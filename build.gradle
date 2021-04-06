@@ -1,0 +1,38 @@
+buildscript {
+    apply from: "gradle/versions.gradle"
+    apply from: "gradle/repositories.gradle"
+
+    repositories {
+        maven { url projectRepositories.google }
+        maven { url projectRepositories.mavenCentral }
+        maven { url projectRepositories.gradlePlugins }
+    }
+    dependencies {
+        classpath libs.androidGradlePlugin
+        classpath libs.kotlin.gradlePlugin
+        classpath libs.kotlin.serialization
+        classpath libs.gradleVersionsPlugin
+        classpath libs.gradleDaggerHiltPlugin
+    }
+}
+
+allprojects {
+    repositories {
+        maven { url projectRepositories.google }
+        maven { url projectRepositories.mavenCentral }
+        maven { url projectRepositories.jcenter }
+        flatDir { dirs "${rootProject.projectDir}/core/mvp/libs" }
+    }
+}
+
+subprojects {
+    if (file("./build.gradle").exists()) {
+        apply from: "${rootDir}/gradle/ktlint.gradle"
+        apply from: "${rootDir}/gradle/detekt.gradle"
+        apply from: "${rootDir}/gradle/jacocoModule.gradle"
+        apply from: "${rootDir}/gradle/moduleSetup.gradle"
+    }
+}
+
+apply from: "gradle/jacocoProject.gradle"
+apply from: "gradle/dependencyUpdates.gradle"

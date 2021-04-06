@@ -1,0 +1,78 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "kotlin-parcelize"
+    id "kotlin-kapt"
+    id "dagger.hilt.android.plugin"
+}
+
+android {
+    defaultConfig {
+        applicationId "com.passbolt.mobile.android"
+        versionCode System.getenv().get("GITLAB_BUILD_NUMBER") ?: projectVersionCode
+        versionName projectVersionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        releaseConfig {
+            //TODO
+            storeFile file("certs/release.keystore")
+            storePassword System.getenv().get("RELEASE_STORE_PASSWORD") ?: ""
+            keyAlias System.getenv().get("RELEASE_KEY_ALIAS") ?: ""
+            keyPassword System.getenv().get("RELEASE_KEY_PASSWORD") ?: ""
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+            minifyEnabled false
+        }
+//        qa {
+//            applicationIdSuffix ".qa"
+//            debuggable false
+//            zipAlignEnabled true
+//            minifyEnabled true
+//            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+//            matchingFallbacks = ["release"]
+//            //TODO signingConfig signingConfigs.qaConfig
+//        }
+        release {
+            debuggable false
+            zipAlignEnabled true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.releaseConfig
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+kapt {
+    correctErrorTypes true
+}
+
+dependencies {
+    implementation project(':mvp')
+    implementation project(':healthcheck')
+    implementation project(':passboltapi')
+
+    debugImplementation libs.quality.leakcanary
+
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.constraintLayout
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+
+    /* DI */
+    implementation libs.di.hilt
+    kapt libs.di.hiltCompiler
+}
