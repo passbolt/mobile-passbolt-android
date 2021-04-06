@@ -1,0 +1,29 @@
+rootProject.name = "Passbolt"
+
+projectModule "app"
+
+coreModule "mvp"
+coreModule "networking"
+coreModule "Gopenpgp"
+
+featureModule 'healthcheck'
+
+serviceModule "passboltapi"
+
+def featureModule(String name) {
+    projectModule(name, "features/")
+}
+
+def coreModule(String name) {
+    projectModule(name, "core/")
+}
+
+def serviceModule(String name) {
+    projectModule(name, "services/")
+}
+
+def projectModule(String name, String directory = "") {
+    include ":$name"
+    project(":$name").projectDir = file(directory + name)
+}
+

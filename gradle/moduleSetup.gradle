@@ -1,0 +1,91 @@
+afterEvaluate { project ->
+    def isAndroid = project.plugins.hasPlugin("com.android.library") ||
+        project.plugins.hasPlugin("com.android.dynamic-feature") ||
+        project.plugins.hasPlugin("com.android.application")
+
+    def isAndroidComponent = project.plugins.hasPlugin("com.android.library") ||
+        project.plugins.hasPlugin("com.android.dynamic-feature")
+
+    if (project.getName() != "Gopenpgp") {
+        setupModule(isAndroid, isAndroidComponent)
+        setupCommonDependencies(isAndroid)
+        setupCommonTasks(isAndroid)
+    }
+}
+
+def setupModule(isAndroid, isAndroidComponent) {
+    if (isAndroid) {
+        android {
+            compileSdkVersion projectCompileSdk
+
+            defaultConfig {
+                minSdkVersion projectMinSdk
+                targetSdkVersion projectTargetSdk
+            }
+
+            if (isAndroidComponent) {
+                buildTypes {
+                    release {
+                        minifyEnabled false
+                        consumerProguardFiles 'proguard-rules.pro'
+                    }
+                }
+            }
+
+            compileOptions {
+                coreLibraryDesugaringEnabled true
+                sourceCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
+            }
+
+            kotlinOptions {
+                jvmTarget = JavaVersion.VERSION_1_8.toString()
+            }
+
+            lintOptions {
+                abortOnError true
+                checkReleaseBuilds false
+                checkAllWarnings true
+                warningsAsErrors true
+                disable = ["GoogleAppIndexingWarning", "GradleDependency", "NewerVersionAvailable", "UnusedIds"]
+            }
+
+            testOptions {
+                unitTests.all {
+                    maxParallelForks = Runtime.runtime.availableProcessors() - 1
+                }
+            }
+        }
+    } else {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+def setupCommonDependencies(isAndroid) {
+    dependencies {
+        implementation libs.kotlin.stdlib
+        implementation libs.kotlin.coroutines
+        testImplementation libs.test.junit
+        testImplementation libs.test.mockitoCore
+        testImplementation libs.test.mockitoKotlin
+        testImplementation libs.test.truth
+        if (isAndroid) {
+            androidTestImplementation libs.test.androidxJUnit
+            androidTestImplementation libs.test.espressoCore
+        }
+        coreLibraryDesugaring libs.desugarJdkLibs
+    }
+}
+
+def setupCommonTasks(isAndroid) {
+    if (isAndroid) {
+        tasks.register("unitTest") { task ->
+            task.dependsOn(testDebugUnitTest)
+        }
+    } else {
+        tasks.register("unitTest") { task ->
+            task.dependsOn(test)
+        }
+    }
+}

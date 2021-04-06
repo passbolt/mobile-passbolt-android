@@ -1,0 +1,29 @@
+ext.jacocoExcludes = [
+    '**/R.class',
+    '**/R$*.class',
+    '**/BuildConfig.*',
+    '**/Manifest*.*',
+
+    // Android
+    'android/**/*.*',
+    '*/android/databinding/*',
+    '*/androidx/databinding/*',
+
+    // UI
+    '**/*Activity.*',
+    '**/*Activity$*.*',
+    '**/*Fragment.*',
+    '**/*Fragment$*.*',
+    '**/*View.*',
+    '**/*ViewHolder*.*',
+    '**/*Adapter.*',
+    '**/*Module*.*',
+    '**/*Dialog.*',
+    '**/*Layout*.*',
+
+    // Dagger auto-generated code.
+    '**/*Dagger*.*',
+    '**/*MembersInjector*.*',
+    '**/*_Provide*Factory*.*',
+    '**/*_Factory*.*'
+]
