@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TextInputView">
+        <attr name="inputTitle"
+            format="string" />
+        <attr name="inputHint"
+            format="string" />
+        <attr name="inputIsRequired"
+            format="boolean" />
+    </declare-styleable>
+</resources>

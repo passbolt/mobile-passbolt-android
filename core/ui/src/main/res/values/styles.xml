@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TextInput"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="errorTextAppearance">@style/TextInputErrorTextAppearance</item>
+        <item name="boxStrokeColor">@drawable/input_text_selector</item>
+    </style>
+
+    <style name="TextInputErrorTextAppearance"
+        parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/red</item>
+        <item name="android:textSize">@dimen/text_input_message</item>
+    </style>
+
+    <style name="TextInputTextAppearance"
+        parent="@android:style/TextAppearance">
+        <item name="android:fontWeight">500</item>
+    </style>
+
+    <style name="PrimaryButton"
+        parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textAppearance">@style/PrimaryButtonTextAppearance</item>
+    </style>
+
+    <style name="PrimaryButtonTextAppearance">
+        <item name="android:textSize">@dimen/text_input</item>
+        <item name="android:fontWeight">600</item>
+    </style>
+</resources>

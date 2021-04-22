@@ -5,8 +5,9 @@ projectModule "app"
 coreModule "mvp"
 coreModule "networking"
 coreModule "Gopenpgp"
+coreModule "ui"
 
-featureModule 'healthcheck'
+featureModule "healthcheck"
 
 serviceModule "passboltapi"
 

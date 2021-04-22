@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--primary-->
+    <color name="primary">#2A9CEB</color>
+    <color name="primary_dark">#2894DF</color>
+    <color name="green">#009900</color>
+    <color name="red">#D40101</color>
+    <color name="yellow">#FAC600</color>
+    <color name="white">#FFFFFF</color>
+
+    <!--tints-->
+    <color name="tint_blue">#EAF3FA</color>
+    <color name="tint_green">#E7F3E7</color>
+    <color name="tint_red">#F8E7E7</color>
+    <color name="tint_yellow">#FFFAEB</color>
+
+    <!--text-->
+    <color name="text_primary">#333333</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_tertiary">#888888</color>
+
+    <!--other-->
+    <color name="background">@color/white</color>
+    <color name="divider">#DDDDDD</color>
+    <color name="icon_light">#888888</color>
+    <color name="icon_dark">#333333</color>
+
+</resources>
