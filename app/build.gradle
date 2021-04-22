@@ -62,6 +62,7 @@ dependencies {
     implementation project(':mvp')
     implementation project(':healthcheck')
     implementation project(':passboltapi')
+    implementation project(':ui')
 
     debugImplementation libs.quality.leakcanary
 
