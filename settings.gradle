@@ -8,6 +8,7 @@ coreModule "Gopenpgp"
 coreModule "ui"
 
 featureModule "healthcheck"
+featureModule "startup"
 
 serviceModule "passboltapi"
 

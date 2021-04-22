@@ -1,18 +1,16 @@
 <resources>
-
-    <style name="Theme.Passbolt" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Passbolt"
+        parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:fontFamily">@font/inter</item>
+        <item name="materialButtonStyle">@style/PrimaryButton</item>
     </style>
 
-    <style name="Theme.Passbolt.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+    <style name="Theme.Passbolt.AppBarOverlay"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.Passbolt.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.Passbolt.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Theme.Passbolt.PopupOverlay"
+        parent="ThemeOverlay.AppCompat.Light" />
 </resources>
