@@ -1,11 +1,14 @@
-package com.passbolt.mobile.android.feature.setup.welcome
+package com.passbolt.mobile.android.feature.setup.transferdetails
 
 import android.os.Bundle
 import android.view.View
-import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.common.extension.fromHtml
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.R
-import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBinding
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import com.passbolt.mobile.android.feature.setup.databinding.FragmentTransferDetailsBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,12 +32,43 @@ import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBind
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class WelcomeFragment : BindingFragment<FragmentWelcomeBinding>(FragmentWelcomeBinding::inflate) {
+
+@AndroidEntryPoint
+class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
+    FragmentTransferDetailsBinding::inflate
+), TransferDetailsContract.View {
+
+    @Inject
+    lateinit var presenter: TransferDetailsContract.Presenter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.connectToAccountButton.setOnClickListener {
-            findNavController().navigate(R.id.action_welcomeFragment_to_transferDetailsFragment)
+        presenter.attach(this)
+        initToolbar()
+        setListeners()
+        addSteps()
+    }
+
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
+    private fun initToolbar() {
+        binding.toolbar.setNavigationIcon(R.drawable.ic_back)
+        binding.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+    }
+
+    private fun setListeners() {
+        binding.scanQrCodesButton.setDebouncingOnClick {
+            presenter.scanQrCodesButtonClicked()
         }
+    }
+
+    private fun addSteps() {
+        binding.steps.addList(
+            requireContext().resources.getStringArray(R.array.transfer_details_steps_array)
+                .map { it.fromHtml() }
+        )
     }
 }

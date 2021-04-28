@@ -65,6 +65,7 @@ dependencies {
     implementation project(':setup')
     implementation project(':passboltapi')
     implementation project(':ui')
+    implementation project(':common')
 
     debugImplementation libs.quality.leakcanary
 

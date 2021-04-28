@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.feature.setup
+package com.passbolt.mobile.android.common.extension
 
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBinding
-import dagger.hilt.android.AndroidEntryPoint
+import android.text.Html
+import android.text.Spanned
+import androidx.core.text.HtmlCompat
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,5 +26,6 @@ import dagger.hilt.android.AndroidEntryPoint
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@AndroidEntryPoint
-class SetUpActivity : BindingActivity<ActivitySetupBinding>(ActivitySetupBinding::inflate)
+
+fun String.fromHtml(): Spanned =
+    Html.fromHtml(this, HtmlCompat.FROM_HTML_MODE_LEGACY)

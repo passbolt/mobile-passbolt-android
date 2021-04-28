@@ -7,6 +7,7 @@ coreModule "networking"
 coreModule "Gopenpgp"
 coreModule "ui"
 coreModule "navigation"
+coreModule "common"
 
 featureModule "healthcheck"
 featureModule "startup"

@@ -1,8 +1,6 @@
-package com.passbolt.mobile.android.feature.setup
+package com.passbolt.mobile.android.feature.setup.transferdetails
 
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBinding
-import dagger.hilt.android.AndroidEntryPoint
+import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,5 +24,14 @@ import dagger.hilt.android.AndroidEntryPoint
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@AndroidEntryPoint
-class SetUpActivity : BindingActivity<ActivitySetupBinding>(ActivitySetupBinding::inflate)
+
+interface TransferDetailsContract {
+
+    interface View : BaseContract.View {
+        // TODO
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun scanQrCodesButtonClicked()
+    }
+}

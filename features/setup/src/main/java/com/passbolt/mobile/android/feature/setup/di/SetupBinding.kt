@@ -1,12 +1,11 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.feature.setup.di
 
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.ext.junit.runners.AndroidJUnit4
-
-import org.junit.Test
-import org.junit.runner.RunWith
-
-import org.junit.Assert.*
+import com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsContract
+import com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsPresenter
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.FragmentComponent
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,12 +30,10 @@ import org.junit.Assert.*
  * @since v1.0
  */
 
-@RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.passbolt.mobile.android", appContext.packageName)
-    }
+@Module
+@InstallIn(FragmentComponent::class)
+internal abstract class SetupBinding {
+
+    @Binds
+    abstract fun transferDetailsPresenter(presenter: TransferDetailsPresenter): TransferDetailsContract.Presenter
 }

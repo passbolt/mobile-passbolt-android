@@ -9,5 +9,15 @@
         android:id="@+id/welcomeFragment"
         android:name="com.passbolt.mobile.android.feature.setup.welcome.WelcomeFragment"
         android:label="WelcomeFragment"
-        tools:layout="@layout/fragment_welcome" />
+        tools:layout="@layout/fragment_welcome">
+        <action
+            android:id="@+id/action_welcomeFragment_to_transferDetailsFragment"
+            app:destination="@id/transferDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/transferDetailsFragment"
+        android:name="com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsFragment"
+        android:label="TransferDetails"
+        tools:layout="@layout/fragment_transfer_details" />
 </navigation>

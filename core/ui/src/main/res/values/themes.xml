@@ -16,4 +16,10 @@
 
     <style name="Theme.Passbolt.PopupOverlay"
         parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Theme.Passbolt.Toolbar"
+        parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_primary</item>
+    </style>
 </resources>
