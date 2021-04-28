@@ -1,8 +1,12 @@
-package com.passbolt.mobile.android.feature.setup
+package com.passbolt.mobile.android.core.ui.text
 
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBinding
-import dagger.hilt.android.AndroidEntryPoint
+import android.content.Context
+import android.text.Spanned
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.widget.LinearLayout
+import com.passbolt.mobile.android.common.extension.gone
+import com.passbolt.mobile.android.core.ui.databinding.ViewCircleStepRowBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,5 +30,26 @@ import dagger.hilt.android.AndroidEntryPoint
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@AndroidEntryPoint
-class SetUpActivity : BindingActivity<ActivitySetupBinding>(ActivitySetupBinding::inflate)
+
+class CircleStepsView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : LinearLayout(context, attrs, defStyle) {
+
+    init {
+        orientation = VERTICAL
+    }
+
+    fun addList(list: List<Spanned>) {
+        list.forEachIndexed { index, text ->
+            val row = ViewCircleStepRowBinding.inflate(LayoutInflater.from(context))
+            row.titleLabel.text = text
+            row.circle.setText("${index + 1}")
+            if (index == list.size - 1) {
+                row.line.gone()
+            }
+            addView(row.root)
+        }
+    }
+}

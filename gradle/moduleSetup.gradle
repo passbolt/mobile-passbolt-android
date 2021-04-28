@@ -46,7 +46,7 @@ def setupModule(isAndroid, isAndroidComponent) {
                 abortOnError true
                 checkReleaseBuilds false
                 checkAllWarnings true
-                warningsAsErrors true
+                warningsAsErrors false
                 disable = ["GoogleAppIndexingWarning", "GradleDependency", "NewerVersionAvailable", "UnusedIds"]
             }
 

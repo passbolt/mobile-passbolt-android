@@ -1,8 +1,11 @@
-package com.passbolt.mobile.android.feature.setup
+package com.passbolt.mobile.android.core.ui
 
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBinding
-import dagger.hilt.android.AndroidEntryPoint
+import android.content.Context
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
+import com.passbolt.mobile.android.core.ui.databinding.ViewTextCircleBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,5 +29,24 @@ import dagger.hilt.android.AndroidEntryPoint
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@AndroidEntryPoint
-class SetUpActivity : BindingActivity<ActivitySetupBinding>(ActivitySetupBinding::inflate)
+
+class TextCircle @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : FrameLayout(context, attrs, defStyle) {
+
+    private val binding = ViewTextCircleBinding.inflate(LayoutInflater.from(context), this)
+
+    init {
+        background = ContextCompat.getDrawable(context, R.drawable.circle_gray)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
+    }
+
+    fun setText(text: String) {
+        binding.textLabel.text = text
+    }
+}

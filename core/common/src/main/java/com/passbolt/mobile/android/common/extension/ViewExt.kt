@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.feature.setup
+package com.passbolt.mobile.android.common.extension
 
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBinding
-import dagger.hilt.android.AndroidEntryPoint
+import android.os.SystemClock
+import android.view.View
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,5 +25,30 @@ import dagger.hilt.android.AndroidEntryPoint
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@AndroidEntryPoint
-class SetUpActivity : BindingActivity<ActivitySetupBinding>(ActivitySetupBinding::inflate)
+
+fun View.visible() {
+    visibility = View.VISIBLE
+}
+
+fun View.invisible() {
+    visibility = View.INVISIBLE
+}
+
+fun View.gone() {
+    visibility = View.GONE
+}
+
+fun View.setDebouncingOnClick(debounceTime: Long = DEBOUNCE_DELAY_MILLIS, action: () -> Unit) {
+    this.setOnClickListener(object : View.OnClickListener {
+        private var lastClickTime: Long = 0
+        override fun onClick(v: View) {
+            if (shouldClickBeIgnored()) return else action()
+
+            lastClickTime = SystemClock.elapsedRealtime()
+        }
+
+        private fun shouldClickBeIgnored() = SystemClock.elapsedRealtime() - lastClickTime < debounceTime
+    })
+}
+
+private const val DEBOUNCE_DELAY_MILLIS = 600L

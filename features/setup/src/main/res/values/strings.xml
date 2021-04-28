@@ -4,4 +4,14 @@
     <string name="welcome_body">You need an existing account to get started. Sign in with your existing account on the desktop browser extension to connect it with the mobile device.</string>
     <string name="welcome_connect_to_existing_account">Connect to an existing account</string>
     <string name="welcome_no_account">I don’t have an account</string>
+
+    <string name="transfer_details_header">Scan QR codes to transfer your account details</string>
+    <string name="transfer_details_scan_button">Scan QR codes</string>
+    <string name="transfer_details_title">Transfer account details</string>
+    <string-array name="transfer_details_steps_array">
+        <item>Sign in using the browser extension</item>
+        <item>Go to the &lt;b>Profile&lt;/b> page</item>
+        <item>Go to the &lt;b>Mobile&lt;/b> section</item>
+        <item>Scan the qr codes sequence</item>
+    </string-array>
 </resources>

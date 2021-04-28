@@ -8,6 +8,7 @@ plugins {
 dependencies {
     implementation project(':mvp')
     implementation project(':ui')
+    implementation project(':common')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
