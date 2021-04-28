@@ -6,9 +6,11 @@ coreModule "mvp"
 coreModule "networking"
 coreModule "Gopenpgp"
 coreModule "ui"
+coreModule "navigation"
 
 featureModule "healthcheck"
 featureModule "startup"
+featureModule "setup"
 
 serviceModule "passboltapi"
 

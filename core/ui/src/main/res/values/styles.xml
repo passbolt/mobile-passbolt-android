@@ -9,23 +9,64 @@
     <style name="TextInputErrorTextAppearance"
         parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/red</item>
-        <item name="android:textSize">@dimen/text_input_message</item>
+        <item name="android:textSize">@dimen/sp_12</item>
     </style>
 
     <style name="TextInputTextAppearance"
         parent="@android:style/TextAppearance">
-        <item name="android:fontWeight">500</item>
+        <item name="android:textFontWeight">500</item>
     </style>
 
     <style name="PrimaryButton"
         parent="Widget.MaterialComponents.Button">
         <item name="android:textColor">@color/white</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:textAppearance">@style/PrimaryButtonTextAppearance</item>
+        <item name="android:textAppearance">@style/ButtonBigText</item>
+        <item name="android:textFontWeight">600</item>
     </style>
 
-    <style name="PrimaryButtonTextAppearance">
-        <item name="android:textSize">@dimen/text_input</item>
-        <item name="android:fontWeight">600</item>
+    <style name="ButtonBigText">
+        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:textFontWeight">600</item>
     </style>
+
+    <style name="ButtonSmallText">
+        <item name="android:textSize">@dimen/sp_12</item>
+        <item name="android:textFontWeight">600</item>
+    </style>
+
+    <style name="Heading">
+        <item name="android:textFontWeight">600</item>
+    </style>
+
+    <style name="Heading1Text"
+        parent="Heading">
+        <item name="android:textSize">@dimen/sp_24</item>
+    </style>
+
+    <style name="Heading2Text"
+        parent="Heading">
+        <item name="android:textSize">@dimen/sp_20</item>
+    </style>
+
+    <style name="Heading3Text"
+        parent="Heading">
+        <item name="android:textSize">@dimen/sp_16</item>
+    </style>
+
+    <style name="Heading4Text"
+        parent="Heading">
+        <item name="android:textSize">@dimen/sp_14</item>
+    </style>
+
+    <style name="BodyText">
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">@dimen/sp_14</item>
+    </style>
+
+    <style name="BodyLight"
+        parent="BodyText">
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
 </resources>

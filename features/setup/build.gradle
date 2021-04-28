@@ -8,10 +8,11 @@ plugins {
 dependencies {
     implementation project(':mvp')
     implementation project(':ui')
-    implementation project(':navigation')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
+    implementation libs.material
+    implementation libs.androidx.constraintLayout
 
     implementation libs.di.hilt
     kapt libs.di.hiltCompiler

@@ -62,6 +62,7 @@ dependencies {
     implementation project(':mvp')
     implementation project(':healthcheck')
     implementation project(':startup')
+    implementation project(':setup')
     implementation project(':passboltapi')
     implementation project(':ui')
 
