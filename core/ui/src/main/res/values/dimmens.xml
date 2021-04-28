@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="text_input_message">12sp</dimen>
-    <dimen name="text_input">14sp</dimen>
+    <!--text-->
+    <dimen name="sp_24">24sp</dimen>
+    <dimen name="sp_20">20sp</dimen>
+    <dimen name="sp_16">20sp</dimen>
+    <dimen name="sp_14">14sp</dimen>
+    <dimen name="sp_12">12sp</dimen>
+
+    <!--standard-->
+    <dimen name="dp_8">8dp</dimen>
+    <dimen name="dp_16">16dp</dimen>
+    <dimen name="dp_24">24dp</dimen>
+    <dimen name="dp_32">32dp</dimen>
+    <dimen name="dp_48">48dp</dimen>
+    <dimen name="dp_56">56dp</dimen>
+    <dimen name="dp_64">64dp</dimen>
+
+    <!--images-->
+    <dimen name="dp_116">116dp</dimen>
+    <dimen name="dp_160">160dp</dimen>
 </resources>

@@ -13,6 +13,7 @@ ext {
         kotlin: "1.4.30",
         coroutines: "1.4.3",
         daggerHilt: "2.33-beta",
+        quadrant: "1.5",
         test: [
             junit: "4.13",
             mockitoCore: "3.3.3",
@@ -49,6 +50,7 @@ ext {
         gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:${versions.gradleVersionsPlugin}",
         desugarJdkLibs: "com.android.tools:desugar_jdk_libs:${versions.desugarJdkLibs}",
         gradleDaggerHiltPlugin: "com.google.dagger:hilt-android-gradle-plugin:${versions.daggerHilt}",
+        quadrant: "gradle.plugin.com.gaelmarhic:quadrant:${versions.quadrant}",
         kotlin: [
             gradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
             stdlib: "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",

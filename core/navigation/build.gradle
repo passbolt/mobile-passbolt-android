@@ -1,0 +1,21 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+apply plugin: "com.gaelmarhic.quadrant"
+
+dependencies {
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+}
+
+quadrantConfig {
+    perModule true
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

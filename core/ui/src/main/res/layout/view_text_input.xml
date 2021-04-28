@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:textFontWeight="600"
         android:textIsSelectable="false"
-        android:textSize="@dimen/text_input_message"
+        android:textSize="@dimen/sp_12"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextInputTextAppearance"
-            android:textSize="@dimen/text_input"
+            android:textSize="@dimen/sp_14"
             tools:hint="Hint"
             tools:text="Text" />
     </com.google.android.material.textfield.TextInputLayout>

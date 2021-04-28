@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Welcome!</string>
+    <string name="welcome_body">You need an existing account to get started. Sign in with your existing account on the desktop browser extension to connect it with the mobile device.</string>
+    <string name="welcome_connect_to_existing_account">Connect to an existing account</string>
+    <string name="welcome_no_account">I don’t have an account</string>
+</resources>
