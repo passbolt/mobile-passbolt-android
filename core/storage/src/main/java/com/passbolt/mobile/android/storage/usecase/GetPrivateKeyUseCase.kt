@@ -1,6 +1,11 @@
-package com.passbolt.mobile.android.feature.healthcheck
+package com.passbolt.mobile.android.storage.usecase
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.common.extension.toCharArray
+import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
+import timber.log.Timber
+import java.io.IOException
+import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +30,31 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface HealthCheckContract {
+class GetPrivateKeyUseCase @Inject constructor(
+    private val encryptedFileFactory: EncryptedFileFactory
+) : UseCase<GetPrivateKeyUseCase.Input, GetPrivateKeyUseCase.Output> {
 
-    interface View : BaseContract.View {
-        fun showMessage(status: String)
-        fun displayPrivateKey(privateKey: CharArray)
+    override fun execute(input: Input): Output {
+        return try {
+            val name = "${PRIVATE_KEY_FILE_NAME}_${input.userId}"
+            Timber.d("Getting private key. Filename: $name")
+
+            val encryptedFile = encryptedFileFactory.get(name, name)
+            encryptedFile.openFileInput().use {
+                val bytes = it.readBytes()
+                Output(bytes.toCharArray())
+            }
+        } catch (exception: IOException) {
+            Timber.e(exception)
+            Output(null)
+        }
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun saveKey(userId: String, privateKeyCharArray: CharArray)
-        fun decryptKey(userId: String)
-    }
+    class Input(
+        val userId: String
+    )
+
+    class Output(
+        val privateKey: CharArray?
+    )
 }

@@ -11,6 +11,7 @@ ext {
         gradleVersionsPlugin: "0.28.0",
         desugarJdkLibs: "1.0.9",
         kotlin: "1.4.30",
+        serializationJson: "1.1.0",
         coroutines: "1.4.3",
         daggerHilt: "2.33-beta",
         quadrant: "1.5",
@@ -32,8 +33,8 @@ ext {
             appcompat: "1.1.0",
             constraintLayout: "1.1.3",
             navigation: "2.2.2",
-            security: "1.0.0-rc04",
-            biometric: "1.2.0-alpha03"
+            security: "1.0.0",
+            biometric: "1.2.0-alpha02"
         ],
         material: "1.1.0",
         networking: [
@@ -42,7 +43,8 @@ ext {
         ],
         firebase: [
             mlVision: "24.0.1"
-        ]
+        ],
+        timber: "4.7.1"
     ]
 
     libs = [
@@ -55,7 +57,9 @@ ext {
             gradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
             stdlib: "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",
             serialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}",
-            coroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
+            serializationJson: "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serializationJson}",
+            coroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}",
+            io: "org.jetbrains.kotlin:kotlin-util-io:${versions.kotlin}"
         ],
         test: [
             junit: "junit:junit:${versions.test.junit}",
@@ -92,6 +96,7 @@ ext {
         ],
         firebase: [
             firebaseMlVision: "com.google.firebase:firebase-ml-vision:${versions.firebase.mlVision}"
-        ]
+        ],
+        timber: "com.jakewharton.timber:timber:${versions.timber}"
     ]
 }

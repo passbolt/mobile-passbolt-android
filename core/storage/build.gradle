@@ -3,20 +3,18 @@ plugins {
     id "kotlin-android"
     id "kotlin-kapt"
     id "dagger.hilt.android.plugin"
+    id 'kotlinx-serialization'
 }
 
 dependencies {
-    implementation project(':mvp')
-    implementation project(':passboltapi')
-    implementation project(':storage')
     implementation project(':common')
 
     implementation libs.androidx.core
     implementation libs.androidx.appcompat
-    implementation libs.material
-    implementation libs.androidx.constraintLayout
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
+    implementation libs.androidx.security
+
+    implementation libs.kotlin.serializationJson
+    implementation libs.kotlin.io
 
     /* DI */
     implementation libs.di.hilt

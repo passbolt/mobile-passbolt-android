@@ -1,6 +1,11 @@
-package com.passbolt.mobile.android.feature.healthcheck
+package com.passbolt.mobile.android.storage.factory
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import android.content.Context
+import androidx.security.crypto.EncryptedFile
+import androidx.security.crypto.MasterKeys
+import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.File
+import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +30,27 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface HealthCheckContract {
+class EncryptedFileFactory @Inject internal constructor(
+    @ApplicationContext private val context: Context,
+    private val keySpecProvider: KeySpecProvider
+) {
 
-    interface View : BaseContract.View {
-        fun showMessage(status: String)
-        fun displayPrivateKey(privateKey: CharArray)
-    }
+    fun get(
+        keyAlias: String,
+        fileName: String,
+        keyBiometricSettings: KeyBiometricSettings = KeyBiometricSettings(
+            authenticationRequired = false,
+            invalidatedByBiometricEnrollment = false
+        )
+    ): EncryptedFile {
+        val masterKeyAlias = MasterKeys.getOrCreate(keySpecProvider.get(keyAlias, keyBiometricSettings))
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun saveKey(userId: String, privateKeyCharArray: CharArray)
-        fun decryptKey(userId: String)
+        val file = File(context.filesDir, fileName)
+        return EncryptedFile.Builder(
+            file,
+            context,
+            masterKeyAlias,
+            EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+        ).build()
     }
 }

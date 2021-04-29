@@ -1,6 +1,8 @@
-package com.passbolt.mobile.android.feature.healthcheck
+package com.passbolt.mobile.android.storage.usecase
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
+import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +27,26 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface HealthCheckContract {
+class GetSessionUseCase @Inject constructor(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : UseCase<GetSessionUseCase.Input, GetSessionUseCase.Output> {
 
-    interface View : BaseContract.View {
-        fun showMessage(status: String)
-        fun displayPrivateKey(privateKey: CharArray)
+    override fun execute(input: Input): Output {
+        val alias = "${SESSION_TOKENS_ALIAS}_${input.userId}"
+        val sharedPreferences = encryptedSharedPreferencesFactory.get(alias, "$alias.xml")
+
+        return Output(
+            sharedPreferences.getString(ACCESS_TOKEN_KEY, ""),
+            sharedPreferences.getString(REFRESH_TOKEN_KEY, "")
+        )
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun saveKey(userId: String, privateKeyCharArray: CharArray)
-        fun decryptKey(userId: String)
-    }
+    class Input(
+        val userId: String
+    )
+
+    class Output(
+        val username: String?,
+        val email: String?
+    )
 }

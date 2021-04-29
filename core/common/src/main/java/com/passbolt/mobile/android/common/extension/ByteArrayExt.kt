@@ -1,6 +1,8 @@
-package com.passbolt.mobile.android.feature.healthcheck
+package com.passbolt.mobile.android.common.extension
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import java.nio.ByteBuffer
+import java.nio.CharBuffer
+import java.util.Arrays
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +27,7 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface HealthCheckContract {
-
-    interface View : BaseContract.View {
-        fun showMessage(status: String)
-        fun displayPrivateKey(privateKey: CharArray)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun saveKey(userId: String, privateKeyCharArray: CharArray)
-        fun decryptKey(userId: String)
-    }
+fun ByteArray.toCharArray(): CharArray? {
+    val charBuffer: CharBuffer = Charsets.UTF_8.decode(ByteBuffer.wrap(this))
+    return Arrays.copyOf(charBuffer.array(), charBuffer.limit())
 }

@@ -3,6 +3,8 @@ package com.passbolt.mobile.android.feature.healthcheck
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.NetworkResult
 import com.passbolt.mobile.android.feature.healthcheck.usecase.GetHealthCheckUseCase
+import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -35,7 +37,9 @@ import javax.inject.Inject
 
 class HealthCheckPresenter @Inject constructor(
     private val getHealthCheckUseCase: GetHealthCheckUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
+    private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
+    private val getPrivateKeyUseCase: GetPrivateKeyUseCase
 ) : HealthCheckContract.Presenter {
 
     override var view: HealthCheckContract.View? = null
@@ -54,6 +58,17 @@ class HealthCheckPresenter @Inject constructor(
                 is NetworkResult.Failure.ServerError -> view?.showMessage("Server error")
                 is NetworkResult.Success -> view?.showMessage(response.value)
             }
+        }
+    }
+
+    override fun saveKey(userId: String, privateKeyCharArray: CharArray) {
+        savePrivateKeyUseCase.execute(SavePrivateKeyUseCase.Input(userId, privateKeyCharArray))
+    }
+
+    override fun decryptKey(userId: String) {
+        val privateKey = getPrivateKeyUseCase.execute(GetPrivateKeyUseCase.Input(userId)).privateKey
+        privateKey?.let {
+            view?.displayPrivateKey(it)
         }
     }
 }

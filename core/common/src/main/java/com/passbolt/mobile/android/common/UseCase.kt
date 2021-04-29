@@ -1,6 +1,4 @@
-package com.passbolt.mobile.android.feature.healthcheck
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
+package com.passbolt.mobile.android.common
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +23,7 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface HealthCheckContract {
+interface UseCase<IN : Any, OUT : Any> {
 
-    interface View : BaseContract.View {
-        fun showMessage(status: String)
-        fun displayPrivateKey(privateKey: CharArray)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun saveKey(userId: String, privateKeyCharArray: CharArray)
-        fun decryptKey(userId: String)
-    }
+    fun execute(input: IN): OUT
 }

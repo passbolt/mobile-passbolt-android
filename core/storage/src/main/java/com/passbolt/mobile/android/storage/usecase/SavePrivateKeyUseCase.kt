@@ -1,6 +1,10 @@
-package com.passbolt.mobile.android.feature.healthcheck
+package com.passbolt.mobile.android.storage.usecase
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.common.extension.toByteArray
+import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
+import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +29,22 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface HealthCheckContract {
+class SavePrivateKeyUseCase @Inject constructor(
+    private val encryptedFileFactory: EncryptedFileFactory
+) : UseCase<SavePrivateKeyUseCase.Input, Unit> {
 
-    interface View : BaseContract.View {
-        fun showMessage(status: String)
-        fun displayPrivateKey(privateKey: CharArray)
+    override fun execute(input: Input) {
+        val name = "${PRIVATE_KEY_FILE_NAME}_${input.userId}"
+        Timber.d("Saving private key. Filename: $name")
+
+        val encryptedFile = encryptedFileFactory.get(name, name)
+        encryptedFile.openFileOutput().use {
+            it.write(input.privateKey.toByteArray())
+        }
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun saveKey(userId: String, privateKeyCharArray: CharArray)
-        fun decryptKey(userId: String)
-    }
+    class Input(
+        val userId: String,
+        val privateKey: CharArray
+    )
 }
