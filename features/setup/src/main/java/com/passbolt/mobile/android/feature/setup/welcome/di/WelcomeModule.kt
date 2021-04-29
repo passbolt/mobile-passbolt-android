@@ -1,7 +1,7 @@
-package com.passbolt.mobile.android.feature.setup.di
+package com.passbolt.mobile.android.feature.setup.welcome.di
 
-import com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsContract
-import com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsPresenter
+import com.passbolt.mobile.android.feature.setup.welcome.WelcomeContract
+import com.passbolt.mobile.android.feature.setup.welcome.WelcomePresenter
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -29,11 +29,10 @@ import dagger.hilt.android.components.FragmentComponent
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
 @Module
 @InstallIn(FragmentComponent::class)
-internal abstract class SetupBinding {
+internal abstract class WelcomeModule {
 
     @Binds
-    abstract fun transferDetailsPresenter(presenter: TransferDetailsPresenter): TransferDetailsContract.Presenter
+    abstract fun welcomePresenter(presenter: WelcomePresenter): WelcomeContract.Presenter
 }

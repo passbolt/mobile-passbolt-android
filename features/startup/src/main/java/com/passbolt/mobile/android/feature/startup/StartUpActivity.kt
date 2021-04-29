@@ -10,5 +10,6 @@ class StartUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         // TODO add logic for navigating between sign in and setup
         startActivity(ActivityIntents.setup(this))
+        finish()
     }
 }
