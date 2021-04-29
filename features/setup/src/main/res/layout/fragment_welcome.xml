@@ -74,6 +74,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dp_32"
+        android:padding="@dimen/dp_16"
         android:background="?selectableItemBackground"
         android:text="@string/welcome_no_account"
         app:layout_constraintBottom_toBottomOf="parent"

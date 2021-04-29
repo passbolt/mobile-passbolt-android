@@ -3,6 +3,7 @@
     <style name="Theme.Passbolt.Splash"
         parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@drawable/splash</item>
-        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/white</item>
     </style>
 </resources>

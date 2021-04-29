@@ -21,5 +21,7 @@
         parent="ThemeOverlay.AppCompat.Light">
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_primary</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:titleTextAppearance">@style/Heading1Text</item>
     </style>
 </resources>

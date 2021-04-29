@@ -2,10 +2,14 @@ package com.passbolt.mobile.android.feature.setup.welcome
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBinding
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,12 +33,37 @@ import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBind
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class WelcomeFragment : BindingFragment<FragmentWelcomeBinding>(FragmentWelcomeBinding::inflate) {
+@AndroidEntryPoint
+class WelcomeFragment : BindingFragment<FragmentWelcomeBinding>(FragmentWelcomeBinding::inflate), WelcomeContract.View {
+
+    @Inject
+    lateinit var presenter: WelcomeContract.Presenter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.connectToAccountButton.setOnClickListener {
-            findNavController().navigate(R.id.action_welcomeFragment_to_transferDetailsFragment)
-        }
+        setUpListeners()
+        presenter.attach(this)
+    }
+
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
+    private fun setUpListeners() {
+        binding.noAccountButton.setDebouncingOnClick { presenter.noAccountButtonClick() }
+        binding.connectToAccountButton.setDebouncingOnClick { presenter.connectToAccountClick() }
+    }
+
+    override fun showAccountCreationInfoDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.welcome_create_account_dialog_title)
+            .setMessage(R.string.welcome_create_account_dialog_message)
+            .setPositiveButton(R.string.ok) { _, _ -> }
+            .show()
+    }
+
+    override fun navigateToTransferDetails() {
+        findNavController().navigate(R.id.action_welcomeFragment_to_transferDetailsFragment)
     }
 }

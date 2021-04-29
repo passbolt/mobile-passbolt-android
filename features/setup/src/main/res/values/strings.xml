@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ok">OK</string>
+
     <string name="welcome_title">Welcome!</string>
     <string name="welcome_body">You need an existing account to get started. Sign in with your existing account on the desktop browser extension to connect it with the mobile device.</string>
     <string name="welcome_connect_to_existing_account">Connect to an existing account</string>
     <string name="welcome_no_account">I don’t have an account</string>
+    <string name="welcome_create_account_dialog_title">How to create an account?</string>
+    <string name="welcome_create_account_dialog_message">It is currently not possible to create an account using the mobile app. First you will need create an account using your desktop browser extension.</string>
 
     <string name="transfer_details_header">Scan QR codes to transfer your account details</string>
     <string name="transfer_details_scan_button">Scan QR codes</string>
