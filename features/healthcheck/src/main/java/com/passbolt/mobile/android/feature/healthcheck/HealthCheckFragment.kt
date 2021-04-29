@@ -42,6 +42,14 @@ class HealthCheckFragment : BindingFragment<Binding>(Binding::inflate),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
+        binding.encryptButton.setOnClickListener {
+            val privateKeyCharArray = CharArray(binding.privateKeyEditText.text.length)
+            binding.privateKeyEditText.text.getChars(0, binding.privateKeyEditText.text.length, privateKeyCharArray, 0)
+            presenter.saveKey(binding.userIdEditText.text.toString(), privateKeyCharArray)
+        }
+        binding.decryptButton.setOnClickListener {
+            presenter.decryptKey(binding.userIdEditText.text.toString())
+        }
     }
 
     override fun onDestroyView() {
@@ -51,5 +59,9 @@ class HealthCheckFragment : BindingFragment<Binding>(Binding::inflate),
 
     override fun showMessage(status: String) {
         binding.textviewFirst.text = status
+    }
+
+    override fun displayPrivateKey(privateKey: CharArray) {
+        binding.privateKeyEditText.setText(privateKey, 0, privateKey.size)
     }
 }

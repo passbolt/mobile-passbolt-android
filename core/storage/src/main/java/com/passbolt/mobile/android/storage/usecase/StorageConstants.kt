@@ -1,6 +1,4 @@
-package com.passbolt.mobile.android.feature.healthcheck
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
+package com.passbolt.mobile.android.storage.usecase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +23,16 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface HealthCheckContract {
+internal const val ACCOUNTS_DATA_ALIAS = "accounts"
+internal const val SESSION_TOKENS_ALIAS = "sessions"
+internal const val SELECTED_ACCOUNT_ALIAS = "selected_account"
+internal const val ACCOUNTS_ALIAS = "accounts_list"
+internal const val USERNAME_KEY = "USERNAME_KEY"
+internal const val ACCESS_TOKEN_KEY = "ACCESS_TOKEN_KEY"
+internal const val SELECTED_ACCOUNT_KEY = "SELECTED_ACCOUNT_KEY"
+internal const val REFRESH_TOKEN_KEY = "REFRESH_TOKEN_KEY"
+internal const val EMAIL_KEY = "EMAIL_KEY"
+internal const val PRIVATE_KEY_FILE_NAME = "user_key"
+internal const val PASSPHRASE_FILE_NAME = "passphrase"
 
-    interface View : BaseContract.View {
-        fun showMessage(status: String)
-        fun displayPrivateKey(privateKey: CharArray)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun saveKey(userId: String, privateKeyCharArray: CharArray)
-        fun decryptKey(userId: String)
-    }
-}
+internal const val KEY_SIZE = 256

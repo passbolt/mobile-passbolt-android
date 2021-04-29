@@ -1,6 +1,10 @@
-package com.passbolt.mobile.android.feature.healthcheck
+package com.passbolt.mobile.android.storage.usecase
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.common.extension.toByteArray
+import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
+import com.passbolt.mobile.android.storage.factory.KeyBiometricSettings
+import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +29,24 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface HealthCheckContract {
+class SavePassphraseUseCase @Inject constructor(
+    private val encryptedFileFactory: EncryptedFileFactory
+) : UseCase<SavePassphraseUseCase.Input, Unit> {
 
-    interface View : BaseContract.View {
-        fun showMessage(status: String)
-        fun displayPrivateKey(privateKey: CharArray)
+    override fun execute(input: Input) {
+        val keyName = "${PASSPHRASE_FILE_NAME}_${input.userId}"
+        val encryptedFile = encryptedFileFactory.get(
+            keyName,
+            keyName,
+            KeyBiometricSettings(authenticationRequired = true, invalidatedByBiometricEnrollment = true)
+        )
+        encryptedFile.openFileOutput().use {
+            it.write(input.passPhrase.toByteArray())
+        }
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun saveKey(userId: String, privateKeyCharArray: CharArray)
-        fun decryptKey(userId: String)
-    }
+    class Input(
+        val userId: String,
+        val passPhrase: CharArray
+    )
 }

@@ -1,6 +1,9 @@
-package com.passbolt.mobile.android.feature.healthcheck
+package com.passbolt.mobile.android.storage.factory
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
+import com.passbolt.mobile.android.storage.usecase.KEY_SIZE
+import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +28,22 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface HealthCheckContract {
+internal class KeySpecProvider @Inject constructor() {
 
-    interface View : BaseContract.View {
-        fun showMessage(status: String)
-        fun displayPrivateKey(privateKey: CharArray)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun saveKey(userId: String, privateKeyCharArray: CharArray)
-        fun decryptKey(userId: String)
-    }
+    fun get(keyAlias: String, keyBiometricSettings: KeyBiometricSettings) =
+        KeyGenParameterSpec.Builder(
+            keyAlias,
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+        )
+            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+            .setUserAuthenticationRequired(keyBiometricSettings.authenticationRequired)
+            .setInvalidatedByBiometricEnrollment(keyBiometricSettings.invalidatedByBiometricEnrollment)
+            .setKeySize(KEY_SIZE)
+            .build()
 }
+
+class KeyBiometricSettings(
+    val authenticationRequired: Boolean,
+    val invalidatedByBiometricEnrollment: Boolean
+)

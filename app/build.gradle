@@ -59,6 +59,8 @@ kapt {
 }
 
 dependencies {
+    // needs to implement all modules:
+    // https://github.com/google/dagger/issues/2378
     implementation project(':mvp')
     implementation project(':healthcheck')
     implementation project(':startup')
@@ -66,6 +68,7 @@ dependencies {
     implementation project(':passboltapi')
     implementation project(':ui')
     implementation project(':common')
+    implementation project(':storage')
 
     debugImplementation libs.quality.leakcanary
 
@@ -79,4 +82,6 @@ dependencies {
     /* DI */
     implementation libs.di.hilt
     kapt libs.di.hiltCompiler
+
+    implementation libs.timber
 }

@@ -2,6 +2,7 @@ package com.passbolt.mobile.android
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,4 +28,16 @@ import dagger.hilt.android.HiltAndroidApp
  */
 
 @HiltAndroidApp
-class PassboltApplication : Application()
+class PassboltApplication : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+        initTimber()
+    }
+
+    private fun initTimber() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+    }
+}

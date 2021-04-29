@@ -1,6 +1,11 @@
-package com.passbolt.mobile.android.feature.healthcheck
+package com.passbolt.mobile.android.storage.factory
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +30,27 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface HealthCheckContract {
+class EncryptedSharedPreferencesFactory @Inject internal constructor(
+    @ApplicationContext private val context: Context,
+    private val keySpecProvider: KeySpecProvider
+) {
 
-    interface View : BaseContract.View {
-        fun showMessage(status: String)
-        fun displayPrivateKey(privateKey: CharArray)
-    }
+    fun get(
+        keyAlias: String,
+        fileName: String,
+        keyBiometricSettings: KeyBiometricSettings = KeyBiometricSettings(
+            authenticationRequired = false,
+            invalidatedByBiometricEnrollment = false
+        )
+    ): SharedPreferences {
+        val masterKeyAlias = MasterKeys.getOrCreate(keySpecProvider.get(keyAlias, keyBiometricSettings))
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun saveKey(userId: String, privateKeyCharArray: CharArray)
-        fun decryptKey(userId: String)
+        return EncryptedSharedPreferences.create(
+            fileName,
+            masterKeyAlias,
+            context,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 }

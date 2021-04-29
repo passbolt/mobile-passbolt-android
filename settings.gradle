@@ -6,6 +6,8 @@ coreModule "mvp"
 coreModule "networking"
 coreModule "Gopenpgp"
 coreModule "ui"
+coreModule "storage"
+coreModule "common"
 coreModule "navigation"
 coreModule "common"
 

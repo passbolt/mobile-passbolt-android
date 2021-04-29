@@ -1,6 +1,14 @@
-package com.passbolt.mobile.android.feature.healthcheck
+package com.passbolt.mobile.android.storage.di
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import android.content.Context
+import android.content.SharedPreferences
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Qualifier
+import javax.inject.Singleton
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +33,17 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface HealthCheckContract {
+@Module
+@InstallIn(SingletonComponent::class)
+internal object StorageModule {
 
-    interface View : BaseContract.View {
-        fun showMessage(status: String)
-        fun displayPrivateKey(privateKey: CharArray)
-    }
+    @Qualifier
+    annotation class AccountsSharedPreferences
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun saveKey(userId: String, privateKeyCharArray: CharArray)
-        fun decryptKey(userId: String)
+    @Provides
+    @Singleton
+    @AccountsSharedPreferences
+    fun provideSharedPreferences(@ApplicationContext appContext: Context): SharedPreferences {
+        return appContext.getSharedPreferences("user-accounts", Context.MODE_PRIVATE)
     }
 }
