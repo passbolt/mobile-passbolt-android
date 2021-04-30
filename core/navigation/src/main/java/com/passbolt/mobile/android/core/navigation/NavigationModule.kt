@@ -1,6 +1,12 @@
-package com.passbolt.mobile.android.feature.setup.transferdetails
+package com.passbolt.mobile.android.core.navigation
 
-import javax.inject.Inject
+import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.FragmentComponent
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,27 +30,11 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class TransferDetailsPresenter @Inject constructor(
-    private val cameraInformationProvider: CameraInformationProvider
-) : TransferDetailsContract.Presenter {
+@Module
+@InstallIn(FragmentComponent::class)
+object NavigationModule {
 
-    override var view: TransferDetailsContract.View? = null
-
-    override fun scanQrCodesButtonClick() {
-        if (!cameraInformationProvider.isCameraAvailable()) {
-            view?.showCameraRequiredDialog()
-        } else if (!cameraInformationProvider.isCameraPermissionGranted()) {
-            view?.requestCameraPermission()
-        } else {
-            view?.navigateToScanQr()
-        }
-    }
-
-    override fun permissionRejectedClick() {
-        view?.showCameraPermissionRequiredDialog()
-    }
-
-    override fun settingsButtonClick() {
-        view?.navigateToAppSettings()
-    }
+    @Provides
+    fun provideNavController(fragment: Fragment): NavController =
+        fragment.findNavController()
 }

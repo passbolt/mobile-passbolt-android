@@ -45,7 +45,7 @@ class TransferDetailsPresenterTest {
         whenever(cameraInformationProvider.isCameraAvailable()).thenReturn(true)
         whenever(cameraInformationProvider.isCameraPermissionGranted()).thenReturn(true)
         presenter.scanQrCodesButtonClick()
-        verify(view).navigateToNextScreen()
+        verify(view).navigateToScanQr()
     }
 
     @Test

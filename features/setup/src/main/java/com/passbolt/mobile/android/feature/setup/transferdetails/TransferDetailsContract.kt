@@ -30,9 +30,9 @@ interface TransferDetailsContract {
     interface View : BaseContract.View {
         fun showCameraPermissionRequiredDialog()
         fun navigateToAppSettings()
-        fun navigateToNextScreen()
         fun showCameraRequiredDialog()
         fun requestCameraPermission()
+        fun navigateToScanQr()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

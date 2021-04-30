@@ -5,10 +5,13 @@ plugins {
     id "dagger.hilt.android.plugin"
 }
 
+apply plugin: "androidx.navigation.safeargs"
+
 dependencies {
     implementation project(':mvp')
     implementation project(':ui')
     implementation project(':common')
+    implementation project(':navigation')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

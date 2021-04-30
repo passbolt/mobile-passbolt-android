@@ -1,6 +1,6 @@
-package com.passbolt.mobile.android.feature.setup.transferdetails
+package com.passbolt.mobile.android.feature.setup.scanqr
 
-import javax.inject.Inject
+import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,27 +24,16 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class TransferDetailsPresenter @Inject constructor(
-    private val cameraInformationProvider: CameraInformationProvider
-) : TransferDetailsContract.Presenter {
 
-    override var view: TransferDetailsContract.View? = null
+interface ScanQrContract {
 
-    override fun scanQrCodesButtonClick() {
-        if (!cameraInformationProvider.isCameraAvailable()) {
-            view?.showCameraRequiredDialog()
-        } else if (!cameraInformationProvider.isCameraPermissionGranted()) {
-            view?.requestCameraPermission()
-        } else {
-            view?.navigateToScanQr()
-        }
+    interface View : BaseContract.View {
+        fun showExitConfirmation()
+        fun navigateBack()
     }
 
-    override fun permissionRejectedClick() {
-        view?.showCameraPermissionRequiredDialog()
-    }
-
-    override fun settingsButtonClick() {
-        view?.navigateToAppSettings()
+    interface Presenter : BaseContract.Presenter<View> {
+        fun backClick()
+        fun exitConfirmClick()
     }
 }

@@ -69,6 +69,7 @@ dependencies {
     implementation project(':ui')
     implementation project(':common')
     implementation project(':storage')
+    implementation project(':navigation')
 
     debugImplementation libs.quality.leakcanary
 

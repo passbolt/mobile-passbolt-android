@@ -9,6 +9,7 @@ import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.navigation.NavController
 import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
@@ -49,6 +50,9 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
     lateinit var presenter: TransferDetailsContract.Presenter
     private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
 
+    @Inject
+    lateinit var navController: NavController
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
@@ -65,10 +69,6 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
     override fun onDestroyView() {
         presenter.detach()
         super.onDestroyView()
-    }
-
-    override fun navigateToNextScreen() {
-        // TODO
     }
 
     override fun showCameraPermissionRequiredDialog() {
@@ -104,7 +104,7 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
 
     private fun initToolbar() {
         binding.toolbar.setNavigationIcon(R.drawable.ic_back)
-        binding.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+        binding.toolbar.setNavigationOnClickListener { navController.popBackStack() }
     }
 
     private fun setListeners() {
@@ -133,6 +133,12 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
         binding.steps.addList(
             requireContext().resources.getStringArray(R.array.transfer_details_steps_array)
                 .map { it.fromHtml() }
+        )
+    }
+
+    override fun navigateToScanQr() {
+        navController.navigate(
+            TransferDetailsFragmentDirections.actionTransferDetailsFragmentToScanQrFragment()
         )
     }
 }

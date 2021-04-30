@@ -1,6 +1,8 @@
 plugins {
     id "com.android.library"
     id "kotlin-android"
+    id "kotlin-kapt"
+    id "dagger.hilt.android.plugin"
 }
 
 apply plugin: "com.gaelmarhic.quadrant"
@@ -8,6 +10,8 @@ apply plugin: "com.gaelmarhic.quadrant"
 dependencies {
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
+    implementation libs.di.hilt
+    kapt libs.di.hiltCompiler
 }
 
 quadrantConfig {
