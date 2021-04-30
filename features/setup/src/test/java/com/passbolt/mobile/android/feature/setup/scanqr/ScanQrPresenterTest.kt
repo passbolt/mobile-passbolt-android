@@ -1,6 +1,9 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import org.junit.Before
+import org.junit.Test
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,18 +27,26 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class ScanQrPresenterTest {
 
-interface ScanQrContract {
+    private lateinit var presenter: ScanQrPresenter
+    private var view: ScanQrContract.View = mock()
 
-    interface View : BaseContract.View {
-        fun showExitConfirmation()
-        fun navigateBack()
-        fun showInformationDialog()
+    @Before
+    fun setUp() {
+        presenter = ScanQrPresenter()
+        presenter.attach(view)
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun backClick()
-        fun exitConfirmClick()
-        fun infoIconClick()
+    @Test
+    fun `click information dialog should display proper dialog`() {
+        presenter.infoIconClick()
+        verify(view).showInformationDialog()
+    }
+
+    @Test
+    fun `click back should display proper dialog`() {
+        presenter.backClick()
+        verify(view).showExitConfirmation()
     }
 }

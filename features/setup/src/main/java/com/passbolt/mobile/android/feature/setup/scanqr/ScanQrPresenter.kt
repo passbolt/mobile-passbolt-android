@@ -35,4 +35,8 @@ class ScanQrPresenter @Inject constructor() : ScanQrContract.Presenter {
     override fun exitConfirmClick() {
         view?.navigateBack()
     }
+
+    override fun infoIconClick() {
+        view?.showInformationDialog()
+    }
 }

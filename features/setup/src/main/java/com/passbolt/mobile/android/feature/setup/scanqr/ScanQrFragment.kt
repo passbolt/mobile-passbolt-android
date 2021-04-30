@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.NavController
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
@@ -46,11 +47,18 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
         initToolbar()
+        setListeners()
     }
 
     override fun onDestroyView() {
         presenter.detach()
         super.onDestroyView()
+    }
+
+    private fun setListeners() {
+        binding.infoIcon.setDebouncingOnClick {
+            presenter.infoIconClick()
+        }
     }
 
     override fun showExitConfirmation() {
@@ -60,6 +68,14 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
             .setMessage(R.string.scan_qr_exit_confirmation_dialog_message)
             .setNegativeButton(R.string.cancel) { _, _ -> }
             .setPositiveButton(R.string.yes) { _, _ -> presenter.exitConfirmClick() }
+            .show()
+    }
+
+    override fun showInformationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.scan_qr_exit_information_dialog_title)
+            .setMessage(R.string.scan_qr_exit_information_dialog_message)
+            .setPositiveButton(R.string.got_it) { _, _ -> }
             .show()
     }
 
