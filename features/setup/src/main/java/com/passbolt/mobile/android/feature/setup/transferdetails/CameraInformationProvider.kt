@@ -1,6 +1,11 @@
 package com.passbolt.mobile.android.feature.setup.transferdetails
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,20 +29,13 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class CameraInformationProvider @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
 
-interface TransferDetailsContract {
+    fun isCameraAvailable(): Boolean =
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA)
 
-    interface View : BaseContract.View {
-        fun showCameraPermissionRequiredDialog()
-        fun navigateToAppSettings()
-        fun navigateToNextScreen()
-        fun showCameraRequiredDialog()
-        fun requestCameraPermission()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun scanQrCodesButtonClick()
-        fun permissionRejectedClick()
-        fun settingsButtonClick()
-    }
+    fun isCameraPermissionGranted(): Boolean =
+        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
 }

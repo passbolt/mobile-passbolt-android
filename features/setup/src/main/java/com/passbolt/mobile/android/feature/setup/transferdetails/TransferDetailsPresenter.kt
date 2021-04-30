@@ -24,11 +24,27 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class TransferDetailsPresenter @Inject constructor() : TransferDetailsContract.Presenter {
+class TransferDetailsPresenter @Inject constructor(
+    private val cameraInformationProvider: CameraInformationProvider
+) : TransferDetailsContract.Presenter {
 
     override var view: TransferDetailsContract.View? = null
 
-    override fun scanQrCodesButtonClicked() {
-        // TODO
+    override fun scanQrCodesButtonClick() {
+        if (!cameraInformationProvider.isCameraAvailable()) {
+            view?.showCameraRequiredDialog()
+        } else if (!cameraInformationProvider.isCameraPermissionGranted()) {
+            view?.requestCameraPermission()
+        } else {
+            view?.navigateToNextScreen()
+        }
+    }
+
+    override fun permissionRejectedClick() {
+        view?.showCameraPermissionRequiredDialog()
+    }
+
+    override fun settingsButtonClick() {
+        view?.navigateToAppSettings()
     }
 }

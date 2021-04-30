@@ -11,7 +11,6 @@ ext {
         gradleVersionsPlugin: "0.28.0",
         desugarJdkLibs: "1.0.9",
         kotlin: "1.4.30",
-        serializationJson: "1.1.0",
         coroutines: "1.4.3",
         daggerHilt: "2.33-beta",
         quadrant: "1.5",
@@ -34,7 +33,9 @@ ext {
             constraintLayout: "1.1.3",
             navigation: "2.2.2",
             security: "1.0.0",
-            biometric: "1.2.0-alpha02"
+            biometric: "1.2.0-alpha02",
+            fragment: "1.3.3",
+            activity: "1.2.2"
         ],
         material: "1.1.0",
         networking: [
@@ -57,7 +58,6 @@ ext {
             gradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
             stdlib: "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",
             serialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}",
-            serializationJson: "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serializationJson}",
             coroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}",
             io: "org.jetbrains.kotlin:kotlin-util-io:${versions.kotlin}"
         ],
@@ -81,7 +81,9 @@ ext {
             navigationFragment: "androidx.navigation:navigation-fragment-ktx:${versions.androidx.navigation}",
             navigationUi: "androidx.navigation:navigation-ui-ktx:${versions.androidx.navigation}",
             security: "androidx.security:security-crypto:${versions.androidx.security}",
-            biometric: "androidx.biometric:biometric-ktx:${versions.androidx.biometric}"
+            biometric: "androidx.biometric:biometric-ktx:${versions.androidx.biometric}",
+            fragment: "androidx.fragment:fragment-ktx:${versions.androidx.fragment}",
+            activity: "androidx.activity:activity-ktx:${versions.androidx.activity}"
         ],
         material: "com.google.android.material:material:${versions.material}",
         di: [

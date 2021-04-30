@@ -13,7 +13,6 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.androidx.security
 
-    implementation libs.kotlin.serializationJson
     implementation libs.kotlin.io
 
     /* DI */
