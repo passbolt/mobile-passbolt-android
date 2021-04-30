@@ -80,6 +80,7 @@ ext {
             constraintLayout: "androidx.constraintlayout:constraintlayout:${versions.androidx.constraintLayout}",
             navigationFragment: "androidx.navigation:navigation-fragment-ktx:${versions.androidx.navigation}",
             navigationUi: "androidx.navigation:navigation-ui-ktx:${versions.androidx.navigation}",
+            navigation_safe_args: "androidx.navigation:navigation-safe-args-gradle-plugin:${versions.androidx.navigation}",
             security: "androidx.security:security-crypto:${versions.androidx.security}",
             biometric: "androidx.biometric:biometric-ktx:${versions.androidx.biometric}",
             fragment: "androidx.fragment:fragment-ktx:${versions.androidx.fragment}",

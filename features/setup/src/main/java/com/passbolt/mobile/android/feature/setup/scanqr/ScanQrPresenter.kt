@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.transferdetails
+package com.passbolt.mobile.android.feature.setup.scanqr
 
 import javax.inject.Inject
 
@@ -24,27 +24,15 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class TransferDetailsPresenter @Inject constructor(
-    private val cameraInformationProvider: CameraInformationProvider
-) : TransferDetailsContract.Presenter {
+class ScanQrPresenter @Inject constructor() : ScanQrContract.Presenter {
 
-    override var view: TransferDetailsContract.View? = null
+    override var view: ScanQrContract.View? = null
 
-    override fun scanQrCodesButtonClick() {
-        if (!cameraInformationProvider.isCameraAvailable()) {
-            view?.showCameraRequiredDialog()
-        } else if (!cameraInformationProvider.isCameraPermissionGranted()) {
-            view?.requestCameraPermission()
-        } else {
-            view?.navigateToScanQr()
-        }
+    override fun backClick() {
+        view?.showExitConfirmation()
     }
 
-    override fun permissionRejectedClick() {
-        view?.showCameraPermissionRequiredDialog()
-    }
-
-    override fun settingsButtonClick() {
-        view?.navigateToAppSettings()
+    override fun exitConfirmClick() {
+        view?.navigateBack()
     }
 }

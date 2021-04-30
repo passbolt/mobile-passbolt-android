@@ -1,84 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="@dimen/dp_16"
-    android:paddingEnd="@dimen/dp_16">
+    android:fillViewport="true">
 
-    <ImageView
-        android:id="@+id/logoImage"
-        android:layout_width="@dimen/dp_116"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_48"
-        android:contentDescription="@null"
-        android:src="@drawable/logo_text_icon_light"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/appsImage"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_160"
-        android:layout_marginTop="@dimen/dp_64"
-        android:scaleType="fitCenter"
-        android:contentDescription="@null"
-        android:src="@drawable/welcome_apps_list"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logoImage"/>
-
-    <TextView
-        android:id="@+id/titleLabel"
-        style="@style/Heading1Text"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_56"
-        android:fontFamily="@font/inter"
-        android:gravity="center"
-        android:text="@string/welcome_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appsImage" />
+        android:paddingStart="@dimen/dp_16"
+        android:paddingEnd="@dimen/dp_16">
 
-    <TextView
-        android:id="@+id/descriptionLabel"
-        style="@style/BodyLight"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/dp_16"
-        android:layout_marginTop="@dimen/dp_16"
-        android:gravity="center|top"
-        android:text="@string/welcome_body"
-        android:textAppearance="@style/BodyText"
-        app:layout_constraintBottom_toTopOf="@id/connectToAccountButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/titleLabel" />
+        <ImageView
+            android:id="@+id/logoImage"
+            android:layout_width="@dimen/dp_116"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_48"
+            android:contentDescription="@null"
+            android:src="@drawable/logo_text_icon_light"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/connectToAccountButton"
-        style="@style/PrimaryButton"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_56"
-        android:layout_marginBottom="@dimen/dp_24"
-        android:text="@string/welcome_connect_to_existing_account"
-        app:layout_constraintBottom_toTopOf="@id/noAccountButton" />
+        <ImageView
+            android:id="@+id/appsImage"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_160"
+            android:layout_marginTop="@dimen/dp_64"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/welcome_apps_list"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/logoImage" />
 
-    <TextView
-        android:id="@+id/noAccountButton"
-        style="@style/ButtonSmallText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dp_32"
-        android:padding="@dimen/dp_16"
-        android:background="?selectableItemBackground"
-        android:text="@string/welcome_no_account"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/titleLabel"
+            style="@style/Heading1Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_56"
+            android:fontFamily="@font/inter"
+            android:gravity="center"
+            android:text="@string/welcome_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appsImage" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/descriptionLabel"
+            style="@style/BodyLight"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_16"
+            android:gravity="center|top"
+            android:text="@string/welcome_body"
+            android:textAppearance="@style/BodyText"
+            app:layout_constraintBottom_toTopOf="@id/connectToAccountButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleLabel" />
+
+        <Button
+            android:id="@+id/connectToAccountButton"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginBottom="@dimen/dp_24"
+            android:text="@string/welcome_connect_to_existing_account"
+            app:layout_constraintBottom_toTopOf="@id/noAccountButton" />
+
+        <TextView
+            android:id="@+id/noAccountButton"
+            style="@style/ButtonSmallText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_32"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/dp_16"
+            android:text="@string/welcome_no_account"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
