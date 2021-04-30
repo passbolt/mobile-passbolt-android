@@ -47,7 +47,8 @@ def setupModule(isAndroid, isAndroidComponent) {
                 checkReleaseBuilds false
                 checkAllWarnings true
                 warningsAsErrors false
-                disable = ["GoogleAppIndexingWarning", "GradleDependency", "NewerVersionAvailable", "UnusedIds", "Autofill"]
+                disable = ["GoogleAppIndexingWarning", "GradleDependency", "NewerVersionAvailable", "UnusedIds",
+                           "Autofill", "PermissionImpliesUnsupportedChromeOsHardware"]
             }
 
             testOptions {
