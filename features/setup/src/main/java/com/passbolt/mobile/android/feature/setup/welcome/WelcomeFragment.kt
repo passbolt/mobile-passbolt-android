@@ -3,11 +3,12 @@ package com.passbolt.mobile.android.feature.setup.welcome
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.NavController
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBinding
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -39,6 +40,9 @@ class WelcomeFragment : BindingFragment<FragmentWelcomeBinding>(FragmentWelcomeB
     @Inject
     lateinit var presenter: WelcomeContract.Presenter
 
+    @Inject
+    lateinit var navController: Lazy<NavController>
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpListeners()
@@ -64,6 +68,8 @@ class WelcomeFragment : BindingFragment<FragmentWelcomeBinding>(FragmentWelcomeB
     }
 
     override fun navigateToTransferDetails() {
-        findNavController().navigate(R.id.action_welcomeFragment_to_transferDetailsFragment)
+        navController.get().navigate(
+            WelcomeFragmentDirections.actionWelcomeFragmentToTransferDetailsFragment()
+        )
     }
 }

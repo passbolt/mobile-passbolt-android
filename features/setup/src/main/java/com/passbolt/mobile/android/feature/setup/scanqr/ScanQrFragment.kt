@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.NavController
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -41,13 +41,12 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
     lateinit var presenter: ScanQrContract.Presenter
 
     @Inject
-    lateinit var navController: NavController
+    lateinit var navController: Lazy<NavController>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
         initToolbar()
-        setListeners()
     }
 
     override fun onDestroyView() {
@@ -55,14 +54,7 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
         super.onDestroyView()
     }
 
-    private fun setListeners() {
-        binding.infoIcon.setDebouncingOnClick {
-            presenter.infoIconClick()
-        }
-    }
-
     override fun showExitConfirmation() {
-        // TODO update font
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.scan_qr_exit_confirmation_dialog_title)
             .setMessage(R.string.scan_qr_exit_confirmation_dialog_message)
@@ -79,12 +71,20 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
             .show()
     }
 
+    @Suppress("MagicNumber")
     private fun initToolbar() {
-        binding.toolbar.setNavigationIcon(R.drawable.ic_back)
-        binding.toolbar.setNavigationOnClickListener { presenter.backClick() }
+        with(binding.progressToolbar) {
+            setNavigationIcon(R.drawable.ic_back)
+            setNavigationOnClickListener { presenter.backClick() }
+            addIconEnd(R.drawable.ic_help) { presenter.infoIconClick() }
+
+            // TODO update during integration
+            initializeProgressBar(1, 10)
+            setCurrentProgress(5)
+        }
     }
 
     override fun navigateBack() {
-        navController.popBackStack()
+        navController.get().popBackStack()
     }
 }
