@@ -3,33 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_gray_dark">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <com.passbolt.mobile.android.core.ui.toolbar.progresstoolbar.ProgressToolbar
+        android:id="@+id/progressToolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:background="@color/white"
+        android:padding="@dimen/dp_16"
         android:theme="@style/Theme.Passbolt.Toolbar"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/Theme.Passbolt.PopupOverlay">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/infoIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:padding="@dimen/dp_8"
-                android:layout_margin="@dimen/dp_10"
-                android:clickable="true"
-                android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_help" />
-        </FrameLayout>
-
-    </androidx.appcompat.widget.Toolbar>
+        app:popupTheme="@style/Theme.Passbolt.PopupOverlay" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

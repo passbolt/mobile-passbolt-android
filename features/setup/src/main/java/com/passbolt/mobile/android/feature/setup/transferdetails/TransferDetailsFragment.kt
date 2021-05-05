@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentTransferDetailsBinding
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -51,7 +52,7 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
     private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
 
     @Inject
-    lateinit var navController: NavController
+    lateinit var navController: Lazy<NavController>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -103,8 +104,10 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
     }
 
     private fun initToolbar() {
-        binding.toolbar.setNavigationIcon(R.drawable.ic_back)
-        binding.toolbar.setNavigationOnClickListener { navController.popBackStack() }
+        with(binding) {
+            toolbar.setNavigationIcon(R.drawable.ic_back)
+            toolbar.setNavigationOnClickListener { navController.get().popBackStack() }
+        }
     }
 
     private fun setListeners() {
@@ -137,7 +140,7 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
     }
 
     override fun navigateToScanQr() {
-        navController.navigate(
+        navController.get().navigate(
             TransferDetailsFragmentDirections.actionTransferDetailsFragmentToScanQrFragment()
         )
     }
