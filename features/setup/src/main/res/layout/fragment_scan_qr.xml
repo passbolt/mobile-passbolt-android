@@ -12,6 +12,24 @@
         android:background="@color/white"
         android:theme="@style/Theme.Passbolt.Toolbar"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/Theme.Passbolt.PopupOverlay" />
+        app:popupTheme="@style/Theme.Passbolt.PopupOverlay">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/infoIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:padding="@dimen/dp_8"
+                android:layout_margin="@dimen/dp_10"
+                android:clickable="true"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_help" />
+        </FrameLayout>
+
+    </androidx.appcompat.widget.Toolbar>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@
     <string name="cancel">Cancel</string>
     <string name="settings">Settings</string>
     <string name="yes">Yes</string>
+    <string name="got_it">Got it</string>
 
     <string name="welcome_title">Welcome!</string>
     <string name="welcome_body">You need an existing account to get started. Sign in with your existing account on the desktop browser extension to connect it with the mobile device.</string>
@@ -28,4 +29,6 @@
 
     <string name="scan_qr_exit_confirmation_dialog_title">Are you sure?</string>
     <string name="scan_qr_exit_confirmation_dialog_message">If you leave, you will need to scan QR codes again.</string>
+    <string name="scan_qr_exit_information_dialog_message">You will see a sequence of QR codes. We will scan these codes until the progress bar is full. then you will be able to login!</string>
+    <string name="scan_qr_exit_information_dialog_title">Scanning QR codes</string>
 </resources>
