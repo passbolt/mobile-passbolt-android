@@ -63,7 +63,7 @@ class WelcomeFragment : BindingFragment<FragmentWelcomeBinding>(FragmentWelcomeB
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.welcome_create_account_dialog_title)
             .setMessage(R.string.welcome_create_account_dialog_message)
-            .setPositiveButton(R.string.ok) { _, _ -> }
+            .setPositiveButton(R.string.got_it) { _, _ -> }
             .show()
     }
 
