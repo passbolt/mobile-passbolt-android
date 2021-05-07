@@ -1,5 +1,12 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
+import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -24,9 +31,35 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ScanQrPresenter @Inject constructor() : ScanQrContract.Presenter {
+class ScanQrPresenter @Inject constructor(
+    coroutineLaunchContext: CoroutineLaunchContext
+) : ScanQrContract.Presenter {
 
     override var view: ScanQrContract.View? = null
+
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.io)
+
+    override fun attach(view: ScanQrContract.View) {
+        super.attach(view)
+        registerForScanResults()
+        this.view?.startAnalysis()
+    }
+
+    private fun registerForScanResults() {
+        view?.scanResultChannel()?.let { barcodeScanResultChannel ->
+            scope.launch {
+                for (result in barcodeScanResultChannel) {
+                    barcodeResult(result)
+                }
+            }
+        }
+    }
+
+    override fun startCameraError(exc: Exception) {
+        Timber.e(exc)
+        view?.showStartCameraError()
+    }
 
     override fun backClick() {
         view?.showExitConfirmation()
@@ -38,5 +71,17 @@ class ScanQrPresenter @Inject constructor() : ScanQrContract.Presenter {
 
     override fun infoIconClick() {
         view?.showInformationDialog()
+    }
+
+    override fun barcodeResult(it: CameraBarcodeAnalyzer.BarcodeScanResult) {
+        when (it) {
+            is CameraBarcodeAnalyzer.BarcodeScanResult.Failure -> Timber.e(it.exception)
+            is CameraBarcodeAnalyzer.BarcodeScanResult.Success -> Timber.e(it.barcodes.joinToString())
+        }
+    }
+
+    override fun detach() {
+        scope.cancel()
+        super.detach()
     }
 }

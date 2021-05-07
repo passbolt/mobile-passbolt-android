@@ -70,6 +70,7 @@ dependencies {
     implementation project(':common')
     implementation project(':storage')
     implementation project(':navigation')
+    implementation project(':qrscan')
 
     debugImplementation libs.quality.leakcanary
 
@@ -83,6 +84,8 @@ dependencies {
     /* DI */
     implementation libs.di.hilt
     kapt libs.di.hiltCompiler
+}
 
-    implementation libs.timber
+hilt {
+    enableExperimentalClasspathAggregation = true
 }

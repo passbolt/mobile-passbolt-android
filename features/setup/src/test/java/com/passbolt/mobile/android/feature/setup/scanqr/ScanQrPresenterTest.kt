@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.passbolt.mobile.android.core.mvp.AppCoroutineContext
 import org.junit.Before
 import org.junit.Test
 
@@ -34,7 +35,8 @@ class ScanQrPresenterTest {
 
     @Before
     fun setUp() {
-        presenter = ScanQrPresenter()
+        //TODO inject test dependecies
+        presenter = ScanQrPresenter(AppCoroutineContext())
         presenter.attach(view)
     }
 

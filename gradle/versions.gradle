@@ -7,7 +7,7 @@ ext {
     projectTargetSdk = 30
 
     versions = [
-        androidGradlePlugin: "4.1.3",
+        androidGradlePlugin: "7.0.0-alpha15",
         gradleVersionsPlugin: "0.28.0",
         desugarJdkLibs: "1.0.9",
         kotlin: "1.4.30",
@@ -31,21 +31,21 @@ ext {
             core: "1.3.0",
             appcompat: "1.1.0",
             constraintLayout: "1.1.3",
-            navigation: "2.2.2",
+            navigation: "2.3.5",
             security: "1.0.0",
             biometric: "1.2.0-alpha02",
             fragment: "1.3.3",
-            activity: "1.2.2"
+            activity: "1.2.2",
+            cameraX: "1.0.0-beta07",
+            cameraView: "1.0.0-alpha14"
         ],
         material: "1.1.0",
         networking: [
             retrofit: "2.9.0",
             okHttp: "4.7.2"
         ],
-        firebase: [
-            mlVision: "24.0.1"
-        ],
-        timber: "4.7.1"
+        timber: "4.7.1",
+        mlkit: "16.1.1"
     ]
 
     libs = [
@@ -84,7 +84,10 @@ ext {
             security: "androidx.security:security-crypto:${versions.androidx.security}",
             biometric: "androidx.biometric:biometric-ktx:${versions.androidx.biometric}",
             fragment: "androidx.fragment:fragment-ktx:${versions.androidx.fragment}",
-            activity: "androidx.activity:activity-ktx:${versions.androidx.activity}"
+            activity: "androidx.activity:activity-ktx:${versions.androidx.activity}",
+            cameraX: "androidx.camera:camera-camera2:${versions.androidx.cameraX}",
+            cameraXLifecycle: "androidx.camera:camera-lifecycle:${versions.androidx.cameraX}",
+            cameraXView: "androidx.camera:camera-view:${versions.androidx.cameraView}"
         ],
         material: "com.google.android.material:material:${versions.material}",
         di: [
@@ -97,9 +100,7 @@ ext {
             okHttp: "com.squareup.okhttp3:okhttp:${versions.networking.okHttp}",
             okHttpLoggingInterceptor: "com.squareup.okhttp3:logging-interceptor:${versions.networking.okHttp}"
         ],
-        firebase: [
-            firebaseMlVision: "com.google.firebase:firebase-ml-vision:${versions.firebase.mlVision}"
-        ],
-        timber: "com.jakewharton.timber:timber:${versions.timber}"
+        timber: "com.jakewharton.timber:timber:${versions.timber}",
+        qrScan: "com.google.mlkit:barcode-scanning:${versions.mlkit}"
     ]
 }

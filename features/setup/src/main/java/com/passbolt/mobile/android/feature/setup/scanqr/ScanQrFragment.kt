@@ -5,6 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.NavController
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
 import dagger.Lazy
@@ -43,6 +44,9 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
     @Inject
     lateinit var navController: Lazy<NavController>
 
+    @Inject
+    lateinit var scanManager: Lazy<ScanManager>
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
@@ -50,9 +54,13 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
     }
 
     override fun onDestroyView() {
+        scanManager.get().detach()
         presenter.detach()
         super.onDestroyView()
     }
+
+    override fun scanResultChannel() =
+        scanManager.get().barcodeScanResultChannel
 
     override fun showExitConfirmation() {
         AlertDialog.Builder(requireContext())
@@ -82,6 +90,18 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
             initializeProgressBar(1, 10)
             setCurrentProgress(5)
         }
+    }
+
+    override fun startAnalysis() {
+        try {
+            scanManager.get().attach(this, binding.cameraPreview)
+        } catch (exception: Exception) {
+            presenter.startCameraError(exception)
+        }
+    }
+
+    override fun showStartCameraError() {
+        // TODO - add when error snackbar prepared
     }
 
     override fun navigateBack() {
