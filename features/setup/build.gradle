@@ -12,6 +12,7 @@ dependencies {
     implementation project(':ui')
     implementation project(':common')
     implementation project(':navigation')
+    implementation project(':qrscan')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -19,6 +20,9 @@ dependencies {
     implementation libs.androidx.activity
     implementation libs.material
     implementation libs.androidx.constraintLayout
+    implementation libs.androidx.cameraXView
+    implementation libs.androidx.cameraX
+    implementation libs.androidx.cameraXLifecycle
 
     implementation libs.di.hilt
     kapt libs.di.hiltCompiler

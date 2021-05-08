@@ -67,6 +67,7 @@ def setupCommonDependencies(isAndroid) {
     dependencies {
         implementation libs.kotlin.stdlib
         implementation libs.kotlin.coroutines
+        implementation libs.timber
         testImplementation libs.test.junit
         testImplementation libs.test.mockitoCore
         testImplementation libs.test.mockitoKotlin

@@ -1,8 +1,12 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
+package com.passbolt.mobile.android.core.mvp.di
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
-import kotlinx.coroutines.channels.Channel
+import com.passbolt.mobile.android.core.mvp.AppCoroutineContext
+import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,22 +31,12 @@ import kotlinx.coroutines.channels.Channel
  * @since v1.0
  */
 
-interface ScanQrContract {
+@Module
+@InstallIn(SingletonComponent::class)
+internal object CoroutinesModule {
 
-    interface View : BaseContract.View {
-        fun showExitConfirmation()
-        fun navigateBack()
-        fun showInformationDialog()
-        fun startAnalysis()
-        fun showStartCameraError()
-        fun scanResultChannel(): Channel<CameraBarcodeAnalyzer.BarcodeScanResult>
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun backClick()
-        fun exitConfirmClick()
-        fun infoIconClick()
-        fun startCameraError(exc: Exception)
-        fun barcodeResult(it: CameraBarcodeAnalyzer.BarcodeScanResult)
-    }
+    @Singleton
+    @Provides
+    fun provideCoroutineLaunchContext(): CoroutineLaunchContext =
+        AppCoroutineContext()
 }

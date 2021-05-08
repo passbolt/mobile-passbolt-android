@@ -1,12 +1,15 @@
-package com.passbolt.mobile.android.feature.healthcheck.di
+package com.passbolt.mobile.android.core.qrscan.di
 
-import com.passbolt.mobile.android.core.mvp.AppCoroutineContext
+import com.google.mlkit.vision.barcode.Barcode
+import com.google.mlkit.vision.barcode.BarcodeScanner
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,13 +33,20 @@ import javax.inject.Singleton
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
 @Module
 @InstallIn(SingletonComponent::class)
-internal object CoroutinesModule {
+object BarcodeScanModule {
 
-    @Singleton
     @Provides
-    fun provideCoroutineLaunchContext(): CoroutineLaunchContext =
-        AppCoroutineContext()
+    fun provideBarcodeScannerOptions() = BarcodeScannerOptions.Builder()
+        .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+        .build()
+
+    @Provides
+    fun provideBarcodeScanner(options: BarcodeScannerOptions) =
+        BarcodeScanning.getClient(options)
+
+    @Provides
+    fun provideBarcodeAnalyzer(barcodeScanner: BarcodeScanner, coroutineLaunchContext: CoroutineLaunchContext) =
+        CameraBarcodeAnalyzer(barcodeScanner)
 }

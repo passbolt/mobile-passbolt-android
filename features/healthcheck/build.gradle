@@ -21,8 +21,6 @@ dependencies {
     /* DI */
     implementation libs.di.hilt
     kapt libs.di.hiltCompiler
-
-    implementation libs.timber
 }
 
 android {
