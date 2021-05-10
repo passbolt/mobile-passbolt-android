@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.NavController
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -89,6 +91,9 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
             // TODO update during integration
             initializeProgressBar(1, 10)
             setCurrentProgress(5)
+        }
+        binding.sendRequestButton.setDebouncingOnClick {
+            presenter.sendRequest()
         }
     }
 

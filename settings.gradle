@@ -5,18 +5,21 @@ projectModule "app"
 coreModule "mvp"
 coreModule "networking"
 coreModule "Gopenpgp"
-coreModule "ui"
+coreModule "coreui"
 coreModule "storage"
 coreModule "common"
 coreModule "navigation"
 coreModule "common"
 coreModule "qrscan"
 
-featureModule "healthcheck"
 featureModule "startup"
 featureModule "setup"
 
 serviceModule "passboltapi"
+
+domainModule "dto"
+domainModule "ui"
+domainModule "mappers"
 
 def featureModule(String name) {
     projectModule(name, "features/")
@@ -28,6 +31,10 @@ def coreModule(String name) {
 
 def serviceModule(String name) {
     projectModule(name, "services/")
+}
+
+def domainModule(String name) {
+    projectModule(name, "domain/")
 }
 
 def projectModule(String name, String directory = "") {

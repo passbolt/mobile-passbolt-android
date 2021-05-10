@@ -42,6 +42,7 @@ interface ScanQrContract {
         fun backClick()
         fun exitConfirmClick()
         fun infoIconClick()
+        fun sendRequest()
         fun startCameraError(exc: Exception)
         fun barcodeResult(it: CameraBarcodeAnalyzer.BarcodeScanResult)
     }

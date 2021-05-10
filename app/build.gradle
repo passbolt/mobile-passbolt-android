@@ -62,7 +62,6 @@ dependencies {
     // needs to implement all modules:
     // https://github.com/google/dagger/issues/2378
     implementation project(':mvp')
-    implementation project(':healthcheck')
     implementation project(':startup')
     implementation project(':setup')
     implementation project(':passboltapi')
@@ -70,6 +69,7 @@ dependencies {
     implementation project(':common')
     implementation project(':storage')
     implementation project(':navigation')
+    implementation project(':mappers')
     implementation project(':qrscan')
 
     debugImplementation libs.quality.leakcanary
