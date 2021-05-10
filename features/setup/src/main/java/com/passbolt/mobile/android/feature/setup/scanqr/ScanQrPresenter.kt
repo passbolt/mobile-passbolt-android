@@ -2,11 +2,13 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
+import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
+import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlinx.coroutines.cancel
 import javax.inject.Inject
 
 /**
@@ -32,7 +34,8 @@ import javax.inject.Inject
  * @since v1.0
  */
 class ScanQrPresenter @Inject constructor(
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
+    private val nextPageUseCase: NextPageUseCase
 ) : ScanQrContract.Presenter {
 
     override var view: ScanQrContract.View? = null
@@ -83,5 +86,19 @@ class ScanQrPresenter @Inject constructor(
     override fun detach() {
         scope.cancel()
         super.detach()
+    }
+
+    override fun sendRequest() {
+        // TODO send proper data
+        scope.launch {
+            nextPageUseCase.execute(
+                NextPageUseCase.Input(
+                    uuid = "c3ef5be8-5c5c-499b-8217-0b15b64fc7b7",
+                    authToken = "4a74e509-9ed9-4328-b492-9af92fa6e2d8",
+                    currentPage = 0,
+                    status = Status.IN_PROGRESS
+                )
+            )
+        }
     }
 }

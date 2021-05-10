@@ -7,6 +7,8 @@ plugins {
 
 dependencies {
     api project(":networking")
+    implementation project(":dto")
+
     implementation libs.networking.retrofitGsonConverter
 
     /* DI */

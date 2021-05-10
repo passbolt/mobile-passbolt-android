@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.passbolt.mobile.android.core.mvp.AppCoroutineContext
+import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
 import org.junit.Before
 import org.junit.Test
 
@@ -32,11 +33,12 @@ class ScanQrPresenterTest {
 
     private lateinit var presenter: ScanQrPresenter
     private var view: ScanQrContract.View = mock()
+    private var nextPageUseCase: NextPageUseCase = mock()
 
     @Before
     fun setUp() {
         //TODO inject test dependecies
-        presenter = ScanQrPresenter(AppCoroutineContext())
+        presenter = ScanQrPresenter(AppCoroutineContext(), nextPageUseCase)
         presenter.attach(view)
     }
 

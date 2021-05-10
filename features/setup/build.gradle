@@ -9,10 +9,14 @@ apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     implementation project(':mvp')
-    implementation project(':ui')
+    implementation project(':coreui')
     implementation project(':common')
     implementation project(':navigation')
     implementation project(':qrscan')
+    implementation project(':passboltapi')
+    implementation project(':ui')
+    implementation project(':dto')
+    implementation project(':mappers')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

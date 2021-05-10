@@ -50,6 +50,8 @@ internal object RestConfigurationModule {
         for (interceptor in networkInterceptors) {
             builder.addNetworkInterceptor(interceptor)
         }
+        // TODO remove in production version - PAS-105
+        builder.hostnameVerifier { _, _ -> true }
         return builder.build()
     }
 }
