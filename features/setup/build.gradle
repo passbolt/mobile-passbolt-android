@@ -27,6 +27,7 @@ dependencies {
     implementation libs.androidx.cameraXView
     implementation libs.androidx.cameraX
     implementation libs.androidx.cameraXLifecycle
+    implementation libs.gson
 
     implementation libs.di.hilt
     kapt libs.di.hiltCompiler

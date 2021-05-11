@@ -1,9 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
-import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import kotlinx.coroutines.channels.Channel
+package com.passbolt.mobile.android.dto.response.qrcode
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,29 +22,7 @@ import kotlinx.coroutines.channels.Channel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-interface ScanQrContract {
-
-    interface View : BaseContract.View {
-        fun showExitConfirmation()
-        fun navigateBack()
-        fun showInformationDialog()
-        fun startAnalysis()
-        fun showStartCameraError()
-        fun scanResultChannel(): Channel<CameraBarcodeAnalyzer.BarcodeScanResult>
-        fun navigateToSummary(status: ResultStatus)
-        fun showBarcodeScanError()
-        fun showMultipleCodesInRange()
-        fun showCenterCameraOnBarcode()
-        fun showKeepGoing()
-        fun initializeProgress(totalPages: Int)
-        fun setProgress(progress: Int)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun backClick()
-        fun exitConfirmClick()
-        fun infoIconClick()
-        fun startCameraError(exc: Exception)
-    }
-}
+data class ReservedBytesDto(
+    val version: Int,
+    val page: Int
+)

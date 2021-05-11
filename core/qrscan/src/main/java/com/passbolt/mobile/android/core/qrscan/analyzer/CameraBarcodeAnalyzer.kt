@@ -43,8 +43,21 @@ class CameraBarcodeAnalyzer @Inject constructor(
             val inputImage = InputImage.fromMediaImage(this, imageProxy.imageInfo.rotationDegrees)
             barcodeScanner.process(inputImage)
                 .addOnSuccessListener { barcodes ->
-                    // TODO map to a QR code model
-                    resultChannel.offer(BarcodeScanResult.Success(barcodes.map { it.rawValue.orEmpty() }))
+                    if (!resultChannel.isClosedForSend) {
+                        resultChannel.offer(
+                            when {
+                                barcodes.isEmpty() -> {
+                                    BarcodeScanResult.NoBarcodeInRange
+                                }
+                                barcodes.size == 1 -> {
+                                    BarcodeScanResult.SingleBarcode(barcodes.first().rawBytes)
+                                }
+                                else -> {
+                                    BarcodeScanResult.MultipleBarcodes
+                                }
+                            }
+                        )
+                    }
                 }
                 .addOnFailureListener { exception ->
                     resultChannel.offer(BarcodeScanResult.Failure(exception))
@@ -53,9 +66,10 @@ class CameraBarcodeAnalyzer @Inject constructor(
         }
     }
 
-    // TODO create a barcode model
     sealed class BarcodeScanResult {
-        class Success(val barcodes: List<String>) : BarcodeScanResult()
+        class SingleBarcode(val data: ByteArray?) : BarcodeScanResult()
+        object MultipleBarcodes : BarcodeScanResult()
+        object NoBarcodeInRange : BarcodeScanResult()
         class Failure(val exception: Exception) : BarcodeScanResult()
     }
 }

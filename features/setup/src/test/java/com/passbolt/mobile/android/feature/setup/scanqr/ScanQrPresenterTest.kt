@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
+import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.passbolt.mobile.android.core.mvp.AppCoroutineContext
@@ -38,7 +39,11 @@ class ScanQrPresenterTest {
     @Before
     fun setUp() {
         //TODO inject test dependecies
-        presenter = ScanQrPresenter(AppCoroutineContext(), nextPageUseCase)
+        presenter = ScanQrPresenter(
+            AppCoroutineContext(),
+            nextPageUseCase,
+            ScanQrParser(AppCoroutineContext(), Gson())
+        )
         presenter.attach(view)
     }
 

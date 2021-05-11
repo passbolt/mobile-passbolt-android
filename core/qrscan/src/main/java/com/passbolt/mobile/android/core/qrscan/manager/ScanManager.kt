@@ -31,11 +31,6 @@ class ScanManager @Inject constructor(
         }, mainExecutor)
     }
 
-    fun detach() {
-        cameraProviderFuture.get().unbindAll()
-        barcodeScanResultChannel.close()
-    }
-
     @Throws(IllegalStateException::class, java.lang.IllegalArgumentException::class)
     private fun bindCameraUseCases(owner: LifecycleOwner) {
         with(cameraProviderFuture.get()) {

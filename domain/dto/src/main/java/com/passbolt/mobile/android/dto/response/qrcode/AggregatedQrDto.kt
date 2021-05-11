@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
+package com.passbolt.mobile.android.dto.response.qrcode
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
-import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import kotlinx.coroutines.channels.Channel
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,29 +24,28 @@ import kotlinx.coroutines.channels.Channel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+data class AggregatedQrDto(
+    @SerializedName("user_id")
+    val userId: String,
+    @SerializedName("armored_key")
+    val armoredKey: ArmoredKey,
+    val fingerprint: String
+)
 
-interface ScanQrContract {
+data class ArmoredKey(
+    val key: String,
+    val keyId: String,
+    val userIds: List<UserId>,
+    val created: String,
+    val expires: String,
+    val algorithm: String,
+    val length: Int,
+    val private: Boolean,
+    @SerializedName("user_id")
+    val userId: String
+)
 
-    interface View : BaseContract.View {
-        fun showExitConfirmation()
-        fun navigateBack()
-        fun showInformationDialog()
-        fun startAnalysis()
-        fun showStartCameraError()
-        fun scanResultChannel(): Channel<CameraBarcodeAnalyzer.BarcodeScanResult>
-        fun navigateToSummary(status: ResultStatus)
-        fun showBarcodeScanError()
-        fun showMultipleCodesInRange()
-        fun showCenterCameraOnBarcode()
-        fun showKeepGoing()
-        fun initializeProgress(totalPages: Int)
-        fun setProgress(progress: Int)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun backClick()
-        fun exitConfirmClick()
-        fun infoIconClick()
-        fun startCameraError(exc: Exception)
-    }
-}
+data class UserId(
+    val name: String,
+    val email: String
+)

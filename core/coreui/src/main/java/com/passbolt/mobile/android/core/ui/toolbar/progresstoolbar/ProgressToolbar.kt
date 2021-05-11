@@ -12,9 +12,7 @@ import android.widget.Toolbar
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.updatePadding
-import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.extension.selectableBackgroundBorderlessResourceId
 
@@ -65,7 +63,8 @@ class ProgressToolbar @JvmOverloads constructor(
         gravity = Gravity.CENTER_VERTICAL
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT)
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
     }
 
     private fun createProgressBar() =
@@ -78,7 +77,6 @@ class ProgressToolbar @JvmOverloads constructor(
             updatePadding(left = progressBarHorizontalPadding, right = progressBarHorizontalPadding)
             isIndeterminate = false
             progressDrawable = ContextCompat.getDrawable(context, R.drawable.progress_toolbar_progress_drawable)
-            gone()
         }
 
     fun initializeProgressBar(minProgress: Int, maxProgress: Int) {
@@ -88,7 +86,6 @@ class ProgressToolbar @JvmOverloads constructor(
 
     fun setCurrentProgress(progress: Int) {
         progressBar.progress = progress
-        progressBar.visible()
     }
 
     fun addIconEnd(@DrawableRes iconRes: Int, clickListener: () -> Unit) {
@@ -101,7 +98,8 @@ class ProgressToolbar @JvmOverloads constructor(
                 it,
                 LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT)
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
             )
         }
     }

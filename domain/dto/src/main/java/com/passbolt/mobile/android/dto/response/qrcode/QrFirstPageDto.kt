@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android.feature.setup.scanqr.di
+package com.passbolt.mobile.android.dto.response.qrcode
 
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrContract
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrPresenter
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.FragmentComponent
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,11 +24,15 @@ import dagger.hilt.android.components.FragmentComponent
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-@Module
-@InstallIn(FragmentComponent::class)
-internal abstract class ScanQrModule {
-
-    @Binds
-    abstract fun scanQrPresenter(presenter: ScanQrPresenter): ScanQrContract.Presenter
-}
+data class QrFirstPageDto(
+    @SerializedName("transfer_id")
+    val transferId: String,
+    @SerializedName("user_id")
+    val userId: String,
+    @SerializedName("total_pages")
+    val totalPages: Int,
+    @SerializedName("authentication_token")
+    val authenticationToken: String,
+    val hash: String,
+    val domain: String
+)

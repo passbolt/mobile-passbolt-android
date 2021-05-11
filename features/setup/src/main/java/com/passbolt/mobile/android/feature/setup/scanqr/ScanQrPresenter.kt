@@ -7,10 +7,14 @@ import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlinx.coroutines.cancel
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,18 +40,88 @@ import javax.inject.Inject
  */
 class ScanQrPresenter @Inject constructor(
     coroutineLaunchContext: CoroutineLaunchContext,
-    private val nextPageUseCase: NextPageUseCase
+    private val nextPageUseCase: NextPageUseCase,
+    private val qrParser: ScanQrParser
 ) : ScanQrContract.Presenter {
 
     override var view: ScanQrContract.View? = null
 
     private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + coroutineLaunchContext.io)
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+
+    private lateinit var authToken: String
+    private lateinit var transferUuid: String
+    private var totalPages: Int by Delegates.notNull()
+    private var currentPage = 0
 
     override fun attach(view: ScanQrContract.View) {
         super.attach(view)
         registerForScanResults()
+        registerForParseResults()
         this.view?.startAnalysis()
+    }
+
+    private fun registerForParseResults() {
+        qrParser.parseResultsChannel.let { barcodeParseResultChannel ->
+            scope.launch {
+                barcodeParseResultChannel
+                    .consumeAsFlow()
+                    .distinctUntilChanged()
+                    .collect {
+                        when (it) {
+                            is ScanQrParser.ParseResult.FirstPage -> processFirstPage(it)
+                            is ScanQrParser.ParseResult.SubsequentPage -> processSubsequentPage(it)
+                            is ScanQrParser.ParseResult.Error -> processError()
+                        }
+                    }
+            }
+        }
+    }
+
+    private suspend fun processError() {
+        updateTransfer(pageNumber = currentPage, Status.ERROR)
+        view?.navigateToSummary(ResultStatus.Failure(""))
+    }
+
+    private suspend fun processFirstPage(firstPage: ScanQrParser.ParseResult.FirstPage) {
+        transferUuid = firstPage.content.transferId
+        authToken = firstPage.content.authenticationToken
+        totalPages = firstPage.content.totalPages
+        currentPage = 0
+        view?.initializeProgress(totalPages - 1)
+        view?.showKeepGoing()
+        updateTransfer(pageNumber = firstPage.reservedBytesDto.page + 1)
+    }
+
+    private suspend fun processSubsequentPage(subsequentPage: ScanQrParser.ParseResult.SubsequentPage) {
+        currentPage = subsequentPage.reservedBytesDto.page
+        view?.showKeepGoing()
+        if (subsequentPage.reservedBytesDto.page < totalPages - 1) {
+            updateTransfer(pageNumber = currentPage + 1)
+        } else {
+            qrParser.assembleKey()
+            updateTransfer(pageNumber = currentPage, Status.COMPLETE)
+            view?.navigateToSummary(ResultStatus.Success)
+        }
+    }
+
+    private suspend fun updateTransfer(pageNumber: Int, status: Status = Status.IN_PROGRESS) {
+        val response = nextPageUseCase.execute(
+            NextPageUseCase.Input(
+                uuid = transferUuid,
+                authToken = authToken,
+                currentPage = pageNumber,
+                status = status
+            )
+        )
+        when (response) {
+            is NextPageUseCase.Output.Failure -> {
+                // TODO prepare error handler class
+                Timber.e("There was an error during transfer update")
+                processError()
+            }
+            is NextPageUseCase.Output.Success -> view?.setProgress(pageNumber)
+        }
     }
 
     private fun registerForScanResults() {
@@ -77,34 +151,21 @@ class ScanQrPresenter @Inject constructor(
         view?.showInformationDialog()
     }
 
-    override fun barcodeResult(it: CameraBarcodeAnalyzer.BarcodeScanResult) {
-        when (it) {
-            is CameraBarcodeAnalyzer.BarcodeScanResult.Failure -> Timber.e(it.exception)
-            is CameraBarcodeAnalyzer.BarcodeScanResult.Success -> Timber.e(it.barcodes.joinToString())
+    private fun barcodeResult(barcodeScanResult: CameraBarcodeAnalyzer.BarcodeScanResult) {
+        when (barcodeScanResult) {
+            is CameraBarcodeAnalyzer.BarcodeScanResult.MultipleBarcodes -> view?.showMultipleCodesInRange()
+            is CameraBarcodeAnalyzer.BarcodeScanResult.NoBarcodeInRange -> view?.showCenterCameraOnBarcode()
+            is CameraBarcodeAnalyzer.BarcodeScanResult.Failure -> scope.launch {
+                view?.navigateToSummary(ResultStatus.Failure(""))
+            }
+            is CameraBarcodeAnalyzer.BarcodeScanResult.SingleBarcode -> scope.launch {
+                qrParser.process(barcodeScanResult.data)
+            }
         }
     }
 
     override fun detach() {
         scope.cancel()
         super.detach()
-    }
-
-    override fun sendRequest() {
-        // TODO send proper data
-        scope.launch {
-            nextPageUseCase.execute(
-                NextPageUseCase.Input(
-                    uuid = "c3ef5be8-5c5c-499b-8217-0b15b64fc7b7",
-                    authToken = "4a74e509-9ed9-4328-b492-9af92fa6e2d8",
-                    currentPage = 0,
-                    status = Status.IN_PROGRESS
-                )
-            )
-        }
-    }
-
-    override fun summaryButtonClick() {
-        // Open proper screen
-        view?.navigateToSummary(ResultStatus.Success)
     }
 }

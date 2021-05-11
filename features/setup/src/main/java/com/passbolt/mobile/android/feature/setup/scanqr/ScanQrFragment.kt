@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.NavController
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.feature.setup.R
@@ -56,7 +55,6 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
     }
 
     override fun onDestroyView() {
-        scanManager.get().detach()
         presenter.detach()
         super.onDestroyView()
     }
@@ -81,23 +79,23 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
             .show()
     }
 
-    @Suppress("MagicNumber")
     private fun initToolbar() {
         with(binding.progressToolbar) {
             setNavigationIcon(R.drawable.ic_back)
             setNavigationOnClickListener { presenter.backClick() }
             addIconEnd(R.drawable.ic_help) { presenter.infoIconClick() }
+        }
+    }
 
-            // TODO update during integration
-            initializeProgressBar(1, 10)
-            setCurrentProgress(5)
+    override fun initializeProgress(totalPages: Int) {
+        with(binding.progressToolbar) {
+            initializeProgressBar(0, totalPages)
+            setCurrentProgress(0)
         }
-        binding.sendRequestButton.setDebouncingOnClick {
-            presenter.sendRequest()
-        }
-        binding.summaryButton.setDebouncingOnClick {
-            presenter.summaryButtonClick()
-        }
+    }
+
+    override fun setProgress(progress: Int) {
+        binding.progressToolbar.setCurrentProgress(progress)
     }
 
     override fun startAnalysis() {
@@ -109,7 +107,23 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
     }
 
     override fun showStartCameraError() {
-        // TODO - add when error snackbar prepared
+        // TODO
+    }
+
+    override fun showBarcodeScanError() {
+        // TODO
+    }
+
+    override fun showMultipleCodesInRange() {
+        // TODO
+    }
+
+    override fun showCenterCameraOnBarcode() {
+        // TODO
+    }
+
+    override fun showKeepGoing() {
+        // TODO
     }
 
     override fun navigateBack() {

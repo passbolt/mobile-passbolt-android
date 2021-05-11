@@ -45,7 +45,8 @@ ext {
             okHttp: "4.7.2"
         ],
         timber: "4.7.1",
-        mlkit: "16.1.1"
+        mlkit: "16.1.1",
+        gson: "2.8.6"
     ]
 
     libs = [
@@ -101,6 +102,7 @@ ext {
             okHttpLoggingInterceptor: "com.squareup.okhttp3:logging-interceptor:${versions.networking.okHttp}"
         ],
         timber: "com.jakewharton.timber:timber:${versions.timber}",
-        qrScan: "com.google.mlkit:barcode-scanning:${versions.mlkit}"
+        qrScan: "com.google.mlkit:barcode-scanning:${versions.mlkit}",
+        gson: "com.google.code.gson:gson:${versions.gson}"
     ]
 }
