@@ -1,10 +1,12 @@
 package com.passbolt.mobile.android.core.ui.toolbar.progresstoolbar
 
 import android.animation.LayoutTransition
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -85,7 +87,12 @@ class ProgressToolbar @JvmOverloads constructor(
     }
 
     fun setCurrentProgress(progress: Int) {
-        progressBar.progress = progress
+        ObjectAnimator.ofInt(progressBar, PROGRESS_PROPERTY, progressBar.progress, progress).apply {
+            setAutoCancel(true)
+            duration = PROGRESS_ANIMATION_DURATION_MILLIS
+            interpolator = DecelerateInterpolator()
+        }
+            .start()
     }
 
     fun addIconEnd(@DrawableRes iconRes: Int, clickListener: () -> Unit) {
@@ -102,5 +109,10 @@ class ProgressToolbar @JvmOverloads constructor(
                 )
             )
         }
+    }
+
+    private companion object {
+        private const val PROGRESS_ANIMATION_DURATION_MILLIS = 200L
+        private const val PROGRESS_PROPERTY = "progress"
     }
 }

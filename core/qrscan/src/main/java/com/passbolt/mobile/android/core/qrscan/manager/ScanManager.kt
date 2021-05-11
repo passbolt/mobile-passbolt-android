@@ -25,9 +25,13 @@ class ScanManager constructor(
     fun attach(owner: LifecycleOwner, cameraPreview: PreviewView) {
         cameraProviderFuture.addListener({
             imageAnalysisUseCase.setAnalyzer(mainExecutor, cameraBarcodeAnalyzer)
-            previewUseCase.setSurfaceProvider(cameraPreview.createSurfaceProvider())
+            previewUseCase.setSurfaceProvider(cameraPreview.surfaceProvider)
             bindCameraUseCases(owner)
         }, mainExecutor)
+    }
+
+    fun detach() {
+        previewUseCase.setSurfaceProvider(null)
     }
 
     @Throws(IllegalStateException::class, java.lang.IllegalArgumentException::class)

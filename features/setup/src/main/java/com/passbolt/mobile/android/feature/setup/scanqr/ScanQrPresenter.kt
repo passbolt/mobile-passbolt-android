@@ -61,9 +61,21 @@ class ScanQrPresenter(
 
     override fun attach(view: ScanQrContract.View) {
         super.attach(view)
+        view.showCenterCameraOnBarcode()
         registerForScanResults()
         registerForParseResults()
         this.view?.startAnalysis()
+    }
+
+    private fun registerForScanResults() {
+        view?.scanResultChannel()?.let { barcodeScanResultChannel ->
+            scope.launch {
+                barcodeScanResultChannel
+                    .consumeAsFlow()
+                    .distinctUntilChanged()
+                    .collect { barcodeResult(it) }
+            }
+        }
     }
 
     private fun registerForParseResults() {
@@ -73,6 +85,7 @@ class ScanQrPresenter(
                     .consumeAsFlow()
                     .distinctUntilChanged()
                     .collect {
+                        Timber.d("Received ${it.javaClass.simpleName}")
                         when (it) {
                             is ScanQrParser.ParseResult.FirstPage -> processFirstPage(it)
                             is ScanQrParser.ParseResult.SubsequentPage -> processSubsequentPage(it)
@@ -111,13 +124,23 @@ class ScanQrPresenter(
         if (subsequentPage.reservedBytesDto.page < totalPages - 1) {
             updateTransfer(pageNumber = currentPage + 1)
         } else {
-            qrParser.assembleKey()
-            updateTransfer(pageNumber = currentPage, Status.COMPLETE)
-            view?.navigateToSummary(ResultStatus.Success)
+            try {
+                qrParser.assembleKey()
+                updateTransfer(pageNumber = currentPage, Status.COMPLETE)
+                view?.navigateToSummary(ResultStatus.Success)
+            } catch (exception: Exception) {
+                updateTransfer(pageNumber = currentPage, Status.ERROR)
+                view?.navigateToSummary(ResultStatus.Failure(""))
+            }
         }
     }
 
     private suspend fun updateTransfer(pageNumber: Int, status: Status = Status.IN_PROGRESS) {
+        // in case of the first qr code is not a correct one
+        if (!::transferUuid.isInitialized || !::authToken.isInitialized) {
+            return
+        }
+
         val response = nextPageUseCase.execute(
             NextPageUseCase.Input(
                 uuid = transferUuid,
@@ -128,21 +151,10 @@ class ScanQrPresenter(
         )
         when (response) {
             is NextPageUseCase.Output.Failure -> {
-                // TODO prepare error handler class
                 Timber.e("There was an error during transfer update")
-                processError()
+                view?.navigateToSummary(ResultStatus.Failure(""))
             }
             is NextPageUseCase.Output.Success -> view?.setProgress(pageNumber)
-        }
-    }
-
-    private fun registerForScanResults() {
-        view?.scanResultChannel()?.let { barcodeScanResultChannel ->
-            scope.launch {
-                for (result in barcodeScanResultChannel) {
-                    barcodeResult(result)
-                }
-            }
         }
     }
 
@@ -164,14 +176,18 @@ class ScanQrPresenter(
     }
 
     private fun barcodeResult(barcodeScanResult: CameraBarcodeAnalyzer.BarcodeScanResult) {
-        when (barcodeScanResult) {
-            is CameraBarcodeAnalyzer.BarcodeScanResult.MultipleBarcodes -> view?.showMultipleCodesInRange()
-            is CameraBarcodeAnalyzer.BarcodeScanResult.NoBarcodeInRange -> view?.showCenterCameraOnBarcode()
-            is CameraBarcodeAnalyzer.BarcodeScanResult.Failure -> scope.launch {
-                view?.navigateToSummary(ResultStatus.Failure(""))
-            }
-            is CameraBarcodeAnalyzer.BarcodeScanResult.SingleBarcode -> scope.launch {
-                qrParser.process(barcodeScanResult.data)
+        Timber.d("Received ${barcodeScanResult.javaClass.simpleName}")
+        scope.launch {
+            when (barcodeScanResult) {
+                is CameraBarcodeAnalyzer.BarcodeScanResult.MultipleBarcodes -> view?.showMultipleCodesInRange()
+                is CameraBarcodeAnalyzer.BarcodeScanResult.NoBarcodeInRange -> view?.showCenterCameraOnBarcode()
+                is CameraBarcodeAnalyzer.BarcodeScanResult.Failure -> view?.navigateToSummary(ResultStatus.Failure(""))
+                is CameraBarcodeAnalyzer.BarcodeScanResult.SingleBarcode ->
+                    if (qrParser.isPassboltQr(barcodeScanResult)) {
+                        qrParser.process(barcodeScanResult.data)
+                    } else {
+                        view?.showNotAPassboltQr()
+                    }
             }
         }
     }

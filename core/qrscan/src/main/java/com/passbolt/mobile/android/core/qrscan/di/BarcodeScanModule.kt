@@ -30,9 +30,9 @@ import org.koin.dsl.module
  * @since v1.0
  */
 val barcodeScanModule = module {
-    single { provideBarcodeScannerOptions() }
-    single { provideBarcodeScanner(get()) }
-    single { provideBarcodeAnalyzer(get()) }
+    factory { provideBarcodeScannerOptions() }
+    factory { provideBarcodeScanner(get()) }
+    factory { provideBarcodeAnalyzer(get()) }
 }
 
 fun provideBarcodeScannerOptions() = BarcodeScannerOptions.Builder()

@@ -37,10 +37,10 @@ fun Module.transferDetailsModule() {
                 cameraInformationProvider = get()
             )
         }
-    }
-    single {
-        CameraInformationProvider(
-            context = androidApplication()
-        )
+        scoped {
+            CameraInformationProvider(
+                context = androidApplication()
+            )
+        }
     }
 }

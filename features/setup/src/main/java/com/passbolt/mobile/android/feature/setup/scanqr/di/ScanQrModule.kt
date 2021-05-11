@@ -36,19 +36,19 @@ fun Module.scanQrModule() {
         scoped<ScanQrContract.Presenter> {
             ScanQrPresenter(get(), get(), get(), get(), get(), get())
         }
-    }
-    single { GsonBuilder().create() }
-    single {
-        NextPageUseCase(
-            registrationRepository = get(),
-            nextQrPageMapper = get(),
-            coroutineContext = get()
-        )
-    }
-    single {
-        ScanQrParser(
-            coroutineContext = get(),
-            gson = get()
-        )
+        scoped { GsonBuilder().create() }
+        scoped {
+            NextPageUseCase(
+                registrationRepository = get(),
+                nextQrPageMapper = get(),
+                coroutineContext = get()
+            )
+        }
+        scoped {
+            ScanQrParser(
+                coroutineContext = get(),
+                gson = get()
+            )
+        }
     }
 }

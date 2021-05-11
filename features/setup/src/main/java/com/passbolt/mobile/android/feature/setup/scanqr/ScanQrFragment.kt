@@ -46,6 +46,7 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
     }
 
     override fun onDestroyView() {
+        scanManager.detach()
         presenter.detach()
         super.onDestroyView()
     }
@@ -98,23 +99,27 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
     }
 
     override fun showStartCameraError() {
-        // TODO
+        binding.tooltip.text = getString(R.string.scan_qr_camera_error)
     }
 
     override fun showBarcodeScanError() {
-        // TODO
+        binding.tooltip.text = getString(R.string.scan_qr_scanning_error)
     }
 
     override fun showMultipleCodesInRange() {
-        // TODO
+        binding.tooltip.text = getString(R.string.scan_qr_multiple_codes_in_range)
     }
 
     override fun showCenterCameraOnBarcode() {
-        // TODO
+        binding.tooltip.text = getString(R.string.scan_qr_aim_at_qr_code)
     }
 
     override fun showKeepGoing() {
-        // TODO
+        binding.tooltip.text = getString(R.string.scan_qr_keep_going)
+    }
+
+    override fun showNotAPassboltQr() {
+        binding.tooltip.text = getString(R.string.scan_qr_not_a_passbolt_qr)
     }
 
     override fun navigateBack() {

@@ -3,12 +3,14 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 import android.util.SparseArray
 import com.google.gson.Gson
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
 import com.passbolt.mobile.android.dto.response.qrcode.AggregatedQrDto
 import com.passbolt.mobile.android.dto.response.qrcode.QrFirstPageDto
 import com.passbolt.mobile.android.dto.response.qrcode.ReservedBytesDto
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.nio.ByteBuffer
 
 /**
  * Passbolt - Open source password manager for teams
@@ -49,6 +51,7 @@ class ScanQrParser(
                 val reservedBytes = ByteArray(RESERVED_BYTES_COUNT) { data[it] }
                 val reservedBytesDto = processReservedBytes(reservedBytes)
                 val payloadBytes = ByteArray(data.size - RESERVED_BYTES_COUNT) { data[it + RESERVED_BYTES_COUNT] }
+
                 if (reservedBytesDto.page == FIRST_PAGE_INDEX) {
                     parseFirstPage(reservedBytesDto, payloadBytes)
                 } else {
@@ -75,20 +78,26 @@ class ScanQrParser(
         reservedBytesDto: ReservedBytesDto,
         payloadBytes: ByteArray
     ) {
-        val parsedSubsequentPage = ParseResult.SubsequentPage(
-            reservedBytesDto,
-            String(payloadBytes)
-        )
-        subsequentPages?.put(reservedBytesDto.page, parsedSubsequentPage)
-        parseResultsChannel.send(parsedSubsequentPage)
+        if (validateFirstPageParsed()) {
+            val parsedSubsequentPage = ParseResult.SubsequentPage(
+                reservedBytesDto,
+                String(payloadBytes)
+            )
+            subsequentPages?.put(reservedBytesDto.page, parsedSubsequentPage)
+            parseResultsChannel.send(parsedSubsequentPage)
+        }
+    }
+
+    private fun validateFirstPageParsed(): Boolean {
+        totalPages ?: error("First page was not scanned")
+        return totalPages != null
     }
 
     private fun processReservedBytes(bytes: ByteArray): ReservedBytesDto {
         // the first byte contains transfer protocol version
         val version = bytes[0].toInt()
         // the second and third bytes contain page number
-        // TODO confirm bytes assemble logic
-        val pageNumber = (bytes[1].toString() + bytes[2].toString()).toInt()
+        val pageNumber = ByteBuffer.wrap(ByteArray(PAGE_NUMBER_BYTES_COUNT) { bytes[it + 1] }).short.toInt()
         return ReservedBytesDto(version, pageNumber)
     }
 
@@ -101,6 +110,13 @@ class ScanQrParser(
             val key = gson.fromJson(keyBuilder.toString(), AggregatedQrDto::class.java)
             // TODO verify & save key
         }
+    }
+
+    fun isPassboltQr(barcodeScanResult: CameraBarcodeAnalyzer.BarcodeScanResult.SingleBarcode): Boolean {
+        barcodeScanResult.data?.let {
+            val reservedBytes = processReservedBytes(it)
+            return reservedBytes.version == PROTOCOL_VERSION && reservedBytes.page in (0..(totalPages ?: 0))
+        } ?: return false
     }
 
     sealed class ParseResult {
@@ -119,6 +135,8 @@ class ScanQrParser(
 
     private companion object {
         private const val RESERVED_BYTES_COUNT = 3
+        private const val PAGE_NUMBER_BYTES_COUNT = 2
         private const val FIRST_PAGE_INDEX = 0
+        private const val PROTOCOL_VERSION = 1
     }
 }

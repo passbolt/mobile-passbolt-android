@@ -23,9 +23,12 @@ package com.passbolt.mobile.android.feature.setup.summary
  * @since v1.0
  */
 class SummaryPresenter : SummaryContract.Presenter {
+
     override var view: SummaryContract.View? = null
+    private lateinit var status: ResultStatus
 
     override fun start(status: ResultStatus) {
+        this.status = status
         setupView(status)
     }
 
@@ -37,6 +40,20 @@ class SummaryPresenter : SummaryContract.Presenter {
                 it.setDescription(status.message)
             }
             it.setIcon(status.icon)
+        }
+    }
+
+    override fun buttonClick() {
+        when (status) {
+            is ResultStatus.AlreadyLinked -> {
+                // TODO
+            }
+            is ResultStatus.Failure -> {
+                view?.navigateBack()
+            }
+            is ResultStatus.Success -> {
+                // TODO
+            }
         }
     }
 }

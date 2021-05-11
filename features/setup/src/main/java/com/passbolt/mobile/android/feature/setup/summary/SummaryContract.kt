@@ -33,9 +33,11 @@ interface SummaryContract {
         fun setDescription(message: String)
         fun setButtonLabel(@StringRes text: Int)
         fun setIcon(@DrawableRes icon: Int)
+        fun navigateBack()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun start(status: ResultStatus)
+        fun buttonClick()
     }
 }

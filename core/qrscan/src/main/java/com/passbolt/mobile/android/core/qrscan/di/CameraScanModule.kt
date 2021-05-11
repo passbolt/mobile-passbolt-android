@@ -35,12 +35,12 @@ import java.util.concurrent.Executor
  * @since v1.0
  */
 val cameraScanModule = module {
-    single { provideImageAnalysis() }
-    single { providePreview() }
-    single { provideCameraProviderFuture(androidApplication()) }
-    single { provideCameraSelector() }
-    single { provideMainExecutor(androidApplication()) }
-    single {
+    factory { provideImageAnalysis() }
+    factory { providePreview() }
+    factory { provideCameraProviderFuture(androidApplication()) }
+    factory { provideCameraSelector() }
+    factory { provideMainExecutor(androidApplication()) }
+    factory {
         ScanManager(
             cameraProviderFuture = get(),
             previewUseCase = get(),

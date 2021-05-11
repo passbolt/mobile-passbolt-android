@@ -28,24 +28,6 @@ data class AggregatedQrDto(
     @SerializedName("user_id")
     val userId: String,
     @SerializedName("armored_key")
-    val armoredKey: ArmoredKey,
+    val armoredKey: String,
     val fingerprint: String
-)
-
-data class ArmoredKey(
-    val key: String,
-    val keyId: String,
-    val userIds: List<UserId>,
-    val created: String,
-    val expires: String,
-    val algorithm: String,
-    val length: Int,
-    val private: Boolean,
-    @SerializedName("user_id")
-    val userId: String
-)
-
-data class UserId(
-    val name: String,
-    val email: String
 )

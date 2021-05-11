@@ -44,6 +44,7 @@ interface ScanQrContract {
         fun showKeepGoing()
         fun initializeProgress(totalPages: Int)
         fun setProgress(progress: Int)
+        fun showNotAPassboltQr()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

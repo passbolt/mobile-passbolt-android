@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.setup.summary
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentSummaryBinding
@@ -38,6 +39,7 @@ class SummaryFragment : BindingFragment<FragmentSummaryBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setListeners()
         presenter.attach(this)
         presenter.start(args.status)
     }
@@ -45,6 +47,10 @@ class SummaryFragment : BindingFragment<FragmentSummaryBinding>(
     override fun onDestroyView() {
         presenter.detach()
         super.onDestroyView()
+    }
+
+    private fun setListeners() {
+        binding.resultView.setButtonAction { presenter.buttonClick() }
     }
 
     override fun setTitle(title: Int) {
@@ -61,5 +67,9 @@ class SummaryFragment : BindingFragment<FragmentSummaryBinding>(
 
     override fun setIcon(icon: Int) {
         binding.resultView.setIcon(icon)
+    }
+
+    override fun navigateBack() {
+        findNavController().popBackStack()
     }
 }
