@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
+package com.passbolt.mobile.android.feature.setup.summary
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
-import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import kotlinx.coroutines.channels.Channel
+import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,26 +24,21 @@ import kotlinx.coroutines.channels.Channel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class SummaryPresenter @Inject constructor() : SummaryContract.Presenter {
+    override var view: SummaryContract.View? = null
 
-interface ScanQrContract {
-
-    interface View : BaseContract.View {
-        fun showExitConfirmation()
-        fun navigateBack()
-        fun showInformationDialog()
-        fun startAnalysis()
-        fun showStartCameraError()
-        fun scanResultChannel(): Channel<CameraBarcodeAnalyzer.BarcodeScanResult>
-        fun navigateToSummary(status: ResultStatus)
+    override fun start(status: ResultStatus) {
+        setupView(status)
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun backClick()
-        fun exitConfirmClick()
-        fun infoIconClick()
-        fun sendRequest()
-        fun summaryButtonClick()
-        fun startCameraError(exc: Exception)
-        fun barcodeResult(it: CameraBarcodeAnalyzer.BarcodeScanResult)
+    private fun setupView(status: ResultStatus) {
+        view?.let {
+            it.setTitle(status.title)
+            it.setButtonLabel(status.buttonText)
+            if (status is ResultStatus.Failure) {
+                it.setDescription(status.message)
+            }
+            it.setIcon(status.icon)
+        }
     }
 }

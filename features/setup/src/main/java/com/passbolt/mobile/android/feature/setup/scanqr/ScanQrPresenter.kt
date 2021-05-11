@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
+import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -100,5 +101,10 @@ class ScanQrPresenter @Inject constructor(
                 )
             )
         }
+    }
+
+    override fun summaryButtonClick() {
+        // Open proper screen
+        view?.navigateToSummary(ResultStatus.Success)
     }
 }

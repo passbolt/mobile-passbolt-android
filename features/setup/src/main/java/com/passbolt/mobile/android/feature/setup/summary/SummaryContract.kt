@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.core.ui.extension
+package com.passbolt.mobile.android.feature.setup.summary
 
-import android.content.Context
-import android.util.TypedValue
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,8 +26,16 @@ import android.util.TypedValue
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface SummaryContract {
 
-fun Context.selectableBackgroundBorderlessResourceId() =
-    TypedValue().apply {
-        theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, this, true)
-    }.resourceId
+    interface View : BaseContract.View {
+        fun setTitle(@StringRes title: Int)
+        fun setDescription(message: String)
+        fun setButtonLabel(@StringRes text: Int)
+        fun setIcon(@DrawableRes icon: Int)
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun start(status: ResultStatus)
+    }
+}

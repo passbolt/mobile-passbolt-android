@@ -9,7 +9,7 @@ import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -95,6 +95,9 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
         binding.sendRequestButton.setDebouncingOnClick {
             presenter.sendRequest()
         }
+        binding.summaryButton.setDebouncingOnClick {
+            presenter.summaryButtonClick()
+        }
     }
 
     override fun startAnalysis() {
@@ -111,5 +114,11 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
 
     override fun navigateBack() {
         navController.get().popBackStack()
+    }
+
+    override fun navigateToSummary(status: ResultStatus) {
+        navController.get().navigate(
+            ScanQrFragmentDirections.actionScanQrFragmentToSummaryFragment(status)
+        )
     }
 }

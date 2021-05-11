@@ -1,9 +1,9 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
+package com.passbolt.mobile.android.feature.setup.summary
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
-import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import kotlinx.coroutines.channels.Channel
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import com.passbolt.mobile.android.feature.setup.R
+import java.io.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,26 +27,28 @@ import kotlinx.coroutines.channels.Channel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+sealed class ResultStatus(
+    @DrawableRes val icon: Int,
+    @StringRes val title: Int,
+    @StringRes val buttonText: Int
+) : Serializable {
+    object Success : ResultStatus(
+        R.drawable.ic_success,
+        R.string.scan_qr_summary_success_title,
+        R.string.continue_label
+    )
 
-interface ScanQrContract {
+    class Failure(
+        val message: String
+    ) : ResultStatus(
+        R.drawable.ic_failed,
+        R.string.scan_qr_summary_failure_title,
+        R.string.try_again
+    )
 
-    interface View : BaseContract.View {
-        fun showExitConfirmation()
-        fun navigateBack()
-        fun showInformationDialog()
-        fun startAnalysis()
-        fun showStartCameraError()
-        fun scanResultChannel(): Channel<CameraBarcodeAnalyzer.BarcodeScanResult>
-        fun navigateToSummary(status: ResultStatus)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun backClick()
-        fun exitConfirmClick()
-        fun infoIconClick()
-        fun sendRequest()
-        fun summaryButtonClick()
-        fun startCameraError(exc: Exception)
-        fun barcodeResult(it: CameraBarcodeAnalyzer.BarcodeScanResult)
-    }
+    object AlreadyLinked : ResultStatus(
+        R.drawable.ic_already_connected,
+        R.string.scan_qr_summary_already_linked_title,
+        R.string.continue_label
+    )
 }

@@ -1,9 +1,11 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
+package com.passbolt.mobile.android.feature.setup.summary.di
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
-import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import kotlinx.coroutines.channels.Channel
+import com.passbolt.mobile.android.feature.setup.summary.SummaryContract
+import com.passbolt.mobile.android.feature.setup.summary.SummaryPresenter
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.FragmentComponent
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,25 +30,10 @@ import kotlinx.coroutines.channels.Channel
  * @since v1.0
  */
 
-interface ScanQrContract {
+@Module
+@InstallIn(FragmentComponent::class)
+internal abstract class SummaryModule {
 
-    interface View : BaseContract.View {
-        fun showExitConfirmation()
-        fun navigateBack()
-        fun showInformationDialog()
-        fun startAnalysis()
-        fun showStartCameraError()
-        fun scanResultChannel(): Channel<CameraBarcodeAnalyzer.BarcodeScanResult>
-        fun navigateToSummary(status: ResultStatus)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun backClick()
-        fun exitConfirmClick()
-        fun infoIconClick()
-        fun sendRequest()
-        fun summaryButtonClick()
-        fun startCameraError(exc: Exception)
-        fun barcodeResult(it: CameraBarcodeAnalyzer.BarcodeScanResult)
-    }
+    @Binds
+    abstract fun summaryPresenter(presenter: SummaryPresenter): SummaryContract.Presenter
 }
