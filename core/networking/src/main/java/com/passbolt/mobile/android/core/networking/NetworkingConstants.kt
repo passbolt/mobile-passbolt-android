@@ -23,4 +23,4 @@ package com.passbolt.mobile.android.core.networking
  * @since v1.0
  */
 // this is used only as a placeholder and it is replaced in ChangeableBaseUrlInterceptor
-const val PLACEHOLDER_BASE_URL = "https://passbolt.baseUrl.placeholder"
+const val PLACEHOLDER_BASE_URL = "https://passbolt.baseurl.placeholder"
