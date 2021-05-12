@@ -36,8 +36,9 @@ class GetAccountDataUseCase @Inject constructor(
         val sharedPreferences = encryptedSharedPreferencesFactory.get(alias, "$alias.xml")
 
         return Output(
-            sharedPreferences.getString(USERNAME_KEY, "").orEmpty(),
-            sharedPreferences.getString(EMAIL_KEY, "").orEmpty()
+            sharedPreferences.getString(USERNAME_KEY, null),
+            sharedPreferences.getString(EMAIL_KEY, null),
+            sharedPreferences.getString(URL_KEY, "").orEmpty()
         )
     }
 
@@ -46,7 +47,8 @@ class GetAccountDataUseCase @Inject constructor(
     )
 
     class Output(
-        val username: String,
-        val email: String
+        val username: String?,
+        val email: String?,
+        val url: String
     )
 }

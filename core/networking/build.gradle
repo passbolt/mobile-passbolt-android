@@ -6,6 +6,9 @@ plugins {
 }
 
 dependencies {
+    implementation project(':common')
+    implementation project(':storage')
+
     /* NETWORKING */
     api libs.networking.retrofit
     api libs.networking.okHttp

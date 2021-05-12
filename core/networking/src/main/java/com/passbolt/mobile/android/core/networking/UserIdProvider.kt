@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.storage.usecase
+package com.passbolt.mobile.android.core.networking
 
-import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
+import java.net.URI
 import javax.inject.Inject
 
 /**
@@ -26,21 +25,10 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class UserIdProvider @Inject constructor() {
 
-class SaveSelectedAccountUseCase @Inject constructor(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
-) : UseCase<SaveSelectedAccountUseCase.Input, Unit> {
-
-    override fun execute(input: Input) {
-        val sharedPreferences =
-            encryptedSharedPreferencesFactory.get(SELECTED_ACCOUNT_ALIAS, "$SELECTED_ACCOUNT_ALIAS.xml")
-        with(sharedPreferences.edit()) {
-            putString(SELECTED_ACCOUNT_KEY, input.userId)
-            apply()
-        }
+    fun get(id: String, url: String): String {
+        val path = URI(url).authority
+        return "${id}_$path"
     }
-
-    class Input(
-        val userId: String
-    )
 }

@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.storage.usecase
 
 import android.content.SharedPreferences
 import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.storage.di.StorageModule
 import javax.inject.Inject
 
 /**
@@ -29,7 +28,7 @@ import javax.inject.Inject
  */
 
 class GetAccountsUseCase @Inject constructor(
-    @StorageModule.AccountsSharedPreferences private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences
 ) : UseCase<Unit, GetAccountsUseCase.Output> {
 
     override fun execute(input: Unit): Output =

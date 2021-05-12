@@ -22,7 +22,6 @@ package com.passbolt.mobile.android.common
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
 interface AsyncUseCase<IN : Any, OUT : Any> {
 
     suspend fun execute(input: IN): OUT

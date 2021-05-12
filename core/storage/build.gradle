@@ -18,6 +18,8 @@ dependencies {
     /* DI */
     implementation libs.di.hilt
     kapt libs.di.hiltCompiler
+
+    debugImplementation libs.debugDatabase
 }
 
 android {

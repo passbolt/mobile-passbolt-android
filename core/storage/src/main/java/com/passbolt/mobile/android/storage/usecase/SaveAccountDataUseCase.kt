@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.storage.usecase
 import com.passbolt.mobile.android.common.UseCase
 import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
 import javax.inject.Inject
-import com.passbolt.mobile.android.storage.di.StorageModule.AccountsSharedPreferences
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,7 +28,7 @@ import com.passbolt.mobile.android.storage.di.StorageModule.AccountsSharedPrefer
  */
 
 class SaveAccountDataUseCase @Inject constructor(
-    @AccountsSharedPreferences private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
 ) : UseCase<SaveAccountDataUseCase.Input, Unit> {
 
     override fun execute(input: Input) {
@@ -38,13 +37,15 @@ class SaveAccountDataUseCase @Inject constructor(
         with(sharedPreferences.edit()) {
             putString(USERNAME_KEY, input.username)
             putString(EMAIL_KEY, input.email)
+            putString(URL_KEY, input.url)
             apply()
         }
     }
 
     class Input(
         val userId: String,
-        val username: String,
-        val email: String
+        val url: String,
+        val username: String? = null,
+        val email: String? = null
     )
 }

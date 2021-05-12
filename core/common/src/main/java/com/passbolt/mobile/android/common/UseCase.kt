@@ -22,7 +22,6 @@ package com.passbolt.mobile.android.common
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
 interface UseCase<IN : Any, OUT : Any> {
 
     fun execute(input: IN): OUT

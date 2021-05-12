@@ -22,7 +22,5 @@ package com.passbolt.mobile.android.core.networking
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-data class RestServiceConfiguration(
-    val baseUrl: String
-)
+// this is used only as a placeholder and it is replaced in ChangeableBaseUrlInterceptor
+const val PLACEHOLDER_BASE_URL = "https://passbolt.baseUrl.placeholder"

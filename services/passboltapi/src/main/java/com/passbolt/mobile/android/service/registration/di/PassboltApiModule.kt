@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.service.registration.di
 
 import com.passbolt.mobile.android.core.networking.RestService
-import com.passbolt.mobile.android.core.networking.RestServiceConfiguration
 import com.passbolt.mobile.android.core.networking.RetrofitRestService
 import com.passbolt.mobile.android.service.registration.RegistrationDataSource
 import com.passbolt.mobile.android.service.registration.data.RegistrationApi
@@ -44,18 +43,9 @@ internal object PassboltApiModule {
 
     @Singleton
     @Provides
-    fun provideWebserviceConfiguration(): RestServiceConfiguration {
-        return RestServiceConfiguration(
-            baseUrl = "https://passbolt.dev/"
-        )
-    }
-
-    @Singleton
-    @Provides
-    fun provideRestService(configuration: RestServiceConfiguration, okHttpClient: OkHttpClient): RestService {
+    fun provideRestService(okHttpClient: OkHttpClient): RestService {
         return RetrofitRestService(
             client = okHttpClient,
-            configuration = configuration,
             converterFactory = GsonConverterFactory.create()
         )
     }

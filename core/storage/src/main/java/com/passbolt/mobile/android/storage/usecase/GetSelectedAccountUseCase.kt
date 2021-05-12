@@ -29,20 +29,16 @@ import javax.inject.Inject
 
 class GetSelectedAccountUseCase @Inject constructor(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
-) : UseCase<GetSelectedAccountUseCase.Input, GetSelectedAccountUseCase.Output> {
+) : UseCase<Unit, GetSelectedAccountUseCase.Output> {
 
-    override fun execute(input: Input): Output {
-        val alias = "${SELECTED_ACCOUNT_ALIAS}_${input.userId}"
-        val sharedPreferences = encryptedSharedPreferencesFactory.get(alias, "$alias.xml")
+    override fun execute(input: Unit): Output {
+        val sharedPreferences =
+            encryptedSharedPreferencesFactory.get(SELECTED_ACCOUNT_ALIAS, "$SELECTED_ACCOUNT_ALIAS.xml")
 
         return Output(
-            sharedPreferences.getString(SELECTED_ACCOUNT_KEY, "")
+            sharedPreferences.getString(SELECTED_ACCOUNT_KEY, null)
         )
     }
-
-    class Input(
-        val userId: String
-    )
 
     class Output(
         val selectedAccount: String?

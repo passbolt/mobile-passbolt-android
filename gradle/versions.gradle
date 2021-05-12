@@ -46,7 +46,8 @@ ext {
         ],
         timber: "4.7.1",
         mlkit: "16.1.1",
-        gson: "2.8.6"
+        gson: "2.8.6",
+        debugDatabase: "1.0.6"
     ]
 
     libs = [
@@ -103,6 +104,7 @@ ext {
         ],
         timber: "com.jakewharton.timber:timber:${versions.timber}",
         qrScan: "com.google.mlkit:barcode-scanning:${versions.mlkit}",
-        gson: "com.google.code.gson:gson:${versions.gson}"
+        gson: "com.google.code.gson:gson:${versions.gson}",
+        debugDatabase: "com.amitshekhar.android:debug-db:${versions.debugDatabase}"
     ]
 }

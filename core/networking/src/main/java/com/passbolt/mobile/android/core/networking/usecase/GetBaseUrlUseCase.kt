@@ -1,7 +1,9 @@
-package com.passbolt.mobile.android.storage.usecase
+package com.passbolt.mobile.android.core.networking.usecase
 
 import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.core.networking.PLACEHOLDER_BASE_URL
+import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 import javax.inject.Inject
 
 /**
@@ -26,21 +28,19 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GetBaseUrlUseCase @Inject constructor(
+    private val getAccountDataUseCase: GetAccountDataUseCase,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : UseCase<Unit, GetBaseUrlUseCase.Output> {
 
-class SaveSelectedAccountUseCase @Inject constructor(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
-) : UseCase<SaveSelectedAccountUseCase.Input, Unit> {
-
-    override fun execute(input: Input) {
-        val sharedPreferences =
-            encryptedSharedPreferencesFactory.get(SELECTED_ACCOUNT_ALIAS, "$SELECTED_ACCOUNT_ALIAS.xml")
-        with(sharedPreferences.edit()) {
-            putString(SELECTED_ACCOUNT_KEY, input.userId)
-            apply()
-        }
+    override fun execute(input: Unit): Output {
+        val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
+        return userId?.let {
+            Output(getAccountDataUseCase.execute(GetAccountDataUseCase.Input(userId)).url)
+        } ?: Output(PLACEHOLDER_BASE_URL)
     }
 
-    class Input(
-        val userId: String
+    class Output(
+        val url: String
     )
 }

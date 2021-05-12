@@ -4,7 +4,10 @@ import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.passbolt.mobile.android.core.mvp.AppCoroutineContext
+import com.passbolt.mobile.android.core.networking.UserIdProvider
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
 import org.junit.Before
 import org.junit.Test
 
@@ -35,6 +38,9 @@ class ScanQrPresenterTest {
     private lateinit var presenter: ScanQrPresenter
     private var view: ScanQrContract.View = mock()
     private var nextPageUseCase: NextPageUseCase = mock()
+    private var saveAccountDataUseCase: SaveAccountDataUseCase = mock()
+    private val selectedAccountUseCase: SaveSelectedAccountUseCase = mock()
+    private val userIdProvider: UserIdProvider = mock()
 
     @Before
     fun setUp() {
@@ -42,7 +48,10 @@ class ScanQrPresenterTest {
         presenter = ScanQrPresenter(
             AppCoroutineContext(),
             nextPageUseCase,
-            ScanQrParser(AppCoroutineContext(), Gson())
+            ScanQrParser(AppCoroutineContext(), Gson()),
+            selectedAccountUseCase,
+            saveAccountDataUseCase,
+            userIdProvider
         )
         presenter.attach(view)
     }

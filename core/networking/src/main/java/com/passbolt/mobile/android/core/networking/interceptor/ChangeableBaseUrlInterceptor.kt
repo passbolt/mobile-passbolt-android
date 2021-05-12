@@ -1,14 +1,10 @@
-package com.passbolt.mobile.android.core.networking
+package com.passbolt.mobile.android.core.networking.interceptor
 
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.IntoSet
+import com.passbolt.mobile.android.core.networking.PLACEHOLDER_BASE_URL
+import com.passbolt.mobile.android.core.networking.usecase.GetBaseUrlUseCase
 import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import javax.inject.Singleton
+import okhttp3.Response
+import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,26 +28,19 @@ import javax.inject.Singleton
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class ChangeableBaseUrlInterceptor @Inject constructor(
+    private val getBaseUrlUseCase: GetBaseUrlUseCase
+) : Interceptor {
 
-@Module
-@InstallIn(SingletonComponent::class)
-internal object RestConfigurationModule {
-
-    @Provides
-    @IntoSet
-    fun provideLoggingInterceptor(): Interceptor {
-        return HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-    }
-
-    @Singleton
-    @Provides
-    fun provideHttpClient(networkInterceptors: Set<@JvmSuppressWildcards Interceptor>): OkHttpClient {
-        val builder = OkHttpClient.Builder()
-        for (interceptor in networkInterceptors) {
-            builder.addNetworkInterceptor(interceptor)
-        }
-        // TODO remove in production version - PAS-105
-        builder.hostnameVerifier { _, _ -> true }
-        return builder.build()
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val oldRequest = chain.request()
+        val oldUrl = oldRequest.url
+        val baseUrl: String = getBaseUrlUseCase.execute(Unit).url
+        val newUrl = oldUrl.toString().replaceBaseUrlWithNew(baseUrl)
+        val newRequest = oldRequest.newBuilder().url(newUrl).build()
+        return chain.proceed(newRequest)
     }
 }
+
+private fun String.replaceBaseUrlWithNew(newUrl: String) =
+    toString().replace(PLACEHOLDER_BASE_URL, newUrl)

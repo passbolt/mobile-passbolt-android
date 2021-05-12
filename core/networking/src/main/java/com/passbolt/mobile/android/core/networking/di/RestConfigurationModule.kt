@@ -1,9 +1,15 @@
-package com.passbolt.mobile.android.core.networking
+package com.passbolt.mobile.android.core.networking.di
 
+import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import retrofit2.Converter
-import retrofit2.Retrofit
-import javax.inject.Inject
+import okhttp3.logging.HttpLoggingInterceptor
+import javax.inject.Singleton
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,18 +34,29 @@ import javax.inject.Inject
  * @since v1.0
  */
 
-class RetrofitRestService @Inject constructor(
-    private val client: OkHttpClient,
-    private val converterFactory: Converter.Factory
-) : RestService {
+@Module
+@InstallIn(SingletonComponent::class)
+internal object RestConfigurationModule {
 
-    private val retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(PLACEHOLDER_BASE_URL)
-            .client(client)
-            .addConverterFactory(converterFactory)
-            .build()
+    @Provides
+    @IntoSet
+    fun provideLoggingInterceptor(): Interceptor {
+        return HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
     }
 
-    override fun <T> service(clazz: Class<T>): T = retrofit.create(clazz)
+    @Singleton
+    @Provides
+    fun provideHttpClient(
+        networkInterceptors: Set<@JvmSuppressWildcards Interceptor>,
+        changeableBaseUrlInterceptor: ChangeableBaseUrlInterceptor
+    ): OkHttpClient {
+        val builder = OkHttpClient.Builder()
+        for (interceptor in networkInterceptors) {
+            builder.addNetworkInterceptor(interceptor)
+        }
+        builder.addInterceptor(changeableBaseUrlInterceptor)
+        // TODO remove in production version - PAS-105
+        builder.hostnameVerifier { _, _ -> true }
+        return builder.build()
+    }
 }
