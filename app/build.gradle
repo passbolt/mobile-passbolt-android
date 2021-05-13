@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     id "kotlin-parcelize"
     id "kotlin-kapt"
+    id "com.google.firebase.appdistribution"
 }
 
 android {
@@ -29,6 +30,12 @@ android {
             applicationIdSuffix ".debug"
             debuggable true
             minifyEnabled false
+            firebaseAppDistribution {
+                appId "1:660923335137:android:08eec6c125f36ba9b092a0"
+                serviceCredentialsFile findProperty("serviceKey") ?: ""
+                groups "qa"
+            }
+
         }
 //        qa {
 //            applicationIdSuffix ".qa"
