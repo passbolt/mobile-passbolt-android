@@ -72,11 +72,9 @@ release:
       apt-get --quiet install --yes python3-pip > /dev/null
       python3 -m pip install -r gradle/requirements.txt
 
-    - export GITLAB_BUILD_NUMBER="$(python3 gradle/gitlabBuildNumber.py "MASTER_BUILD_NUMBER" ${CI_API_V4_URL} ${CI_PROJECT_ID} ${GITLAB_ACCESS_TOKEN})"
+    - export GITLAB_BUILD_NUMBER="$(python3 gradle/gitlabBuildNumber.py "RELEASE_BUILD_NUMBER" ${CI_API_V4_URL} ${CI_PROJECT_ID} ${GITLAB_ACCESS_TOKEN})"
     - export FIREBASE_DIR="$HOME/.config/firebase"
     - install -d $FIREBASE_DIR
-    - echo $FIREBASE_SERVICE_KEY
-    - echo $FIREBASE_DIR
     - echo ${FIREBASE_SERVICE_KEY} | base64 --decode > "$FIREBASE_DIR/service_key.json"
     - >
       ./gradlew --no-daemon --build-cache -PwithGitlabReleaseNotes -PserviceKey="$FIREBASE_DIR/service_key.json"

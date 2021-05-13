@@ -1,10 +1,10 @@
 import sys
 import requests
 
-var_name = "GITLAB_BUILD_NUMBER"
-gitlab_api_url = sys.argv[1]
-project_id = sys.argv[2]
-access_token = sys.argv[3]
+var_name = sys.argv[1]
+gitlab_api_url = sys.argv[2]
+project_id = sys.argv[3]
+access_token = sys.argv[4]
 
 def increment_build_number():
     build_number_response = get_build_number_response()

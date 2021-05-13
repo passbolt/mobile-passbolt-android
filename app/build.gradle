@@ -9,7 +9,7 @@ plugins {
 android {
     defaultConfig {
         applicationId "com.passbolt.mobile.android"
-        versionCode System.getenv().get("GITLAB_BUILD_NUMBER") ?: projectVersionCode
+        versionCode Integer.valueOf(System.getenv().get("GITLAB_BUILD_NUMBER") ?: projectVersionCode)
         versionName projectVersionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
