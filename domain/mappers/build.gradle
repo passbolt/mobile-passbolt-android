@@ -8,6 +8,5 @@ dependencies {
     implementation project(':ui')
     implementation project(':dto')
 
-    implementation libs.di.hilt
-    kapt libs.di.hiltCompiler
+    implementation libs.di.koin
 }

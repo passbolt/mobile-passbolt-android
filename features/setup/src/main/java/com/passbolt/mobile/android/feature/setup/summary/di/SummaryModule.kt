@@ -1,11 +1,10 @@
 package com.passbolt.mobile.android.feature.setup.summary.di
 
 import com.passbolt.mobile.android.feature.setup.summary.SummaryContract
+import com.passbolt.mobile.android.feature.setup.summary.SummaryFragment
 import com.passbolt.mobile.android.feature.setup.summary.SummaryPresenter
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.FragmentComponent
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,10 +29,10 @@ import dagger.hilt.android.components.FragmentComponent
  * @since v1.0
  */
 
-@Module
-@InstallIn(FragmentComponent::class)
-internal abstract class SummaryModule {
-
-    @Binds
-    abstract fun summaryPresenter(presenter: SummaryPresenter): SummaryContract.Presenter
+fun Module.summaryModule() {
+    scope(named<SummaryFragment>()) {
+        scoped<SummaryContract.Presenter> {
+            SummaryPresenter()
+        }
+    }
 }

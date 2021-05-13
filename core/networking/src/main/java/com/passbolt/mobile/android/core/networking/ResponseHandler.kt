@@ -5,7 +5,6 @@ import timber.log.Timber
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,7 +28,7 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResponseHandler @Inject constructor() {
+class ResponseHandler {
 
     fun <T : Any> handleSuccess(data: T): NetworkResult<T> =
         NetworkResult.Success(data)

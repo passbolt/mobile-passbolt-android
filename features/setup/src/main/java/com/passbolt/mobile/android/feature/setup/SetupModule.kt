@@ -1,12 +1,10 @@
-package com.passbolt.mobile.android.core.mvp.di
+package com.passbolt.mobile.android.feature.setup
 
-import com.passbolt.mobile.android.core.mvp.AppCoroutineContext
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import com.passbolt.mobile.android.feature.setup.scanqr.di.scanQrModule
+import com.passbolt.mobile.android.feature.setup.summary.di.summaryModule
+import com.passbolt.mobile.android.feature.setup.transferdetails.di.transferDetailsModule
+import com.passbolt.mobile.android.feature.setup.welcome.di.welcomeModule
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,13 +28,9 @@ import javax.inject.Singleton
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-@Module
-@InstallIn(SingletonComponent::class)
-internal object CoroutinesModule {
-
-    @Singleton
-    @Provides
-    fun provideCoroutineLaunchContext(): CoroutineLaunchContext =
-        AppCoroutineContext()
+val setupModule = module {
+    welcomeModule()
+    scanQrModule()
+    summaryModule()
+    transferDetailsModule()
 }

@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.common.UseCase
 import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 import com.passbolt.mobile.android.storage.factory.KeyBiometricSettings
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,7 +28,7 @@ import javax.inject.Inject
  * @since v1.0
  */
 
-class SavePassphraseUseCase @Inject constructor(
+class SavePassphraseUseCase(
     private val encryptedFileFactory: EncryptedFileFactory
 ) : UseCase<SavePassphraseUseCase.Input, Unit> {
 

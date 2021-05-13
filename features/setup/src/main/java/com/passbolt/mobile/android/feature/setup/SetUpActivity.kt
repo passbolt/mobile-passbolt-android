@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.setup
 
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
 import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBinding
-import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,5 +25,4 @@ import dagger.hilt.android.AndroidEntryPoint
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@AndroidEntryPoint
 class SetUpActivity : BindingActivity<ActivitySetupBinding>(ActivitySetupBinding::inflate)

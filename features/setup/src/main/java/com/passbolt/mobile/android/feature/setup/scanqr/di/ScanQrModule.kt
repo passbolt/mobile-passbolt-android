@@ -1,11 +1,13 @@
 package com.passbolt.mobile.android.feature.setup.scanqr.di
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.FragmentComponent
+import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrContract
+import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrFragment
+import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrParser
+import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrPresenter
+import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,11 +31,24 @@ import dagger.hilt.android.components.FragmentComponent
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-@Module
-@InstallIn(FragmentComponent::class)
-object ScanQrModuleProvides {
-
-    @Provides
-    fun provideGson(): Gson = GsonBuilder().create()
+fun Module.scanQrModule() {
+    scope(named<ScanQrFragment>()) {
+        scoped<ScanQrContract.Presenter> {
+            ScanQrPresenter(get(), get(), get(), get(), get(), get())
+        }
+    }
+    single { GsonBuilder().create() }
+    single {
+        NextPageUseCase(
+            registrationRepository = get(),
+            nextQrPageMapper = get(),
+            coroutineContext = get()
+        )
+    }
+    single {
+        ScanQrParser(
+            coroutineContext = get(),
+            gson = get()
+        )
+    }
 }

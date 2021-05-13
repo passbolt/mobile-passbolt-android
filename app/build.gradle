@@ -3,7 +3,6 @@ plugins {
     id "kotlin-android"
     id "kotlin-parcelize"
     id "kotlin-kapt"
-    id "dagger.hilt.android.plugin"
 }
 
 android {
@@ -82,10 +81,6 @@ dependencies {
     implementation libs.androidx.navigationUi
 
     /* DI */
-    implementation libs.di.hilt
-    kapt libs.di.hiltCompiler
-}
-
-hilt {
-    enableExperimentalClasspathAggregation = true
+    implementation libs.di.koin
+    implementation libs.di.koinExt
 }

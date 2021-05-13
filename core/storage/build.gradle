@@ -2,7 +2,6 @@ plugins {
     id "com.android.library"
     id "kotlin-android"
     id "kotlin-kapt"
-    id "dagger.hilt.android.plugin"
     id 'kotlinx-serialization'
 }
 
@@ -16,8 +15,8 @@ dependencies {
     implementation libs.kotlin.io
 
     /* DI */
-    implementation libs.di.hilt
-    kapt libs.di.hiltCompiler
+    implementation libs.di.koin
+    implementation libs.di.koinExt
 
     debugImplementation libs.debugDatabase
 }

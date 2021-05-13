@@ -2,13 +2,10 @@ package com.passbolt.mobile.android.feature.setup.summary
 
 import android.os.Bundle
 import android.view.View
-import androidx.navigation.NavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentSummaryBinding
-import dagger.Lazy
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,16 +29,11 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@AndroidEntryPoint
 class SummaryFragment : BindingFragment<FragmentSummaryBinding>(
     FragmentSummaryBinding::inflate
 ), SummaryContract.View {
 
-    @Inject
-    lateinit var presenter: SummaryContract.Presenter
-
-    @Inject
-    lateinit var navController: Lazy<NavController>
+    private val presenter: SummaryContract.Presenter by inject()
     private val args: SummaryFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -7,11 +7,9 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
+import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
+import org.koin.android.ext.koin.androidApplication
+import org.koin.dsl.module
 import java.util.concurrent.Executor
 
 /**
@@ -36,33 +34,41 @@ import java.util.concurrent.Executor
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Module
-@InstallIn(SingletonComponent::class)
-object CameraScanModule {
-
-    // https://firebase.google.com/docs/ml-kit/android/read-barcodes?hl=en#input-image-guidelines
-    private const val RECOMMENDED_INPUT_IMAGE_WIDTH = 1280
-    private const val RECOMMENDED_INPUT_IMAGE_HEIGHT = 720
-
-    @Provides
-    fun provideImageAnalysis() = ImageAnalysis.Builder()
-        .setTargetResolution(Size(RECOMMENDED_INPUT_IMAGE_WIDTH, RECOMMENDED_INPUT_IMAGE_HEIGHT))
-        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-        .build()
-
-    @Provides
-    fun provideCameraProviderFuture(@ApplicationContext context: Context) =
-        ProcessCameraProvider.getInstance(context)
-
-    @Provides
-    fun providePreview() =
-        Preview.Builder().build()
-
-    @Provides
-    fun provideCameraSelector() =
-        CameraSelector.DEFAULT_BACK_CAMERA
-
-    @Provides
-    fun provideMainExecutor(@ApplicationContext context: Context): Executor =
-        ContextCompat.getMainExecutor(context)
+val cameraScanModule = module {
+    single { provideImageAnalysis() }
+    single { providePreview() }
+    single { provideCameraProviderFuture(androidApplication()) }
+    single { provideCameraSelector() }
+    single { provideMainExecutor(androidApplication()) }
+    single {
+        ScanManager(
+            cameraProviderFuture = get(),
+            previewUseCase = get(),
+            cameraSelector = get(),
+            cameraBarcodeAnalyzer = get(),
+            imageAnalysisUseCase = get(),
+            mainExecutor = get()
+        )
+    }
 }
+
+// https://firebase.google.com/docs/ml-kit/android/read-barcodes?hl=en#input-image-guidelines
+private const val RECOMMENDED_INPUT_IMAGE_WIDTH = 1280
+private const val RECOMMENDED_INPUT_IMAGE_HEIGHT = 720
+
+private fun provideImageAnalysis() = ImageAnalysis.Builder()
+    .setTargetResolution(Size(RECOMMENDED_INPUT_IMAGE_WIDTH, RECOMMENDED_INPUT_IMAGE_HEIGHT))
+    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+    .build()
+
+private fun provideCameraProviderFuture(context: Context) =
+    ProcessCameraProvider.getInstance(context)
+
+private fun providePreview() =
+    Preview.Builder().build()
+
+private fun provideCameraSelector() =
+    CameraSelector.DEFAULT_BACK_CAMERA
+
+private fun provideMainExecutor(context: Context): Executor =
+    ContextCompat.getMainExecutor(context)

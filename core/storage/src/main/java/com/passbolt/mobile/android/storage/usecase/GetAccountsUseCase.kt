@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.storage.usecase
 
 import android.content.SharedPreferences
 import com.passbolt.mobile.android.common.UseCase
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,7 +26,7 @@ import javax.inject.Inject
  * @since v1.0
  */
 
-class GetAccountsUseCase @Inject constructor(
+class GetAccountsUseCase(
     private val sharedPreferences: SharedPreferences
 ) : UseCase<Unit, GetAccountsUseCase.Output> {
 

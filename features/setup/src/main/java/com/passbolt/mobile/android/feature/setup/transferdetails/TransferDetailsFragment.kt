@@ -9,15 +9,13 @@ import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentTransferDetailsBinding
-import dagger.Lazy
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -41,18 +39,12 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-@AndroidEntryPoint
 class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
     FragmentTransferDetailsBinding::inflate
 ), TransferDetailsContract.View {
 
-    @Inject
-    lateinit var presenter: TransferDetailsContract.Presenter
+    private val presenter: TransferDetailsContract.Presenter by inject()
     private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
-
-    @Inject
-    lateinit var navController: Lazy<NavController>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -106,7 +98,7 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
     private fun initToolbar() {
         with(binding) {
             toolbar.setNavigationIcon(R.drawable.ic_back)
-            toolbar.setNavigationOnClickListener { navController.get().popBackStack() }
+            toolbar.setNavigationOnClickListener { findNavController().popBackStack() }
         }
     }
 
@@ -140,7 +132,7 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
     }
 
     override fun navigateToScanQr() {
-        navController.get().navigate(
+        findNavController().navigate(
             TransferDetailsFragmentDirections.actionTransferDetailsFragmentToScanQrFragment()
         )
     }

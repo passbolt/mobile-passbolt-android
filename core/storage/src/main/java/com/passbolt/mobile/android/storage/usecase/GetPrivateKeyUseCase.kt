@@ -5,7 +5,6 @@ import com.passbolt.mobile.android.common.extension.toCharArray
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 import timber.log.Timber
 import java.io.IOException
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,7 +29,7 @@ import javax.inject.Inject
  * @since v1.0
  */
 
-class GetPrivateKeyUseCase @Inject constructor(
+class GetPrivateKeyUseCase(
     private val encryptedFileFactory: EncryptedFileFactory
 ) : UseCase<GetPrivateKeyUseCase.Input, GetPrivateKeyUseCase.Output> {
 

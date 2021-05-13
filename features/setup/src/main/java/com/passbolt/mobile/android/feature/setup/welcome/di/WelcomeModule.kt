@@ -1,11 +1,10 @@
 package com.passbolt.mobile.android.feature.setup.welcome.di
 
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeContract
+import com.passbolt.mobile.android.feature.setup.welcome.WelcomeFragment
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomePresenter
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.FragmentComponent
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,10 +28,10 @@ import dagger.hilt.android.components.FragmentComponent
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Module
-@InstallIn(FragmentComponent::class)
-internal abstract class WelcomeModule {
-
-    @Binds
-    abstract fun welcomePresenter(presenter: WelcomePresenter): WelcomeContract.Presenter
+fun Module.welcomeModule() {
+    scope(named<WelcomeFragment>()) {
+        scoped<WelcomeContract.Presenter> {
+            WelcomePresenter()
+        }
+    }
 }

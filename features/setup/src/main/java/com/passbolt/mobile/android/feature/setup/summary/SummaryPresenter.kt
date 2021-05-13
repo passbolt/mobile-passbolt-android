@@ -1,7 +1,5 @@
 package com.passbolt.mobile.android.feature.setup.summary
 
-import javax.inject.Inject
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -24,7 +22,7 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SummaryPresenter @Inject constructor() : SummaryContract.Presenter {
+class SummaryPresenter : SummaryContract.Presenter {
     override var view: SummaryContract.View? = null
 
     override fun start(status: ResultStatus) {

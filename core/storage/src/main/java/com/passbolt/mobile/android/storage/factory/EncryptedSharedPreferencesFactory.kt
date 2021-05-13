@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,8 +28,8 @@ import javax.inject.Inject
  * @since v1.0
  */
 
-class EncryptedSharedPreferencesFactory @Inject internal constructor(
-    @ApplicationContext private val context: Context,
+class EncryptedSharedPreferencesFactory internal constructor(
+    private val context: Context,
     private val keySpecProvider: KeySpecProvider
 ) {
 

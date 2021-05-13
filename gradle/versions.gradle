@@ -7,12 +7,12 @@ ext {
     projectTargetSdk = 30
 
     versions = [
-        androidGradlePlugin: "7.0.0-alpha15",
+        androidGradlePlugin: '4.2.0',
         gradleVersionsPlugin: "0.28.0",
         desugarJdkLibs: "1.0.9",
         kotlin: "1.4.30",
         coroutines: "1.4.3",
-        daggerHilt: "2.33-beta",
+        koin: "3.0.1",
         quadrant: "1.5",
         test: [
             junit: "4.13",
@@ -54,7 +54,10 @@ ext {
         androidGradlePlugin: "com.android.tools.build:gradle:${versions.androidGradlePlugin}",
         gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:${versions.gradleVersionsPlugin}",
         desugarJdkLibs: "com.android.tools:desugar_jdk_libs:${versions.desugarJdkLibs}",
-        gradleDaggerHiltPlugin: "com.google.dagger:hilt-android-gradle-plugin:${versions.daggerHilt}",
+        di: [
+            koin: "io.insert-koin:koin-core:${versions.koin}",
+            koinExt: "io.insert-koin:koin-android-ext:${versions.koin}"
+        ],
         quadrant: "gradle.plugin.com.gaelmarhic:quadrant:${versions.quadrant}",
         kotlin: [
             gradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
@@ -92,10 +95,6 @@ ext {
             cameraXView: "androidx.camera:camera-view:${versions.androidx.cameraView}"
         ],
         material: "com.google.android.material:material:${versions.material}",
-        di: [
-            hilt: "com.google.dagger:hilt-android:${versions.daggerHilt}",
-            hiltCompiler: "com.google.dagger:hilt-android-compiler:${versions.daggerHilt}"
-        ],
         networking: [
             retrofit: "com.squareup.retrofit2:retrofit:${versions.networking.retrofit}",
             retrofitGsonConverter: "com.squareup.retrofit2:converter-gson:${versions.networking.retrofit}",

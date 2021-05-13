@@ -3,16 +3,12 @@ package com.passbolt.mobile.android.service.registration.di
 import com.passbolt.mobile.android.core.networking.RestService
 import com.passbolt.mobile.android.core.networking.RetrofitRestService
 import com.passbolt.mobile.android.service.registration.RegistrationDataSource
+import com.passbolt.mobile.android.service.registration.RegistrationRepository
 import com.passbolt.mobile.android.service.registration.data.RegistrationApi
 import com.passbolt.mobile.android.service.registration.data.RegistrationRemoteDataSource
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import org.koin.dsl.module
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,32 +32,29 @@ import javax.inject.Singleton
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+val passboltApiModule = module {
+    single { provideRestService(get()) }
+    single { getRegistrationApi(get()) }
 
-@Module
-@InstallIn(SingletonComponent::class)
-internal object PassboltApiModule {
-
-    @Singleton
-    @Provides
-    fun provideRestService(okHttpClient: OkHttpClient): RestService {
-        return RetrofitRestService(
-            client = okHttpClient,
-            converterFactory = GsonConverterFactory.create()
+    single<RegistrationDataSource> {
+        RegistrationRemoteDataSource(
+            registrationApi = get()
         )
     }
-
-    @Provides
-    @Singleton
-    fun getRegistrationApi(restService: RestService): RegistrationApi =
-        restService.service(RegistrationApi::class.java)
+    single {
+        RegistrationRepository(
+            registrationDataSource = get(),
+            responseHandler = get()
+        )
+    }
 }
 
-@Module
-@InstallIn(SingletonComponent::class)
-internal interface DataBindings {
-
-    @Binds
-    fun bindRegistrationDataSource(
-        registrationRemoteDataSource: RegistrationRemoteDataSource
-    ): RegistrationDataSource
+private fun provideRestService(okHttpClient: OkHttpClient): RestService {
+    return RetrofitRestService(
+        client = okHttpClient,
+        converterFactory = GsonConverterFactory.create()
+    )
 }
+
+private fun getRegistrationApi(restService: RestService): RegistrationApi =
+    restService.service(RegistrationApi::class.java)

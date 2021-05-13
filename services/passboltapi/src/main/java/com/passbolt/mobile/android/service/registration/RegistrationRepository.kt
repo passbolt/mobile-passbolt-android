@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.service.registration
 
 import com.passbolt.mobile.android.core.networking.ResponseHandler
 import com.passbolt.mobile.android.dto.request.NextPageRequestDto
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +25,7 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RegistrationRepository @Inject constructor(
+class RegistrationRepository constructor(
     private val registrationDataSource: RegistrationDataSource,
     private val responseHandler: ResponseHandler
 ) {

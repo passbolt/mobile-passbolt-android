@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.common.UseCase
 import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,7 +28,7 @@ import javax.inject.Inject
  * @since v1.0
  */
 
-class SavePrivateKeyUseCase @Inject constructor(
+class SavePrivateKeyUseCase(
     private val encryptedFileFactory: EncryptedFileFactory
 ) : UseCase<SavePrivateKeyUseCase.Input, Unit> {
 

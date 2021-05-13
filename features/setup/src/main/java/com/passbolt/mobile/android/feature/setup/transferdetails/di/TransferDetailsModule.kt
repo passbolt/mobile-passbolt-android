@@ -1,11 +1,12 @@
 package com.passbolt.mobile.android.feature.setup.transferdetails.di
 
+import com.passbolt.mobile.android.feature.setup.transferdetails.CameraInformationProvider
 import com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsContract
+import com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsFragment
 import com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsPresenter
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.FragmentComponent
+import org.koin.android.ext.koin.androidApplication
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,11 +30,17 @@ import dagger.hilt.android.components.FragmentComponent
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-@Module
-@InstallIn(FragmentComponent::class)
-internal abstract class TransferDetailsModule {
-
-    @Binds
-    abstract fun transferDetailsPresenter(presenter: TransferDetailsPresenter): TransferDetailsContract.Presenter
+fun Module.transferDetailsModule() {
+    scope(named<TransferDetailsFragment>()) {
+        scoped<TransferDetailsContract.Presenter> {
+            TransferDetailsPresenter(
+                cameraInformationProvider = get()
+            )
+        }
+    }
+    single {
+        CameraInformationProvider(
+            context = androidApplication()
+        )
+    }
 }

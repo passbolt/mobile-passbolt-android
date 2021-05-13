@@ -1,11 +1,8 @@
-package com.passbolt.mobile.android.feature.setup.scanqr.di
+package com.passbolt.mobile.android.core.mvp.di
 
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrContract
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrPresenter
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.FragmentComponent
+import com.passbolt.mobile.android.core.mvp.AppCoroutineContext
+import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,11 +26,6 @@ import dagger.hilt.android.components.FragmentComponent
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-@Module
-@InstallIn(FragmentComponent::class)
-internal abstract class ScanQrModuleBindings {
-
-    @Binds
-    abstract fun scanQrPresenter(presenter: ScanQrPresenter): ScanQrContract.Presenter
+val mvpModule = module {
+    single<CoroutineLaunchContext> { AppCoroutineContext() }
 }

@@ -12,7 +12,6 @@ buildscript {
         classpath libs.kotlin.gradlePlugin
         classpath libs.kotlin.serialization
         classpath libs.gradleVersionsPlugin
-        classpath libs.gradleDaggerHiltPlugin
         classpath libs.quadrant
         classpath libs.androidx.navigation_safe_args
     }

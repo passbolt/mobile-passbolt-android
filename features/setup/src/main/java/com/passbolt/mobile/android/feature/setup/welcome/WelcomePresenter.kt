@@ -1,8 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.welcome
 
-import javax.inject.Inject
-
-class WelcomePresenter @Inject constructor() : WelcomeContract.Presenter {
+class WelcomePresenter : WelcomeContract.Presenter {
 
     override var view: WelcomeContract.View? = null
 

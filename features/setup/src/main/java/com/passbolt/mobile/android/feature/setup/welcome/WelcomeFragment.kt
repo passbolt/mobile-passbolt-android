@@ -3,14 +3,12 @@ package com.passbolt.mobile.android.feature.setup.welcome
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBinding
-import dagger.Lazy
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,14 +32,9 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@AndroidEntryPoint
 class WelcomeFragment : BindingFragment<FragmentWelcomeBinding>(FragmentWelcomeBinding::inflate), WelcomeContract.View {
 
-    @Inject
-    lateinit var presenter: WelcomeContract.Presenter
-
-    @Inject
-    lateinit var navController: Lazy<NavController>
+    private val presenter: WelcomeContract.Presenter by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -68,7 +61,7 @@ class WelcomeFragment : BindingFragment<FragmentWelcomeBinding>(FragmentWelcomeB
     }
 
     override fun navigateToTransferDetails() {
-        navController.get().navigate(
+        findNavController().navigate(
             WelcomeFragmentDirections.actionWelcomeFragmentToTransferDetailsFragment()
         )
     }

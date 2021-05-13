@@ -7,7 +7,6 @@ import com.passbolt.mobile.android.service.registration.RegistrationRepository
 import com.passbolt.mobile.android.mappers.NextQrPageMapper
 import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,7 +30,7 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class NextPageUseCase @Inject constructor(
+class NextPageUseCase(
     private val registrationRepository: RegistrationRepository,
     private val nextQrPageMapper: NextQrPageMapper,
     private val coroutineContext: CoroutineLaunchContext

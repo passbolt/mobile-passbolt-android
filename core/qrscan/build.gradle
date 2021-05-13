@@ -2,7 +2,6 @@ plugins {
     id "com.android.library"
     id "kotlin-android"
     id "kotlin-kapt"
-    id "dagger.hilt.android.plugin"
 }
 
 dependencies {
@@ -12,8 +11,8 @@ dependencies {
     implementation libs.androidx.cameraX
     implementation libs.androidx.cameraXLifecycle
     implementation libs.androidx.cameraXView
-    implementation libs.di.hilt
-    kapt libs.di.hiltCompiler
+    implementation libs.di.koin
+    implementation libs.di.koinExt
 }
 
 android {

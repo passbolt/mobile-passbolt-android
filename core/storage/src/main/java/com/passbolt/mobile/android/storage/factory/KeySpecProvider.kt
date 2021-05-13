@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.storage.factory
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import com.passbolt.mobile.android.storage.usecase.KEY_SIZE
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,7 +27,7 @@ import javax.inject.Inject
  * @since v1.0
  */
 
-internal class KeySpecProvider @Inject constructor() {
+internal class KeySpecProvider {
 
     fun get(keyAlias: String, keyBiometricSettings: KeyBiometricSettings) =
         KeyGenParameterSpec.Builder(

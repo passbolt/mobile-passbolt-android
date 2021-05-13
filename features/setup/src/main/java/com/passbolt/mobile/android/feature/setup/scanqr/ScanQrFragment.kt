@@ -3,15 +3,13 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import dagger.Lazy
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,17 +34,10 @@ import javax.inject.Inject
  * @since v1.0
  */
 
-@AndroidEntryPoint
 class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBinding::inflate), ScanQrContract.View {
 
-    @Inject
-    lateinit var presenter: ScanQrContract.Presenter
-
-    @Inject
-    lateinit var navController: Lazy<NavController>
-
-    @Inject
-    lateinit var scanManager: Lazy<ScanManager>
+    private val presenter: ScanQrContract.Presenter by inject()
+    private val scanManager: ScanManager by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,7 +51,7 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
     }
 
     override fun scanResultChannel() =
-        scanManager.get().barcodeScanResultChannel
+        scanManager.barcodeScanResultChannel
 
     override fun showExitConfirmation() {
         AlertDialog.Builder(requireContext())
@@ -100,7 +91,7 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
 
     override fun startAnalysis() {
         try {
-            scanManager.get().attach(this, binding.cameraPreview)
+            scanManager.attach(this, binding.cameraPreview)
         } catch (exception: Exception) {
             presenter.startCameraError(exception)
         }
@@ -127,11 +118,11 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
     }
 
     override fun navigateBack() {
-        navController.get().popBackStack()
+        findNavController().popBackStack()
     }
 
     override fun navigateToSummary(status: ResultStatus) {
-        navController.get().navigate(
+        findNavController().navigate(
             ScanQrFragmentDirections.actionScanQrFragmentToSummaryFragment(status)
         )
     }

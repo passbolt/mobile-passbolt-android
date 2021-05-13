@@ -1,15 +1,13 @@
 package com.passbolt.mobile.android.core.networking.di
 
+import com.passbolt.mobile.android.core.networking.ResponseHandler
+import com.passbolt.mobile.android.core.networking.RetrofitRestService
+import com.passbolt.mobile.android.core.networking.UserIdProvider
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.IntoSet
-import okhttp3.Interceptor
+import com.passbolt.mobile.android.core.networking.usecase.GetBaseUrlUseCase
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import javax.inject.Singleton
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,30 +31,43 @@ import javax.inject.Singleton
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-@Module
-@InstallIn(SingletonComponent::class)
-internal object RestConfigurationModule {
-
-    @Provides
-    @IntoSet
-    fun provideLoggingInterceptor(): Interceptor {
-        return HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+val networkingModule = module {
+    single { provideLoggingInterceptor() }
+    single {
+        provideHttpClient(
+            loggingInterceptor = get(),
+            changeableBaseUrlInterceptor = get()
+        )
     }
-
-    @Singleton
-    @Provides
-    fun provideHttpClient(
-        networkInterceptors: Set<@JvmSuppressWildcards Interceptor>,
-        changeableBaseUrlInterceptor: ChangeableBaseUrlInterceptor
-    ): OkHttpClient {
-        val builder = OkHttpClient.Builder()
-        for (interceptor in networkInterceptors) {
-            builder.addNetworkInterceptor(interceptor)
-        }
-        builder.addInterceptor(changeableBaseUrlInterceptor)
-        // TODO remove in production version - PAS-105
-        builder.hostnameVerifier { _, _ -> true }
-        return builder.build()
+    single { ChangeableBaseUrlInterceptor(getBaseUrlUseCase = get()) }
+    single {
+        GetBaseUrlUseCase(
+            getAccountDataUseCase = get(),
+            getSelectedAccountUseCase = get()
+        )
     }
+    single {
+        RetrofitRestService(
+            client = get(),
+            converterFactory = get()
+        )
+    }
+    single { UserIdProvider() }
+    single { ResponseHandler() }
+}
+
+private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
+    return HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+}
+
+private fun provideHttpClient(
+    loggingInterceptor: HttpLoggingInterceptor,
+    changeableBaseUrlInterceptor: ChangeableBaseUrlInterceptor
+): OkHttpClient {
+    val builder = OkHttpClient.Builder()
+    builder.addNetworkInterceptor(loggingInterceptor)
+    builder.addInterceptor(changeableBaseUrlInterceptor)
+    // TODO remove in production version - PAS-105
+    builder.hostnameVerifier { _, _ -> true }
+    return builder.build()
 }

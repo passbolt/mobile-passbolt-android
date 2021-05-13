@@ -4,12 +4,8 @@ import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,20 +29,18 @@ import dagger.hilt.components.SingletonComponent
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Module
-@InstallIn(SingletonComponent::class)
-object BarcodeScanModule {
-
-    @Provides
-    fun provideBarcodeScannerOptions() = BarcodeScannerOptions.Builder()
-        .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-        .build()
-
-    @Provides
-    fun provideBarcodeScanner(options: BarcodeScannerOptions) =
-        BarcodeScanning.getClient(options)
-
-    @Provides
-    fun provideBarcodeAnalyzer(barcodeScanner: BarcodeScanner, coroutineLaunchContext: CoroutineLaunchContext) =
-        CameraBarcodeAnalyzer(barcodeScanner)
+val barcodeScanModule = module {
+    single { provideBarcodeScannerOptions() }
+    single { provideBarcodeScanner(get()) }
+    single { provideBarcodeAnalyzer(get()) }
 }
+
+fun provideBarcodeScannerOptions() = BarcodeScannerOptions.Builder()
+    .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+    .build()
+
+fun provideBarcodeScanner(options: BarcodeScannerOptions) =
+    BarcodeScanning.getClient(options)
+
+fun provideBarcodeAnalyzer(barcodeScanner: BarcodeScanner) =
+    CameraBarcodeAnalyzer(barcodeScanner)

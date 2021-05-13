@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
+import org.koin.core.scope.Scope
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,8 +34,9 @@ import androidx.viewbinding.ViewBinding
  */
 
 abstract class BindingFragment<T : ViewBinding>(private val viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
-    Fragment() {
+    Fragment(), AndroidScopeComponent {
 
+    override val scope: Scope by fragmentScope()
     private var _binding: T? = null
     protected val binding: T
         get() = _binding!!

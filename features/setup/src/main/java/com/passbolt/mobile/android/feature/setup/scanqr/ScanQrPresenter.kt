@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 import kotlin.properties.Delegates
 
 /**
@@ -41,7 +40,7 @@ import kotlin.properties.Delegates
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ScanQrPresenter @Inject constructor(
+class ScanQrPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val nextPageUseCase: NextPageUseCase,
     private val qrParser: ScanQrParser,

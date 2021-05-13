@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.core.networking
 
 import java.net.URI
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,7 +24,7 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UserIdProvider @Inject constructor() {
+class UserIdProvider {
 
     fun get(id: String, url: String): String {
         val path = URI(url).authority

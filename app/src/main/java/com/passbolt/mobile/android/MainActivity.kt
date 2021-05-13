@@ -3,7 +3,6 @@ package com.passbolt.mobile.android
 import android.os.Bundle
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
 import com.passbolt.mobile.android.databinding.ActivityMainBinding
-import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,7 +27,6 @@ import dagger.hilt.android.AndroidEntryPoint
  * @since v1.0
  */
 
-@AndroidEntryPoint
 class MainActivity : BindingActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
     override fun onCreate(savedInstanceState: Bundle?) {

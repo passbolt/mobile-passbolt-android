@@ -2,13 +2,23 @@ package com.passbolt.mobile.android.storage.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Qualifier
-import javax.inject.Singleton
+import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
+import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.factory.KeySpecProvider
+import com.passbolt.mobile.android.storage.usecase.AddAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.GetAccountsUseCase
+import com.passbolt.mobile.android.storage.usecase.GetPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.GetSessionUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveSessionUseCase
+import org.koin.android.ext.koin.androidApplication
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,17 +43,83 @@ import javax.inject.Singleton
  * @since v1.0
  */
 
-@Module
-@InstallIn(SingletonComponent::class)
-internal object StorageModule {
-
-    @Qualifier
-    annotation class AccountsSharedPreferences
-
-    @Provides
-    @Singleton
-    @AccountsSharedPreferences
-    fun provideSharedPreferences(@ApplicationContext appContext: Context): SharedPreferences {
-        return appContext.getSharedPreferences("user-accounts", Context.MODE_PRIVATE)
+val storageModule = module {
+    single { provideSharedPreferences(androidApplication()) }
+    single {
+        EncryptedFileFactory(
+            context = androidApplication(),
+            keySpecProvider = get()
+        )
     }
+    single {
+        EncryptedSharedPreferencesFactory(
+            context = androidApplication(),
+            keySpecProvider = get()
+        )
+    }
+    single { KeySpecProvider() }
+    single {
+        AddAccountUseCase(
+            sharedPreferences = get()
+        )
+    }
+    single {
+        GetAccountDataUseCase(
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
+    single {
+        GetAccountsUseCase(
+            sharedPreferences = get()
+        )
+    }
+    single {
+        GetPassphraseUseCase(
+            encryptedFileFactory = get()
+        )
+    }
+    single {
+        GetPrivateKeyUseCase(
+            encryptedFileFactory = get()
+        )
+    }
+    single {
+        GetSelectedAccountUseCase(
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
+    single {
+        GetSessionUseCase(
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
+    single {
+        SaveAccountDataUseCase(
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
+    single {
+        SavePassphraseUseCase(
+            encryptedFileFactory = get()
+        )
+    }
+    single {
+        SavePrivateKeyUseCase(
+            encryptedFileFactory = get()
+        )
+    }
+    single {
+        SaveSelectedAccountUseCase(
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
+    single {
+        SaveSessionUseCase(
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
+}
+
+private fun provideSharedPreferences(appContext: Context): SharedPreferences {
+    return appContext.getSharedPreferences("user-accounts", Context.MODE_PRIVATE)
 }

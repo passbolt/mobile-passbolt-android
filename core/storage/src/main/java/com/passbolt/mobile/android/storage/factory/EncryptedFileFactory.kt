@@ -3,9 +3,7 @@ package com.passbolt.mobile.android.storage.factory
 import android.content.Context
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKeys
-import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,8 +28,8 @@ import javax.inject.Inject
  * @since v1.0
  */
 
-class EncryptedFileFactory @Inject internal constructor(
-    @ApplicationContext private val context: Context,
+class EncryptedFileFactory internal constructor(
+    private val context: Context,
     private val keySpecProvider: KeySpecProvider
 ) {
 

@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.storage.usecase
 
 import com.passbolt.mobile.android.common.UseCase
 import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,7 +26,7 @@ import javax.inject.Inject
  * @since v1.0
  */
 
-class SaveSelectedAccountUseCase @Inject constructor(
+class SaveSelectedAccountUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
 ) : UseCase<SaveSelectedAccountUseCase.Input, Unit> {
 

@@ -6,7 +6,6 @@ import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.channels.Channel
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,7 +30,7 @@ import javax.inject.Inject
  * @since v1.0
  */
 
-class CameraBarcodeAnalyzer @Inject constructor(
+class CameraBarcodeAnalyzer(
     private val barcodeScanner: BarcodeScanner
 ) : ImageAnalysis.Analyzer {
 

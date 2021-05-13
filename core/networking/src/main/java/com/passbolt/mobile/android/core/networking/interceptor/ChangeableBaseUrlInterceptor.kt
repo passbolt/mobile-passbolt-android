@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.core.networking.PLACEHOLDER_BASE_URL
 import com.passbolt.mobile.android.core.networking.usecase.GetBaseUrlUseCase
 import okhttp3.Interceptor
 import okhttp3.Response
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,7 +27,7 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ChangeableBaseUrlInterceptor @Inject constructor(
+class ChangeableBaseUrlInterceptor(
     private val getBaseUrlUseCase: GetBaseUrlUseCase
 ) : Interceptor {
 

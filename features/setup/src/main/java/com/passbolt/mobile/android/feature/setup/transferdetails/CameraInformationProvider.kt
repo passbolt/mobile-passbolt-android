@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,8 +27,8 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class CameraInformationProvider @Inject constructor(
-    @ApplicationContext private val context: Context
+class CameraInformationProvider constructor(
+    private val context: Context
 ) {
 
     fun isCameraAvailable(): Boolean =

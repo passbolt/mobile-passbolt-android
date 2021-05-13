@@ -1,7 +1,15 @@
 package com.passbolt.mobile.android
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import com.passbolt.mobile.android.core.mvp.di.mvpModule
+import com.passbolt.mobile.android.core.networking.di.networkingModule
+import com.passbolt.mobile.android.core.qrscan.di.barcodeScanModule
+import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
+import com.passbolt.mobile.android.feature.setup.setupModule
+import com.passbolt.mobile.android.service.registration.di.passboltApiModule
+import com.passbolt.mobile.android.storage.di.storageModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 import timber.log.Timber
 
 /**
@@ -27,17 +35,33 @@ import timber.log.Timber
  * @since v1.0
  */
 
-@HiltAndroidApp
 class PassboltApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
         initTimber()
+        initKoin()
     }
 
     private fun initTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+        }
+    }
+
+    private fun initKoin() {
+        startKoin {
+            androidContext(this@PassboltApplication)
+            modules(
+                setupModule,
+                mappersModule,
+                mvpModule,
+                networkingModule,
+                barcodeScanModule,
+                cameraScanModule,
+                storageModule,
+                passboltApiModule
+            )
         }
     }
 }

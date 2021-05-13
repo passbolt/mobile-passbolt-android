@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.common.UseCase
 import com.passbolt.mobile.android.core.networking.PLACEHOLDER_BASE_URL
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,7 +27,7 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetBaseUrlUseCase @Inject constructor(
+class GetBaseUrlUseCase constructor(
     private val getAccountDataUseCase: GetAccountDataUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
 ) : UseCase<Unit, GetBaseUrlUseCase.Output> {

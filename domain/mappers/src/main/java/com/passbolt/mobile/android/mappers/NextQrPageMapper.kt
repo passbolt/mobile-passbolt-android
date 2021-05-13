@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.dto.request.NextPageRequestDto
 import com.passbolt.mobile.android.dto.response.NextPageResponseDto
 import com.passbolt.mobile.android.dto.request.StatusRequest
 import com.passbolt.mobile.android.ui.Status
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,7 +27,7 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class NextQrPageMapper @Inject constructor() {
+class NextQrPageMapper {
 
     fun mapRequestToDto(currentPage: Int, status: Status): NextPageRequestDto =
         NextPageRequestDto(currentPage, mapStatus(status))

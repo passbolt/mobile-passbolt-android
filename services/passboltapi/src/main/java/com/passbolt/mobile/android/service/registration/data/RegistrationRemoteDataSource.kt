@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.dto.request.NextPageRequestDto
 import com.passbolt.mobile.android.dto.response.NextPageResponseDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.service.registration.RegistrationDataSource
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,7 +27,7 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class RegistrationRemoteDataSource @Inject constructor(
+internal class RegistrationRemoteDataSource(
     private val registrationApi: RegistrationApi
 ) : RegistrationDataSource {
 

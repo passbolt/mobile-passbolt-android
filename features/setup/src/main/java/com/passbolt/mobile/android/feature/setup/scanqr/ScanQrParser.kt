@@ -9,7 +9,6 @@ import com.passbolt.mobile.android.dto.response.qrcode.ReservedBytesDto
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,7 +32,7 @@ import javax.inject.Inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ScanQrParser @Inject constructor(
+class ScanQrParser(
     private val coroutineContext: CoroutineLaunchContext,
     private val gson: Gson
 ) {

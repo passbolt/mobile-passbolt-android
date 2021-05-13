@@ -9,9 +9,8 @@ import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
 import java.util.concurrent.Executor
-import javax.inject.Inject
 
-class ScanManager @Inject constructor(
+class ScanManager constructor(
     private val cameraProviderFuture: ListenableFuture<ProcessCameraProvider>,
     private val previewUseCase: Preview,
     private val cameraSelector: CameraSelector,

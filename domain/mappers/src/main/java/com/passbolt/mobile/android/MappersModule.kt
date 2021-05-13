@@ -1,12 +1,7 @@
-package com.passbolt.mobile.android.core.navigation
+package com.passbolt.mobile.android
 
-import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.FragmentComponent
+import com.passbolt.mobile.android.mappers.NextQrPageMapper
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,11 +25,6 @@ import dagger.hilt.android.components.FragmentComponent
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Module
-@InstallIn(FragmentComponent::class)
-object NavigationModule {
-
-    @Provides
-    fun provideNavController(fragment: Fragment): NavController =
-        fragment.findNavController()
+val mappersModule = module {
+    single { NextQrPageMapper() }
 }
