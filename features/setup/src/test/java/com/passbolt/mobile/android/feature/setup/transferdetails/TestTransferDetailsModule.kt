@@ -1,14 +1,7 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
+package com.passbolt.mobile.android.feature.setup.transferdetails
 
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.passbolt.mobile.android.feature.setup.base.testModule
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.koin.test.KoinTest
-import org.koin.test.KoinTestRule
-import org.koin.test.inject
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,31 +25,10 @@ import org.koin.test.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ScanQrPresenterTest : KoinTest {
 
-    private val presenter: ScanQrContract.Presenter by inject()
-    private var view: ScanQrContract.View = mock()
+val cameraInformationProvider = mock<CameraInformationProvider>()
 
-    @get:Rule
-    val koinTestRule = KoinTestRule.create {
-        printLogger()
-        modules(testModule, testScanQrModule)
-    }
-
-    @Before
-    fun setUp() {
-        presenter.attach(view)
-    }
-
-    @Test
-    fun `click information dialog should display proper dialog`() {
-        presenter.infoIconClick()
-        verify(view).showInformationDialog()
-    }
-
-    @Test
-    fun `click back should display proper dialog`() {
-        presenter.backClick()
-        verify(view).showExitConfirmation()
-    }
+val transferDetailsModule = module {
+    factory { TransferDetailsPresenter(get()) }
+    factory { cameraInformationProvider }
 }

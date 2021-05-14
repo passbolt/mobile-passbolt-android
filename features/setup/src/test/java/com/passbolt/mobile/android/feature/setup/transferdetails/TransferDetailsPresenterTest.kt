@@ -4,7 +4,11 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
+import org.koin.test.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,15 +32,19 @@ import org.junit.Test
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class TransferDetailsPresenterTest {
+class TransferDetailsPresenterTest : KoinTest {
 
-    private lateinit var presenter: TransferDetailsPresenter
+    private val presenter: TransferDetailsPresenter by inject()
     private var view: TransferDetailsContract.View = mock()
-    private var cameraInformationProvider: CameraInformationProvider = mock()
+
+    @get:Rule
+    val koinTestRule = KoinTestRule.create {
+        printLogger()
+        modules(transferDetailsModule)
+    }
 
     @Before
     fun setUp() {
-        presenter = TransferDetailsPresenter(cameraInformationProvider)
         presenter.attach(view)
     }
 

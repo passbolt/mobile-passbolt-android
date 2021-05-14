@@ -57,7 +57,9 @@ ext {
         desugarJdkLibs: "com.android.tools:desugar_jdk_libs:${versions.desugarJdkLibs}",
         di: [
             koin: "io.insert-koin:koin-core:${versions.koin}",
-            koinExt: "io.insert-koin:koin-android-ext:${versions.koin}"
+            koinExt: "io.insert-koin:koin-android-ext:${versions.koin}",
+            koinTest: "io.insert-koin:koin-android-ext:${versions.koin}",
+            koinTestJUnit: "io.insert-koin:koin-test-junit4:${versions.koin}"
         ],
         quadrant: "gradle.plugin.com.gaelmarhic:quadrant:${versions.quadrant}",
         kotlin: [
