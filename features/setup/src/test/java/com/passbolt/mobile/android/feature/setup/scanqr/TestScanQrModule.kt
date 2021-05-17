@@ -2,6 +2,9 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.UserIdProvider
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
@@ -31,19 +34,20 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-private val nextPageUseCase = mock<NextPageUseCase>()
-private val saveAccountDataUseCase = mock<SaveAccountDataUseCase>()
-private val selectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
-private val userIdProvider = mock<UserIdProvider>()
-private val scanQrParser = mock<ScanQrParser>()
-private val savePrivateKeyUseCase = mock<SavePrivateKeyUseCase>()
+internal val nextPageUseCase = mock<NextPageUseCase>()
+internal val saveAccountDataUseCase = mock<SaveAccountDataUseCase>()
+internal val selectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
+internal val userIdProvider = mock<UserIdProvider>()
+internal val savePrivateKeyUseCase = mock<SavePrivateKeyUseCase>()
 
 val testScanQrModule = module {
-    factory<ScanQrContract.Presenter> { ScanQrPresenter(get(), get(), get(), get(), get(), get(), get()) }
     factory { nextPageUseCase }
     factory { saveAccountDataUseCase }
     factory { selectedAccountUseCase }
     factory { userIdProvider }
-    factory { scanQrParser }
     factory { savePrivateKeyUseCase }
+    factory { ScanQrParser(get(), get(), get()) }
+    factory { KeyAssembler() }
+    factory { QrScanResultsMapper(get()) }
+    factory<ScanQrContract.Presenter> { ScanQrPresenter(get(), get(), get(), get(), get(), get(), get()) }
 }

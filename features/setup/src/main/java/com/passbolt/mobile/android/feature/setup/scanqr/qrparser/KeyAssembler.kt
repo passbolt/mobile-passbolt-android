@@ -1,9 +1,9 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
+package com.passbolt.mobile.android.feature.setup.scanqr.qrparser
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
-import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import kotlinx.coroutines.flow.StateFlow
+import com.passbolt.mobile.android.common.extension.eraseArray
+import com.passbolt.mobile.android.common.extension.findPosition
+import com.passbolt.mobile.android.common.extension.toCharArray
+import okio.Buffer
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,30 +27,22 @@ import kotlinx.coroutines.flow.StateFlow
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class KeyAssembler {
 
-interface ScanQrContract {
+    fun assemblePrivateKey(contentBytes: Buffer): CharArray {
+        val charArray = contentBytes.readByteArray().toCharArray()
+        val keyStartPosition =
+            charArray.findPosition(ARMORED_KEY_TEXT.toCharArray()) + ARMORED_KEY_TEXT.length
+        val keyEndPosition = charArray.lastIndexOf(ARMORED_KEY_END_CHAR) - 1
 
-    interface View : BaseContract.View {
-        fun showExitConfirmation()
-        fun navigateBack()
-        fun showInformationDialog()
-        fun startAnalysis()
-        fun showStartCameraError()
-        fun scanResultChannel(): StateFlow<BarcodeScanResult>
-        fun navigateToSummary(status: ResultStatus)
-        fun showBarcodeScanError()
-        fun showMultipleCodesInRange()
-        fun showCenterCameraOnBarcode()
-        fun showKeepGoing()
-        fun initializeProgress(totalPages: Int)
-        fun setProgress(progress: Int)
-        fun showNotAPassboltQr()
+        val privateKey = charArray.slice(IntRange(keyStartPosition, keyEndPosition)).toCharArray()
+        charArray.eraseArray()
+
+        return privateKey
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun backClick()
-        fun exitConfirmClick()
-        fun infoIconClick()
-        fun startCameraError(exc: Exception)
+    private companion object {
+        private const val ARMORED_KEY_TEXT = "\"armored_key\":\""
+        private const val ARMORED_KEY_END_CHAR = '}'
     }
 }

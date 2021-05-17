@@ -1,9 +1,9 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
+package com.passbolt.mobile.android.feature.setup.scanqr.parser
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
-import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import kotlinx.coroutines.flow.StateFlow
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,30 +27,8 @@ import kotlinx.coroutines.flow.StateFlow
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-interface ScanQrContract {
-
-    interface View : BaseContract.View {
-        fun showExitConfirmation()
-        fun navigateBack()
-        fun showInformationDialog()
-        fun startAnalysis()
-        fun showStartCameraError()
-        fun scanResultChannel(): StateFlow<BarcodeScanResult>
-        fun navigateToSummary(status: ResultStatus)
-        fun showBarcodeScanError()
-        fun showMultipleCodesInRange()
-        fun showCenterCameraOnBarcode()
-        fun showKeepGoing()
-        fun initializeProgress(totalPages: Int)
-        fun setProgress(progress: Int)
-        fun showNotAPassboltQr()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun backClick()
-        fun exitConfirmClick()
-        fun infoIconClick()
-        fun startCameraError(exc: Exception)
-    }
+val testParserModule = module {
+    factory { ScanQrParser(get(), get(), get()) }
+    factory { KeyAssembler() }
+    factory { QrScanResultsMapper(get()) }
 }

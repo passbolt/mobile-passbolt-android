@@ -5,7 +5,9 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.common.InputImage
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,7 +36,10 @@ class CameraBarcodeAnalyzer(
     private val barcodeScanner: BarcodeScanner
 ) : ImageAnalysis.Analyzer {
 
-    val resultChannel = Channel<BarcodeScanResult>()
+    val resultFlow: StateFlow<BarcodeScanResult>
+        get() = _resultFlow.asStateFlow()
+
+    private val _resultFlow = MutableStateFlow<BarcodeScanResult>(BarcodeScanResult.NoBarcodeInRange)
 
     @ExperimentalGetImage
     override fun analyze(imageProxy: ImageProxy) {
@@ -42,33 +47,24 @@ class CameraBarcodeAnalyzer(
             val inputImage = InputImage.fromMediaImage(this, imageProxy.imageInfo.rotationDegrees)
             barcodeScanner.process(inputImage)
                 .addOnSuccessListener { barcodes ->
-                    if (!resultChannel.isClosedForSend) {
-                        resultChannel.offer(
-                            when {
-                                barcodes.isEmpty() -> {
-                                    BarcodeScanResult.NoBarcodeInRange
-                                }
-                                barcodes.size == 1 -> {
-                                    BarcodeScanResult.SingleBarcode(barcodes.first().rawBytes)
-                                }
-                                else -> {
-                                    BarcodeScanResult.MultipleBarcodes
-                                }
+                    _resultFlow.tryEmit(
+                        when {
+                            barcodes.isEmpty() -> {
+                                BarcodeScanResult.NoBarcodeInRange
                             }
-                        )
-                    }
+                            barcodes.size == 1 -> {
+                                BarcodeScanResult.SingleBarcode(barcodes.first().rawBytes)
+                            }
+                            else -> {
+                                BarcodeScanResult.MultipleBarcodes
+                            }
+                        }
+                    )
                 }
                 .addOnFailureListener { exception ->
-                    resultChannel.offer(BarcodeScanResult.Failure(exception))
+                    _resultFlow.tryEmit(BarcodeScanResult.Failure(exception))
                 }
                 .addOnCompleteListener { imageProxy.close() }
         }
-    }
-
-    sealed class BarcodeScanResult {
-        class SingleBarcode(val data: ByteArray?) : BarcodeScanResult()
-        object MultipleBarcodes : BarcodeScanResult()
-        object NoBarcodeInRange : BarcodeScanResult()
-        class Failure(val exception: Exception) : BarcodeScanResult()
     }
 }

@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.feature.setup.scanqr.testScanQrModule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
@@ -43,7 +44,7 @@ class ScanQrPresenterTest : KoinTest {
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
-        printLogger()
+        printLogger(Level.ERROR)
         modules(testModule, summaryModule)
     }
 

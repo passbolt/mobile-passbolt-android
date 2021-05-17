@@ -41,18 +41,21 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter.attach(this)
         initToolbar()
     }
 
-    override fun onDestroyView() {
-        scanManager.detach()
-        presenter.detach()
-        super.onDestroyView()
+    override fun onStart() {
+        super.onStart()
+        presenter.attach(this)
     }
 
-    override fun scanResultChannel() =
-        scanManager.barcodeScanResultChannel
+    override fun onStop() {
+        scanManager.detach()
+        presenter.detach()
+        super.onStop()
+    }
+
+    override fun scanResultChannel() = scanManager.barcodeScanPublisher
 
     override fun showExitConfirmation() {
         AlertDialog.Builder(requireContext())

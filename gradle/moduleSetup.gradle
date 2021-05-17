@@ -72,6 +72,8 @@ def setupCommonDependencies(isAndroid) {
         testImplementation libs.test.mockitoCore
         testImplementation libs.test.mockitoKotlin
         testImplementation libs.test.truth
+        testImplementation libs.test.turbine
+        testImplementation libs.test.coroutinesTest
         if (isAndroid) {
             androidTestImplementation libs.test.androidxJUnit
             androidTestImplementation libs.test.espressoCore

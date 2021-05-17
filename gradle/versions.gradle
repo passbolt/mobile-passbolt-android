@@ -20,7 +20,9 @@ ext {
             mockitoKotlin: "2.2.0",
             truth: "1.0.1",
             androidxJUnit: "1.1.1",
-            espresso: "3.2.0"
+            espresso: "3.2.0",
+            turbine: "0.5.1",
+            coroutinesTest: "1.5.0"
         ],
         quality: [
             ktlint: "0.36.0",
@@ -75,7 +77,9 @@ ext {
             mockitoKotlin: "com.nhaarman.mockitokotlin2:mockito-kotlin:${versions.test.mockitoKotlin}",
             truth: "com.google.truth:truth:${versions.test.truth}",
             androidxJUnit: "androidx.test.ext:junit:${versions.test.androidxJUnit}",
-            espressoCore: "androidx.test.espresso:espresso-core:${versions.test.espresso}"
+            espressoCore: "androidx.test.espresso:espresso-core:${versions.test.espresso}",
+            turbine: "app.cash.turbine:turbine:${versions.test.turbine}",
+            coroutinesTest: "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.test.coroutinesTest}"
         ],
         quality: [
             ktlint: "com.pinterest:ktlint:${versions.quality.ktlint}",
