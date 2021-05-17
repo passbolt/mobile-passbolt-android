@@ -34,7 +34,7 @@ import org.koin.core.qualifier.named
 fun Module.scanQrModule() {
     scope(named<ScanQrFragment>()) {
         scoped<ScanQrContract.Presenter> {
-            ScanQrPresenter(get(), get(), get(), get(), get(), get())
+            ScanQrPresenter(get(), get(), get(), get(), get(), get(), get())
         }
         scoped { GsonBuilder().create() }
         scoped {

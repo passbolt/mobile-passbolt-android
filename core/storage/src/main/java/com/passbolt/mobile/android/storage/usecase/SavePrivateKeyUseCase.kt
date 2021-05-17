@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.storage.usecase
 
 import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.common.extension.eraseArray
 import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 import timber.log.Timber
@@ -30,16 +31,28 @@ import timber.log.Timber
 
 class SavePrivateKeyUseCase(
     private val encryptedFileFactory: EncryptedFileFactory
-) : UseCase<SavePrivateKeyUseCase.Input, Unit> {
+) : UseCase<SavePrivateKeyUseCase.Input, SavePrivateKeyUseCase.Output> {
 
-    override fun execute(input: Input) {
+    override fun execute(input: Input): Output {
         val name = "${PRIVATE_KEY_FILE_NAME}_${input.userId}"
         Timber.d("Saving private key. Filename: $name")
 
         val encryptedFile = encryptedFileFactory.get(name, name)
-        encryptedFile.openFileOutput().use {
-            it.write(input.privateKey.toByteArray())
+        return try {
+            val bytes = input.privateKey.toByteArray()
+            encryptedFile.openFileOutput().use {
+                it.write(bytes)
+            }
+            bytes?.eraseArray()
+            Output.Success
+        } catch (e: Exception) {
+            Output.AlreadyExist
         }
+    }
+
+    sealed class Output {
+        object Success : Output()
+        object AlreadyExist : Output()
     }
 
     class Input(

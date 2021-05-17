@@ -27,7 +27,11 @@ import java.util.Arrays
  * @since v1.0
  */
 
-fun ByteArray.toCharArray(): CharArray? {
+fun ByteArray.toCharArray(): CharArray {
     val charBuffer: CharBuffer = Charsets.UTF_8.decode(ByteBuffer.wrap(this))
     return Arrays.copyOf(charBuffer.array(), charBuffer.limit())
+}
+
+fun ByteArray.eraseArray() {
+    Arrays.fill(this, 0)
 }

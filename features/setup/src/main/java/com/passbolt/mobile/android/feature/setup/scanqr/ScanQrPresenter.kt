@@ -1,11 +1,13 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
+import com.passbolt.mobile.android.common.extension.eraseArray
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.networking.UserIdProvider
 import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
@@ -46,7 +48,8 @@ class ScanQrPresenter(
     private val qrParser: ScanQrParser,
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val saveAccountDataUseCase: SaveAccountDataUseCase,
-    private val userIdProvider: UserIdProvider
+    private val userIdProvider: UserIdProvider,
+    private val savePrivateKeyUseCase: SavePrivateKeyUseCase
 ) : ScanQrContract.Presenter {
 
     override var view: ScanQrContract.View? = null
@@ -56,6 +59,7 @@ class ScanQrPresenter(
 
     private lateinit var authToken: String
     private lateinit var transferUuid: String
+    private lateinit var userId: String
     private var totalPages: Int by Delegates.notNull()
     private var currentPage = 0
 
@@ -90,6 +94,7 @@ class ScanQrPresenter(
                             is ScanQrParser.ParseResult.FirstPage -> processFirstPage(it)
                             is ScanQrParser.ParseResult.SubsequentPage -> processSubsequentPage(it)
                             is ScanQrParser.ParseResult.Error -> processError()
+                            is ScanQrParser.ParseResult.Success -> processSuccess(it.armoredKey)
                         }
                     }
             }
@@ -113,7 +118,7 @@ class ScanQrPresenter(
     }
 
     private fun saveAccountDetails(id: String, url: String) {
-        val userId = userIdProvider.get(id, url)
+        userId = userIdProvider.get(id, url)
         saveSelectedAccountUseCase.execute(SaveSelectedAccountUseCase.Input(userId))
         saveAccountDataUseCase.execute(SaveAccountDataUseCase.Input(userId, url))
     }
@@ -125,10 +130,11 @@ class ScanQrPresenter(
             updateTransfer(pageNumber = currentPage + 1)
         } else {
             try {
-                qrParser.assembleKey()
-                updateTransfer(pageNumber = currentPage, Status.COMPLETE)
-                view?.navigateToSummary(ResultStatus.Success)
+                scope.launch {
+                    qrParser.verifyKey()
+                }
             } catch (exception: Exception) {
+                Timber.e(exception)
                 updateTransfer(pageNumber = currentPage, Status.ERROR)
                 view?.navigateToSummary(ResultStatus.Failure(""))
             }
@@ -190,6 +196,20 @@ class ScanQrPresenter(
                     }
             }
         }
+    }
+
+    private suspend fun processSuccess(armoredKey: CharArray) {
+        when (savePrivateKeyUseCase.execute(SavePrivateKeyUseCase.Input(userId, armoredKey))) {
+            SavePrivateKeyUseCase.Output.AlreadyExist -> {
+                updateTransfer(pageNumber = currentPage, Status.ERROR)
+                view?.navigateToSummary(ResultStatus.AlreadyLinked)
+            }
+            SavePrivateKeyUseCase.Output.Success -> {
+                updateTransfer(pageNumber = currentPage, Status.COMPLETE)
+                view?.navigateToSummary(ResultStatus.Success)
+            }
+        }
+        armoredKey.eraseArray()
     }
 
     override fun detach() {

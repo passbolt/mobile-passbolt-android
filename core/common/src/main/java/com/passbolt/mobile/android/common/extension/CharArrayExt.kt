@@ -31,3 +31,30 @@ fun CharArray?.toByteArray(): ByteArray? {
     val byteBuffer: ByteBuffer = Charsets.UTF_8.encode(CharBuffer.wrap(this))
     return Arrays.copyOf(byteBuffer.array(), byteBuffer.limit())
 }
+
+fun CharArray.findPosition(text: CharArray): Int {
+    for (p in this.indices) {
+        var i = 0
+        while (i < text.size && p + i < this.size) {
+            if (text[i] != this[p + i]) {
+                break
+            } else if (i + 1 == text.size) {
+                return p
+            }
+            i++
+        }
+    }
+    return 0
+}
+
+fun CharArray.eraseArray() {
+    for (i in this.indices) {
+        this[i] = '\u0000'
+    }
+}
+
+fun List<CharArray>.eraseArray() {
+    this.forEach {
+        it.eraseArray()
+    }
+}
