@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
+package com.passbolt.mobile.android.feature.setup.welcome
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
@@ -11,7 +11,6 @@ import org.junit.Test
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
-import java.lang.Exception
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,15 +34,15 @@ import java.lang.Exception
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ScanQrPresenterTest : KoinTest {
+class WelcomePresenterTest : KoinTest {
 
-    private val presenter: ScanQrContract.Presenter by inject()
-    private var view: ScanQrContract.View = mock()
+    private val presenter: WelcomeContract.Presenter by inject()
+    private var view: WelcomeContract.View = mock()
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger()
-        modules(testModule, testScanQrModule)
+        modules(testModule, welcomeModule)
     }
 
     @Before
@@ -52,34 +51,18 @@ class ScanQrPresenterTest : KoinTest {
     }
 
     @Test
-    fun `click information dialog should display proper dialog`() {
+    fun `click no account button should display account creation info dialog`() {
         reset(view)
-        presenter.infoIconClick()
-        verify(view).showInformationDialog()
+        presenter.noAccountButtonClick()
+        verify(view).showAccountCreationInfoDialog()
         verifyNoMoreInteractions(view)
     }
 
     @Test
-    fun `click back should display proper dialog`() {
+    fun `click connect to account should navigate to transfer details`() {
         reset(view)
-        presenter.backClick()
-        verify(view).showExitConfirmation()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `click exit confirmation should navigate back`() {
-        reset(view)
-        presenter.exitConfirmClick()
-        verify(view).navigateBack()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `camera error should display start camera error tooltip`() {
-        reset(view)
-        presenter.startCameraError(Exception())
-        verify(view).showStartCameraError()
+        presenter.connectToAccountClick()
+        verify(view).navigateToTransferDetails()
         verifyNoMoreInteractions(view)
     }
 }

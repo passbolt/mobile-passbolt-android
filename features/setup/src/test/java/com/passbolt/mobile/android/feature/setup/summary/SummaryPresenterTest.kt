@@ -1,17 +1,18 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
+package com.passbolt.mobile.android.feature.setup.summary
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.passbolt.mobile.android.feature.setup.base.testModule
+import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrContract
+import com.passbolt.mobile.android.feature.setup.scanqr.testScanQrModule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
-import java.lang.Exception
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,13 +38,13 @@ import java.lang.Exception
  */
 class ScanQrPresenterTest : KoinTest {
 
-    private val presenter: ScanQrContract.Presenter by inject()
-    private var view: ScanQrContract.View = mock()
+    private val presenter: SummaryContract.Presenter by inject()
+    private var view: SummaryContract.View = mock()
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger()
-        modules(testModule, testScanQrModule)
+        modules(testModule, summaryModule)
     }
 
     @Before
@@ -52,34 +53,19 @@ class ScanQrPresenterTest : KoinTest {
     }
 
     @Test
-    fun `click information dialog should display proper dialog`() {
+    fun `click back when Failure status should go back`() {
+        presenter.start(ResultStatus.Failure(""))
         reset(view)
-        presenter.infoIconClick()
-        verify(view).showInformationDialog()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `click back should display proper dialog`() {
-        reset(view)
-        presenter.backClick()
-        verify(view).showExitConfirmation()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `click exit confirmation should navigate back`() {
-        reset(view)
-        presenter.exitConfirmClick()
+        presenter.buttonClick()
         verify(view).navigateBack()
         verifyNoMoreInteractions(view)
     }
 
     @Test
-    fun `camera error should display start camera error tooltip`() {
-        reset(view)
-        presenter.startCameraError(Exception())
-        verify(view).showStartCameraError()
-        verifyNoMoreInteractions(view)
+    fun `description should be displayed when result is Failure`() {
+        val description = "description"
+        presenter.start(ResultStatus.Failure(description))
+        verify(view).setDescription(description)
     }
+
 }
