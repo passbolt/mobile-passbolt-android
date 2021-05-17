@@ -1,14 +1,17 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
-import android.util.SparseArray
+import androidx.collection.ArrayMap
 import com.google.gson.Gson
+import com.passbolt.mobile.android.common.extension.eraseArray
+import com.passbolt.mobile.android.common.extension.findPosition
+import com.passbolt.mobile.android.common.extension.toCharArray
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
-import com.passbolt.mobile.android.dto.response.qrcode.AggregatedQrDto
 import com.passbolt.mobile.android.dto.response.qrcode.QrFirstPageDto
 import com.passbolt.mobile.android.dto.response.qrcode.ReservedBytesDto
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.withContext
+import okio.Buffer
 import timber.log.Timber
 import java.nio.ByteBuffer
 
@@ -42,7 +45,9 @@ class ScanQrParser(
     val parseResultsChannel = Channel<ParseResult>()
 
     private var totalPages: Int? = null
-    private var subsequentPages: SparseArray<ParseResult.SubsequentPage>? = null
+    private var hash: String? = null
+    private var subsequentPages: ArrayMap<Int, ParseResult.SubsequentPage>? = null
+    private val contentBytes = Buffer()
 
     suspend fun process(data: ByteArray?) {
         try {
@@ -51,7 +56,6 @@ class ScanQrParser(
                 val reservedBytes = ByteArray(RESERVED_BYTES_COUNT) { data[it] }
                 val reservedBytesDto = processReservedBytes(reservedBytes)
                 val payloadBytes = ByteArray(data.size - RESERVED_BYTES_COUNT) { data[it + RESERVED_BYTES_COUNT] }
-
                 if (reservedBytesDto.page == FIRST_PAGE_INDEX) {
                     parseFirstPage(reservedBytesDto, payloadBytes)
                 } else {
@@ -70,7 +74,8 @@ class ScanQrParser(
             gson.fromJson(String(payloadBytes), QrFirstPageDto::class.java)
         )
         totalPages = parsedFirstPage.content.totalPages
-        subsequentPages = SparseArray<ParseResult.SubsequentPage>(parsedFirstPage.content.totalPages - 1)
+        hash = parsedFirstPage.content.hash
+        subsequentPages = ArrayMap(parsedFirstPage.content.totalPages - 1)
         parseResultsChannel.send(parsedFirstPage)
     }
 
@@ -78,11 +83,9 @@ class ScanQrParser(
         reservedBytesDto: ReservedBytesDto,
         payloadBytes: ByteArray
     ) {
-        if (validateFirstPageParsed()) {
-            val parsedSubsequentPage = ParseResult.SubsequentPage(
-                reservedBytesDto,
-                String(payloadBytes)
-            )
+        if (validateFirstPageParsed() && subsequentPages?.contains(reservedBytesDto.page) == false) {
+            contentBytes.write(payloadBytes)
+            val parsedSubsequentPage = ParseResult.SubsequentPage(reservedBytesDto)
             subsequentPages?.put(reservedBytesDto.page, parsedSubsequentPage)
             parseResultsChannel.send(parsedSubsequentPage)
         }
@@ -101,15 +104,27 @@ class ScanQrParser(
         return ReservedBytesDto(version, pageNumber)
     }
 
-    fun assembleKey() {
-        val keyBuilder = StringBuilder()
-        totalPages?.let { totalPages ->
-            (0 until totalPages - 1)
-                .mapNotNull { subsequentPages?.valueAt(it)?.content }
-                .forEach { keyBuilder.append(it) }
-            val key = gson.fromJson(keyBuilder.toString(), AggregatedQrDto::class.java)
-            // TODO verify & save key
+    fun verifyKey() {
+        if (contentBytes.sha512().hex() == hash) {
+            val assembledKey = assemblePrivateKey()
+            parseResultsChannel.offer(ParseResult.Success(assembledKey))
+            assembledKey.eraseArray()
+        } else {
+            Timber.e("Incorrect key hash.")
+            parseResultsChannel.offer(ParseResult.Error)
         }
+        contentBytes.clear()
+    }
+
+    private fun assemblePrivateKey(): CharArray {
+        val charArray = contentBytes.readByteArray().toCharArray()
+        val keyStartPosition = charArray.findPosition(ARMORED_KEY_TEXT.toCharArray()) + ARMORED_KEY_TEXT.length
+        val keyEndPosition = charArray.lastIndexOf(ARMORED_KEY_END_CHAR) - 1
+
+        val privateKey = charArray.slice(IntRange(keyStartPosition, keyEndPosition)).toCharArray()
+        charArray.eraseArray()
+
+        return privateKey
     }
 
     fun isPassboltQr(barcodeScanResult: CameraBarcodeAnalyzer.BarcodeScanResult.SingleBarcode): Boolean {
@@ -126,11 +141,14 @@ class ScanQrParser(
         ) : ParseResult()
 
         data class SubsequentPage(
-            val reservedBytesDto: ReservedBytesDto,
-            val content: String
+            val reservedBytesDto: ReservedBytesDto
         ) : ParseResult()
 
         object Error : ParseResult()
+
+        class Success(
+            val armoredKey: CharArray
+        ) : ParseResult()
     }
 
     private companion object {
@@ -138,5 +156,7 @@ class ScanQrParser(
         private const val PAGE_NUMBER_BYTES_COUNT = 2
         private const val FIRST_PAGE_INDEX = 0
         private const val PROTOCOL_VERSION = 1
+        private const val ARMORED_KEY_TEXT = "\"armored_key\":\""
+        private const val ARMORED_KEY_END_CHAR = '}'
     }
 }

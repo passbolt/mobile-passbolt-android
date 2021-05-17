@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.core.networking.UserIdProvider
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
 import org.koin.dsl.module
 
@@ -35,12 +36,14 @@ private val saveAccountDataUseCase = mock<SaveAccountDataUseCase>()
 private val selectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
 private val userIdProvider = mock<UserIdProvider>()
 private val scanQrParser = mock<ScanQrParser>()
+private val savePrivateKeyUseCase = mock<SavePrivateKeyUseCase>()
 
 val testScanQrModule = module {
-    factory<ScanQrContract.Presenter> { ScanQrPresenter(get(), get(), get(), get(), get(), get()) }
+    factory<ScanQrContract.Presenter> { ScanQrPresenter(get(), get(), get(), get(), get(), get(), get()) }
     factory { nextPageUseCase }
     factory { saveAccountDataUseCase }
     factory { selectedAccountUseCase }
     factory { userIdProvider }
     factory { scanQrParser }
+    factory { savePrivateKeyUseCase }
 }
