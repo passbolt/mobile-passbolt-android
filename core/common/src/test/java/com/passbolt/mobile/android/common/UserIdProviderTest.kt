@@ -1,12 +1,8 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
+package com.passbolt.mobile.android.common
 
-import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.UserIdProvider
-import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
-import org.koin.dsl.module
+import org.junit.Before
+import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,20 +26,35 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class NextQrPageMapperTest {
+    private lateinit var provider: UserIdProvider
 
-private val nextPageUseCase = mock<NextPageUseCase>()
-private val saveAccountDataUseCase = mock<SaveAccountDataUseCase>()
-private val selectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
-private val userIdProvider = mock<UserIdProvider>()
-private val scanQrParser = mock<ScanQrParser>()
-private val savePrivateKeyUseCase = mock<SavePrivateKeyUseCase>()
+    @Before
+    fun setUp() {
+        provider = UserIdProvider()
+    }
 
-val testScanQrModule = module {
-    factory<ScanQrContract.Presenter> { ScanQrPresenter(get(), get(), get(), get(), get(), get(), get()) }
-    factory { nextPageUseCase }
-    factory { saveAccountDataUseCase }
-    factory { selectedAccountUseCase }
-    factory { userIdProvider }
-    factory { scanQrParser }
-    factory { savePrivateKeyUseCase }
+    @Test
+    fun `passing valid url with https should return user id`() {
+        val id = "18"
+        val url = "https://www.passbolt.com"
+        val result = provider.get(id, url)
+        assertThat(result).isEqualTo("18_www.passbolt.com")
+    }
+
+    @Test
+    fun `passing valid url with http should return user id`() {
+        val id = "18"
+        val url = "http://www.passbolt.com"
+        val result = provider.get(id, url)
+        assertThat(result).isEqualTo("18_www.passbolt.com")
+    }
+
+    @Test
+    fun `passing valid url with http with extra path should return user id`() {
+        val id = "18"
+        val url = "http://www.passbolt.com/something"
+        val result = provider.get(id, url)
+        assertThat(result).isEqualTo("18_www.passbolt.com")
+    }
 }

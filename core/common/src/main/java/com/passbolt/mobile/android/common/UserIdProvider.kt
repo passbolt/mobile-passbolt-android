@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.networking
+package com.passbolt.mobile.android.common
 
 import java.net.URI
 

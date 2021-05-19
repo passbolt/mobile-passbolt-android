@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.passbolt.mobile.android.common.extension.eraseArray
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.networking.UserIdProvider
+import com.passbolt.mobile.android.common.UserIdProvider
 import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus

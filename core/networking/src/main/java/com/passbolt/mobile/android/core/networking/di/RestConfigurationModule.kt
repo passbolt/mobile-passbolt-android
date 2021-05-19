@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.core.networking.di
 
 import com.passbolt.mobile.android.core.networking.ResponseHandler
 import com.passbolt.mobile.android.core.networking.RetrofitRestService
-import com.passbolt.mobile.android.core.networking.UserIdProvider
+import com.passbolt.mobile.android.common.UserIdProvider
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
 import com.passbolt.mobile.android.core.networking.usecase.GetBaseUrlUseCase
 import okhttp3.OkHttpClient
