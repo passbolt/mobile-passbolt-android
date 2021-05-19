@@ -1,14 +1,19 @@
 package com.passbolt.mobile.android
 
 import android.app.Application
+import coil.Coil
+import coil.ImageLoader
 import com.passbolt.mobile.android.core.mvp.di.mvpModule
 import com.passbolt.mobile.android.core.networking.di.networkingModule
 import com.passbolt.mobile.android.core.qrscan.di.barcodeScanModule
 import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
+import com.passbolt.mobile.android.di.appModule
 import com.passbolt.mobile.android.feature.setup.setupModule
 import com.passbolt.mobile.android.service.registration.di.passboltApiModule
 import com.passbolt.mobile.android.storage.di.storageModule
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
@@ -35,12 +40,15 @@ import timber.log.Timber
  * @since v1.0
  */
 
-class PassboltApplication : Application() {
+class PassboltApplication : Application(), KoinComponent {
+
+    private val imageLoader: ImageLoader by inject()
 
     override fun onCreate() {
         super.onCreate()
         initTimber()
         initKoin()
+        setupCoil()
     }
 
     private fun initTimber() {
@@ -49,10 +57,16 @@ class PassboltApplication : Application() {
         }
     }
 
+    private fun setupCoil() {
+        // TODO remove in production version - PAS-105
+        Coil.setImageLoader(imageLoader)
+    }
+
     private fun initKoin() {
         startKoin {
             androidContext(this@PassboltApplication)
             modules(
+                appModule,
                 setupModule,
                 mappersModule,
                 mvpModule,

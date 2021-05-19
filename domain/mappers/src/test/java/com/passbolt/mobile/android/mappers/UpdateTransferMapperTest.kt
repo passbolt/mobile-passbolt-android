@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.mappers
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.dto.request.NextPageRequestDto
+import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
 import com.passbolt.mobile.android.dto.request.StatusRequest
 import com.passbolt.mobile.android.ui.Status
 import org.junit.Before
@@ -29,12 +29,12 @@ import org.junit.Test
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class NextQrPageMapperTest {
-    private lateinit var mapper: NextQrPageMapper
+class UpdateTransferMapperTest {
+    private lateinit var mapper: UpdateTransferMapper
 
     @Before
     fun setUp() {
-        mapper = NextQrPageMapper()
+        mapper = UpdateTransferMapper()
     }
 
     @Test
@@ -55,7 +55,7 @@ class NextQrPageMapperTest {
 
     private fun verifyStatus(inputStatus: Status, expectedStatusRequest: StatusRequest) {
         val result = mapper.mapRequestToDto(0, inputStatus)
-        val expected = NextPageRequestDto(0, expectedStatusRequest)
+        val expected = UpdateTransferRequestDto(0, expectedStatusRequest)
         assertThat(result).isEqualTo(expected)
     }
 

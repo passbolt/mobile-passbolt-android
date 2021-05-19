@@ -43,4 +43,13 @@
     <string name="scan_qr_summary_success_title">Your information has been transferred!</string>
     <string name="scan_qr_summary_already_linked_title">Account  is already linked to the device</string>
     <string name="scan_qr_summary_failure_title">Something went wrong!</string>
+
+    <string name="enter_passphrase_title">Enter your passphrase</string>
+    <string name="enter_passphrase_sign_in_button">Sign In</string>
+    <string name="enter_passphrase_forgot_password_button">I forgot my passphrase</string>
+    <string name="enter_passphrase_password_title">Passphrase</string>
+    <string name="enter_passphrase_password_hint">Enter your passphrase</string>
+    <string name="enter_passphrase_forgot_password_title">Did you forgot your passphrase?</string>
+    <string name="enter_passphrase_forgot_password_message">Unfortunately you cannot access your data if you do not remember your passphrase. Please contact your administrator to unlock your account.</string>
+
 </resources>

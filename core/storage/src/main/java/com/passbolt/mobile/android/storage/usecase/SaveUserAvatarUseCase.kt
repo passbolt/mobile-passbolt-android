@@ -1,6 +1,7 @@
-package com.passbolt.mobile.android.dto.request
+package com.passbolt.mobile.android.storage.usecase
 
-import com.google.gson.annotations.SerializedName
+import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,8 +25,27 @@ import com.google.gson.annotations.SerializedName
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class NextPageRequestDto(
-    @SerializedName("current_page")
-    val currentPage: Int,
-    val status: StatusRequest
-)
+class SaveUserAvatarUseCase(
+    private val encryptedFileFactory: EncryptedFileFactory,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : UseCase<SaveUserAvatarUseCase.Input, SaveUserAvatarUseCase.Output> {
+
+    override fun execute(input: Input): Output {
+        val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
+        val name = "${USER_AVATAR_FILE_NAME}_$userId"
+
+        val encryptedFile = encryptedFileFactory.get(name, name)
+        encryptedFile.openFileOutput().use {
+            it.write(input.image)
+        }
+        return Output.Success
+    }
+
+    sealed class Output {
+        object Success : Output()
+    }
+
+    class Input(
+        val image: ByteArray
+    )
+}

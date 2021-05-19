@@ -37,7 +37,7 @@
         android:id="@+id/scanQrFragment"
         android:name="com.passbolt.mobile.android.feature.setup.scanqr.ScanQrFragment"
         android:label="ScanQrFragment"
-        tools:layout="@layout/fragment_scan_qr" >
+        tools:layout="@layout/fragment_scan_qr">
         <action
             android:id="@+id/action_scanQrFragment_to_summaryFragment"
             app:destination="@id/summaryFragment" />
@@ -51,5 +51,13 @@
         <argument
             android:name="status"
             app:argType="com.passbolt.mobile.android.feature.setup.summary.ResultStatus" />
+        <action
+            android:id="@+id/action_summaryFragment_to_enterPassphraseFragment"
+            app:destination="@id/enterPassphraseFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/enterPassphraseFragment"
+        android:name="com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseFragment"
+        android:label="EnterPassphraseFragment"
+        tools:layout="@layout/fragment_enter_passphrase" />
 </navigation>

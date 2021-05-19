@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android
 
-import com.passbolt.mobile.android.mappers.NextQrPageMapper
+import com.passbolt.mobile.android.mappers.UpdateTransferMapper
 import org.koin.dsl.module
 
 /**
@@ -26,5 +26,5 @@ import org.koin.dsl.module
  * @since v1.0
  */
 val mappersModule = module {
-    single { NextQrPageMapper() }
+    single { UpdateTransferMapper() }
 }

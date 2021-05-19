@@ -4,10 +4,10 @@ import com.google.gson.GsonBuilder
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrContract
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrFragment
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrPresenter
+import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
-import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -36,15 +36,15 @@ import org.koin.core.qualifier.named
 fun Module.scanQrModule() {
     scope(named<ScanQrFragment>()) {
         scoped<ScanQrContract.Presenter> {
-            ScanQrPresenter(get(), get(), get(), get(), get(), get(), get())
+            ScanQrPresenter(get(), get(), get(), get(), get(), get(), get(), get())
         }
         scoped { QrScanResultsMapper(gson = get()) }
         scoped { KeyAssembler() }
         scoped { GsonBuilder().create() }
         scoped {
-            NextPageUseCase(
+            UpdateTransferUseCase(
                 registrationRepository = get(),
-                nextQrPageMapper = get(),
+                updateTransferMapper = get(),
                 coroutineContext = get()
             )
         }

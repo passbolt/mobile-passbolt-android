@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.service.registration
 
-import com.passbolt.mobile.android.dto.response.NextPageResponseDto
-import com.passbolt.mobile.android.dto.request.NextPageRequestDto
+import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
+import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
 
 /**
@@ -28,9 +28,10 @@ import com.passbolt.mobile.android.dto.response.BaseResponse
  */
 
 interface RegistrationDataSource {
-    suspend fun putNextPage(
+    suspend fun updateTransfer(
         uuid: String,
         authToken: String,
-        pageRequestDto: NextPageRequestDto
-    ): BaseResponse<NextPageResponseDto>
+        pageRequestDto: UpdateTransferRequestDto,
+        userProfile: String?
+    ): BaseResponse<UpdateTransferResponseDto>
 }

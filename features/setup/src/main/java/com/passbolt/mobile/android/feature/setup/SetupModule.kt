@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.setup
 
+import com.passbolt.mobile.android.feature.setup.enterpassphrase.di.enterPassphraseModule
 import com.passbolt.mobile.android.feature.setup.scanqr.di.scanQrModule
 import com.passbolt.mobile.android.feature.setup.summary.di.summaryModule
 import com.passbolt.mobile.android.feature.setup.transferdetails.di.transferDetailsModule
@@ -33,4 +34,5 @@ val setupModule = module {
     scanQrModule()
     summaryModule()
     transferDetailsModule()
+    enterPassphraseModule()
 }

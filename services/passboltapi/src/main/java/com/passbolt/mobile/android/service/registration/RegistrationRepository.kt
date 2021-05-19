@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.service.registration
 
 import com.passbolt.mobile.android.core.networking.ResponseHandler
-import com.passbolt.mobile.android.dto.request.NextPageRequestDto
+import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,9 +32,10 @@ class RegistrationRepository constructor(
     suspend fun turnPage(
         uuid: String,
         authToken: String,
-        pageRequestDto: NextPageRequestDto
+        pageRequestDto: UpdateTransferRequestDto,
+        userProfile: String?
     ) = try {
-        val result = registrationDataSource.putNextPage(uuid, authToken, pageRequestDto)
+        val result = registrationDataSource.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
         responseHandler.handleSuccess(result)
     } catch (e: Exception) {
         responseHandler.handleException(e)

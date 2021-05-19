@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.mappers
+package com.passbolt.mobile.android.feature.setup.enterpassphrase
 
-import com.passbolt.mobile.android.dto.request.NextPageRequestDto
-import com.passbolt.mobile.android.dto.response.NextPageResponseDto
-import com.passbolt.mobile.android.dto.request.StatusRequest
-import com.passbolt.mobile.android.ui.Status
+import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,19 +24,19 @@ import com.passbolt.mobile.android.ui.Status
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class NextQrPageMapper {
+class EnterPassphraseContract {
+    interface View : BaseContract.View {
+        fun showForgotPasswordDialog()
+        fun displayAvatar(url: String)
+        fun displayName(name: String)
+        fun displayUrl(url: String)
+        fun displayEmail(email: String?)
+        fun setButtonEnabled(enabled: Boolean)
+    }
 
-    fun mapRequestToDto(currentPage: Int, status: Status): NextPageRequestDto =
-        NextPageRequestDto(currentPage, mapStatus(status))
-
-    fun mapResponseToUi(pageResponseDto: NextPageResponseDto): String =
-        pageResponseDto.id
-
-    private fun mapStatus(status: Status): StatusRequest =
-        when (status) {
-            Status.ERROR -> StatusRequest.ERROR
-            Status.IN_PROGRESS -> StatusRequest.IN_PROGRESS
-            Status.COMPLETE -> StatusRequest.COMPLETE
-            Status.CANCEL -> StatusRequest.CANCEL
-        }
+    interface Presenter : BaseContract.Presenter<View> {
+        fun forgotPasswordCLick()
+        fun onImageLoaded(image: ByteArray)
+        fun passwordChanged(isEmpty: Boolean)
+    }
 }

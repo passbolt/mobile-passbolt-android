@@ -87,6 +87,9 @@ dependencies {
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
 
+    implementation libs.coil.core
+    implementation libs.coil.base
+
     /* DI */
     implementation libs.di.koin
     implementation libs.di.koinExt

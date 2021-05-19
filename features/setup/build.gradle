@@ -32,6 +32,9 @@ dependencies {
     implementation libs.di.koin
     implementation libs.di.koinExt
 
+    implementation libs.coil.core
+    implementation libs.coil.base
+
     testImplementation libs.di.koinTest
     testImplementation libs.di.koinTestJUnit
 }

@@ -17,6 +17,8 @@ import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSessionUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveUserAvatarUseCase
+import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
@@ -99,12 +101,24 @@ val storageModule = module {
         )
     }
     single {
+        UpdateAccountDataUseCase(
+            getSelectedAccountUseCase = get(),
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
+    single {
         SavePassphraseUseCase(
             encryptedFileFactory = get()
         )
     }
     single {
         SavePrivateKeyUseCase(
+            encryptedFileFactory = get()
+        )
+    }
+    single {
+        SaveUserAvatarUseCase(
+            getSelectedAccountUseCase = get(),
             encryptedFileFactory = get()
         )
     }
