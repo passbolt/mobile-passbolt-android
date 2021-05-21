@@ -1,0 +1,34 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "kotlin-kapt"
+}
+
+repositories {
+    flatDir { dirs "libs" }
+}
+
+dependencies {
+    implementation(name: "Gopenpgp", ext: "aar")
+
+    implementation libs.di.koin
+    implementation libs.di.koinExt
+
+    androidTestImplementation(name: "Gopenpgp", ext: "aar")
+    androidTestImplementation libs.di.koinTest
+    androidTestImplementation libs.di.koinTestJUnit
+    androidTestImplementation libs.test.coroutinesTest
+    androidTestImplementation libs.test.androidTestsRunner
+    androidTestImplementation libs.test.androidTestRules
+}
+
+android {
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    packagingOptions {
+        exclude "META-INF/AL2.0"
+        exclude "META-INF/LGPL2.1"
+    }
+}

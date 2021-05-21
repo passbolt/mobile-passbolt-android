@@ -4,7 +4,7 @@ projectModule "app"
 
 coreModule "mvp"
 coreModule "networking"
-coreModule "Gopenpgp"
+coreModule "gopenpgp"
 coreModule "coreui"
 coreModule "storage"
 coreModule "common"

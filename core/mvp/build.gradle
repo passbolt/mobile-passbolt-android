@@ -5,7 +5,6 @@ plugins {
 }
 
 dependencies {
-    implementation project(':Gopenpgp')
     implementation libs.androidx.core
     implementation libs.androidx.appcompat
     implementation libs.di.koin

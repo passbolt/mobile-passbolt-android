@@ -1,5 +1,0 @@
-# Ignore everything in this directory
-# This file is obligatory to run properly detekt on this module
-*
-# Except this file
-!.gitignore
