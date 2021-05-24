@@ -4,11 +4,13 @@ import android.content.Context
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
+import com.passbolt.mobile.android.common.extension.setIsEmptyListener
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewTextInputBinding
 
@@ -35,7 +37,7 @@ import com.passbolt.mobile.android.core.ui.databinding.ViewTextInputBinding
  * @since v1.0
  */
 
-class TextInputView @JvmOverloads constructor(
+open class TextInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
@@ -71,12 +73,18 @@ class TextInputView @JvmOverloads constructor(
 
     private val uiTitle: Spannable
         get() = if (!isRequired) SpannableString(title) else requiredTitle
+    private var textWatcher: TextWatcher? = null
 
-    private val binding = ViewTextInputBinding.inflate(LayoutInflater.from(context), this)
+    protected val binding = ViewTextInputBinding.inflate(LayoutInflater.from(context), this)
 
     init {
         parseAttributes(attrs)
         setInitialState()
+    }
+
+    override fun onDetachedFromWindow() {
+        binding.input.removeTextChangedListener(textWatcher)
+        super.onDetachedFromWindow()
     }
 
     private fun parseAttributes(attrs: AttributeSet?) {
@@ -92,6 +100,10 @@ class TextInputView @JvmOverloads constructor(
     fun setState(state: State) = when (state) {
         is State.Initial -> setInitialState()
         is State.Error -> setErrorState(state.message)
+    }
+
+    fun setIsEmptyListener(textChange: (Boolean) -> Unit) {
+        textWatcher = binding.input.setIsEmptyListener(textChange)
     }
 
     private fun setErrorState(message: String) {

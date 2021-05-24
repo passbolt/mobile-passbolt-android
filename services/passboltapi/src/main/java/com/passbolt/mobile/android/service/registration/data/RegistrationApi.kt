@@ -1,11 +1,12 @@
 package com.passbolt.mobile.android.service.registration.data
 
-import com.passbolt.mobile.android.dto.request.NextPageRequestDto
-import com.passbolt.mobile.android.dto.response.NextPageResponseDto
+import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
+import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import retrofit2.http.Body
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,16 +33,18 @@ import retrofit2.http.Path
 
 internal interface RegistrationApi {
 
-    @PUT(NEXT_PAGE)
-    suspend fun putNextPage(
+    @PUT(UPDATE_TRANSFER)
+    suspend fun updateTransfer(
         @Path(UUID) uuid: String,
         @Path(AUTH_TOKEN) authToken: String,
-        @Body pageRequestDto: NextPageRequestDto
-    ): BaseResponse<NextPageResponseDto>
+        @Body pageRequestDto: UpdateTransferRequestDto,
+        @Query(USER_PROFILE_INFO) userProfile: String?
+    ): BaseResponse<UpdateTransferResponseDto>
 
     private companion object {
         private const val UUID = "uuid"
         private const val AUTH_TOKEN = "AUTH_TOKEN"
-        private const val NEXT_PAGE = "mobile/transfers/{$UUID}/{$AUTH_TOKEN}.json"
+        private const val USER_PROFILE_INFO = "contain[user.profile]"
+        private const val UPDATE_TRANSFER = "mobile/transfers/{$UUID}/{$AUTH_TOKEN}.json"
     }
 }

@@ -17,8 +17,16 @@
             android:background="@color/white"
             android:theme="@style/Theme.Passbolt.Toolbar"
             app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/Theme.Passbolt.PopupOverlay"
-            app:title="@string/transfer_details_title" />
+            app:popupTheme="@style/Theme.Passbolt.PopupOverlay">
+
+            <TextView
+                style="@style/ToolbarTitleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/transfer_details_title" />
+
+        </androidx.appcompat.widget.Toolbar>
 
         <TextView
             android:id="@+id/header"

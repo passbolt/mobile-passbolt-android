@@ -72,4 +72,10 @@ class SummaryFragment : BindingFragment<FragmentSummaryBinding>(
     override fun navigateBack() {
         findNavController().popBackStack()
     }
+
+    override fun navigateToEnterPassphrase() {
+        findNavController().navigate(
+            SummaryFragmentDirections.actionSummaryFragmentToEnterPassphraseFragment()
+        )
+    }
 }

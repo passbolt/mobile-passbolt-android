@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentTransferDetailsBinding
@@ -49,7 +50,7 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
-        initToolbar()
+        initDefaultToolbar(binding.toolbar)
         setListeners()
         addSteps()
     }
@@ -92,13 +93,6 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
             } else {
                 presenter.permissionRejectedClick()
             }
-        }
-    }
-
-    private fun initToolbar() {
-        with(binding) {
-            toolbar.setNavigationIcon(R.drawable.ic_back)
-            toolbar.setNavigationOnClickListener { findNavController().popBackStack() }
         }
     }
 

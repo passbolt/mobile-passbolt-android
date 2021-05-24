@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.dto.response
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,7 +22,10 @@ package com.passbolt.mobile.android.dto.response
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class NextPageResponseDto(
+data class UpdateTransferResponseModel(
     val id: String,
-    val status: StatusResponse
+    val firstName: String?,
+    val lastName: String?,
+    val avatarUrl: String?,
+    val email: String?
 )

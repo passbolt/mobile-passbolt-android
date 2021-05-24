@@ -48,12 +48,8 @@ class SummaryPresenter : SummaryContract.Presenter {
             is ResultStatus.AlreadyLinked -> {
                 // TODO
             }
-            is ResultStatus.Failure -> {
-                view?.navigateBack()
-            }
-            is ResultStatus.Success -> {
-                // TODO
-            }
+            is ResultStatus.Failure -> view?.navigateBack()
+            is ResultStatus.Success -> view?.navigateToEnterPassphrase()
         }
     }
 }

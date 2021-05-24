@@ -34,7 +34,8 @@ class SaveAccountDataUseCase(
         val alias = "${ACCOUNTS_DATA_ALIAS}_${input.userId}"
         val sharedPreferences = encryptedSharedPreferencesFactory.get(alias, "$alias.xml")
         with(sharedPreferences.edit()) {
-            putString(USERNAME_KEY, input.username)
+            putString(USER_FIRST_NAME_KEY, input.firstname)
+            putString(USER_LAST_NAME_KEY, input.lastname)
             putString(EMAIL_KEY, input.email)
             putString(URL_KEY, input.url)
             apply()
@@ -44,7 +45,8 @@ class SaveAccountDataUseCase(
     class Input(
         val userId: String,
         val url: String,
-        val username: String? = null,
+        val firstname: String? = null,
+        val lastname: String? = null,
         val email: String? = null
     )
 }

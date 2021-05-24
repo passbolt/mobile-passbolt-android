@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.storage.usecase
+package com.passbolt.mobile.android.dto.request
 
-import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,33 +24,8 @@ import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFac
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-class GetAccountDataUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
-) : UseCase<GetAccountDataUseCase.Input, GetAccountDataUseCase.Output> {
-
-    override fun execute(input: Input): Output {
-        val alias = "${ACCOUNTS_DATA_ALIAS}_${input.userId}"
-        val sharedPreferences = encryptedSharedPreferencesFactory.get(alias, "$alias.xml")
-
-        return Output(
-            sharedPreferences.getString(USER_FIRST_NAME_KEY, null),
-            sharedPreferences.getString(USER_LAST_NAME_KEY, null),
-            sharedPreferences.getString(EMAIL_KEY, null),
-            sharedPreferences.getString(AVATAR_URL_KEY, null),
-            sharedPreferences.getString(URL_KEY, "").orEmpty()
-        )
-    }
-
-    class Input(
-        val userId: String
-    )
-
-    class Output(
-        val firstName: String?,
-        val lastName: String?,
-        val email: String?,
-        val avatarUrl: String?,
-        val url: String
-    )
-}
+data class UpdateTransferRequestDto(
+    @SerializedName("current_page")
+    val currentPage: Int,
+    val status: StatusRequest
+)

@@ -3,13 +3,14 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 import com.passbolt.mobile.android.common.UserIdProvider
 import com.passbolt.mobile.android.common.extension.eraseArray
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
-import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
 import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -43,12 +44,13 @@ import kotlin.properties.Delegates
  */
 class ScanQrPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
-    private val nextPageUseCase: NextPageUseCase,
+    private val updateTransferUseCase: UpdateTransferUseCase,
     private val qrParser: ScanQrParser,
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val saveAccountDataUseCase: SaveAccountDataUseCase,
     private val userIdProvider: UserIdProvider,
-    private val savePrivateKeyUseCase: SavePrivateKeyUseCase
+    private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
+    private val updateAccountDataUseCase: UpdateAccountDataUseCase
 ) : ScanQrContract.Presenter {
 
     override var view: ScanQrContract.View? = null
@@ -138,8 +140,8 @@ class ScanQrPresenter(
             return
         }
 
-        val response = nextPageUseCase.execute(
-            NextPageUseCase.Input(
+        val response = updateTransferUseCase.execute(
+            UpdateTransferUseCase.Input(
                 uuid = transferUuid,
                 authToken = authToken,
                 currentPage = pageNumber,
@@ -147,11 +149,29 @@ class ScanQrPresenter(
             )
         )
         when (response) {
-            is NextPageUseCase.Output.Failure -> {
+            is UpdateTransferUseCase.Output.Failure -> {
                 Timber.e("There was an error during transfer update")
                 view?.navigateToSummary(ResultStatus.Failure(""))
             }
-            is NextPageUseCase.Output.Success -> view?.setProgress(pageNumber)
+            is UpdateTransferUseCase.Output.Success -> onUpdateTransferSuccess(pageNumber, status, response)
+        }
+    }
+
+    private fun onUpdateTransferSuccess(
+        pageNumber: Int,
+        status: Status,
+        response: UpdateTransferUseCase.Output.Success
+    ) {
+        view?.setProgress(pageNumber)
+        if (status == Status.COMPLETE) {
+            updateAccountDataUseCase.execute(
+                UpdateAccountDataUseCase.Input(
+                    firstName = response.updateTransferResponseModel.firstName,
+                    lastName = response.updateTransferResponseModel.lastName,
+                    avatarUrl = response.updateTransferResponseModel.avatarUrl,
+                    email = response.updateTransferResponseModel.email
+                )
+            )
         }
     }
 

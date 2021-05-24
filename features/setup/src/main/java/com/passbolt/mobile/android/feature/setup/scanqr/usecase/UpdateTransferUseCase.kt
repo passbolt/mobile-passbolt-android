@@ -4,7 +4,8 @@ import com.passbolt.mobile.android.common.AsyncUseCase
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.service.registration.RegistrationRepository
-import com.passbolt.mobile.android.mappers.NextQrPageMapper
+import com.passbolt.mobile.android.mappers.UpdateTransferMapper
+import com.passbolt.mobile.android.ui.UpdateTransferResponseModel
 import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.withContext
 
@@ -30,21 +31,22 @@ import kotlinx.coroutines.withContext
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class NextPageUseCase(
+class UpdateTransferUseCase(
     private val registrationRepository: RegistrationRepository,
-    private val nextQrPageMapper: NextQrPageMapper,
+    private val updateTransferMapper: UpdateTransferMapper,
     private val coroutineContext: CoroutineLaunchContext
-) : AsyncUseCase<NextPageUseCase.Input, NextPageUseCase.Output> {
+) : AsyncUseCase<UpdateTransferUseCase.Input, UpdateTransferUseCase.Output> {
 
     override suspend fun execute(input: Input): Output = withContext(coroutineContext.io) {
         val response = registrationRepository.turnPage(
             input.uuid,
             input.authToken,
-            nextQrPageMapper.mapRequestToDto(input.currentPage, input.status)
+            updateTransferMapper.mapRequestToDto(input.currentPage, input.status),
+            if (input.status == Status.COMPLETE) PROFILE_INFO_REQUIRED else null
         )
         when (response) {
             is NetworkResult.Failure -> Output.Failure
-            is NetworkResult.Success -> Output.Success(nextQrPageMapper.mapResponseToUi(response.value.body))
+            is NetworkResult.Success -> Output.Success(updateTransferMapper.mapResponseToUi(response.value.body))
         }
     }
 
@@ -57,9 +59,13 @@ class NextPageUseCase(
 
     sealed class Output {
         class Success(
-            val id: String
+            val updateTransferResponseModel: UpdateTransferResponseModel
         ) : Output()
 
         object Failure : Output()
+    }
+
+    companion object {
+        private const val PROFILE_INFO_REQUIRED = "1"
     }
 }

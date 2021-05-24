@@ -1,7 +1,10 @@
 package com.passbolt.mobile.android.common.extension
 
 import android.os.SystemClock
+import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
+import androidx.core.widget.addTextChangedListener
 
 /**
  * Passbolt - Open source password manager for teams
@@ -50,5 +53,8 @@ fun View.setDebouncingOnClick(debounceTime: Long = DEBOUNCE_DELAY_MILLIS, action
         private fun shouldClickBeIgnored() = SystemClock.elapsedRealtime() - lastClickTime < debounceTime
     })
 }
+
+fun EditText.setIsEmptyListener(textChange: (Boolean) -> Unit): TextWatcher =
+    addTextChangedListener { textChange.invoke(it.isNullOrEmpty()) }
 
 private const val DEBOUNCE_DELAY_MILLIS = 600L

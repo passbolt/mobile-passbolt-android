@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.service.registration.data
+package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
 import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.service.registration.RegistrationDataSource
+import com.passbolt.mobile.android.dto.request.StatusRequest
+import com.passbolt.mobile.android.ui.UpdateTransferResponseModel
+import com.passbolt.mobile.android.ui.Status
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,15 +28,25 @@ import com.passbolt.mobile.android.service.registration.RegistrationDataSource
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class RegistrationRemoteDataSource(
-    private val registrationApi: RegistrationApi
-) : RegistrationDataSource {
+class UpdateTransferMapper {
 
-    override suspend fun updateTransfer(
-        uuid: String,
-        authToken: String,
-        pageRequestDto: UpdateTransferRequestDto,
-        userProfile: String?
-    ): BaseResponse<UpdateTransferResponseDto> =
-        registrationApi.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
+    fun mapRequestToDto(currentPage: Int, status: Status): UpdateTransferRequestDto =
+        UpdateTransferRequestDto(currentPage, mapStatus(status))
+
+    fun mapResponseToUi(pageResponseDto: UpdateTransferResponseDto): UpdateTransferResponseModel =
+        UpdateTransferResponseModel(
+            id = pageResponseDto.id,
+            firstName = pageResponseDto.user?.profile?.firstName,
+            lastName = pageResponseDto.user?.profile?.lastName,
+            email = pageResponseDto.user?.email,
+            avatarUrl = pageResponseDto.user?.profile?.avatar?.url?.medium
+        )
+
+    private fun mapStatus(status: Status): StatusRequest =
+        when (status) {
+            Status.ERROR -> StatusRequest.ERROR
+            Status.IN_PROGRESS -> StatusRequest.IN_PROGRESS
+            Status.COMPLETE -> StatusRequest.COMPLETE
+            Status.CANCEL -> StatusRequest.CANCEL
+        }
 }

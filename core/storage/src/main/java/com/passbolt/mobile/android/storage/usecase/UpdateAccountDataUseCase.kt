@@ -26,32 +26,28 @@ import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFac
  * @since v1.0
  */
 
-class GetAccountDataUseCase(
+class UpdateAccountDataUseCase(
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
-) : UseCase<GetAccountDataUseCase.Input, GetAccountDataUseCase.Output> {
+) : UseCase<UpdateAccountDataUseCase.Input, Unit> {
 
-    override fun execute(input: Input): Output {
-        val alias = "${ACCOUNTS_DATA_ALIAS}_${input.userId}"
+    override fun execute(input: Input) {
+        val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
+        val alias = "${ACCOUNTS_DATA_ALIAS}_$userId"
         val sharedPreferences = encryptedSharedPreferencesFactory.get(alias, "$alias.xml")
-
-        return Output(
-            sharedPreferences.getString(USER_FIRST_NAME_KEY, null),
-            sharedPreferences.getString(USER_LAST_NAME_KEY, null),
-            sharedPreferences.getString(EMAIL_KEY, null),
-            sharedPreferences.getString(AVATAR_URL_KEY, null),
-            sharedPreferences.getString(URL_KEY, "").orEmpty()
-        )
+        with(sharedPreferences.edit()) {
+            input.firstName?.let { putString(USER_FIRST_NAME_KEY, it) }
+            input.lastName?.let { putString(USER_LAST_NAME_KEY, it) }
+            input.email?.let { putString(EMAIL_KEY, it) }
+            input.avatarUrl?.let { putString(AVATAR_URL_KEY, it) }
+            apply()
+        }
     }
 
     class Input(
-        val userId: String
-    )
-
-    class Output(
-        val firstName: String?,
-        val lastName: String?,
-        val email: String?,
-        val avatarUrl: String?,
-        val url: String
+        val firstName: String? = null,
+        val lastName: String? = null,
+        val email: String? = null,
+        val avatarUrl: String? = null
     )
 }

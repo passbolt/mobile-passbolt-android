@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.storage.usecase
+package com.passbolt.mobile.android.dto.response
 
-import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,33 +24,30 @@ import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFac
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+data class UpdateTransferResponseDto(
+    val id: String,
+    val status: StatusResponse,
+    val user: UserResponseDto?
+)
 
-class GetAccountDataUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
-) : UseCase<GetAccountDataUseCase.Input, GetAccountDataUseCase.Output> {
+data class UserResponseDto(
+    @SerializedName("username")
+    val email: String?,
+    val profile: ProfileResponseDto?
+)
 
-    override fun execute(input: Input): Output {
-        val alias = "${ACCOUNTS_DATA_ALIAS}_${input.userId}"
-        val sharedPreferences = encryptedSharedPreferencesFactory.get(alias, "$alias.xml")
+data class ProfileResponseDto(
+    @SerializedName("first_name")
+    val firstName: String?,
+    @SerializedName("last_name")
+    val lastName: String?,
+    val avatar: AvatarResponseDto?
+)
 
-        return Output(
-            sharedPreferences.getString(USER_FIRST_NAME_KEY, null),
-            sharedPreferences.getString(USER_LAST_NAME_KEY, null),
-            sharedPreferences.getString(EMAIL_KEY, null),
-            sharedPreferences.getString(AVATAR_URL_KEY, null),
-            sharedPreferences.getString(URL_KEY, "").orEmpty()
-        )
-    }
+data class AvatarResponseDto(
+    val url: UrlAvatarResponseDto?
+)
 
-    class Input(
-        val userId: String
-    )
-
-    class Output(
-        val firstName: String?,
-        val lastName: String?,
-        val email: String?,
-        val avatarUrl: String?,
-        val url: String
-    )
-}
+data class UrlAvatarResponseDto(
+    val medium: String
+)
