@@ -3,8 +3,10 @@ package com.passbolt.mobile.android.feature.setup.scanqr.di
 import com.google.gson.GsonBuilder
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrContract
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrFragment
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrPresenter
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -36,6 +38,8 @@ fun Module.scanQrModule() {
         scoped<ScanQrContract.Presenter> {
             ScanQrPresenter(get(), get(), get(), get(), get(), get(), get())
         }
+        scoped { QrScanResultsMapper(gson = get()) }
+        scoped { KeyAssembler() }
         scoped { GsonBuilder().create() }
         scoped {
             NextPageUseCase(
@@ -46,8 +50,9 @@ fun Module.scanQrModule() {
         }
         scoped {
             ScanQrParser(
-                coroutineContext = get(),
-                gson = get()
+                qrScanResultsMapper = get(),
+                keyAssembler = get(),
+                coroutineLaunchContext = get()
             )
         }
     }

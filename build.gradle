@@ -20,10 +20,9 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url projectRepositories.google }
         maven { url projectRepositories.mavenCentral }
+        maven { url projectRepositories.google }
         maven { url projectRepositories.jcenter }
-        flatDir { dirs "${rootProject.projectDir}/core/mvp/libs" }
     }
 }
 

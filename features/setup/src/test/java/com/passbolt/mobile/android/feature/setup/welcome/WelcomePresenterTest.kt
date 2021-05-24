@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.feature.setup.base.testModule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
@@ -41,7 +42,7 @@ class WelcomePresenterTest : KoinTest {
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
-        printLogger()
+        printLogger(Level.ERROR)
         modules(testModule, welcomeModule)
     }
 

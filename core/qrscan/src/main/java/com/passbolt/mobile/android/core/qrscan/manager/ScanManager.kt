@@ -19,7 +19,7 @@ class ScanManager constructor(
     private val mainExecutor: Executor
 ) {
 
-    val barcodeScanResultChannel = cameraBarcodeAnalyzer.resultChannel
+    val barcodeScanPublisher = cameraBarcodeAnalyzer.resultFlow
 
     @Throws(IllegalStateException::class, IllegalArgumentException::class)
     fun attach(owner: LifecycleOwner, cameraPreview: PreviewView) {
@@ -32,6 +32,7 @@ class ScanManager constructor(
 
     fun detach() {
         previewUseCase.setSurfaceProvider(null)
+        cameraProviderFuture.get().unbind(imageAnalysisUseCase, previewUseCase)
     }
 
     @Throws(IllegalStateException::class, java.lang.IllegalArgumentException::class)
@@ -41,7 +42,7 @@ class ScanManager constructor(
             bindToLifecycle(
                 owner,
                 cameraSelector,
-                imageAnalysisUseCase, previewUseCase
+                previewUseCase, imageAnalysisUseCase
             )
         }
     }

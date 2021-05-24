@@ -1,9 +1,10 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
+import com.passbolt.mobile.android.common.UserIdProvider
 import com.passbolt.mobile.android.common.extension.eraseArray
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
-import com.passbolt.mobile.android.common.UserIdProvider
-import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.NextPageUseCase
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
@@ -14,8 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.properties.Delegates
@@ -65,48 +64,39 @@ class ScanQrPresenter(
 
     override fun attach(view: ScanQrContract.View) {
         super.attach(view)
-        view.showCenterCameraOnBarcode()
-        registerForScanResults()
-        registerForParseResults()
-        this.view?.startAnalysis()
+        scope.launch {
+            launch { qrParser.startParsing(view.scanResultChannel()) }
+            launch {
+                qrParser.parseResultFlow
+                    .collect { processParseResult(it) }
+            }
+        }
+        view.startAnalysis()
     }
 
-    private fun registerForScanResults() {
-        view?.scanResultChannel()?.let { barcodeScanResultChannel ->
-            scope.launch {
-                barcodeScanResultChannel
-                    .consumeAsFlow()
-                    .distinctUntilChanged()
-                    .collect { barcodeResult(it) }
+    private suspend fun processParseResult(parserResult: ParseResult) {
+        when (parserResult) {
+            is ParseResult.Failure -> parserFailure(parserResult.exception)
+            is ParseResult.PassboltQr -> when (parserResult) {
+                is ParseResult.PassboltQr.FirstPage -> parserFirstPage(parserResult)
+                is ParseResult.PassboltQr.SubsequentPage -> parserSubsequentPage(parserResult)
+            }
+            is ParseResult.FinishedWithSuccess -> parserFinishedWithSuccess(parserResult.armoredKey)
+            is ParseResult.UserResolvableError -> when (parserResult.errorType) {
+                ParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES -> view?.showMultipleCodesInRange()
+                ParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE -> view?.showCenterCameraOnBarcode()
+                ParseResult.UserResolvableError.ErrorType.NOT_A_PASSBOLT_QR -> view?.showNotAPassboltQr()
             }
         }
     }
 
-    private fun registerForParseResults() {
-        qrParser.parseResultsChannel.let { barcodeParseResultChannel ->
-            scope.launch {
-                barcodeParseResultChannel
-                    .consumeAsFlow()
-                    .distinctUntilChanged()
-                    .collect {
-                        Timber.d("Received ${it.javaClass.simpleName}")
-                        when (it) {
-                            is ScanQrParser.ParseResult.FirstPage -> processFirstPage(it)
-                            is ScanQrParser.ParseResult.SubsequentPage -> processSubsequentPage(it)
-                            is ScanQrParser.ParseResult.Error -> processError()
-                            is ScanQrParser.ParseResult.Success -> processSuccess(it.armoredKey)
-                        }
-                    }
-            }
-        }
-    }
-
-    private suspend fun processError() {
+    private suspend fun parserFailure(exception: Throwable?) {
+        exception?.let { Timber.e(it) }
         updateTransfer(pageNumber = currentPage, Status.ERROR)
         view?.navigateToSummary(ResultStatus.Failure(""))
     }
 
-    private suspend fun processFirstPage(firstPage: ScanQrParser.ParseResult.FirstPage) {
+    private suspend fun parserFirstPage(firstPage: ParseResult.PassboltQr.FirstPage) {
         transferUuid = firstPage.content.transferId
         authToken = firstPage.content.authenticationToken
         totalPages = firstPage.content.totalPages
@@ -117,28 +107,29 @@ class ScanQrPresenter(
         updateTransfer(pageNumber = firstPage.reservedBytesDto.page + 1)
     }
 
-    private fun saveAccountDetails(id: String, url: String) {
-        userId = userIdProvider.get(id, url)
-        saveSelectedAccountUseCase.execute(SaveSelectedAccountUseCase.Input(userId))
-        saveAccountDataUseCase.execute(SaveAccountDataUseCase.Input(userId, url))
-    }
-
-    private suspend fun processSubsequentPage(subsequentPage: ScanQrParser.ParseResult.SubsequentPage) {
+    private suspend fun parserSubsequentPage(subsequentPage: ParseResult.PassboltQr.SubsequentPage) {
         currentPage = subsequentPage.reservedBytesDto.page
         view?.showKeepGoing()
+
         if (subsequentPage.reservedBytesDto.page < totalPages - 1) {
             updateTransfer(pageNumber = currentPage + 1)
         } else {
-            try {
-                scope.launch {
-                    qrParser.verifyKey()
-                }
-            } catch (exception: Exception) {
-                Timber.e(exception)
+            qrParser.verifyScannedKey()
+        }
+    }
+
+    private suspend fun parserFinishedWithSuccess(armoredKey: CharArray) {
+        when (savePrivateKeyUseCase.execute(SavePrivateKeyUseCase.Input(userId, armoredKey))) {
+            SavePrivateKeyUseCase.Output.AlreadyExist -> {
                 updateTransfer(pageNumber = currentPage, Status.ERROR)
-                view?.navigateToSummary(ResultStatus.Failure(""))
+                view?.navigateToSummary(ResultStatus.AlreadyLinked)
+            }
+            SavePrivateKeyUseCase.Output.Success -> {
+                updateTransfer(pageNumber = currentPage, Status.COMPLETE)
+                view?.navigateToSummary(ResultStatus.Success)
             }
         }
+        armoredKey.eraseArray()
     }
 
     private suspend fun updateTransfer(pageNumber: Int, status: Status = Status.IN_PROGRESS) {
@@ -164,6 +155,12 @@ class ScanQrPresenter(
         }
     }
 
+    private fun saveAccountDetails(id: String, url: String) {
+        userId = userIdProvider.get(id, url)
+        saveSelectedAccountUseCase.execute(SaveSelectedAccountUseCase.Input(userId))
+        saveAccountDataUseCase.execute(SaveAccountDataUseCase.Input(userId, url))
+    }
+
     override fun startCameraError(exc: Exception) {
         Timber.e(exc)
         view?.showStartCameraError()
@@ -179,37 +176,6 @@ class ScanQrPresenter(
 
     override fun infoIconClick() {
         view?.showInformationDialog()
-    }
-
-    private fun barcodeResult(barcodeScanResult: CameraBarcodeAnalyzer.BarcodeScanResult) {
-        Timber.d("Received ${barcodeScanResult.javaClass.simpleName}")
-        scope.launch {
-            when (barcodeScanResult) {
-                is CameraBarcodeAnalyzer.BarcodeScanResult.MultipleBarcodes -> view?.showMultipleCodesInRange()
-                is CameraBarcodeAnalyzer.BarcodeScanResult.NoBarcodeInRange -> view?.showCenterCameraOnBarcode()
-                is CameraBarcodeAnalyzer.BarcodeScanResult.Failure -> view?.navigateToSummary(ResultStatus.Failure(""))
-                is CameraBarcodeAnalyzer.BarcodeScanResult.SingleBarcode ->
-                    if (qrParser.isPassboltQr(barcodeScanResult)) {
-                        qrParser.process(barcodeScanResult.data)
-                    } else {
-                        view?.showNotAPassboltQr()
-                    }
-            }
-        }
-    }
-
-    private suspend fun processSuccess(armoredKey: CharArray) {
-        when (savePrivateKeyUseCase.execute(SavePrivateKeyUseCase.Input(userId, armoredKey))) {
-            SavePrivateKeyUseCase.Output.AlreadyExist -> {
-                updateTransfer(pageNumber = currentPage, Status.ERROR)
-                view?.navigateToSummary(ResultStatus.AlreadyLinked)
-            }
-            SavePrivateKeyUseCase.Output.Success -> {
-                updateTransfer(pageNumber = currentPage, Status.COMPLETE)
-                view?.navigateToSummary(ResultStatus.Success)
-            }
-        }
-        armoredKey.eraseArray()
     }
 
     override fun detach() {

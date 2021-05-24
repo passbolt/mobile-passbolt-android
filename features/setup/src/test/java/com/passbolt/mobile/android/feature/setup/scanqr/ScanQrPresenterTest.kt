@@ -4,14 +4,17 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
+import com.nhaarman.mockitokotlin2.whenever
+import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
 import com.passbolt.mobile.android.feature.setup.base.testModule
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
-import java.lang.Exception
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,14 +43,19 @@ class ScanQrPresenterTest : KoinTest {
     private val presenter: ScanQrContract.Presenter by inject()
     private var view: ScanQrContract.View = mock()
 
+    private val scanningFlow = MutableStateFlow<BarcodeScanResult>(
+        BarcodeScanResult.NoBarcodeInRange
+    )
+
     @get:Rule
     val koinTestRule = KoinTestRule.create {
-        printLogger()
+        printLogger(Level.ERROR)
         modules(testModule, testScanQrModule)
     }
 
     @Before
     fun setUp() {
+        whenever(view.scanResultChannel()).thenReturn(scanningFlow)
         presenter.attach(view)
     }
 

@@ -1,9 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.scanqr
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
-import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import kotlinx.coroutines.flow.StateFlow
+package com.passbolt.mobile.android.feature.setup.scanqr.parser
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,29 +23,22 @@ import kotlinx.coroutines.flow.StateFlow
  * @since v1.0
  */
 
-interface ScanQrContract {
+internal val PASSBOLT_FIRST_PAGE_SCAN = ("100{" +
+        "\"transfer_id\":\"6a63c0f1-1c87-4402-84eb-b3141e1e6397\"," +
+        "\"user_id\":\"f848277c-5398-58f8-a82a-72397af2d450\"," +
+        "\"domain\":\"https://localhost:8443\"," +
+        "\"total_pages\":7," +
+        "\"hash\":\"3d84155d3ea079c17221587bbd1fce285b8b636014025e484da01867cf28c0bc22079cac9a268e2ca76d075189065e5426044244b6d0e1a440adda4d89e148fb\"," +
+        "\"authentication_token\":\"af32cb1f-c1ae-4753-9982-7cc0d2178355\"" +
+        "}")
+    .toByteArray()
 
-    interface View : BaseContract.View {
-        fun showExitConfirmation()
-        fun navigateBack()
-        fun showInformationDialog()
-        fun startAnalysis()
-        fun showStartCameraError()
-        fun scanResultChannel(): StateFlow<BarcodeScanResult>
-        fun navigateToSummary(status: ResultStatus)
-        fun showBarcodeScanError()
-        fun showMultipleCodesInRange()
-        fun showCenterCameraOnBarcode()
-        fun showKeepGoing()
-        fun initializeProgress(totalPages: Int)
-        fun setProgress(progress: Int)
-        fun showNotAPassboltQr()
-    }
+internal val PASSBOLT_SUBSEQUENT_PAGE_SCAN = ("101{" +
+        "\"user_id\":\"f848277c-5398-58f8-a82a-72397af2d450\"," +
+        "\"fingerprint\":\"03f60e958f4cb29723acdf761353b5b15d9b054f\"," +
+        "\"armored_key\":\"-----BEGIN PGP PRIVATE KEY BLOCK-----"
+        )
+    .toByteArray()
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun backClick()
-        fun exitConfirmClick()
-        fun infoIconClick()
-        fun startCameraError(exc: Exception)
-    }
-}
+internal val SAMPLE_BYTE_ARRAY = "www.passbolt.com".toByteArray()
+
