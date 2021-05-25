@@ -1,10 +1,16 @@
-package com.passbolt.mobile.android.feature.setup.enterpassphrase.di
+package com.passbolt.mobile.android.feature.setup.fingerprint
 
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseContract
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseFragment
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphrasePresenter
-import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import com.nhaarman.mockitokotlin2.mock
+import com.passbolt.mobile.android.common.UserIdProvider
+import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
+import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,15 +34,10 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-fun Module.enterPassphraseModule() {
-    scope(named<EnterPassphraseFragment>()) {
-        scoped<EnterPassphraseContract.Presenter> {
-            EnterPassphrasePresenter(
-                getAccountDataUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                saveUserAvatarUseCase = get(),
-                fingerprintProvider = get()
-            )
-        }
-    }
+
+val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
+
+val fingerprintModule = module {
+    factory<FingerprintContract.Presenter> { FingerprintPresenter(get()) }
+    factory { fingerprintInformationProvider }
 }

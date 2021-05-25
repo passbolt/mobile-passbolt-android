@@ -1,10 +1,15 @@
 package com.passbolt.mobile.android.feature.setup
 
+import android.content.Context
+import androidx.biometric.BiometricManager
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.di.enterPassphraseModule
+import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintInformationProvider
+import com.passbolt.mobile.android.feature.setup.fingerprint.di.fingerprintModule
 import com.passbolt.mobile.android.feature.setup.scanqr.di.scanQrModule
 import com.passbolt.mobile.android.feature.setup.summary.di.summaryModule
 import com.passbolt.mobile.android.feature.setup.transferdetails.di.transferDetailsModule
 import com.passbolt.mobile.android.feature.setup.welcome.di.welcomeModule
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 /**
@@ -35,4 +40,14 @@ val setupModule = module {
     summaryModule()
     transferDetailsModule()
     enterPassphraseModule()
+    fingerprintModule()
+    single {
+        FingerprintInformationProvider(
+            biometricManager = get()
+        )
+    }
+    single { provideBiometricManager(androidContext()) }
 }
+
+private fun provideBiometricManager(context: Context) =
+    BiometricManager.from(context)

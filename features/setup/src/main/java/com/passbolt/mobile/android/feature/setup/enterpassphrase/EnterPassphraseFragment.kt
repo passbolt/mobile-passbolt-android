@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.setup.enterpassphrase
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.R
@@ -50,7 +51,8 @@ class EnterPassphraseFragment :
     }
 
     private fun setListeners() {
-        binding.forgotPasswordButton.setDebouncingOnClick { presenter.forgotPasswordCLick() }
+        binding.forgotPasswordButton.setDebouncingOnClick { presenter.forgotPasswordClick() }
+        binding.signInButton.setDebouncingOnClick { presenter.singInClick() }
         binding.password.setIsEmptyListener { presenter.passwordChanged(it) }
     }
 
@@ -86,5 +88,11 @@ class EnterPassphraseFragment :
 
     override fun displayEmail(email: String?) {
         binding.email.text = email
+    }
+
+    override fun navigateToBiometricSetup() {
+        findNavController().navigate(
+            EnterPassphraseFragmentDirections.actionEnterPassphraseFragmentToFingerprintFragment()
+        )
     }
 }

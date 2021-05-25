@@ -52,4 +52,10 @@
     <string name="enter_passphrase_forgot_password_title">Did you forgot your passphrase?</string>
     <string name="enter_passphrase_forgot_password_message">Unfortunately you cannot access your data if you do not remember your passphrase. Please contact your administrator to unlock your account.</string>
 
+    <string name="fingerprint_setup_use_fingerprint_button">Use Fingerprint</string>
+    <string name="fingerprint_setup_maybe_later_button">Maybe later</string>
+    <string name="fingerprint_setup_configure_title">Configure Fingerprint</string>
+    <string name="fingerprint_setup_configure_description">Configure Fingerprint</string>
+    <string name="fingerprint_setup_use_title">Use Fingerprint instead of passphrase</string>
+    <string name="fingerprint_setup_use_description">Unlock your secrets in a second.</string>
 </resources>

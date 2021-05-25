@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.feature.setup.enterpassphrase.di
+package com.passbolt.mobile.android.feature.setup.fingerprint.di
 
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseContract
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseFragment
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphrasePresenter
+import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintContract
+import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintFragment
+import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintPresenter
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -28,13 +28,10 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-fun Module.enterPassphraseModule() {
-    scope(named<EnterPassphraseFragment>()) {
-        scoped<EnterPassphraseContract.Presenter> {
-            EnterPassphrasePresenter(
-                getAccountDataUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                saveUserAvatarUseCase = get(),
+fun Module.fingerprintModule() {
+    scope(named<FingerprintFragment>()) {
+        scoped<FingerprintContract.Presenter> {
+            FingerprintPresenter(
                 fingerprintProvider = get()
             )
         }
