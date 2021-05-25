@@ -1,11 +1,12 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.UserIdProvider
-import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
+import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
@@ -35,22 +36,40 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-private val updateTransferUseCase = mock<UpdateTransferUseCase>()
-private val saveAccountDataUseCase = mock<SaveAccountDataUseCase>()
-private val selectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
-private val userIdProvider = mock<UserIdProvider>()
-private val savePrivateKeyUseCase = mock<SavePrivateKeyUseCase>()
-private val updateAccountDataUseCase = mock<UpdateAccountDataUseCase>()
+internal val updateTransferUseCase = mock<UpdateTransferUseCase>()
+internal val saveAccountDataUseCase = mock<SaveAccountDataUseCase>()
+internal val selectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
+internal val userIdProvider = mock<UserIdProvider>()
+internal val savePrivateKeyUseCase = mock<SavePrivateKeyUseCase>()
+internal val updateAccountDataUseCase = mock<UpdateAccountDataUseCase>()
+internal val qrParser = mock<ScanQrParser>()
 
 val testScanQrModule = module {
-    factory<ScanQrContract.Presenter> { ScanQrPresenter(get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { updateTransferUseCase }
     factory { saveAccountDataUseCase }
     factory { selectedAccountUseCase }
     factory { userIdProvider }
     factory { savePrivateKeyUseCase }
     factory { updateAccountDataUseCase }
-    factory { ScanQrParser(get(), get(), get()) }
+    factory {
+        ScanQrParser(
+            coroutineLaunchContext = get(),
+            qrScanResultsMapper = get(),
+            keyAssembler = get()
+        )
+    }
     factory { KeyAssembler() }
     factory { QrScanResultsMapper(get()) }
+    factory<ScanQrContract.Presenter> {
+        ScanQrPresenter(
+            coroutineLaunchContext = get(),
+            qrParser = qrParser,
+            updateTransferUseCase = get(),
+            saveAccountDataUseCase = get(),
+            saveSelectedAccountUseCase = get(),
+            userIdProvider = get(),
+            savePrivateKeyUseCase = get(),
+            updateAccountDataUseCase = get()
+        )
+    }
 }
