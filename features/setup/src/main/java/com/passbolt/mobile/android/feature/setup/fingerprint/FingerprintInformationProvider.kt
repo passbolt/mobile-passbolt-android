@@ -1,10 +1,9 @@
-package com.passbolt.mobile.android.feature.setup.enterpassphrase.di
+package com.passbolt.mobile.android.feature.setup.fingerprint
 
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseContract
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseFragment
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphrasePresenter
-import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
+import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,15 +27,13 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-fun Module.enterPassphraseModule() {
-    scope(named<EnterPassphraseFragment>()) {
-        scoped<EnterPassphraseContract.Presenter> {
-            EnterPassphrasePresenter(
-                getAccountDataUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                saveUserAvatarUseCase = get(),
-                fingerprintProvider = get()
-            )
-        }
-    }
+class FingerprintInformationProvider(
+    private val biometricManager: BiometricManager
+) {
+
+    fun hasBiometricSetUp(): Boolean =
+        biometricManager.canAuthenticate(BIOMETRIC_STRONG) == BIOMETRIC_SUCCESS
+
+    fun hasBiometricHardware(): Boolean =
+        biometricManager.canAuthenticate(BIOMETRIC_STRONG) != BIOMETRIC_ERROR_NO_HARDWARE
 }

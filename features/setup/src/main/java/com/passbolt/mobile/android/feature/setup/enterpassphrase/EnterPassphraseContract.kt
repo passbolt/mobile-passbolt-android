@@ -32,11 +32,13 @@ class EnterPassphraseContract {
         fun displayUrl(url: String)
         fun displayEmail(email: String?)
         fun setButtonEnabled(enabled: Boolean)
+        fun navigateToBiometricSetup()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun forgotPasswordCLick()
+        fun forgotPasswordClick()
         fun onImageLoaded(image: ByteArray)
         fun passwordChanged(isEmpty: Boolean)
+        fun singInClick()
     }
 }

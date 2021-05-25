@@ -1,9 +1,20 @@
 package com.passbolt.mobile.android.feature.setup.enterpassphrase
 
+import com.nhaarman.mockitokotlin2.mock
+import com.passbolt.mobile.android.common.UserIdProvider
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintInformationProvider
+import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveUserAvatarUseCase
+import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,48 +38,16 @@ import com.passbolt.mobile.android.storage.usecase.SaveUserAvatarUseCase
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class EnterPassphrasePresenter(
-    private val getAccountDataUseCase: GetAccountDataUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val saveUserAvatarUseCase: SaveUserAvatarUseCase,
-    private val fingerprintProvider: FingerprintInformationProvider
-) : EnterPassphraseContract.Presenter {
 
-    override var view: EnterPassphraseContract.View? = null
+val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
+val getAccountDataUseCase = mock<GetAccountDataUseCase>()
+val getSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
+val saveUserAvatarUseCase = mock<SaveUserAvatarUseCase>()
 
-    override fun attach(view: EnterPassphraseContract.View) {
-        super.attach(view)
-        displayAccount()
-    }
-
-    private fun displayAccount() {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val accountData = getAccountDataUseCase.execute(GetAccountDataUseCase.Input(userId))
-        accountData.avatarUrl?.let {
-            view?.displayAvatar(it)
-        }
-        view?.displayName("${accountData.firstName} ${accountData.lastName}")
-        view?.displayUrl(accountData.url)
-        view?.displayEmail(accountData.email)
-    }
-
-    override fun passwordChanged(isEmpty: Boolean) {
-        view?.setButtonEnabled(!isEmpty)
-    }
-
-    override fun onImageLoaded(image: ByteArray) {
-        saveUserAvatarUseCase.execute(SaveUserAvatarUseCase.Input(image))
-    }
-
-    override fun forgotPasswordClick() {
-        view?.showForgotPasswordDialog()
-    }
-
-    override fun singInClick() {
-        if (fingerprintProvider.hasBiometricHardware()) {
-            view?.navigateToBiometricSetup()
-        } else {
-            // TODO
-        }
-    }
+val enterPassphraseModule = module {
+    factory<EnterPassphraseContract.Presenter> { EnterPassphrasePresenter(get(), get(), get(), get()) }
+    factory { fingerprintInformationProvider }
+    factory { getAccountDataUseCase }
+    factory { getSelectedAccountUseCase }
+    factory { saveUserAvatarUseCase }
 }

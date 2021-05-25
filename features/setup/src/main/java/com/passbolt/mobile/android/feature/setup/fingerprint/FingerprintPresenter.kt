@@ -1,10 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.enterpassphrase.di
-
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseContract
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseFragment
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphrasePresenter
-import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+package com.passbolt.mobile.android.feature.setup.fingerprint
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,15 +22,24 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-fun Module.enterPassphraseModule() {
-    scope(named<EnterPassphraseFragment>()) {
-        scoped<EnterPassphraseContract.Presenter> {
-            EnterPassphrasePresenter(
-                getAccountDataUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                saveUserAvatarUseCase = get(),
-                fingerprintProvider = get()
-            )
+class FingerprintPresenter(
+    private val fingerprintProvider: FingerprintInformationProvider
+) : FingerprintContract.Presenter {
+    override var view: FingerprintContract.View? = null
+
+    override fun resume() {
+        if (fingerprintProvider.hasBiometricSetUp()) {
+            view?.showUseFingerprint()
+        } else {
+            view?.showConfigureFingerprint()
+        }
+    }
+
+    override fun useFingerprintButtonClick() {
+        if (fingerprintProvider.hasBiometricSetUp()) {
+            // TODO
+        } else {
+            view?.navigateToBiometricSettings()
         }
     }
 }
