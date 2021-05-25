@@ -6,11 +6,9 @@ afterEvaluate { project ->
     def isAndroidComponent = project.plugins.hasPlugin("com.android.library") ||
         project.plugins.hasPlugin("com.android.dynamic-feature")
 
-    if (project.getName() != "Gopenpgp") {
-        setupModule(isAndroid, isAndroidComponent)
-        setupCommonDependencies(isAndroid)
-        setupCommonTasks(isAndroid)
-    }
+    setupModule(isAndroid, isAndroidComponent)
+    setupCommonDependencies(isAndroid)
+    setupCommonTasks(isAndroid)
 }
 
 def setupModule(isAndroid, isAndroidComponent) {
@@ -77,6 +75,7 @@ def setupCommonDependencies(isAndroid) {
         if (isAndroid) {
             androidTestImplementation libs.test.androidxJUnit
             androidTestImplementation libs.test.espressoCore
+            androidTestImplementation libs.test.truth
         }
         coreLibraryDesugaring libs.desugarJdkLibs
     }

@@ -12,7 +12,7 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.androidx.security
 
-    implementation libs.kotlin.io
+//    implementation libs.kotlin.io
 
     /* DI */
     implementation libs.di.koin
