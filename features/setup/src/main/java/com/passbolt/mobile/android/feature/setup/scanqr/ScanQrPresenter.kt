@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.passbolt.mobile.android.common.UserIdProvider
-import com.passbolt.mobile.android.common.extension.eraseArray
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
@@ -120,7 +119,7 @@ class ScanQrPresenter(
         }
     }
 
-    private suspend fun parserFinishedWithSuccess(armoredKey: CharArray) {
+    private suspend fun parserFinishedWithSuccess(armoredKey: String) {
         when (savePrivateKeyUseCase.execute(SavePrivateKeyUseCase.Input(userId, armoredKey))) {
             SavePrivateKeyUseCase.Output.AlreadyExist -> {
                 updateTransfer(pageNumber = currentPage, Status.ERROR)
@@ -131,7 +130,6 @@ class ScanQrPresenter(
                 view?.navigateToSummary(ResultStatus.Success)
             }
         }
-        armoredKey.eraseArray()
     }
 
     private suspend fun updateTransfer(pageNumber: Int, status: Status = Status.IN_PROGRESS) {

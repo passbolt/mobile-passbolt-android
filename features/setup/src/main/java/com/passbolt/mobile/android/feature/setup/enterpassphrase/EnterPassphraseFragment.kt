@@ -13,6 +13,7 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.ui.text.textinputfield.TextInputView
 
 /**
  * Passbolt - Open source password manager for teams
@@ -51,9 +52,11 @@ class EnterPassphraseFragment :
     }
 
     private fun setListeners() {
-        binding.forgotPasswordButton.setDebouncingOnClick { presenter.forgotPasswordClick() }
-        binding.signInButton.setDebouncingOnClick { presenter.singInClick() }
-        binding.password.setIsEmptyListener { presenter.passwordChanged(it) }
+        with(binding) {
+            forgotPasswordButton.setDebouncingOnClick { presenter.forgotPasswordClick() }
+            signInButton.setDebouncingOnClick { presenter.singInClick(password.getText()!!) }
+            password.setIsEmptyListener { presenter.passwordChanged(it) }
+        }
     }
 
     override fun showForgotPasswordDialog() {
@@ -94,5 +97,9 @@ class EnterPassphraseFragment :
         findNavController().navigate(
             EnterPassphraseFragmentDirections.actionEnterPassphraseFragmentToFingerprintFragment()
         )
+    }
+
+    override fun showWrongPassphraseError() {
+        binding.password.setState(TextInputView.State.Error(getString(R.string.enter_passphrase_wrong_passphrase)))
     }
 }

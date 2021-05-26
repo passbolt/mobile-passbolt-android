@@ -1,8 +1,6 @@
 package com.passbolt.mobile.android.storage.usecase
 
 import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.common.extension.eraseArray
-import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 import timber.log.Timber
 
@@ -43,7 +41,6 @@ class SavePrivateKeyUseCase(
             encryptedFile.openFileOutput().use {
                 it.write(bytes)
             }
-            bytes?.eraseArray()
             Output.Success
         } catch (e: Exception) {
             Output.AlreadyExist
@@ -57,6 +54,6 @@ class SavePrivateKeyUseCase(
 
     class Input(
         val userId: String,
-        val privateKey: CharArray
+        val privateKey: String
     )
 }

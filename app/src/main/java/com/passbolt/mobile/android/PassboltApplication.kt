@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.qrscan.di.barcodeScanModule
 import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
 import com.passbolt.mobile.android.di.appModule
 import com.passbolt.mobile.android.feature.setup.setupModule
+import com.passbolt.mobile.android.gopenpgp.di.openPgpModule
 import com.passbolt.mobile.android.service.registration.di.passboltApiModule
 import com.passbolt.mobile.android.storage.di.storageModule
 import org.koin.android.ext.koin.androidContext
@@ -67,6 +68,7 @@ class PassboltApplication : Application(), KoinComponent {
             androidContext(this@PassboltApplication)
             modules(
                 appModule,
+                openPgpModule,
                 setupModule,
                 mappersModule,
                 mvpModule,

@@ -71,6 +71,6 @@ sealed class ParseResult {
     }
 
     class FinishedWithSuccess(
-        val armoredKey: CharArray
+        val armoredKey: String
     ) : ParseResult()
 }
