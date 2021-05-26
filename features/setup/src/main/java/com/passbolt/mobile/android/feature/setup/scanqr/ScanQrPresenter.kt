@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -199,7 +200,7 @@ class ScanQrPresenter(
     }
 
     override fun detach() {
-        scope.cancel()
+        scope.coroutineContext.cancelChildren()
         super.detach()
     }
 }
