@@ -8,8 +8,12 @@ import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
+import com.passbolt.mobile.android.feature.setup.scanqr.di.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
+import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
+import org.koin.core.scope.Scope
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,22 +41,22 @@ import org.koin.android.ext.android.inject
 class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBinding::inflate), ScanQrContract.View {
 
     private val presenter: ScanQrContract.Presenter by inject()
-    private val scanManager: ScanManager by inject()
+    private lateinit var scanManagerScope: Scope
+    private lateinit var scanManager: ScanManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        scanManagerScope = getKoin().getOrCreateScope("scanMangerScope", named(SCAN_MANAGER_SCOPE))
+        scanManager = scanManagerScope.get()
+        presenter.attach(this)
         initToolbar()
     }
 
-    override fun onStart() {
-        super.onStart()
-        presenter.attach(this)
-    }
-
-    override fun onStop() {
+    override fun onDestroyView() {
         scanManager.detach()
+        scanManagerScope.close()
         presenter.detach()
-        super.onStop()
+        super.onDestroyView()
     }
 
     override fun scanResultChannel() = scanManager.barcodeScanPublisher

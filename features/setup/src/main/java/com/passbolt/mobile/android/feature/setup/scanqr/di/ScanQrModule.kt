@@ -1,13 +1,14 @@
 package com.passbolt.mobile.android.feature.setup.scanqr.di
 
 import com.google.gson.GsonBuilder
+import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrContract
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrFragment
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrPresenter
-import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
+import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -33,7 +34,11 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+internal const val SCAN_MANAGER_SCOPE = "SCAN_MANAGER_SCOPE"
+
 fun Module.scanQrModule() {
+
     scope(named<ScanQrFragment>()) {
         scoped<ScanQrContract.Presenter> {
             ScanQrPresenter(get(), get(), get(), get(), get(), get(), get(), get())
@@ -53,6 +58,19 @@ fun Module.scanQrModule() {
                 qrScanResultsMapper = get(),
                 keyAssembler = get(),
                 coroutineLaunchContext = get()
+            )
+        }
+    }
+
+    scope(named(SCAN_MANAGER_SCOPE)) {
+        scoped {
+            ScanManager(
+                cameraProviderFuture = get(),
+                previewUseCase = get(),
+                cameraSelector = get(),
+                cameraBarcodeAnalyzer = get(),
+                imageAnalysisUseCase = get(),
+                mainExecutor = get()
             )
         }
     }
