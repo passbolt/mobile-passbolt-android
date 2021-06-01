@@ -51,6 +51,7 @@
     <string name="enter_passphrase_password_hint">Enter your passphrase</string>
     <string name="enter_passphrase_forgot_password_title">Did you forgot your passphrase?</string>
     <string name="enter_passphrase_forgot_password_message">Unfortunately you cannot access your data if you do not remember your passphrase. Please contact your administrator to unlock your account.</string>
+    <string name="enter_passphrase_wrong_passphrase">Passphrase is wrong!</string>
 
     <string name="fingerprint_setup_use_fingerprint_button">Use Fingerprint</string>
     <string name="fingerprint_setup_maybe_later_button">Maybe later</string>

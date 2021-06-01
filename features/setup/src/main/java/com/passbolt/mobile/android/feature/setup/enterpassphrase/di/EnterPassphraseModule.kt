@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.setup.enterpassphrase.di
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseContract
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseFragment
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphrasePresenter
+import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -35,7 +36,15 @@ fun Module.enterPassphraseModule() {
                 getAccountDataUseCase = get(),
                 getSelectedAccountUseCase = get(),
                 saveUserAvatarUseCase = get(),
-                fingerprintProvider = get()
+                fingerprintProvider = get(),
+                getPrivateKeyUseCase = get(),
+                verifyPassphraseUseCase = get(),
+                coroutineLaunchContext = get()
+            )
+        }
+        scoped {
+            VerifyPassphraseUseCase(
+                openPgp = get()
             )
         }
     }

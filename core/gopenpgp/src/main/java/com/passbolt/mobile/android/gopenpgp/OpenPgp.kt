@@ -94,24 +94,22 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
 
     @Throws(OpenPgpException::class)
     suspend fun unlockKey(
-        privateKey: ByteArray,
+        privateKey: String?,
         passphrase: ByteArray
     ): Boolean {
         return try {
             withContext(Dispatchers.IO) {
-                val privateKeyInput = String(privateKey)
                 val passphraseCopy = ByteArray(passphrase.size) { passphrase[it] }
 
-                val key = Key(privateKeyInput)
+                val key = Key(privateKey)
                 val unlockedKey = key.unlock(passphraseCopy)
 
-                privateKeyInput.erase()
                 passphraseCopy.erase()
 
                 unlockedKey.isUnlocked
             }
         } catch (exception: Exception) {
-            Timber.e(exception, "There was an error during decryptVerifyMessageArmored")
+            Timber.e(exception, "There was an error during unlockKey")
             throw gopenPgpExceptionParser.parseGopenPgpException(exception)
         } finally {
             Helper.freeOSMemory()

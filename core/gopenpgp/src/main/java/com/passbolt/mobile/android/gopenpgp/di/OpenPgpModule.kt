@@ -1,9 +1,8 @@
-package com.passbolt.mobile.android.storage.usecase
+package com.passbolt.mobile.android.gopenpgp.di
 
-import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
-import timber.log.Timber
-import java.io.IOException
+import com.passbolt.mobile.android.gopenpgp.OpenPgp
+import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,30 +26,7 @@ import java.io.IOException
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-class GetPrivateKeyUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : UseCase<Unit, GetPrivateKeyUseCase.Output> {
-
-    override fun execute(input: Unit): Output {
-        return try {
-            val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-            val name = "${PRIVATE_KEY_FILE_NAME}_$userId"
-            Timber.d("Getting private key. Filename: $name")
-
-            val encryptedFile = encryptedFileFactory.get(name, name)
-            encryptedFile.openFileInput().use {
-                val bytes = it.readBytes()
-                Output(String(bytes))
-            }
-        } catch (exception: IOException) {
-            Timber.e(exception)
-            Output(null)
-        }
-    }
-
-    class Output(
-        val privateKey: String?
-    )
+val openPgpModule = module {
+    single { GopenPgpExceptionParser() }
+    single { OpenPgp(gopenPgpExceptionParser = get()) }
 }

@@ -10,7 +10,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
-import com.passbolt.mobile.android.common.extension.setIsEmptyListener
+import androidx.core.widget.addTextChangedListener
+import com.passbolt.mobile.android.common.extension.toCharArray
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewTextInputBinding
 
@@ -80,6 +81,7 @@ open class TextInputView @JvmOverloads constructor(
     init {
         parseAttributes(attrs)
         setInitialState()
+        setFocusChangeListener()
     }
 
     override fun onDetachedFromWindow() {
@@ -103,7 +105,14 @@ open class TextInputView @JvmOverloads constructor(
     }
 
     fun setIsEmptyListener(textChange: (Boolean) -> Unit) {
-        textWatcher = binding.input.setIsEmptyListener(textChange)
+        textWatcher = binding.input.addTextChangedListener {
+            textChange.invoke(it.isNullOrEmpty())
+            setInitialState()
+        }
+    }
+
+    private fun setFocusChangeListener() {
+        binding.textLayout.setOnFocusChangeListener { _, hasFocus -> if (hasFocus) setState(State.Initial) }
     }
 
     private fun setErrorState(message: String) {
@@ -119,6 +128,9 @@ open class TextInputView @JvmOverloads constructor(
             textLayout.error = ""
         }
     }
+
+    fun getText(): CharArray? =
+        binding.input.text?.toCharArray()
 
     sealed class State {
         object Initial : State()

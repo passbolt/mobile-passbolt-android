@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.storage.usecase
+package com.passbolt.mobile.android.common.extension
 
-import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
-import timber.log.Timber
-import java.io.IOException
+import android.text.Editable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,30 +24,8 @@ import java.io.IOException
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-class GetPrivateKeyUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : UseCase<Unit, GetPrivateKeyUseCase.Output> {
-
-    override fun execute(input: Unit): Output {
-        return try {
-            val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-            val name = "${PRIVATE_KEY_FILE_NAME}_$userId"
-            Timber.d("Getting private key. Filename: $name")
-
-            val encryptedFile = encryptedFileFactory.get(name, name)
-            encryptedFile.openFileInput().use {
-                val bytes = it.readBytes()
-                Output(String(bytes))
-            }
-        } catch (exception: IOException) {
-            Timber.e(exception)
-            Output(null)
-        }
-    }
-
-    class Output(
-        val privateKey: String?
-    )
+fun Editable.toCharArray(): CharArray {
+    val charArray = CharArray(length)
+    getChars(0, length, charArray, 0)
+    return charArray
 }

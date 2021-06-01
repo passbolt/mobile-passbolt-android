@@ -82,7 +82,8 @@ val storageModule = module {
     }
     single {
         GetPrivateKeyUseCase(
-            encryptedFileFactory = get()
+            encryptedFileFactory = get(),
+            getSelectedAccountUseCase = get()
         )
     }
     single {

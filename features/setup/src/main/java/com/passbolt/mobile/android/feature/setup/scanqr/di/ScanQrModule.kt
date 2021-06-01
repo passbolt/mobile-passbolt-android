@@ -39,7 +39,7 @@ fun Module.scanQrModule() {
             ScanQrPresenter(get(), get(), get(), get(), get(), get(), get(), get())
         }
         scoped { QrScanResultsMapper(gson = get()) }
-        scoped { KeyAssembler() }
+        scoped { KeyAssembler(gson = get()) }
         scoped { GsonBuilder().create() }
         scoped {
             UpdateTransferUseCase(

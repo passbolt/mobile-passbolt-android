@@ -2,12 +2,15 @@ package com.passbolt.mobile.android.feature.setup.enterpassphrase
 
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.UserIdProvider
+import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.setup.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintInformationProvider
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
@@ -43,11 +46,25 @@ val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
 val getAccountDataUseCase = mock<GetAccountDataUseCase>()
 val getSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 val saveUserAvatarUseCase = mock<SaveUserAvatarUseCase>()
+val getPrivateKeyUseCase = mock<GetPrivateKeyUseCase>()
+val verifyPassphraseUseCase = mock<VerifyPassphraseUseCase>()
 
 val enterPassphraseModule = module {
-    factory<EnterPassphraseContract.Presenter> { EnterPassphrasePresenter(get(), get(), get(), get()) }
+    factory<EnterPassphraseContract.Presenter> {
+        EnterPassphrasePresenter(
+            getAccountDataUseCase = get(),
+            getSelectedAccountUseCase = get(),
+            saveUserAvatarUseCase = get(),
+            fingerprintProvider = get(),
+            getPrivateKeyUseCase = get(),
+            verifyPassphraseUseCase = get(),
+            coroutineLaunchContext = get()
+        )
+    }
     factory { fingerprintInformationProvider }
     factory { getAccountDataUseCase }
     factory { getSelectedAccountUseCase }
     factory { saveUserAvatarUseCase }
+    factory { getPrivateKeyUseCase }
+    factory { verifyPassphraseUseCase }
 }

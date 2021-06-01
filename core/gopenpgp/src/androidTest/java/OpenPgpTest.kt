@@ -112,7 +112,7 @@ class OpenPgpTest : KoinTest {
     @Test
     fun test_keyShouldBeUnlockedWithCorrectPassphrase() = runBlocking {
         val isUnlocked = openPgp.unlockKey(
-            gracePrivateKey,
+            String(gracePrivateKey),
             GRACE_KEY_CORRECT_PASSPHRASE
         )
         assertTrue(isUnlocked)
@@ -122,7 +122,7 @@ class OpenPgpTest : KoinTest {
     fun test_keyShouldNotBeUnlockedWithWrongPassphrase() = runBlocking {
         try {
             val ignored = openPgp.unlockKey(
-                gracePrivateKey,
+                String(gracePrivateKey),
                 GRACE_KEY_WRONG_PASSPHRASE
             )
         } catch (exception: Exception) {

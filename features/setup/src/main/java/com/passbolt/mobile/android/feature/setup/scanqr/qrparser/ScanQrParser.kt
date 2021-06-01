@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.setup.scanqr.qrparser
 
-import com.passbolt.mobile.android.common.extension.eraseArray
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -96,7 +95,6 @@ class ScanQrParser(
             if (scannedBytes.sha512().hex() == hash) {
                 val assembledKey = keyAssembler.assemblePrivateKey(scannedBytes)
                 _pareResultFlow.tryEmit(ParseResult.FinishedWithSuccess(assembledKey))
-                assembledKey.eraseArray()
             } else {
                 _pareResultFlow.tryEmit(ParseResult.Failure())
             }

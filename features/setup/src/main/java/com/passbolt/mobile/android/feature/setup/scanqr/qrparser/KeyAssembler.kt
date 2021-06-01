@@ -1,8 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.scanqr.qrparser
 
-import com.passbolt.mobile.android.common.extension.eraseArray
-import com.passbolt.mobile.android.common.extension.findPosition
-import com.passbolt.mobile.android.common.extension.toCharArray
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import okio.Buffer
 
 /**
@@ -27,22 +26,20 @@ import okio.Buffer
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class KeyAssembler {
+class KeyAssembler(
+    private val gson: Gson
+) {
 
-    fun assemblePrivateKey(contentBytes: Buffer): CharArray {
-        val charArray = contentBytes.readByteArray().toCharArray()
-        val keyStartPosition =
-            charArray.findPosition(ARMORED_KEY_TEXT.toCharArray()) + ARMORED_KEY_TEXT.length
-        val keyEndPosition = charArray.lastIndexOf(ARMORED_KEY_END_CHAR) - 1
+    fun assemblePrivateKey(contentBytes: Buffer): String {
+        val key = String(contentBytes.readByteArray())
 
-        val privateKey = charArray.slice(IntRange(keyStartPosition, keyEndPosition)).toCharArray()
-        charArray.eraseArray()
+        val assembledKey = gson.fromJson(key, AssembledKey::class.java)
 
-        return privateKey
-    }
-
-    private companion object {
-        private const val ARMORED_KEY_TEXT = "\"armored_key\":\""
-        private const val ARMORED_KEY_END_CHAR = '}'
+        return assembledKey.armoredKey
     }
 }
+
+class AssembledKey(
+    @SerializedName("armored_key")
+    val armoredKey: String
+)

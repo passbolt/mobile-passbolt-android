@@ -58,7 +58,11 @@ val testScanQrModule = module {
             keyAssembler = get()
         )
     }
-    factory { KeyAssembler() }
+    factory {
+        KeyAssembler(
+            gson = get()
+        )
+    }
     factory { QrScanResultsMapper(get()) }
     factory<ScanQrContract.Presenter> {
         ScanQrPresenter(

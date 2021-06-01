@@ -1,9 +1,15 @@
 package com.passbolt.mobile.android.feature.setup.enterpassphrase
 
+import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintInformationProvider
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveUserAvatarUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase.Input
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,10 +37,15 @@ class EnterPassphrasePresenter(
     private val getAccountDataUseCase: GetAccountDataUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val saveUserAvatarUseCase: SaveUserAvatarUseCase,
-    private val fingerprintProvider: FingerprintInformationProvider
+    private val fingerprintProvider: FingerprintInformationProvider,
+    private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
+    private val verifyPassphraseUseCase: VerifyPassphraseUseCase,
+    coroutineLaunchContext: CoroutineLaunchContext
 ) : EnterPassphraseContract.Presenter {
 
     override var view: EnterPassphraseContract.View? = null
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     override fun attach(view: EnterPassphraseContract.View) {
         super.attach(view)
@@ -64,7 +75,23 @@ class EnterPassphrasePresenter(
         view?.showForgotPasswordDialog()
     }
 
-    override fun singInClick() {
+    override fun singInClick(passphrase: CharArray) {
+        validatePassphrase(passphrase)
+    }
+
+    private fun validatePassphrase(passphrase: CharArray) {
+        scope.launch {
+            val privateKey = requireNotNull(getPrivateKeyUseCase.execute(Unit).privateKey)
+            val isCorrect = verifyPassphraseUseCase.execute(Input(privateKey, passphrase)).isCorrect
+            if (!isCorrect) {
+                view?.showWrongPassphraseError()
+            } else {
+                navigateToNextScreen()
+            }
+        }
+    }
+
+    private fun navigateToNextScreen() {
         if (fingerprintProvider.hasBiometricHardware()) {
             view?.navigateToBiometricSetup()
         } else {

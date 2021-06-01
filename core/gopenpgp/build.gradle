@@ -10,6 +10,7 @@ repositories {
 
 dependencies {
     implementation(name: "Gopenpgp", ext: "aar")
+    implementation project(":common")
 
     implementation libs.di.koin
     implementation libs.di.koinExt

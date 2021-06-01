@@ -162,7 +162,7 @@ class ScanQrPresenterTest : KoinTest {
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
 
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
-        parseFlow.emit(ParseResult.FinishedWithSuccess(CharArray(1)))
+        parseFlow.emit(ParseResult.FinishedWithSuccess("key"))
 
         verify(view).initializeProgress(TOTAL_PAGES - 1)
         verify(view).showKeepGoing()
@@ -180,7 +180,7 @@ class ScanQrPresenterTest : KoinTest {
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.AlreadyExist)
 
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
-        parseFlow.emit(ParseResult.FinishedWithSuccess(CharArray(1)))
+        parseFlow.emit(ParseResult.FinishedWithSuccess("key"))
 
         verify(view).initializeProgress(TOTAL_PAGES - 1)
         verify(view).showKeepGoing()

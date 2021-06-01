@@ -1,9 +1,9 @@
-package com.passbolt.mobile.android.storage.usecase
+package com.passbolt.mobile.android.feature.setup.enterpassphrase
 
-import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
+import com.passbolt.mobile.android.common.AsyncUseCase
+import com.passbolt.mobile.android.common.extension.toByteArray
+import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import timber.log.Timber
-import java.io.IOException
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,30 +27,25 @@ import java.io.IOException
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class VerifyPassphraseUseCase(
+    private val openPgp: OpenPgp
+) : AsyncUseCase<VerifyPassphraseUseCase.Input, VerifyPassphraseUseCase.Output> {
 
-class GetPrivateKeyUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : UseCase<Unit, GetPrivateKeyUseCase.Output> {
-
-    override fun execute(input: Unit): Output {
+    override suspend fun execute(input: Input): Output {
         return try {
-            val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-            val name = "${PRIVATE_KEY_FILE_NAME}_$userId"
-            Timber.d("Getting private key. Filename: $name")
-
-            val encryptedFile = encryptedFileFactory.get(name, name)
-            encryptedFile.openFileInput().use {
-                val bytes = it.readBytes()
-                Output(String(bytes))
-            }
-        } catch (exception: IOException) {
+            Output(openPgp.unlockKey(input.privateKey, input.passphrase.toByteArray()!!))
+        } catch (exception: Exception) {
             Timber.e(exception)
-            Output(null)
+            Output(false)
         }
     }
 
+    class Input(
+        val privateKey: String,
+        val passphrase: CharArray
+    )
+
     class Output(
-        val privateKey: String?
+        val isCorrect: Boolean
     )
 }
