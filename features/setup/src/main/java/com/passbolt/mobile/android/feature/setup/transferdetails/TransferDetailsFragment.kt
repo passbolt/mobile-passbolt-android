@@ -103,7 +103,6 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
     }
 
     override fun showCameraRequiredDialog() {
-        // TODO PAS-97
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.transfer_details_camera_required_dialog_title)
             .setMessage(R.string.transfer_details_camera_required_dialog_message)
