@@ -7,7 +7,9 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
+import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
 import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
+import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.Executor
 
 class ScanManager constructor(
@@ -19,7 +21,8 @@ class ScanManager constructor(
     private val mainExecutor: Executor
 ) {
 
-    val barcodeScanPublisher = cameraBarcodeAnalyzer.resultFlow
+    val barcodeScanPublisher: StateFlow<BarcodeScanResult>
+        get() = cameraBarcodeAnalyzer.resultFlow
 
     @Throws(IllegalStateException::class, IllegalArgumentException::class)
     fun attach(owner: LifecycleOwner, cameraPreview: PreviewView) {

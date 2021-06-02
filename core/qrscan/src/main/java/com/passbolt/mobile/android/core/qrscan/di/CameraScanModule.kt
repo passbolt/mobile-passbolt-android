@@ -7,7 +7,6 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 import java.util.concurrent.Executor
@@ -40,16 +39,6 @@ val cameraScanModule = module {
     factory { provideCameraProviderFuture(androidApplication()) }
     factory { provideCameraSelector() }
     factory { provideMainExecutor(androidApplication()) }
-    factory {
-        ScanManager(
-            cameraProviderFuture = get(),
-            previewUseCase = get(),
-            cameraSelector = get(),
-            cameraBarcodeAnalyzer = get(),
-            imageAnalysisUseCase = get(),
-            mainExecutor = get()
-        )
-    }
 }
 
 // https://firebase.google.com/docs/ml-kit/android/read-barcodes?hl=en#input-image-guidelines
