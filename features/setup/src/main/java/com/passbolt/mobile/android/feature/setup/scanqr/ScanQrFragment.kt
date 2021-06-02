@@ -46,7 +46,7 @@ class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        scanManagerScope = getKoin().getOrCreateScope("scanMangerScope", named(SCAN_MANAGER_SCOPE))
+        scanManagerScope = getKoin().getOrCreateScope(SCAN_MANAGER_SCOPE, named(SCAN_MANAGER_SCOPE))
         scanManager = scanManagerScope.get()
         presenter.attach(this)
         initToolbar()
