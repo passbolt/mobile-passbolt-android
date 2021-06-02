@@ -1,11 +1,12 @@
-package com.passbolt.mobile.android.core.ui.text
+package com.passbolt.mobile.android.core.ui
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.LinearLayout
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.core.ui.databinding.ViewCircleStepRowBinding
+import android.widget.FrameLayout
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
+import com.passbolt.mobile.android.core.ui.databinding.ViewTextCircleBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,28 +31,27 @@ import com.passbolt.mobile.android.core.ui.databinding.ViewCircleStepRowBinding
  * @since v1.0
  */
 
-class CircleStepsView @JvmOverloads constructor(
+class ImageTextCircle @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+) : FrameLayout(context, attrs, defStyle) {
+
+    private val binding = ViewTextCircleBinding.inflate(LayoutInflater.from(context), this)
 
     init {
-        orientation = VERTICAL
+        background = ContextCompat.getDrawable(context, R.drawable.circle_gray)
     }
 
-    fun addList(list: List<CircleStepItemModel>) {
-        list.forEachIndexed { index, model ->
-            val row = ViewCircleStepRowBinding.inflate(LayoutInflater.from(context))
-            row.titleLabel.text = model.text
-            with(row.circle) {
-                setText("${index + 1}")
-                model.icon?.let { setImageResource(it) }
-            }
-            if (index == list.size - 1) {
-                row.line.gone()
-            }
-            addView(row.root)
-        }
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
+    }
+
+    fun setText(text: String) {
+        binding.textLabel.text = text
+    }
+
+    fun setImageResource(@DrawableRes drawableRes: Int) {
+        binding.iconImage.setImageResource(drawableRes)
     }
 }

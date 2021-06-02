@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/dp_4">
 
-    <com.passbolt.mobile.android.core.ui.TextCircle
+    <com.passbolt.mobile.android.core.ui.ImageTextCircle
         android:id="@+id/circle"
         android:layout_width="@dimen/dp_24"
         android:layout_height="@dimen/dp_24"

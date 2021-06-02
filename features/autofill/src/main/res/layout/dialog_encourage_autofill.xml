@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/dp_16"
+        android:paddingEnd="@dimen/dp_16">
+
+        <ImageView
+            android:id="@+id/closeButton"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_close"
+            android:layout_marginTop="@dimen/dp_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/headerLabel"
+            style="@style/Heading1Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/dialog_encourage_autofill_header"
+            android:textColor="@color/text_primary"
+            app:layout_constraintBottom_toTopOf="@id/stepsView"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintTop_toBottomOf="@id/closeButton" />
+
+        <com.passbolt.mobile.android.core.ui.text.CircleStepsView
+            android:id="@+id/stepsView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_48"
+            app:layout_constraintBottom_toTopOf="@id/goToSettingsButton"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/headerLabel" />
+
+        <Button
+            android:id="@+id/goToSettingsButton"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginBottom="@dimen/dp_24"
+            android:text="@string/dialog_encourage_autofill_go_to_settings"
+            app:layout_constraintBottom_toTopOf="@id/maybeLaterButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/maybeLaterButton"
+            style="@style/ButtonSmallText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_32"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/dp_16"
+            android:text="@string/dialog_encourage_autofill_maybe_later"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
