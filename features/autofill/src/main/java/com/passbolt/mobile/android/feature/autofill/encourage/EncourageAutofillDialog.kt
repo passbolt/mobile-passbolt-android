@@ -96,9 +96,11 @@ class EncourageAutofillDialog : DialogFragment(), EncourageAutofillContract.View
     }
 
     private fun setupListeners(binding: DialogEncourageAutofillBinding) {
-        binding.goToSettingsButton.setDebouncingOnClick { presenter.goToSettingsClick() }
-        binding.maybeLaterButton.setDebouncingOnClick { listener?.setupAutofillLaterClick() }
-        binding.closeButton.setDebouncingOnClick { dismiss() }
+        with(binding) {
+            goToSettingsButton.setDebouncingOnClick { presenter.goToSettingsClick() }
+            maybeLaterButton.setDebouncingOnClick { listener?.setupAutofillLaterClick() }
+            closeButton.setDebouncingOnClick { dismiss() }
+        }
     }
 
     override fun openAutofillSettings() {
