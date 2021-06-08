@@ -34,7 +34,7 @@ class UpdateAccountDataUseCase(
     override fun execute(input: Input) {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
         val alias = "${ACCOUNTS_DATA_ALIAS}_$userId"
-        val sharedPreferences = encryptedSharedPreferencesFactory.get(alias, "$alias.xml")
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$alias.xml")
         with(sharedPreferences.edit()) {
             input.firstName?.let { putString(USER_FIRST_NAME_KEY, it) }
             input.lastName?.let { putString(USER_LAST_NAME_KEY, it) }

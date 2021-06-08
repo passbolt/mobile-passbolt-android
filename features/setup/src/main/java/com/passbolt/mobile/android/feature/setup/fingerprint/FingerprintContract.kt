@@ -31,10 +31,15 @@ interface FingerprintContract {
         fun showUseFingerprint()
         fun showConfigureFingerprint()
         fun navigateToBiometricSettings()
+        fun showBiometricPrompt()
+        fun showAuthenticationError()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun useFingerprintButtonClick()
         fun resume()
+        fun authenticationSucceeded()
+        fun authenticationError(error: String)
+        fun authenticationFailed()
     }
 }

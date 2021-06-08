@@ -39,7 +39,7 @@ class GetPrivateKeyUseCase(
             val name = "${PRIVATE_KEY_FILE_NAME}_$userId"
             Timber.d("Getting private key. Filename: $name")
 
-            val encryptedFile = encryptedFileFactory.get(name, name)
+            val encryptedFile = encryptedFileFactory.get(name)
             encryptedFile.openFileInput().use {
                 val bytes = it.readBytes()
                 Output(String(bytes))

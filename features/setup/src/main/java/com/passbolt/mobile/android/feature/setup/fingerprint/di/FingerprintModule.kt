@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint.di
 
+import androidx.biometric.BiometricPrompt
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintContract
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintFragment
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintPresenter
@@ -32,8 +33,11 @@ fun Module.fingerprintModule() {
     scope(named<FingerprintFragment>()) {
         scoped<FingerprintContract.Presenter> {
             FingerprintPresenter(
-                fingerprintProvider = get()
+                fingerprintProvider = get(),
+                savePassphraseUseCase = get(),
+                coroutineLaunchContext = get()
             )
         }
+        scoped { BiometricPrompt.PromptInfo.Builder() }
     }
 }

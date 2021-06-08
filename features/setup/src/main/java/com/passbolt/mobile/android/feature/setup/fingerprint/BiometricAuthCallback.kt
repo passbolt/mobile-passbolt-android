@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.storage.usecase
+package com.passbolt.mobile.android.feature.setup.fingerprint
 
-import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
-import timber.log.Timber
+import androidx.biometric.BiometricPrompt
+import androidx.biometric.BiometricPrompt.ERROR_NEGATIVE_BUTTON
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,33 +26,29 @@ import timber.log.Timber
  * @since v1.0
  */
 
-class SavePrivateKeyUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory
-) : UseCase<SavePrivateKeyUseCase.Input, SavePrivateKeyUseCase.Output> {
+class BiometricAuthCallback(
+    private val authError: (String) -> Unit,
+    private val authSucceeded: () -> Unit,
+    private val authFailed: () -> Unit
+) : BiometricPrompt.AuthenticationCallback() {
 
-    override fun execute(input: Input): Output {
-        val name = "${PRIVATE_KEY_FILE_NAME}_${input.userId}"
-        Timber.d("Saving private key. Filename: $name")
-
-        val encryptedFile = encryptedFileFactory.get(name)
-        return try {
-            val bytes = input.privateKey.toByteArray()
-            encryptedFile.openFileOutput().use {
-                it.write(bytes)
-            }
-            Output.Success
-        } catch (e: Exception) {
-            Output.AlreadyExist
+    override fun onAuthenticationError(
+        errorCode: Int,
+        errString: CharSequence
+    ) {
+        super.onAuthenticationError(errorCode, errString)
+        if (errorCode != ERROR_NEGATIVE_BUTTON) {
+            authError.invoke(errString.toString())
         }
     }
 
-    sealed class Output {
-        object Success : Output()
-        object AlreadyExist : Output()
+    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+        super.onAuthenticationSucceeded(result)
+        authSucceeded.invoke()
     }
 
-    class Input(
-        val userId: String,
-        val privateKey: String
-    )
+    override fun onAuthenticationFailed() {
+        super.onAuthenticationFailed()
+        authFailed.invoke()
+    }
 }

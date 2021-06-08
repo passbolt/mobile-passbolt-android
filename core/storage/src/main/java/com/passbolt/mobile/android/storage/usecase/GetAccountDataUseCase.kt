@@ -32,7 +32,7 @@ class GetAccountDataUseCase(
 
     override fun execute(input: Input): Output {
         val alias = "${ACCOUNTS_DATA_ALIAS}_${input.userId}"
-        val sharedPreferences = encryptedSharedPreferencesFactory.get(alias, "$alias.xml")
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$alias.xml")
 
         return Output(
             sharedPreferences.getString(USER_FIRST_NAME_KEY, null),

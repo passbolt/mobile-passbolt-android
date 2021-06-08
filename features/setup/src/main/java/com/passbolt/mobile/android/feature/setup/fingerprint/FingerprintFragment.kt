@@ -4,11 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricPrompt
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentFingerprintBinding
 import org.koin.android.ext.android.inject
+import java.util.concurrent.Executor
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,6 +42,8 @@ class FingerprintFragment : BindingFragment<FragmentFingerprintBinding>(Fragment
     FingerprintContract.View {
 
     private val presenter: FingerprintContract.Presenter by inject()
+    private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
+    private val executor: Executor by inject()
 
     override fun onStart() {
         super.onStart()
@@ -80,5 +87,28 @@ class FingerprintFragment : BindingFragment<FragmentFingerprintBinding>(Fragment
 
     override fun navigateToBiometricSettings() {
         startActivity(Intent(Settings.ACTION_SECURITY_SETTINGS))
+    }
+
+    override fun showBiometricPrompt() {
+        val biometricPrompt = BiometricPrompt(
+            this, executor, BiometricAuthCallback(
+                presenter::authenticationError,
+                presenter::authenticationSucceeded,
+                presenter::authenticationFailed
+            )
+        )
+
+        val promptInfo = biometricPromptBuilder
+            .setTitle(getString(R.string.fingerprint_setup_biometric_title))
+            .setSubtitle(getString(R.string.fingerprint_setup_biometric_subtitle))
+            .setNegativeButtonText(getString(R.string.cancel))
+            .setAllowedAuthenticators(BIOMETRIC_STRONG)
+            .build()
+        biometricPrompt.authenticate(promptInfo)
+    }
+
+    override fun showAuthenticationError() {
+        Snackbar.make(binding.root, R.string.fingerprint_setup_biometric_error, BaseTransientBottomBar.LENGTH_LONG)
+            .show()
     }
 }
