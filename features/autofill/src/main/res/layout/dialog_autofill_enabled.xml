@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/dp_16"
+        android:paddingEnd="@dimen/dp_16">
+
+        <ImageView
+            android:id="@+id/closeButton"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:layout_marginTop="@dimen/dp_16"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_close"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/successImage"
+            android:layout_width="@dimen/dp_144"
+            android:layout_height="@dimen/dp_144"
+            android:layout_marginTop="@dimen/dp_48"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_success"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/closeButton" />
+
+        <TextView
+            android:id="@+id/headerLabel"
+            style="@style/Heading1Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/dialog_autofill_enabled_title"
+            android:textColor="@color/text_primary"
+            app:layout_constraintBottom_toTopOf="@id/messageLabel"
+            app:layout_constraintTop_toBottomOf="@id/successImage"
+            app:layout_constraintVertical_bias="0.1"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/messageLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            android:gravity="center"
+            android:lineSpacingExtra="@dimen/dp_8"
+            android:text="@string/dialog_autofill_enabled_message"
+            app:layout_constraintBottom_toTopOf="@id/goToAppButton"
+            app:layout_constraintTop_toBottomOf="@id/headerLabel" />
+
+        <Button
+            android:id="@+id/goToAppButton"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginBottom="@dimen/dp_24"
+            android:text="@string/dialog_autofill_enabled_go_to_app"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

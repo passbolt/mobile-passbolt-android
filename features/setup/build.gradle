@@ -18,6 +18,7 @@ dependencies {
     implementation project(':mappers')
     implementation project(':storage')
     implementation project(':gopenpgp')
+    implementation project(':autofill')
 
     //TODO
     implementation project(':autofill')

@@ -11,4 +11,9 @@
         <item>&lt;b>Turn on Autofill&lt;/b> settings</item>
         <item>Choose &lt;b>Passbolt!&lt;/b></item>
     </string-array>
+
+    <string name="dialog_autofill_enabled_go_to_app">Go to the app</string>
+    <string name="dialog_autofill_enabled_title">Passbolt Autofill enabled!</string>
+    <string name="dialog_autofill_enabled_message">Once you\'ve filled out a form, simply tap on the entry field and the
+        Autofill you enabled will suggest filling it from the login credentials you’ve already added to the Passbolt app.</string>
 </resources>
