@@ -65,8 +65,6 @@ kapt {
 }
 
 dependencies {
-    // needs to implement all modules:
-    // https://github.com/google/dagger/issues/2378
     implementation project(':mvp')
     implementation project(':startup')
     implementation project(':setup')
@@ -78,6 +76,7 @@ dependencies {
     implementation project(':mappers')
     implementation project(':qrscan')
     implementation project(':gopenpgp')
+    implementation project(':autofill')
 
     debugImplementation libs.quality.leakcanary
 

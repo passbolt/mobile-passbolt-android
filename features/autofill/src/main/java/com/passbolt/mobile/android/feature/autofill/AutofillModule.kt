@@ -1,11 +1,7 @@
-package com.passbolt.mobile.android.core.ui
+package com.passbolt.mobile.android.feature.autofill
 
-import android.content.Context
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
-import com.passbolt.mobile.android.core.ui.databinding.ViewTextCircleBinding
+import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,23 +26,6 @@ import com.passbolt.mobile.android.core.ui.databinding.ViewTextCircleBinding
  * @since v1.0
  */
 
-class TextCircle @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : FrameLayout(context, attrs, defStyle) {
-
-    private val binding = ViewTextCircleBinding.inflate(LayoutInflater.from(context), this)
-
-    init {
-        background = ContextCompat.getDrawable(context, R.drawable.circle_gray)
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
-    }
-
-    fun setText(text: String) {
-        binding.textLabel.text = text
-    }
+val autofillModule = module {
+    encourageAutofillModule()
 }

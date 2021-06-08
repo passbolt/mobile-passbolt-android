@@ -1,11 +1,10 @@
-package com.passbolt.mobile.android.core.ui.text
+package com.passbolt.mobile.android.feature.autofill.encourage
 
-import android.content.Context
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.core.ui.databinding.ViewCircleStepRowBinding
+import android.view.autofill.AutofillManager
+import com.passbolt.mobile.android.feature.autofill.info.AutofillInformationProvider
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,28 +29,18 @@ import com.passbolt.mobile.android.core.ui.databinding.ViewCircleStepRowBinding
  * @since v1.0
  */
 
-class CircleStepsView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
-
-    init {
-        orientation = VERTICAL
-    }
-
-    fun addList(list: List<CircleStepItemModel>) {
-        list.forEachIndexed { index, model ->
-            val row = ViewCircleStepRowBinding.inflate(LayoutInflater.from(context))
-            row.titleLabel.text = model.text
-            with(row.circle) {
-                setText("${index + 1}")
-                model.icon?.let { setImageResource(it) }
-            }
-            if (index == list.size - 1) {
-                row.line.gone()
-            }
-            addView(row.root)
+fun Module.encourageAutofillModule() {
+    scope(named<EncourageAutofillDialog>()) {
+        scoped<EncourageAutofillContract.Presenter> {
+            EncourageAutofillPresenter(
+                autofillInformationProvider = get()
+            )
+        }
+        scoped { androidContext().getSystemService(AutofillManager::class.java) }
+        scoped {
+            AutofillInformationProvider(
+                autofillManager = get()
+            )
         }
     }
 }

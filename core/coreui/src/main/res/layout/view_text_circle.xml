@@ -17,4 +17,10 @@
         android:textSize="14sp"
         tools:text="1" />
 
+    <ImageView
+        android:id="@+id/iconImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
 </merge>

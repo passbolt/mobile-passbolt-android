@@ -14,6 +14,7 @@ import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.core.ui.text.CircleStepItemModel
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentTransferDetailsBinding
 import org.koin.android.ext.android.inject
@@ -120,7 +121,7 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
     private fun addSteps() {
         binding.steps.addList(
             requireContext().resources.getStringArray(R.array.transfer_details_steps_array)
-                .map { it.fromHtml() }
+                .map { CircleStepItemModel(it.fromHtml()) }
         )
     }
 

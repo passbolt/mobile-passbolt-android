@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ok">OK</string>
+
+    <string name="dialog_encourage_autofill_header">Log In to your favourite apps in 3 seconds!</string>
+    <string name="dialog_encourage_autofill_go_to_settings">Go to settings</string>
+    <string name="dialog_encourage_autofill_maybe_later">Maybe later</string>
+    <string name="dialog_encourage_autofill_autofill_not_supported_title">Autofill not supported</string>
+    <string name="dialog_encourage_autofill_autofill_not_supported_message">Autofill is not supported on this device.</string>
+    <string-array name="dialog_encourage_autofill_setup_steps">
+        <item>&lt;b>Turn on Autofill&lt;/b> settings</item>
+        <item>Choose &lt;b>Passbolt!&lt;/b></item>
+    </string-array>
+</resources>

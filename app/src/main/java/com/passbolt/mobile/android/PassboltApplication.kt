@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.core.networking.di.networkingModule
 import com.passbolt.mobile.android.core.qrscan.di.barcodeScanModule
 import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
 import com.passbolt.mobile.android.di.appModule
+import com.passbolt.mobile.android.feature.autofill.autofillModule
 import com.passbolt.mobile.android.feature.setup.setupModule
 import com.passbolt.mobile.android.gopenpgp.di.openPgpModule
 import com.passbolt.mobile.android.service.registration.di.passboltApiModule
@@ -76,7 +77,8 @@ class PassboltApplication : Application(), KoinComponent {
                 barcodeScanModule,
                 cameraScanModule,
                 storageModule,
-                passboltApiModule
+                passboltApiModule,
+                autofillModule
             )
         }
     }

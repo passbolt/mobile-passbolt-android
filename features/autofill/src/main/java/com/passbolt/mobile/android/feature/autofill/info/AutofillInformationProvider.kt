@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android.core.ui.text
+package com.passbolt.mobile.android.feature.autofill.info
 
-import android.content.Context
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.core.ui.databinding.ViewCircleStepRowBinding
+import android.view.autofill.AutofillManager
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,29 +24,12 @@ import com.passbolt.mobile.android.core.ui.databinding.ViewCircleStepRowBinding
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class AutofillInformationProvider(
+    private val autofillManager: AutofillManager
+) {
 
-class CircleStepsView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+    fun isAutofillSupported() = autofillManager.isAutofillSupported
 
-    init {
-        orientation = VERTICAL
-    }
-
-    fun addList(list: List<CircleStepItemModel>) {
-        list.forEachIndexed { index, model ->
-            val row = ViewCircleStepRowBinding.inflate(LayoutInflater.from(context))
-            row.titleLabel.text = model.text
-            with(row.circle) {
-                setText("${index + 1}")
-                model.icon?.let { setImageResource(it) }
-            }
-            if (index == list.size - 1) {
-                row.line.gone()
-            }
-            addView(row.root)
-        }
-    }
+    // TODO use before showing EncourageAutofillDialog
+    fun isPassboltAutofillServiceSet() = autofillManager.hasEnabledAutofillServices()
 }

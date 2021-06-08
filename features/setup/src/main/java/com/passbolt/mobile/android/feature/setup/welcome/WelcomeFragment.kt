@@ -48,8 +48,10 @@ class WelcomeFragment : BindingFragment<FragmentWelcomeBinding>(FragmentWelcomeB
     }
 
     private fun setUpListeners() {
-        binding.noAccountButton.setDebouncingOnClick { presenter.noAccountButtonClick() }
-        binding.connectToAccountButton.setDebouncingOnClick { presenter.connectToAccountClick() }
+        with(binding) {
+            noAccountButton.setDebouncingOnClick { presenter.noAccountButtonClick() }
+            connectToAccountButton.setDebouncingOnClick { presenter.connectToAccountClick() }
+        }
     }
 
     override fun showAccountCreationInfoDialog() {

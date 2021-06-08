@@ -10,36 +10,16 @@ dependencies {
     implementation project(':mvp')
     implementation project(':coreui')
     implementation project(':common')
-    implementation project(':navigation')
-    implementation project(':qrscan')
-    implementation project(':passboltapi')
-    implementation project(':ui')
-    implementation project(':dto')
-    implementation project(':mappers')
-    implementation project(':storage')
-    implementation project(':gopenpgp')
-
-    //TODO
-    implementation project(':autofill')
-
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
     implementation libs.androidx.fragment
     implementation libs.androidx.activity
-    implementation libs.androidx.biometric
     implementation libs.material
     implementation libs.androidx.constraintLayout
-    implementation libs.androidx.cameraXView
-    implementation libs.androidx.cameraX
-    implementation libs.androidx.cameraXLifecycle
-    implementation libs.gson
 
     implementation libs.di.koin
     implementation libs.di.koinExt
-
-    implementation libs.coil.core
-    implementation libs.coil.base
 
     testImplementation libs.di.koinTest
     testImplementation libs.di.koinTestJUnit
