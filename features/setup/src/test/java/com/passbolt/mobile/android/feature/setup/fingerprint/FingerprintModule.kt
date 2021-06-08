@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
@@ -36,8 +37,10 @@ import org.koin.dsl.module
  */
 
 val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
+internal val savePassphraseUseCase = mock<SavePassphraseUseCase>()
 
 val fingerprintModule = module {
-    factory<FingerprintContract.Presenter> { FingerprintPresenter(get()) }
+    factory<FingerprintContract.Presenter> { FingerprintPresenter(get(), get(), get()) }
     factory { fingerprintInformationProvider }
+    factory { savePassphraseUseCase }
 }

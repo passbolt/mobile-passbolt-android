@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.storage.usecase
 
+import android.util.Base64
 import com.passbolt.mobile.android.common.UseCase
 import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
@@ -29,23 +30,24 @@ import com.passbolt.mobile.android.storage.factory.KeyBiometricSettings
  */
 
 class SavePassphraseUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory
+    private val encryptedFileFactory: EncryptedFileFactory,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
 ) : UseCase<SavePassphraseUseCase.Input, Unit> {
 
     override fun execute(input: Input) {
-        val keyName = "${PASSPHRASE_FILE_NAME}_${input.userId}"
+        val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
+        val keyName = "${PASSPHRASE_FILE_NAME}_$userId"
         val encryptedFile = encryptedFileFactory.get(
-            keyName,
             keyName,
             KeyBiometricSettings(authenticationRequired = true, invalidatedByBiometricEnrollment = true)
         )
         encryptedFile.openFileOutput().use {
-            it.write(input.passPhrase.toByteArray())
+            val encodedPassphrase = Base64.encode(input.passPhrase.toByteArray(), Base64.DEFAULT)
+            it.write(encodedPassphrase)
         }
     }
 
     class Input(
-        val userId: String,
         val passPhrase: CharArray
     )
 }

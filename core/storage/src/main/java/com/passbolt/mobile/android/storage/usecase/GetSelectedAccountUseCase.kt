@@ -32,7 +32,7 @@ class GetSelectedAccountUseCase(
 
     override fun execute(input: Unit): Output {
         val sharedPreferences =
-            encryptedSharedPreferencesFactory.get(SELECTED_ACCOUNT_ALIAS, "$SELECTED_ACCOUNT_ALIAS.xml")
+            encryptedSharedPreferencesFactory.get("$SELECTED_ACCOUNT_ALIAS.xml")
 
         return Output(
             sharedPreferences.getString(SELECTED_ACCOUNT_KEY, null)

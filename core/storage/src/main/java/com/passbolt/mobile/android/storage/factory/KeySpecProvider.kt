@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.storage.factory
 
+import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import androidx.security.crypto.MasterKey
 import com.passbolt.mobile.android.storage.usecase.KEY_SIZE
 
 /**
@@ -29,9 +31,9 @@ import com.passbolt.mobile.android.storage.usecase.KEY_SIZE
 
 internal class KeySpecProvider {
 
-    fun get(keyAlias: String, keyBiometricSettings: KeyBiometricSettings) =
-        KeyGenParameterSpec.Builder(
-            keyAlias,
+    fun get(keyBiometricSettings: KeyBiometricSettings): KeyGenParameterSpec {
+        val builder = KeyGenParameterSpec.Builder(
+            MasterKey.DEFAULT_MASTER_KEY_ALIAS,
             KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
         )
             .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
@@ -39,7 +41,25 @@ internal class KeySpecProvider {
             .setUserAuthenticationRequired(keyBiometricSettings.authenticationRequired)
             .setInvalidatedByBiometricEnrollment(keyBiometricSettings.invalidatedByBiometricEnrollment)
             .setKeySize(KEY_SIZE)
-            .build()
+
+        if (keyBiometricSettings.authenticationRequired) {
+            builder.setAuthParameters()
+        }
+
+        return builder.build()
+    }
+
+    private fun KeyGenParameterSpec.Builder.setAuthParameters() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            setUserAuthenticationParameters(AUTH_TIMEOUT_SECONDS, KeyProperties.AUTH_BIOMETRIC_STRONG)
+        } else {
+            setUserAuthenticationValidityDurationSeconds(AUTH_TIMEOUT_SECONDS)
+        }
+    }
+
+    companion object {
+        private const val AUTH_TIMEOUT_SECONDS = 30
+    }
 }
 
 class KeyBiometricSettings(

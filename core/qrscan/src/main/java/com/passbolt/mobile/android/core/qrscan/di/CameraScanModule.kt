@@ -6,10 +6,8 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.content.ContextCompat
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
-import java.util.concurrent.Executor
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,7 +36,6 @@ val cameraScanModule = module {
     factory { providePreview() }
     factory { provideCameraProviderFuture(androidApplication()) }
     factory { provideCameraSelector() }
-    factory { provideMainExecutor(androidApplication()) }
 }
 
 // https://firebase.google.com/docs/ml-kit/android/read-barcodes?hl=en#input-image-guidelines
@@ -58,6 +55,3 @@ private fun providePreview() =
 
 private fun provideCameraSelector() =
     CameraSelector.DEFAULT_BACK_CAMERA
-
-private fun provideMainExecutor(context: Context): Executor =
-    ContextCompat.getMainExecutor(context)

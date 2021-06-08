@@ -1,5 +1,11 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
+import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,9 +29,14 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
  * @since v1.0
  */
 class FingerprintPresenter(
-    private val fingerprintProvider: FingerprintInformationProvider
+    private val fingerprintProvider: FingerprintInformationProvider,
+    private val savePassphraseUseCase: SavePassphraseUseCase,
+    coroutineLaunchContext: CoroutineLaunchContext
 ) : FingerprintContract.Presenter {
+
     override var view: FingerprintContract.View? = null
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     override fun resume() {
         if (fingerprintProvider.hasBiometricSetUp()) {
@@ -37,9 +48,24 @@ class FingerprintPresenter(
 
     override fun useFingerprintButtonClick() {
         if (fingerprintProvider.hasBiometricSetUp()) {
-            // TODO
+            view?.showBiometricPrompt()
         } else {
             view?.navigateToBiometricSettings()
         }
+    }
+
+    override fun authenticationSucceeded() {
+        scope.launch {
+            // TODO - save proper passphrase PAS-125
+            savePassphraseUseCase.execute(SavePassphraseUseCase.Input("pass".toCharArray()))
+        }
+    }
+
+    override fun authenticationError(error: String) {
+        view?.showAuthenticationError()
+    }
+
+    override fun authenticationFailed() {
+        view?.showAuthenticationError()
     }
 }

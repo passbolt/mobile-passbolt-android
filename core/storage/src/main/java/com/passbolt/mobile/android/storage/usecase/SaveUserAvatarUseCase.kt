@@ -34,7 +34,7 @@ class SaveUserAvatarUseCase(
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
         val name = "${USER_AVATAR_FILE_NAME}_$userId"
 
-        val encryptedFile = encryptedFileFactory.get(name, name)
+        val encryptedFile = encryptedFileFactory.get(name)
         encryptedFile.openFileOutput().use {
             it.write(input.image)
         }

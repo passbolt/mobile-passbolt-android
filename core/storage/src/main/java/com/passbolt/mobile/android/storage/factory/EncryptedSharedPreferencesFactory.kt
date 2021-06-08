@@ -34,14 +34,13 @@ class EncryptedSharedPreferencesFactory internal constructor(
 ) {
 
     fun get(
-        keyAlias: String,
         fileName: String,
         keyBiometricSettings: KeyBiometricSettings = KeyBiometricSettings(
             authenticationRequired = false,
             invalidatedByBiometricEnrollment = false
         )
     ): SharedPreferences {
-        val masterKeyAlias = MasterKeys.getOrCreate(keySpecProvider.get(keyAlias, keyBiometricSettings))
+        val masterKeyAlias = MasterKeys.getOrCreate(keySpecProvider.get(keyBiometricSettings))
 
         return EncryptedSharedPreferences.create(
             fileName,

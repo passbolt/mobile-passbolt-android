@@ -109,7 +109,8 @@ val storageModule = module {
     }
     single {
         SavePassphraseUseCase(
-            encryptedFileFactory = get()
+            encryptedFileFactory = get(),
+            getSelectedAccountUseCase = get()
         )
     }
     single {

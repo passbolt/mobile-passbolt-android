@@ -1,10 +1,13 @@
 package com.passbolt.mobile.android.di
 
 import android.content.Context
+import androidx.core.content.ContextCompat
 import coil.ImageLoader
 import okhttp3.OkHttpClient
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
+import java.util.concurrent.Executor
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,9 +38,13 @@ internal val appModule = module {
             context = androidContext()
         )
     }
+    factory { provideMainExecutor(androidApplication()) }
 }
 
 private fun provideImageLoader(okHttpClient: OkHttpClient, context: Context): ImageLoader =
     ImageLoader.Builder(context)
         .okHttpClient(okHttpClient)
         .build()
+
+private fun provideMainExecutor(context: Context): Executor =
+    ContextCompat.getMainExecutor(context)

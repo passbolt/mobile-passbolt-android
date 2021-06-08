@@ -32,7 +32,7 @@ class GetSessionUseCase(
 
     override fun execute(input: Input): Output {
         val alias = "${SESSION_TOKENS_ALIAS}_${input.userId}"
-        val sharedPreferences = encryptedSharedPreferencesFactory.get(alias, "$alias.xml")
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$alias.xml")
 
         return Output(
             sharedPreferences.getString(ACCESS_TOKEN_KEY, ""),
