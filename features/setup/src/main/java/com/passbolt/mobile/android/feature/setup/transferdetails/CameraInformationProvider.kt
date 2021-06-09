@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.setup.transferdetails
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraManager
 import androidx.core.content.ContextCompat
 
 /**
@@ -32,7 +33,8 @@ class CameraInformationProvider constructor(
 ) {
 
     fun isCameraAvailable(): Boolean =
-        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA)
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) &&
+                (context.getSystemService(Context.CAMERA_SERVICE) as CameraManager).cameraIdList.isNotEmpty()
 
     fun isCameraPermissionGranted(): Boolean =
         ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED

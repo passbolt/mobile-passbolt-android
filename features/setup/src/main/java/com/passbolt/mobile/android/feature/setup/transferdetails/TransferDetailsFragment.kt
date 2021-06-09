@@ -107,10 +107,7 @@ class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.transfer_details_camera_required_dialog_title)
             .setMessage(R.string.transfer_details_camera_required_dialog_message)
-            .setPositiveButton(R.string.settings) { _, _ ->
-                presenter.settingsButtonClick()
-            }
-            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setPositiveButton(R.string.ok) { _, _ -> }
             .show()
     }
 
