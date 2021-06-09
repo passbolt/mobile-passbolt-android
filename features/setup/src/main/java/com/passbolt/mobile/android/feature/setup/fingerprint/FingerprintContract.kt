@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
+import androidx.annotation.StringRes
 import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
@@ -32,14 +33,13 @@ interface FingerprintContract {
         fun showConfigureFingerprint()
         fun navigateToBiometricSettings()
         fun showBiometricPrompt()
-        fun showAuthenticationError()
+        fun showAuthenticationError(@StringRes errorMessage: Int)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun useFingerprintButtonClick()
         fun resume()
         fun authenticationSucceeded()
-        fun authenticationError(error: String)
-        fun authenticationFailed()
+        fun authenticationError(errorMessage: Int)
     }
 }

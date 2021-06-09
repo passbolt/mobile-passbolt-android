@@ -6,7 +6,6 @@ import android.provider.Settings
 import android.view.View
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
@@ -93,8 +92,7 @@ class FingerprintFragment : BindingFragment<FragmentFingerprintBinding>(Fragment
         val biometricPrompt = BiometricPrompt(
             this, executor, BiometricAuthCallback(
                 presenter::authenticationError,
-                presenter::authenticationSucceeded,
-                presenter::authenticationFailed
+                presenter::authenticationSucceeded
             )
         )
 
@@ -107,8 +105,8 @@ class FingerprintFragment : BindingFragment<FragmentFingerprintBinding>(Fragment
         biometricPrompt.authenticate(promptInfo)
     }
 
-    override fun showAuthenticationError() {
-        Snackbar.make(binding.root, R.string.fingerprint_setup_biometric_error, BaseTransientBottomBar.LENGTH_LONG)
+    override fun showAuthenticationError(errorMessage: Int) {
+        Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG)
             .show()
     }
 }
