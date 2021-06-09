@@ -61,11 +61,7 @@ class FingerprintPresenter(
         }
     }
 
-    override fun authenticationError(error: String) {
-        view?.showAuthenticationError()
-    }
-
-    override fun authenticationFailed() {
-        view?.showAuthenticationError()
+    override fun authenticationError(errorMessage: Int) {
+        view?.showAuthenticationError(errorMessage)
     }
 }

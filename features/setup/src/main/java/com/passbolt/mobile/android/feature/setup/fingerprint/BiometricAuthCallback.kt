@@ -2,6 +2,11 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.ERROR_NEGATIVE_BUTTON
+import androidx.biometric.BiometricPrompt.ERROR_LOCKOUT
+import androidx.biometric.BiometricPrompt.ERROR_LOCKOUT_PERMANENT
+import androidx.biometric.BiometricPrompt.ERROR_TIMEOUT
+import androidx.biometric.BiometricPrompt.ERROR_USER_CANCELED
+import com.passbolt.mobile.android.feature.setup.R
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,9 +32,8 @@ import androidx.biometric.BiometricPrompt.ERROR_NEGATIVE_BUTTON
  */
 
 class BiometricAuthCallback(
-    private val authError: (String) -> Unit,
-    private val authSucceeded: () -> Unit,
-    private val authFailed: () -> Unit
+    private val authError: (Int) -> Unit,
+    private val authSucceeded: () -> Unit
 ) : BiometricPrompt.AuthenticationCallback() {
 
     override fun onAuthenticationError(
@@ -37,9 +41,7 @@ class BiometricAuthCallback(
         errString: CharSequence
     ) {
         super.onAuthenticationError(errorCode, errString)
-        if (errorCode != ERROR_NEGATIVE_BUTTON) {
-            authError.invoke(errString.toString())
-        }
+        handleError(errorCode)
     }
 
     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
@@ -47,8 +49,14 @@ class BiometricAuthCallback(
         authSucceeded.invoke()
     }
 
-    override fun onAuthenticationFailed() {
-        super.onAuthenticationFailed()
-        authFailed.invoke()
+    private fun handleError(errorCode: Int) {
+        when (errorCode) {
+            ERROR_LOCKOUT -> authError.invoke(R.string.fingerprint_setup_biometric_error_blocked)
+            ERROR_LOCKOUT_PERMANENT -> authError.invoke(R.string.fingerprint_setup_biometric_error_too_many_attempts)
+            ERROR_NEGATIVE_BUTTON, ERROR_USER_CANCELED, ERROR_TIMEOUT -> {
+                // ignoring
+            }
+            else -> authError.invoke(R.string.fingerprint_setup_biometric_error_generic)
+        }
     }
 }
