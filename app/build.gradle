@@ -86,6 +86,7 @@ dependencies {
     implementation libs.androidx.constraintLayout
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
+    implementation libs.androidx.processLifecycle
 
     implementation libs.coil.core
     implementation libs.coil.base

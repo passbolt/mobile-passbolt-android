@@ -6,9 +6,7 @@ task jacocoProjectReport(type: JacocoReport) {
 
     // execute this task after submodule tasks.
     subprojects.each {
-        if (it.name != "Gopenpgp") {
-            dependsOn("${it.name}:jacocoModuleReport")
-        }
+        dependsOn("${it.name}:jacocoModuleReport")
     }
 
     group = "Reporting"

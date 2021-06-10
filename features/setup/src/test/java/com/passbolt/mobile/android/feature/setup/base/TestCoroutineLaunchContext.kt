@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.base
 
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlin.coroutines.CoroutineContext
 
@@ -26,6 +27,8 @@ import kotlin.coroutines.CoroutineContext
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+@ExperimentalCoroutinesApi
 class TestCoroutineLaunchContext : CoroutineLaunchContext {
     override val ui: CoroutineContext = TestCoroutineDispatcher()
     override val default = TestCoroutineDispatcher()

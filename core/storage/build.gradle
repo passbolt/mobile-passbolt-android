@@ -7,22 +7,39 @@ plugins {
 
 dependencies {
     implementation project(':common')
+    implementation project(':mvp')
 
     implementation libs.androidx.core
     implementation libs.androidx.appcompat
     implementation libs.androidx.security
 
-//    implementation libs.kotlin.io
-
-    /* DI */
     implementation libs.di.koin
     implementation libs.di.koinExt
 
+    kapt libs.androidx.lifecycleAnnotationProcessor
+    implementation libs.androidx.processLifecycle
+
     debugImplementation libs.debugDatabase
+
+    androidTestImplementation libs.di.koinTest
+    androidTestImplementation libs.di.koinTestJUnit
+    androidTestImplementation libs.test.coroutinesTest
+    androidTestImplementation libs.test.androidTestsRunner
+    androidTestImplementation libs.test.androidTestRules
+    androidTestImplementation libs.test.androidTest
 }
 
 android {
-    buildFeatures {
-        viewBinding true
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    useLibrary("android.test.runner")
+    useLibrary("android.test.base")
+    useLibrary("android.test.mock")
+
+    packagingOptions {
+        exclude "META-INF/AL2.0"
+        exclude "META-INF/LGPL2.1"
     }
 }

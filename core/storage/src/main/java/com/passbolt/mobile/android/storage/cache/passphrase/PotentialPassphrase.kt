@@ -1,12 +1,4 @@
-package com.passbolt.mobile.android.di
-
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ProcessLifecycleOwner
-import coil.ImageLoader
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
+package com.passbolt.mobile.android.storage.cache.passphrase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,23 +22,24 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+sealed class PotentialPassphrase {
 
-internal val appModule = module {
-    single {
-        ImageLoader.Builder(androidContext())
-            .okHttpClient(okHttpClient = get())
-            .build()
+    data class Passphrase(val passphrase: CharArray) : PotentialPassphrase() {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Passphrase
+
+            if (!passphrase.contentEquals(other.passphrase)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return passphrase.contentHashCode()
+        }
     }
-    single {
-        PassphraseMemoryCache(
-            coroutineLaunchContext = get(),
-            lifecycleOwner = get(named<ProcessLifecycleOwner>())
-        )
-    }
-    factory {
-        ContextCompat.getMainExecutor(androidContext())
-    }
-    factory(named<ProcessLifecycleOwner>()) {
-        ProcessLifecycleOwner.get()
-    }
+
+    object PassphraseNotPresent : PotentialPassphrase()
 }
