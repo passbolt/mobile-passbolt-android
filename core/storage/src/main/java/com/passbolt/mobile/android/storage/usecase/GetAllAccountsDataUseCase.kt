@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.storage.usecase
 
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.UpdateTransferMapper
-import org.koin.dsl.module
+import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.entity.AccountEntity
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +25,28 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mappersModule = module {
-    single { UpdateTransferMapper() }
-    single { AccountModelMapper() }
+
+class GetAllAccountsDataUseCase(
+    private val getAccountDataUseCase: GetAccountDataUseCase,
+    private val getAccountsUseCase: GetAccountsUseCase
+) : UseCase<Unit, GetAllAccountsDataUseCase.Output> {
+
+    override fun execute(input: Unit): Output {
+        val accountsData = getAccountsUseCase.execute(Unit).users.map {
+            val accountData = getAccountDataUseCase.execute(GetAccountDataUseCase.Input(it))
+            AccountEntity(
+                firstName = accountData.firstName,
+                lastName = accountData.lastName,
+                email = accountData.email,
+                avatarUrl = accountData.avatarUrl,
+                url = accountData.url
+            )
+        }
+
+        return Output(accountsData)
+    }
+
+    class Output(
+        val accounts: List<AccountEntity>
+    )
 }

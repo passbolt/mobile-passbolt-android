@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.core.ui
 
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.UpdateTransferMapper
-import org.koin.dsl.module
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +26,25 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mappersModule = module {
-    single { UpdateTransferMapper() }
-    single { AccountModelMapper() }
+class DrawableListDivider(
+    private val divider: Drawable?
+) : RecyclerView.ItemDecoration() {
+
+    override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        val dividerLeft = parent.paddingLeft
+        val dividerRight = parent.width - parent.paddingRight
+        val childCount = parent.childCount
+
+        (0..childCount - 2)
+            .map { parent.getChildAt(it) }
+            .forEach { child ->
+                val params = child.layoutParams as RecyclerView.LayoutParams
+                val dividerTop: Int = child.bottom + params.bottomMargin
+                val dividerBottom = dividerTop + (divider?.intrinsicHeight ?: 0)
+                divider?.let {
+                    it.setBounds(dividerLeft, dividerTop, dividerRight, dividerBottom)
+                    it.draw(canvas)
+                }
+            }
+    }
 }

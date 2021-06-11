@@ -1,0 +1,35 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+dependencies {
+    implementation project(':mvp')
+    implementation project(':coreui')
+    implementation project(':storage')
+    implementation project(':common')
+    implementation project(':ui')
+    implementation project(':mappers')
+    implementation project(':entity')
+
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+    implementation libs.androidx.fragment
+    implementation libs.androidx.activity
+
+    implementation libs.fastAdapter.core
+    implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.utils
+
+    implementation libs.di.koin
+    implementation libs.di.koinExt
+
+    implementation libs.coil.core
+    implementation libs.coil.base
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.feature.login
 
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.UpdateTransferMapper
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.feature.login.databinding.ActivityLoginBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +25,4 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mappersModule = module {
-    single { UpdateTransferMapper() }
-    single { AccountModelMapper() }
-}
+class LoginActivity : BindingActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate)

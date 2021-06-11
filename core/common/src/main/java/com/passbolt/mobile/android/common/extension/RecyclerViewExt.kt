@@ -1,8 +1,9 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.common.extension
 
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.UpdateTransferMapper
-import org.koin.dsl.module
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
+import com.mikepenz.fastadapter.binding.BindingViewHolder
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +27,10 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mappersModule = module {
-    single { UpdateTransferMapper() }
-    single { AccountModelMapper() }
+inline fun <reified T : ViewBinding> RecyclerView.ViewHolder.asBinding(block: (T) -> View): View? {
+    return if (this is BindingViewHolder<*> && this.binding is T) {
+        block(this.binding as T)
+    } else {
+        null
+    }
 }

@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.storage.factory.KeySpecProvider
 import com.passbolt.mobile.android.storage.usecase.AddAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAccountsUseCase
+import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
@@ -89,6 +90,12 @@ val storageModule = module {
     single {
         GetSelectedAccountUseCase(
             encryptedSharedPreferencesFactory = get()
+        )
+    }
+    single {
+        GetAllAccountsDataUseCase(
+            getAccountDataUseCase = get(),
+            getAccountsUseCase = get()
         )
     }
     single {

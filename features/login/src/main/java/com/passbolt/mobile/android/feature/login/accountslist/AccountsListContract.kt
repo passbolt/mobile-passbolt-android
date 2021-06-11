@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.feature.login.accountslist
 
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.UpdateTransferMapper
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.AccountModelUi
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +25,14 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mappersModule = module {
-    single { UpdateTransferMapper() }
-    single { AccountModelMapper() }
+interface AccountsListContract {
+
+    interface View : BaseContract.View {
+        fun showAccounts(accounts: List<AccountModelUi>)
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun accountItemClick(model: AccountModelUi.AccountModel)
+        fun addAccountClick()
+    }
 }
