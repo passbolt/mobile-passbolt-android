@@ -1,12 +1,7 @@
-package com.passbolt.mobile.android.di
+package com.passbolt.mobile.android.storage.base
 
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ProcessLifecycleOwner
-import coil.ImageLoader
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,22 +26,9 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val appModule = module {
-    single {
-        ImageLoader.Builder(androidContext())
-            .okHttpClient(okHttpClient = get())
-            .build()
-    }
-    single {
-        PassphraseMemoryCache(
-            coroutineLaunchContext = get(),
-            lifecycleOwner = get(named<ProcessLifecycleOwner>())
-        )
-    }
-    factory {
-        ContextCompat.getMainExecutor(androidContext())
-    }
-    factory(named<ProcessLifecycleOwner>()) {
-        ProcessLifecycleOwner.get()
-    }
+//TODO refactor to test module and remove duplicates - PAS-145
+class TestCoroutineLaunchContext : CoroutineLaunchContext {
+    override val ui = TestCoroutineDispatcher()
+    override val default = TestCoroutineDispatcher()
+    override val io = TestCoroutineDispatcher()
 }

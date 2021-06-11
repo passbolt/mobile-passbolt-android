@@ -1,6 +1,10 @@
-package com.passbolt.mobile.android.gopenpgp
+package com.passbolt.mobile.android.storage.passphrasememorycache
 
-import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
+import androidx.lifecycle.ProcessLifecycleOwner
+import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -25,7 +29,20 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal val testOpenPgpModule = module {
-    single { GopenPgpExceptionParser() }
-    single { OpenPgp(gopenPgpExceptionParser = get()) }
+
+internal val testCoroutineLaunchContext = TestCoroutineLaunchContext()
+
+internal val testPassphraseMemoryCacheModule = module {
+    single {
+        PassphraseMemoryCache(
+            coroutineLaunchContext = get(),
+            lifecycleOwner = get(named<ProcessLifecycleOwner>())
+        )
+    }
+    single<CoroutineLaunchContext> {
+        testCoroutineLaunchContext
+    }
+    factory(named<ProcessLifecycleOwner>()) {
+        ProcessLifecycleOwner.get()
+    }
 }

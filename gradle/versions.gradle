@@ -24,7 +24,8 @@ ext {
             turbine: "0.5.1",
             coroutinesTest: "1.5.0",
             androidTestsRunner: "1.1.0",
-            androidTestRules: "1.1.0"
+            androidTestRules: "1.1.0",
+            androidTest: "3.1.0"
         ],
         quality: [
             ktlint: "0.36.0",
@@ -41,7 +42,8 @@ ext {
             fragment: "1.3.3",
             activity: "1.2.2",
             cameraX: "1.0.0",
-            cameraView: "1.0.0-alpha24"
+            cameraView: "1.0.0-alpha24",
+            lifecycle: "2.3.1"
         ],
         material: "1.4.0-beta01",
         networking: [
@@ -84,7 +86,8 @@ ext {
             turbine: "app.cash.turbine:turbine:${versions.test.turbine}",
             coroutinesTest: "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.test.coroutinesTest}",
             androidTestsRunner: "androidx.test:runner:${versions.test.androidTestsRunner}",
-            androidTestRules: "androidx.test:rules:${versions.test.androidTestRules}"
+            androidTestRules: "androidx.test:rules:${versions.test.androidTestRules}",
+            androidTest: "androidx.test.espresso:espresso-core:${versions.test.androidTest}"
         ],
         quality: [
             ktlint: "com.pinterest:ktlint:${versions.quality.ktlint}",
@@ -104,7 +107,9 @@ ext {
             activity: "androidx.activity:activity-ktx:${versions.androidx.activity}",
             cameraX: "androidx.camera:camera-camera2:${versions.androidx.cameraX}",
             cameraXLifecycle: "androidx.camera:camera-lifecycle:${versions.androidx.cameraX}",
-            cameraXView: "androidx.camera:camera-view:${versions.androidx.cameraView}"
+            cameraXView: "androidx.camera:camera-view:${versions.androidx.cameraView}",
+            lifecycleAnnotationProcessor: "androidx.lifecycle:lifecycle-compiler:${versions.androidx.lifecycle}",
+            processLifecycle: "androidx.lifecycle:lifecycle-process:${versions.androidx.lifecycle}"
         ],
         material: "com.google.android.material:material:${versions.material}",
         networking: [

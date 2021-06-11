@@ -1,12 +1,8 @@
-package com.passbolt.mobile.android.di
+package com.passbolt.mobile.android.common.coroutines
 
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ProcessLifecycleOwner
-import coil.ImageLoader
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.onEach
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,22 +27,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val appModule = module {
-    single {
-        ImageLoader.Builder(androidContext())
-            .okHttpClient(okHttpClient = get())
-            .build()
-    }
-    single {
-        PassphraseMemoryCache(
-            coroutineLaunchContext = get(),
-            lifecycleOwner = get(named<ProcessLifecycleOwner>())
-        )
-    }
-    factory {
-        ContextCompat.getMainExecutor(androidContext())
-    }
-    factory(named<ProcessLifecycleOwner>()) {
-        ProcessLifecycleOwner.get()
-    }
-}
+fun timerFlow(repeatTimes: Long, delayMillis: Long) =
+    (0 until repeatTimes)
+        .asFlow()
+        .onEach { delay(delayMillis) }

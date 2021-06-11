@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.passbolt.mobile.android.storage">
+
+    <application>
+        <uses-library android:name="android.test.runner" />
+        <uses-library android:name="android.test.base" />
+        <uses-library android:name="android.test.mock" />
+
+        <activity
+            android:name=".dummy.TestActivity"
+            android:screenOrientation="portrait" />
+    </application>
+</manifest>

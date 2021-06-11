@@ -1,12 +1,10 @@
-package com.passbolt.mobile.android.di
+package com.passbolt.mobile.android.common.coroutines
 
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ProcessLifecycleOwner
-import coil.ImageLoader
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
+import app.cash.turbine.test
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import org.junit.Test
+import kotlin.time.ExperimentalTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,23 +28,24 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@ExperimentalTime
+@ExperimentalCoroutinesApi
+class CoroutineTimerKtTest {
 
-internal val appModule = module {
-    single {
-        ImageLoader.Builder(androidContext())
-            .okHttpClient(okHttpClient = get())
-            .build()
+    @Test
+    fun `test if timer is ticking fine`() = runBlocking {
+        val timer = timerFlow(TICK_COUNT, TIMER_TICK_MILLIS)
+        val expectedTickCount = 10
+
+        timer.test {
+            repeat(expectedTickCount) { expectItem() }
+            expectComplete()
+        }
     }
-    single {
-        PassphraseMemoryCache(
-            coroutineLaunchContext = get(),
-            lifecycleOwner = get(named<ProcessLifecycleOwner>())
-        )
-    }
-    factory {
-        ContextCompat.getMainExecutor(androidContext())
-    }
-    factory(named<ProcessLifecycleOwner>()) {
-        ProcessLifecycleOwner.get()
+
+    private companion object {
+        private const val TIMER_DURATION_MILLIS = 1_000L
+        private const val TIMER_TICK_MILLIS = 100L
+        private const val TICK_COUNT = TIMER_DURATION_MILLIS / TIMER_TICK_MILLIS
     }
 }
