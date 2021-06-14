@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.storage.usecase
 import android.util.Base64
 import com.passbolt.mobile.android.common.UseCase
 import com.passbolt.mobile.android.common.extension.toCharArray
+import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 import com.passbolt.mobile.android.storage.factory.KeyBiometricSettings
 import timber.log.Timber
@@ -49,11 +50,11 @@ class GetPassphraseUseCase(
             encryptedFile.openFileInput().use {
                 val bytes = it.readBytes()
                 val decodedPassphrase = Base64.decode(bytes, Base64.DEFAULT)
-                Output(decodedPassphrase.toCharArray())
+                Output(PotentialPassphrase.Passphrase(decodedPassphrase.toCharArray()))
             }
         } catch (exception: IOException) {
             Timber.e(exception)
-            Output(null)
+            Output(PotentialPassphrase.PassphraseNotPresent)
         }
     }
 
@@ -62,6 +63,6 @@ class GetPassphraseUseCase(
     )
 
     class Output(
-        val passPhrase: CharArray?
+        val potentialPassphrase: PotentialPassphrase
     )
 }
