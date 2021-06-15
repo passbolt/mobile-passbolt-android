@@ -55,7 +55,8 @@ ext {
         gson: "2.8.6",
         debugDatabase: "1.0.6",
         appDistribution: "2.1.1",
-        coil: "1.2.1"
+        coil: "1.2.1",
+        fastAdapter: "5.4.1"
     ]
 
     libs = [
@@ -126,6 +127,11 @@ ext {
         coil: [
             core: "io.coil-kt:coil:${versions.coil}",
             base: "io.coil-kt:coil-base:${versions.coil}"
+        ],
+        fastAdapter: [
+            core: "com.mikepenz:fastadapter:${versions.fastAdapter}",
+            binding: "com.mikepenz:fastadapter-extensions-binding:${versions.fastAdapter}",
+            utils: "com.mikepenz:fastadapter-extensions-utils:${versions.fastAdapter}"
         ]
     ]
 }

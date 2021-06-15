@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.mappers
 
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.UpdateTransferMapper
-import org.koin.dsl.module
+import com.passbolt.mobile.android.entity.AccountEntity
+import com.passbolt.mobile.android.ui.AccountModelUi
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +25,16 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mappersModule = module {
-    single { UpdateTransferMapper() }
-    single { AccountModelMapper() }
+class AccountModelMapper {
+
+    fun map(accounts: List<AccountEntity>): List<AccountModelUi.AccountModel> =
+        accounts.mapIndexed { i, item -> map(item, i == 0) }
+
+    private fun map(accountEntity: AccountEntity, isFirstItem: Boolean) =
+        AccountModelUi.AccountModel(
+            title = "${accountEntity.firstName} ${accountEntity.lastName}",
+            email = accountEntity.email,
+            avatar = accountEntity.avatarUrl,
+            isFirstItem = isFirstItem
+        )
 }

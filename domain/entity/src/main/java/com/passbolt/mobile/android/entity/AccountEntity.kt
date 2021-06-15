@@ -1,8 +1,4 @@
-package com.passbolt.mobile.android
-
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.UpdateTransferMapper
-import org.koin.dsl.module
+package com.passbolt.mobile.android.entity
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +22,10 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mappersModule = module {
-    single { UpdateTransferMapper() }
-    single { AccountModelMapper() }
-}
+class AccountEntity(
+    val firstName: String?,
+    val lastName: String?,
+    val email: String?,
+    val avatarUrl: String?,
+    val url: String
+)

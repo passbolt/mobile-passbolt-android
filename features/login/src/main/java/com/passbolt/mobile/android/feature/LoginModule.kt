@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.feature
 
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.UpdateTransferMapper
+import com.passbolt.mobile.android.feature.login.accountslist.accountsListModule
 import org.koin.dsl.module
 
 /**
@@ -26,7 +25,6 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mappersModule = module {
-    single { UpdateTransferMapper() }
-    single { AccountModelMapper() }
+val loginModule = module {
+    accountsListModule()
 }

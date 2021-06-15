@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/accountsListFragment">
+
+    <fragment
+        android:id="@+id/accountsListFragment"
+        android:name="com.passbolt.mobile.android.feature.login.accountslist.AccountsListFragment"
+        android:label="AccountsListFragment"
+        tools:layout="@layout/fragment_accounts_list"/>
+
+</navigation>

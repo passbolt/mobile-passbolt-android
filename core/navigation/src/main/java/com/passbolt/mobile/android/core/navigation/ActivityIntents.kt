@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.navigation
 
 import android.content.Context
 import android.content.Intent
+import com.gaelmarhic.quadrant.Login
 import com.gaelmarhic.quadrant.Setup
 
 /**
@@ -30,5 +31,9 @@ object ActivityIntents {
 
     fun setup(context: Context) = Intent().apply {
         setClassName(context, Setup.SET_UP_ACTIVITY)
+    }
+
+    fun login(context: Context) = Intent().apply {
+        setClassName(context, Login.LOGIN_ACTIVITY)
     }
 }
