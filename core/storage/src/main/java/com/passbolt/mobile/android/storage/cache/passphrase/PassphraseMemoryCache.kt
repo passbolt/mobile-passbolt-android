@@ -65,6 +65,8 @@ class PassphraseMemoryCache(
 
     fun get() = value
 
+    fun hasPassphrase() = value is PotentialPassphrase.Passphrase
+
     private fun initializeObservers() {
         lifecycleObserverScope.launch {
             lifecycleOwner.lifecycle.addObserver(this@PassphraseMemoryCache)
