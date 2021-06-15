@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.feature.setup.enterpassphrase
 
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase.Input
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintInformationProvider
+import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
@@ -9,7 +11,6 @@ import com.passbolt.mobile.android.storage.usecase.SaveUserAvatarUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase.Input
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,6 +41,7 @@ class EnterPassphrasePresenter(
     private val fingerprintProvider: FingerprintInformationProvider,
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
     private val verifyPassphraseUseCase: VerifyPassphraseUseCase,
+    private val passphraseRepository: PassphraseRepository,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : EnterPassphraseContract.Presenter {
 
@@ -53,7 +55,7 @@ class EnterPassphrasePresenter(
     }
 
     private fun displayAccount() {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
         val accountData = getAccountDataUseCase.execute(GetAccountDataUseCase.Input(userId))
         accountData.avatarUrl?.let {
             view?.displayAvatar(it)
@@ -85,7 +87,9 @@ class EnterPassphrasePresenter(
             val isCorrect = verifyPassphraseUseCase.execute(Input(privateKey, passphrase)).isCorrect
             if (!isCorrect) {
                 view?.showWrongPassphraseError()
+                passphraseRepository.clearPassphrase()
             } else {
+                passphraseRepository.setPassphrase(passphrase)
                 navigateToNextScreen()
             }
         }

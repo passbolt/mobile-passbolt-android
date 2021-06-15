@@ -33,13 +33,17 @@ class GetSelectedAccountUseCase(
     override fun execute(input: Unit): Output {
         val sharedPreferences =
             encryptedSharedPreferencesFactory.get("$SELECTED_ACCOUNT_ALIAS.xml")
-
-        return Output(
+        val selectedAccount =
             sharedPreferences.getString(SELECTED_ACCOUNT_KEY, null)
-        )
+
+        return if (selectedAccount != null) {
+            Output(selectedAccount)
+        } else {
+            throw IllegalStateException("No account is currently selected")
+        }
     }
 
     class Output(
-        val selectedAccount: String?
+        val selectedAccount: String
     )
 }

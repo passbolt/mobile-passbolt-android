@@ -1,22 +1,12 @@
 package com.passbolt.mobile.android.feature.setup.enterpassphrase
 
 import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.UserIdProvider
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.setup.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintInformationProvider
-import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
-import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
-import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
-import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
+import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveUserAvatarUseCase
-import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
 import org.koin.dsl.module
 
 /**
@@ -42,12 +32,13 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
-val getAccountDataUseCase = mock<GetAccountDataUseCase>()
-val getSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
-val saveUserAvatarUseCase = mock<SaveUserAvatarUseCase>()
-val getPrivateKeyUseCase = mock<GetPrivateKeyUseCase>()
-val verifyPassphraseUseCase = mock<VerifyPassphraseUseCase>()
+internal val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
+internal val getAccountDataUseCase = mock<GetAccountDataUseCase>()
+internal val getSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
+internal val saveUserAvatarUseCase = mock<SaveUserAvatarUseCase>()
+internal val getPrivateKeyUseCase = mock<GetPrivateKeyUseCase>()
+internal val verifyPassphraseUseCase = mock<VerifyPassphraseUseCase>()
+internal val passphraseRepository = mock<PassphraseRepository>()
 
 val enterPassphraseModule = module {
     factory<EnterPassphraseContract.Presenter> {
@@ -58,7 +49,8 @@ val enterPassphraseModule = module {
             fingerprintProvider = get(),
             getPrivateKeyUseCase = get(),
             verifyPassphraseUseCase = get(),
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            passphraseRepository = get()
         )
     }
     factory { fingerprintInformationProvider }
@@ -67,4 +59,5 @@ val enterPassphraseModule = module {
     factory { saveUserAvatarUseCase }
     factory { getPrivateKeyUseCase }
     factory { verifyPassphraseUseCase }
+    factory { passphraseRepository }
 }

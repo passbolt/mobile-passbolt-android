@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.di
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ProcessLifecycleOwner
 import coil.ImageLoader
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -36,12 +35,6 @@ internal val appModule = module {
         ImageLoader.Builder(androidContext())
             .okHttpClient(okHttpClient = get())
             .build()
-    }
-    single {
-        PassphraseMemoryCache(
-            coroutineLaunchContext = get(),
-            lifecycleOwner = get(named<ProcessLifecycleOwner>())
-        )
     }
     factory {
         ContextCompat.getMainExecutor(androidContext())

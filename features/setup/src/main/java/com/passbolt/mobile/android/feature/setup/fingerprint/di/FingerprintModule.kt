@@ -34,7 +34,7 @@ fun Module.fingerprintModule() {
         scoped<FingerprintContract.Presenter> {
             FingerprintPresenter(
                 fingerprintProvider = get(),
-                savePassphraseUseCase = get(),
+                passphraseRepository = get(),
                 coroutineLaunchContext = get()
             )
         }

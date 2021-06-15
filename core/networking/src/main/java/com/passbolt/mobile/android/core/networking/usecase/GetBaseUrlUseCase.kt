@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.core.networking.usecase
 
 import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.core.networking.PLACEHOLDER_BASE_URL
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 
@@ -34,9 +33,7 @@ class GetBaseUrlUseCase constructor(
 
     override fun execute(input: Unit): Output {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        return userId?.let {
-            Output(getAccountDataUseCase.execute(GetAccountDataUseCase.Input(userId)).url)
-        } ?: Output(PLACEHOLDER_BASE_URL)
+        return Output(getAccountDataUseCase.execute(GetAccountDataUseCase.Input(userId)).url)
     }
 
     class Output(

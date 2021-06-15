@@ -1,16 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.UserIdProvider
-import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
-import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
-import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
-import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
-import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
+import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import org.koin.dsl.module
 
 /**
@@ -36,11 +27,17 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
-internal val savePassphraseUseCase = mock<SavePassphraseUseCase>()
+internal val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
+internal val passphraseRepository = mock<PassphraseRepository>()
 
 val fingerprintModule = module {
-    factory<FingerprintContract.Presenter> { FingerprintPresenter(get(), get(), get()) }
+    factory<FingerprintContract.Presenter> {
+        FingerprintPresenter(
+            fingerprintProvider = get(),
+            passphraseRepository = get(),
+            coroutineLaunchContext = get()
+        )
+    }
     factory { fingerprintInformationProvider }
-    factory { savePassphraseUseCase }
+    factory { passphraseRepository }
 }

@@ -77,7 +77,7 @@ class PassphraseMemoryCache(
         }
     }
 
-    private fun clear() {
+    fun clear() {
         (value as? PotentialPassphrase.Passphrase).let {
             it?.passphrase?.eraseArray()
         }

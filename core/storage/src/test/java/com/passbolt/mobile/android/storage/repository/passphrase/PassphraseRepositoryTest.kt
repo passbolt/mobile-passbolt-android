@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
-import org.junit.Assert.assertThrows
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -73,18 +72,6 @@ class PassphraseRepositoryTest : KoinTest {
         val passphrase = passphraseRepository.getPotentialPassphrase()
         assertThat(passphrase).isInstanceOf(PotentialPassphrase.Passphrase::class.java)
         assertThat((passphrase as PotentialPassphrase.Passphrase).passphrase).isEqualTo(PASSPHRASE)
-    }
-
-    @Test
-    fun `test if repository throws exception when no account is selected`() {
-        whenever(passphraseMemoryCacheMock.hasPassphrase()).doReturn(false)
-        whenever(getSelectedAccountUseCaseMock.execute(Unit)).doReturn(
-            GetSelectedAccountUseCase.Output(null)
-        )
-
-        assertThrows(IllegalStateException::class.java) {
-            passphraseRepository.getPotentialPassphrase()
-        }
     }
 
     private companion object {

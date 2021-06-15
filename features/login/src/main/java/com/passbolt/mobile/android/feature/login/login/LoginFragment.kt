@@ -1,10 +1,7 @@
-package com.passbolt.mobile.android.storage.factory
+package com.passbolt.mobile.android.feature.login.login
 
-import android.content.Context
-import androidx.security.crypto.EncryptedFile
-import androidx.security.crypto.MasterKey
-import com.passbolt.mobile.android.storage.path.EncryptedFileBaseDirectory
-import java.io.File
+import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.feature.login.databinding.FragmentLoginBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,30 +25,4 @@ import java.io.File
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-class EncryptedFileFactory internal constructor(
-    private val context: Context,
-    private val keySpecProvider: KeySpecProvider
-) {
-
-    fun get(
-        fileName: String,
-        keyBiometricSettings: KeyBiometricSettings = KeyBiometricSettings(
-            authenticationRequired = false,
-            invalidatedByBiometricEnrollment = false
-        )
-    ): EncryptedFile {
-        val masterKey: MasterKey = MasterKey.Builder(context)
-            .setKeyGenParameterSpec(keySpecProvider.get(keyBiometricSettings))
-            .build()
-
-        val file = File(EncryptedFileBaseDirectory(context).baseDirectory, fileName)
-
-        return EncryptedFile.Builder(
-            context,
-            file,
-            masterKey,
-            EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-        ).build()
-    }
-}
+class LoginFragment : BindingFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate)

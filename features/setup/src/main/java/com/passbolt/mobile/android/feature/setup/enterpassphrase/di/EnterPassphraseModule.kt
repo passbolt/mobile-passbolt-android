@@ -39,7 +39,8 @@ fun Module.enterPassphraseModule() {
                 fingerprintProvider = get(),
                 getPrivateKeyUseCase = get(),
                 verifyPassphraseUseCase = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
+                passphraseRepository = get()
             )
         }
         scoped {

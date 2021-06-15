@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
-import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
+import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
+import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
  */
 class FingerprintPresenter(
     private val fingerprintProvider: FingerprintInformationProvider,
-    private val savePassphraseUseCase: SavePassphraseUseCase,
+    private val passphraseRepository: PassphraseRepository,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : FingerprintContract.Presenter {
 
@@ -55,13 +55,28 @@ class FingerprintPresenter(
     }
 
     override fun authenticationSucceeded() {
-        scope.launch {
-            // TODO - save proper passphrase PAS-125
-            savePassphraseUseCase.execute(SavePassphraseUseCase.Input("pass".toCharArray()))
+        when (val cachedPassphrase = passphraseRepository.getPotentialPassphrase()) {
+            is PotentialPassphrase.Passphrase -> {
+                // fingerprint is good and passphrase in cache not expired - renew cache duration
+                passphraseRepository.setPassphrase(cachedPassphrase.passphrase)
+                view?.showEncourageAutofillDialog()
+            }
+            is PotentialPassphrase.PassphraseNotPresent -> {
+                // user stayed too long and passphrase cache expired - show info dialog
+                view?.showPasswordCacheExpiredDialog()
+            }
         }
+    }
+
+    override fun cacheExpiredDialogConfirmed() {
+        view?.navigateToEnterPassphrase()
     }
 
     override fun authenticationError(errorMessage: Int) {
         view?.showAuthenticationError(errorMessage)
+    }
+
+    override fun setupAutofillLaterClick() {
+        view?.navigateToLogin()
     }
 }
