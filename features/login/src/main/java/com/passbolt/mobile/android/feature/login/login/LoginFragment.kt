@@ -1,7 +1,11 @@
 package com.passbolt.mobile.android.feature.login.login
 
+import android.os.Bundle
+import android.view.View
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.feature.login.databinding.FragmentLoginBinding
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,4 +29,19 @@ import com.passbolt.mobile.android.feature.login.databinding.FragmentLoginBindin
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LoginFragment : BindingFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate)
+class LoginFragment : BindingFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate), LoginContract.View {
+
+    private val presenter: LoginContract.Presenter by inject()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.attach(this)
+        setListeners()
+    }
+
+    private fun setListeners() {
+        binding.signInButton.setDebouncingOnClick {
+            presenter.signInClick()
+        }
+    }
+}

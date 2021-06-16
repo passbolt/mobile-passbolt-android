@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.service.registration
+package com.passbolt.mobile.android.feature.login.login
 
-import com.passbolt.mobile.android.core.networking.ResponseHandler
-import com.passbolt.mobile.android.core.networking.callWithHandler
-import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
+import com.passbolt.mobile.android.common.AsyncUseCase
+import com.passbolt.mobile.android.mappers.LoginMapper
+import com.passbolt.mobile.android.service.auth.AuthRepository
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +26,17 @@ import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RegistrationRepository(
-    private val registrationDataSource: RegistrationDataSource,
-    private val responseHandler: ResponseHandler
-) {
-    suspend fun turnPage(
-        uuid: String,
-        authToken: String,
-        pageRequestDto: UpdateTransferRequestDto,
-        userProfile: String?
-    ) = callWithHandler(responseHandler) {
-        registrationDataSource.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
+class LoginUseCase(
+    private val authRepository: AuthRepository,
+    private val loginMapper: LoginMapper
+) : AsyncUseCase<LoginUseCase.Input, Unit> {
+
+    override suspend fun execute(input: Input) {
+        authRepository.login(loginMapper.mapRequestToDto(input.userId, input.challenge))
     }
+
+    data class Input(
+        val userId: String,
+        val challenge: String
+    )
 }

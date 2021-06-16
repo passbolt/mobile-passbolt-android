@@ -11,6 +11,8 @@ dependencies {
     implementation project(':ui')
     implementation project(':mappers')
     implementation project(':entity')
+    implementation project(":passboltapi")
+    implementation project(":dto")
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

@@ -11,7 +11,6 @@ import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.core.ui.DrawableListDivider
 import com.passbolt.mobile.android.feature.login.R
 import com.passbolt.mobile.android.feature.login.accountslist.item.AccountItem
-import com.passbolt.mobile.android.feature.login.accountslist.item.AccountItemsMapper
 import com.passbolt.mobile.android.feature.login.accountslist.item.AddNewAccountItem
 import com.passbolt.mobile.android.feature.login.databinding.FragmentAccountsListBinding
 import com.passbolt.mobile.android.ui.AccountModelUi
@@ -43,7 +42,6 @@ class AccountsListFragment : BindingFragment<FragmentAccountsListBinding>(Fragme
     AccountsListContract.View {
 
     private val presenter: AccountsListContract.Presenter by inject()
-    private val accountItemsMapper: AccountItemsMapper by inject()
     private val modelAdapter: ModelAdapter<AccountModelUi, GenericItem> by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
