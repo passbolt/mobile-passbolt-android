@@ -4,12 +4,17 @@ plugins {
     id "kotlin-parcelize"
     id "kotlin-kapt"
     id "com.google.firebase.appdistribution"
+    id "com.starter.easylauncher"
+}
+
+def getVersionCode = { ->
+    return Integer.valueOf(System.getenv().get("GITLAB_BUILD_NUMBER") ?: projectVersionCode)
 }
 
 android {
     defaultConfig {
         applicationId "com.passbolt.mobile.android"
-        versionCode Integer.valueOf(System.getenv().get("GITLAB_BUILD_NUMBER") ?: projectVersionCode)
+        versionCode getVersionCode()
         versionName projectVersionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -35,7 +40,6 @@ android {
                 serviceCredentialsFile findProperty("serviceKey") ?: ""
                 groups "qa"
             }
-
         }
 //        qa {
 //            applicationIdSuffix ".qa"
@@ -57,6 +61,19 @@ android {
 
     buildFeatures {
         viewBinding true
+    }
+}
+
+easylauncher {
+    buildTypes {
+        debug {
+            enable true
+            filters = chromeLike(
+                label: "debug:${getVersionCode()}",
+                labelColor: "#000000",
+                ribbonColor: "#DCDCDC"
+            )
+        }
     }
 }
 

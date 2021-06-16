@@ -56,7 +56,8 @@ ext {
         debugDatabase: "1.0.6",
         appDistribution: "2.1.1",
         coil: "1.2.1",
-        fastAdapter: "5.4.1"
+        fastAdapter: "5.4.1",
+        easylauncher: "4.0.0"
     ]
 
     libs = [
@@ -132,6 +133,7 @@ ext {
             core: "com.mikepenz:fastadapter:${versions.fastAdapter}",
             binding: "com.mikepenz:fastadapter-extensions-binding:${versions.fastAdapter}",
             utils: "com.mikepenz:fastadapter-extensions-utils:${versions.fastAdapter}"
-        ]
+        ],
+        easylauncher: "com.project.starter:easylauncher:${versions.easylauncher}"
     ]
 }
