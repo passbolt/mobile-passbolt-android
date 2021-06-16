@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/accountsListFragment"
-        android:name="com.passbolt.mobile.android.feature.login.accountslist.AccountsListFragment"
+        android:name="com.passbolt.mobile.android.feature.login.login.LoginFragment"
         android:label="AccountsListFragment"
         tools:layout="@layout/fragment_accounts_list"/>
 

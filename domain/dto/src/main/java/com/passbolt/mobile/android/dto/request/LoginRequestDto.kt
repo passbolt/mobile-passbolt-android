@@ -1,8 +1,6 @@
-package com.passbolt.mobile.android.service.registration
+package com.passbolt.mobile.android.dto.request
 
-import com.passbolt.mobile.android.core.networking.ResponseHandler
-import com.passbolt.mobile.android.core.networking.callWithHandler
-import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +24,8 @@ import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RegistrationRepository(
-    private val registrationDataSource: RegistrationDataSource,
-    private val responseHandler: ResponseHandler
-) {
-    suspend fun turnPage(
-        uuid: String,
-        authToken: String,
-        pageRequestDto: UpdateTransferRequestDto,
-        userProfile: String?
-    ) = callWithHandler(responseHandler) {
-        registrationDataSource.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
-    }
-}
+data class LoginRequestDto(
+    @SerializedName("user_id")
+    val userId: String,
+    val challenge: String
+)

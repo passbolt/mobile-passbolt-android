@@ -1,8 +1,9 @@
-package com.passbolt.mobile.android.service.registration
+package com.passbolt.mobile.android.service.auth.data
 
-import com.passbolt.mobile.android.core.networking.ResponseHandler
-import com.passbolt.mobile.android.core.networking.callWithHandler
-import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
+import com.passbolt.mobile.android.dto.request.LoginRequestDto
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import retrofit2.http.Body
+import retrofit2.http.GET
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +27,19 @@ import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RegistrationRepository(
-    private val registrationDataSource: RegistrationDataSource,
-    private val responseHandler: ResponseHandler
-) {
-    suspend fun turnPage(
-        uuid: String,
-        authToken: String,
-        pageRequestDto: UpdateTransferRequestDto,
-        userProfile: String?
-    ) = callWithHandler(responseHandler) {
-        registrationDataSource.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
+internal interface AuthApi {
+    @GET(AUTH_VERIFY)
+    suspend fun getServerPublicPgpKey(): BaseResponse<Unit>
+
+    @GET(AUTH_RSA)
+    suspend fun getServerPublicRsaKey(): BaseResponse<Unit>
+
+    @GET(AUTH_LOGIN)
+    suspend fun login(@Body loginRequestDto: LoginRequestDto): BaseResponse<Unit>
+
+    private companion object {
+        private const val AUTH_VERIFY = "/auth/verify.json"
+        private const val AUTH_RSA = "/auth/jwt/rsa.json"
+        private const val AUTH_LOGIN = "/auth/jwt/login.json"
     }
 }

@@ -54,3 +54,9 @@ class ResponseHandler {
         }
     }
 }
+
+inline fun <T : Any> callWithHandler(responseHandler: ResponseHandler, apiCall: () -> T) = try {
+    responseHandler.handleSuccess(apiCall())
+} catch (e: Exception) {
+    responseHandler.handleException(e)
+}

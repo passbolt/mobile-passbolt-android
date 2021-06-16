@@ -1,8 +1,10 @@
-package com.passbolt.mobile.android.service.registration
+package com.passbolt.mobile.android.feature.login.login
 
-import com.passbolt.mobile.android.core.networking.ResponseHandler
-import com.passbolt.mobile.android.core.networking.callWithHandler
-import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
+import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +28,23 @@ import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RegistrationRepository(
-    private val registrationDataSource: RegistrationDataSource,
-    private val responseHandler: ResponseHandler
-) {
-    suspend fun turnPage(
-        uuid: String,
-        authToken: String,
-        pageRequestDto: UpdateTransferRequestDto,
-        userProfile: String?
-    ) = callWithHandler(responseHandler) {
-        registrationDataSource.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
+class LoginPresenter(
+    private val getServerPublicPgpKeyUseCase: GetServerPublicPgpKeyUseCase,
+    private val getServerPublicRsaKeyUseCase: GetServerPublicRsaKeyUseCase,
+    coroutineLaunchContext: CoroutineLaunchContext
+) : LoginContract.Presenter {
+
+    override var view: LoginContract.View? = null
+
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+
+    override fun signInClick() {
+        scope.launch {
+            val pgpKey = async { getServerPublicPgpKeyUseCase.execute(Unit) }
+            val rsaKey = async { getServerPublicRsaKeyUseCase.execute(Unit) }
+            pgpKey.await()
+            rsaKey.await()
+        }
     }
 }

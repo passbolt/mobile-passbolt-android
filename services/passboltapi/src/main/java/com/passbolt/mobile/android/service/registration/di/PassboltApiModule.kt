@@ -2,6 +2,10 @@ package com.passbolt.mobile.android.service.registration.di
 
 import com.passbolt.mobile.android.core.networking.RestService
 import com.passbolt.mobile.android.core.networking.RetrofitRestService
+import com.passbolt.mobile.android.service.auth.AuthDataSource
+import com.passbolt.mobile.android.service.auth.AuthRepository
+import com.passbolt.mobile.android.service.auth.data.AuthApi
+import com.passbolt.mobile.android.service.auth.data.AuthRemoteDataSource
 import com.passbolt.mobile.android.service.registration.RegistrationDataSource
 import com.passbolt.mobile.android.service.registration.RegistrationRepository
 import com.passbolt.mobile.android.service.registration.data.RegistrationApi
@@ -35,15 +39,27 @@ import retrofit2.converter.gson.GsonConverterFactory
 val passboltApiModule = module {
     single { provideRestService(get()) }
     single { getRegistrationApi(get()) }
+    single { getLoginApi(get()) }
 
     single<RegistrationDataSource> {
         RegistrationRemoteDataSource(
             registrationApi = get()
         )
     }
+    single<AuthDataSource> {
+        AuthRemoteDataSource(
+            authApi = get()
+        )
+    }
     single {
         RegistrationRepository(
             registrationDataSource = get(),
+            responseHandler = get()
+        )
+    }
+    single {
+        AuthRepository(
+            authDataSource = get(),
             responseHandler = get()
         )
     }
@@ -58,3 +74,6 @@ private fun provideRestService(okHttpClient: OkHttpClient): RestService {
 
 private fun getRegistrationApi(restService: RestService): RegistrationApi =
     restService.service(RegistrationApi::class.java)
+
+private fun getLoginApi(restService: RestService): AuthApi =
+    restService.service(AuthApi::class.java)
