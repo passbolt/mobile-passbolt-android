@@ -1,12 +1,6 @@
-package com.passbolt.mobile.android.core.mvp.viewbinding
+package com.passbolt.mobile.android.feature.main.mainscreen
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import androidx.appcompat.app.AppCompatActivity
-import androidx.viewbinding.ViewBinding
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
-import org.koin.core.scope.Scope
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,22 +25,11 @@ import org.koin.core.scope.Scope
  * @since v1.0
  */
 
-abstract class BindingActivity<T : ViewBinding>(private val viewInflater: (LayoutInflater) -> T) :
-    AppCompatActivity(), AndroidScopeComponent {
+fun Module.mainModule() {
 
-    override val scope: Scope by activityScope()
-    private var _binding: T? = null
-    protected open val binding: T
-        get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        _binding = viewInflater(layoutInflater)
-        setContentView(binding.root)
-    }
-
-    override fun onDestroy() {
-        _binding = null
-        super.onDestroy()
+    scope<MainActivity> {
+        scoped<MainContract.Presenter> {
+            MainPresenter()
+        }
     }
 }

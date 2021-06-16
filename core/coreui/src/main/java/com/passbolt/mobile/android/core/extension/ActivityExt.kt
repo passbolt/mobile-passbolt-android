@@ -1,12 +1,8 @@
-package com.passbolt.mobile.android.core.mvp.viewbinding
+package com.passbolt.mobile.android.core.extension
 
-import android.os.Bundle
-import android.view.LayoutInflater
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewbinding.ViewBinding
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
-import org.koin.core.scope.Scope
+import androidx.navigation.fragment.NavHostFragment
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,22 +27,5 @@ import org.koin.core.scope.Scope
  * @since v1.0
  */
 
-abstract class BindingActivity<T : ViewBinding>(private val viewInflater: (LayoutInflater) -> T) :
-    AppCompatActivity(), AndroidScopeComponent {
-
-    override val scope: Scope by activityScope()
-    private var _binding: T? = null
-    protected open val binding: T
-        get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        _binding = viewInflater(layoutInflater)
-        setContentView(binding.root)
-    }
-
-    override fun onDestroy() {
-        _binding = null
-        super.onDestroy()
-    }
-}
+fun AppCompatActivity.findNavHostFragment(@IdRes id: Int) =
+    (supportFragmentManager.findFragmentById(id) as NavHostFragment)
