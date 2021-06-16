@@ -49,8 +49,12 @@ class GetPassphraseUseCase(
 
             encryptedFile.openFileInput().use {
                 val bytes = it.readBytes()
-                val decodedPassphrase = Base64.decode(bytes, Base64.DEFAULT)
-                Output(PotentialPassphrase.Passphrase(decodedPassphrase.toCharArray()))
+                if (bytes.isNotEmpty()) {
+                    val decodedPassphrase = Base64.decode(bytes, Base64.DEFAULT)
+                    Output(PotentialPassphrase.Passphrase(decodedPassphrase.toCharArray()))
+                } else {
+                    Output(PotentialPassphrase.PassphraseNotPresent)
+                }
             }
         } catch (exception: IOException) {
             Timber.e(exception)

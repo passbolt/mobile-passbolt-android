@@ -4,11 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.feature.autofill.encourage.EncourageAutofillDialog
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentFingerprintBinding
 import org.koin.android.ext.android.inject
@@ -38,7 +42,7 @@ import java.util.concurrent.Executor
  */
 
 class FingerprintFragment : BindingFragment<FragmentFingerprintBinding>(FragmentFingerprintBinding::inflate),
-    FingerprintContract.View {
+    FingerprintContract.View, EncourageAutofillDialog.Listener {
 
     private val presenter: FingerprintContract.Presenter by inject()
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
@@ -88,6 +92,21 @@ class FingerprintFragment : BindingFragment<FragmentFingerprintBinding>(Fragment
         startActivity(Intent(Settings.ACTION_SECURITY_SETTINGS))
     }
 
+    override fun showEncourageAutofillDialog() {
+        EncourageAutofillDialog().show(
+            childFragmentManager, EncourageAutofillDialog::class.java.name
+        )
+    }
+
+    override fun navigateToEnterPassphrase() {
+        findNavController().popBackStack()
+    }
+
+    override fun navigateToLogin() {
+        startActivity(ActivityIntents.login(requireContext()))
+        requireActivity().finish()
+    }
+
     override fun showBiometricPrompt() {
         val biometricPrompt = BiometricPrompt(
             this, executor, BiometricAuthCallback(
@@ -105,8 +124,24 @@ class FingerprintFragment : BindingFragment<FragmentFingerprintBinding>(Fragment
         biometricPrompt.authenticate(promptInfo)
     }
 
+    override fun showPasswordCacheExpiredDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.fingerprint_setup_password_cache_expired_title)
+            .setMessage(R.string.fingerprint_setup_password_cache_expired_message)
+            .setPositiveButton(R.string.ok) { _, _ -> presenter.cacheExpiredDialogConfirmed() }
+            .show()
+    }
+
     override fun showAuthenticationError(errorMessage: Int) {
         Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG)
             .show()
+    }
+
+    override fun setupAutofillLaterClick() {
+        presenter.setupAutofillLaterClick()
+    }
+
+    override fun autofillSetupSuccessfully() {
+        // TODO after Passbolt autofill service can be enabled
     }
 }

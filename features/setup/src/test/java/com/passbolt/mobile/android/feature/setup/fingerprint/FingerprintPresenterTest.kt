@@ -1,10 +1,11 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.feature.setup.base.testModule
+import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -56,6 +57,7 @@ class FingerprintPresenterTest : KoinTest {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(false)
         presenter.useFingerprintButtonClick()
         verify(view).navigateToBiometricSettings()
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -63,6 +65,7 @@ class FingerprintPresenterTest : KoinTest {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(false)
         presenter.resume()
         verify(view).showConfigureFingerprint()
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -70,6 +73,46 @@ class FingerprintPresenterTest : KoinTest {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
         presenter.resume()
         verify(view).showUseFingerprint()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `when biometrics auth is a success and cache has passphrase encourage autofill should show`() {
+        whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+        whenever(passphraseRepository.getPotentialPassphrase()).thenReturn(
+            PotentialPassphrase.Passphrase("passphrase".toCharArray())
+        )
+
+        presenter.authenticationSucceeded()
+
+        verify(view).showEncourageAutofillDialog()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `when biometrics auth is a success and cache passphrase expired should show info dialog`() {
+        whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+        whenever(passphraseRepository.getPotentialPassphrase()).thenReturn(
+            PotentialPassphrase.PassphraseNotPresent
+        )
+
+        presenter.authenticationSucceeded()
+
+        verify(view).showPasswordCacheExpiredDialog()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `when cache expired info dialog is acknowledged should navigate to enter passphrase screen`() {
+        whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+        whenever(passphraseRepository.getPotentialPassphrase()).thenReturn(
+            PotentialPassphrase.PassphraseNotPresent
+        )
+
+        presenter.cacheExpiredDialogConfirmed()
+
+        verify(view).navigateToEnterPassphrase()
+        verifyNoMoreInteractions(view)
     }
 }
 

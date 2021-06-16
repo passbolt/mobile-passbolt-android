@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.storage.factory
+package com.passbolt.mobile.android.storage.path
 
 import android.content.Context
-import androidx.security.crypto.EncryptedFile
-import androidx.security.crypto.MasterKey
-import com.passbolt.mobile.android.storage.path.EncryptedFileBaseDirectory
 import java.io.File
 
 /**
@@ -29,29 +26,6 @@ import java.io.File
  * @since v1.0
  */
 
-class EncryptedFileFactory internal constructor(
-    private val context: Context,
-    private val keySpecProvider: KeySpecProvider
-) {
-
-    fun get(
-        fileName: String,
-        keyBiometricSettings: KeyBiometricSettings = KeyBiometricSettings(
-            authenticationRequired = false,
-            invalidatedByBiometricEnrollment = false
-        )
-    ): EncryptedFile {
-        val masterKey: MasterKey = MasterKey.Builder(context)
-            .setKeyGenParameterSpec(keySpecProvider.get(keyBiometricSettings))
-            .build()
-
-        val file = File(EncryptedFileBaseDirectory(context).baseDirectory, fileName)
-
-        return EncryptedFile.Builder(
-            context,
-            file,
-            masterKey,
-            EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-        ).build()
-    }
+class EncryptedFileBaseDirectory(appContext: Context) {
+    val baseDirectory: File = appContext.filesDir
 }

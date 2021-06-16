@@ -34,6 +34,10 @@ interface FingerprintContract {
         fun navigateToBiometricSettings()
         fun showBiometricPrompt()
         fun showAuthenticationError(@StringRes errorMessage: Int)
+        fun showEncourageAutofillDialog()
+        fun showPasswordCacheExpiredDialog()
+        fun navigateToEnterPassphrase()
+        fun navigateToLogin()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -41,5 +45,7 @@ interface FingerprintContract {
         fun resume()
         fun authenticationSucceeded()
         fun authenticationError(errorMessage: Int)
+        fun cacheExpiredDialogConfirmed()
+        fun setupAutofillLaterClick()
     }
 }

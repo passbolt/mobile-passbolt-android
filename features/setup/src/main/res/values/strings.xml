@@ -64,4 +64,6 @@
     <string name="fingerprint_setup_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
     <string name="fingerprint_setup_biometric_error_too_many_attempts">Biometric authorization has been blocked due to too many attempts.</string>
     <string name="fingerprint_setup_biometric_error_blocked">Biometric authorization has been blocked for 30 seconds.</string>
+    <string name="fingerprint_setup_password_cache_expired_title">Password cache expired</string>
+    <string name="fingerprint_setup_password_cache_expired_message">For security reason the passphrase entered on previous screen expired after timeout. Please retype the passphrase.</string>
 </resources>

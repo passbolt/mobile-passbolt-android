@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.storage.factory
+package com.passbolt.mobile.android.storage.usecase
 
 import android.content.Context
-import androidx.security.crypto.EncryptedFile
-import androidx.security.crypto.MasterKey
+import com.passbolt.mobile.android.common.UseCase
 import com.passbolt.mobile.android.storage.path.EncryptedFileBaseDirectory
+import com.passbolt.mobile.android.storage.path.PassphraseFileName
+import timber.log.Timber
 import java.io.File
 
 /**
@@ -28,30 +29,20 @@ import java.io.File
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class ClearSavedPassphraseUseCase(
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val appContext: Context
+) : UseCase<Unit, Unit> {
 
-class EncryptedFileFactory internal constructor(
-    private val context: Context,
-    private val keySpecProvider: KeySpecProvider
-) {
-
-    fun get(
-        fileName: String,
-        keyBiometricSettings: KeyBiometricSettings = KeyBiometricSettings(
-            authenticationRequired = false,
-            invalidatedByBiometricEnrollment = false
+    override fun execute(input: Unit) {
+        val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
+        val passphraseFile = File(
+            EncryptedFileBaseDirectory(appContext).baseDirectory,
+            PassphraseFileName(userId).path
         )
-    ): EncryptedFile {
-        val masterKey: MasterKey = MasterKey.Builder(context)
-            .setKeyGenParameterSpec(keySpecProvider.get(keyBiometricSettings))
-            .build()
-
-        val file = File(EncryptedFileBaseDirectory(context).baseDirectory, fileName)
-
-        return EncryptedFile.Builder(
-            context,
-            file,
-            masterKey,
-            EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-        ).build()
+        if (passphraseFile.exists()) {
+            val deleted = passphraseFile.delete()
+            Timber.e("Deleted passphrase file: $deleted")
+        }
     }
 }

@@ -2,10 +2,14 @@ package com.passbolt.mobile.android.storage.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.ProcessLifecycleOwner
+import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.factory.KeySpecProvider
+import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import com.passbolt.mobile.android.storage.usecase.AddAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.ClearSavedPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAccountsUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
@@ -21,6 +25,8 @@ import com.passbolt.mobile.android.storage.usecase.SaveSessionUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveUserAvatarUseCase
 import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
 import org.koin.android.ext.koin.androidApplication
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -139,6 +145,27 @@ val storageModule = module {
     single {
         SaveSessionUseCase(
             encryptedSharedPreferencesFactory = get()
+        )
+    }
+    single {
+        PassphraseMemoryCache(
+            coroutineLaunchContext = get(),
+            lifecycleOwner = get(named<ProcessLifecycleOwner>())
+        )
+    }
+    factory {
+        PassphraseRepository(
+            passphraseMemoryCache = get(),
+            getPassphraseUseCase = get(),
+            savePassphraseUseCase = get(),
+            selectedAccountUseCase = get(),
+            clearSavedPassphraseUseCase = get()
+        )
+    }
+    factory {
+        ClearSavedPassphraseUseCase(
+            getSelectedAccountUseCase = get(),
+            androidContext()
         )
     }
 }

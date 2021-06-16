@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.common.UseCase
 import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 import com.passbolt.mobile.android.storage.factory.KeyBiometricSettings
+import com.passbolt.mobile.android.storage.path.PassphraseFileName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,18 +37,18 @@ class SavePassphraseUseCase(
 
     override fun execute(input: Input) {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        val keyName = "${PASSPHRASE_FILE_NAME}_$userId"
+        val fileName = PassphraseFileName(userId).path
         val encryptedFile = encryptedFileFactory.get(
-            keyName,
+            fileName,
             KeyBiometricSettings(authenticationRequired = true, invalidatedByBiometricEnrollment = true)
         )
         encryptedFile.openFileOutput().use {
-            val encodedPassphrase = Base64.encode(input.passPhrase.toByteArray(), Base64.DEFAULT)
+            val encodedPassphrase = Base64.encode(input.passphrase.toByteArray(), Base64.DEFAULT)
             it.write(encodedPassphrase)
         }
     }
 
     class Input(
-        val passPhrase: CharArray
+        val passphrase: CharArray
     )
 }

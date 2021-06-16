@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.login
 
+import android.os.Bundle
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
 import com.passbolt.mobile.android.feature.login.databinding.ActivityLoginBinding
 
@@ -25,4 +26,10 @@ import com.passbolt.mobile.android.feature.login.databinding.ActivityLoginBindin
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LoginActivity : BindingActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate)
+class LoginActivity : BindingActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate) {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // TODO decide if go to login or account list
+    }
+}

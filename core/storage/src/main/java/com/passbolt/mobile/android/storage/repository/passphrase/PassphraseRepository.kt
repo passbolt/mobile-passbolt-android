@@ -2,8 +2,10 @@ package com.passbolt.mobile.android.storage.repository.passphrase
 
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
+import com.passbolt.mobile.android.storage.usecase.ClearSavedPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,7 +33,9 @@ import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 class PassphraseRepository(
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val getPassphraseUseCase: GetPassphraseUseCase,
-    private val selectedAccountUseCase: GetSelectedAccountUseCase
+    private val savePassphraseUseCase: SavePassphraseUseCase,
+    private val selectedAccountUseCase: GetSelectedAccountUseCase,
+    private val clearSavedPassphraseUseCase: ClearSavedPassphraseUseCase
 ) {
 
     fun getPotentialPassphrase(): PotentialPassphrase =
@@ -39,10 +43,17 @@ class PassphraseRepository(
             passphraseMemoryCache.get()
         } else {
             val userId = selectedAccountUseCase.execute(Unit).selectedAccount
-            if (userId != null) {
-                getPassphraseUseCase.execute(GetPassphraseUseCase.Input(userId)).potentialPassphrase
-            } else {
-                throw IllegalStateException("Cannot get passphrase: no account is currently selected")
-            }
+            getPassphraseUseCase.execute(GetPassphraseUseCase.Input(userId)).potentialPassphrase
         }
+
+    fun clearPassphrase() {
+        passphraseMemoryCache.clear()
+        clearSavedPassphraseUseCase.execute(Unit)
+    }
+
+    fun setPassphrase(passphrase: CharArray) {
+        clearSavedPassphraseUseCase.execute(Unit)
+        savePassphraseUseCase.execute(SavePassphraseUseCase.Input(passphrase))
+        passphraseMemoryCache.set(passphrase)
+    }
 }
