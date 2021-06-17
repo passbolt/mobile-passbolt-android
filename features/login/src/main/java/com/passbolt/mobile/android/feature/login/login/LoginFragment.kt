@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.feature.login.login
 import android.os.Bundle
 import android.view.View
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.login.databinding.FragmentLoginBinding
 import org.koin.android.ext.android.inject
 
@@ -29,7 +29,7 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LoginFragment : BindingFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate), LoginContract.View {
+class LoginFragment : BindingScopedFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate), LoginContract.View {
 
     private val presenter: LoginContract.Presenter by inject()
 

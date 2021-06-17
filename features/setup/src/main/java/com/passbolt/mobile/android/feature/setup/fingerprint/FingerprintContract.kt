@@ -41,11 +41,12 @@ interface FingerprintContract {
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun useFingerprintButtonClick()
+        fun useFingerprintClick()
         fun resume()
         fun authenticationSucceeded()
         fun authenticationError(errorMessage: Int)
         fun cacheExpiredDialogConfirmed()
         fun setupAutofillLaterClick()
+        fun maybeLaterClick()
     }
 }

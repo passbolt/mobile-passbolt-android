@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.DrawableListDivider
 import com.passbolt.mobile.android.feature.login.R
 import com.passbolt.mobile.android.feature.login.accountslist.item.AccountItem
@@ -38,7 +38,7 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountsListFragment : BindingFragment<FragmentAccountsListBinding>(FragmentAccountsListBinding::inflate),
+class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(FragmentAccountsListBinding::inflate),
     AccountsListContract.View {
 
     private val presenter: AccountsListContract.Presenter by inject()

@@ -16,9 +16,9 @@
             android:id="@+id/closeButton"
             android:layout_width="@dimen/dp_24"
             android:layout_height="@dimen/dp_24"
+            android:layout_marginTop="@dimen/dp_16"
             android:background="?selectableItemBackgroundBorderless"
             android:src="@drawable/ic_close"
-            android:layout_marginTop="@dimen/dp_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,8 +31,8 @@
             android:text="@string/dialog_encourage_autofill_header"
             android:textColor="@color/text_primary"
             app:layout_constraintBottom_toTopOf="@id/stepsView"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintTop_toBottomOf="@id/closeButton" />
+            app:layout_constraintTop_toBottomOf="@id/closeButton"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <com.passbolt.mobile.android.core.ui.text.CircleStepsView
             android:id="@+id/stepsView"
@@ -41,9 +41,9 @@
             android:layout_marginStart="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_48"
             app:layout_constraintBottom_toTopOf="@id/goToSettingsButton"
-            app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/headerLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/headerLabel"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <Button
             android:id="@+id/goToSettingsButton"

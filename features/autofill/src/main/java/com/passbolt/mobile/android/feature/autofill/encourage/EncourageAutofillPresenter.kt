@@ -16,6 +16,14 @@ class EncourageAutofillPresenter(
         }
     }
 
+    override fun closeClick() {
+        view?.dismissWithNoAction()
+    }
+
+    override fun maybeLaterClick() {
+        view?.dismissWithNoAction()
+    }
+
     override fun autofillSettingsClosedWithResult() {
         if (autofillInformationProvider.isPassboltAutofillServiceSet()) {
             view?.closeWithSuccess()

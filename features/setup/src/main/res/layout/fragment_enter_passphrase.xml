@@ -128,6 +128,7 @@
                     style="@style/ButtonSmallText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_16"
                     android:layout_marginBottom="@dimen/dp_32"
                     android:background="?selectableItemBackground"
                     android:gravity="center_horizontal"

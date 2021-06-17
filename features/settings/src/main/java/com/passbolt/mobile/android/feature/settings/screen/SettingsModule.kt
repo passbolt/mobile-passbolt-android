@@ -26,8 +26,5 @@ import org.koin.core.module.Module
  */
 
 fun Module.settingsModule() {
-
-    scope<SettingsFragment> {
-        // TODO needed for koin - place scoped dependencies here
-    }
+    // TODO
 }
