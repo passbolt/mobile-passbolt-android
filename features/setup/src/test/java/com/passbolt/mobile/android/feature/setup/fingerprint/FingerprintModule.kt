@@ -34,8 +34,7 @@ val fingerprintModule = module {
     factory<FingerprintContract.Presenter> {
         FingerprintPresenter(
             fingerprintProvider = get(),
-            passphraseRepository = get(),
-            coroutineLaunchContext = get()
+            passphraseRepository = get()
         )
     }
     factory { fingerprintInformationProvider }

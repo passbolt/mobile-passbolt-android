@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.core.ui.text.textinputfield
 
 import android.content.Context
+import android.text.InputType
 import android.util.AttributeSet
 import com.google.android.material.textfield.TextInputLayout
 
@@ -33,6 +34,12 @@ class PasswordInputView @JvmOverloads constructor(
 ) : TextInputView(context, attrs, defStyle) {
 
     init {
-        binding.textLayout.endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
+        with(binding.textLayout) {
+            editText?.let {
+                it.isSingleLine = true
+                it.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
+            endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
+        }
     }
 }

@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
@@ -38,7 +38,8 @@ import org.koin.core.scope.Scope
  * @since v1.0
  */
 
-class ScanQrFragment : BindingFragment<FragmentScanQrBinding>(FragmentScanQrBinding::inflate), ScanQrContract.View {
+class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScanQrBinding::inflate),
+    ScanQrContract.View {
 
     private val presenter: ScanQrContract.Presenter by inject()
     private lateinit var scanManagerScope: Scope

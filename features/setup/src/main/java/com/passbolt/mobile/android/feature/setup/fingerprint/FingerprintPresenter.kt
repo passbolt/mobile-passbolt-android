@@ -1,10 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,13 +27,10 @@ import kotlinx.coroutines.SupervisorJob
  */
 class FingerprintPresenter(
     private val fingerprintProvider: FingerprintInformationProvider,
-    private val passphraseRepository: PassphraseRepository,
-    coroutineLaunchContext: CoroutineLaunchContext
+    private val passphraseRepository: PassphraseRepository
 ) : FingerprintContract.Presenter {
 
     override var view: FingerprintContract.View? = null
-    private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     override fun resume() {
         if (fingerprintProvider.hasBiometricSetUp()) {
@@ -46,12 +40,16 @@ class FingerprintPresenter(
         }
     }
 
-    override fun useFingerprintButtonClick() {
+    override fun useFingerprintClick() {
         if (fingerprintProvider.hasBiometricSetUp()) {
             view?.showBiometricPrompt()
         } else {
             view?.navigateToBiometricSettings()
         }
+    }
+
+    override fun maybeLaterClick() {
+        view?.navigateToLogin()
     }
 
     override fun authenticationSucceeded() {

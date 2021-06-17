@@ -5,7 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBinding
 import org.koin.android.ext.android.inject
@@ -32,7 +32,8 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class WelcomeFragment : BindingFragment<FragmentWelcomeBinding>(FragmentWelcomeBinding::inflate), WelcomeContract.View {
+class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWelcomeBinding::inflate),
+    WelcomeContract.View {
 
     private val presenter: WelcomeContract.Presenter by inject()
 

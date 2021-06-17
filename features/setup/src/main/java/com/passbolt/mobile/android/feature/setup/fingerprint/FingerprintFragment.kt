@@ -10,7 +10,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.autofill.encourage.EncourageAutofillDialog
 import com.passbolt.mobile.android.feature.setup.R
@@ -41,7 +41,7 @@ import java.util.concurrent.Executor
  * @since v1.0
  */
 
-class FingerprintFragment : BindingFragment<FragmentFingerprintBinding>(FragmentFingerprintBinding::inflate),
+class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(FragmentFingerprintBinding::inflate),
     FingerprintContract.View, EncourageAutofillDialog.Listener {
 
     private val presenter: FingerprintContract.Presenter by inject()
@@ -69,7 +69,10 @@ class FingerprintFragment : BindingFragment<FragmentFingerprintBinding>(Fragment
     }
 
     private fun setListeners() {
-        binding.useFingerprintButton.setDebouncingOnClick { presenter.useFingerprintButtonClick() }
+        with(binding) {
+            useFingerprintButton.setDebouncingOnClick { presenter.useFingerprintClick() }
+            maybeLaterButton.setDebouncingOnClick { presenter.maybeLaterClick() }
+        }
     }
 
     override fun showUseFingerprint() {

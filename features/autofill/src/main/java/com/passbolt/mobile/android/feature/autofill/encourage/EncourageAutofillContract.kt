@@ -31,10 +31,13 @@ interface EncourageAutofillContract {
         fun openAutofillSettings()
         fun showAutofillNotSupported()
         fun closeWithSuccess()
+        fun dismissWithNoAction()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun goToSettingsClick()
         fun autofillSettingsClosedWithResult()
+        fun closeClick()
+        fun maybeLaterClick()
     }
 }

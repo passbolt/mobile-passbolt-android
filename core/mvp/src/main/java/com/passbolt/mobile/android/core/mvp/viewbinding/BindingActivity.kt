@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
-import org.koin.core.scope.Scope
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,9 +29,8 @@ import org.koin.core.scope.Scope
  */
 
 abstract class BindingActivity<T : ViewBinding>(private val viewInflater: (LayoutInflater) -> T) :
-    AppCompatActivity(), AndroidScopeComponent {
+    AppCompatActivity() {
 
-    override val scope: Scope by activityScope()
     private var _binding: T? = null
     protected open val binding: T
         get() = _binding!!

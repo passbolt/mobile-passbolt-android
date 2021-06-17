@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.text.CircleStepItemModel
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentTransferDetailsBinding
@@ -41,7 +41,7 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class TransferDetailsFragment : BindingFragment<FragmentTransferDetailsBinding>(
+class TransferDetailsFragment : BindingScopedFragment<FragmentTransferDetailsBinding>(
     FragmentTransferDetailsBinding::inflate
 ), TransferDetailsContract.View {
 

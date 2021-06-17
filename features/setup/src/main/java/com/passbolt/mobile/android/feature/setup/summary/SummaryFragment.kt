@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentSummaryBinding
 import org.koin.android.ext.android.inject
 
@@ -30,7 +30,7 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SummaryFragment : BindingFragment<FragmentSummaryBinding>(
+class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
     FragmentSummaryBinding::inflate
 ), SummaryContract.View {
 

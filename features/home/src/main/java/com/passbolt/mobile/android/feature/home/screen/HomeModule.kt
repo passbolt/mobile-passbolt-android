@@ -26,8 +26,5 @@ import org.koin.core.module.Module
  */
 
 fun Module.homeModule() {
-
-    scope<HomeFragment> {
-        // TODO needed for koin - place scoped dependencies here
-    }
+    // TODO
 }

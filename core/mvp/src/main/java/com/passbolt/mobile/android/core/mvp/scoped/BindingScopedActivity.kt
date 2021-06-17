@@ -1,11 +1,11 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint.di
+package com.passbolt.mobile.android.core.mvp.scoped
 
-import androidx.biometric.BiometricPrompt
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintContract
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintFragment
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintPresenter
-import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import android.view.LayoutInflater
+import androidx.viewbinding.ViewBinding
+import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.activityScope
+import org.koin.core.scope.Scope
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,14 +29,9 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-fun Module.fingerprintModule() {
-    scope(named<FingerprintFragment>()) {
-        scoped<FingerprintContract.Presenter> {
-            FingerprintPresenter(
-                fingerprintProvider = get(),
-                passphraseRepository = get()
-            )
-        }
-        scoped { BiometricPrompt.PromptInfo.Builder() }
-    }
+
+abstract class BindingScopedActivity<T : ViewBinding>(viewInflater: (LayoutInflater) -> T) :
+    BindingActivity<T>(viewInflater), AndroidScopeComponent {
+
+    override val scope: Scope by activityScope()
 }

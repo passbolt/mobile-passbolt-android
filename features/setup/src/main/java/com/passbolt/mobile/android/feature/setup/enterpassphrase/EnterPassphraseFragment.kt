@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import com.passbolt.mobile.android.common.extension.toByteArray
+import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.ui.text.textinputfield.TextInputView
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentEnterPassphraseBinding
 import org.koin.android.ext.android.inject
-import coil.load
-import coil.transform.CircleCropTransformation
-import com.passbolt.mobile.android.common.extension.toByteArray
-import com.passbolt.mobile.android.core.extension.initDefaultToolbar
-import com.passbolt.mobile.android.core.ui.text.textinputfield.TextInputView
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,7 +39,7 @@ import com.passbolt.mobile.android.core.ui.text.textinputfield.TextInputView
  */
 
 class EnterPassphraseFragment :
-    BindingFragment<FragmentEnterPassphraseBinding>(FragmentEnterPassphraseBinding::inflate),
+    BindingScopedFragment<FragmentEnterPassphraseBinding>(FragmentEnterPassphraseBinding::inflate),
     EnterPassphraseContract.View {
 
     private val presenter: EnterPassphraseContract.Presenter by inject()
