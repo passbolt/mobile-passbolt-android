@@ -14,7 +14,7 @@ import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.core.ui.text.CircleStepItemModel
+import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentTransferDetailsBinding
 import org.koin.android.ext.android.inject

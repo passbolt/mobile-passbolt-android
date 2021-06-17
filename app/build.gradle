@@ -41,15 +41,6 @@ android {
                 groups "qa"
             }
         }
-//        qa {
-//            applicationIdSuffix ".qa"
-//            debuggable false
-//            zipAlignEnabled true
-//            minifyEnabled true
-//            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-//            matchingFallbacks = ["release"]
-//            //TODO signingConfig signingConfigs.qaConfig
-//        }
         release {
             debuggable false
             zipAlignEnabled true
@@ -102,18 +93,9 @@ dependencies {
 
     debugImplementation libs.quality.leakcanary
 
-    implementation libs.androidx.core
-    implementation libs.androidx.appcompat
-    implementation libs.material
-    implementation libs.androidx.constraintLayout
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
     implementation libs.androidx.processLifecycle
-
     implementation libs.coil.core
     implementation libs.coil.base
-
-    /* DI */
     implementation libs.di.koin
     implementation libs.di.koinExt
 

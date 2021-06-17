@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.storage.usecase
 
-import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.paths.SessionFileName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,8 +32,8 @@ class SaveSessionUseCase(
 ) : UseCase<SaveSessionUseCase.Input, Unit> {
 
     override fun execute(input: Input) {
-        val alias = "${SESSION_TOKENS_ALIAS}_${input.userId}"
-        val sharedPreferences = encryptedSharedPreferencesFactory.get("$alias.xml")
+        val fileName = SessionFileName(input.userId).name
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
         with(sharedPreferences.edit()) {
             putString(ACCESS_TOKEN_KEY, input.accessToken)
             putString(REFRESH_TOKEN_KEY, input.refreshToken)

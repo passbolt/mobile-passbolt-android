@@ -8,7 +8,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.core.ui.DrawableListDivider
+import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
 import com.passbolt.mobile.android.feature.login.R
 import com.passbolt.mobile.android.feature.login.accountslist.item.AccountItem
 import com.passbolt.mobile.android.feature.login.accountslist.item.AddNewAccountItem

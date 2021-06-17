@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
-import com.passbolt.mobile.android.common.UserIdProvider
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.common.userid.UserIdProvider
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase

@@ -32,6 +32,6 @@ fun ByteArray.toCharArray(): CharArray {
     return Arrays.copyOf(charBuffer.array(), charBuffer.limit())
 }
 
-fun ByteArray.eraseArray() {
+fun ByteArray.erase() {
     Arrays.fill(this, 0)
 }

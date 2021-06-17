@@ -10,7 +10,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.core.ui.text.textinputfield.TextInputView
+import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentEnterPassphraseBinding
 import org.koin.android.ext.android.inject

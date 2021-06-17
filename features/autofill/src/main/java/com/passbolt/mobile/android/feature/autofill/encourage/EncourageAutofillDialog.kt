@@ -14,7 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.ui.text.CircleStepItemModel
+import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogEncourageAutofillBinding
 import org.koin.androidx.scope.fragmentScope

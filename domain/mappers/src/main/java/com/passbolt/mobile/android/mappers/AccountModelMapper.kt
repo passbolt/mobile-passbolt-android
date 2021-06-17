@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.mappers
 
-import com.passbolt.mobile.android.entity.AccountEntity
+import com.passbolt.mobile.android.entity.account.AccountEntity
 import com.passbolt.mobile.android.ui.AccountModelUi
 
 /**

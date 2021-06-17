@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.login.accountslist
 
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi

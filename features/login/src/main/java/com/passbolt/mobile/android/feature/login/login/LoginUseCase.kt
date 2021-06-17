@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.login.login
 
-import com.passbolt.mobile.android.common.AsyncUseCase
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.mappers.LoginMapper
 import com.passbolt.mobile.android.service.auth.AuthRepository
 

@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.login.login
 
 import com.passbolt.mobile.android.common.extension.toByteArray
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async

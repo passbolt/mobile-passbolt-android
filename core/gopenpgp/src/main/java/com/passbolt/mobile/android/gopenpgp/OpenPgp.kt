@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.gopenpgp
 
+import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpException
 import com.passbolt.mobile.android.gopenpgp.extension.erase

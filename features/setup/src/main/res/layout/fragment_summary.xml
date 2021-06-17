@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.passbolt.mobile.android.core.ui.ResultView
+    <com.passbolt.mobile.android.core.ui.resultview.ResultView
         android:id="@+id/resultView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

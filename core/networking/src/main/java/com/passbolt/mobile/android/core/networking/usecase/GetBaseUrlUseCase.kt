@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.core.networking.usecase
 
-import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 

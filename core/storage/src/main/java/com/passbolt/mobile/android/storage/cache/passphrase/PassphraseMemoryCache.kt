@@ -5,9 +5,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
-import com.passbolt.mobile.android.common.coroutines.timerFlow
-import com.passbolt.mobile.android.common.extension.eraseArray
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.common.coroutinetimer.timerFlow
+import com.passbolt.mobile.android.common.extension.erase
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -79,7 +79,7 @@ class PassphraseMemoryCache(
 
     fun clear() {
         (value as? PotentialPassphrase.Passphrase).let {
-            it?.passphrase?.eraseArray()
+            it?.passphrase?.erase()
         }
         value = PotentialPassphrase.PassphraseNotPresent
         lifecycleObserverScope.launch {

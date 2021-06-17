@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.storage.base
 
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 
 /**

@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.storage.factory
 import android.content.Context
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
-import com.passbolt.mobile.android.storage.path.EncryptedFileBaseDirectory
+import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
 import java.io.File
 
 /**

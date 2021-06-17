@@ -1,8 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.UserIdProvider
+import com.passbolt.mobile.android.common.userid.UserIdProvider
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
