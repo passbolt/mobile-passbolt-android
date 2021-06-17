@@ -27,10 +27,11 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
 interface LoginContract {
 
     interface View : BaseContract.View {
-        // TODO
+        fun showWrongPassphrase()
+        fun showError()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun signInClick()
+        fun signInClick(passphrase: CharArray?)
     }
 }

@@ -8,11 +8,17 @@ dependencies {
     implementation project(':mvp')
     implementation project(':ui')
     implementation project(':navigation')
+    implementation project(':storage')
+    implementation project(':common')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
 
+    implementation libs.androidx.fragment
+    implementation libs.androidx.activity
+
     implementation libs.di.koin
+    implementation libs.di.koinExt
 }
 
 android {

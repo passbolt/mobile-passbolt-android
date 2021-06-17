@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.service.auth.data
+package com.passbolt.mobile.android.dto.request
 
-import com.passbolt.mobile.android.dto.request.LoginRequestDto
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
-import com.passbolt.mobile.android.service.auth.AuthDataSource
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,16 +24,11 @@ import com.passbolt.mobile.android.service.auth.AuthDataSource
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class AuthRemoteDataSource(
-    private val authApi: AuthApi
-) : AuthDataSource {
-
-    override suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto> =
-        authApi.getServerPublicPgpKey()
-
-    override suspend fun getServerPublicRsaKey(): BaseResponse<Unit> =
-        authApi.getServerPublicRsaKey()
-
-    override suspend fun login(loginRequestDto: LoginRequestDto): BaseResponse<Unit> =
-        authApi.login(loginRequestDto)
-}
+data class ChallengeDto(
+    val version: String,
+    val domain: String,
+    @SerializedName("verify_token")
+    val verifyToken: String,
+    @SerializedName("verify_token_expiry")
+    val verifyTokenExpiry: Long
+)

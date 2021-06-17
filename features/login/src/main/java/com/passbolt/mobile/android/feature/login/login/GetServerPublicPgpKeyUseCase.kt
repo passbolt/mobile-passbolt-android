@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.login.login
 
 import com.passbolt.mobile.android.common.AsyncUseCase
+import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.service.auth.AuthRepository
 
 /**
@@ -27,9 +28,21 @@ import com.passbolt.mobile.android.service.auth.AuthRepository
  */
 class GetServerPublicPgpKeyUseCase(
     private val authRepository: AuthRepository
-) : AsyncUseCase<Unit, Unit> {
+) : AsyncUseCase<Unit, GetServerPublicPgpKeyUseCase.Output> {
 
-    override suspend fun execute(input: Unit) {
-        authRepository.getServerPublicPgpKey()
+    override suspend fun execute(input: Unit): Output =
+        when (val result = authRepository.getServerPublicPgpKey()) {
+            is NetworkResult.Failure.NetworkError -> Output.Failure
+            is NetworkResult.Failure.ServerError -> Output.Failure
+            is NetworkResult.Success -> Output.Success(result.value.body.keydata)
+        }
+
+    sealed class Output {
+
+        data class Success(
+            val publicKey: String
+        ) : Output()
+
+        object Failure : Output()
     }
 }

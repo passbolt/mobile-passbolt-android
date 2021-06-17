@@ -2,8 +2,11 @@ package com.passbolt.mobile.android.feature.login.login
 
 import android.os.Bundle
 import android.view.View
+import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.ui.text.textinputfield.TextInputView
+import com.passbolt.mobile.android.feature.login.R
 import com.passbolt.mobile.android.feature.login.databinding.FragmentLoginBinding
 import org.koin.android.ext.android.inject
 
@@ -41,7 +44,16 @@ class LoginFragment : BindingScopedFragment<FragmentLoginBinding>(FragmentLoginB
 
     private fun setListeners() {
         binding.signInButton.setDebouncingOnClick {
-            presenter.signInClick()
+            presenter.signInClick(binding.password.getText())
         }
+    }
+
+    override fun showWrongPassphrase() {
+        binding.password.setState(TextInputView.State.Error(getString(R.string.login_incorrect_passphrase)))
+    }
+
+    override fun showError() {
+        Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_LONG)
+            .show()
     }
 }

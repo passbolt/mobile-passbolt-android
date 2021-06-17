@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.service.auth.data
+package com.passbolt.mobile.android.feature.startup
 
-import com.passbolt.mobile.android.dto.request.LoginRequestDto
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
-import com.passbolt.mobile.android.service.auth.AuthDataSource
+import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,16 +24,14 @@ import com.passbolt.mobile.android.service.auth.AuthDataSource
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class AuthRemoteDataSource(
-    private val authApi: AuthApi
-) : AuthDataSource {
+class StartUpContract {
+    interface View : BaseContract.View {
+        fun navigateToSetup()
+        fun navigateToLogin()
+        fun navigateToAccountsList()
+    }
 
-    override suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto> =
-        authApi.getServerPublicPgpKey()
-
-    override suspend fun getServerPublicRsaKey(): BaseResponse<Unit> =
-        authApi.getServerPublicRsaKey()
-
-    override suspend fun login(loginRequestDto: LoginRequestDto): BaseResponse<Unit> =
-        authApi.login(loginRequestDto)
+    interface Presenter : BaseContract.Presenter<View> {
+        // no-op
+    }
 }

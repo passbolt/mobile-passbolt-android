@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.login.login
 
+import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -31,6 +32,8 @@ import kotlinx.coroutines.launch
 class LoginPresenter(
     private val getServerPublicPgpKeyUseCase: GetServerPublicPgpKeyUseCase,
     private val getServerPublicRsaKeyUseCase: GetServerPublicRsaKeyUseCase,
+    private val loginUseCase: LoginUseCase,
+    private val challengeProvider: ChallengeProvider,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : LoginContract.Presenter {
 
@@ -39,12 +42,42 @@ class LoginPresenter(
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    override fun signInClick() {
+    override fun signInClick(passphrase: CharArray?) {
         scope.launch {
             val pgpKey = async { getServerPublicPgpKeyUseCase.execute(Unit) }
             val rsaKey = async { getServerPublicRsaKeyUseCase.execute(Unit) }
-            pgpKey.await()
-            rsaKey.await()
+
+            val pgpKeyResult = pgpKey.await()
+            if (pgpKeyResult is GetServerPublicPgpKeyUseCase.Output.Success) {
+                login(passphrase, pgpKeyResult.publicKey)
+            } else {
+                view?.showError()
+            }
         }
+    }
+
+    private suspend fun login(passphrase: CharArray?, serverPublicKey: String) {
+        // TODO data should be passed from the accounts list screen
+        val userId = "e1ebc592-b90d-5e22-9f40-50e52911673b"
+        val challenge = challengeProvider.get(
+            version = "1.0.0",
+            domain = "https://passbolt.dev",
+            serverPublicKey = serverPublicKey,
+            passphrase = requireNotNull(passphrase.toByteArray()),
+            userId + "_passbolt.dev"
+        )
+        when (challenge) {
+            is ChallengeProvider.Output.Success -> sendLoginRequest(userId, challenge.challenge)
+            ChallengeProvider.Output.WrongPassphrase -> view?.showWrongPassphrase()
+        }
+    }
+
+    private suspend fun sendLoginRequest(userId: String, challenge: String) {
+        loginUseCase.execute(
+            LoginUseCase.Input(
+                userId,
+                challenge
+            )
+        )
     }
 }

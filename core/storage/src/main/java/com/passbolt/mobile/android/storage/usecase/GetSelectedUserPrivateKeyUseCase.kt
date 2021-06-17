@@ -1,9 +1,9 @@
-package com.passbolt.mobile.android.service.auth.data
+package com.passbolt.mobile.android.storage.usecase
 
-import com.passbolt.mobile.android.dto.request.LoginRequestDto
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
-import com.passbolt.mobile.android.service.auth.AuthDataSource
+import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
+import timber.log.Timber
+import java.io.IOException
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,16 +27,30 @@ import com.passbolt.mobile.android.service.auth.AuthDataSource
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class AuthRemoteDataSource(
-    private val authApi: AuthApi
-) : AuthDataSource {
 
-    override suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto> =
-        authApi.getServerPublicPgpKey()
+class GetSelectedUserPrivateKeyUseCase(
+    private val encryptedFileFactory: EncryptedFileFactory,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : UseCase<Unit, GetSelectedUserPrivateKeyUseCase.Output> {
 
-    override suspend fun getServerPublicRsaKey(): BaseResponse<Unit> =
-        authApi.getServerPublicRsaKey()
+    override fun execute(input: Unit): Output {
+        return try {
+            val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
+            val name = "${PRIVATE_KEY_FILE_NAME}_$userId"
+            Timber.d("Getting private key. Filename: $name")
 
-    override suspend fun login(loginRequestDto: LoginRequestDto): BaseResponse<Unit> =
-        authApi.login(loginRequestDto)
+            val encryptedFile = encryptedFileFactory.get(name)
+            encryptedFile.openFileInput().use {
+                val bytes = it.readBytes()
+                Output(String(bytes))
+            }
+        } catch (exception: IOException) {
+            Timber.e(exception)
+            Output(null)
+        }
+    }
+
+    class Output(
+        val privateKey: String?
+    )
 }

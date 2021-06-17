@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintInformationProvider
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveUserAvatarUseCase
 import org.koin.dsl.module
@@ -36,7 +36,7 @@ internal val fingerprintInformationProvider = mock<FingerprintInformationProvide
 internal val getAccountDataUseCase = mock<GetAccountDataUseCase>()
 internal val getSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val saveUserAvatarUseCase = mock<SaveUserAvatarUseCase>()
-internal val getPrivateKeyUseCase = mock<GetPrivateKeyUseCase>()
+internal val getPrivateKeyUseCase = mock<GetSelectedUserPrivateKeyUseCase>()
 internal val verifyPassphraseUseCase = mock<VerifyPassphraseUseCase>()
 internal val passphraseRepository = mock<PassphraseRepository>()
 
@@ -47,7 +47,7 @@ val enterPassphraseModule = module {
             getSelectedAccountUseCase = get(),
             saveUserAvatarUseCase = get(),
             fingerprintProvider = get(),
-            getPrivateKeyUseCase = get(),
+            getSelectedUserPrivateKeyUseCase = get(),
             verifyPassphraseUseCase = get(),
             coroutineLaunchContext = get(),
             passphraseRepository = get()

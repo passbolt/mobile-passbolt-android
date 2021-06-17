@@ -1,9 +1,9 @@
-package com.passbolt.mobile.android.service.auth.data
+package com.passbolt.mobile.android.feature.startup.di
 
-import com.passbolt.mobile.android.dto.request.LoginRequestDto
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
-import com.passbolt.mobile.android.service.auth.AuthDataSource
+import com.passbolt.mobile.android.feature.startup.StartUpActivity
+import com.passbolt.mobile.android.feature.startup.StartUpContract
+import com.passbolt.mobile.android.feature.startup.StartUpPresenter
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,16 +27,13 @@ import com.passbolt.mobile.android.service.auth.AuthDataSource
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class AuthRemoteDataSource(
-    private val authApi: AuthApi
-) : AuthDataSource {
-
-    override suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto> =
-        authApi.getServerPublicPgpKey()
-
-    override suspend fun getServerPublicRsaKey(): BaseResponse<Unit> =
-        authApi.getServerPublicRsaKey()
-
-    override suspend fun login(loginRequestDto: LoginRequestDto): BaseResponse<Unit> =
-        authApi.login(loginRequestDto)
+val startUpModule = module {
+    scope<StartUpActivity> {
+        scoped<StartUpContract.Presenter> {
+            StartUpPresenter(
+                getAccountsUseCase = get(),
+                coroutineLaunchContext = get()
+            )
+        }
+    }
 }

@@ -2,8 +2,10 @@ package com.passbolt.mobile.android.service.auth.data
 
 import com.passbolt.mobile.android.dto.request.LoginRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,12 +31,12 @@ import retrofit2.http.GET
  */
 internal interface AuthApi {
     @GET(AUTH_VERIFY)
-    suspend fun getServerPublicPgpKey(): BaseResponse<Unit>
+    suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto>
 
     @GET(AUTH_RSA)
     suspend fun getServerPublicRsaKey(): BaseResponse<Unit>
 
-    @GET(AUTH_LOGIN)
+    @POST(AUTH_LOGIN)
     suspend fun login(@Body loginRequestDto: LoginRequestDto): BaseResponse<Unit>
 
     private companion object {

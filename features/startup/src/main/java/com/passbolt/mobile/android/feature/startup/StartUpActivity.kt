@@ -1,15 +1,33 @@
 package com.passbolt.mobile.android.feature.startup
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.feature.startup.databinding.ActivityStartupBinding
+import org.koin.android.ext.android.inject
 
-class StartUpActivity : AppCompatActivity() {
+class StartUpActivity : BindingScopedActivity<ActivityStartupBinding>(ActivityStartupBinding::inflate),
+    StartUpContract.View {
+
+    private val presenter: StartUpContract.Presenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // TODO add logic for navigating between sign in and setup
+        presenter.attach(this)
+    }
+
+    override fun navigateToSetup() {
         startActivity(ActivityIntents.setup(this))
+        finish()
+    }
+
+    override fun navigateToLogin() {
+        startActivity(ActivityIntents.login(this, false))
+        finish()
+    }
+
+    override fun navigateToAccountsList() {
+        startActivity(ActivityIntents.login(this, true))
         finish()
     }
 }

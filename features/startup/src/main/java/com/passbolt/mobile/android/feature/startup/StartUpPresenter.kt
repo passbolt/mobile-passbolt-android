@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.service.auth.data
+package com.passbolt.mobile.android.feature.startup
 
-import com.passbolt.mobile.android.dto.request.LoginRequestDto
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
-import com.passbolt.mobile.android.service.auth.AuthDataSource
+import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.storage.usecase.GetAccountsUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,16 +28,24 @@ import com.passbolt.mobile.android.service.auth.AuthDataSource
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class AuthRemoteDataSource(
-    private val authApi: AuthApi
-) : AuthDataSource {
+class StartUpPresenter(
+    private val getAccountsUseCase: GetAccountsUseCase,
+    coroutineLaunchContext: CoroutineLaunchContext
+) : StartUpContract.Presenter {
 
-    override suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto> =
-        authApi.getServerPublicPgpKey()
+    override var view: StartUpContract.View? = null
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    override suspend fun getServerPublicRsaKey(): BaseResponse<Unit> =
-        authApi.getServerPublicRsaKey()
-
-    override suspend fun login(loginRequestDto: LoginRequestDto): BaseResponse<Unit> =
-        authApi.login(loginRequestDto)
+    override fun attach(view: StartUpContract.View) {
+        super.attach(view)
+        scope.launch {
+            val accounts = getAccountsUseCase.execute(Unit).users
+            when {
+                accounts.isEmpty() -> view.navigateToSetup()
+                accounts.size == 1 -> view.navigateToLogin()
+                else -> view.navigateToAccountsList()
+            }
+        }
+    }
 }

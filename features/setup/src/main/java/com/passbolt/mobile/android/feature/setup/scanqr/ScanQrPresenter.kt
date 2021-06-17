@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
+import com.passbolt.mobile.android.storage.usecase.AddAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
@@ -47,6 +48,7 @@ class ScanQrPresenter(
     private val qrParser: ScanQrParser,
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val saveAccountDataUseCase: SaveAccountDataUseCase,
+    private val addAccountUseCase: AddAccountUseCase,
     private val userIdProvider: UserIdProvider,
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
     private val updateAccountDataUseCase: UpdateAccountDataUseCase
@@ -177,6 +179,7 @@ class ScanQrPresenter(
         userId = userIdProvider.get(id, url)
         saveSelectedAccountUseCase.execute(SaveSelectedAccountUseCase.Input(userId))
         saveAccountDataUseCase.execute(SaveAccountDataUseCase.Input(userId, url))
+        addAccountUseCase.execute(AddAccountUseCase.Input(userId))
     }
 
     override fun startCameraError(exc: Exception) {
