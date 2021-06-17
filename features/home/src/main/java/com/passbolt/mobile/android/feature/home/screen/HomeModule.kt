@@ -1,8 +1,6 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.feature.home.screen
 
-import android.os.Bundle
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.databinding.ActivityMainBinding
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,10 +25,9 @@ import com.passbolt.mobile.android.databinding.ActivityMainBinding
  * @since v1.0
  */
 
-class MainActivity : BindingActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
+fun Module.homeModule() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setSupportActionBar(binding.toolbar)
+    scope<HomeFragment> {
+        // TODO needed for koin - place scoped dependencies here
     }
 }

@@ -1,12 +1,10 @@
-package com.passbolt.mobile.android.core.mvp.viewbinding
+package com.passbolt.mobile.android.common
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import androidx.appcompat.app.AppCompatActivity
-import androidx.viewbinding.ViewBinding
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
-import org.koin.core.scope.Scope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
+import java.io.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,22 +29,30 @@ import org.koin.core.scope.Scope
  * @since v1.0
  */
 
-abstract class BindingActivity<T : ViewBinding>(private val viewInflater: (LayoutInflater) -> T) :
-    AppCompatActivity(), AndroidScopeComponent {
+fun <T> LifecycleOwner.lifecycleAwareLazy(initializer: () -> T): Lazy<T> =
+    LifecycleAwareLazy(this, initializer)
 
-    override val scope: Scope by activityScope()
-    private var _binding: T? = null
-    protected open val binding: T
-        get() = _binding!!
+class LifecycleAwareLazy<out T>(owner: LifecycleOwner, private val initializer: () -> T) : Lazy<T>, Serializable {
+    private var _value: T? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        _binding = viewInflater(layoutInflater)
-        setContentView(binding.root)
+    init {
+        owner.lifecycle.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+            fun onStop() {
+                _value = null
+            }
+        })
     }
 
-    override fun onDestroy() {
-        _binding = null
-        super.onDestroy()
-    }
+    override val value: T
+        get() {
+            if (!isInitialized()) {
+                _value = initializer()
+            }
+            return _value as T
+        }
+
+    override fun isInitialized(): Boolean = _value != null
+
+    override fun toString(): String = if (isInitialized()) value.toString() else "Lazy value not initialized yet."
 }

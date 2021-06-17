@@ -95,6 +95,10 @@ dependencies {
     implementation project(':gopenpgp')
     implementation project(':autofill')
     implementation project(':login')
+    implementation project(':main')
+    implementation project(':home')
+    implementation project(':settings')
+    implementation project(':folders')
 
     debugImplementation libs.quality.leakcanary
 

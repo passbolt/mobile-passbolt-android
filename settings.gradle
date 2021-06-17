@@ -16,6 +16,10 @@ featureModule "startup"
 featureModule "setup"
 featureModule "autofill"
 featureModule "login"
+featureModule "main"
+featureModule "home"
+featureModule "settings"
+featureModule "folders"
 
 serviceModule "passboltapi"
 
