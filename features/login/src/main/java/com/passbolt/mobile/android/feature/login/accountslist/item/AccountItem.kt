@@ -1,14 +1,9 @@
 package com.passbolt.mobile.android.feature.login.accountslist.item
 
-import android.graphics.drawable.Drawable
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.items.AbstractItem
-import com.mikepenz.fastadapter.listeners.ClickEventHook
-import com.passbolt.mobile.android.common.extension.asBinding
+import android.view.ViewGroup
+import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.login.R
 import com.passbolt.mobile.android.feature.login.databinding.ItemAccountBinding
 import com.passbolt.mobile.android.ui.AccountModelUi
@@ -36,67 +31,30 @@ import com.passbolt.mobile.android.ui.AccountModelUi
  * @since v1.0
  */
 class AccountItem(
-    private val accountModel: AccountModelUi.AccountModel
-) : AbstractItem<AccountItem.ViewHolder>() {
+    val accountModel: AccountModelUi.AccountModel
+) : AbstractBindingItem<ItemAccountBinding>() {
 
     override val type: Int
         get() = R.id.itemAccount
 
-    override val layoutRes: Int
-        get() = R.layout.item_account
-
-    override fun bindView(holder: ViewHolder, payloads: List<Any>) {
-        super.bindView(holder, payloads)
-        holder.title.text = accountModel.title
-        holder.email.text = accountModel.email
-        if (accountModel.isFirstItem) {
-            holder.setRippleBackgroundTop()
-        } else {
-            holder.setRippleBackground()
-        }
-        // holder.icon.load(accountModel.avatar) // TODO
+    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemAccountBinding {
+        return ItemAccountBinding.inflate(inflater, parent, false)
     }
 
-    override fun getViewHolder(v: View): ViewHolder {
-        return ViewHolder(v)
-    }
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-        var title: TextView = view.findViewById(R.id.title)
-        var email: TextView = view.findViewById(R.id.email)
-        var itemAccountContainer: View = view.findViewById(R.id.itemAccount)
-        private var rippleBackground: Drawable =
-            ContextCompat.getDrawable(view.context, R.drawable.background_ripple)!!
-        private var rippleBackgroundTop: Drawable =
-            ContextCompat.getDrawable(view.context, R.drawable.background_ripple_top_radius)!!
-
-        fun setRippleBackgroundTop() {
-            itemAccountContainer.background = rippleBackgroundTop
-        }
-
-        fun setRippleBackground() {
-            itemAccountContainer.background = rippleBackground
-        }
-    }
-
-    class AccountItemClick(
-        private val clickListener: (AccountModelUi.AccountModel) -> Unit
-    ) : ClickEventHook<AccountItem>() {
-
-        override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemAccountBinding> {
-                it.itemAccount
-            }
-        }
-
-        override fun onClick(
-            v: View,
-            position: Int,
-            fastAdapter: FastAdapter<AccountItem>,
-            item: AccountItem
-        ) {
-            clickListener.invoke(item.accountModel)
+    override fun bindView(binding: ItemAccountBinding, payloads: List<Any>) {
+        super.bindView(binding, payloads)
+        with(binding) {
+            title.text = accountModel.title
+            email.text = accountModel.email
+            trashImage.visibility = if (accountModel.isTrashIconVisible) View.VISIBLE else View.GONE
+            root.setBackgroundResource(
+                if (accountModel.isFirstItem) {
+                    R.drawable.background_ripple_top_radius
+                } else {
+                    R.drawable.background_ripple
+                }
+            )
+            // holder.icon.load(accountModel.avatar) // TODO
         }
     }
 }

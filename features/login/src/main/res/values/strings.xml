@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="cancel">Cancel</string>
     <string name="unknown_error">Unknown error occurred</string>
 
     <string name="accounts_list_title">Welcome back!</string>
     <string name="accounts_list_subtitle">Choose an account to sign in!</string>
     <string name="accounts_list_remove">Remove an account from this device</string>
+    <string name="accounts_list_remove_account">Remove</string>
+    <string name="accounts_list_removing_done">Done</string>
+    <string name="accounts_list_add_new_account">Add new account</string>
 
     <string name="login_password_title">Passphrase</string>
     <string name="login_sign_in">Sign In</string>
     <string name="login_incorrect_passphrase">Incorrect passphrase!</string>
+    <string name="accounts_list_remove_account_title">Are you sure?</string>
+    <string name="accounts_list_remove_account_message">This will remove your account from this device. Your passwords will not be deleted.</string>
 </resources>

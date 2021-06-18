@@ -2,15 +2,20 @@ package com.passbolt.mobile.android.feature.login.accountslist
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
+import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.common.extension.gone
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
 import com.passbolt.mobile.android.feature.login.R
-import com.passbolt.mobile.android.feature.login.accountslist.item.AccountItem
+import com.passbolt.mobile.android.feature.login.accountslist.item.AccountItemClick
+import com.passbolt.mobile.android.feature.login.accountslist.item.AccountUiItemsMapper
 import com.passbolt.mobile.android.feature.login.accountslist.item.AddNewAccountItem
 import com.passbolt.mobile.android.feature.login.databinding.FragmentAccountsListBinding
 import com.passbolt.mobile.android.ui.AccountModelUi
@@ -43,29 +48,37 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
 
     private val presenter: AccountsListContract.Presenter by inject()
     private val modelAdapter: ModelAdapter<AccountModelUi, GenericItem> by inject()
+    private val fastAdapter: FastAdapter<GenericItem> by inject()
+    private val accountsUiMapper: AccountUiItemsMapper by inject()
+    private val listDivider: DrawableListDivider by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
+        setListeners()
         presenter.attach(this)
     }
 
-    private fun initAdapter() {
-        val fastAdapter = FastAdapter.with(modelAdapter)
+    private fun setListeners() {
+        with(binding) {
+            removeAccountLabel.setDebouncingOnClick { presenter.removeAnAccountClick() }
+            doneRemovingAccountsButton.setDebouncingOnClick { presenter.doneRemovingAccountsClick() }
+        }
+    }
 
+    private fun initAdapter() {
         binding.recyclerView.apply {
             itemAnimator = null
             layoutManager = LinearLayoutManager(requireContext())
             adapter = fastAdapter
-            val divider = DrawableListDivider(ContextCompat.getDrawable(requireContext(), R.drawable.grey_divider))
-            addItemDecoration(divider)
+            addItemDecoration(listDivider)
         }
 
         fastAdapter.addEventHooks(
             listOf(
-                AccountItem.AccountItemClick {
-                    presenter.accountItemClick(it)
-                },
+                AccountItemClick(
+                    accountClickListener = { presenter.accountItemClick(it) },
+                    removeAccountClickListener = { presenter.removeAccountClick(it) }),
                 AddNewAccountItem.AddAccountItemClick {
                     presenter.addAccountClick()
                 }
@@ -74,6 +87,35 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     }
 
     override fun showAccounts(accounts: List<AccountModelUi>) {
-        modelAdapter.add(accounts)
+        val uiItems = accounts.map { accountsUiMapper.mapModelToItem(it) }
+        FastAdapterDiffUtil.calculateDiff(modelAdapter, uiItems)
+        fastAdapter.notifyAdapterDataSetChanged()
+    }
+
+    override fun showDoneRemovingAccounts() {
+        binding.doneRemovingAccountsButton.visible()
+    }
+
+    override fun hideDoneRemovingAccounts() {
+        binding.doneRemovingAccountsButton.gone()
+    }
+
+    override fun showRemoveAccounts() {
+        binding.removeAccountLabel.visible()
+    }
+
+    override fun hideRemoveAccounts() {
+        binding.removeAccountLabel.gone()
+    }
+
+    override fun showRemoveAccountConfirmationDialog(model: AccountModelUi.AccountModel) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.accounts_list_remove_account_title)
+            .setMessage(R.string.accounts_list_remove_account_message)
+            .setPositiveButton(R.string.accounts_list_remove) { _, _ ->
+                presenter.confirmRemoveAccountClick(model)
+            }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .show()
     }
 }

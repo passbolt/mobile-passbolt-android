@@ -132,7 +132,9 @@ ext {
         fastAdapter: [
             core: "com.mikepenz:fastadapter:${versions.fastAdapter}",
             binding: "com.mikepenz:fastadapter-extensions-binding:${versions.fastAdapter}",
-            utils: "com.mikepenz:fastadapter-extensions-utils:${versions.fastAdapter}"
+            utils: "com.mikepenz:fastadapter-extensions-utils:${versions.fastAdapter}",
+            diff: "com.mikepenz:fastadapter-extensions-diff:${versions.fastAdapter}"
+
         ],
         easylauncher: "com.project.starter:easylauncher:${versions.easylauncher}"
     ]

@@ -29,10 +29,19 @@ interface AccountsListContract {
 
     interface View : BaseContract.View {
         fun showAccounts(accounts: List<AccountModelUi>)
+        fun hideRemoveAccounts()
+        fun showDoneRemovingAccounts()
+        fun hideDoneRemovingAccounts()
+        fun showRemoveAccounts()
+        fun showRemoveAccountConfirmationDialog(model: AccountModelUi.AccountModel)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun accountItemClick(model: AccountModelUi.AccountModel)
         fun addAccountClick()
+        fun removeAnAccountClick()
+        fun doneRemovingAccountsClick()
+        fun removeAccountClick(model: AccountModelUi.AccountModel)
+        fun confirmRemoveAccountClick(model: AccountModelUi.AccountModel)
     }
 }

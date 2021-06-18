@@ -40,64 +40,65 @@ class AccountsListPresenter(
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
+    private var accounts = listOf(
+        AccountModelUi.AccountModel(
+            "First name",
+            "email@passbolt.com",
+            "https://image.pngaaa.com/569/2189569-middle.png",
+            isFirstItem = true
+        ),
+        AccountModelUi.AccountModel(
+            "First name",
+            "email@passbolt.com",
+            "https://image.pngaaa.com/569/2189569-middle.png"
+        ),
+        AccountModelUi.AccountModel(
+            "First name",
+            "email@passbolt.com",
+            "https://image.pngaaa.com/569/2189569-middle.png"
+        ),
+        AccountModelUi.AccountModel(
+            "First name",
+            "email@passbolt.com",
+            "https://image.pngaaa.com/569/2189569-middle.png"
+        ),
+        AccountModelUi.AccountModel(
+            "First name",
+            "email@passbolt.com",
+            "https://image.pngaaa.com/569/2189569-middle.png"
+        ),
+        AccountModelUi.AccountModel(
+            "First name",
+            "email@passbolt.com",
+            "https://image.pngaaa.com/569/2189569-middle.png"
+        ),
+        AccountModelUi.AccountModel(
+            "First name",
+            "email@passbolt.com",
+            "https://image.pngaaa.com/569/2189569-middle.png"
+        ),
+        AccountModelUi.AccountModel(
+            "First name",
+            "email@passbolt.com",
+            "https://image.pngaaa.com/569/2189569-middle.png"
+        ),
+        AccountModelUi.AccountModel(
+            "First name",
+            "email@passbolt.com",
+            "https://image.pngaaa.com/569/2189569-middle.png"
+        ),
+        AccountModelUi.AccountModel(
+            "First name",
+            "email@passbolt.com",
+            "https://image.pngaaa.com/569/2189569-middle.png"
+        ),
+        AccountModelUi.AddNewAccount
+    )
+
     override fun attach(view: AccountsListContract.View) {
         super.attach(view)
-        view.showAccounts(
-            listOf(
-                AccountModelUi.AccountModel(
-                    "First name",
-                    "email@passbolt.com",
-                    "https://image.pngaaa.com/569/2189569-middle.png",
-                    isFirstItem = true
-                ),
-                AccountModelUi.AccountModel(
-                    "First name",
-                    "email@passbolt.com",
-                    "https://image.pngaaa.com/569/2189569-middle.png"
-                ),
-                AccountModelUi.AccountModel(
-                    "First name",
-                    "email@passbolt.com",
-                    "https://image.pngaaa.com/569/2189569-middle.png"
-                ),
-                AccountModelUi.AccountModel(
-                    "First name",
-                    "email@passbolt.com",
-                    "https://image.pngaaa.com/569/2189569-middle.png"
-                ),
-                AccountModelUi.AccountModel(
-                    "First name",
-                    "email@passbolt.com",
-                    "https://image.pngaaa.com/569/2189569-middle.png"
-                ),
-                AccountModelUi.AccountModel(
-                    "First name",
-                    "email@passbolt.com",
-                    "https://image.pngaaa.com/569/2189569-middle.png"
-                ),
-                AccountModelUi.AccountModel(
-                    "First name",
-                    "email@passbolt.com",
-                    "https://image.pngaaa.com/569/2189569-middle.png"
-                ),
-                AccountModelUi.AccountModel(
-                    "First name",
-                    "email@passbolt.com",
-                    "https://image.pngaaa.com/569/2189569-middle.png"
-                ),
-                AccountModelUi.AccountModel(
-                    "First name",
-                    "email@passbolt.com",
-                    "https://image.pngaaa.com/569/2189569-middle.png"
-                ),
-                AccountModelUi.AccountModel(
-                    "First name",
-                    "email@passbolt.com",
-                    "https://image.pngaaa.com/569/2189569-middle.png"
-                ),
-                AccountModelUi.AddNewAccount
-            )
-        )
+        view.showAccounts(accounts)
+
         // TODO display account from use case
         // displayAccounts()
     }
@@ -115,5 +116,39 @@ class AccountsListPresenter(
 
     override fun addAccountClick() {
         // TODO
+    }
+
+    override fun removeAnAccountClick() {
+        trashIconsVisible(true)
+        view?.apply {
+            hideRemoveAccounts()
+            showDoneRemovingAccounts()
+        }
+    }
+
+    private fun trashIconsVisible(areVisible: Boolean) {
+        accounts = accounts.map {
+            when (it) {
+                is AccountModelUi.AccountModel -> it.copy(isTrashIconVisible = areVisible)
+                is AccountModelUi.AddNewAccount -> it
+            }
+        }
+        view?.showAccounts(accounts)
+    }
+
+    override fun doneRemovingAccountsClick() {
+        trashIconsVisible(false)
+        view?.apply {
+            hideDoneRemovingAccounts()
+            showRemoveAccounts()
+        }
+    }
+
+    override fun removeAccountClick(model: AccountModelUi.AccountModel) {
+        view?.showRemoveAccountConfirmationDialog(model)
+    }
+
+    override fun confirmRemoveAccountClick(model: AccountModelUi.AccountModel) {
+        // TODO remove account data and show confirmation
     }
 }
