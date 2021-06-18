@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.base
 
 import com.google.gson.Gson
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import org.koin.dsl.module
 
 /**

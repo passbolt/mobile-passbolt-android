@@ -90,7 +90,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/email"
                 tools:text="John Smith" />
 
-            <com.passbolt.mobile.android.core.ui.text.textinputfield.PasswordInputView
+            <com.passbolt.mobile.android.core.ui.textinputfield.PasswordInputView
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

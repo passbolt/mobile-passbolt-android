@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.main.mainscreen
 
 import android.os.Bundle
 import androidx.navigation.ui.setupWithNavController
-import com.passbolt.mobile.android.common.lifecycleAwareLazy
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
 import com.passbolt.mobile.android.feature.settings.R

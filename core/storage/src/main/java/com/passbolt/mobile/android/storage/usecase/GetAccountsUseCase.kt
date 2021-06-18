@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.storage.usecase
 
 import android.content.SharedPreferences
-import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.common.usecase.UseCase
 
 /**
  * Passbolt - Open source password manager for teams

@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.storage.usecase
 
-import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.paths.AccountDataFileName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,8 +32,8 @@ class SaveAccountDataUseCase(
 ) : UseCase<SaveAccountDataUseCase.Input, Unit> {
 
     override fun execute(input: Input) {
-        val alias = "${ACCOUNTS_DATA_ALIAS}_${input.userId}"
-        val sharedPreferences = encryptedSharedPreferencesFactory.get("$alias.xml")
+        val fileName = AccountDataFileName(input.userId).name
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
         with(sharedPreferences.edit()) {
             putString(USER_FIRST_NAME_KEY, input.firstname)
             putString(USER_LAST_NAME_KEY, input.lastname)

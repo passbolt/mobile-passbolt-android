@@ -6,12 +6,6 @@ plugins {
 
 apply plugin: "com.gaelmarhic.quadrant"
 
-dependencies {
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
-    implementation libs.di.koin
-}
-
 quadrantConfig {
     perModule true
 }

@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.base
 
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlin.coroutines.CoroutineContext

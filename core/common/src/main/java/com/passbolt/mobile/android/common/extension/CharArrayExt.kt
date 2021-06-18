@@ -32,14 +32,14 @@ fun CharArray?.toByteArray(): ByteArray? {
     return Arrays.copyOf(byteBuffer.array(), byteBuffer.limit())
 }
 
-fun CharArray.eraseArray() {
+fun CharArray.erase() {
     for (i in this.indices) {
         this[i] = '\u0000'
     }
 }
 
-fun List<CharArray>.eraseArray() {
+fun List<CharArray>.eraseItemArrays() {
     this.forEach {
-        it.eraseArray()
+        it.erase()
     }
 }

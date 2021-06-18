@@ -88,7 +88,7 @@ class PassphraseMemoryCacheTest : KoinTest {
     }
 
     @Test
-    fun testCacheIsClearedAfterAppIsInBackground() = runBlocking {
+    fun test_CacheIsClearedAfterAppIsInBackground() = runBlocking {
         passphraseMemoryCache.set(TEST_PASSPHRASE)
 
         // start launcher app
@@ -100,7 +100,7 @@ class PassphraseMemoryCacheTest : KoinTest {
     }
 
     @Test
-    fun testCacheIsClearedAfterAppIsDestroyed() = runBlocking {
+    fun test_CacheIsClearedAfterAppIsDestroyed() = runBlocking {
         passphraseMemoryCache.set(TEST_PASSPHRASE)
 
         val scenario = activityScenarioRule.scenario
@@ -111,7 +111,7 @@ class PassphraseMemoryCacheTest : KoinTest {
     }
 
     @Test
-    fun testCacheTimeoutIsRenewedAfterNewPassphraseValueIsSet() = runBlocking {
+    fun test_CacheTimeoutIsRenewedAfterNewPassphraseValueIsSet() = runBlocking {
         passphraseMemoryCache.set(TEST_PASSPHRASE)
 
         // advance time on the timer thread to just before cache expiration

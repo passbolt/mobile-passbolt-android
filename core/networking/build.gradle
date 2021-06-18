@@ -8,11 +8,9 @@ dependencies {
     implementation project(':common')
     implementation project(':storage')
 
-    /* NETWORKING */
     api libs.networking.retrofit
     api libs.networking.okHttp
     api libs.networking.okHttpLoggingInterceptor
 
-    /* DI */
     implementation libs.di.koin
 }

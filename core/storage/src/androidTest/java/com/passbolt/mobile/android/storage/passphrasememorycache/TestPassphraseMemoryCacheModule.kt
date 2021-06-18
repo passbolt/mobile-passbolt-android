@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.storage.passphrasememorycache
 
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import org.koin.core.qualifier.named

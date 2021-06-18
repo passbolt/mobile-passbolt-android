@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.storage.usecase
 
-import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
+import com.passbolt.mobile.android.storage.paths.PrivateKeyFileName
 import timber.log.Timber
 
 /**
@@ -32,7 +33,7 @@ class SavePrivateKeyUseCase(
 ) : UseCase<SavePrivateKeyUseCase.Input, SavePrivateKeyUseCase.Output> {
 
     override fun execute(input: Input): Output {
-        val name = "${PRIVATE_KEY_FILE_NAME}_${input.userId}"
+        val name = PrivateKeyFileName(input.userId).name
         Timber.d("Saving private key. Filename: $name")
 
         val encryptedFile = encryptedFileFactory.get(name)

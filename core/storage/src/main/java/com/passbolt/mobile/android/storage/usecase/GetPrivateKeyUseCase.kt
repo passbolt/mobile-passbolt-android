@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.storage.usecase
 
-import com.passbolt.mobile.android.common.UseCase
+import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
+import com.passbolt.mobile.android.storage.paths.PrivateKeyFileName
 import timber.log.Timber
 import java.io.IOException
 
@@ -33,8 +34,8 @@ class GetPrivateKeyUseCase(
 ) : UseCase<GetPrivateKeyUseCase.Input, GetPrivateKeyUseCase.Output> {
 
     override fun execute(input: Input): Output {
+        val name = PrivateKeyFileName(input.userId).name
         return try {
-            val name = "${PRIVATE_KEY_FILE_NAME}_${input.userId}"
             Timber.d("Getting private key. Filename: $name")
 
             val encryptedFile = encryptedFileFactory.get(name)
@@ -44,7 +45,7 @@ class GetPrivateKeyUseCase(
             }
         } catch (exception: IOException) {
             Timber.e(exception)
-            throw IllegalStateException("Unable to restore private key: ${PRIVATE_KEY_FILE_NAME}_${input.userId}")
+            throw IllegalStateException("Unable to restore private key: $name")
         }
     }
 

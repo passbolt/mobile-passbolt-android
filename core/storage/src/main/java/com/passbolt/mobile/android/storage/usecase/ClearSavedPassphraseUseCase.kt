@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.storage.usecase
 
 import android.content.Context
-import com.passbolt.mobile.android.common.UseCase
-import com.passbolt.mobile.android.storage.path.EncryptedFileBaseDirectory
-import com.passbolt.mobile.android.storage.path.PassphraseFileName
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
+import com.passbolt.mobile.android.storage.paths.PassphraseFileName
 import timber.log.Timber
 import java.io.File
 
@@ -38,7 +38,7 @@ class ClearSavedPassphraseUseCase(
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
         val passphraseFile = File(
             EncryptedFileBaseDirectory(appContext).baseDirectory,
-            PassphraseFileName(userId).path
+            PassphraseFileName(userId).name
         )
         if (passphraseFile.exists()) {
             val deleted = passphraseFile.delete()

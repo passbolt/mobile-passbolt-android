@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.enterpassphrase
 
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase.Input
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintInformationProvider
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository

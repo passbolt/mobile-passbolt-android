@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.enterpassphrase
 
-import com.passbolt.mobile.android.common.AsyncUseCase
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import timber.log.Timber

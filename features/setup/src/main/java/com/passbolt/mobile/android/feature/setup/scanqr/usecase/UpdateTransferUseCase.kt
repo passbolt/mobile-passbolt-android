@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.scanqr.usecase
 
-import com.passbolt.mobile.android.common.AsyncUseCase
-import com.passbolt.mobile.android.core.mvp.CoroutineLaunchContext
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.service.registration.RegistrationRepository
 import com.passbolt.mobile.android.mappers.UpdateTransferMapper

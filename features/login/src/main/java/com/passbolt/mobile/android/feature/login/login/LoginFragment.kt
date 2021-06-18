@@ -5,7 +5,7 @@ import android.view.View
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.core.ui.text.textinputfield.TextInputView
+import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
 import com.passbolt.mobile.android.feature.login.R
 import com.passbolt.mobile.android.feature.login.databinding.FragmentLoginBinding
 import org.koin.android.ext.android.inject
