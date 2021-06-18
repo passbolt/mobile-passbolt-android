@@ -116,4 +116,6 @@ dependencies {
     /* DI */
     implementation libs.di.koin
     implementation libs.di.koinExt
+
+    implementation libs.gson
 }

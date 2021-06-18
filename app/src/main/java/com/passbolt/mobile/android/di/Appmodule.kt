@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.di
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ProcessLifecycleOwner
 import coil.ImageLoader
+import com.google.gson.GsonBuilder
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -41,5 +42,8 @@ internal val appModule = module {
     }
     factory(named<ProcessLifecycleOwner>()) {
         ProcessLifecycleOwner.get()
+    }
+    single {
+        GsonBuilder().create()
     }
 }

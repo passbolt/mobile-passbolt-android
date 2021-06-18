@@ -36,19 +36,18 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
     @Throws(OpenPgpException::class)
     suspend fun encryptSignMessageArmored(
         publicKey: String,
-        privateKey: ByteArray,
+        privateKey: String,
         passphrase: ByteArray,
         message: String
     ): String {
         return try {
             withContext(Dispatchers.IO) {
-                val privateKeyInput = String(privateKey)
                 val passphraseCopy = ByteArray(passphrase.size) { passphrase[it] }
 
                 val encrypted = Helper.encryptSignMessageArmored(
-                    publicKey, privateKeyInput, passphrase, message
+                    publicKey, privateKey, passphrase, message
                 )
-                privateKeyInput.erase()
+                privateKey.erase()
                 passphraseCopy.erase()
 
                 encrypted

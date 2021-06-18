@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.feature.login
 
 import android.os.Bundle
+import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.core.navigation.ActivityIntents.LOGIN_EXTRA_MANY_ACCOUNT
 import com.passbolt.mobile.android.feature.login.databinding.ActivityLoginBinding
 
 /**
@@ -30,6 +32,20 @@ class LoginActivity : BindingActivity<ActivityLoginBinding>(ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // TODO decide if go to login or account list
+        setupNavigation()
+    }
+
+    private fun setupNavigation() {
+        val navHostFragment = findNavHostFragment(R.id.fragmentContainer)
+        val inflater = navHostFragment.navController.navInflater
+        val graph = inflater.inflate(R.navigation.login)
+
+        if (intent.getBooleanExtra(LOGIN_EXTRA_MANY_ACCOUNT, false)) {
+            graph.startDestination = R.id.accountsListFragment
+        } else {
+            graph.startDestination = R.id.loginFragment
+        }
+
+        navHostFragment.navController.setGraph(graph, intent.extras)
     }
 }

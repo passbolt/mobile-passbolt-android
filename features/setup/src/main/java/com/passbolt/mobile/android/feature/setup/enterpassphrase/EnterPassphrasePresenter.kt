@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphras
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintInformationProvider
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveUserAvatarUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -39,7 +39,7 @@ class EnterPassphrasePresenter(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val saveUserAvatarUseCase: SaveUserAvatarUseCase,
     private val fingerprintProvider: FingerprintInformationProvider,
-    private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
+    private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
     private val verifyPassphraseUseCase: VerifyPassphraseUseCase,
     private val passphraseRepository: PassphraseRepository,
     coroutineLaunchContext: CoroutineLaunchContext
@@ -83,7 +83,7 @@ class EnterPassphrasePresenter(
 
     private fun validatePassphrase(passphrase: CharArray) {
         scope.launch {
-            val privateKey = requireNotNull(getPrivateKeyUseCase.execute(Unit).privateKey)
+            val privateKey = requireNotNull(getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey)
             val isCorrect = verifyPassphraseUseCase.execute(Input(privateKey, passphrase)).isCorrect
             if (!isCorrect) {
                 view?.showWrongPassphraseError()

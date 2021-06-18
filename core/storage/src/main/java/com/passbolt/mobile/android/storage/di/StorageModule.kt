@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.storage.usecase.GetAccountsUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSessionUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
@@ -88,9 +89,14 @@ val storageModule = module {
         )
     }
     single {
-        GetPrivateKeyUseCase(
+        GetSelectedUserPrivateKeyUseCase(
             encryptedFileFactory = get(),
             getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        GetPrivateKeyUseCase(
+            encryptedFileFactory = get()
         )
     }
     single {

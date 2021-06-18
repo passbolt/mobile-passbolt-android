@@ -13,6 +13,8 @@ dependencies {
     implementation project(':entity')
     implementation project(":passboltapi")
     implementation project(":dto")
+    implementation project(':gopenpgp')
+    implementation project(':navigation')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -28,6 +30,8 @@ dependencies {
 
     implementation libs.coil.core
     implementation libs.coil.base
+
+    implementation libs.gson
 }
 
 android {

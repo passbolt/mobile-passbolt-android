@@ -1,22 +1,14 @@
 package com.passbolt.mobile.android.feature.setup.enterpassphrase
 
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
 import com.passbolt.mobile.android.feature.setup.base.testModule
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrContract
-import com.passbolt.mobile.android.feature.setup.scanqr.testScanQrModule
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveUserAvatarUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -99,7 +91,7 @@ class EnterPassphrasePresenterTest : KoinTest {
     @Test
     fun `clicking sign in when biometrics hardware on device should open biometrics setup`() = runBlockingTest {
         whenever(fingerprintInformationProvider.hasBiometricHardware()).thenReturn(true)
-        whenever(getPrivateKeyUseCase.execute(Unit)).thenReturn(GetPrivateKeyUseCase.Output(""))
+        whenever(getPrivateKeyUseCase.execute(Unit)).thenReturn(GetSelectedUserPrivateKeyUseCase.Output(""))
         whenever(verifyPassphraseUseCase.execute(anyOrNull())).thenReturn(VerifyPassphraseUseCase.Output(true))
         presenter.singInClick("password".toCharArray())
         verify(view).navigateToBiometricSetup()
@@ -108,7 +100,7 @@ class EnterPassphrasePresenterTest : KoinTest {
     @Test
     fun `clicking sign in when password is incorrect should show error`() = runBlockingTest {
         whenever(fingerprintInformationProvider.hasBiometricHardware()).thenReturn(true)
-        whenever(getPrivateKeyUseCase.execute(Unit)).thenReturn(GetPrivateKeyUseCase.Output(""))
+        whenever(getPrivateKeyUseCase.execute(Unit)).thenReturn(GetSelectedUserPrivateKeyUseCase.Output(""))
         whenever(verifyPassphraseUseCase.execute(anyOrNull())).thenReturn(VerifyPassphraseUseCase.Output(false))
         presenter.singInClick("password".toCharArray())
         verify(view).showWrongPassphraseError()

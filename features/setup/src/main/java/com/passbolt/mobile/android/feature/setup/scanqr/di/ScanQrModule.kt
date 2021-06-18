@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.setup.scanqr.di
 
-import com.google.gson.GsonBuilder
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrContract
 import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrFragment
@@ -41,11 +40,10 @@ fun Module.scanQrModule() {
 
     scope(named<ScanQrFragment>()) {
         scoped<ScanQrContract.Presenter> {
-            ScanQrPresenter(get(), get(), get(), get(), get(), get(), get(), get())
+            ScanQrPresenter(get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         scoped { QrScanResultsMapper(gson = get()) }
         scoped { KeyAssembler(gson = get()) }
-        scoped { GsonBuilder().create() }
         scoped {
             UpdateTransferUseCase(
                 registrationRepository = get(),

@@ -31,7 +31,9 @@ fun Module.loginScreenModule() {
             LoginPresenter(
                 getServerPublicPgpKeyUseCase = get(),
                 getServerPublicRsaKeyUseCase = get(),
-                coroutineLaunchContext = get()
+                loginUseCase = get(),
+                coroutineLaunchContext = get(),
+                challengeProvider = get()
             )
         }
         scoped {
@@ -42,6 +44,19 @@ fun Module.loginScreenModule() {
         scoped {
             GetServerPublicRsaKeyUseCase(
                 authRepository = get()
+            )
+        }
+        scoped {
+            LoginUseCase(
+                authRepository = get(),
+                loginMapper = get()
+            )
+        }
+        scoped {
+            ChallengeProvider(
+                gson = get(),
+                openPgp = get(),
+                privateKeyUseCase = get()
             )
         }
     }

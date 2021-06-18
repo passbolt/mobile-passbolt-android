@@ -29,14 +29,12 @@ import java.io.IOException
  */
 
 class GetPrivateKeyUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : UseCase<Unit, GetPrivateKeyUseCase.Output> {
+    private val encryptedFileFactory: EncryptedFileFactory
+) : UseCase<GetPrivateKeyUseCase.Input, GetPrivateKeyUseCase.Output> {
 
-    override fun execute(input: Unit): Output {
+    override fun execute(input: Input): Output {
         return try {
-            val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-            val name = "${PRIVATE_KEY_FILE_NAME}_$userId"
+            val name = "${PRIVATE_KEY_FILE_NAME}_${input.userId}"
             Timber.d("Getting private key. Filename: $name")
 
             val encryptedFile = encryptedFileFactory.get(name)
@@ -46,11 +44,15 @@ class GetPrivateKeyUseCase(
             }
         } catch (exception: IOException) {
             Timber.e(exception)
-            Output(null)
+            throw IllegalStateException("Unable to restore private key: ${PRIVATE_KEY_FILE_NAME}_${input.userId}")
         }
     }
 
+    class Input(
+        val userId: String
+    )
+
     class Output(
-        val privateKey: String?
+        val privateKey: String
     )
 }

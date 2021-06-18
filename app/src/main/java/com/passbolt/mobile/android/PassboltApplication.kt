@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.feature.loginModule
 import com.passbolt.mobile.android.feature.main.mainModule
 import com.passbolt.mobile.android.feature.settings.settingsModule
 import com.passbolt.mobile.android.feature.setup.setupModule
+import com.passbolt.mobile.android.feature.startup.di.startUpModule
 import com.passbolt.mobile.android.gopenpgp.di.openPgpModule
 import com.passbolt.mobile.android.service.registration.di.passboltApiModule
 import com.passbolt.mobile.android.storage.di.storageModule
@@ -88,7 +89,8 @@ class PassboltApplication : Application(), KoinComponent {
                 mainModule,
                 homeModule,
                 foldersModule,
-                settingsModule
+                settingsModule,
+                startUpModule
             )
         }
     }

@@ -62,7 +62,7 @@ class OpenPgpTest : KoinTest {
     fun test_messageEncryptionDecryption() = runBlocking {
         val encrypted = openPgp.encryptSignMessageArmored(
             gracePublicKey,
-            gracePrivateKey,
+            String(gracePrivateKey),
             GRACE_KEY_CORRECT_PASSPHRASE,
             PLAIN_MESSAGE
         )
@@ -79,7 +79,7 @@ class OpenPgpTest : KoinTest {
     fun test_messageDecryptionWithIncorrectPassphraseFailsWithCorrectException() = runBlocking {
         val encrypted = openPgp.encryptSignMessageArmored(
             gracePublicKey,
-            gracePrivateKey,
+            String(gracePrivateKey),
             GRACE_KEY_CORRECT_PASSPHRASE,
             PLAIN_MESSAGE
         )
@@ -101,7 +101,7 @@ class OpenPgpTest : KoinTest {
         try {
             val ignored = openPgp.encryptSignMessageArmored(
                 gracePublicKey,
-                gracePrivateKey,
+                String(gracePrivateKey),
                 GRACE_KEY_WRONG_PASSPHRASE,
                 PLAIN_MESSAGE
             )

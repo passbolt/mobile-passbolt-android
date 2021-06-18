@@ -37,7 +37,7 @@ fun Module.enterPassphraseModule() {
                 getSelectedAccountUseCase = get(),
                 saveUserAvatarUseCase = get(),
                 fingerprintProvider = get(),
-                getPrivateKeyUseCase = get(),
+                getSelectedUserPrivateKeyUseCase = get(),
                 verifyPassphraseUseCase = get(),
                 coroutineLaunchContext = get(),
                 passphraseRepository = get()
