@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.service.auth
 
 import com.passbolt.mobile.android.dto.request.LoginRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.LoginResponseDto
 import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
+import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,6 +30,6 @@ import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
  */
 interface AuthDataSource {
     suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto>
-    suspend fun getServerPublicRsaKey(): BaseResponse<Unit>
-    suspend fun login(loginRequestDto: LoginRequestDto): BaseResponse<Unit>
+    suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto>
+    suspend fun login(loginRequestDto: LoginRequestDto): BaseResponse<LoginResponseDto>
 }

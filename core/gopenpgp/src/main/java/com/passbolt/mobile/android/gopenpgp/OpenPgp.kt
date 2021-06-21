@@ -64,21 +64,20 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
     @Throws(OpenPgpException::class)
     suspend fun decryptVerifyMessageArmored(
         publicKey: String,
-        privateKey: ByteArray,
+        privateKey: String,
         passphrase: ByteArray,
         cipherText: String
     ): ByteArray {
         return try {
             withContext(Dispatchers.IO) {
-                val privateKeyInput = String(privateKey)
                 val passphraseCopy = ByteArray(passphrase.size) { passphrase[it] }
 
                 val decrypted = Helper.decryptVerifyMessageArmored(
-                    publicKey, privateKeyInput, passphrase, cipherText
+                    publicKey, privateKey, passphrase, cipherText
                 )
                 val decryptedOutput = decrypted.toByteArray()
 
-                privateKeyInput.erase()
+                privateKey.erase()
                 decrypted.erase()
                 passphraseCopy.erase()
 

@@ -33,6 +33,9 @@ dependencies {
     implementation libs.coil.base
 
     implementation libs.gson
+
+    implementation libs.fusionauthJwt
+
 }
 
 android {

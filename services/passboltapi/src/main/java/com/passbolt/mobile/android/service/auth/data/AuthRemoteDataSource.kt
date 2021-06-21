@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.service.auth.data
 
 import com.passbolt.mobile.android.dto.request.LoginRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.LoginResponseDto
 import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
+import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
 import com.passbolt.mobile.android.service.auth.AuthDataSource
 
 /**
@@ -34,9 +36,9 @@ internal class AuthRemoteDataSource(
     override suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto> =
         authApi.getServerPublicPgpKey()
 
-    override suspend fun getServerPublicRsaKey(): BaseResponse<Unit> =
+    override suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto> =
         authApi.getServerPublicRsaKey()
 
-    override suspend fun login(loginRequestDto: LoginRequestDto): BaseResponse<Unit> =
+    override suspend fun login(loginRequestDto: LoginRequestDto): BaseResponse<LoginResponseDto> =
         authApi.login(loginRequestDto)
 }

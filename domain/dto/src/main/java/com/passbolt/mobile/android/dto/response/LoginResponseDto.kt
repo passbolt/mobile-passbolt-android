@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.feature.login.login
+package com.passbolt.mobile.android.dto.response
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.mappers.LoginMapper
-import com.passbolt.mobile.android.service.auth.AuthRepository
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,28 +24,17 @@ import com.passbolt.mobile.android.service.auth.AuthRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LoginUseCase(
-    private val authRepository: AuthRepository,
-    private val loginMapper: LoginMapper
-) : AsyncUseCase<LoginUseCase.Input, LoginUseCase.Output> {
+class LoginResponseDto(
+    val challenge: String
+)
 
-    override suspend fun execute(input: Input): Output =
-        when (val result = authRepository.login(loginMapper.mapRequestToDto(input.userId, input.challenge))) {
-            is NetworkResult.Failure.NetworkError -> Output.Failure
-            is NetworkResult.Failure.ServerError -> Output.Failure
-            is NetworkResult.Success -> Output.Success(result.value.body.challenge)
-        }
-
-    sealed class Output {
-        class Success(
-            val challenge: String
-        ) : Output()
-
-        object Failure : Output()
-    }
-
-    data class Input(
-        val userId: String,
-        val challenge: String
-    )
-}
+class ChallengeResponseDto(
+    version: String,
+    domain: String,
+    @SerializedName("verify_token")
+    val verifyToken: String,
+    @SerializedName("access_token")
+    val accessToken: String,
+    @SerializedName("refresh_token")
+    val refreshToken: String
+)

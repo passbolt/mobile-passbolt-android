@@ -57,7 +57,8 @@ ext {
         appDistribution: "2.1.1",
         coil: "1.2.1",
         fastAdapter: "5.4.1",
-        easylauncher: "4.0.0"
+        easylauncher: "4.0.0",
+        fusionauthJwt: "4.2.0"
     ]
 
     libs = [
@@ -136,6 +137,7 @@ ext {
             diff: "com.mikepenz:fastadapter-extensions-diff:${versions.fastAdapter}"
 
         ],
-        easylauncher: "com.project.starter:easylauncher:${versions.easylauncher}"
+        easylauncher: "com.project.starter:easylauncher:${versions.easylauncher}",
+        fusionauthJwt: "io.fusionauth:fusionauth-jwt:${versions.fusionauthJwt}"
     ]
 }

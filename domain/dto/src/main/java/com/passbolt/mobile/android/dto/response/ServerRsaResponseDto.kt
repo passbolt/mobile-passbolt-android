@@ -1,9 +1,4 @@
-package com.passbolt.mobile.android.feature.login.login
-
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.mappers.LoginMapper
-import com.passbolt.mobile.android.service.auth.AuthRepository
+package com.passbolt.mobile.android.dto.response
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,28 +22,6 @@ import com.passbolt.mobile.android.service.auth.AuthRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LoginUseCase(
-    private val authRepository: AuthRepository,
-    private val loginMapper: LoginMapper
-) : AsyncUseCase<LoginUseCase.Input, LoginUseCase.Output> {
-
-    override suspend fun execute(input: Input): Output =
-        when (val result = authRepository.login(loginMapper.mapRequestToDto(input.userId, input.challenge))) {
-            is NetworkResult.Failure.NetworkError -> Output.Failure
-            is NetworkResult.Failure.ServerError -> Output.Failure
-            is NetworkResult.Success -> Output.Success(result.value.body.challenge)
-        }
-
-    sealed class Output {
-        class Success(
-            val challenge: String
-        ) : Output()
-
-        object Failure : Output()
-    }
-
-    data class Input(
-        val userId: String,
-        val challenge: String
-    )
-}
+data class ServerRsaResponseDto(
+    val keydata: String
+)
