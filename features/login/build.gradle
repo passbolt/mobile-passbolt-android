@@ -24,6 +24,7 @@ dependencies {
     implementation libs.fastAdapter.core
     implementation libs.fastAdapter.binding
     implementation libs.fastAdapter.utils
+    implementation libs.fastAdapter.diff
 
     implementation libs.di.koin
     implementation libs.di.koinExt

@@ -1,8 +1,16 @@
 package com.passbolt.mobile.android.feature.login.accountslist
 
+import androidx.core.content.ContextCompat
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-import com.passbolt.mobile.android.feature.login.accountslist.item.AccountItemsMapper
+import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
+import com.passbolt.mobile.android.feature.login.R
+import com.passbolt.mobile.android.feature.login.accountslist.item.AccountUiItemsMapper
+import com.passbolt.mobile.android.ui.AccountModelUi
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 
 /**
@@ -36,13 +44,19 @@ fun Module.accountsListModule() {
                 coroutineLaunchContext = get()
             )
         }
-    }
-    single { AccountItemsMapper() }
-    single {
-        getModelAdapter(
-            accountItemsMapper = get()
-        )
+        scoped { AccountUiItemsMapper() }
+        scoped { (accountUiItemsMapper: AccountUiItemsMapper) ->
+            ModelAdapter(accountUiItemsMapper::mapModelToItem)
+        }
+        scoped {
+            FastAdapter.with(get<ModelAdapter<AccountModelUi, GenericItem>> {
+                parametersOf(get<AccountUiItemsMapper>())
+            })
+        }
+        scoped {
+            DrawableListDivider(
+                ContextCompat.getDrawable(androidContext(), R.drawable.grey_divider)
+            )
+        }
     }
 }
-
-private fun getModelAdapter(accountItemsMapper: AccountItemsMapper) = ModelAdapter(accountItemsMapper::mapModelToItem)

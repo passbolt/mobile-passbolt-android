@@ -22,7 +22,7 @@
         style="@style/Heading4Text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add new account"
+        android:text="@string/accounts_list_add_new_account"
         android:textColor="@color/text_primary"
         android:layout_marginStart="@dimen/dp_20"
         app:layout_constraintBottom_toBottomOf="parent"

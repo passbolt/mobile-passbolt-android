@@ -20,7 +20,7 @@
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="@dimen/dp_56"
+        android:layout_marginBottom="@dimen/dp_72"
         android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/icon">
@@ -63,40 +63,39 @@
     </androidx.core.widget.NestedScrollView>
 
     <FrameLayout
+        android:id="@+id/bottomBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_48"
+        android:layout_height="@dimen/dp_72"
+        android:animateLayoutChanges="true"
         android:background="?selectableItemBackground"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/removeAccountLabel"
+            style="@style/Heading4Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="horizontal">
+            android:layout_marginStart="4dp"
+            android:drawablePadding="@dimen/dp_4"
+            android:gravity="center"
+            android:padding="@dimen/dp_8"
+            android:text="@string/accounts_list_remove"
+            app:drawableStartCompat="@drawable/ic_trash" />
 
-            <ImageView
-                android:id="@+id/trash"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_trash"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/done_removing_accounts_button"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:backgroundTint="@color/button_selector"
+            android:text="@string/accounts_list_removing_done"
+            android:visibility="gone" />
 
-            <TextView
-                style="@style/Heading4Text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:gravity="center_horizontal"
-                android:text="@string/accounts_list_remove"
-                app:layout_constraintBottom_toBottomOf="@+id/trash"
-                app:layout_constraintStart_toEndOf="@+id/trash"
-                app:layout_constraintTop_toTopOf="@+id/trash" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
