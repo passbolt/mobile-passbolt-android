@@ -2,10 +2,16 @@ package com.passbolt.mobile.android.feature.login.login
 
 import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
+import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeDecryptor
+import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeProvider
+import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeVerifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import com.passbolt.mobile.android.feature.login.login.GetServerPublicRsaKeyUseCase.Output.Success as RsaSuccess
+import com.passbolt.mobile.android.feature.login.login.GetServerPublicPgpKeyUseCase.Output.Success as PgpSuccess
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,6 +40,8 @@ class LoginPresenter(
     private val getServerPublicRsaKeyUseCase: GetServerPublicRsaKeyUseCase,
     private val loginUseCase: LoginUseCase,
     private val challengeProvider: ChallengeProvider,
+    private val challengeDecryptor: ChallengeDecryptor,
+    private val challengeVerifier: ChallengeVerifier,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : LoginContract.Presenter {
 
@@ -48,15 +56,16 @@ class LoginPresenter(
             val rsaKey = async { getServerPublicRsaKeyUseCase.execute(Unit) }
 
             val pgpKeyResult = pgpKey.await()
-            if (pgpKeyResult is GetServerPublicPgpKeyUseCase.Output.Success) {
-                login(passphrase, pgpKeyResult.publicKey)
+            val rsaKeyResult = rsaKey.await()
+            if (pgpKeyResult is PgpSuccess && rsaKeyResult is RsaSuccess) {
+                login(passphrase, pgpKeyResult.publicKey, rsaKeyResult.rsaKey)
             } else {
                 view?.showError()
             }
         }
     }
 
-    private suspend fun login(passphrase: CharArray?, serverPublicKey: String) {
+    private suspend fun login(passphrase: CharArray?, serverPublicKey: String, rsaKey: String) {
         // TODO data should be passed from the accounts list screen
         val userId = "e1ebc592-b90d-5e22-9f40-50e52911673b"
         val challenge = challengeProvider.get(
@@ -67,17 +76,54 @@ class LoginPresenter(
             userId + "_passbolt.dev"
         )
         when (challenge) {
-            is ChallengeProvider.Output.Success -> sendLoginRequest(userId, challenge.challenge)
+            is ChallengeProvider.Output.Success -> sendLoginRequest(
+                userId,
+                challenge.challenge,
+                serverPublicKey,
+                requireNotNull(passphrase),
+                rsaKey
+            )
             ChallengeProvider.Output.WrongPassphrase -> view?.showWrongPassphrase()
         }
     }
 
-    private suspend fun sendLoginRequest(userId: String, challenge: String) {
-        loginUseCase.execute(
-            LoginUseCase.Input(
-                userId,
-                challenge
-            )
-        )
+    private suspend fun sendLoginRequest(
+        userId: String,
+        challenge: String,
+        serverPublicKey: String,
+        passphrase: CharArray,
+        rsaKey: String
+    ) {
+        when (val result = loginUseCase.execute(LoginUseCase.Input(userId, challenge))) {
+            LoginUseCase.Output.Failure -> {
+                // TODO
+            }
+            is LoginUseCase.Output.Success -> {
+                val challengeDecryptResult = challengeDecryptor.decrypt(
+                    serverPublicKey,
+                    passphrase.toByteArray()!!,
+                    userId + "_passbolt.dev",
+                    result.challenge
+                )
+                verifyChallenge(challengeDecryptResult, rsaKey)
+            }
+        }
+    }
+
+    private fun verifyChallenge(challengeResponseDto: ChallengeResponseDto, rsaKey: String) {
+        when (challengeVerifier.verify(challengeResponseDto, rsaKey)) {
+            ChallengeVerifier.Output.Failure -> {
+                // TODO
+            }
+            ChallengeVerifier.Output.InvalidSignature -> {
+                // TODO
+            }
+            ChallengeVerifier.Output.TokenExpired -> {
+                // TODO
+            }
+            is ChallengeVerifier.Output.Verified -> {
+                // TODO
+            }
+        }
     }
 }

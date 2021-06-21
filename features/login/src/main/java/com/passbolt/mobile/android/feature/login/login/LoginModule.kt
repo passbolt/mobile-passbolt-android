@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.feature.login.login
 
+import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeDecryptor
+import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeProvider
+import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeVerifier
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -33,7 +36,9 @@ fun Module.loginScreenModule() {
                 getServerPublicRsaKeyUseCase = get(),
                 loginUseCase = get(),
                 coroutineLaunchContext = get(),
-                challengeProvider = get()
+                challengeProvider = get(),
+                challengeDecryptor = get(),
+                challengeVerifier = get()
             )
         }
         scoped {
@@ -58,6 +63,16 @@ fun Module.loginScreenModule() {
                 openPgp = get(),
                 privateKeyUseCase = get()
             )
+        }
+        scoped {
+            ChallengeDecryptor(
+                openPgp = get(),
+                getPrivateKeyUseCase = get(),
+                gson = get()
+            )
+        }
+        scoped {
+            ChallengeVerifier()
         }
     }
 }

@@ -1,12 +1,9 @@
-package com.passbolt.mobile.android.feature.login.login
+package com.passbolt.mobile.android.feature.login.login.challenge
 
 import com.google.gson.Gson
-import com.passbolt.mobile.android.dto.request.ChallengeDto
+import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
-import java.lang.Exception
-import java.time.Instant
-import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,50 +27,27 @@ import java.util.UUID
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ChallengeProvider(
-    private val gson: Gson,
+class ChallengeDecryptor(
     private val openPgp: OpenPgp,
-    private val privateKeyUseCase: GetPrivateKeyUseCase
+    private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
+    private val gson: Gson
 ) {
 
-    suspend fun get(
-        version: String,
-        domain: String,
+    suspend fun decrypt(
         serverPublicKey: String,
         passphrase: ByteArray,
-        userId: String
-    ): Output {
-        val privateKey = requireNotNull(privateKeyUseCase.execute(GetPrivateKeyUseCase.Input(userId)).privateKey)
+        userId: String,
+        challenge: String
+    ): ChallengeResponseDto {
+        val privateKey = getPrivateKeyUseCase.execute(GetPrivateKeyUseCase.Input(userId)).privateKey
 
-        val challengeJson = ChallengeDto(
-            version, domain, UUID.randomUUID().toString(), getVerifyTokenExpiry()
-        ).run { gson.toJson(this) }
+        val encryptedChallenge = openPgp.decryptVerifyMessageArmored(
+            publicKey = serverPublicKey,
+            privateKey = privateKey,
+            passphrase = passphrase,
+            cipherText = challenge
+        )
 
-        return try {
-            val encryptedChallenge = openPgp.encryptSignMessageArmored(
-                publicKey = serverPublicKey,
-                privateKey = privateKey,
-                passphrase = passphrase,
-                message = challengeJson
-            )
-            Output.Success(encryptedChallenge)
-        } catch (e: Exception) {
-            Output.WrongPassphrase
-        }
-    }
-
-    private fun getVerifyTokenExpiry() =
-        Instant.now().epochSecond + TOKEN_VALIDATION_TIME
-
-    sealed class Output {
-        class Success(
-            val challenge: String
-        ) : Output()
-
-        object WrongPassphrase : Output()
-    }
-
-    companion object {
-        private const val TOKEN_VALIDATION_TIME = 120
+        return gson.fromJson(String(encryptedChallenge), ChallengeResponseDto::class.java)
     }
 }

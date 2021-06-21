@@ -1,9 +1,11 @@
-package com.passbolt.mobile.android.feature.login.login
+package com.passbolt.mobile.android.feature.login.login.challenge
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.mappers.LoginMapper
-import com.passbolt.mobile.android.service.auth.AuthRepository
+import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
+import io.fusionauth.jwt.InvalidJWTSignatureException
+import io.fusionauth.jwt.Verifier
+import io.fusionauth.jwt.domain.JWT
+import io.fusionauth.jwt.rsa.RSAVerifier
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,28 +29,33 @@ import com.passbolt.mobile.android.service.auth.AuthRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LoginUseCase(
-    private val authRepository: AuthRepository,
-    private val loginMapper: LoginMapper
-) : AsyncUseCase<LoginUseCase.Input, LoginUseCase.Output> {
+class ChallengeVerifier {
 
-    override suspend fun execute(input: Input): Output =
-        when (val result = authRepository.login(loginMapper.mapRequestToDto(input.userId, input.challenge))) {
-            is NetworkResult.Failure.NetworkError -> Output.Failure
-            is NetworkResult.Failure.ServerError -> Output.Failure
-            is NetworkResult.Success -> Output.Success(result.value.body.challenge)
+    fun verify(challengeResponseDto: ChallengeResponseDto, rsaPublicKey: String): Output = try {
+
+        val verifier: Verifier = RSAVerifier.newVerifier(rsaPublicKey)
+        val jwt: JWT = JWT.getDecoder().decode(challengeResponseDto.accessToken, verifier)
+
+        if (jwt.isExpired) {
+            Output.TokenExpired
         }
 
-    sealed class Output {
-        class Success(
-            val challenge: String
-        ) : Output()
-
-        object Failure : Output()
+        Output.Verified(challengeResponseDto.accessToken)
+    } catch (exception: InvalidJWTSignatureException) {
+        Timber.e(exception)
+        Output.InvalidSignature
+    } catch (exception: Exception) {
+        Timber.e(exception)
+        Output.Failure
     }
 
-    data class Input(
-        val userId: String,
-        val challenge: String
-    )
+    sealed class Output {
+        object TokenExpired : Output()
+        class Verified(
+            val accessToken: String
+        ) : Output()
+
+        object InvalidSignature : Output()
+        object Failure : Output()
+    }
 }

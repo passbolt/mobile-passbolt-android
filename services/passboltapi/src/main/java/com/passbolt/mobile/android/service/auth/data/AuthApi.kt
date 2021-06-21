@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.service.auth.data
 
 import com.passbolt.mobile.android.dto.request.LoginRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.LoginResponseDto
 import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
+import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -34,10 +36,10 @@ internal interface AuthApi {
     suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto>
 
     @GET(AUTH_RSA)
-    suspend fun getServerPublicRsaKey(): BaseResponse<Unit>
+    suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto>
 
     @POST(AUTH_LOGIN)
-    suspend fun login(@Body loginRequestDto: LoginRequestDto): BaseResponse<Unit>
+    suspend fun login(@Body loginRequestDto: LoginRequestDto): BaseResponse<LoginResponseDto>
 
     private companion object {
         private const val AUTH_VERIFY = "/auth/verify.json"
