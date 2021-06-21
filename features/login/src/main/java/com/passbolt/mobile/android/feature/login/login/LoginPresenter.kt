@@ -65,6 +65,10 @@ class LoginPresenter(
         }
     }
 
+    override fun backPress() {
+        view?.navigateToAccountsList()
+    }
+
     private suspend fun login(passphrase: CharArray?, serverPublicKey: String, rsaKey: String) {
         // TODO data should be passed from the accounts list screen
         val userId = "e1ebc592-b90d-5e22-9f40-50e52911673b"

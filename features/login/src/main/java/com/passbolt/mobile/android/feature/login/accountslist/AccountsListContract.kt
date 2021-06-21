@@ -34,6 +34,8 @@ interface AccountsListContract {
         fun hideDoneRemovingAccounts()
         fun showRemoveAccounts()
         fun showRemoveAccountConfirmationDialog(model: AccountModelUi.AccountModel)
+        fun navigateToLogin(model: AccountModelUi.AccountModel)
+        fun navigateToSetup()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

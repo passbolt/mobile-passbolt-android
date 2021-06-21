@@ -59,7 +59,7 @@
         android:id="@+id/enterPassphraseFragment"
         android:name="com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseFragment"
         android:label="EnterPassphraseFragment"
-        tools:layout="@layout/fragment_enter_passphrase" >
+        tools:layout="@layout/fragment_enter_passphrase">
         <action
             android:id="@+id/action_enterPassphraseFragment_to_fingerprintFragment"
             app:destination="@id/fingerprintFragment" />

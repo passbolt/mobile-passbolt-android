@@ -28,7 +28,7 @@ class AccountItemClick(
         item: AccountItem
     ) =
         when (v.id) {
-            R.id.addItemAccount -> accountClickListener.invoke(item.accountModel)
+            R.id.itemAccount -> accountClickListener.invoke(item.accountModel)
             R.id.trashImage -> removeAccountClickListener.invoke(item.accountModel)
             else -> { /* ignore the rest of the views */
             }
