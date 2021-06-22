@@ -28,8 +28,12 @@ interface LoginContract {
 
     interface View : BaseContract.View {
         fun showWrongPassphrase()
-        fun showError()
+        fun showError(message: String)
         fun navigateBack()
+        fun showGenericError()
+        fun navigateToHome()
+        fun showProgress()
+        fun hideProgress()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

@@ -1,8 +1,9 @@
-package com.passbolt.mobile.android.feature.login.login
+package com.passbolt.mobile.android.core.networking
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.service.auth.AuthRepository
+import android.content.Context
+import com.google.gson.Gson
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import retrofit2.Response
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,23 +27,13 @@ import com.passbolt.mobile.android.service.auth.AuthRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetServerPublicPgpKeyUseCase(
-    private val authRepository: AuthRepository
-) : AsyncUseCase<Unit, GetServerPublicPgpKeyUseCase.Output> {
+class ErrorHeaderMapper(
+    private val context: Context,
+    private val gson: Gson
+) {
 
-    override suspend fun execute(input: Unit): Output =
-        when (val result = authRepository.getServerPublicPgpKey()) {
-            is NetworkResult.Failure.NetworkError -> Output.Failure
-            is NetworkResult.Failure.ServerError -> Output.Failure
-            is NetworkResult.Success -> Output.Success(result.value.body.keydata)
-        }
-
-    sealed class Output {
-
-        data class Success(
-            val publicKey: String
-        ) : Output()
-
-        object Failure : Output()
-    }
+    fun getMessage(response: Response<*>? = null) =
+        response?.errorBody()?.let {
+            gson.fromJson(it.charStream(), BaseResponse::class.java).header.message
+        } ?: context.getString(R.string.common_failure)
 }

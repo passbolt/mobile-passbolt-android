@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.feature.login.login
+package com.passbolt.mobile.android.feature.login.login.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.mappers.LoginMapper
 import com.passbolt.mobile.android.service.auth.AuthRepository
 
 /**
@@ -26,19 +27,30 @@ import com.passbolt.mobile.android.service.auth.AuthRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetServerPublicRsaKeyUseCase(
-    private val authRepository: AuthRepository
-) : AsyncUseCase<Unit, GetServerPublicRsaKeyUseCase.Output> {
+class LoginUseCase(
+    private val authRepository: AuthRepository,
+    private val loginMapper: LoginMapper
+) : AsyncUseCase<LoginUseCase.Input, LoginUseCase.Output> {
 
-    override suspend fun execute(input: Unit): Output =
-        when (val result = authRepository.getServerPublicRsaKey()) {
-            is NetworkResult.Failure.NetworkError -> Output.Failure
-            is NetworkResult.Failure.ServerError -> Output.Failure
-            is NetworkResult.Success -> Output.Success(result.value.body.keydata)
+    override suspend fun execute(input: Input): Output =
+        when (val result = authRepository.login(loginMapper.mapRequestToDto(input.userId, input.challenge))) {
+            is NetworkResult.Failure.NetworkError -> Output.Failure(result.headerMessage)
+            is NetworkResult.Failure.ServerError -> Output.Failure(result.headerMessage)
+            is NetworkResult.Success -> Output.Success(result.value.body.challenge)
         }
 
     sealed class Output {
-        class Success(val rsaKey: String) : Output()
-        object Failure : Output()
+        class Success(
+            val challenge: String
+        ) : Output()
+
+        class Failure(
+            val message: String
+        ) : Output()
     }
+
+    data class Input(
+        val userId: String,
+        val challenge: String
+    )
 }

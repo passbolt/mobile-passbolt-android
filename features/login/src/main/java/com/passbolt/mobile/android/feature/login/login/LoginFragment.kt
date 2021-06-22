@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.login.R
 import com.passbolt.mobile.android.feature.login.databinding.FragmentLoginBinding
 import org.koin.android.ext.android.inject
@@ -57,11 +59,30 @@ class LoginFragment : BindingScopedFragment<FragmentLoginBinding>(FragmentLoginB
     }
 
     override fun showWrongPassphrase() {
-        binding.password.setState(TextInputView.State.Error(getString(R.string.login_incorrect_passphrase)))
+        Snackbar.make(binding.root, R.string.login_incorrect_passphrase, Snackbar.LENGTH_LONG)
+            .show()
     }
 
-    override fun showError() {
+    override fun showGenericError() {
         Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_LONG)
             .show()
+    }
+
+    override fun showError(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+            .show()
+    }
+
+    override fun navigateToHome() {
+        startActivity(ActivityIntents.home(requireActivity()))
+        requireActivity().finish()
+    }
+
+    override fun showProgress() {
+        binding.progress.progressContainer.visible()
+    }
+
+    override fun hideProgress() {
+        binding.progress.progressContainer.gone()
     }
 }

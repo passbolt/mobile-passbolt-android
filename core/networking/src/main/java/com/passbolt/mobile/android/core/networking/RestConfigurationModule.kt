@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.networking.di
 import com.passbolt.mobile.android.core.networking.ResponseHandler
 import com.passbolt.mobile.android.core.networking.RetrofitRestService
 import com.passbolt.mobile.android.common.userid.UserIdProvider
+import com.passbolt.mobile.android.core.networking.ErrorHeaderMapper
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
 import com.passbolt.mobile.android.core.networking.usecase.GetBaseUrlUseCase
 import okhttp3.OkHttpClient
@@ -53,7 +54,17 @@ val networkingModule = module {
         )
     }
     single { UserIdProvider() }
-    single { ResponseHandler() }
+    single {
+        ResponseHandler(
+            errorHeaderMapper = get()
+        )
+    }
+    single {
+        ErrorHeaderMapper(
+            gson = get(),
+            context = get()
+        )
+    }
 }
 
 private fun provideLoggingInterceptor(): HttpLoggingInterceptor {

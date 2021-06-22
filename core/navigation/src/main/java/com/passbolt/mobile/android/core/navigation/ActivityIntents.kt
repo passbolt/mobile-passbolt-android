@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.navigation
 import android.content.Context
 import android.content.Intent
 import com.gaelmarhic.quadrant.Login
+import com.gaelmarhic.quadrant.Main
 import com.gaelmarhic.quadrant.Setup
 
 /**
@@ -35,5 +36,9 @@ object ActivityIntents {
 
     fun login(context: Context) = Intent().apply {
         setClassName(context, Login.LOGIN_ACTIVITY)
+    }
+
+    fun home(context: Context) = Intent().apply {
+        setClassName(context, Main.MAIN_ACTIVITY)
     }
 }
