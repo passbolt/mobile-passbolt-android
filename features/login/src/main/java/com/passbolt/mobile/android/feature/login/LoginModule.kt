@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.login
 
-import androidx.annotation.StringRes
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,30 +25,10 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface FingerprintContract {
-
-    interface View : BaseContract.View {
-        fun showUseFingerprint()
-        fun showConfigureFingerprint()
-        fun navigateToBiometricSettings()
-        fun showBiometricPrompt()
-        fun showAuthenticationError(@StringRes errorMessage: Int)
-        fun showEncourageAutofillDialog()
-        fun showPasswordCacheExpiredDialog()
-        fun navigateToEnterPassphrase()
-        fun navigateToLogin()
-        fun showAutofillEnabledDialog()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun useFingerprintClick()
-        fun resume()
-        fun authenticationSucceeded()
-        fun authenticationError(errorMessage: Int)
-        fun cacheExpiredDialogConfirmed()
-        fun setupAutofillLaterClick()
-        fun maybeLaterClick()
-        fun autofillSetupSuccessfully()
-        fun goToTheAppClick()
+fun Module.loginModule() {
+    scope<LoginActivity> {
+        scoped<LoginContract.Presenter> {
+            LoginPresenter(getSelectedAccountUseCase = get())
+        }
     }
 }

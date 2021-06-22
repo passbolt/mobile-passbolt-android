@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="autofill_service_name">Passbolt Autofill</string>
     <string name="ok">OK</string>
 
     <string name="dialog_encourage_autofill_header">Log In to your favourite apps in 3 seconds!</string>

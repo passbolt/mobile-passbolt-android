@@ -79,6 +79,7 @@ class FingerprintPresenterTest : KoinTest {
     @Test
     fun `when biometrics auth is a success and cache has passphrase encourage autofill should show`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+        whenever(autofillInformationProvider.isPassboltAutofillServiceSet()).thenReturn(false)
         whenever(passphraseRepository.getPotentialPassphrase()).thenReturn(
             PotentialPassphrase.Passphrase("passphrase".toCharArray())
         )
@@ -112,6 +113,20 @@ class FingerprintPresenterTest : KoinTest {
         presenter.cacheExpiredDialogConfirmed()
 
         verify(view).navigateToEnterPassphrase()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `when autofill service is already set up should navigate to autofill enabled directly`() {
+        whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+        whenever(autofillInformationProvider.isPassboltAutofillServiceSet()).thenReturn(true)
+        whenever(passphraseRepository.getPotentialPassphrase()).thenReturn(
+            PotentialPassphrase.Passphrase("passphrase".toCharArray())
+        )
+
+        presenter.maybeLaterClick()
+
+        verify(view).showAutofillEnabledDialog()
         verifyNoMoreInteractions(view)
     }
 }

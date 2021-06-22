@@ -1,6 +1,9 @@
 package com.passbolt.mobile.android.feature.autofill
 
+import android.view.autofill.AutofillManager
 import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
+import com.passbolt.mobile.android.feature.autofill.info.AutofillInformationProvider
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 /**
@@ -28,4 +31,10 @@ import org.koin.dsl.module
 
 val autofillModule = module {
     encourageAutofillModule()
+    factory { androidContext().getSystemService(AutofillManager::class.java) }
+    factory {
+        AutofillInformationProvider(
+            autofillManager = get()
+        )
+    }
 }

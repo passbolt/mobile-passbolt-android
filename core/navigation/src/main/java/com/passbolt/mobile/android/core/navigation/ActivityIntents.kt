@@ -33,10 +33,7 @@ object ActivityIntents {
         setClassName(context, Setup.SET_UP_ACTIVITY)
     }
 
-    fun login(context: Context, manyAccounts: Boolean) = Intent().apply {
+    fun login(context: Context) = Intent().apply {
         setClassName(context, Login.LOGIN_ACTIVITY)
-            .putExtra(LOGIN_EXTRA_MANY_ACCOUNT, manyAccounts)
     }
-
-    const val LOGIN_EXTRA_MANY_ACCOUNT = "LOGIN_EXTRA_MANY_ACCOUNT"
 }

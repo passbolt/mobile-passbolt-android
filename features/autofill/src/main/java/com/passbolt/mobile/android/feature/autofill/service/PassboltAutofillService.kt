@@ -1,7 +1,11 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.autofill.service
 
-import androidx.annotation.StringRes
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import android.os.CancellationSignal
+import android.service.autofill.AutofillService
+import android.service.autofill.FillCallback
+import android.service.autofill.FillRequest
+import android.service.autofill.SaveCallback
+import android.service.autofill.SaveRequest
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,31 +29,13 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class PassboltAutofillService : AutofillService() {
 
-interface FingerprintContract {
-
-    interface View : BaseContract.View {
-        fun showUseFingerprint()
-        fun showConfigureFingerprint()
-        fun navigateToBiometricSettings()
-        fun showBiometricPrompt()
-        fun showAuthenticationError(@StringRes errorMessage: Int)
-        fun showEncourageAutofillDialog()
-        fun showPasswordCacheExpiredDialog()
-        fun navigateToEnterPassphrase()
-        fun navigateToLogin()
-        fun showAutofillEnabledDialog()
+    override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback) {
+        // TODO implement
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun useFingerprintClick()
-        fun resume()
-        fun authenticationSucceeded()
-        fun authenticationError(errorMessage: Int)
-        fun cacheExpiredDialogConfirmed()
-        fun setupAutofillLaterClick()
-        fun maybeLaterClick()
-        fun autofillSetupSuccessfully()
-        fun goToTheAppClick()
+    override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
+        // TODO implement
     }
 }

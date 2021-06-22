@@ -22,12 +22,12 @@ class StartUpActivity : BindingScopedActivity<ActivityStartupBinding>(ActivitySt
     }
 
     override fun navigateToLogin() {
-        startActivity(ActivityIntents.login(this, false))
+        startActivity(ActivityIntents.login(this))
         finish()
     }
 
     override fun navigateToAccountsList() {
-        startActivity(ActivityIntents.login(this, true))
+        startActivity(ActivityIntents.login(this))
         finish()
     }
 }

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import com.nhaarman.mockitokotlin2.mock
+import com.passbolt.mobile.android.feature.autofill.info.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import org.koin.dsl.module
 
@@ -28,15 +29,18 @@ import org.koin.dsl.module
  */
 
 internal val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
+internal val autofillInformationProvider = mock<AutofillInformationProvider>()
 internal val passphraseRepository = mock<PassphraseRepository>()
 
 val fingerprintModule = module {
     factory<FingerprintContract.Presenter> {
         FingerprintPresenter(
-            fingerprintProvider = get(),
-            passphraseRepository = get()
+            fingerprintInformationProvider = get(),
+            passphraseRepository = get(),
+            autofillInformationProvider = get()
         )
     }
     factory { fingerprintInformationProvider }
     factory { passphraseRepository }
+    factory { autofillInformationProvider }
 }
