@@ -29,9 +29,11 @@ interface LoginContract {
     interface View : BaseContract.View {
         fun showWrongPassphrase()
         fun showError()
+        fun navigateToAccountsList()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun signInClick(passphrase: CharArray?)
+        fun backPress()
     }
 }

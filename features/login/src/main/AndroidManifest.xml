@@ -7,6 +7,7 @@
         <activity
             android:name=".LoginActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.Passbolt" />
     </application>
 

@@ -39,83 +39,26 @@ class AccountsListPresenter(
     override var view: AccountsListContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-
-    private var accounts = listOf(
-        AccountModelUi.AccountModel(
-            "First name",
-            "email@passbolt.com",
-            "https://image.pngaaa.com/569/2189569-middle.png",
-            isFirstItem = true
-        ),
-        AccountModelUi.AccountModel(
-            "First name",
-            "email@passbolt.com",
-            "https://image.pngaaa.com/569/2189569-middle.png"
-        ),
-        AccountModelUi.AccountModel(
-            "First name",
-            "email@passbolt.com",
-            "https://image.pngaaa.com/569/2189569-middle.png"
-        ),
-        AccountModelUi.AccountModel(
-            "First name",
-            "email@passbolt.com",
-            "https://image.pngaaa.com/569/2189569-middle.png"
-        ),
-        AccountModelUi.AccountModel(
-            "First name",
-            "email@passbolt.com",
-            "https://image.pngaaa.com/569/2189569-middle.png"
-        ),
-        AccountModelUi.AccountModel(
-            "First name",
-            "email@passbolt.com",
-            "https://image.pngaaa.com/569/2189569-middle.png"
-        ),
-        AccountModelUi.AccountModel(
-            "First name",
-            "email@passbolt.com",
-            "https://image.pngaaa.com/569/2189569-middle.png"
-        ),
-        AccountModelUi.AccountModel(
-            "First name",
-            "email@passbolt.com",
-            "https://image.pngaaa.com/569/2189569-middle.png"
-        ),
-        AccountModelUi.AccountModel(
-            "First name",
-            "email@passbolt.com",
-            "https://image.pngaaa.com/569/2189569-middle.png"
-        ),
-        AccountModelUi.AccountModel(
-            "First name",
-            "email@passbolt.com",
-            "https://image.pngaaa.com/569/2189569-middle.png"
-        ),
-        AccountModelUi.AddNewAccount
-    )
+    private var accounts: List<AccountModelUi> = emptyList()
 
     override fun attach(view: AccountsListContract.View) {
         super.attach(view)
-        view.showAccounts(accounts)
-
-        // TODO display account from use case
-        // displayAccounts()
+        displayAccounts()
     }
 
     private fun displayAccounts() {
         scope.launch {
-            val accounts = accountModelMapper.map(getAllAccountsDataUseCase.execute(Unit).accounts)
+            accounts = accountModelMapper.map(getAllAccountsDataUseCase.execute(Unit).accounts, true)
             view?.showAccounts(accounts)
         }
     }
 
     override fun accountItemClick(model: AccountModelUi.AccountModel) {
-        // TODO
+        view?.navigateToLogin(model)
     }
 
     override fun addAccountClick() {
-        // TODO
+        view?.navigateToSetup()
     }
 
     override fun removeAnAccountClick() {

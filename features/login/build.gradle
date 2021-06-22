@@ -3,6 +3,8 @@ plugins {
     id 'kotlin-android'
 }
 
+apply plugin: "androidx.navigation.safeargs"
+
 dependencies {
     implementation project(':mvp')
     implementation project(':coreui')

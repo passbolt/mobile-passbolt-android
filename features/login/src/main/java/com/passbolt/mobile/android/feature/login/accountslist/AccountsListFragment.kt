@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.login.accountslist
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -12,6 +13,7 @@ import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
 import com.passbolt.mobile.android.feature.login.R
 import com.passbolt.mobile.android.feature.login.accountslist.item.AccountItemClick
@@ -84,6 +86,14 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
                 }
             )
         )
+    }
+
+    override fun navigateToSetup() {
+        startActivity(ActivityIntents.setup(requireContext()))
+    }
+
+    override fun navigateToLogin(model: AccountModelUi.AccountModel) {
+        findNavController().navigate(AccountsListFragmentDirections.actionAccountsListFragmentToLoginFragment())
     }
 
     override fun showAccounts(accounts: List<AccountModelUi>) {

@@ -27,8 +27,14 @@ import com.passbolt.mobile.android.ui.AccountModelUi
  */
 class AccountModelMapper {
 
-    fun map(accounts: List<AccountEntity>): List<AccountModelUi.AccountModel> =
-        accounts.mapIndexed { i, item -> map(item, i == 0) }
+    fun map(accounts: List<AccountEntity>, hasNewAccountButton: Boolean = false): List<AccountModelUi> {
+        val modelsList = accounts.mapIndexed { i, item -> map(item, i == 0) }
+        return if (hasNewAccountButton) {
+            modelsList + AccountModelUi.AddNewAccount
+        } else {
+            modelsList
+        }
+    }
 
     private fun map(accountEntity: AccountEntity, isFirstItem: Boolean) =
         AccountModelUi.AccountModel(
