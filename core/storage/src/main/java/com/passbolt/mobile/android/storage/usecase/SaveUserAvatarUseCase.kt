@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.storage.usecase
 
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
+import com.passbolt.mobile.android.storage.paths.AvatarFileName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,7 +33,7 @@ class SaveUserAvatarUseCase(
 
     override fun execute(input: Input): Output {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        val name = "${USER_AVATAR_FILE_NAME}_$userId"
+        val name = AvatarFileName(userId).name
 
         val encryptedFile = encryptedFileFactory.get(name)
         encryptedFile.openFileOutput().use {

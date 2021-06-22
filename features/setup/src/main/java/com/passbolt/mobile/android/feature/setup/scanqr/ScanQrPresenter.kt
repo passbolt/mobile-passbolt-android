@@ -6,11 +6,12 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import com.passbolt.mobile.android.storage.usecase.AddAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -48,7 +49,7 @@ class ScanQrPresenter(
     private val qrParser: ScanQrParser,
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val saveAccountDataUseCase: SaveAccountDataUseCase,
-    private val addAccountUseCase: AddAccountUseCase,
+    private val saveAccountUseCase: SaveAccountUseCase,
     private val userIdProvider: UserIdProvider,
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
     private val updateAccountDataUseCase: UpdateAccountDataUseCase
@@ -177,9 +178,9 @@ class ScanQrPresenter(
 
     private fun saveAccountDetails(id: String, url: String) {
         userId = userIdProvider.get(id, url)
-        saveSelectedAccountUseCase.execute(SaveSelectedAccountUseCase.Input(userId))
+        saveSelectedAccountUseCase.execute(UserIdInput(userId))
         saveAccountDataUseCase.execute(SaveAccountDataUseCase.Input(userId, url))
-        addAccountUseCase.execute(AddAccountUseCase.Input(userId))
+        saveAccountUseCase.execute(UserIdInput(userId))
     }
 
     override fun startCameraError(exc: Exception) {

@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveUserAvatarUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -56,7 +57,7 @@ class EnterPassphrasePresenter(
 
     private fun displayAccount() {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        val accountData = getAccountDataUseCase.execute(GetAccountDataUseCase.Input(userId))
+        val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
         accountData.avatarUrl?.let {
             view?.displayAvatar(it)
         }

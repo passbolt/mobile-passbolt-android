@@ -1,11 +1,9 @@
 package com.passbolt.mobile.android.storage.usecase
 
-import android.content.Context
 import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
-import com.passbolt.mobile.android.storage.paths.PassphraseFileName
-import timber.log.Timber
-import java.io.File
+import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.paths.AccountDataFileName
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,20 +27,20 @@ import java.io.File
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ClearSavedPassphraseUseCase(
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val appContext: Context
-) : UseCase<Unit, Unit> {
 
-    override fun execute(input: Unit) {
-        val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        val passphraseFile = File(
-            EncryptedFileBaseDirectory(appContext).baseDirectory,
-            PassphraseFileName(userId).name
-        )
-        if (passphraseFile.exists()) {
-            val deleted = passphraseFile.delete()
-            Timber.e("Deleted passphrase file: $deleted")
+class RemoveAccountDataUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : UseCase<UserIdInput, Unit> {
+
+    override fun execute(input: UserIdInput) {
+        val fileName = AccountDataFileName(input.userId).name
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
+        with(sharedPreferences.edit()) {
+            remove(USER_FIRST_NAME_KEY)
+            remove(USER_LAST_NAME_KEY)
+            remove(EMAIL_KEY)
+            remove(URL_KEY)
+            apply()
         }
     }
 }

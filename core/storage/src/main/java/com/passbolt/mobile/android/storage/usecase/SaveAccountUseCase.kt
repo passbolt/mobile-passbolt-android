@@ -1,4 +1,8 @@
-package com.passbolt.mobile.android.entity.account
+package com.passbolt.mobile.android.storage.usecase
+
+import android.content.SharedPreferences
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,11 +26,16 @@ package com.passbolt.mobile.android.entity.account
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountEntity(
-    val userId: String,
-    val firstName: String?,
-    val lastName: String?,
-    val email: String?,
-    val avatarUrl: String?,
-    val url: String
-)
+
+class SaveAccountUseCase(
+    private val sharedPreferences: SharedPreferences
+) : UseCase<UserIdInput, Unit> {
+
+    override fun execute(input: UserIdInput) {
+        with(sharedPreferences.edit()) {
+            val currentList = sharedPreferences.getStringSet(ACCOUNTS_ALIAS, emptySet()).orEmpty()
+            putStringSet(ACCOUNTS_ALIAS, currentList.plus(input.userId))
+            apply()
+        }
+    }
+}

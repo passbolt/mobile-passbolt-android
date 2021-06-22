@@ -2,9 +2,9 @@ package com.passbolt.mobile.android.storage.repository.passphrase
 
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.usecase.ClearSavedPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
 import org.koin.dsl.module
 
@@ -35,7 +35,7 @@ internal val passphraseMemoryCacheMock = mock<PassphraseMemoryCache>()
 internal val getSelectedAccountUseCaseMock = mock<GetSelectedAccountUseCase>()
 internal val getPassphraseUseCaseMock = mock<GetPassphraseUseCase>()
 internal val savePassphraseUseCaseMock = mock<SavePassphraseUseCase>()
-internal val clearPassphraseUseCaseMock = mock<ClearSavedPassphraseUseCase>()
+internal val clearPassphraseUseCaseMock = mock<RemoveSelectedAccountPassphraseUseCase>()
 
 val passphraseRepositoryTestModule = module {
     factory {
@@ -44,7 +44,7 @@ val passphraseRepositoryTestModule = module {
             getPassphraseUseCase = getPassphraseUseCaseMock,
             selectedAccountUseCase = getSelectedAccountUseCaseMock,
             savePassphraseUseCase = savePassphraseUseCaseMock,
-            clearSavedPassphraseUseCase = clearPassphraseUseCaseMock
+            removeSelectedAccountPassphraseUseCase = clearPassphraseUseCaseMock
         )
     }
 }

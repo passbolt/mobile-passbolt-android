@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,8 +40,7 @@ class ChallengeDecryptor(
         userId: String,
         challenge: String
     ): ChallengeResponseDto {
-        val privateKey = getPrivateKeyUseCase.execute(GetPrivateKeyUseCase.Input(userId)).privateKey
-
+        val privateKey = getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
         val encryptedChallenge = openPgp.decryptVerifyMessageArmored(
             publicKey = serverPublicKey,
             privateKey = privateKey,

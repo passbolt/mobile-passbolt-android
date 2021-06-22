@@ -2,11 +2,17 @@ package com.passbolt.mobile.android.feature.login.accountslist
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.mappers.AccountModelMapper
+import com.passbolt.mobile.android.service.logout.LogoutRepository
 import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
+import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.RemoveAllAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.ui.AccountModelUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,7 +38,10 @@ import kotlinx.coroutines.launch
  */
 class AccountsListPresenter(
     private val getAllAccountsDataUseCase: GetAllAccountsDataUseCase,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val accountModelMapper: AccountModelMapper,
+    private val removeAllAccountDataUseCase: RemoveAllAccountDataUseCase,
+    private val logoutRepository: LogoutRepository,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AccountsListContract.Presenter {
 
@@ -46,9 +55,16 @@ class AccountsListPresenter(
         displayAccounts()
     }
 
+    override fun detach() {
+        scope.coroutineContext.cancelChildren()
+        super.detach()
+    }
+
     private fun displayAccounts() {
         scope.launch {
-            accounts = accountModelMapper.map(getAllAccountsDataUseCase.execute(Unit).accounts, true)
+            accounts = accountModelMapper.map(
+                getAllAccountsDataUseCase.execute(Unit).accounts
+            )
             view?.showAccounts(accounts)
         }
     }
@@ -62,28 +78,32 @@ class AccountsListPresenter(
     }
 
     override fun removeAnAccountClick() {
-        trashIconsVisible(true)
-        view?.apply {
-            hideRemoveAccounts()
-            showDoneRemovingAccounts()
-        }
-    }
-
-    private fun trashIconsVisible(areVisible: Boolean) {
-        accounts = accounts.map {
-            when (it) {
-                is AccountModelUi.AccountModel -> it.copy(isTrashIconVisible = areVisible)
-                is AccountModelUi.AddNewAccount -> it
-            }
-        }
-        view?.showAccounts(accounts)
+        removeModeOn(isOn = true)
     }
 
     override fun doneRemovingAccountsClick() {
-        trashIconsVisible(false)
-        view?.apply {
-            hideDoneRemovingAccounts()
-            showRemoveAccounts()
+        removeModeOn(isOn = false)
+    }
+
+    private fun removeModeOn(isOn: Boolean) {
+        accounts = accounts
+            .filterIsInstance(AccountModelUi.AccountModel::class.java)
+            .map { it.copy(isTrashIconVisible = isOn) }
+            .let {
+                if (!isOn) it + AccountModelUi.AddNewAccount else it
+            }
+        view?.showAccounts(accounts)
+
+        if (isOn) {
+            view?.apply {
+                hideRemoveAccounts()
+                showDoneRemovingAccounts()
+            }
+        } else {
+            view?.apply {
+                hideDoneRemovingAccounts()
+                showRemoveAccounts()
+            }
         }
     }
 
@@ -92,6 +112,22 @@ class AccountsListPresenter(
     }
 
     override fun confirmRemoveAccountClick(model: AccountModelUi.AccountModel) {
-        // TODO remove account data and show confirmation
+        scope.launch {
+            val accountToRemoveId = model.userId
+            removeAllAccountDataUseCase.execute(UserIdInput(accountToRemoveId))
+
+            runCatching { getSelectedAccountUseCase.execute(Unit).selectedAccount }
+                .onSuccess { selectedAccountId ->
+                    if (accountToRemoveId != selectedAccountId) {
+                        logoutRepository.logout()
+                    }
+                }
+                .onFailure {
+                    // do not logout the current account when removing other account
+                    Timber.d(it)
+                }
+        }
+        removeModeOn(isOn = false)
+        displayAccounts()
     }
 }

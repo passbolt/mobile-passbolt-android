@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.storage.usecase
 
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.entity.account.AccountEntity
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,9 +33,10 @@ class GetAllAccountsDataUseCase(
 ) : UseCase<Unit, GetAllAccountsDataUseCase.Output> {
 
     override fun execute(input: Unit): Output {
-        val accountsData = getAccountsUseCase.execute(Unit).users.map {
-            val accountData = getAccountDataUseCase.execute(GetAccountDataUseCase.Input(it))
+        val accountsData = getAccountsUseCase.execute(Unit).users.map { userId ->
+            val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
             AccountEntity(
+                userId = userId,
                 firstName = accountData.firstName,
                 lastName = accountData.lastName,
                 email = accountData.email,

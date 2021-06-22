@@ -41,7 +41,10 @@ fun Module.accountsListModule() {
             AccountsListPresenter(
                 getAllAccountsDataUseCase = get(),
                 accountModelMapper = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
+                getSelectedAccountUseCase = get(),
+                logoutRepository = get(),
+                removeAllAccountDataUseCase = get()
             )
         }
         scoped { AccountUiItemsMapper() }

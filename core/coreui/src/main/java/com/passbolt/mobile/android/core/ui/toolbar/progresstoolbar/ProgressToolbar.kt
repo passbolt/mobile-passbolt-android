@@ -82,12 +82,17 @@ class ProgressToolbar @JvmOverloads constructor(
         }
 
     fun initializeProgressBar(minProgress: Int, maxProgress: Int) {
-        progressBar.min = minProgress
-        progressBar.max = maxProgress
+        progressBar.min = minProgress * ANIMATION_VALUE_MULTIPLIER
+        progressBar.max = maxProgress * ANIMATION_VALUE_MULTIPLIER
     }
 
     fun setCurrentProgress(progress: Int) {
-        ObjectAnimator.ofInt(progressBar, PROGRESS_PROPERTY, progressBar.progress, progress).apply {
+        ObjectAnimator.ofInt(
+            progressBar,
+            PROGRESS_PROPERTY,
+            progressBar.progress,
+            progress * ANIMATION_VALUE_MULTIPLIER
+        ).apply {
             setAutoCancel(true)
             duration = PROGRESS_ANIMATION_DURATION_MILLIS
             interpolator = DecelerateInterpolator()
@@ -112,7 +117,8 @@ class ProgressToolbar @JvmOverloads constructor(
     }
 
     private companion object {
-        private const val PROGRESS_ANIMATION_DURATION_MILLIS = 200L
+        private const val PROGRESS_ANIMATION_DURATION_MILLIS = 250L
+        private const val ANIMATION_VALUE_MULTIPLIER = 1_000
         private const val PROGRESS_PROPERTY = "progress"
     }
 }

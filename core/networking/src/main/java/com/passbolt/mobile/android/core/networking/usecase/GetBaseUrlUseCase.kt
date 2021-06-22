@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.networking.usecase
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,7 +34,7 @@ class GetBaseUrlUseCase constructor(
 
     override fun execute(input: Unit): Output {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        return Output(getAccountDataUseCase.execute(GetAccountDataUseCase.Input(userId)).url)
+        return Output(getAccountDataUseCase.execute(UserIdInput(userId)).url)
     }
 
     class Output(

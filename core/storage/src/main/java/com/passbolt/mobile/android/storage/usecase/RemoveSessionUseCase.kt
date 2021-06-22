@@ -1,4 +1,9 @@
-package com.passbolt.mobile.android.entity.account
+package com.passbolt.mobile.android.storage.usecase
+
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.paths.SessionFileName
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,11 +27,18 @@ package com.passbolt.mobile.android.entity.account
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountEntity(
-    val userId: String,
-    val firstName: String?,
-    val lastName: String?,
-    val email: String?,
-    val avatarUrl: String?,
-    val url: String
-)
+
+class RemoveSessionUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : UseCase<UserIdInput, Unit> {
+
+    override fun execute(input: UserIdInput) {
+        val fileName = SessionFileName(input.userId).name
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
+        with(sharedPreferences.edit()) {
+            remove(ACCESS_TOKEN_KEY)
+            remove(REFRESH_TOKEN_KEY)
+            apply()
+        }
+    }
+}

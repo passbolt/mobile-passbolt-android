@@ -29,9 +29,10 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LoginActivity : BindingScopedActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate), LoginContract.View {
+class LoginActivity : BindingScopedActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate),
+    LoginMainContract.View {
 
-    private val presenter: LoginContract.Presenter by inject()
+    private val presenter: LoginMainContract.Presenter by inject()
     private val navController by lifecycleAwareLazy {
         findNavHostFragment(binding.fragmentContainer.id).navController
     }

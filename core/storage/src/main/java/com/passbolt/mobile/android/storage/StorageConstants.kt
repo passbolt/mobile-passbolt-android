@@ -33,5 +33,4 @@ internal const val ACCESS_TOKEN_KEY = "ACCESS_TOKEN_KEY"
 internal const val SELECTED_ACCOUNT_KEY = "SELECTED_ACCOUNT_KEY"
 internal const val REFRESH_TOKEN_KEY = "REFRESH_TOKEN_KEY"
 internal const val EMAIL_KEY = "EMAIL_KEY"
-internal const val USER_AVATAR_FILE_NAME = "user_avatar"
 internal const val KEY_SIZE = 256
