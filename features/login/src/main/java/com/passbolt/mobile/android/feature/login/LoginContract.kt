@@ -1,6 +1,5 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.login
 
-import androidx.annotation.StringRes
 import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
@@ -25,31 +24,10 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-interface FingerprintContract {
-
+interface LoginContract {
     interface View : BaseContract.View {
-        fun showUseFingerprint()
-        fun showConfigureFingerprint()
-        fun navigateToBiometricSettings()
-        fun showBiometricPrompt()
-        fun showAuthenticationError(@StringRes errorMessage: Int)
-        fun showEncourageAutofillDialog()
-        fun showPasswordCacheExpiredDialog()
-        fun navigateToEnterPassphrase()
-        fun navigateToLogin()
-        fun showAutofillEnabledDialog()
+        fun navigateToAccountLogin(userId: String)
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun useFingerprintClick()
-        fun resume()
-        fun authenticationSucceeded()
-        fun authenticationError(errorMessage: Int)
-        fun cacheExpiredDialogConfirmed()
-        fun setupAutofillLaterClick()
-        fun maybeLaterClick()
-        fun autofillSetupSuccessfully()
-        fun goToTheAppClick()
-    }
+    interface Presenter : BaseContract.Presenter<View>
 }

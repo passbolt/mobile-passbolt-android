@@ -65,8 +65,8 @@ class LoginPresenter(
         }
     }
 
-    override fun backPress() {
-        view?.navigateToAccountsList()
+    override fun backClick() {
+        view?.navigateBack()
     }
 
     private suspend fun login(passphrase: CharArray?, serverPublicKey: String, rsaKey: String) {

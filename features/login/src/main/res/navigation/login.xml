@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@+id/loginFragment">
+    app:startDestination="@id/accountsListFragment">
 
     <fragment
         android:id="@+id/accountsListFragment"
@@ -23,13 +23,5 @@
         android:id="@+id/loginFragment"
         android:name="com.passbolt.mobile.android.feature.login.login.LoginFragment"
         android:label="LoginFragment"
-        tools:layout="@layout/fragment_login">
-        <action
-            android:id="@+id/action_loginFragment_to_accountsListFragment"
-            app:destination="@id/accountsListFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-    </fragment>
+        tools:layout="@layout/fragment_login" />
 </navigation>

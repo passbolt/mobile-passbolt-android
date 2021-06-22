@@ -1,2 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.passbolt.mobile.android.feature.autofill" />
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.passbolt.mobile.android.feature.autofill">
+
+    <application>
+        <service
+            android:name=".service.PassboltAutofillService"
+            android:label="@string/autofill_service_name"
+            android:permission="android.permission.BIND_AUTOFILL_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.autofill.AutofillService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

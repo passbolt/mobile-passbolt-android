@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.login.login
 
 import android.os.Bundle
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
@@ -48,15 +47,13 @@ class LoginFragment : BindingScopedFragment<FragmentLoginBinding>(FragmentLoginB
         binding.signInButton.setDebouncingOnClick {
             presenter.signInClick(binding.password.getText())
         }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                presenter.backPress()
-            }
-        })
+        binding.backImage.setDebouncingOnClick {
+            presenter.backClick()
+        }
     }
 
-    override fun navigateToAccountsList() {
-        findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToAccountsListFragment())
+    override fun navigateBack() {
+        findNavController().popBackStack()
     }
 
     override fun showWrongPassphrase() {

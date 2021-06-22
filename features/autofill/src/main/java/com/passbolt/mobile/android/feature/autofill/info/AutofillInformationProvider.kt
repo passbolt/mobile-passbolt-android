@@ -30,6 +30,5 @@ class AutofillInformationProvider(
 
     fun isAutofillSupported() = autofillManager.isAutofillSupported
 
-    // TODO use before showing EncourageAutofillDialog
     fun isPassboltAutofillServiceSet() = autofillManager.hasEnabledAutofillServices()
 }

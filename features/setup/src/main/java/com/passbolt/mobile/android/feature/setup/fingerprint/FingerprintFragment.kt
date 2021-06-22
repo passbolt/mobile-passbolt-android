@@ -12,6 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
 import com.passbolt.mobile.android.feature.autofill.encourage.EncourageAutofillDialog
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentFingerprintBinding
@@ -42,7 +43,7 @@ import java.util.concurrent.Executor
  */
 
 class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(FragmentFingerprintBinding::inflate),
-    FingerprintContract.View, EncourageAutofillDialog.Listener {
+    FingerprintContract.View, EncourageAutofillDialog.Listener, AutofillEnabledDialog.Listener {
 
     private val presenter: FingerprintContract.Presenter by inject()
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
@@ -101,12 +102,18 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         )
     }
 
+    override fun showAutofillEnabledDialog() {
+        AutofillEnabledDialog().show(
+            childFragmentManager, AutofillEnabledDialog::class.java.name
+        )
+    }
+
     override fun navigateToEnterPassphrase() {
         findNavController().popBackStack()
     }
 
     override fun navigateToLogin() {
-        startActivity(ActivityIntents.login(requireContext(), false))
+        startActivity(ActivityIntents.login(requireContext()))
         requireActivity().finish()
     }
 
@@ -145,6 +152,10 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
     }
 
     override fun autofillSetupSuccessfully() {
-        // TODO after Passbolt autofill service can be enabled
+        presenter.autofillSetupSuccessfully()
+    }
+
+    override fun goToAppClick() {
+        presenter.goToTheAppClick()
     }
 }

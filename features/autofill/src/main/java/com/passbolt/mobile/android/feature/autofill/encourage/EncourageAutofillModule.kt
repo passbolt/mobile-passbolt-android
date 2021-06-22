@@ -1,8 +1,5 @@
 package com.passbolt.mobile.android.feature.autofill.encourage
 
-import android.view.autofill.AutofillManager
-import com.passbolt.mobile.android.feature.autofill.info.AutofillInformationProvider
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -34,12 +31,6 @@ fun Module.encourageAutofillModule() {
         scoped<EncourageAutofillContract.Presenter> {
             EncourageAutofillPresenter(
                 autofillInformationProvider = get()
-            )
-        }
-        scoped { androidContext().getSystemService(AutofillManager::class.java) }
-        scoped {
-            AutofillInformationProvider(
-                autofillManager = get()
             )
         }
     }

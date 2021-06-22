@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
+import com.passbolt.mobile.android.feature.autofill.info.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 
@@ -26,14 +27,15 @@ import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepos
  * @since v1.0
  */
 class FingerprintPresenter(
-    private val fingerprintProvider: FingerprintInformationProvider,
+    private val fingerprintInformationProvider: FingerprintInformationProvider,
+    private val autofillInformationProvider: AutofillInformationProvider,
     private val passphraseRepository: PassphraseRepository
 ) : FingerprintContract.Presenter {
 
     override var view: FingerprintContract.View? = null
 
     override fun resume() {
-        if (fingerprintProvider.hasBiometricSetUp()) {
+        if (fingerprintInformationProvider.hasBiometricSetUp()) {
             view?.showUseFingerprint()
         } else {
             view?.showConfigureFingerprint()
@@ -41,7 +43,7 @@ class FingerprintPresenter(
     }
 
     override fun useFingerprintClick() {
-        if (fingerprintProvider.hasBiometricSetUp()) {
+        if (fingerprintInformationProvider.hasBiometricSetUp()) {
             view?.showBiometricPrompt()
         } else {
             view?.navigateToBiometricSettings()
@@ -49,15 +51,23 @@ class FingerprintPresenter(
     }
 
     override fun maybeLaterClick() {
-        view?.navigateToLogin()
+        handleAutofillSetup()
     }
 
     override fun authenticationSucceeded() {
+        handleAutofillSetup()
+    }
+
+    private fun handleAutofillSetup() {
         when (val cachedPassphrase = passphraseRepository.getPotentialPassphrase()) {
             is PotentialPassphrase.Passphrase -> {
                 // fingerprint is good and passphrase in cache not expired - renew cache duration
                 passphraseRepository.setPassphrase(cachedPassphrase.passphrase)
-                view?.showEncourageAutofillDialog()
+                if (!autofillInformationProvider.isPassboltAutofillServiceSet()) {
+                    view?.showEncourageAutofillDialog()
+                } else {
+                    view?.showAutofillEnabledDialog()
+                }
             }
             is PotentialPassphrase.PassphraseNotPresent -> {
                 // user stayed too long and passphrase cache expired - show info dialog
@@ -76,5 +86,13 @@ class FingerprintPresenter(
 
     override fun setupAutofillLaterClick() {
         view?.navigateToLogin()
+    }
+
+    override fun goToTheAppClick() {
+        view?.navigateToLogin()
+    }
+
+    override fun autofillSetupSuccessfully() {
+        view?.showAutofillEnabledDialog()
     }
 }

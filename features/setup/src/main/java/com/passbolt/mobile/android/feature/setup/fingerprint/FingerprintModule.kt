@@ -33,8 +33,9 @@ fun Module.fingerprintModule() {
     scope(named<FingerprintFragment>()) {
         scoped<FingerprintContract.Presenter> {
             FingerprintPresenter(
-                fingerprintProvider = get(),
-                passphraseRepository = get()
+                fingerprintInformationProvider = get(),
+                passphraseRepository = get(),
+                autofillInformationProvider = get()
             )
         }
         scoped { BiometricPrompt.PromptInfo.Builder() }

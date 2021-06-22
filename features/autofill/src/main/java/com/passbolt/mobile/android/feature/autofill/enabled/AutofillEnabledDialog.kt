@@ -49,8 +49,14 @@ class AutofillEnabledDialog : DialogFragment() {
 
     private fun setupListeners(binding: DialogAutofillEnabledBinding) {
         with(binding) {
-            closeButton.setDebouncingOnClick { dismiss() }
-            goToAppButton.setDebouncingOnClick { listener?.goToAppClick() }
+            closeButton.setDebouncingOnClick {
+                listener?.goToAppClick()
+                dismiss()
+            }
+            goToAppButton.setDebouncingOnClick {
+                listener?.goToAppClick()
+                dismiss()
+            }
         }
     }
 

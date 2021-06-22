@@ -1,10 +1,11 @@
 package com.passbolt.mobile.android.feature.login
 
 import android.os.Bundle
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.core.navigation.ActivityIntents.LOGIN_EXTRA_MANY_ACCOUNT
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.feature.login.databinding.ActivityLoginBinding
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,24 +29,20 @@ import com.passbolt.mobile.android.feature.login.databinding.ActivityLoginBindin
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LoginActivity : BindingActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate) {
+class LoginActivity : BindingScopedActivity<ActivityLoginBinding>(ActivityLoginBinding::inflate), LoginContract.View {
+
+    private val presenter: LoginContract.Presenter by inject()
+    private val navController by lifecycleAwareLazy {
+        findNavHostFragment(binding.fragmentContainer.id).navController
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupNavigation()
+        presenter.attach(this)
     }
 
-    private fun setupNavigation() {
-        val navHostFragment = findNavHostFragment(R.id.fragmentContainer)
-        val inflater = navHostFragment.navController.navInflater
-        val graph = inflater.inflate(R.navigation.login)
-
-        if (intent.getBooleanExtra(LOGIN_EXTRA_MANY_ACCOUNT, false)) {
-            graph.startDestination = R.id.accountsListFragment
-        } else {
-            graph.startDestination = R.id.loginFragment
-        }
-
-        navHostFragment.navController.setGraph(graph, intent.extras)
+    override fun navigateToAccountLogin(userId: String) {
+        // TODO pass user id in safe args
+        navController.navigate(R.id.action_accountsListFragment_to_loginFragment)
     }
 }
