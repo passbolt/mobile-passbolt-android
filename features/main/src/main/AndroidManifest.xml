@@ -1,2 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.passbolt.mobile.android.feature.settings" />
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.passbolt.mobile.android.feature.settings">
+
+    <application>
+        <activity
+            android:name="com.passbolt.mobile.android.feature.main.mainscreen.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Passbolt" />
+    </application>
+</manifest>

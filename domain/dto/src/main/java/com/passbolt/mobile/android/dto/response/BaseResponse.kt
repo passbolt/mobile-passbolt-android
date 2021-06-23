@@ -23,6 +23,6 @@ package com.passbolt.mobile.android.dto.response
  * @since v1.0
  */
 class BaseResponse<T>(
-    val headerResponse: HeaderResponse,
+    val header: HeaderResponse,
     val body: T
 )

@@ -30,16 +30,19 @@ sealed class NetworkResult<T : Any> {
 
     sealed class Failure<T : Any>(
         val exception: Exception,
-        val errorCode: Int? = null
+        val errorCode: Int? = null,
+        val headerMessage: String
     ) : NetworkResult<T>() {
 
         class ServerError<T : Any>(
             exception: Exception,
-            errorCode: Int? = null
-        ) : Failure<T>(exception, errorCode)
+            errorCode: Int? = null,
+            headerMessage: String
+        ) : Failure<T>(exception, errorCode, headerMessage)
 
         class NetworkError<T : Any>(
-            exception: Exception
-        ) : Failure<T>(exception, null)
+            exception: Exception,
+            headerMessage: String
+        ) : Failure<T>(exception, null, headerMessage)
     }
 }

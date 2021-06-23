@@ -10,8 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_back"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.passbolt.mobile.android.core.ui.textinputfield.PasswordInputView
         android:id="@+id/password"
@@ -27,7 +27,13 @@
         style="@style/PrimaryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dp_16"
         android:layout_marginTop="@dimen/dp_24"
         android:text="@string/login_sign_in"
         app:layout_constraintTop_toBottomOf="@id/password" />
+
+    <include
+        android:id="@+id/progress"
+        layout="@layout/view_progress" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,10 +7,14 @@ plugins {
 dependencies {
     implementation project(':common')
     implementation project(':storage')
+    implementation project(':dto')
 
     api libs.networking.retrofit
     api libs.networking.okHttp
     api libs.networking.okHttpLoggingInterceptor
 
     implementation libs.di.koin
+
+    implementation libs.gson
+
 }

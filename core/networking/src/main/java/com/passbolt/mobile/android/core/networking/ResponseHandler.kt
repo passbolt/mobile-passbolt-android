@@ -28,7 +28,9 @@ import java.net.UnknownHostException
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResponseHandler {
+class ResponseHandler(
+    private val errorHeaderMapper: ErrorHeaderMapper
+) {
 
     fun <T : Any> handleSuccess(data: T): NetworkResult<T> =
         NetworkResult.Success(data)
@@ -36,21 +38,27 @@ class ResponseHandler {
     fun <T : Any> handleException(e: Exception): NetworkResult<T> {
         Timber.d(e)
         return when (e) {
-            is HttpException -> {
-                NetworkResult.Failure.ServerError(e, e.code())
-            }
-            is UnknownHostException -> {
-                NetworkResult.Failure.NetworkError(e)
-            }
-            is ConnectException -> {
-                NetworkResult.Failure.NetworkError(e)
-            }
-            is SocketTimeoutException -> {
-                NetworkResult.Failure.ServerError(e)
-            }
-            else -> {
-                NetworkResult.Failure.ServerError(e)
-            }
+            is HttpException -> NetworkResult.Failure.ServerError(
+                exception = e,
+                errorCode = e.code(),
+                headerMessage = errorHeaderMapper.getMessage(e.response())
+            )
+            is UnknownHostException -> NetworkResult.Failure.NetworkError(
+                exception = e,
+                headerMessage = errorHeaderMapper.getMessage()
+            )
+            is ConnectException -> NetworkResult.Failure.NetworkError(
+                exception = e,
+                headerMessage = errorHeaderMapper.getMessage()
+            )
+            is SocketTimeoutException -> NetworkResult.Failure.ServerError(
+                exception = e,
+                headerMessage = errorHeaderMapper.getMessage()
+            )
+            else -> NetworkResult.Failure.ServerError(
+                exception = e,
+                headerMessage = errorHeaderMapper.getMessage()
+            )
         }
     }
 }

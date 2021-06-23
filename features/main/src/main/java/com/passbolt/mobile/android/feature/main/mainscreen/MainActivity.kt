@@ -4,12 +4,12 @@ import android.os.Bundle
 import androidx.navigation.ui.setupWithNavController
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.feature.settings.R
 import com.passbolt.mobile.android.feature.settings.databinding.ActivityMainBinding
 import org.koin.android.ext.android.inject
 
-class MainActivity : BindingActivity<ActivityMainBinding>(ActivityMainBinding::inflate), MainContract.View {
+class MainActivity : BindingScopedActivity<ActivityMainBinding>(ActivityMainBinding::inflate), MainContract.View {
 
     private val presenter: MainContract.Presenter by inject()
     private val bottomNavController by lifecycleAwareLazy {

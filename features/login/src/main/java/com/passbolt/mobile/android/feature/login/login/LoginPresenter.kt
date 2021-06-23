@@ -6,12 +6,15 @@ import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeVerifier
+import com.passbolt.mobile.android.feature.login.login.usecase.GetServerPublicPgpKeyUseCase
+import com.passbolt.mobile.android.feature.login.login.usecase.GetServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.login.login.usecase.LoginUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import com.passbolt.mobile.android.feature.login.login.GetServerPublicRsaKeyUseCase.Output.Success as RsaSuccess
-import com.passbolt.mobile.android.feature.login.login.GetServerPublicPgpKeyUseCase.Output.Success as PgpSuccess
+import com.passbolt.mobile.android.feature.login.login.usecase.GetServerPublicRsaKeyUseCase.Output.Success as RsaSuccess
+import com.passbolt.mobile.android.feature.login.login.usecase.GetServerPublicPgpKeyUseCase.Output.Success as PgpSuccess
 
 /**
  * Passbolt - Open source password manager for teams
@@ -51,6 +54,7 @@ class LoginPresenter(
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     override fun signInClick(passphrase: CharArray?) {
+        view?.showProgress()
         scope.launch {
             val pgpKey = async { getServerPublicPgpKeyUseCase.execute(Unit) }
             val rsaKey = async { getServerPublicRsaKeyUseCase.execute(Unit) }
@@ -60,7 +64,7 @@ class LoginPresenter(
             if (pgpKeyResult is PgpSuccess && rsaKeyResult is RsaSuccess) {
                 login(passphrase, pgpKeyResult.publicKey, rsaKeyResult.rsaKey)
             } else {
-                view?.showError()
+                showGenericError()
             }
         }
     }
@@ -87,7 +91,7 @@ class LoginPresenter(
                 requireNotNull(passphrase),
                 rsaKey
             )
-            ChallengeProvider.Output.WrongPassphrase -> view?.showWrongPassphrase()
+            ChallengeProvider.Output.WrongPassphrase -> showWrongPassphrase()
         }
     }
 
@@ -99,8 +103,9 @@ class LoginPresenter(
         rsaKey: String
     ) {
         when (val result = loginUseCase.execute(LoginUseCase.Input(userId, challenge))) {
-            LoginUseCase.Output.Failure -> {
-                // TODO
+            is LoginUseCase.Output.Failure -> {
+                view?.showError(result.message)
+                view?.hideProgress()
             }
             is LoginUseCase.Output.Success -> {
                 val challengeDecryptResult = challengeDecryptor.decrypt(
@@ -116,18 +121,25 @@ class LoginPresenter(
 
     private fun verifyChallenge(challengeResponseDto: ChallengeResponseDto, rsaKey: String) {
         when (challengeVerifier.verify(challengeResponseDto, rsaKey)) {
-            ChallengeVerifier.Output.Failure -> {
-                // TODO
-            }
-            ChallengeVerifier.Output.InvalidSignature -> {
-                // TODO
-            }
-            ChallengeVerifier.Output.TokenExpired -> {
-                // TODO
-            }
-            is ChallengeVerifier.Output.Verified -> {
-                // TODO
-            }
+            ChallengeVerifier.Output.Failure -> showGenericError()
+            ChallengeVerifier.Output.InvalidSignature -> showGenericError()
+            ChallengeVerifier.Output.TokenExpired -> showGenericError()
+            is ChallengeVerifier.Output.Verified -> navigateHome()
         }
+    }
+
+    private fun navigateHome() {
+        view?.hideProgress()
+        view?.navigateToHome()
+    }
+
+    private fun showGenericError() {
+        view?.hideProgress()
+        view?.showGenericError()
+    }
+
+    private fun showWrongPassphrase() {
+        view?.hideProgress()
+        view?.showWrongPassphrase()
     }
 }
