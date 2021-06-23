@@ -137,7 +137,7 @@ class ScanQrPresenterTest : KoinTest {
 
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
 
-        verify(view).initializeProgress(TOTAL_PAGES - 1)
+        verify(view).initializeProgress(TOTAL_PAGES)
         verify(view).showKeepGoing()
         verifyNoMoreInteractions(view)
     }
@@ -164,7 +164,7 @@ class ScanQrPresenterTest : KoinTest {
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
         parseFlow.emit(ParseResult.FinishedWithSuccess("key"))
 
-        verify(view).initializeProgress(TOTAL_PAGES - 1)
+        verify(view).initializeProgress(TOTAL_PAGES)
         verify(view).showKeepGoing()
         argumentCaptor<ResultStatus>().apply {
             verify(view).navigateToSummary(capture())
@@ -182,7 +182,7 @@ class ScanQrPresenterTest : KoinTest {
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
         parseFlow.emit(ParseResult.FinishedWithSuccess("key"))
 
-        verify(view).initializeProgress(TOTAL_PAGES - 1)
+        verify(view).initializeProgress(TOTAL_PAGES)
         verify(view).showKeepGoing()
         argumentCaptor<ResultStatus>().apply {
             verify(view).navigateToSummary(capture())
