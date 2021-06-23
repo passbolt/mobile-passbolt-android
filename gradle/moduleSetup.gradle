@@ -74,6 +74,8 @@ def setupCommonDependencies(isAndroid) {
         testImplementation libs.test.truth
         testImplementation libs.test.turbine
         testImplementation libs.test.coroutinesTest
+        testImplementation libs.di.koinTest
+        testImplementation libs.di.koinTestJUnit
         if (isAndroid) {
             androidTestImplementation libs.test.androidxJUnit
             androidTestImplementation libs.test.espressoCore

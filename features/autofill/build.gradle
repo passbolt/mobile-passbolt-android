@@ -18,9 +18,6 @@ dependencies {
 
     implementation libs.di.koin
     implementation libs.di.koinExt
-
-    testImplementation libs.di.koinTest
-    testImplementation libs.di.koinTestJUnit
 }
 
 android {

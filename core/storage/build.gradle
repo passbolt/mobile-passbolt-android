@@ -20,9 +20,6 @@ dependencies {
 
     debugImplementation libs.debugDatabase
 
-    testImplementation libs.di.koinTest
-    testImplementation libs.di.koinTestJUnit
-
     androidTestImplementation libs.di.koinTest
     androidTestImplementation libs.di.koinTestJUnit
     androidTestImplementation libs.test.coroutinesTest

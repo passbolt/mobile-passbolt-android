@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.passbolt.mobile.android.feature.setup.base.testModule
+import com.passbolt.mobile.android.feature.setup.di.testModule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
