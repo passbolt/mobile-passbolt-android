@@ -28,17 +28,17 @@ import com.passbolt.mobile.android.dto.response.qrcode.ReservedBytesDto
 
 sealed class ParseResult {
 
-    sealed class PassboltQr : ParseResult() {
+    sealed class PassboltQr(open val reservedBytesDto: ReservedBytesDto) : ParseResult() {
 
         data class FirstPage(
-            val reservedBytesDto: ReservedBytesDto,
+            override val reservedBytesDto: ReservedBytesDto,
             val content: QrFirstPageDto
-        ) : PassboltQr()
+        ) : PassboltQr(reservedBytesDto)
 
         data class SubsequentPage(
-            val reservedBytesDto: ReservedBytesDto,
+            override val reservedBytesDto: ReservedBytesDto,
             val content: ByteArray
-        ) : PassboltQr() {
+        ) : PassboltQr(reservedBytesDto) {
             override fun equals(other: Any?): Boolean {
                 if (this === other) return true
                 if (javaClass != other?.javaClass) return false

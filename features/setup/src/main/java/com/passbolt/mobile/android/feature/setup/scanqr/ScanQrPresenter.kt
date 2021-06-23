@@ -105,7 +105,7 @@ class ScanQrPresenter(
         authToken = firstPage.content.authenticationToken
         totalPages = firstPage.content.totalPages
         currentPage = 0
-        view?.initializeProgress(totalPages - 1)
+        view?.initializeProgress(totalPages)
         view?.showKeepGoing()
         saveAccountDetails(firstPage.content.userId, firstPage.content.domain)
         updateTransfer(pageNumber = firstPage.reservedBytesDto.page + 1)

@@ -57,10 +57,10 @@ class ScanQrParser(
         scanFlow
             .map { qrScanResultsMapper.apply(it) }
             .collect {
-                if (it is ParseResult.PassboltQr.FirstPage) {
+                if (it is ParseResult.PassboltQr.FirstPage && it.isNotScanned()) {
                     processFirstPageData(it)
                     _pareResultFlow.tryEmit(it)
-                } else if (it is ParseResult.PassboltQr.SubsequentPage) {
+                } else if (it is ParseResult.PassboltQr.SubsequentPage && it.isNotScanned()) {
                     if (isFirstPageScanned) {
                         processSubsequentPageData(it)
                         _pareResultFlow.tryEmit(it)
@@ -75,6 +75,9 @@ class ScanQrParser(
                 }
             }
     }
+
+    private fun ParseResult.PassboltQr.isNotScanned() =
+        !alreadyScannedPages.contains(this.reservedBytesDto.page)
 
     private suspend fun processFirstPageData(firstPage: ParseResult.PassboltQr.FirstPage) =
         withContext(coroutineLaunchContext.io) {
