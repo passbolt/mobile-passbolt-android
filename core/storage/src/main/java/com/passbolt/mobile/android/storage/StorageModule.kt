@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.storage.di
+package com.passbolt.mobile.android.storage
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -8,17 +8,25 @@ import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.factory.KeySpecProvider
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
-import com.passbolt.mobile.android.storage.usecase.AddAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.ClearSavedPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAccountsUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSessionUseCase
+import com.passbolt.mobile.android.storage.usecase.RemoveAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.RemoveAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.RemoveAllAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.RemovePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.RemovePrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.RemoveSelectedAccountPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.RemoveSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.RemoveSessionUseCase
+import com.passbolt.mobile.android.storage.usecase.RemoveUserAvatarUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
@@ -69,7 +77,7 @@ val storageModule = module {
     }
     single { KeySpecProvider() }
     single {
-        AddAccountUseCase(
+        SaveAccountUseCase(
             sharedPreferences = get()
         )
     }
@@ -165,13 +173,48 @@ val storageModule = module {
             getPassphraseUseCase = get(),
             savePassphraseUseCase = get(),
             selectedAccountUseCase = get(),
-            clearSavedPassphraseUseCase = get()
+            removeSelectedAccountPassphraseUseCase = get()
         )
     }
     factory {
-        ClearSavedPassphraseUseCase(
+        RemovePassphraseUseCase(androidContext())
+    }
+    factory {
+        RemoveSelectedAccountPassphraseUseCase(
+            androidContext(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    factory {
+        RemoveAccountDataUseCase(encryptedSharedPreferencesFactory = get())
+    }
+    factory {
+        RemoveAllAccountDataUseCase(
             getSelectedAccountUseCase = get(),
-            androidContext()
+            removeAccountDataUseCase = get(),
+            removePassphraseUseCase = get(),
+            removePrivateKeyUseCase = get(),
+            removeSelectedAccountUseCase = get(),
+            removeSessionUseCase = get(),
+            removeUserAvatarUseCase = get(),
+            removeAccountUseCase = get()
+        )
+    }
+    factory {
+        RemoveUserAvatarUseCase(androidContext())
+    }
+    factory {
+        RemoveSessionUseCase(encryptedSharedPreferencesFactory = get())
+    }
+    factory {
+        RemoveSelectedAccountUseCase(encryptedSharedPreferencesFactory = get())
+    }
+    factory {
+        RemovePrivateKeyUseCase(androidContext())
+    }
+    factory {
+        RemoveAccountUseCase(
+            sharedPreferences = get()
         )
     }
 }

@@ -2,10 +2,11 @@ package com.passbolt.mobile.android.storage.repository.passphrase
 
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.usecase.ClearSavedPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,7 +36,7 @@ class PassphraseRepository(
     private val getPassphraseUseCase: GetPassphraseUseCase,
     private val savePassphraseUseCase: SavePassphraseUseCase,
     private val selectedAccountUseCase: GetSelectedAccountUseCase,
-    private val clearSavedPassphraseUseCase: ClearSavedPassphraseUseCase
+    private val removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase
 ) {
 
     fun getPotentialPassphrase(): PotentialPassphrase =
@@ -43,16 +44,16 @@ class PassphraseRepository(
             passphraseMemoryCache.get()
         } else {
             val userId = selectedAccountUseCase.execute(Unit).selectedAccount
-            getPassphraseUseCase.execute(GetPassphraseUseCase.Input(userId)).potentialPassphrase
+            getPassphraseUseCase.execute(UserIdInput(userId)).potentialPassphrase
         }
 
     fun clearPassphrase() {
         passphraseMemoryCache.clear()
-        clearSavedPassphraseUseCase.execute(Unit)
+        removeSelectedAccountPassphraseUseCase.execute(Unit)
     }
 
     fun setPassphrase(passphrase: CharArray) {
-        clearSavedPassphraseUseCase.execute(Unit)
+        removeSelectedAccountPassphraseUseCase.execute(Unit)
         savePassphraseUseCase.execute(SavePassphraseUseCase.Input(passphrase))
         passphraseMemoryCache.set(passphrase)
     }

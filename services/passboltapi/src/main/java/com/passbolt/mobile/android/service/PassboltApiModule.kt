@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.service.auth.AuthDataSource
 import com.passbolt.mobile.android.service.auth.AuthRepository
 import com.passbolt.mobile.android.service.auth.data.AuthApi
 import com.passbolt.mobile.android.service.auth.data.AuthRemoteDataSource
+import com.passbolt.mobile.android.service.logout.LogoutRepository
 import com.passbolt.mobile.android.service.registration.RegistrationDataSource
 import com.passbolt.mobile.android.service.registration.RegistrationRepository
 import com.passbolt.mobile.android.service.registration.data.RegistrationApi
@@ -62,6 +63,9 @@ val passboltApiModule = module {
             authDataSource = get(),
             responseHandler = get()
         )
+    }
+    single {
+        LogoutRepository()
     }
 }
 

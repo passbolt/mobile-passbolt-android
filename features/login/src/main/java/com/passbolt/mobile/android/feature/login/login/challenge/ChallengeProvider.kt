@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.passbolt.mobile.android.dto.request.ChallengeDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
-import java.lang.Exception
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import java.time.Instant
 import java.util.UUID
 
@@ -43,7 +43,7 @@ class ChallengeProvider(
         passphrase: ByteArray,
         userId: String
     ): Output {
-        val privateKey = requireNotNull(privateKeyUseCase.execute(GetPrivateKeyUseCase.Input(userId)).privateKey)
+        val privateKey = requireNotNull(privateKeyUseCase.execute(UserIdInput(userId)).privateKey)
 
         val tokenExpiry = getVerifyTokenExpiry()
 

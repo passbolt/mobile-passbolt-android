@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 import com.passbolt.mobile.android.storage.factory.KeyBiometricSettings
 import com.passbolt.mobile.android.storage.paths.PassphraseFileName
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import timber.log.Timber
 import java.io.IOException
 
@@ -35,9 +36,9 @@ import java.io.IOException
 
 class GetPassphraseUseCase(
     private val encryptedFileFactory: EncryptedFileFactory
-) : UseCase<GetPassphraseUseCase.Input, GetPassphraseUseCase.Output> {
+) : UseCase<UserIdInput, GetPassphraseUseCase.Output> {
 
-    override fun execute(input: Input): Output {
+    override fun execute(input: UserIdInput): Output {
         return try {
             val fileName = PassphraseFileName(input.userId).name
             val encryptedFile = encryptedFileFactory.get(
@@ -62,10 +63,6 @@ class GetPassphraseUseCase(
             Output(PotentialPassphrase.PassphraseNotPresent)
         }
     }
-
-    class Input(
-        val userId: String
-    )
 
     class Output(
         val potentialPassphrase: PotentialPassphrase

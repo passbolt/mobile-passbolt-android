@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.ui
 sealed class AccountModelUi {
 
     data class AccountModel(
+        val userId: String,
         val title: String,
         val email: String?,
         val avatar: String?,

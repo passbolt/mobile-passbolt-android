@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.storage.usecase
 
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,9 +29,9 @@ import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFac
 
 class SaveSelectedAccountUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
-) : UseCase<SaveSelectedAccountUseCase.Input, Unit> {
+) : UseCase<UserIdInput, Unit> {
 
-    override fun execute(input: Input) {
+    override fun execute(input: UserIdInput) {
         val sharedPreferences =
             encryptedSharedPreferencesFactory.get("$SELECTED_ACCOUNT_ALIAS.xml")
         with(sharedPreferences.edit()) {
@@ -38,8 +39,4 @@ class SaveSelectedAccountUseCase(
             apply()
         }
     }
-
-    class Input(
-        val userId: String
-    )
 }

@@ -1,4 +1,12 @@
-package com.passbolt.mobile.android.entity.account
+package com.passbolt.mobile.android.storage.usecase
+
+import android.content.Context
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
+import com.passbolt.mobile.android.storage.paths.PassphraseFileName
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import timber.log.Timber
+import java.io.File
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,11 +30,18 @@ package com.passbolt.mobile.android.entity.account
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountEntity(
-    val userId: String,
-    val firstName: String?,
-    val lastName: String?,
-    val email: String?,
-    val avatarUrl: String?,
-    val url: String
-)
+class RemovePassphraseUseCase(
+    private val appContext: Context
+) : UseCase<UserIdInput, Unit> {
+
+    override fun execute(input: UserIdInput) {
+        val passphraseFile = File(
+            EncryptedFileBaseDirectory(appContext).baseDirectory,
+            PassphraseFileName(input.userId).name
+        )
+        if (passphraseFile.exists()) {
+            val deleted = passphraseFile.delete()
+            Timber.e("Deleted passphrase file: $deleted")
+        }
+    }
+}

@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature
 
 import com.passbolt.mobile.android.feature.login.accountslist.accountsListModule
 import com.passbolt.mobile.android.feature.login.login.loginScreenModule
-import com.passbolt.mobile.android.feature.login.loginModule
+import com.passbolt.mobile.android.feature.login.loginMainModule
 import org.koin.dsl.module
 
 /**
@@ -29,6 +29,6 @@ import org.koin.dsl.module
  */
 val loginModule = module {
     accountsListModule()
-    loginModule()
+    loginMainModule()
     loginScreenModule()
 }

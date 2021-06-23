@@ -18,7 +18,7 @@ import com.passbolt.mobile.android.feature.setup.setupModule
 import com.passbolt.mobile.android.feature.startup.di.startUpModule
 import com.passbolt.mobile.android.gopenpgp.di.openPgpModule
 import com.passbolt.mobile.android.service.registration.di.passboltApiModule
-import com.passbolt.mobile.android.storage.di.storageModule
+import com.passbolt.mobile.android.storage.storageModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

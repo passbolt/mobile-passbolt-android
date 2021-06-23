@@ -3,13 +3,13 @@ package com.passbolt.mobile.android.feature.login
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 import timber.log.Timber
 
-class LoginPresenter(
+class LoginMainPresenter(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : LoginContract.Presenter {
+) : LoginMainContract.Presenter {
 
-    override var view: LoginContract.View? = null
+    override var view: LoginMainContract.View? = null
 
-    override fun attach(view: LoginContract.View) {
+    override fun attach(view: LoginMainContract.View) {
         super.attach(view)
         runCatching {
             getSelectedAccountUseCase.execute(Unit).selectedAccount

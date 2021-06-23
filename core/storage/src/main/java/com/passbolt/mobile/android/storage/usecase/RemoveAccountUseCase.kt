@@ -1,6 +1,8 @@
-package com.passbolt.mobile.android.feature.login
+package com.passbolt.mobile.android.storage.usecase
 
-import org.koin.core.module.Module
+import android.content.SharedPreferences
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,10 +27,19 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.loginModule() {
-    scope<LoginActivity> {
-        scoped<LoginContract.Presenter> {
-            LoginPresenter(getSelectedAccountUseCase = get())
+class RemoveAccountUseCase(
+    private val sharedPreferences: SharedPreferences
+) : UseCase<UserIdInput, Unit> {
+
+    override fun execute(input: UserIdInput) {
+        with(sharedPreferences.edit()) {
+            val modifiedAccountsSet = sharedPreferences
+                .getStringSet(ACCOUNTS_ALIAS, emptySet()).orEmpty()
+                .toMutableSet()
+                .apply { remove(input.userId) }
+
+            putStringSet(ACCOUNTS_ALIAS, modifiedAccountsSet)
+            apply()
         }
     }
 }

@@ -1,6 +1,4 @@
-package com.passbolt.mobile.android.feature.login
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
+package com.passbolt.mobile.android.service.logout
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,10 +22,9 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface LoginContract {
-    interface View : BaseContract.View {
-        fun navigateToAccountLogin(userId: String)
-    }
+class LogoutRepository {
 
-    interface Presenter : BaseContract.Presenter<View>
+    fun logout() {
+        // TODO
+    }
 }

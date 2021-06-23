@@ -61,6 +61,11 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
         presenter.attach(this)
     }
 
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
     private fun setListeners() {
         with(binding) {
             removeAccountLabel.setDebouncingOnClick { presenter.removeAnAccountClick() }
@@ -122,7 +127,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.accounts_list_remove_account_title)
             .setMessage(R.string.accounts_list_remove_account_message)
-            .setPositiveButton(R.string.accounts_list_remove) { _, _ ->
+            .setPositiveButton(R.string.accounts_list_remove_account) { _, _ ->
                 presenter.confirmRemoveAccountClick(model)
             }
             .setNegativeButton(R.string.cancel) { _, _ -> }

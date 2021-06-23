@@ -6,7 +6,7 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
-import com.passbolt.mobile.android.storage.usecase.AddAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
@@ -42,7 +42,7 @@ internal val selectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
 internal val userIdProvider = mock<UserIdProvider>()
 internal val savePrivateKeyUseCase = mock<SavePrivateKeyUseCase>()
 internal val updateAccountDataUseCase = mock<UpdateAccountDataUseCase>()
-internal val addAccountUseCase = mock<AddAccountUseCase>()
+internal val addAccountUseCase = mock<SaveAccountUseCase>()
 internal val qrParser = mock<ScanQrParser>()
 
 val testScanQrModule = module {
@@ -76,7 +76,7 @@ val testScanQrModule = module {
             userIdProvider = get(),
             savePrivateKeyUseCase = get(),
             updateAccountDataUseCase = get(),
-            addAccountUseCase = get()
+            saveAccountUseCase = get()
         )
     }
 }
