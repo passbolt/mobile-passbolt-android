@@ -34,11 +34,13 @@ interface SummaryContract {
         fun setButtonLabel(@StringRes text: Int)
         fun setIcon(@DrawableRes icon: Int)
         fun navigateBack()
-        fun navigateToEnterPassphrase()
+        fun navigateToAuth()
+        fun navigateToFingerprintSetup()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun start(status: ResultStatus)
         fun buttonClick()
+        fun authenticationSucceeded()
     }
 }

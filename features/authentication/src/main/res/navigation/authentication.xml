@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/accountsListFragment">
+
+    <fragment
+        android:id="@+id/accountsListFragment"
+        android:name="com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment"
+        android:label="AccountsListFragment"
+        tools:layout="@layout/fragment_accounts_list">
+        <action
+            android:id="@+id/action_accountsListFragment_to_authFragment"
+            app:destination="@id/authFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/authFragment"
+        android:name="com.passbolt.mobile.android.feature.authentication.auth.AuthFragment"
+        android:label="AuthFragment"
+        tools:layout="@layout/fragment_auth">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+        <argument
+            android:name="authenticationStrategy"
+            app:argType="com.passbolt.mobile.android.feature.authentication.AuthenticationType" />
+    </fragment>
+</navigation>

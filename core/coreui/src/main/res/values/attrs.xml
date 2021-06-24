@@ -16,4 +16,8 @@
         <attr name="resultIcon"
             format="reference" />
     </declare-styleable>
+    <declare-styleable name="TitleToolbar">
+        <attr name="toolbarTitle"
+            format="string" />
+    </declare-styleable>
 </resources>

@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.service.auth
 
-import com.passbolt.mobile.android.dto.request.LoginRequestDto
+import com.passbolt.mobile.android.dto.request.SignInRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.LoginResponseDto
+import com.passbolt.mobile.android.dto.response.SignInResponseDto
 import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
 import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
 
@@ -31,5 +31,5 @@ import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
 interface AuthDataSource {
     suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto>
     suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto>
-    suspend fun login(loginRequestDto: LoginRequestDto): BaseResponse<LoginResponseDto>
+    suspend fun signIn(signInRequestDto: SignInRequestDto): BaseResponse<SignInResponseDto>
 }

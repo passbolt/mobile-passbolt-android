@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.setup
 
 import android.content.Context
 import androidx.biometric.BiometricManager
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.di.enterPassphraseModule
 import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintInformationProvider
 import com.passbolt.mobile.android.feature.setup.fingerprint.di.fingerprintModule
 import com.passbolt.mobile.android.feature.setup.scanqr.di.scanQrModule
@@ -39,7 +38,6 @@ val setupModule = module {
     scanQrModule()
     summaryModule()
     transferDetailsModule()
-    enterPassphraseModule()
     fingerprintModule()
     single {
         FingerprintInformationProvider(

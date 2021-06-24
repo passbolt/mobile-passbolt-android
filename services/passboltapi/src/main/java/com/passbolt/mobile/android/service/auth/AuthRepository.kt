@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.service.auth
 
 import com.passbolt.mobile.android.core.networking.ResponseHandler
 import com.passbolt.mobile.android.core.networking.callWithHandler
-import com.passbolt.mobile.android.dto.request.LoginRequestDto
+import com.passbolt.mobile.android.dto.request.SignInRequestDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,7 +38,7 @@ class AuthRepository(
         authDataSource.getServerPublicRsaKey()
     }
 
-    suspend fun login(loginRequestDto: LoginRequestDto) = callWithHandler(responseHandler) {
-        authDataSource.login(loginRequestDto)
+    suspend fun signIn(signInRequestDto: SignInRequestDto) = callWithHandler(responseHandler) {
+        authDataSource.signIn(signInRequestDto)
     }
 }

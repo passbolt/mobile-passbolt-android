@@ -85,7 +85,7 @@ dependencies {
     implementation project(':qrscan')
     implementation project(':gopenpgp')
     implementation project(':autofill')
-    implementation project(':login')
+    implementation project(':authentication')
     implementation project(':main')
     implementation project(':home')
     implementation project(':settings')

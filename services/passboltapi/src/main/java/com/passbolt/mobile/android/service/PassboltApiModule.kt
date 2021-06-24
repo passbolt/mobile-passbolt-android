@@ -40,7 +40,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 val passboltApiModule = module {
     single { provideRestService(get()) }
     single { getRegistrationApi(get()) }
-    single { getLoginApi(get()) }
+    single { getAuthApi(get()) }
 
     single<RegistrationDataSource> {
         RegistrationRemoteDataSource(
@@ -79,5 +79,5 @@ private fun provideRestService(okHttpClient: OkHttpClient): RestService {
 private fun getRegistrationApi(restService: RestService): RegistrationApi =
     restService.service(RegistrationApi::class.java)
 
-private fun getLoginApi(restService: RestService): AuthApi =
+private fun getAuthApi(restService: RestService): AuthApi =
     restService.service(AuthApi::class.java)

@@ -11,7 +11,7 @@ import com.passbolt.mobile.android.di.appModule
 import com.passbolt.mobile.android.feature.autofill.autofillModule
 import com.passbolt.mobile.android.feature.folders.foldersModule
 import com.passbolt.mobile.android.feature.home.homeModule
-import com.passbolt.mobile.android.feature.loginModule
+import com.passbolt.mobile.android.feature.authenticationModule
 import com.passbolt.mobile.android.feature.main.mainModule
 import com.passbolt.mobile.android.feature.settings.settingsModule
 import com.passbolt.mobile.android.feature.setup.setupModule
@@ -85,7 +85,7 @@ class PassboltApplication : Application(), KoinComponent {
                 storageModule,
                 passboltApiModule,
                 autofillModule,
-                loginModule,
+                authenticationModule,
                 mainModule,
                 homeModule,
                 foldersModule,

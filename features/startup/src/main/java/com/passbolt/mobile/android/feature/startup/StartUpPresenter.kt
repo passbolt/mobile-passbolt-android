@@ -41,10 +41,10 @@ class StartUpPresenter(
         super.attach(view)
         scope.launch {
             val accounts = getAccountsUseCase.execute(Unit).users
-            when {
-                accounts.isEmpty() -> view.navigateToSetup()
-                accounts.size == 1 -> view.navigateToLogin()
-                else -> view.navigateToAccountsList()
+            if (accounts.isEmpty()) {
+                view.navigateToSetup()
+            } else {
+                view.navigateToSignIn()
             }
         }
     }

@@ -40,7 +40,11 @@
         tools:layout="@layout/fragment_scan_qr">
         <action
             android:id="@+id/action_scanQrFragment_to_summaryFragment"
-            app:destination="@id/summaryFragment" />
+            app:destination="@id/summaryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -50,20 +54,20 @@
         tools:layout="@layout/fragment_summary">
         <argument
             android:name="status"
-            app:argType="com.passbolt.mobile.android.feature.setup.summary.ResultStatus" />
+            app:argType="com.passbolt.mobile.android.feature.setup.summary.ResultStatus"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_summaryFragment_to_enterPassphraseFragment"
-            app:destination="@id/enterPassphraseFragment" />
+            android:id="@+id/action_summaryFragment_to_fingerprintFragment"
+            app:destination="@id/fingerprintFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
-    <fragment
-        android:id="@+id/enterPassphraseFragment"
-        android:name="com.passbolt.mobile.android.feature.setup.enterpassphrase.EnterPassphraseFragment"
-        android:label="EnterPassphraseFragment"
-        tools:layout="@layout/fragment_enter_passphrase">
-        <action
-            android:id="@+id/action_enterPassphraseFragment_to_fingerprintFragment"
-            app:destination="@id/fingerprintFragment" />
-    </fragment>
+
 
     <fragment
         android:id="@+id/fingerprintFragment"

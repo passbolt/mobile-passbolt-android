@@ -27,8 +27,7 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
 class StartUpContract {
     interface View : BaseContract.View {
         fun navigateToSetup()
-        fun navigateToLogin()
-        fun navigateToAccountsList()
+        fun navigateToSignIn()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

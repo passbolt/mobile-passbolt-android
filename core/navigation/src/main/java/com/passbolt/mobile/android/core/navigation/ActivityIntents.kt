@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.core.navigation
 
 import android.content.Context
 import android.content.Intent
-import com.gaelmarhic.quadrant.Login
+import com.gaelmarhic.quadrant.Authentication
 import com.gaelmarhic.quadrant.Main
 import com.gaelmarhic.quadrant.Setup
 
@@ -30,12 +30,16 @@ import com.gaelmarhic.quadrant.Setup
  */
 object ActivityIntents {
 
+    const val EXTRA_AUTH_STRATEGY_TYPE = "AUTH_STRATEGY_TYPE"
+
     fun setup(context: Context) = Intent().apply {
         setClassName(context, Setup.SET_UP_ACTIVITY)
     }
 
-    fun login(context: Context) = Intent().apply {
-        setClassName(context, Login.LOGIN_ACTIVITY)
+    // an integer which is an ordinal od AuthenticationType enum
+    fun authentication(context: Context, authenticationTypeOrdinal: Int) = Intent().apply {
+        setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
+        putExtra(EXTRA_AUTH_STRATEGY_TYPE, authenticationTypeOrdinal)
     }
 
     fun home(context: Context) = Intent().apply {

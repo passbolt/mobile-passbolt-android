@@ -1,17 +1,18 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import androidx.appcompat.app.AlertDialog
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.feature.authentication.AuthenticationType
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
 import com.passbolt.mobile.android.feature.autofill.encourage.EncourageAutofillDialog
 import com.passbolt.mobile.android.feature.setup.R
@@ -48,6 +49,11 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
     private val presenter: FingerprintContract.Presenter by inject()
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
     private val executor: Executor by inject()
+    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            presenter.authenticationSucceeded()
+        }
+    }
 
     override fun onStart() {
         super.onStart()
@@ -108,12 +114,8 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         )
     }
 
-    override fun navigateToEnterPassphrase() {
-        findNavController().popBackStack()
-    }
-
-    override fun navigateToLogin() {
-        startActivity(ActivityIntents.login(requireContext()))
+    override fun navigateToSignIn() {
+        startActivity(ActivityIntents.authentication(requireContext(), AuthenticationType.SIGN_IN.ordinal))
         requireActivity().finish()
     }
 
@@ -134,14 +136,6 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         biometricPrompt.authenticate(promptInfo)
     }
 
-    override fun showPasswordCacheExpiredDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.fingerprint_setup_password_cache_expired_title)
-            .setMessage(R.string.fingerprint_setup_password_cache_expired_message)
-            .setPositiveButton(R.string.ok) { _, _ -> presenter.cacheExpiredDialogConfirmed() }
-            .show()
-    }
-
     override fun showAuthenticationError(errorMessage: Int) {
         Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG)
             .show()
@@ -157,5 +151,14 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
 
     override fun goToAppClick() {
         presenter.goToTheAppClick()
+    }
+
+    override fun startAuthActivity() {
+        authenticationResult.launch(
+            ActivityIntents.authentication(
+                requireContext(),
+                AuthenticationType.PASSPHRASE.ordinal
+            )
+        )
     }
 }
