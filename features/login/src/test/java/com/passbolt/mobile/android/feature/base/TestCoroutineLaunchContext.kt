@@ -1,9 +1,7 @@
-package com.passbolt.mobile.android.feature.setup.di
+package com.passbolt.mobile.android.storage.base
 
-import com.google.gson.Gson
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.setup.base.TestCoroutineLaunchContext
-import org.koin.dsl.module
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,7 +26,9 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val testModule = module {
-    factory { Gson() }
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+//TODO refactor to test module and remove duplicates - PAS-145
+class TestCoroutineLaunchContext : CoroutineLaunchContext {
+    override val ui = TestCoroutineDispatcher()
+    override val default = TestCoroutineDispatcher()
+    override val io = TestCoroutineDispatcher()
 }

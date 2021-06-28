@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.feature.setup.scanqr.parser
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
-import com.passbolt.mobile.android.feature.setup.base.testModule
+import com.passbolt.mobile.android.feature.setup.di.testModule
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import kotlinx.coroutines.ExperimentalCoroutinesApi

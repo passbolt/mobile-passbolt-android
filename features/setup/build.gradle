@@ -41,9 +41,6 @@ dependencies {
 
     implementation libs.coil.core
     implementation libs.coil.base
-
-    testImplementation libs.di.koinTest
-    testImplementation libs.di.koinTestJUnit
 }
 
 android {

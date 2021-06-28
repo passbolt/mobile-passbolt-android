@@ -1,8 +1,13 @@
-package com.passbolt.mobile.android.feature.setup.di
+package com.passbolt.mobile.android.feature.login.accountslist
 
-import com.google.gson.Gson
+import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.setup.base.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.mappers.AccountModelMapper
+import com.passbolt.mobile.android.service.logout.LogoutRepository
+import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
+import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.RemoveAllAccountDataUseCase
 import org.koin.dsl.module
 
 /**
@@ -28,7 +33,22 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val testModule = module {
-    factory { Gson() }
+internal val mockGetAllAccountsDataUseCase = mock<GetAllAccountsDataUseCase>()
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
+internal val mockRemoveAllAccountsDataUseCase = mock<RemoveAllAccountDataUseCase>()
+internal val mockLogoutRepository = mock<LogoutRepository>()
+
+val testAccountListModule = module {
+    factory<AccountsListContract.Presenter> {
+        AccountsListPresenter(
+            getAllAccountsDataUseCase = mockGetAllAccountsDataUseCase,
+            getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
+            accountModelMapper = get(),
+            removeAllAccountDataUseCase = mockRemoveAllAccountsDataUseCase,
+            logoutRepository = mockLogoutRepository,
+            coroutineLaunchContext = get()
+        )
+    }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+    factory { AccountModelMapper() }
 }
