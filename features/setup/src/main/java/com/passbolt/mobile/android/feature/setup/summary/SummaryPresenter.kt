@@ -49,7 +49,11 @@ class SummaryPresenter : SummaryContract.Presenter {
                 // TODO
             }
             is ResultStatus.Failure -> view?.navigateBack()
-            is ResultStatus.Success -> view?.navigateToEnterPassphrase()
+            is ResultStatus.Success -> view?.navigateToAuth()
         }
+    }
+
+    override fun authenticationSucceeded() {
+        view?.navigateToFingerprintSetup()
     }
 }

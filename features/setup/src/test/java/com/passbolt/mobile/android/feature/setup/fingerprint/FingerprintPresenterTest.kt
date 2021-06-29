@@ -91,7 +91,7 @@ class FingerprintPresenterTest : KoinTest {
     }
 
     @Test
-    fun `when biometrics auth is a success and cache passphrase expired should show info dialog`() {
+    fun `when biometrics auth is a success and cache passphrase expired should authenticate`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
         whenever(passphraseRepository.getPotentialPassphrase()).thenReturn(
             PotentialPassphrase.PassphraseNotPresent
@@ -99,20 +99,7 @@ class FingerprintPresenterTest : KoinTest {
 
         presenter.authenticationSucceeded()
 
-        verify(view).showPasswordCacheExpiredDialog()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `when cache expired info dialog is acknowledged should navigate to enter passphrase screen`() {
-        whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
-        whenever(passphraseRepository.getPotentialPassphrase()).thenReturn(
-            PotentialPassphrase.PassphraseNotPresent
-        )
-
-        presenter.cacheExpiredDialogConfirmed()
-
-        verify(view).navigateToEnterPassphrase()
+        verify(view).startAuthActivity()
         verifyNoMoreInteractions(view)
     }
 

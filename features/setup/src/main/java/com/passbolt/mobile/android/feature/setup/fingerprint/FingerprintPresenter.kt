@@ -70,14 +70,10 @@ class FingerprintPresenter(
                 }
             }
             is PotentialPassphrase.PassphraseNotPresent -> {
-                // user stayed too long and passphrase cache expired - show info dialog
-                view?.showPasswordCacheExpiredDialog()
+                // user stayed too long and passphrase cache expired - authenticate
+                view?.startAuthActivity()
             }
         }
-    }
-
-    override fun cacheExpiredDialogConfirmed() {
-        view?.navigateToEnterPassphrase()
     }
 
     override fun authenticationError(errorMessage: Int) {
@@ -85,11 +81,11 @@ class FingerprintPresenter(
     }
 
     override fun setupAutofillLaterClick() {
-        view?.navigateToLogin()
+        view?.navigateToSignIn()
     }
 
     override fun goToTheAppClick() {
-        view?.navigateToLogin()
+        view?.navigateToSignIn()
     }
 
     override fun autofillSetupSuccessfully() {

@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.service.auth.data
 
-import com.passbolt.mobile.android.dto.request.LoginRequestDto
+import com.passbolt.mobile.android.dto.request.SignInRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.LoginResponseDto
+import com.passbolt.mobile.android.dto.response.SignInResponseDto
 import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
 import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
 import retrofit2.http.Body
@@ -38,12 +38,12 @@ internal interface AuthApi {
     @GET(AUTH_RSA)
     suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto>
 
-    @POST(AUTH_LOGIN)
-    suspend fun login(@Body loginRequestDto: LoginRequestDto): BaseResponse<LoginResponseDto>
+    @POST(AUTH_SIGN_IN)
+    suspend fun signIn(@Body signInRequestDto: SignInRequestDto): BaseResponse<SignInResponseDto>
 
     private companion object {
         private const val AUTH_VERIFY = "/auth/verify.json"
         private const val AUTH_RSA = "/auth/jwt/rsa.json"
-        private const val AUTH_LOGIN = "/auth/jwt/login.json"
+        private const val AUTH_SIGN_IN = "/auth/jwt/login.json"
     }
 }

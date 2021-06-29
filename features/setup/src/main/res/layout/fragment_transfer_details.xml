@@ -10,23 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/white"
             android:theme="@style/Theme.Passbolt.Toolbar"
             app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/Theme.Passbolt.PopupOverlay">
-
-            <TextView
-                style="@style/ToolbarTitleText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/transfer_details_title" />
-
-        </androidx.appcompat.widget.Toolbar>
+            app:popupTheme="@style/Theme.Passbolt.PopupOverlay"
+            app:toolbarTitle="@string/transfer_details_title" />
 
         <TextView
             android:id="@+id/header"

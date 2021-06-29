@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:toolbarTitle="Sign in" />
+
+        <ImageView
+            android:id="@+id/avatarImage"
+            android:layout_width="@dimen/dp_56"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginTop="@dimen/dp_88"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            tools:src="@drawable/ic_logo" />
+
+        <TextView
+            android:id="@+id/nameLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/avatarImage"
+            tools:text="Passbolt" />
+
+        <TextView
+            android:id="@+id/emailLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nameLabel"
+            tools:text="passbolt@passbolt.com" />
+
+        <com.passbolt.mobile.android.core.ui.textinputfield.PasswordInputView
+            android:id="@+id/passphraseInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_40"
+            app:inputTitle="@string/auth_password_title"
+            app:layout_constraintBottom_toTopOf="@id/authButton"
+            app:layout_constraintTop_toBottomOf="@id/emailLabel"
+            app:layout_constraintVertical_bias="0"
+            app:layout_goneMarginTop="@dimen/dp_32" />
+
+        <Button
+            android:id="@+id/authButton"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:layout_marginBottom="@dimen/dp_16"
+            android:text="@string/auth_sign_in"
+            app:layout_constraintBottom_toTopOf="@id/forgotPasswordButton" />
+
+        <TextView
+            android:id="@+id/forgotPasswordButton"
+            style="@style/ButtonSmallText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:layout_marginVertical="@dimen/dp_8"
+            android:background="?selectableItemBackground"
+            android:gravity="center_horizontal"
+            android:padding="@dimen/dp_16"
+            android:text="@string/auth_forgot_password_button"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <include
+            android:id="@+id/progress"
+            layout="@layout/view_progress" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

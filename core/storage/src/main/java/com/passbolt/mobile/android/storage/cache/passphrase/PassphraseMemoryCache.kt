@@ -72,7 +72,7 @@ class PassphraseMemoryCache(
             lifecycleOwner.lifecycle.addObserver(this@PassphraseMemoryCache)
         }
         timerScope.launch {
-            timerFlow.collect { Timber.d("Timer $it/$TIMER_REPEAT_TIMES interval passed") }
+            timerFlow.collect { Timber.d("Timer $it/${TIMER_REPEAT_TIMES - 1} interval passed") }
             clear()
         }
     }

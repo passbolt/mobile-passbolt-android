@@ -19,6 +19,7 @@ dependencies {
     implementation project(':storage')
     implementation project(':gopenpgp')
     implementation project(':autofill')
+    implementation project(':authentication')
 
     //TODO
     implementation project(':autofill')

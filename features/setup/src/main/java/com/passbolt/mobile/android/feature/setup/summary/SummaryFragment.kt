@@ -1,10 +1,14 @@
 package com.passbolt.mobile.android.feature.setup.summary
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.feature.authentication.AuthenticationType
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentSummaryBinding
 import org.koin.android.ext.android.inject
 
@@ -36,6 +40,11 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
 
     private val presenter: SummaryContract.Presenter by inject()
     private val args: SummaryFragmentArgs by navArgs()
+    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            presenter.authenticationSucceeded()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,9 +82,18 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
         findNavController().popBackStack()
     }
 
-    override fun navigateToEnterPassphrase() {
+    override fun navigateToAuth() {
+        authenticationResult.launch(
+            ActivityIntents.authentication(
+                requireContext(),
+                AuthenticationType.PASSPHRASE.ordinal
+            )
+        )
+    }
+
+    override fun navigateToFingerprintSetup() {
         findNavController().navigate(
-            SummaryFragmentDirections.actionSummaryFragmentToEnterPassphraseFragment()
+            SummaryFragmentDirections.actionSummaryFragmentToFingerprintFragment()
         )
     }
 }
