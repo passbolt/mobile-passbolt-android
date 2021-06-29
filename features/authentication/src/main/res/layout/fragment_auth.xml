@@ -83,9 +83,5 @@
             android:text="@string/auth_forgot_password_button"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <include
-            android:id="@+id/progress"
-            layout="@layout/view_progress" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

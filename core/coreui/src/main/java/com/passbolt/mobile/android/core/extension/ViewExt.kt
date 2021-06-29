@@ -1,6 +1,8 @@
-package com.passbolt.mobile.android.feature.authentication.auth
+package com.passbolt.mobile.android.core.extension
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import android.content.Context
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,31 +26,10 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface AuthContract {
 
-    interface View : BaseContract.View {
-        fun showWrongPassphrase()
-        fun showError(message: String)
-        fun navigateBack()
-        fun showGenericError()
-        fun showProgress()
-        fun hideProgress()
-        fun showName(name: String)
-        fun showEmail(email: String)
-        fun showAvatar(url: String)
-        fun showForgotPasswordDialog()
-        fun showTitle()
-        fun disableAuthButton()
-        fun enableAuthButton()
-        fun authSuccess()
-        fun hideKeyboard()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun signInClick(passphrase: CharArray?)
-        fun backClick()
-        fun argsRetrieved(userId: String)
-        fun forgotPasswordClick()
-        fun passphraseInputIsEmpty(isEmpty: Boolean)
+fun View?.hideKeyboard() {
+    this?.let {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 }

@@ -1,7 +1,16 @@
-package com.passbolt.mobile.android.core.extension
+package com.passbolt.mobile.android.core.ui.progressdialog
 
 import android.content.Context
-import android.util.TypedValue
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
+import com.passbolt.mobile.android.core.ui.databinding.DialogProgressBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,8 +34,25 @@ import android.util.TypedValue
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class ProgressDialog : DialogFragment(), LifecycleObserver {
 
-fun Context.selectableBackgroundBorderlessResourceId() =
-    TypedValue().apply {
-        theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, this, true)
-    }.resourceId
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        DialogProgressBinding.inflate(inflater).root
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        isCancelable = false
+        observeParentVisibility()
+    }
+
+    private fun observeParentVisibility() {
+        (parentFragment as LifecycleOwner).lifecycle.addObserver(this)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    private fun parentStopped() {
+        (parentFragment as LifecycleOwner).lifecycle.removeObserver(this)
+        // hide dialog to prevent leaked widows after navigating back or parent recreation
+        dismiss()
+    }
+}
