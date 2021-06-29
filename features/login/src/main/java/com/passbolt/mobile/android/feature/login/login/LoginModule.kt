@@ -64,7 +64,9 @@ fun Module.loginScreenModule() {
             ChallengeProvider(
                 gson = get(),
                 openPgp = get(),
-                privateKeyUseCase = get()
+                privateKeyUseCase = get(),
+                timeProvider = get(),
+                uuidProvider = get()
             )
         }
         scoped {

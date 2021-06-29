@@ -29,8 +29,8 @@ class LoginResponseDto(
 )
 
 class ChallengeResponseDto(
-    version: String,
-    domain: String,
+    val version: String,
+    val domain: String,
     @SerializedName("verify_token")
     val verifyToken: String,
     @SerializedName("access_token")

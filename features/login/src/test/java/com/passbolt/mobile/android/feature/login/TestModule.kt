@@ -1,13 +1,14 @@
-package com.passbolt.mobile.android.di
+package com.passbolt.mobile.android.feature.login
 
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ProcessLifecycleOwner
-import coil.ImageLoader
-import com.google.gson.GsonBuilder
+import com.google.gson.Gson
+import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.TimeProvider
 import com.passbolt.mobile.android.common.UuidProvider
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeDecryptor
+import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeProvider
+import com.passbolt.mobile.android.feature.login.login.challenge.ChallengeVerifier
+import com.passbolt.mobile.android.gopenpgp.OpenPgp
+import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
 import org.koin.dsl.module
 
 /**
@@ -33,21 +34,34 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val appModule = module {
-    single {
-        ImageLoader.Builder(androidContext())
-            .okHttpClient(okHttpClient = get())
-            .build()
+internal val getPrivateKeyUseCase = mock<GetPrivateKeyUseCase>()
+internal val openPgp = mock<OpenPgp>()
+internal val timeProvider = mock<TimeProvider>()
+internal val uuidProvider = mock<UuidProvider>()
+
+val testModule = module {
+    factory { Gson() }
+    factory { getPrivateKeyUseCase }
+    factory { openPgp }
+    factory {
+        ChallengeDecryptor(
+            openPgp = get(),
+            getPrivateKeyUseCase = get(),
+            gson = get()
+        )
     }
     factory {
-        ContextCompat.getMainExecutor(androidContext())
+        ChallengeProvider(
+            openPgp = get(),
+            privateKeyUseCase = get(),
+            gson = get(),
+            timeProvider = get(),
+            uuidProvider = get()
+        )
     }
-    factory(named<ProcessLifecycleOwner>()) {
-        ProcessLifecycleOwner.get()
+    factory {
+        ChallengeVerifier()
     }
-    single {
-        GsonBuilder().create()
-    }
-    single { TimeProvider() }
-    single { UuidProvider() }
+    factory { timeProvider }
+    factory { uuidProvider }
 }
