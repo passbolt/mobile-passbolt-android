@@ -1,14 +1,6 @@
-package com.passbolt.mobile.android.di
+package com.passbolt.mobile.android.common
 
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ProcessLifecycleOwner
-import coil.ImageLoader
-import com.google.gson.GsonBuilder
-import com.passbolt.mobile.android.common.TimeProvider
-import com.passbolt.mobile.android.common.UuidProvider
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,22 +24,8 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class UuidProvider {
 
-internal val appModule = module {
-    single {
-        ImageLoader.Builder(androidContext())
-            .okHttpClient(okHttpClient = get())
-            .build()
-    }
-    factory {
-        ContextCompat.getMainExecutor(androidContext())
-    }
-    factory(named<ProcessLifecycleOwner>()) {
-        ProcessLifecycleOwner.get()
-    }
-    single {
-        GsonBuilder().create()
-    }
-    single { TimeProvider() }
-    single { UuidProvider() }
+    fun get(): String =
+        UUID.randomUUID().toString()
 }

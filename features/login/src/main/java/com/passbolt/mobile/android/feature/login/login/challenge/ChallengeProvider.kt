@@ -1,12 +1,12 @@
 package com.passbolt.mobile.android.feature.login.login.challenge
 
 import com.google.gson.Gson
+import com.passbolt.mobile.android.common.TimeProvider
+import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.dto.request.ChallengeDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import java.time.Instant
-import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,7 +33,9 @@ import java.util.UUID
 class ChallengeProvider(
     private val gson: Gson,
     private val openPgp: OpenPgp,
-    private val privateKeyUseCase: GetPrivateKeyUseCase
+    private val privateKeyUseCase: GetPrivateKeyUseCase,
+    private val timeProvider: TimeProvider,
+    private val uuidProvider: UuidProvider
 ) {
 
     suspend fun get(
@@ -47,7 +49,7 @@ class ChallengeProvider(
 
         val tokenExpiry = getVerifyTokenExpiry()
 
-        val challengeJson = ChallengeDto(version, domain, UUID.randomUUID().toString(), tokenExpiry)
+        val challengeJson = ChallengeDto(version, domain, uuidProvider.get(), tokenExpiry)
             .run { gson.toJson(this) }
 
         return try {
@@ -64,7 +66,7 @@ class ChallengeProvider(
     }
 
     private fun getVerifyTokenExpiry() =
-        Instant.now().epochSecond + TOKEN_VALIDATION_TIME
+        timeProvider.getCurrentEpochTime() + TOKEN_VALIDATION_TIME
 
     sealed class Output {
         class Success(
