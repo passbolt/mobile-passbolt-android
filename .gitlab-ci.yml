@@ -45,7 +45,7 @@ verification:
     - echo "Jacoco console report"
     - cat build/reports/jacoco/jacocoProjectReport/html/index.html
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "schedule"'
   artifacts:
     when: always
     expire_in: 72 hrs
