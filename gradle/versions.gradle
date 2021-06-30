@@ -58,7 +58,8 @@ ext {
         coil: "1.2.1",
         fastAdapter: "5.4.1",
         easylauncher: "4.0.0",
-        fusionauthJwt: "4.2.0"
+        fusionauthJwt: "4.2.0",
+        textDrawable: "1.0.1"
     ]
 
     libs = [
@@ -138,6 +139,7 @@ ext {
 
         ],
         easylauncher: "com.project.starter:easylauncher:${versions.easylauncher}",
-        fusionauthJwt: "io.fusionauth:fusionauth-jwt:${versions.fusionauthJwt}"
+        fusionauthJwt: "io.fusionauth:fusionauth-jwt:${versions.fusionauthJwt}",
+        textDrawable: "com.amulyakhare:com.amulyakhare.textdrawable:${versions.textDrawable}"
     ]
 }

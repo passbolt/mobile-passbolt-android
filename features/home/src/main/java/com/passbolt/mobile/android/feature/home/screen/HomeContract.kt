@@ -1,9 +1,7 @@
 package com.passbolt.mobile.android.feature.home.screen
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
-import org.koin.core.module.Module
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,17 +25,16 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface HomeContract {
 
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter()
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
+    interface View : BaseContract.View {
+        fun showPasswords(list: List<PasswordModel>)
+        fun navigateToMore()
+        fun navigateToDetails()
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun moreClick()
+        fun itemClick()
     }
 }

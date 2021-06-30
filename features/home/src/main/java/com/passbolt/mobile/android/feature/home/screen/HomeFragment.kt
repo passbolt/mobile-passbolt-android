@@ -1,7 +1,16 @@
 package com.passbolt.mobile.android.feature.home.screen
 
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
+import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
+import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
+import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordModel
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,4 +34,43 @@ import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class HomeFragment : BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate)
+class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), HomeContract.View {
+
+    private val itemAdapter: ItemAdapter<PasswordItem> by inject()
+    private val fastAdapter: FastAdapter<PasswordItem> by inject()
+    private val presenter: HomeContract.Presenter by inject()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initAdapter()
+        presenter.attach(this)
+    }
+
+    private fun initAdapter() {
+        binding.recyclerView.apply {
+            itemAnimator = null
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = fastAdapter
+        }
+        fastAdapter.addEventHooks(listOf(
+            PasswordItem.ItemClick {
+                presenter.itemClick()
+            },
+            PasswordItem.MoreClick {
+                presenter.moreClick()
+            }
+        ))
+    }
+
+    override fun showPasswords(list: List<PasswordModel>) {
+        itemAdapter.add(list.map { PasswordItem(it) })
+    }
+
+    override fun navigateToMore() {
+        Toast.makeText(requireContext(), "More clicked!", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun navigateToDetails() {
+        Toast.makeText(requireContext(), "Details clicked!", Toast.LENGTH_SHORT).show()
+    }
+}
