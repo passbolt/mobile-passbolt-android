@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.core.extension
 
+import android.app.Activity
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -30,4 +32,13 @@ import com.passbolt.mobile.android.core.ui.R
 fun Fragment.initDefaultToolbar(toolbar: Toolbar) {
     toolbar.setNavigationIcon(R.drawable.ic_back)
     toolbar.setNavigationOnClickListener { findNavController().popBackStack() }
+}
+
+fun Fragment.hideSoftInput() {
+    activity?.let { activity ->
+        val view = activity.currentFocus ?: activity.getRootView()
+        (activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).run {
+            hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
 }

@@ -7,10 +7,10 @@ import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
-import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.core.extension.hideSoftInput
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategy
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
@@ -48,6 +48,8 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     private lateinit var authStrategy: AuthStrategy
     private lateinit var presenter: AuthContract.Presenter
+
+    private var progressDialog = ProgressDialog()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -110,11 +112,11 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showProgress() {
-        binding.progress.progressContainer.visible()
+        progressDialog.show(childFragmentManager, ProgressDialog::class.java.name)
     }
 
     override fun hideProgress() {
-        binding.progress.progressContainer.gone()
+        progressDialog.dismiss()
     }
 
     override fun showName(name: String) {
@@ -148,5 +150,9 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun disableAuthButton() {
         binding.authButton.isEnabled = false
+    }
+
+    override fun hideKeyboard() {
+        hideSoftInput()
     }
 }

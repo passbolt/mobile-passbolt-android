@@ -41,6 +41,7 @@ class PassphrasePresenter(
 ) : AuthBasePresenter(getAccountDataUseCase, coroutineLaunchContext) {
 
     override fun signInClick(passphrase: CharArray?) {
+        super.signInClick(passphrase)
         passphrase?.let {
             validatePassphrase(passphrase)
         }

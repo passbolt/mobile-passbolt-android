@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.core.extension
 
+import android.app.Activity
+import android.view.View
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -29,3 +31,6 @@ import androidx.navigation.fragment.NavHostFragment
 
 fun AppCompatActivity.findNavHostFragment(@IdRes id: Int) =
     (supportFragmentManager.findFragmentById(id) as NavHostFragment)
+
+fun Activity.getRootView(): View =
+    findViewById(android.R.id.content)

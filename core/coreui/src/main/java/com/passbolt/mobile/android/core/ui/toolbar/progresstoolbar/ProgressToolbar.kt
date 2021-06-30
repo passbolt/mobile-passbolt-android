@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.updatePadding
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.extension.selectableBackgroundBorderlessResourceId
+import com.passbolt.mobile.android.core.extension.selectableBackgroundBorderlessResourceId
 
 /**
  * Passbolt - Open source password manager for teams

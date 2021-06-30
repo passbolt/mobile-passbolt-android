@@ -49,6 +49,7 @@ class SignInPresenter(
 ) : AuthBasePresenter(getAccountDataUseCase, coroutineLaunchContext) {
 
     override fun signInClick(passphrase: CharArray?) {
+        super.signInClick(passphrase)
         view?.showProgress()
         scope.launch {
             val pgpKey = async { getServerPublicPgpKeyUseCase.execute(Unit) }

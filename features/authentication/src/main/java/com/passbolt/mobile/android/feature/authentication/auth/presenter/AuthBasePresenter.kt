@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import androidx.annotation.CallSuper
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
@@ -79,5 +80,10 @@ abstract class AuthBasePresenter(
 
     override fun backClick() {
         view?.navigateBack()
+    }
+
+    @CallSuper
+    override fun signInClick(passphrase: CharArray?) {
+        view?.hideKeyboard()
     }
 }
