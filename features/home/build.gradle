@@ -9,12 +9,21 @@ dependencies {
     implementation project(':ui')
     implementation project(':navigation')
     implementation project(':coreui')
+    implementation project(':common')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
 
     implementation libs.di.koin
     implementation libs.di.koinExt
+
+    implementation libs.fastAdapter.core
+    implementation libs.fastAdapter.binding
+
+    implementation libs.textDrawable
+
+    implementation libs.coil.core
+    implementation libs.coil.base
 }
 
 android {

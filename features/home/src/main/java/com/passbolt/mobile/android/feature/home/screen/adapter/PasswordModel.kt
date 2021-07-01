@@ -1,9 +1,4 @@
-package com.passbolt.mobile.android.feature.home.screen
-
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
-import org.koin.core.module.Module
+package com.passbolt.mobile.android.feature.home.screen.adapter
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,17 +22,9 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter()
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
-    }
-}
+class PasswordModel(
+    val title: String,
+    val subtitle: String,
+    val icon: String?,
+    val initials: String
+)

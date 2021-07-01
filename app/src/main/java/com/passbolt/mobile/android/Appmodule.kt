@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ProcessLifecycleOwner
 import coil.ImageLoader
 import com.google.gson.GsonBuilder
+import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.TimeProvider
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.core.networking.COIL_HTTP_CLIENT
@@ -60,6 +61,7 @@ internal val appModule = module {
             androidContext()
         )
     }
+    single { InitialsProvider() }
 }
 
 private fun provideImageLoader(okHttpClient: OkHttpClient, context: Context) {
