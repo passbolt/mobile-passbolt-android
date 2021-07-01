@@ -23,10 +23,10 @@
             android:layout_width="@dimen/dp_56"
             android:layout_height="@dimen/dp_56"
             android:layout_marginTop="@dimen/dp_88"
+            android:src="@drawable/ic_avatar_placeholder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            tools:src="@drawable/ic_logo" />
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
         <TextView
             android:id="@+id/nameLabel"

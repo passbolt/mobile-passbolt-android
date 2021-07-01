@@ -1,11 +1,15 @@
-package com.passbolt.mobile.android.di
+package com.passbolt.mobile.android
 
+import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ProcessLifecycleOwner
 import coil.ImageLoader
 import com.google.gson.GsonBuilder
 import com.passbolt.mobile.android.common.TimeProvider
 import com.passbolt.mobile.android.common.UuidProvider
+import com.passbolt.mobile.android.core.networking.COIL_HTTP_CLIENT
+import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
+import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -36,7 +40,7 @@ import org.koin.dsl.module
 internal val appModule = module {
     single {
         ImageLoader.Builder(androidContext())
-            .okHttpClient(okHttpClient = get())
+            .okHttpClient(okHttpClient = get(named(DEFAULT_HTTP_CLIENT)))
             .build()
     }
     factory {
@@ -50,4 +54,16 @@ internal val appModule = module {
     }
     single { TimeProvider() }
     single { UuidProvider() }
+    single {
+        provideImageLoader(
+            okHttpClient = get(named(COIL_HTTP_CLIENT)),
+            androidContext()
+        )
+    }
+}
+
+private fun provideImageLoader(okHttpClient: OkHttpClient, context: Context) {
+    ImageLoader.Builder(context)
+        .okHttpClient(okHttpClient)
+        .build()
 }

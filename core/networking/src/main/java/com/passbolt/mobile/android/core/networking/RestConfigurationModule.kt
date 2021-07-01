@@ -1,13 +1,14 @@
-package com.passbolt.mobile.android.core.networking.di
+package com.passbolt.mobile.android.core.networking
 
-import com.passbolt.mobile.android.core.networking.ResponseHandler
-import com.passbolt.mobile.android.core.networking.RetrofitRestService
+import coil.util.CoilUtils
 import com.passbolt.mobile.android.common.userid.UserIdProvider
-import com.passbolt.mobile.android.core.networking.ErrorHeaderMapper
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
 import com.passbolt.mobile.android.core.networking.usecase.GetBaseUrlUseCase
+import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -34,10 +35,17 @@ import org.koin.dsl.module
  */
 val networkingModule = module {
     single { provideLoggingInterceptor() }
-    single {
+    single(named(DEFAULT_HTTP_CLIENT)) {
         provideHttpClient(
             loggingInterceptor = get(),
             changeableBaseUrlInterceptor = get()
+        )
+    }
+    single(named(COIL_HTTP_CLIENT)) {
+        provideCoilHttpClient(
+            loggingInterceptor = get(),
+            changeableBaseUrlInterceptor = get(),
+            cache = get()
         )
     }
     single { ChangeableBaseUrlInterceptor(getBaseUrlUseCase = get()) }
@@ -65,6 +73,7 @@ val networkingModule = module {
             context = get()
         )
     }
+    single { CoilUtils.createDefaultCache(androidContext()) }
 }
 
 private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
@@ -82,3 +91,20 @@ private fun provideHttpClient(
     builder.hostnameVerifier { _, _ -> true }
     return builder.build()
 }
+
+private fun provideCoilHttpClient(
+    loggingInterceptor: HttpLoggingInterceptor,
+    changeableBaseUrlInterceptor: ChangeableBaseUrlInterceptor,
+    cache: Cache
+): OkHttpClient {
+    val builder = OkHttpClient.Builder()
+    builder.addNetworkInterceptor(loggingInterceptor)
+    builder.addInterceptor(changeableBaseUrlInterceptor)
+    // TODO remove in production version - PAS-105
+    builder.hostnameVerifier { _, _ -> true }
+    builder.cache(cache)
+    return builder.build()
+}
+
+const val DEFAULT_HTTP_CLIENT = "DEFAULT_HTTP_CLIENT"
+const val COIL_HTTP_CLIENT = "COIL_HTTP_CLIENT"

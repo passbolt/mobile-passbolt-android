@@ -59,7 +59,7 @@ abstract class AuthBasePresenter(
     private fun getAccountData() {
         scope.launch {
             val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
-            // TODO load cached avatar
+
             view?.showName("${accountData.firstName.orEmpty()} ${accountData.lastName.orEmpty()}")
             accountData.email?.let { view?.showEmail(it) }
             accountData.avatarUrl?.let { view?.showAvatar(it) }
