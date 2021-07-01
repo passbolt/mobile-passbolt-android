@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.service.registration.di
+package com.passbolt.mobile.android.service
 
 import com.passbolt.mobile.android.core.networking.RestService
 import com.passbolt.mobile.android.core.networking.RetrofitRestService
+import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import com.passbolt.mobile.android.service.auth.AuthDataSource
 import com.passbolt.mobile.android.service.auth.AuthRepository
 import com.passbolt.mobile.android.service.auth.data.AuthApi
@@ -12,6 +13,7 @@ import com.passbolt.mobile.android.service.registration.RegistrationRepository
 import com.passbolt.mobile.android.service.registration.data.RegistrationApi
 import com.passbolt.mobile.android.service.registration.data.RegistrationRemoteDataSource
 import okhttp3.OkHttpClient
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -38,7 +40,7 @@ import retrofit2.converter.gson.GsonConverterFactory
  * @since v1.0
  */
 val passboltApiModule = module {
-    single { provideRestService(get()) }
+    single { provideRestService(get(named(DEFAULT_HTTP_CLIENT))) }
     single { getRegistrationApi(get()) }
     single { getAuthApi(get()) }
 

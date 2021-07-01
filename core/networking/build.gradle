@@ -14,7 +14,9 @@ dependencies {
     api libs.networking.okHttpLoggingInterceptor
 
     implementation libs.di.koin
+    implementation libs.di.koinExt
 
     implementation libs.gson
+    implementation libs.coil.core
 
 }

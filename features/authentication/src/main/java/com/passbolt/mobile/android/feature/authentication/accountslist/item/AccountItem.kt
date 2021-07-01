@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.accountslist.item
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import coil.load
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.databinding.ItemAccountBinding
@@ -54,7 +55,10 @@ class AccountItem(
                     R.drawable.background_ripple
                 }
             )
-            // holder.icon.load(accountModel.avatar) // TODO
+            icon.load(accountModel.avatar) {
+                error(R.drawable.ic_avatar_placeholder)
+                placeholder(R.drawable.ic_avatar_placeholder)
+            }
         }
     }
 }

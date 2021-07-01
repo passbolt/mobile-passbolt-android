@@ -130,9 +130,8 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     override fun showAvatar(url: String) {
         binding.avatarImage.load(url) {
             transformations(CircleCropTransformation())
-            target {
-                binding.avatarImage.setImageDrawable(it)
-            }
+            error(R.drawable.ic_avatar_placeholder)
+            placeholder(R.drawable.ic_avatar_placeholder)
         }
     }
 
