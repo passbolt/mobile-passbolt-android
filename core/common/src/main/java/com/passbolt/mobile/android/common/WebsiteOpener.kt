@@ -1,7 +1,9 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.common
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordModel
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,16 +27,13 @@ import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
+class WebsiteOpener {
 
-    interface View : BaseContract.View {
-        fun showPasswords(list: List<PasswordModel>)
-        fun navigateToMore(passwordModel: PasswordModel)
-        fun navigateToDetails()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun moreClick(passwordModel: PasswordModel)
-        fun itemClick()
+    fun open(context: Context, url: String) {
+        runCatching {
+            Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        }
+            .onSuccess { context.startActivity(it) }
+            .onFailure { Toast.makeText(context, R.string.common_failure, Toast.LENGTH_SHORT).show() }
     }
 }

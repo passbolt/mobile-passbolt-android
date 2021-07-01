@@ -1,7 +1,4 @@
-package com.passbolt.mobile.android.feature.home.screen
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordModel
+package com.passbolt.mobile.android.common.extension
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,16 +22,6 @@ import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
-
-    interface View : BaseContract.View {
-        fun showPasswords(list: List<PasswordModel>)
-        fun navigateToMore(passwordModel: PasswordModel)
-        fun navigateToDetails()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun moreClick(passwordModel: PasswordModel)
-        fun itemClick()
-    }
+fun CharSequence.firstOrEmpty(): Char {
+    return if (isEmpty()) Character.MIN_VALUE else this[0]
 }

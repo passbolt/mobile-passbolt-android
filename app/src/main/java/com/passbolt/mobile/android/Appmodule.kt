@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.TimeProvider
 import com.passbolt.mobile.android.common.UuidProvider
+import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.core.networking.COIL_HTTP_CLIENT
 import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import okhttp3.OkHttpClient
@@ -62,6 +63,7 @@ internal val appModule = module {
         )
     }
     single { InitialsProvider() }
+    single { WebsiteOpener() }
 }
 
 private fun provideImageLoader(okHttpClient: OkHttpClient, context: Context) {

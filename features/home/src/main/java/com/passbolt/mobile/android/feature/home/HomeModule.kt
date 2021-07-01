@@ -1,6 +1,9 @@
 package com.passbolt.mobile.android.feature.home
 
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
 import com.passbolt.mobile.android.feature.home.screen.homeModule
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 /**
@@ -28,4 +31,7 @@ import org.koin.dsl.module
 
 val homeModule = module {
     homeModule()
+    single {
+        androidContext().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
+    }
 }

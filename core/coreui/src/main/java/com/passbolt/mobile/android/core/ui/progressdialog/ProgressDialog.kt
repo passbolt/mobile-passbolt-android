@@ -42,17 +42,20 @@ class ProgressDialog : DialogFragment(), LifecycleObserver {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         isCancelable = false
-        observeParentVisibility()
+        (activity as LifecycleOwner).lifecycle.addObserver(this)
     }
 
-    private fun observeParentVisibility() {
-        (parentFragment as LifecycleOwner).lifecycle.addObserver(this)
+    override fun onDetach() {
+        (activity as LifecycleOwner).lifecycle.removeObserver(this)
+        super.onDetach()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    private fun parentStopped() {
-        (parentFragment as LifecycleOwner).lifecycle.removeObserver(this)
-        // hide dialog to prevent leaked widows after navigating back or parent recreation
-        dismiss()
+    private fun activityStopped() {
+        if (isAdded) {
+            (activity as LifecycleOwner).lifecycle.removeObserver(this)
+            // hide dialog to prevent leaked widows after navigating back or parent recreation
+            dismiss()
+        }
     }
 }

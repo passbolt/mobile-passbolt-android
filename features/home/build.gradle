@@ -4,12 +4,15 @@ plugins {
     id "kotlin-kapt"
 }
 
+apply plugin: "androidx.navigation.safeargs"
+
 dependencies {
     implementation project(':mvp')
     implementation project(':ui')
     implementation project(':navigation')
     implementation project(':coreui')
     implementation project(':common')
+    implementation project(':networking')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

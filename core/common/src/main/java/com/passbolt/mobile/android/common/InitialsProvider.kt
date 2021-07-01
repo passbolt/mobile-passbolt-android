@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.common
 
+import com.passbolt.mobile.android.common.extension.firstOrEmpty
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,9 +27,9 @@ package com.passbolt.mobile.android.common
 class InitialsProvider {
 
     fun get(firstName: String, lastName: String?) =
-        if (lastName != null) {
-            "${firstName.first()}${lastName.first()}"
+        if (!lastName.isNullOrEmpty()) {
+            "${firstName.firstOrEmpty()}${lastName.first()}"
         } else {
-            firstName.first()
+            firstName.firstOrEmpty()
         }
 }

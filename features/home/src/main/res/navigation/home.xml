@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home.xml"
+    app:startDestination="@id/home">
+
+    <fragment
+        android:id="@+id/home"
+        android:name="com.passbolt.mobile.android.feature.home.screen.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home_to_more"
+            app:destination="@id/more" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/more"
+        android:name="com.passbolt.mobile.android.feature.home.screen.more.PasswordMenuFragment"
+        android:label="PasswordDetailsSheetFragment"
+        tools:layout="@layout/view_password_bottomsheet">
+        <argument
+            android:name="passwordModel"
+            app:argType="com.passbolt.mobile.android.feature.home.screen.more.PasswordMoreModel" />
+    </dialog>
+</navigation>

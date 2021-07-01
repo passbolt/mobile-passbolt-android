@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.home.screen
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -10,6 +11,7 @@ import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
 import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordModel
+import com.passbolt.mobile.android.feature.home.screen.more.PasswordMoreModel
 import org.koin.android.ext.android.inject
 
 /**
@@ -57,7 +59,7 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
                 presenter.itemClick()
             },
             PasswordItem.MoreClick {
-                presenter.moreClick()
+                presenter.moreClick(it)
             }
         ))
     }
@@ -66,8 +68,17 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
         itemAdapter.add(list.map { PasswordItem(it) })
     }
 
-    override fun navigateToMore() {
-        Toast.makeText(requireContext(), "More clicked!", Toast.LENGTH_SHORT).show()
+    override fun navigateToMore(passwordModel: PasswordModel) {
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeToMore(
+                PasswordMoreModel(
+                    title = passwordModel.title,
+                    password = "password",
+                    username = "username",
+                    url = "https://www.passbolt.com"
+                )
+            )
+        )
     }
 
     override fun navigateToDetails() {
