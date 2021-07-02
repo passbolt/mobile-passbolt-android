@@ -53,7 +53,8 @@ def setupModule(isAndroid, isAndroidComponent) {
                 animationsDisabled true
 
                 unitTests.all {
-                    maxParallelForks = Runtime.runtime.availableProcessors() - 1
+                    def processors = Runtime.runtime.availableProcessors() - 1
+                    maxParallelForks = Math.max(processors, 1)
                 }
             }
         }
