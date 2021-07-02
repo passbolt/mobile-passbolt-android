@@ -2,10 +2,10 @@ package com.passbolt.mobile.android.storage.repository.passphrase
 
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.usecase.GetPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.RemoveSelectedAccountPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import org.koin.dsl.module
 
 /**

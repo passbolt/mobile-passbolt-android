@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
-import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.GetSelectedUserPrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import kotlinx.coroutines.launch
 
 /**

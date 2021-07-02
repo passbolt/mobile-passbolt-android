@@ -5,8 +5,8 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.usecase.GetPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level

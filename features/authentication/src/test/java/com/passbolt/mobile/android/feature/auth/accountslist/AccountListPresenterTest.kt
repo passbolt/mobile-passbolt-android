@@ -13,7 +13,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.entity.account.AccountEntity
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListContract
 import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
+import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule

@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.challenge
 import com.google.gson.Gson
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
-import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**

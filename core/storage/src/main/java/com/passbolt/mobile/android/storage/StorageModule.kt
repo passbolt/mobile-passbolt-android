@@ -1,42 +1,17 @@
 package com.passbolt.mobile.android.storage
 
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.lifecycle.ProcessLifecycleOwner
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
-import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
-import com.passbolt.mobile.android.storage.factory.KeySpecProvider
-import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
-import com.passbolt.mobile.android.storage.usecase.CheckIfPassphraseFileExistsUseCase
-import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.GetAccountsUseCase
-import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
-import com.passbolt.mobile.android.storage.usecase.GetPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.GetPrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.GetSelectedUserPrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.GetSessionUseCase
-import com.passbolt.mobile.android.storage.usecase.RemoveAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.RemoveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.RemoveAllAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.RemovePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.RemovePrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.RemoveSelectedAccountPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.RemoveSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.RemoveSessionUseCase
-import com.passbolt.mobile.android.storage.usecase.RemoveUserAvatarUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.SavePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveSessionUseCase
-import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
+import com.passbolt.mobile.android.storage.cache.cacheModule
+import com.passbolt.mobile.android.storage.encrypted.encryptedStorageModule
+import com.passbolt.mobile.android.storage.repository.repositoryModule
+import com.passbolt.mobile.android.storage.usecase.account.accountModule
+import com.passbolt.mobile.android.storage.usecase.accountdata.accountDataModule
+import com.passbolt.mobile.android.storage.usecase.accounts.accountsModule
+import com.passbolt.mobile.android.storage.usecase.passphrase.passphraseModule
+import com.passbolt.mobile.android.storage.usecase.privatekey.privateKeyModule
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.selectedAccountModule
+import com.passbolt.mobile.android.storage.usecase.session.sessionModule
 import org.koin.android.ext.koin.androidApplication
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -63,170 +38,17 @@ import org.koin.dsl.module
  */
 
 val storageModule = module {
-    single { provideSharedPreferences(androidApplication()) }
+    cacheModule()
+    encryptedStorageModule()
+    repositoryModule()
+    accountModule()
+    accountDataModule()
+    accountsModule()
+    passphraseModule()
+    privateKeyModule()
+    selectedAccountModule()
+    sessionModule()
     single {
-        EncryptedFileFactory(
-            context = androidApplication(),
-            keySpecProvider = get()
-        )
+        androidApplication().getSharedPreferences("user-accounts", Context.MODE_PRIVATE)
     }
-    single {
-        EncryptedSharedPreferencesFactory(
-            context = androidApplication(),
-            keySpecProvider = get()
-        )
-    }
-    single { KeySpecProvider() }
-    single {
-        SaveAccountUseCase(
-            sharedPreferences = get()
-        )
-    }
-    single {
-        GetAccountDataUseCase(
-            encryptedSharedPreferencesFactory = get()
-        )
-    }
-    single {
-        GetSelectedAccountDataUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetAccountsUseCase(
-            sharedPreferences = get()
-        )
-    }
-    single {
-        GetPassphraseUseCase(
-            encryptedFileFactory = get()
-        )
-    }
-    single {
-        GetSelectedUserPrivateKeyUseCase(
-            encryptedFileFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetPrivateKeyUseCase(
-            encryptedFileFactory = get()
-        )
-    }
-    single {
-        GetSelectedAccountUseCase(
-            encryptedSharedPreferencesFactory = get()
-        )
-    }
-    single {
-        GetAllAccountsDataUseCase(
-            getAccountDataUseCase = get(),
-            getAccountsUseCase = get()
-        )
-    }
-    single {
-        GetSessionUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        SaveAccountDataUseCase(
-            encryptedSharedPreferencesFactory = get()
-        )
-    }
-    single {
-        UpdateAccountDataUseCase(
-            getSelectedAccountUseCase = get(),
-            encryptedSharedPreferencesFactory = get()
-        )
-    }
-    single {
-        SavePassphraseUseCase(
-            encryptedFileFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        SavePrivateKeyUseCase(
-            encryptedFileFactory = get()
-        )
-    }
-    single {
-        SaveSelectedAccountUseCase(
-            encryptedSharedPreferencesFactory = get()
-        )
-    }
-    single {
-        SaveSessionUseCase(
-            encryptedSharedPreferencesFactory = get()
-        )
-    }
-    single {
-        PassphraseMemoryCache(
-            coroutineLaunchContext = get(),
-            lifecycleOwner = get(named<ProcessLifecycleOwner>())
-        )
-    }
-    factory {
-        PassphraseRepository(
-            passphraseMemoryCache = get(),
-            getPassphraseUseCase = get(),
-            savePassphraseUseCase = get(),
-            selectedAccountUseCase = get(),
-            removeSelectedAccountPassphraseUseCase = get()
-        )
-    }
-    factory {
-        RemovePassphraseUseCase(androidContext())
-    }
-    factory {
-        RemoveSelectedAccountPassphraseUseCase(
-            androidContext(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    factory {
-        RemoveAccountDataUseCase(encryptedSharedPreferencesFactory = get())
-    }
-    factory {
-        RemoveAllAccountDataUseCase(
-            getSelectedAccountUseCase = get(),
-            removeAccountDataUseCase = get(),
-            removePassphraseUseCase = get(),
-            removePrivateKeyUseCase = get(),
-            removeSelectedAccountUseCase = get(),
-            removeSessionUseCase = get(),
-            removeUserAvatarUseCase = get(),
-            removeAccountUseCase = get()
-        )
-    }
-    factory {
-        RemoveUserAvatarUseCase(androidContext())
-    }
-    factory {
-        RemoveSessionUseCase(encryptedSharedPreferencesFactory = get())
-    }
-    factory {
-        RemoveSelectedAccountUseCase(encryptedSharedPreferencesFactory = get())
-    }
-    factory {
-        RemovePrivateKeyUseCase(androidContext())
-    }
-    factory {
-        RemoveAccountUseCase(
-            sharedPreferences = get()
-        )
-    }
-    factory {
-        CheckIfPassphraseFileExistsUseCase(
-            getSelectedAccountUseCase = get(),
-            appContext = androidContext()
-        )
-    }
-}
-
-private fun provideSharedPreferences(appContext: Context): SharedPreferences {
-    return appContext.getSharedPreferences("user-accounts", Context.MODE_PRIVATE)
 }

@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.core.networking.interceptor
 
 import com.passbolt.mobile.android.core.networking.AuthPaths
-import com.passbolt.mobile.android.storage.usecase.GetSessionUseCase
+import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response

@@ -9,9 +9,9 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
-import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveSessionUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
