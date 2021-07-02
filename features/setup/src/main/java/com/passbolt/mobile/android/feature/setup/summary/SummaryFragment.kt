@@ -8,7 +8,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.feature.authentication.AuthenticationType
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentSummaryBinding
 import org.koin.android.ext.android.inject
 
@@ -86,7 +86,7 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                AuthenticationType.PASSPHRASE.ordinal
+                AuthenticationType.PASSPHRASE
             )
         )
     }

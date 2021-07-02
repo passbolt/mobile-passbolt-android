@@ -130,6 +130,11 @@ class EncourageAutofillDialog : DialogFragment(), EncourageAutofillContract.View
         dismiss()
     }
 
+    override fun dismiss() {
+        listener?.autofillDialogDismissed()
+        super.dismiss()
+    }
+
     private companion object {
         private const val PACKAGE_URI_FORMAT = "package:%s"
         private val AUTOFILL_SETUP_STEPS_ICONS = listOf(R.drawable.autofill_with_bg, R.drawable.passbolt_with_bg)
@@ -138,5 +143,6 @@ class EncourageAutofillDialog : DialogFragment(), EncourageAutofillContract.View
     interface Listener {
         fun setupAutofillLaterClick()
         fun autofillSetupSuccessfully()
+        fun autofillDialogDismissed() {}
     }
 }

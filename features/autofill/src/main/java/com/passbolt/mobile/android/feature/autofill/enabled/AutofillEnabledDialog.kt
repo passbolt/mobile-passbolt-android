@@ -69,6 +69,11 @@ class AutofillEnabledDialog : DialogFragment() {
         }
     }
 
+    override fun dismiss() {
+        listener?.autofillEnabledDialogDismissed()
+        super.dismiss()
+    }
+
     override fun onDetach() {
         listener = null
         super.onDetach()
@@ -76,5 +81,6 @@ class AutofillEnabledDialog : DialogFragment() {
 
     interface Listener {
         fun goToAppClick()
+        fun autofillEnabledDialogDismissed() {}
     }
 }

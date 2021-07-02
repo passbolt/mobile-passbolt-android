@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.uistrategy
 
-import com.passbolt.mobile.android.feature.authentication.AuthenticationType
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 
 class AuthStrategyFactory {

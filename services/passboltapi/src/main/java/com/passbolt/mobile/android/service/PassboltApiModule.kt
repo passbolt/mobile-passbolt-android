@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.service
 
+import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import com.passbolt.mobile.android.core.networking.RestService
 import com.passbolt.mobile.android.core.networking.RetrofitRestService
-import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import com.passbolt.mobile.android.service.auth.AuthDataSource
 import com.passbolt.mobile.android.service.auth.AuthRepository
 import com.passbolt.mobile.android.service.auth.data.AuthApi
@@ -17,6 +17,7 @@ import com.passbolt.mobile.android.service.resource.ResourceDataSource
 import com.passbolt.mobile.android.service.resource.ResourceRemoteDataSource
 import com.passbolt.mobile.android.service.resource.ResourceRepository
 import okhttp3.OkHttpClient
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.converter.gson.GsonConverterFactory
@@ -83,7 +84,7 @@ val passboltApiModule = module {
         )
     }
     single {
-        LogoutRepository()
+        LogoutRepository(androidContext())
     }
 }
 

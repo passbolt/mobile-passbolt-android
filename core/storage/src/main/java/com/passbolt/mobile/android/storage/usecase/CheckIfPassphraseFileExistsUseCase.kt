@@ -1,10 +1,10 @@
-package com.passbolt.mobile.android.feature.autofill
+package com.passbolt.mobile.android.storage.usecase
 
-import android.view.autofill.AutofillManager
-import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module
+import android.content.Context
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
+import com.passbolt.mobile.android.storage.paths.PassphraseFileName
+import java.io.File
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,12 +29,18 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val autofillModule = module {
-    encourageAutofillModule()
-    factory { androidContext().getSystemService(AutofillManager::class.java) }
-    factory {
-        AutofillInformationProvider(
-            autofillManager = get()
-        )
+class CheckIfPassphraseFileExistsUseCase(
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val appContext: Context
+) : UseCase<Unit, CheckIfPassphraseFileExistsUseCase.Output> {
+
+    override fun execute(input: Unit): Output {
+        val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
+        val fileName = PassphraseFileName(userId).name
+        return Output(File(EncryptedFileBaseDirectory(appContext).baseDirectory, fileName).exists())
     }
+
+    class Output(
+        val passphraseFileExists: Boolean
+    )
 }

@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth
 
-import com.passbolt.mobile.android.feature.authentication.AuthenticationType
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier

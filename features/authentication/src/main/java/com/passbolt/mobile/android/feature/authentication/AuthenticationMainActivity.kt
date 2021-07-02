@@ -6,6 +6,10 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragmentDirections
 import com.passbolt.mobile.android.feature.authentication.databinding.ActivityAuthenticationMainBinding
 import org.koin.android.ext.android.inject
@@ -37,28 +41,65 @@ class AuthenticationMainActivity :
     AuthenticationMainContract.View {
 
     private val presenter: AuthenticationMainContract.Presenter by inject()
+    private val progressDialog = ProgressDialog()
+
     private val navController by lifecycleAwareLazy {
         findNavHostFragment(binding.fragmentContainer.id).navController
     }
 
+    private val navInflater by lifecycleAwareLazy {
+        navController.navInflater
+    }
+
+    private val navGraph by lifecycleAwareLazy {
+        navInflater.inflate(R.navigation.authentication).apply {
+            setStartDestination(R.id.accountsListFragment)
+        }
+    }
+
+    private val authTarget by lifecycleAwareLazy {
+        intent.getSerializableExtra(ActivityIntents.EXTRA_AUTH_TARGET) as AuthenticationTarget
+    }
+
     private val authStrategy by lifecycleAwareLazy {
-        val ordinal = intent.getIntExtra(ActivityIntents.EXTRA_AUTH_STRATEGY_TYPE, -1)
-        AuthenticationType.values()[ordinal]
+        intent.getSerializableExtra(ActivityIntents.EXTRA_AUTH_STRATEGY_TYPE) as? AuthenticationType
+    }
+
+    private val shouldSignOut by lifecycleAwareLazy {
+        intent.getBooleanExtra(ActivityIntents.EXTRA_MANAGE_ACCOUNTS_SIGN_OUT, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         presenter.attach(this)
-        presenter.bundleRetrieved(authStrategy)
+        presenter.bundleRetrieved(authTarget, authStrategy, shouldSignOut)
         setResult(Activity.RESULT_CANCELED)
+    }
+
+    override fun onDestroy() {
+        presenter.detach()
+        super.onDestroy()
     }
 
     override fun navigateToAuth(
         userId: String,
         authenticationStrategy: AuthenticationType
     ) {
+        navController.setGraph(navGraph, AccountsListFragment.newBundle(AuthenticationTarget.AUTHENTICATE))
         navController.navigate(
             AccountsListFragmentDirections.actionAccountsListFragmentToAuthFragment(userId, authenticationStrategy)
         )
+    }
+
+    override fun navigateToManageAccounts() {
+        navController.setGraph(navGraph, AccountsListFragment.newBundle(AuthenticationTarget.MANAGE_ACCOUNTS))
+    }
+
+    override fun showProgress() {
+        progressDialog.show(supportFragmentManager, ProgressDialog::class.java.name)
+    }
+
+    override fun hideProgress() {
+        progressDialog.dismiss()
     }
 }

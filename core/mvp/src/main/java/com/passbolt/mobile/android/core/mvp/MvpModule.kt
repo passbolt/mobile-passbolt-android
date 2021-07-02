@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.mvp.di
+package com.passbolt.mobile.android.core.mvp
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.AppCoroutineContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext

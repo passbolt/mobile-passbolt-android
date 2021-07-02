@@ -1,10 +1,7 @@
-package com.passbolt.mobile.android.feature.autofill
+package com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy
 
-import android.view.autofill.AutofillManager
-import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module
+import android.view.View
+import com.passbolt.mobile.android.feature.authentication.R
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,13 +25,13 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class ManageAccountListStrategy : AccountListStrategy {
 
-val autofillModule = module {
-    encourageAutofillModule()
-    factory { androidContext().getSystemService(AutofillManager::class.java) }
-    factory {
-        AutofillInformationProvider(
-            autofillManager = get()
-        )
-    }
+    override fun getTitleRes(): Int? = R.string.accounts_list_manage_accounts
+
+    override fun logoVisibility() = View.GONE
+
+    override fun headerVisibility() = View.INVISIBLE
+
+    override fun toolbarVisibility() = View.VISIBLE
 }

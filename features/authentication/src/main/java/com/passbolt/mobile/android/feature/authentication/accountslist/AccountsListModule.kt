@@ -4,9 +4,11 @@ import androidx.core.content.ContextCompat
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
+import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
 import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AccountUiItemsMapper
+import com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy.AccountListStrategyFactory
 import com.passbolt.mobile.android.ui.AccountModelUi
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
@@ -60,6 +62,12 @@ fun Module.accountsListModule() {
             DrawableListDivider(
                 ContextCompat.getDrawable(androidContext(), R.drawable.grey_divider)
             )
+        }
+        scoped { (type: AuthenticationTarget) ->
+            get<AccountListStrategyFactory>().get(type)
+        }
+        scoped {
+            AccountListStrategyFactory()
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.feature.authentication
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,9 +30,16 @@ interface AuthenticationMainContract {
 
     interface View : BaseContract.View {
         fun navigateToAuth(userId: String, authenticationStrategy: AuthenticationType)
+        fun showProgress()
+        fun hideProgress()
+        fun navigateToManageAccounts()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun bundleRetrieved(authenticationStrategy: AuthenticationType)
+        fun bundleRetrieved(
+            authTarget: AuthenticationTarget,
+            authenticationStrategy: AuthenticationType?,
+            shouldLogOut: Boolean
+        )
     }
 }

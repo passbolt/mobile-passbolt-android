@@ -1,10 +1,8 @@
-package com.passbolt.mobile.android.core.navigation
+package com.passbolt.mobile.android.feature.settings.screen.view
 
 import android.content.Context
-import android.content.Intent
-import com.gaelmarhic.quadrant.Authentication
-import com.gaelmarhic.quadrant.Main
-import com.gaelmarhic.quadrant.Setup
+import android.util.AttributeSet
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,29 +26,42 @@ import com.gaelmarhic.quadrant.Setup
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-object ActivityIntents {
+class SwitchSettingView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : SettingView(context, attrs, defStyle) {
 
-    const val EXTRA_AUTH_STRATEGY_TYPE = "AUTH_STRATEGY_TYPE"
-    const val EXTRA_AUTH_TARGET = "AUTH_TARGET"
-    const val EXTRA_MANAGE_ACCOUNTS_SIGN_OUT = "MANAGE_ACCOUNTS_LOG_OUT"
+    var onChanged: ((Boolean) -> Unit)? = null
 
-    fun setup(context: Context) = Intent().apply {
-        setClassName(context, Setup.SET_UP_ACTIVITY)
+    private val switch = SwitchMaterial(context)
+    private var silentCheckChangedModeOn = false
+
+    init {
+        binding.root.addView(switch)
+        switch.setOnCheckedChangeListener { _, isChecked ->
+            if (!silentCheckChangedModeOn) {
+                onChanged?.invoke(isChecked)
+            }
+        }
     }
 
-    fun authentication(context: Context, authenticationType: AuthenticationType) = Intent().apply {
-        setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
-        putExtra(EXTRA_AUTH_STRATEGY_TYPE, authenticationType)
-        putExtra(EXTRA_AUTH_TARGET, AuthenticationTarget.AUTHENTICATE)
+    override fun onDetachedFromWindow() {
+        switch.setOnCheckedChangeListener(null)
+        super.onDetachedFromWindow()
     }
 
-    fun manageAccounts(context: Context, withSignOut: Boolean = false) = Intent().apply {
-        setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
-        putExtra(EXTRA_AUTH_TARGET, AuthenticationTarget.MANAGE_ACCOUNTS)
-        putExtra(EXTRA_MANAGE_ACCOUNTS_SIGN_OUT, withSignOut)
+    fun turnOn(silently: Boolean) {
+        executeCheckChange(silently, checkChangeValue = true)
     }
 
-    fun home(context: Context) = Intent().apply {
-        setClassName(context, Main.MAIN_ACTIVITY)
+    fun turnOff(silently: Boolean) {
+        executeCheckChange(silently, checkChangeValue = false)
+    }
+
+    private fun executeCheckChange(silently: Boolean, checkChangeValue: Boolean) {
+        silentCheckChangedModeOn = silently
+        switch.isChecked = checkChangeValue
+        silentCheckChangedModeOn = false
     }
 }

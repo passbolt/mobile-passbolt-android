@@ -1,10 +1,6 @@
-package com.passbolt.mobile.android.feature.autofill
+package com.passbolt.mobile.android.feature.settings.screen
 
-import android.view.autofill.AutofillManager
-import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,13 +24,31 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface SettingsContract {
 
-val autofillModule = module {
-    encourageAutofillModule()
-    factory { androidContext().getSystemService(AutofillManager::class.java) }
-    factory {
-        AutofillInformationProvider(
-            autofillManager = get()
-        )
+    interface View : BaseContract.View {
+        fun openUrl(url: String)
+        fun navigateToAccountList(withSignOut: Boolean = false)
+        fun toggleFingerprintOn(silently: Boolean)
+        fun toggleFingerprintOff(silently: Boolean)
+        fun showAutofillSetting()
+        fun showEncourageAutofillDialog()
+        fun showAutofillEnabledDialog()
+        fun showDisableFingerprintConfirmationDialog()
+        fun navigateToAuthenticationSignIn()
+        fun hideAutofillSetting()
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun privacyPolicyClick()
+        fun termsClick()
+        fun signOutClick()
+        fun manageAccountsClick()
+        fun autofillClick()
+        fun fingerprintSettingChanged(isEnabled: Boolean)
+        fun autofillSetupSuccessfully()
+        fun disableFingerprintConfirmed()
+        fun disableFingerprintCanceled()
+        fun autofillEnabledDialogDismissed()
     }
 }

@@ -6,8 +6,8 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import com.passbolt.mobile.android.storage.usecase.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
@@ -151,7 +151,7 @@ class ScanQrPresenter(
         )
         when (response) {
             is UpdateTransferUseCase.Output.Failure -> {
-                Timber.e("There was an error during transfer update")
+                Timber.e(response.exception, "There was an error during transfer update")
                 view?.navigateToSummary(ResultStatus.Failure(""))
             }
             is UpdateTransferUseCase.Output.Success -> onUpdateTransferSuccess(pageNumber, status, response)

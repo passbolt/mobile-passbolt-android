@@ -9,6 +9,9 @@ dependencies {
     implementation project(':ui')
     implementation project(':navigation')
     implementation project(':coreui')
+    implementation project(':common')
+    implementation project(':storage')
+    implementation project(':autofill')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

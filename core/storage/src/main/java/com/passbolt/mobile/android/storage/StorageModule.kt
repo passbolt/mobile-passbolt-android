@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.storage.factory.EncryptedFileFactory
 import com.passbolt.mobile.android.storage.factory.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.factory.KeySpecProvider
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
+import com.passbolt.mobile.android.storage.usecase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAccountsUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
@@ -216,6 +217,12 @@ val storageModule = module {
     factory {
         RemoveAccountUseCase(
             sharedPreferences = get()
+        )
+    }
+    factory {
+        CheckIfPassphraseFileExistsUseCase(
+            getSelectedAccountUseCase = get(),
+            appContext = androidContext()
         )
     }
 }

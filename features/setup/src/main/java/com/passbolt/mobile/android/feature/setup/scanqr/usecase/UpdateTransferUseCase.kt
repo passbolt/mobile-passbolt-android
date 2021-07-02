@@ -3,10 +3,10 @@ package com.passbolt.mobile.android.feature.setup.scanqr.usecase
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.service.registration.RegistrationRepository
 import com.passbolt.mobile.android.mappers.UpdateTransferMapper
-import com.passbolt.mobile.android.ui.UpdateTransferResponseModel
+import com.passbolt.mobile.android.service.registration.RegistrationRepository
 import com.passbolt.mobile.android.ui.Status
+import com.passbolt.mobile.android.ui.UpdateTransferResponseModel
 import kotlinx.coroutines.withContext
 
 /**
@@ -45,7 +45,7 @@ class UpdateTransferUseCase(
             if (input.status == Status.COMPLETE) PROFILE_INFO_REQUIRED else null
         )
         when (response) {
-            is NetworkResult.Failure -> Output.Failure
+            is NetworkResult.Failure -> Output.Failure(response.exception)
             is NetworkResult.Success -> Output.Success(updateTransferMapper.mapResponseToUi(response.value.body))
         }
     }
@@ -62,7 +62,7 @@ class UpdateTransferUseCase(
             val updateTransferResponseModel: UpdateTransferResponseModel
         ) : Output()
 
-        object Failure : Output()
+        class Failure(val exception: Exception) : Output()
     }
 
     companion object {

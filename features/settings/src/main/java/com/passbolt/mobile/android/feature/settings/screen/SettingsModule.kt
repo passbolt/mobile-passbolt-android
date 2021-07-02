@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
+import android.view.autofill.AutofillManager
+import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 
 /**
@@ -26,5 +29,20 @@ import org.koin.core.module.Module
  */
 
 fun Module.settingsModule() {
-    // TODO
+    scope<SettingsFragment> {
+        scoped<SettingsContract.Presenter> {
+            SettingsPresenter(
+                checkIfPassphraseExistsUseCase = get(),
+                autofillInfoProvider = get(),
+                removePassphraseUseCase = get(),
+                getSelectedAccountUseCase = get()
+            )
+        }
+        factory { androidContext().getSystemService(AutofillManager::class.java) }
+        factory {
+            AutofillInformationProvider(
+                autofillManager = get()
+            )
+        }
+    }
 }

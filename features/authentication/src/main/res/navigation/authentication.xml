@@ -29,6 +29,6 @@
             app:argType="string" />
         <argument
             android:name="authenticationStrategy"
-            app:argType="com.passbolt.mobile.android.feature.authentication.AuthenticationType" />
+            app:argType="com.passbolt.mobile.android.core.navigation.AuthenticationType" />
     </fragment>
 </navigation>

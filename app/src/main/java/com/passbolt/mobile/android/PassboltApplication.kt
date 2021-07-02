@@ -3,7 +3,7 @@ package com.passbolt.mobile.android
 import android.app.Application
 import coil.Coil
 import coil.ImageLoader
-import com.passbolt.mobile.android.core.mvp.di.mvpModule
+import com.passbolt.mobile.android.core.mvp.mvpModule
 import com.passbolt.mobile.android.core.networking.networkingModule
 import com.passbolt.mobile.android.core.qrscan.di.barcodeScanModule
 import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule

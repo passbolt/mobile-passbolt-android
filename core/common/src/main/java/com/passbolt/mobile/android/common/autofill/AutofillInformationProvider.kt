@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.autofill.info
+package com.passbolt.mobile.android.common.autofill
 
 import android.view.autofill.AutofillManager
 

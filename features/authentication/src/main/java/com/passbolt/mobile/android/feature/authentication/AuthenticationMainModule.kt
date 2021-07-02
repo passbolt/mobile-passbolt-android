@@ -28,7 +28,11 @@ import org.koin.core.module.Module
 fun Module.authenticationMainModule() {
     scope<AuthenticationMainActivity> {
         scoped<AuthenticationMainContract.Presenter> {
-            AuthenticationMainPresenter(getSelectedAccountUseCase = get())
+            AuthenticationMainPresenter(
+                getSelectedAccountUseCase = get(),
+                logoutRepository = get(),
+                coroutineLaunchContext = get()
+            )
         }
     }
 }

@@ -4,6 +4,7 @@
     <color name="primary">#2A9CEB</color>
     <color name="primary_disabled">#76BFF1</color>
     <color name="primary_dark">#2894DF</color>
+    <color name="accent">#B32894DF</color>
     <color name="green">#009900</color>
     <color name="red">#D40101</color>
     <color name="yellow">#FAC600</color>

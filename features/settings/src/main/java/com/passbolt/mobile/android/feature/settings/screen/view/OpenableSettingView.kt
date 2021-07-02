@@ -1,10 +1,9 @@
-package com.passbolt.mobile.android.feature.autofill
+package com.passbolt.mobile.android.feature.settings.screen.view
 
-import android.view.autofill.AutofillManager
-import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module
+import android.content.Context
+import android.util.AttributeSet
+import android.widget.ImageView
+import com.passbolt.mobile.android.feature.settings.R
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,13 +27,16 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class OpenableSettingView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : SettingView(context, attrs, defStyle) {
 
-val autofillModule = module {
-    encourageAutofillModule()
-    factory { androidContext().getSystemService(AutofillManager::class.java) }
-    factory {
-        AutofillInformationProvider(
-            autofillManager = get()
-        )
+    init {
+        ImageView(context).apply {
+            setImageResource(R.drawable.ic_arrow_right)
+            binding.root.addView(this)
+        }
     }
 }

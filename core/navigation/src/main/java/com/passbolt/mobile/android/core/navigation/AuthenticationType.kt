@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.authentication
+package com.passbolt.mobile.android.core.navigation
 
 enum class AuthenticationType {
     PASSPHRASE,

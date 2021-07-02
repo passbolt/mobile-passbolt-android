@@ -1,7 +1,20 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
-import com.passbolt.mobile.android.feature.main.databinding.FragmentSettingsBinding
+import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.extension.gone
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
+import com.passbolt.mobile.android.feature.autofill.encourage.EncourageAutofillDialog
+import com.passbolt.mobile.android.feature.settings.R
+import com.passbolt.mobile.android.feature.settings.databinding.FragmentSettingsBinding
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,4 +38,104 @@ import com.passbolt.mobile.android.feature.main.databinding.FragmentSettingsBind
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SettingsFragment : BindingFragment<FragmentSettingsBinding>(FragmentSettingsBinding::inflate)
+class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(FragmentSettingsBinding::inflate),
+    SettingsContract.View, EncourageAutofillDialog.Listener, AutofillEnabledDialog.Listener {
+
+    private val presenter: SettingsContract.Presenter by inject()
+    private val websiteOpener: WebsiteOpener by inject()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setListeners()
+        presenter.attach(this)
+    }
+
+    private fun setListeners() {
+        with(binding) {
+            fingerprintSetting.onChanged = {
+                presenter.fingerprintSettingChanged(it)
+            }
+            autofillSetting.setDebouncingOnClick {
+                presenter.autofillClick()
+            }
+            manageAccountsSetting.setDebouncingOnClick {
+                presenter.manageAccountsClick()
+            }
+            termsSetting.setDebouncingOnClick {
+                presenter.termsClick()
+            }
+            privacySetting.setDebouncingOnClick {
+                presenter.privacyPolicyClick()
+            }
+            signOutSetting.setDebouncingOnClick {
+                presenter.signOutClick()
+            }
+        }
+    }
+
+    override fun toggleFingerprintOn(silently: Boolean) {
+        binding.fingerprintSetting.turnOn(silently)
+    }
+
+    override fun toggleFingerprintOff(silently: Boolean) {
+        binding.fingerprintSetting.turnOff(silently)
+    }
+
+    override fun showAutofillSetting() {
+        binding.autofillSetting.visible()
+    }
+
+    override fun hideAutofillSetting() {
+        binding.autofillSetting.gone()
+    }
+
+    override fun openUrl(url: String) {
+        websiteOpener.open(requireContext(), url)
+    }
+
+    override fun showEncourageAutofillDialog() {
+        EncourageAutofillDialog().show(
+            childFragmentManager, EncourageAutofillDialog::class.java.name
+        )
+    }
+
+    override fun setupAutofillLaterClick() {
+        // no action - dialog closed
+    }
+
+    override fun autofillSetupSuccessfully() {
+        presenter.autofillSetupSuccessfully()
+    }
+
+    override fun showAutofillEnabledDialog() {
+        AutofillEnabledDialog().show(
+            childFragmentManager, AutofillEnabledDialog::class.java.name
+        )
+    }
+
+    override fun goToAppClick() {
+        // no action - dialog closed
+    }
+
+    override fun navigateToAccountList(withSignOut: Boolean) {
+        startActivity(ActivityIntents.manageAccounts(requireContext(), withSignOut))
+    }
+
+    override fun showDisableFingerprintConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.settings_disable_fingerprint_conformation_title)
+            .setMessage(R.string.settings_disable_fingerprint_conformation_message)
+            .setPositiveButton(R.string.settings_disable) { _, _ -> presenter.disableFingerprintConfirmed() }
+            .setNegativeButton(R.string.cancel) { _, _ -> presenter.disableFingerprintCanceled() }
+            .show()
+    }
+
+    override fun navigateToAuthenticationSignIn() {
+        // TODO authenticate to re-enable biometrics
+        Toast.makeText(requireContext(), "TODO", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun autofillEnabledDialogDismissed() {
+        presenter.autofillEnabledDialogDismissed()
+    }
+}

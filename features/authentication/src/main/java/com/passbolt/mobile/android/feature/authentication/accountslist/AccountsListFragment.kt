@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.accountslist
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
@@ -12,17 +13,23 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
-import com.passbolt.mobile.android.feature.authentication.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AccountItemClick
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AccountUiItemsMapper
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AddNewAccountItem
+import com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy.AccountListStrategy
 import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAccountsListBinding
 import com.passbolt.mobile.android.ui.AccountModelUi
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -54,12 +61,39 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val accountsUiMapper: AccountUiItemsMapper by inject()
     private val listDivider: DrawableListDivider by inject()
+    private val authTarget by lifecycleAwareLazy {
+        requireArguments().getSerializable(ARG_AUTH_TARGET) as AuthenticationTarget
+    }
+    private lateinit var uiStrategy: AccountListStrategy
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        uiStrategy = get { parametersOf(authTarget) }
+        initToolbar()
+        initHeader()
+        initLogo()
         initAdapter()
         setListeners()
         presenter.attach(this)
+    }
+
+    private fun initLogo() {
+        binding.icon.visibility = uiStrategy.logoVisibility()
+    }
+
+    private fun initHeader() {
+        setOf(binding.header, binding.subtitle).forEach {
+            it.visibility = uiStrategy.headerVisibility()
+        }
+    }
+
+    private fun initToolbar() {
+        with(binding.toolbar) {
+            uiStrategy.getTitleRes()?.let { toolbarTitle = getString(it) }
+            visibility = uiStrategy.toolbarVisibility()
+            initDefaultToolbar(this)
+            setNavigationOnClickListener { requireActivity().finish() }
+        }
     }
 
     override fun onDestroyView() {
@@ -137,5 +171,13 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
             }
             .setNegativeButton(R.string.cancel) { _, _ -> }
             .show()
+    }
+
+    companion object {
+        private const val ARG_AUTH_TARGET = "AUTH_TARGET"
+
+        fun newBundle(authTarget: AuthenticationTarget) = bundleOf(
+            ARG_AUTH_TARGET to authTarget
+        )
     }
 }

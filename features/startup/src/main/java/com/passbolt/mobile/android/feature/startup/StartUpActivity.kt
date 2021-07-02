@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.feature.startup
 import android.os.Bundle
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.feature.authentication.AuthenticationType
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.startup.databinding.ActivityStartupBinding
 import org.koin.android.ext.android.inject
 
@@ -23,7 +23,7 @@ class StartUpActivity : BindingScopedActivity<ActivityStartupBinding>(ActivitySt
     }
 
     override fun navigateToSignIn() {
-        startActivity(ActivityIntents.authentication(this, AuthenticationType.SIGN_IN.ordinal))
+        startActivity(ActivityIntents.authentication(this, AuthenticationType.SIGN_IN))
         finish()
     }
 }

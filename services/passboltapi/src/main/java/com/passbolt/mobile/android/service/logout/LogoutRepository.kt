@@ -1,5 +1,9 @@
 package com.passbolt.mobile.android.service.logout
 
+import android.content.Context
+import android.widget.Toast
+import timber.log.Timber
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,9 +26,13 @@ package com.passbolt.mobile.android.service.logout
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LogoutRepository {
+class LogoutRepository(
+    private val appContext: Context
+) {
 
     fun logout() {
         // TODO
+        Toast.makeText(appContext, "TODO Logging out", Toast.LENGTH_SHORT).show()
+        Timber.d("Logging out")
     }
 }

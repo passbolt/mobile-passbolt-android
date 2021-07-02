@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.autofill.encourage
 
-import com.passbolt.mobile.android.feature.autofill.info.AutofillInformationProvider
+import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 
 class EncourageAutofillPresenter(
     private val autofillInformationProvider: AutofillInformationProvider
