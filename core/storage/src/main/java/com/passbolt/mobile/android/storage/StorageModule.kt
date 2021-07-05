@@ -119,7 +119,8 @@ val storageModule = module {
     }
     single {
         GetSessionUseCase(
-            encryptedSharedPreferencesFactory = get()
+            encryptedSharedPreferencesFactory = get(),
+            getSelectedAccountUseCase = get()
         )
     }
     single {

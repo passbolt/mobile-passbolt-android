@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.passbolt.mobile.android.feature.setup.di.testModule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -35,6 +36,7 @@ import org.koin.test.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@ExperimentalCoroutinesApi
 class WelcomePresenterTest : KoinTest {
 
     private val presenter: WelcomeContract.Presenter by inject()

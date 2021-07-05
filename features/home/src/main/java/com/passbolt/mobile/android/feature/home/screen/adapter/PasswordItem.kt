@@ -18,6 +18,7 @@ import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.asBinding
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.ItemPasswordBinding
+import com.passbolt.mobile.android.ui.PasswordModel
 
 /**
  * Passbolt - Open source password manager for teams

@@ -1,6 +1,12 @@
 package com.passbolt.mobile.android.feature.home.screen
 
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordModel
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.ui.PasswordModel
+import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
+import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,48 +30,45 @@ import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class HomePresenter : HomeContract.Presenter {
+class HomePresenter(
+    coroutineLaunchContext: CoroutineLaunchContext,
+    private val getResourcesUseCase: GetResourcesUseCase,
+    private val resourceModelMapper: ResourceModelMapper
+) : HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
-        getPasswords()
+        fetchPasswords()
     }
 
-    private fun getPasswords() {
-        val list = listOf(
-            PasswordModel(
-                "Adobe Photoshop",
-                "mail",
-                "https://www.mcicon.com/wp-content/uploads/2021/03/Cat-18.jpg",
-                "AP"
-            ),
-            PasswordModel("Figma", "john.doe@email.com", null, "F"),
-            PasswordModel("Facebook", "john.doe@email.com", null, "F"),
-            PasswordModel("Facebook", "john.doe@email.com", null, "F"),
-            PasswordModel(
-                "Facebook",
-                "john.doe@email.com",
-                "https://image.flaticon.com/icons/png/512/616/616408.png",
-                "F"
-            ),
-            PasswordModel("Instagram", "john.doe@email.com", null, "I"),
-            PasswordModel("Tiktok", "john.doe@email.com", null, "T"),
-            PasswordModel("Miquido", "john.doe@email.com", null, "M"),
-            PasswordModel("Facebook", "john.doe@email.com", null, "AB"),
-            PasswordModel("Facebook", "john.doe@email.com", null, "CD"),
-            PasswordModel("Facebook", "john.doe@email.com", null, "GH"),
-            PasswordModel(
-                "Facebook",
-                "john.doe@email.com",
-                "https://cdn.icon-icons.com/icons2/1446/PNG/512/22252hamsterface_98824.png",
-                "HH"
-            ),
-            PasswordModel("Facebook", "john.doe@email.com", null, "AA"),
-            PasswordModel("Workspace", "john.doe@email.com", null, "BW")
-        )
-        view?.showPasswords(list)
+    private fun fetchPasswords() {
+        scope.launch {
+            when (val result = getResourcesUseCase.execute(Unit)) {
+                GetResourcesUseCase.Output.Failure -> {
+                    view?.hideRefreshProgress()
+                    view?.hideProgress()
+                    view?.showError()
+                }
+                is GetResourcesUseCase.Output.Success -> {
+                    view?.hideRefreshProgress()
+                    view?.hideProgress()
+                    val resources = result.resources.map { resourceModelMapper.map(it) }
+                    view?.showPasswords(resources)
+                }
+            }
+        }
+    }
+
+    override fun refreshClick() {
+        fetchPasswords()
+    }
+
+    override fun refreshSwipe() {
+        fetchPasswords()
     }
 
     override fun moreClick(passwordModel: PasswordModel) {

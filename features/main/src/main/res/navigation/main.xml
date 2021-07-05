@@ -7,7 +7,6 @@
     app:startDestination="@id/homeNav">
 
     <include
-        android:id="@+id/homeNav"
         app:graph="@navigation/home" />
 
     <fragment

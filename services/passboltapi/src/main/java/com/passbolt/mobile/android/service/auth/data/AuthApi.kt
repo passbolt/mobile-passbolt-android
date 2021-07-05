@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.service.auth.data
 
+import com.passbolt.mobile.android.core.networking.AuthPaths.AUTH_RSA
+import com.passbolt.mobile.android.core.networking.AuthPaths.AUTH_SIGN_IN
+import com.passbolt.mobile.android.core.networking.AuthPaths.AUTH_VERIFY
 import com.passbolt.mobile.android.dto.request.SignInRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.SignInResponseDto
@@ -40,10 +43,4 @@ internal interface AuthApi {
 
     @POST(AUTH_SIGN_IN)
     suspend fun signIn(@Body signInRequestDto: SignInRequestDto): BaseResponse<SignInResponseDto>
-
-    private companion object {
-        private const val AUTH_VERIFY = "/auth/verify.json"
-        private const val AUTH_RSA = "/auth/jwt/rsa.json"
-        private const val AUTH_SIGN_IN = "/auth/jwt/login.json"
-    }
 }

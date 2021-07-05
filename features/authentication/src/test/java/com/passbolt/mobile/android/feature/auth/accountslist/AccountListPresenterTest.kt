@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsL
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -44,6 +45,7 @@ import org.koin.test.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@ExperimentalCoroutinesApi
 class AccountListPresenterTest : KoinTest {
 
     private val presenter: AccountsListContract.Presenter by inject()

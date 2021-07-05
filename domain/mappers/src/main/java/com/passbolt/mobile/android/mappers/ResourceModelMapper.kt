@@ -1,6 +1,7 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.mappers
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.common.InitialsProvider
+import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.ui.PasswordModel
 
 /**
@@ -25,22 +26,16 @@ import com.passbolt.mobile.android.ui.PasswordModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
+class ResourceModelMapper(
+    private val initialsProvider: InitialsProvider
+) {
 
-    interface View : BaseContract.View {
-        fun showPasswords(list: List<PasswordModel>)
-        fun navigateToMore(passwordModel: PasswordModel)
-        fun navigateToDetails()
-        fun hideProgress()
-        fun showProgress()
-        fun hideRefreshProgress()
-        fun showError()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun moreClick(passwordModel: PasswordModel)
-        fun itemClick()
-        fun refreshSwipe()
-        fun refreshClick()
-    }
+    fun map(resource: ResourceResponseDto): PasswordModel =
+        PasswordModel(
+            title = resource.name,
+            subtitle = resource.username,
+            initials = initialsProvider.get(resource.name),
+            icon = null,
+            url = resource.uri
+        )
 }

@@ -39,6 +39,7 @@ class SaveAccountDataUseCase(
             putString(USER_LAST_NAME_KEY, input.lastname)
             putString(EMAIL_KEY, input.email)
             putString(URL_KEY, input.url)
+            putString(SERVER_ID_KEY, input.serverId)
             apply()
         }
     }
@@ -48,6 +49,7 @@ class SaveAccountDataUseCase(
         val url: String,
         val firstname: String? = null,
         val lastname: String? = null,
-        val email: String? = null
+        val email: String? = null,
+        val serverId: String? = null
     )
 }

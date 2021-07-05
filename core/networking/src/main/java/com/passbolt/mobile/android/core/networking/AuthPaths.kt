@@ -1,6 +1,4 @@
-package com.passbolt.mobile.android.common.userid
-
-import java.net.URI
+package com.passbolt.mobile.android.core.networking
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,10 +22,8 @@ import java.net.URI
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UserIdProvider {
-
-    fun get(id: String, url: String): String {
-        val path = URI(url).authority
-        return "${id}_$path"
-    }
+object AuthPaths {
+    const val AUTH_VERIFY = "/auth/verify.json"
+    const val AUTH_RSA = "/auth/jwt/rsa.json"
+    const val AUTH_SIGN_IN = "/auth/jwt/login.json"
 }

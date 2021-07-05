@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.usecase.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.RemoveAllAccountDataUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 
 /**
@@ -40,6 +41,7 @@ internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val mockRemoveAllAccountsDataUseCase = mock<RemoveAllAccountDataUseCase>()
 internal val mockLogoutRepository = mock<LogoutRepository>()
 
+@ExperimentalCoroutinesApi
 val testAccountListModule = module {
     factory<AccountsListContract.Presenter> {
         AccountsListPresenter(

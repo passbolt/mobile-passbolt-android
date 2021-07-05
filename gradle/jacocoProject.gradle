@@ -18,6 +18,10 @@ task jacocoProjectReport(type: JacocoReport) {
         html.enabled = true
     }
 
+    jacoco {
+        toolVersion = "0.8.7"
+    }
+
     def sourceTree = []
     def classTree = []
     def execList = []

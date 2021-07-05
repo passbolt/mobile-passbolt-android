@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.storage.base
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 
 /**
@@ -27,6 +28,7 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
  */
 
 //TODO refactor to test module and remove duplicates - PAS-145
+@ExperimentalCoroutinesApi
 class TestCoroutineLaunchContext : CoroutineLaunchContext {
     override val ui = TestCoroutineDispatcher()
     override val default = TestCoroutineDispatcher()
