@@ -25,6 +25,11 @@
         <item name="android:textFontWeight">600</item>
     </style>
 
+    <style name="PrimaryBlueButton"
+        parent="PrimaryButton">
+        <item name="android:background">@color/primary</item>
+    </style>
+
     <style name="ButtonBigText">
         <item name="android:textSize">@dimen/sp_14</item>
         <item name="android:textFontWeight">600</item>

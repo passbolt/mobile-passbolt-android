@@ -41,7 +41,8 @@ class GetAccountDataUseCase(
             sharedPreferences.getString(USER_LAST_NAME_KEY, null),
             sharedPreferences.getString(EMAIL_KEY, null),
             sharedPreferences.getString(AVATAR_URL_KEY, null),
-            sharedPreferences.getString(URL_KEY, "").orEmpty()
+            sharedPreferences.getString(URL_KEY, "").orEmpty(),
+            sharedPreferences.getString(SERVER_ID_KEY, "")
         )
     }
 
@@ -50,6 +51,7 @@ class GetAccountDataUseCase(
         val lastName: String?,
         val email: String?,
         val avatarUrl: String?,
-        val url: String
+        val url: String,
+        val serverId: String?
     )
 }

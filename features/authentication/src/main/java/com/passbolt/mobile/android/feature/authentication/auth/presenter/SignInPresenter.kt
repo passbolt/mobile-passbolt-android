@@ -10,6 +10,9 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
 import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SaveSessionUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase.Output.Success as PgpSuccess
@@ -44,7 +47,9 @@ class SignInPresenter(
     private val challengeProvider: ChallengeProvider,
     private val challengeDecryptor: ChallengeDecryptor,
     private val challengeVerifier: ChallengeVerifier,
-    getAccountDataUseCase: GetAccountDataUseCase,
+    private val saveSessionUseCase: SaveSessionUseCase,
+    private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
+    private val getAccountDataUseCase: GetAccountDataUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthBasePresenter(getAccountDataUseCase, coroutineLaunchContext) {
 
@@ -68,6 +73,7 @@ class SignInPresenter(
     private suspend fun signIn(passphrase: CharArray?, serverPublicKey: String, rsaKey: String) {
         // TODO verify passphrase use case?
         // TODO refactor using local user id and server user id
+        val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
         val challenge = challengeProvider.get(
             version = "1.0.0",
             domain = "https://passbolt.dev",
@@ -77,12 +83,12 @@ class SignInPresenter(
         )
         when (challenge) {
             is ChallengeProvider.Output.Success -> sendSignInRequest(
-                // TODO refactor using local user id and server user id
-                userId.removeSuffix("_passbolt.dev"),
+                userId,
                 challenge.challenge,
                 serverPublicKey,
                 requireNotNull(passphrase),
-                rsaKey
+                rsaKey,
+                requireNotNull(accountData.serverId)
             )
             ChallengeProvider.Output.WrongPassphrase -> showWrongPassphrase()
         }
@@ -93,9 +99,10 @@ class SignInPresenter(
         challenge: String,
         serverPublicKey: String,
         passphrase: CharArray,
-        rsaKey: String
+        rsaKey: String,
+        serverId: String
     ) {
-        when (val result = signInUseCase.execute(SiginInUseCase.Input(userId, challenge))) {
+        when (val result = signInUseCase.execute(SiginInUseCase.Input(serverId, challenge))) {
             is SiginInUseCase.Output.Failure -> {
                 view?.showError(result.message)
                 view?.hideProgress()
@@ -104,24 +111,32 @@ class SignInPresenter(
                 val challengeDecryptResult = challengeDecryptor.decrypt(
                     serverPublicKey,
                     passphrase.toByteArray()!!,
-                    userId + "_passbolt.dev",
+                    userId,
                     result.challenge
                 )
-                verifyChallenge(challengeDecryptResult, rsaKey)
+                verifyChallenge(challengeDecryptResult, rsaKey, userId)
             }
         }
     }
 
-    private fun verifyChallenge(challengeResponseDto: ChallengeResponseDto, rsaKey: String) {
-        when (challengeVerifier.verify(challengeResponseDto, rsaKey)) {
+    private fun verifyChallenge(challengeResponseDto: ChallengeResponseDto, rsaKey: String, userId: String) {
+        when (val result = challengeVerifier.verify(challengeResponseDto, rsaKey)) {
             ChallengeVerifier.Output.Failure -> showGenericError()
             ChallengeVerifier.Output.InvalidSignature -> showGenericError()
             ChallengeVerifier.Output.TokenExpired -> showGenericError()
-            is ChallengeVerifier.Output.Verified -> signInSuccess()
+            is ChallengeVerifier.Output.Verified -> signInSuccess(result.accessToken, userId)
         }
     }
 
-    private fun signInSuccess() {
+    private fun signInSuccess(accessToken: String, userId: String) {
+        saveSessionUseCase.execute(
+            SaveSessionUseCase.Input(
+                userId = userId,
+                accessToken = accessToken,
+                refreshToken = ""
+            )
+        )
+        saveSelectedAccountUseCase.execute(UserIdInput(userId))
         view?.hideProgress()
         view?.authSuccess()
     }

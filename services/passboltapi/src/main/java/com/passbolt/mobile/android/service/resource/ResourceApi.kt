@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.service.resource
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.PasswordModel
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import retrofit2.http.GET
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,22 +26,13 @@ import com.passbolt.mobile.android.ui.PasswordModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
 
-    interface View : BaseContract.View {
-        fun showPasswords(list: List<PasswordModel>)
-        fun navigateToMore(passwordModel: PasswordModel)
-        fun navigateToDetails()
-        fun hideProgress()
-        fun showProgress()
-        fun hideRefreshProgress()
-        fun showError()
-    }
+internal interface ResourceApi {
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun moreClick(passwordModel: PasswordModel)
-        fun itemClick()
-        fun refreshSwipe()
-        fun refreshClick()
+    @GET(GET_RESOURCES)
+    suspend fun getResources(): BaseResponse<List<ResourceResponseDto>>
+
+    private companion object {
+        private const val GET_RESOURCES = "resources.json"
     }
 }

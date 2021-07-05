@@ -13,6 +13,10 @@ task jacocoModuleReport(type: JacocoReport, dependsOn: 'unitTest') {
         html.enabled = true
     }
 
+    jacoco {
+        toolVersion = "0.8.7"
+    }
+
     final mainSrc = "${project.projectDir}/src/main/java"
     final kotlinFileTree = fileTree(dir: "${project.buildDir}/tmp/kotlin-classes/debug", excludes: jacocoExcludes)
     final javacFileTree = fileTree(dir: "${project.buildDir}/intermediates/javac/debug", excludes: jacocoExcludes)

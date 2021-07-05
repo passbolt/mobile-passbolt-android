@@ -12,6 +12,10 @@ import com.passbolt.mobile.android.service.registration.RegistrationDataSource
 import com.passbolt.mobile.android.service.registration.RegistrationRepository
 import com.passbolt.mobile.android.service.registration.data.RegistrationApi
 import com.passbolt.mobile.android.service.registration.data.RegistrationRemoteDataSource
+import com.passbolt.mobile.android.service.resource.ResourceApi
+import com.passbolt.mobile.android.service.resource.ResourceDataSource
+import com.passbolt.mobile.android.service.resource.ResourceRemoteDataSource
+import com.passbolt.mobile.android.service.resource.ResourceRepository
 import okhttp3.OkHttpClient
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -43,6 +47,7 @@ val passboltApiModule = module {
     single { provideRestService(get(named(DEFAULT_HTTP_CLIENT))) }
     single { getRegistrationApi(get()) }
     single { getAuthApi(get()) }
+    single { getResourceApi(get()) }
 
     single<RegistrationDataSource> {
         RegistrationRemoteDataSource(
@@ -54,6 +59,11 @@ val passboltApiModule = module {
             authApi = get()
         )
     }
+    single<ResourceDataSource> {
+        ResourceRemoteDataSource(
+            resourceApi = get()
+        )
+    }
     single {
         RegistrationRepository(
             registrationDataSource = get(),
@@ -63,6 +73,12 @@ val passboltApiModule = module {
     single {
         AuthRepository(
             authDataSource = get(),
+            responseHandler = get()
+        )
+    }
+    single {
+        ResourceRepository(
+            resourceDataSource = get(),
             responseHandler = get()
         )
     }
@@ -83,3 +99,6 @@ private fun getRegistrationApi(restService: RestService): RegistrationApi =
 
 private fun getAuthApi(restService: RestService): AuthApi =
     restService.service(AuthApi::class.java)
+
+private fun getResourceApi(restService: RestService): ResourceApi =
+    restService.service(ResourceApi::class.java)

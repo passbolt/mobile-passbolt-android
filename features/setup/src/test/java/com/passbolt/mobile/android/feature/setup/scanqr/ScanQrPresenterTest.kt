@@ -132,7 +132,7 @@ class ScanQrPresenterTest : KoinTest {
 
     @Test
     fun `view should initialize progress and show keep going after first page scan`() = runBlockingTest {
-        whenever(userIdProvider.get(any(), any())).doReturn("testUserId")
+        whenever(uuidProvider.get()).doReturn("testUserId")
         reset(view)
 
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
@@ -158,7 +158,7 @@ class ScanQrPresenterTest : KoinTest {
     @Test
     fun `view should navigate to scanning success after scanning finished`() = runBlockingTest {
         reset(view)
-        whenever(userIdProvider.get(any(), any())).doReturn("testUserId")
+        whenever(uuidProvider.get()).doReturn("testUserId")
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
 
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
@@ -176,7 +176,7 @@ class ScanQrPresenterTest : KoinTest {
     @Test
     fun `view should navigate to account already linked after scanning existing key`() = runBlockingTest {
         reset(view)
-        whenever(userIdProvider.get(any(), any())).doReturn("testUserId")
+        whenever(uuidProvider.get()).doReturn("testUserId")
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.AlreadyExist)
 
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))

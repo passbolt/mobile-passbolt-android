@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.userid.UserIdProvider
+import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
@@ -39,7 +39,7 @@ import org.koin.dsl.module
 internal val updateTransferUseCase = mock<UpdateTransferUseCase>()
 internal val saveAccountDataUseCase = mock<SaveAccountDataUseCase>()
 internal val selectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
-internal val userIdProvider = mock<UserIdProvider>()
+internal val uuidProvider = mock<UuidProvider>()
 internal val savePrivateKeyUseCase = mock<SavePrivateKeyUseCase>()
 internal val updateAccountDataUseCase = mock<UpdateAccountDataUseCase>()
 internal val addAccountUseCase = mock<SaveAccountUseCase>()
@@ -49,7 +49,7 @@ val testScanQrModule = module {
     factory { updateTransferUseCase }
     factory { saveAccountDataUseCase }
     factory { selectedAccountUseCase }
-    factory { userIdProvider }
+    factory { uuidProvider }
     factory { savePrivateKeyUseCase }
     factory { updateAccountDataUseCase }
     factory { addAccountUseCase }
@@ -73,7 +73,7 @@ val testScanQrModule = module {
             updateTransferUseCase = get(),
             saveAccountDataUseCase = get(),
             saveSelectedAccountUseCase = get(),
-            userIdProvider = get(),
+            uuidProvider = get(),
             savePrivateKeyUseCase = get(),
             updateAccountDataUseCase = get(),
             saveAccountUseCase = get()

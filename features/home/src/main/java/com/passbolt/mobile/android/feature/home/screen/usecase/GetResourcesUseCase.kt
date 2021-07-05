@@ -1,9 +1,9 @@
-package com.passbolt.mobile.android.common
+package com.passbolt.mobile.android.feature.home.screen.usecase
 
-import org.junit.Before
-import org.junit.Test
-import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.common.userid.UserIdProvider
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.service.resource.ResourceRepository
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,35 +27,21 @@ import com.passbolt.mobile.android.common.userid.UserIdProvider
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class NextQrPageMapperTest {
-    private lateinit var provider: UserIdProvider
+class GetResourcesUseCase(
+    private val resourceRepository: ResourceRepository
+) : AsyncUseCase<Unit, GetResourcesUseCase.Output> {
 
-    @Before
-    fun setUp() {
-        provider = UserIdProvider()
-    }
+    override suspend fun execute(input: Unit): Output =
+        when (val response = resourceRepository.getResources()) {
+            is NetworkResult.Failure -> Output.Failure
+            is NetworkResult.Success -> Output.Success(response.value.body)
+        }
 
-    @Test
-    fun `passing valid url with https should return user id`() {
-        val id = "18"
-        val url = "https://www.passbolt.com"
-        val result = provider.get(id, url)
-        assertThat(result).isEqualTo("18_www.passbolt.com")
-    }
+    sealed class Output {
+        class Success(
+            val resources: List<ResourceResponseDto>
+        ) : Output()
 
-    @Test
-    fun `passing valid url with http should return user id`() {
-        val id = "18"
-        val url = "http://www.passbolt.com"
-        val result = provider.get(id, url)
-        assertThat(result).isEqualTo("18_www.passbolt.com")
-    }
-
-    @Test
-    fun `passing valid url with http with extra path should return user id`() {
-        val id = "18"
-        val url = "http://www.passbolt.com/something"
-        val result = provider.get(id, url)
-        assertThat(result).isEqualTo("18_www.passbolt.com")
+        object Failure : Output()
     }
 }

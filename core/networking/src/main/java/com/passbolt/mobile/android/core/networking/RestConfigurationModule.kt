@@ -1,10 +1,11 @@
 package com.passbolt.mobile.android.core.networking
 
 import coil.util.CoilUtils
-import com.passbolt.mobile.android.common.userid.UserIdProvider
+import com.passbolt.mobile.android.core.networking.interceptor.AuthInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
 import com.passbolt.mobile.android.core.networking.usecase.GetBaseUrlUseCase
 import okhttp3.Cache
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
@@ -38,7 +39,7 @@ val networkingModule = module {
     single(named(DEFAULT_HTTP_CLIENT)) {
         provideHttpClient(
             loggingInterceptor = get(),
-            changeableBaseUrlInterceptor = get()
+            interceptors = listOf(get<ChangeableBaseUrlInterceptor>(), get<AuthInterceptor>())
         )
     }
     single(named(COIL_HTTP_CLIENT)) {
@@ -49,6 +50,11 @@ val networkingModule = module {
         )
     }
     single { ChangeableBaseUrlInterceptor(getBaseUrlUseCase = get()) }
+    single {
+        AuthInterceptor(
+            getSessionUseCase = get()
+        )
+    }
     single {
         GetBaseUrlUseCase(
             getAccountDataUseCase = get(),
@@ -61,7 +67,6 @@ val networkingModule = module {
             converterFactory = get()
         )
     }
-    single { UserIdProvider() }
     single {
         ResponseHandler(
             errorHeaderMapper = get()
@@ -82,11 +87,11 @@ private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
 
 private fun provideHttpClient(
     loggingInterceptor: HttpLoggingInterceptor,
-    changeableBaseUrlInterceptor: ChangeableBaseUrlInterceptor
+    interceptors: List<Interceptor>
 ): OkHttpClient {
     val builder = OkHttpClient.Builder()
+    interceptors.forEach { builder.addInterceptor(it) }
     builder.addNetworkInterceptor(loggingInterceptor)
-    builder.addInterceptor(changeableBaseUrlInterceptor)
     // TODO remove in production version - PAS-105
     builder.hostnameVerifier { _, _ -> true }
     return builder.build()

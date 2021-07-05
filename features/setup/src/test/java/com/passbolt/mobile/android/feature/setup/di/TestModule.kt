@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.setup.di
 import com.google.gson.Gson
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.base.TestCoroutineLaunchContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 
 /**
@@ -28,6 +29,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
+@ExperimentalCoroutinesApi
 val testModule = module {
     factory { Gson() }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

@@ -96,7 +96,9 @@ private fun ScopeDSL.authPresenters() {
             challengeProvider = get(),
             challengeDecryptor = get(),
             challengeVerifier = get(),
-            getAccountDataUseCase = get()
+            getAccountDataUseCase = get(),
+            saveSessionUseCase = get(),
+            saveSelectedAccountUseCase = get()
         )
     }
     scoped<AuthContract.Presenter>(named(AuthenticationType.PASSPHRASE.name)) {

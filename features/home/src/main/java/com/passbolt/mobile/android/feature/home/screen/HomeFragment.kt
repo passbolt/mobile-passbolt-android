@@ -7,11 +7,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.common.extension.gone
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordModel
 import com.passbolt.mobile.android.feature.home.screen.more.PasswordMoreModel
+import com.passbolt.mobile.android.ui.PasswordModel
 import org.koin.android.ext.android.inject
 
 /**
@@ -45,6 +49,7 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
+        setListeners()
         presenter.attach(this)
     }
 
@@ -64,8 +69,38 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
         ))
     }
 
+    private fun setListeners() {
+        with(binding) {
+            refreshButton.setDebouncingOnClick {
+                presenter.refreshClick()
+            }
+            swiperefresh.setOnRefreshListener {
+                presenter.refreshSwipe()
+            }
+        }
+    }
+
     override fun showPasswords(list: List<PasswordModel>) {
-        itemAdapter.add(list.map { PasswordItem(it) })
+        binding.recyclerView.visible()
+        FastAdapterDiffUtil.calculateDiff(itemAdapter, list.map { PasswordItem(it) })
+        fastAdapter.notifyAdapterDataSetChanged()
+    }
+
+    override fun hideProgress() {
+        binding.progress.gone()
+    }
+
+    override fun hideRefreshProgress() {
+        binding.swiperefresh.isRefreshing = false
+    }
+
+    override fun showError() {
+        binding.errorContainer.visible()
+    }
+
+    override fun showProgress() {
+        binding.progress.visible()
+        binding.errorContainer.gone()
     }
 
     override fun navigateToMore(passwordModel: PasswordModel) {
@@ -74,8 +109,8 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
                 PasswordMoreModel(
                     title = passwordModel.title,
                     password = "password",
-                    username = "username",
-                    url = "https://www.passbolt.com"
+                    username = passwordModel.subtitle,
+                    url = passwordModel.url
                 )
             )
         )

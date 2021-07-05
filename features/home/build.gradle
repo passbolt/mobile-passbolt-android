@@ -13,15 +13,20 @@ dependencies {
     implementation project(':coreui')
     implementation project(':common')
     implementation project(':networking')
+    implementation project(':passboltapi')
+    implementation project(':mappers')
+    implementation project(':dto')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
+    implementation libs.androidx.swiperefresh
 
     implementation libs.di.koin
     implementation libs.di.koinExt
 
     implementation libs.fastAdapter.core
     implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.diff
 
     implementation libs.textDrawable
 

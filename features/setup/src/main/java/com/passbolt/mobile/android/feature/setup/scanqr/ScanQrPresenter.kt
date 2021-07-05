@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
-import com.passbolt.mobile.android.common.userid.UserIdProvider
+import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
@@ -50,7 +50,7 @@ class ScanQrPresenter(
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val saveAccountDataUseCase: SaveAccountDataUseCase,
     private val saveAccountUseCase: SaveAccountUseCase,
-    private val userIdProvider: UserIdProvider,
+    private val uuidProvider: UuidProvider,
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
     private val updateAccountDataUseCase: UpdateAccountDataUseCase
 ) : ScanQrContract.Presenter {
@@ -176,10 +176,16 @@ class ScanQrPresenter(
         }
     }
 
-    private fun saveAccountDetails(id: String, url: String) {
-        userId = userIdProvider.get(id, url)
+    private fun saveAccountDetails(serverId: String, url: String) {
+        userId = uuidProvider.get()
         saveSelectedAccountUseCase.execute(UserIdInput(userId))
-        saveAccountDataUseCase.execute(SaveAccountDataUseCase.Input(userId, url))
+        saveAccountDataUseCase.execute(
+            SaveAccountDataUseCase.Input(
+                userId = userId,
+                url = url,
+                serverId = serverId
+            )
+        )
         saveAccountUseCase.execute(UserIdInput(userId))
     }
 
