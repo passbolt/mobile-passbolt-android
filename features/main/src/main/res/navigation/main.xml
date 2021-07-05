@@ -6,11 +6,10 @@
     android:id="@+id/main.xml"
     app:startDestination="@id/homeNav">
 
-    <fragment
+    <include
         android:id="@+id/homeNav"
-        android:name="com.passbolt.mobile.android.feature.home.screen.HomeFragment"
-        android:label="HomeFragment"
-        tools:layout="@layout/fragment_home" />
+        app:graph="@navigation/home" />
+
     <fragment
         android:id="@+id/foldersNav"
         android:name="com.passbolt.mobile.android.feature.folders.screen.FoldersFragment"

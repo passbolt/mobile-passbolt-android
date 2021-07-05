@@ -68,8 +68,8 @@ class HomePresenter : HomeContract.Presenter {
         view?.showPasswords(list)
     }
 
-    override fun moreClick() {
-        view?.navigateToMore()
+    override fun moreClick(passwordModel: PasswordModel) {
+        view?.navigateToMore(passwordModel)
     }
 
     override fun itemClick() {

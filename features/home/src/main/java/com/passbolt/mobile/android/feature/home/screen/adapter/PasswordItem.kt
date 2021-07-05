@@ -82,7 +82,7 @@ class PasswordItem(
     }
 
     class MoreClick(
-        private val clickListener: () -> Unit
+        private val clickListener: (PasswordModel) -> Unit
     ) : ClickEventHook<PasswordItem>() {
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
             return viewHolder.asBinding<ItemPasswordBinding> {
@@ -96,7 +96,7 @@ class PasswordItem(
             fastAdapter: FastAdapter<PasswordItem>,
             item: PasswordItem
         ) {
-            clickListener.invoke()
+            clickListener.invoke(item.passwordModel)
         }
     }
 

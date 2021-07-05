@@ -13,7 +13,7 @@
         app:defaultNavHost="true"
         app:layout_constraintBottom_toTopOf="@id/mainNavigation"
         app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/main" />
+        app:navGraph="@navigation/home" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/mainNavigation"

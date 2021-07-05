@@ -10,6 +10,7 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
 
     <style name="Theme.Passbolt.AppBarOverlay"
@@ -47,5 +48,15 @@
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:textSize">@dimen/sp_16</item>
         <item name="android:textColor">@color/black_87</item>
+    </style>
+
+    <style name="AppBottomSheetDialogTheme"
+        parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+
+    <style name="AppModalStyle"
+        parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_bottomsheet_dialog</item>
     </style>
 </resources>
