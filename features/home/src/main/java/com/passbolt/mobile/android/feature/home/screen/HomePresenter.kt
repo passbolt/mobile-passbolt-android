@@ -4,8 +4,10 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.ui.PasswordModel
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountDataUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 
 /**
@@ -33,16 +35,32 @@ import kotlinx.coroutines.launch
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getResourcesUseCase: GetResourcesUseCase,
-    private val resourceModelMapper: ResourceModelMapper
+    private val resourceModelMapper: ResourceModelMapper,
+    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
 ) : HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private var currentSearchText: String = ""
+    private var allItemsList: List<PasswordModel> = emptyList()
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         fetchPasswords()
+        getSelectedAccountDataUseCase.execute(Unit).avatarUrl?.let {
+            view.displayAvatar(it)
+        }
+    }
+
+    override fun detach() {
+        scope.coroutineContext.cancelChildren()
+        super.detach()
+    }
+
+    override fun searchTextChange(text: String) {
+        currentSearchText = text
+        filterList()
     }
 
     private fun fetchPasswords() {
@@ -56,14 +74,38 @@ class HomePresenter(
                 is GetResourcesUseCase.Output.Success -> {
                     view?.hideRefreshProgress()
                     view?.hideProgress()
-                    val resources = result.resources.map { resourceModelMapper.map(it) }
-                    view?.showPasswords(resources)
+                    allItemsList = result.resources.map { resourceModelMapper.map(it) }
+                    displayPasswords()
                 }
             }
         }
     }
 
+    private fun displayPasswords() {
+        if (allItemsList.isEmpty()) {
+            view?.showEmptyList()
+        } else {
+            if (currentSearchText.isEmpty()) {
+                view?.showPasswords(allItemsList)
+            } else {
+                filterList()
+            }
+        }
+    }
+
+    private fun filterList() {
+        val filtered = allItemsList.filter {
+            it.searchCriteria.contains(currentSearchText)
+        }
+        if (filtered.isEmpty()) {
+            view?.showEmptyList()
+        } else {
+            view?.showPasswords(filtered)
+        }
+    }
+
     override fun refreshClick() {
+        view?.showProgress()
         fetchPasswords()
     }
 

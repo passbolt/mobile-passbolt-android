@@ -8,6 +8,8 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.material
     implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.core
+    implementation libs.fastAdapter.diff
 }
 
 android {

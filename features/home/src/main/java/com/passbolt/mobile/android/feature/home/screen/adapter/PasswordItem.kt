@@ -43,7 +43,7 @@ import com.passbolt.mobile.android.ui.PasswordModel
  * @since v1.0
  */
 class PasswordItem(
-    private val passwordModel: PasswordModel
+    val passwordModel: PasswordModel
 ) : AbstractBindingItem<ItemPasswordBinding>() {
 
     override val type: Int
