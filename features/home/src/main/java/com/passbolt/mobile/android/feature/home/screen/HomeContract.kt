@@ -35,6 +35,8 @@ interface HomeContract {
         fun showProgress()
         fun hideRefreshProgress()
         fun showError()
+        fun showEmptyList()
+        fun displayAvatar(url: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -42,5 +44,6 @@ interface HomeContract {
         fun itemClick()
         fun refreshSwipe()
         fun refreshClick()
+        fun searchTextChange(text: String)
     }
 }

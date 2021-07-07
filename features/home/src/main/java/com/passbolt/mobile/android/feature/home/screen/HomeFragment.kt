@@ -3,15 +3,22 @@ package com.passbolt.mobile.android.feature.home.screen
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
+import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
 import com.passbolt.mobile.android.feature.home.screen.more.PasswordMoreModel
@@ -45,12 +52,33 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
     private val itemAdapter: ItemAdapter<PasswordItem> by inject()
     private val fastAdapter: FastAdapter<PasswordItem> by inject()
     private val presenter: HomeContract.Presenter by inject()
+    private val imageLoader: ImageLoader by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
         setListeners()
         presenter.attach(this)
+    }
+
+    override fun displayAvatar(url: String) {
+        val request = ImageRequest.Builder(requireContext())
+            .data(url)
+            .transformations(CircleCropTransformation())
+            .size(AVATAR_SIZE, AVATAR_SIZE)
+            .placeholder(R.drawable.ic_avatar_placeholder)
+            .target { drawable ->
+                binding.searchTextInput.endIconMode = TextInputLayout.END_ICON_CUSTOM
+                binding.searchTextInput.endIconDrawable = drawable
+            }
+            .error(R.drawable.ic_avatar_placeholder)
+            .build()
+        imageLoader.enqueue(request)
+    }
+
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
     }
 
     private fun initAdapter() {
@@ -69,6 +97,11 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
         ))
     }
 
+    override fun showEmptyList() {
+        binding.recyclerView.gone()
+        binding.emptyListContainer.visible()
+    }
+
     private fun setListeners() {
         with(binding) {
             refreshButton.setDebouncingOnClick {
@@ -77,11 +110,18 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
             swiperefresh.setOnRefreshListener {
                 presenter.refreshSwipe()
             }
+            searchEditText.doAfterTextChanged {
+                presenter.searchTextChange(it.toString())
+            }
         }
     }
 
     override fun showPasswords(list: List<PasswordModel>) {
-        binding.recyclerView.visible()
+        with(binding) {
+            recyclerView.visible()
+            errorContainer.gone()
+            emptyListContainer.gone()
+        }
         FastAdapterDiffUtil.calculateDiff(itemAdapter, list.map { PasswordItem(it) })
         fastAdapter.notifyAdapterDataSetChanged()
     }
@@ -95,6 +135,7 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
     }
 
     override fun showError() {
+        binding.recyclerView.gone()
         binding.errorContainer.visible()
     }
 
@@ -118,5 +159,9 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
 
     override fun navigateToDetails() {
         Toast.makeText(requireContext(), "Details clicked!", Toast.LENGTH_SHORT).show()
+    }
+
+    companion object {
+        private val AVATAR_SIZE = 30.px
     }
 }

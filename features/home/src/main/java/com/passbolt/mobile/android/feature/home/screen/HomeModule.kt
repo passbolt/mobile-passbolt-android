@@ -35,7 +35,8 @@ fun Module.homeModule() {
             HomePresenter(
                 getResourcesUseCase = get(),
                 coroutineLaunchContext = get(),
-                resourceModelMapper = get()
+                resourceModelMapper = get(),
+                getSelectedAccountDataUseCase = get()
             )
         }
         scoped<ItemAdapter<PasswordItem>> {

@@ -1,4 +1,6 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.common
+
+import android.content.res.Resources
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,11 +24,5 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class PasswordModel(
-    val title: String,
-    val subtitle: String,
-    val icon: String?,
-    val initials: String,
-    val url: String,
-    val searchCriteria: String
-)
+val Int.px: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()

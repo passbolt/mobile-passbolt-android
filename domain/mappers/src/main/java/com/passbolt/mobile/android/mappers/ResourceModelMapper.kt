@@ -36,6 +36,7 @@ class ResourceModelMapper(
             subtitle = resource.username,
             initials = initialsProvider.get(resource.name),
             icon = null,
-            url = resource.uri
+            url = resource.uri,
+            searchCriteria = "${resource.name}${resource.username}${resource.uri}"
         )
 }
