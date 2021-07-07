@@ -4,6 +4,7 @@ import android.content.Context
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
 import com.passbolt.mobile.android.storage.paths.PassphraseFileName
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import java.io.File
 
 /**

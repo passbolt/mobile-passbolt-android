@@ -6,12 +6,12 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import com.passbolt.mobile.android.storage.usecase.SaveAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.SavePrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.SaveSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.UpdateAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.SaveAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob

@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import androidx.annotation.CallSuper
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
-import com.passbolt.mobile.android.storage.usecase.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob

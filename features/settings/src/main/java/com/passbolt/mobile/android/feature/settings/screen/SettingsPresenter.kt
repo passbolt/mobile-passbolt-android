@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
-import com.passbolt.mobile.android.storage.usecase.CheckIfPassphraseFileExistsUseCase
-import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.RemovePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 
 class SettingsPresenter(
     private val checkIfPassphraseExistsUseCase: CheckIfPassphraseFileExistsUseCase,
