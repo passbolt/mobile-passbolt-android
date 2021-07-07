@@ -1,8 +1,13 @@
-package com.passbolt.mobile.android.feature.auth
+package com.passbolt.mobile.android.feature.authentication.auth.challenge
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
+import com.passbolt.mobile.android.feature.authentication.getPrivateKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.openPgp
+import com.passbolt.mobile.android.feature.authentication.challengeTestModule
+import com.passbolt.mobile.android.feature.authentication.timeProvider
+import com.passbolt.mobile.android.feature.authentication.uuidProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,7 +27,7 @@ class ChallengeProviderTest : KoinTest {
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
-        modules(testModule)
+        modules(challengeTestModule)
     }
 
     @Test
