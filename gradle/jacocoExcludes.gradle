@@ -27,4 +27,12 @@ ext.jacocoExcludes = [
 
     // Koin modules definitions.
     '**/*Module.kt',
+
+    '**/*Directions*.*',
+    '**/*Args*.*',
+    '**/*Binding*.*',
+    '**/*Response*.*',
+    '**/*RequestDto*.*',
+    '**/*ExtKt**',
+    '**/*Item*.*',
 ]
