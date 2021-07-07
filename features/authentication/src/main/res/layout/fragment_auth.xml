@@ -67,6 +67,7 @@
             android:layout_height="@dimen/dp_56"
             android:layout_marginHorizontal="@dimen/dp_16"
             android:layout_marginBottom="@dimen/dp_16"
+            android:enabled="false"
             android:text="@string/auth_sign_in"
             app:layout_constraintBottom_toTopOf="@id/forgotPasswordButton" />
 
