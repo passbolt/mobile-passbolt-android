@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.auth.accountslist
+package com.passbolt.mobile.android.feature.authentication.auth.accountslist
 
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.any
@@ -63,7 +63,6 @@ class AccountListPresenterTest : KoinTest {
         whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(GetAllAccountsDataUseCase.Output(SAVED_ACCOUNTS))
 
         presenter.attach(view)
-
 
         argumentCaptor<List<AccountModelUi>>().apply {
             verify(view).showAccounts(capture())

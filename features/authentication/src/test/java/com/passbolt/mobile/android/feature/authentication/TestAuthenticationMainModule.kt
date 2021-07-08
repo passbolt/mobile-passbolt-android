@@ -1,4 +1,14 @@
-package com.passbolt.mobile.android.gopenpgp.extension
+package com.passbolt.mobile.android.feature
+
+import com.nhaarman.mockitokotlin2.mock
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.authentication.AuthenticationMainContract
+import com.passbolt.mobile.android.feature.authentication.AuthenticationMainPresenter
+import com.passbolt.mobile.android.service.logout.LogoutRepository
+import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -23,6 +33,17 @@ package com.passbolt.mobile.android.gopenpgp.extension
  * @since v1.0
  */
 
-fun String.erase() {
-    // TODO decide after "Strings on JVM" discussion
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
+internal val mockLogoutRepository = mock<LogoutRepository>()
+
+@ExperimentalCoroutinesApi
+val testAuthenticationMainModule = module {
+    factory<AuthenticationMainContract.Presenter> {
+        AuthenticationMainPresenter(
+            getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
+            logoutRepository = mockLogoutRepository,
+            coroutineLaunchContext = get()
+        )
+    }
+    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
 }

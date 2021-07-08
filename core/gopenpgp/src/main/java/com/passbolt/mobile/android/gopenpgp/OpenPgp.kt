@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.gopenpgp
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpException
-import com.passbolt.mobile.android.gopenpgp.extension.erase
 import com.proton.Gopenpgp.crypto.Key
 import com.proton.Gopenpgp.helper.Helper
 import kotlinx.coroutines.Dispatchers
@@ -48,7 +47,6 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
                 val encrypted = Helper.encryptSignMessageArmored(
                     publicKey, privateKey, passphrase, message
                 )
-                privateKey.erase()
                 passphraseCopy.erase()
 
                 encrypted
@@ -77,8 +75,6 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
                 )
                 val decryptedOutput = decrypted.toByteArray()
 
-                privateKey.erase()
-                decrypted.erase()
                 passphraseCopy.erase()
 
                 decryptedOutput

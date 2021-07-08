@@ -1,6 +1,7 @@
-package com.passbolt.mobile.android.feature.auth
+package com.passbolt.mobile.android.feature.authentication.auth.challenge
 
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
+import com.passbolt.mobile.android.feature.authentication.challengeTestModule
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.base.readFromFile
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,7 +25,7 @@ class ChallengeVerifierTest : KoinTest {
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
-        modules(testModule)
+        modules(challengeTestModule)
     }
 
     @Test

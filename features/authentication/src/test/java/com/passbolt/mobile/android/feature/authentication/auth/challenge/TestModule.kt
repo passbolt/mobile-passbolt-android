@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.auth
+package com.passbolt.mobile.android.feature.authentication
 
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.mock
@@ -39,7 +39,7 @@ internal val openPgp = mock<OpenPgp>()
 internal val timeProvider = mock<TimeProvider>()
 internal val uuidProvider = mock<UuidProvider>()
 
-val testModule = module {
+val challengeTestModule = module {
     factory { Gson() }
     factory { getPrivateKeyUseCase }
     factory { openPgp }
