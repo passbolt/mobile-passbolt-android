@@ -51,6 +51,10 @@ class SettingsPresenter(
     }
 
     override fun signOutClick() {
+        view?.showLogoutDialog()
+    }
+
+    override fun logoutConfirmed() {
         view?.navigateToAccountList(withSignOut = true)
     }
 
