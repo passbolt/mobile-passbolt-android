@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.stub
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
+import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
@@ -14,6 +15,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -57,18 +59,16 @@ class SignInPresenterTest : KoinTest {
         modules(testAuthModule)
     }
 
-    @Before
-    fun setup() {
-        presenter.attach(mockView)
-    }
-
     @Test
     fun `view should show error when server public keys cannot be fetched`() {
         mockGetServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Failure)
         }
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.signInClick("pass".toCharArray())
+        presenter.attach(mockView)
+        presenter.signInClick(SAMPLE_PASSPHRASE)
 
         verify(mockView).showTitle()
         verify(mockView).hideKeyboard()
@@ -105,9 +105,12 @@ class SignInPresenterTest : KoinTest {
                 ChallengeVerifier.Output.Verified("accessToken")
             )
         }
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
+        presenter.attach(mockView)
         presenter.argsRetrieved(ACCOUNT)
-        presenter.signInClick("pass".toCharArray())
+        presenter.signInClick(SAMPLE_PASSPHRASE)
 
         verify(mockView).showProgress()
         verify(mockView).hideProgress()
@@ -127,9 +130,12 @@ class SignInPresenterTest : KoinTest {
                 ChallengeProvider.Output.WrongPassphrase
             )
         }
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
+        presenter.attach(mockView)
         presenter.argsRetrieved(ACCOUNT)
-        presenter.signInClick("pass".toCharArray())
+        presenter.signInClick(SAMPLE_PASSPHRASE)
 
         verify(mockView).showProgress()
         verify(mockView).hideProgress()
@@ -152,10 +158,12 @@ class SignInPresenterTest : KoinTest {
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(SiginInUseCase.Output.Failure(ERROR_MESSAGE))
         }
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-
+        presenter.attach(mockView)
         presenter.argsRetrieved(ACCOUNT)
-        presenter.signInClick("pass".toCharArray())
+        presenter.signInClick(SAMPLE_PASSPHRASE)
 
         verify(mockView).showProgress()
         verify(mockView).hideProgress()
@@ -189,9 +197,12 @@ class SignInPresenterTest : KoinTest {
                 ChallengeVerifier.Output.Failure
             )
         }
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
+        presenter.attach(mockView)
         presenter.argsRetrieved(ACCOUNT)
-        presenter.signInClick("pass".toCharArray())
+        presenter.signInClick(SAMPLE_PASSPHRASE)
 
         verify(mockView).showProgress()
         verify(mockView).hideProgress()
@@ -201,5 +212,6 @@ class SignInPresenterTest : KoinTest {
 
     private companion object {
         private const val ERROR_MESSAGE = "error"
+        private val SAMPLE_PASSPHRASE = "pass".toByteArray()
     }
 }

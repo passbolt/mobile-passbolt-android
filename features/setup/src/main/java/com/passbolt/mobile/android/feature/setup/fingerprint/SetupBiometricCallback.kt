@@ -31,7 +31,7 @@ import com.passbolt.mobile.android.feature.setup.R
  * @since v1.0
  */
 
-class BiometricAuthCallback(
+class SetupBiometricCallback(
     private val authError: (Int) -> Unit,
     private val authSucceeded: () -> Unit
 ) : BiometricPrompt.AuthenticationCallback() {

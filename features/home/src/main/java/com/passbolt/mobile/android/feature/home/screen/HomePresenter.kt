@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.ui.PasswordModel
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren

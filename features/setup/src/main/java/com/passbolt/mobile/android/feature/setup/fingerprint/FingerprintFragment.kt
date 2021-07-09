@@ -121,7 +121,7 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
 
     override fun showBiometricPrompt() {
         val biometricPrompt = BiometricPrompt(
-            this, executor, BiometricAuthCallback(
+            this, executor, SetupBiometricCallback(
                 presenter::authenticationError,
                 presenter::authenticationSucceeded
             )

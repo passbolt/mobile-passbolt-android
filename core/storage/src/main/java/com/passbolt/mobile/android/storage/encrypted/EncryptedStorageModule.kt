@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.storage.encrypted
 
+import androidx.security.crypto.MasterKey
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.Module
 
@@ -27,17 +28,21 @@ import org.koin.core.module.Module
  */
 
 fun Module.encryptedStorageModule() {
-    single {
+    factory {
         EncryptedFileFactory(
             context = androidApplication(),
-            keySpecProvider = get()
+            masterKey = get()
         )
     }
-    single {
+    factory {
         EncryptedSharedPreferencesFactory(
             context = androidApplication(),
-            keySpecProvider = get()
+            masterKey = get()
         )
     }
-    single { KeySpecProvider() }
+    factory {
+        MasterKey.Builder(androidApplication())
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+    }
 }

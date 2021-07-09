@@ -24,7 +24,7 @@ package com.passbolt.mobile.android.storage.cache.passphrase
  */
 sealed class PotentialPassphrase {
 
-    data class Passphrase(val passphrase: CharArray) : PotentialPassphrase() {
+    data class Passphrase(val passphrase: ByteArray) : PotentialPassphrase() {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false

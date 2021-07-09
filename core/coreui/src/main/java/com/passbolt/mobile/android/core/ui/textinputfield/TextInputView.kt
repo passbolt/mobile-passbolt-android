@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
 import androidx.core.widget.addTextChangedListener
-import com.passbolt.mobile.android.common.extension.toCharArray
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewTextInputBinding
 
@@ -129,8 +128,8 @@ open class TextInputView @JvmOverloads constructor(
         }
     }
 
-    fun getText(): CharArray? =
-        binding.input.text?.toCharArray()
+    fun getInputBytes(): ByteArray? =
+        binding.input.text?.toString()?.toByteArray()
 
     sealed class State {
         object Initial : State()

@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
-import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
@@ -9,12 +8,16 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
+import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase.Output.Success as PgpSuccess
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase.Output.Success as RsaSuccess
 
@@ -50,11 +53,30 @@ class SignInPresenter(
     private val saveSessionUseCase: SaveSessionUseCase,
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val getAccountDataUseCase: GetAccountDataUseCase,
+    private val passphraseRepository: PassphraseRepository,
+    checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
-) : AuthBasePresenter(getAccountDataUseCase, coroutineLaunchContext) {
+) : AuthBasePresenter(
+    getAccountDataUseCase,
+    checkIfPassphraseFileExistsUseCase,
+    coroutineLaunchContext
+) {
 
-    override fun signInClick(passphrase: CharArray?) {
+    override fun signInClick(passphrase: ByteArray?) {
         super.signInClick(passphrase)
+        performSignIn(passphrase)
+    }
+
+    override fun biometricAuthSuccess() {
+        val potentialPassphrase = passphraseRepository.getCaching()
+        if (potentialPassphrase is PotentialPassphrase.Passphrase) {
+            performSignIn(potentialPassphrase.passphrase)
+        } else {
+            Timber.e("Passphrase not found in repository")
+        }
+    }
+
+    private fun performSignIn(passphrase: ByteArray?) {
         view?.showProgress()
         scope.launch {
             val pgpKey = async { getServerPublicPgpKeyUseCase.execute(Unit) }
@@ -70,7 +92,7 @@ class SignInPresenter(
         }
     }
 
-    private suspend fun signIn(passphrase: CharArray?, serverPublicKey: String, rsaKey: String) {
+    private suspend fun signIn(passphrase: ByteArray?, serverPublicKey: String, rsaKey: String) {
         // TODO verify passphrase use case?
         // TODO refactor using local user id and server user id
         val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
@@ -78,7 +100,7 @@ class SignInPresenter(
             version = "1.0.0",
             domain = "https://passbolt.dev",
             serverPublicKey = serverPublicKey,
-            passphrase = requireNotNull(passphrase.toByteArray()),
+            passphrase = requireNotNull(passphrase),
             userId
         )
         when (challenge) {
@@ -86,7 +108,7 @@ class SignInPresenter(
                 userId,
                 challenge.challenge,
                 serverPublicKey,
-                requireNotNull(passphrase),
+                passphrase,
                 rsaKey,
                 requireNotNull(accountData.serverId)
             )
@@ -98,7 +120,7 @@ class SignInPresenter(
         userId: String,
         challenge: String,
         serverPublicKey: String,
-        passphrase: CharArray,
+        passphrase: ByteArray,
         rsaKey: String,
         serverId: String
     ) {
@@ -110,7 +132,7 @@ class SignInPresenter(
             is SiginInUseCase.Output.Success -> {
                 val challengeDecryptResult = challengeDecryptor.decrypt(
                     serverPublicKey,
-                    passphrase.toByteArray()!!,
+                    passphrase,
                     userId,
                     result.challenge
                 )

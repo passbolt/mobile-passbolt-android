@@ -82,8 +82,8 @@ class FingerprintPresenterTest : KoinTest {
     fun `when biometrics auth is a success and cache has passphrase encourage autofill should show`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
         whenever(autofillInformationProvider.isPassboltAutofillServiceSet()).thenReturn(false)
-        whenever(passphraseRepository.getPotentialPassphrase()).thenReturn(
-            PotentialPassphrase.Passphrase("passphrase".toCharArray())
+        whenever(passphraseRepository.getCaching()).thenReturn(
+            PotentialPassphrase.Passphrase("passphrase".toByteArray())
         )
 
         presenter.authenticationSucceeded()
@@ -95,7 +95,7 @@ class FingerprintPresenterTest : KoinTest {
     @Test
     fun `when biometrics auth is a success and cache passphrase expired should authenticate`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
-        whenever(passphraseRepository.getPotentialPassphrase()).thenReturn(
+        whenever(passphraseRepository.getCaching()).thenReturn(
             PotentialPassphrase.PassphraseNotPresent
         )
 
@@ -109,8 +109,8 @@ class FingerprintPresenterTest : KoinTest {
     fun `when autofill service is already set up should navigate to autofill enabled directly`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
         whenever(autofillInformationProvider.isPassboltAutofillServiceSet()).thenReturn(true)
-        whenever(passphraseRepository.getPotentialPassphrase()).thenReturn(
-            PotentialPassphrase.Passphrase("passphrase".toCharArray())
+        whenever(passphraseRepository.getCaching()).thenReturn(
+            PotentialPassphrase.Passphrase("passphrase".toByteArray())
         )
 
         presenter.maybeLaterClick()

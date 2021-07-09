@@ -34,17 +34,13 @@ import org.koin.dsl.module
 internal val passphraseMemoryCacheMock = mock<PassphraseMemoryCache>()
 internal val getSelectedAccountUseCaseMock = mock<GetSelectedAccountUseCase>()
 internal val getPassphraseUseCaseMock = mock<GetPassphraseUseCase>()
-internal val savePassphraseUseCaseMock = mock<SavePassphraseUseCase>()
-internal val clearPassphraseUseCaseMock = mock<RemoveSelectedAccountPassphraseUseCase>()
 
 val passphraseRepositoryTestModule = module {
     factory {
         PassphraseRepository(
             passphraseMemoryCache = passphraseMemoryCacheMock,
             getPassphraseUseCase = getPassphraseUseCaseMock,
-            selectedAccountUseCase = getSelectedAccountUseCaseMock,
-            savePassphraseUseCase = savePassphraseUseCaseMock,
-            removeSelectedAccountPassphraseUseCase = clearPassphraseUseCaseMock
+            selectedAccountUseCase = getSelectedAccountUseCaseMock
         )
     }
 }

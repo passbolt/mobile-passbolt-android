@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.storage
 
 import android.content.Context
 import com.passbolt.mobile.android.storage.cache.cacheModule
+import com.passbolt.mobile.android.storage.encrypted.biometric.cryptoModule
 import com.passbolt.mobile.android.storage.encrypted.encryptedStorageModule
 import com.passbolt.mobile.android.storage.repository.repositoryModule
 import com.passbolt.mobile.android.storage.usecase.account.accountModule
@@ -48,6 +49,7 @@ val storageModule = module {
     privateKeyModule()
     selectedAccountModule()
     sessionModule()
+    cryptoModule()
     single {
         androidApplication().getSharedPreferences("user-accounts", Context.MODE_PRIVATE)
     }

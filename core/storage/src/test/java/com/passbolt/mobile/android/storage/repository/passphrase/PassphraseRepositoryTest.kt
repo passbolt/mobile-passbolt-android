@@ -54,7 +54,7 @@ class PassphraseRepositoryTest : KoinTest {
             GetSelectedAccountUseCase.Output(ACCOUNT_ID)
         )
 
-        val passphrase = passphraseRepository.getPotentialPassphrase()
+        val passphrase = passphraseRepository.getCaching()
         assertThat(passphrase).isInstanceOf(PotentialPassphrase.Passphrase::class.java)
         assertThat((passphrase as PotentialPassphrase.Passphrase).passphrase).isEqualTo(PASSPHRASE)
     }
@@ -69,13 +69,13 @@ class PassphraseRepositoryTest : KoinTest {
             GetPassphraseUseCase.Output(PotentialPassphrase.Passphrase(PASSPHRASE))
         )
 
-        val passphrase = passphraseRepository.getPotentialPassphrase()
+        val passphrase = passphraseRepository.getCaching()
         assertThat(passphrase).isInstanceOf(PotentialPassphrase.Passphrase::class.java)
         assertThat((passphrase as PotentialPassphrase.Passphrase).passphrase).isEqualTo(PASSPHRASE)
     }
 
     private companion object {
-        private val PASSPHRASE = "passphrase".toCharArray()
+        private val PASSPHRASE = "passphrase".toByteArray()
         private const val ACCOUNT_ID = "accountId"
     }
 }
