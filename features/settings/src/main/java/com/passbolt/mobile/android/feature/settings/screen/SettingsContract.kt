@@ -37,6 +37,7 @@ interface SettingsContract {
         fun showDisableFingerprintConfirmationDialog()
         fun navigateToAuthenticationSignIn()
         fun hideAutofillSetting()
+        fun showLogoutDialog()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -50,5 +51,6 @@ interface SettingsContract {
         fun disableFingerprintConfirmed()
         fun disableFingerprintCanceled()
         fun autofillEnabledDialogDismissed()
+        fun logoutConfirmed()
     }
 }

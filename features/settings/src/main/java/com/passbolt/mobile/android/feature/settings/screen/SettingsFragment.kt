@@ -99,6 +99,15 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         )
     }
 
+    override fun showLogoutDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.settings_logout_dialog_title)
+            .setMessage(R.string.settings_logout_dialog_message)
+            .setPositiveButton(R.string.settings_logout_dialog_sign_out) { _, _ -> presenter.logoutConfirmed() }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .show()
+    }
+
     override fun setupAutofillLaterClick() {
         // no action - dialog closed
     }
@@ -123,8 +132,8 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     override fun showDisableFingerprintConfirmationDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.settings_disable_fingerprint_conformation_title)
-            .setMessage(R.string.settings_disable_fingerprint_conformation_message)
+            .setTitle(R.string.settings_disable_fingerprint_confirmation_title)
+            .setMessage(R.string.settings_disable_fingerprint_confirmation_message)
             .setPositiveButton(R.string.settings_disable) { _, _ -> presenter.disableFingerprintConfirmed() }
             .setNegativeButton(R.string.cancel) { _, _ -> presenter.disableFingerprintCanceled() }
             .show()

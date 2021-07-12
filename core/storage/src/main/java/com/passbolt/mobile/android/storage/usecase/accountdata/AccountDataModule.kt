@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.storage.usecase.accountdata
 
+import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountDataUseCase
 import org.koin.core.module.Module
 
 /**
@@ -29,6 +30,12 @@ fun Module.accountDataModule() {
     single {
         GetAccountDataUseCase(
             encryptedSharedPreferencesFactory = get()
+        )
+    }
+    single {
+        GetSelectedAccountDataUseCase(
+            encryptedSharedPreferencesFactory = get(),
+            getSelectedAccountUseCase = get()
         )
     }
     factory {
