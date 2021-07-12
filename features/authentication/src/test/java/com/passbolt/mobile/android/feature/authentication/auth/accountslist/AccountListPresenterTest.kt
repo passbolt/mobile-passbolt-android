@@ -149,7 +149,7 @@ class AccountListPresenterTest : KoinTest {
 
     private companion object {
         private val SAVED_ACCOUNTS = listOf(
-            AccountEntity(userId = "1", null, null, null, null, "dev.test")
+            AccountEntity(userId = "1", null, null, null, null, "dev.test", "server_id")
         )
 
     }

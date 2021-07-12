@@ -87,7 +87,7 @@ fun Module.authModule() {
 }
 
 private fun ScopeDSL.authPresenters() {
-    scoped<AuthContract.Presenter>(named(AuthenticationType.SIGN_IN.name)) {
+    scoped<AuthContract.Presenter>(named(AuthenticationType.SignIn.name)) {
         SignInPresenter(
             getServerPublicPgpKeyUseCase = get(),
             getServerPublicRsaKeyUseCase = get(),
@@ -101,7 +101,7 @@ private fun ScopeDSL.authPresenters() {
             saveSelectedAccountUseCase = get()
         )
     }
-    scoped<AuthContract.Presenter>(named(AuthenticationType.PASSPHRASE.name)) {
+    scoped<AuthContract.Presenter>(named(AuthenticationType.Passphrase.javaClass.simpleName)) {
         PassphrasePresenter(
             getAccountDataUseCase = get(),
             coroutineLaunchContext = get(),

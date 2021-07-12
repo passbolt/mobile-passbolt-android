@@ -1,6 +1,15 @@
 package com.passbolt.mobile.android.core.navigation
 
-enum class AuthenticationType {
-    PASSPHRASE,
-    SIGN_IN
+import java.io.Serializable
+
+sealed class AuthenticationType : Serializable {
+    object Passphrase : AuthenticationType()
+
+    data class SignIn(
+        val userId: String? = null
+    ) : AuthenticationType() {
+        companion object {
+            const val name = "SignIn"
+        }
+    }
 }

@@ -28,5 +28,6 @@ class AccountEntity(
     val lastName: String?,
     val email: String?,
     val avatarUrl: String?,
-    val url: String
+    val url: String,
+    val serverId: String?
 )

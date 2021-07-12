@@ -46,20 +46,28 @@ class AuthenticationMainPresenter(
 
     private fun processAuthentication(authenticationStrategy: AuthenticationType) {
         when (authenticationStrategy) {
-            AuthenticationType.PASSPHRASE -> {
+            AuthenticationType.Passphrase -> {
                 val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
                 view?.navigateToAuth(selectedAccount, authenticationStrategy)
             }
-            AuthenticationType.SIGN_IN -> {
-                runCatching {
-                    getSelectedAccountUseCase.execute(Unit).selectedAccount
-                }
-                    .onSuccess { view?.navigateToAuth(it, authenticationStrategy) }
-                    .onFailure {
-                        Timber.d(it)
-                        // no account selected - remain on account list
-                    }
+            is AuthenticationType.SignIn -> navigateToSingIn(authenticationStrategy)
+        }
+    }
+
+    private fun navigateToSingIn(authenticationStrategy: AuthenticationType.SignIn) {
+        authenticationStrategy.userId?.let {
+            view?.navigateToAuth(it, authenticationStrategy)
+        } ?: run {
+            runCatching {
+                getSelectedAccountUseCase.execute(Unit).selectedAccount
             }
+                .onSuccess {
+                    view?.navigateToAuth(it, authenticationStrategy)
+                }
+                .onFailure {
+                    Timber.d(it)
+                    // no account selected - remain on account list
+                }
         }
     }
 

@@ -115,7 +115,7 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
     }
 
     override fun navigateToSignIn() {
-        startActivity(ActivityIntents.authentication(requireContext(), AuthenticationType.SIGN_IN))
+        startActivity(ActivityIntents.authentication(requireContext(), AuthenticationType.SignIn()))
         requireActivity().finish()
     }
 
@@ -157,7 +157,7 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                AuthenticationType.PASSPHRASE
+                AuthenticationType.Passphrase
             )
         )
     }

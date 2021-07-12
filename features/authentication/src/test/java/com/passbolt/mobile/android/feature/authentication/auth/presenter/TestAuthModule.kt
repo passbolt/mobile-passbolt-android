@@ -75,7 +75,7 @@ internal val mockChallengeDecryptor = mock<ChallengeDecryptor>()
 internal val mockChallengeVerifier = mock<ChallengeVerifier>()
 
 val testAuthModule = module {
-    factory<AuthContract.Presenter>(named(AuthenticationType.PASSPHRASE.name)) {
+    factory<AuthContract.Presenter>(named(AuthenticationType.Passphrase.javaClass.simpleName)) {
         PassphrasePresenter(
             getAccountDataUseCase = mockGetAccountDataUseCase,
             coroutineLaunchContext = get(),
@@ -84,7 +84,7 @@ val testAuthModule = module {
             verifyPassphraseUseCase = mockVerifyPassphraseUseCase
         )
     }
-    factory<AuthContract.Presenter>(named(AuthenticationType.SIGN_IN.name)) {
+    factory<AuthContract.Presenter>(named(AuthenticationType.SignIn.name)) {
         SignInPresenter(
             getServerPublicPgpKeyUseCase = mockGetServerPublicPgpKeyUseCase,
             getServerPublicRsaKeyUseCase = mockGetServerPublicRsaKeyUseCase,

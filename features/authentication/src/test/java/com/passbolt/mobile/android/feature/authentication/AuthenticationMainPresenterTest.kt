@@ -96,11 +96,11 @@ class AuthenticationMainPresenterTest : KoinTest {
 
         presenter.bundleRetrieved(
             AuthenticationTarget.AUTHENTICATE,
-            AuthenticationType.PASSPHRASE,
+            AuthenticationType.Passphrase,
             shouldLogOut = false
         )
 
-        verify(mockView).navigateToAuth(TEST_SELECTED_ACCOUNT, AuthenticationType.PASSPHRASE)
+        verify(mockView).navigateToAuth(TEST_SELECTED_ACCOUNT, AuthenticationType.Passphrase)
         verifyNoMoreInteractions(mockView)
     }
 
@@ -113,11 +113,11 @@ class AuthenticationMainPresenterTest : KoinTest {
 
         presenter.bundleRetrieved(
             AuthenticationTarget.AUTHENTICATE,
-            AuthenticationType.SIGN_IN,
+            AuthenticationType.SignIn(),
             shouldLogOut = false
         )
 
-        verify(mockView).navigateToAuth(TEST_SELECTED_ACCOUNT, AuthenticationType.SIGN_IN)
+        verify(mockView).navigateToAuth(TEST_SELECTED_ACCOUNT, AuthenticationType.SignIn())
         verifyNoMoreInteractions(mockView)
     }
 
@@ -128,7 +128,7 @@ class AuthenticationMainPresenterTest : KoinTest {
 
         presenter.bundleRetrieved(
             AuthenticationTarget.AUTHENTICATE,
-            AuthenticationType.SIGN_IN,
+            AuthenticationType.SignIn(),
             shouldLogOut = false
         )
 
