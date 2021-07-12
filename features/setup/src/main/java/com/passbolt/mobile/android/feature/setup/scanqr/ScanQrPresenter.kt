@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
@@ -52,7 +53,8 @@ class ScanQrPresenter(
     private val saveAccountUseCase: SaveAccountUseCase,
     private val uuidProvider: UuidProvider,
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
-    private val updateAccountDataUseCase: UpdateAccountDataUseCase
+    private val updateAccountDataUseCase: UpdateAccountDataUseCase,
+    private val checkAccountExistsUseCase: CheckAccountExistsUseCase
 ) : ScanQrContract.Presenter {
 
     override var view: ScanQrContract.View? = null
@@ -101,14 +103,20 @@ class ScanQrPresenter(
     }
 
     private suspend fun parserFirstPage(firstPage: ParseResult.PassboltQr.FirstPage) {
-        transferUuid = firstPage.content.transferId
-        authToken = firstPage.content.authenticationToken
-        totalPages = firstPage.content.totalPages
-        currentPage = 0
-        view?.initializeProgress(totalPages)
-        view?.showKeepGoing()
-        saveAccountDetails(firstPage.content.userId, firstPage.content.domain)
-        updateTransfer(pageNumber = firstPage.reservedBytesDto.page + 1)
+        val userId = firstPage.content.userId
+        val userExistsResult = checkAccountExistsUseCase.execute(CheckAccountExistsUseCase.Input(userId))
+        if (userExistsResult.exist) {
+            view?.navigateToSummary(ResultStatus.AlreadyLinked(requireNotNull(userExistsResult.userId)))
+        } else {
+            transferUuid = firstPage.content.transferId
+            authToken = firstPage.content.authenticationToken
+            totalPages = firstPage.content.totalPages
+            currentPage = 0
+            view?.initializeProgress(totalPages)
+            view?.showKeepGoing()
+            saveAccountDetails(userId, firstPage.content.domain)
+            updateTransfer(pageNumber = firstPage.reservedBytesDto.page + 1)
+        }
     }
 
     private suspend fun parserSubsequentPage(subsequentPage: ParseResult.PassboltQr.SubsequentPage) {
@@ -124,9 +132,9 @@ class ScanQrPresenter(
 
     private suspend fun parserFinishedWithSuccess(armoredKey: String) {
         when (savePrivateKeyUseCase.execute(SavePrivateKeyUseCase.Input(userId, armoredKey))) {
-            SavePrivateKeyUseCase.Output.AlreadyExist -> {
+            SavePrivateKeyUseCase.Output.Failure -> {
                 updateTransfer(pageNumber = currentPage, Status.ERROR)
-                view?.navigateToSummary(ResultStatus.AlreadyLinked)
+                view?.navigateToSummary(ResultStatus.Failure(""))
             }
             SavePrivateKeyUseCase.Output.Success -> {
                 updateTransfer(pageNumber = currentPage, Status.COMPLETE)

@@ -23,7 +23,7 @@ class StartUpActivity : BindingScopedActivity<ActivityStartupBinding>(ActivitySt
     }
 
     override fun navigateToSignIn() {
-        startActivity(ActivityIntents.authentication(this, AuthenticationType.SIGN_IN))
+        startActivity(ActivityIntents.authentication(this, AuthenticationType.SignIn()))
         finish()
     }
 }

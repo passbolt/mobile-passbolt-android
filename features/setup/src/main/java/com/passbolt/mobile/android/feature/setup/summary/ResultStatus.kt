@@ -46,7 +46,9 @@ sealed class ResultStatus(
         R.string.try_again
     )
 
-    object AlreadyLinked : ResultStatus(
+    class AlreadyLinked(
+        val userId: String
+    ) : ResultStatus(
         R.drawable.ic_already_connected,
         R.string.scan_qr_summary_already_linked_title,
         R.string.continue_label

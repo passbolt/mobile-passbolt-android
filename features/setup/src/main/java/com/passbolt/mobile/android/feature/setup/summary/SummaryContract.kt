@@ -36,6 +36,7 @@ interface SummaryContract {
         fun navigateBack()
         fun navigateToAuth()
         fun navigateToFingerprintSetup()
+        fun navigateToLogin(userId: String? = null)
     }
 
     interface Presenter : BaseContract.Presenter<View> {

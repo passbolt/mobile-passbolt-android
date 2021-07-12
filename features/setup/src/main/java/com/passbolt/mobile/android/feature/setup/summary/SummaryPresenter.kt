@@ -44,10 +44,8 @@ class SummaryPresenter : SummaryContract.Presenter {
     }
 
     override fun buttonClick() {
-        when (status) {
-            is ResultStatus.AlreadyLinked -> {
-                // TODO
-            }
+        when (val currentStatus = status) {
+            is ResultStatus.AlreadyLinked -> view?.navigateToLogin(currentStatus.userId)
             is ResultStatus.Failure -> view?.navigateBack()
             is ResultStatus.Success -> view?.navigateToAuth()
         }

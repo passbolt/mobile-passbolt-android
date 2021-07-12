@@ -44,13 +44,14 @@ class SavePrivateKeyUseCase(
             }
             Output.Success
         } catch (e: Exception) {
-            Output.AlreadyExist
+            Timber.e(e)
+            Output.Failure
         }
     }
 
     sealed class Output {
         object Success : Output()
-        object AlreadyExist : Output()
+        object Failure : Output()
     }
 
     class Input(

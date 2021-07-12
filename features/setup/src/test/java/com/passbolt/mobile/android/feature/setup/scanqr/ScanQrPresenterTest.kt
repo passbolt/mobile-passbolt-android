@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.stub
@@ -19,6 +20,7 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult.Use
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult.UserResolvableError.ErrorType.NOT_A_PASSBOLT_QR
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
+import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -133,6 +135,8 @@ class ScanQrPresenterTest : KoinTest {
     @Test
     fun `view should initialize progress and show keep going after first page scan`() = runBlockingTest {
         whenever(uuidProvider.get()).doReturn("testUserId")
+        whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
+
         reset(view)
 
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
@@ -160,6 +164,7 @@ class ScanQrPresenterTest : KoinTest {
         reset(view)
         whenever(uuidProvider.get()).doReturn("testUserId")
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
+        whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
 
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
         parseFlow.emit(ParseResult.FinishedWithSuccess("key"))
@@ -174,16 +179,19 @@ class ScanQrPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should navigate to account already linked after scanning existing key`() = runBlockingTest {
+    fun `view should navigate to failure after scanning existing key`() = runBlockingTest {
         reset(view)
         whenever(uuidProvider.get()).doReturn("testUserId")
-        whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.AlreadyExist)
+        whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Failure)
+        whenever(checkAccountExistsUseCase.execute(any())).doReturn(
+            CheckAccountExistsUseCase.Output(
+                true,
+                "testUserId"
+            )
+        )
 
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
-        parseFlow.emit(ParseResult.FinishedWithSuccess("key"))
 
-        verify(view).initializeProgress(TOTAL_PAGES)
-        verify(view).showKeepGoing()
         argumentCaptor<ResultStatus>().apply {
             verify(view).navigateToSummary(capture())
             assertThat(firstValue).isInstanceOf(ResultStatus.AlreadyLinked::class.java)

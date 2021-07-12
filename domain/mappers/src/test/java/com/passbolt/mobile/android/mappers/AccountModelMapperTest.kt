@@ -48,7 +48,8 @@ class AccountModelMapperTest {
                 lastName = "lastName1",
                 email = "email1",
                 avatarUrl = "avatarUrl1",
-                url = "url1"
+                url = "url1",
+                serverId = "serverId1"
             ),
             AccountEntity(
                 userId = "id2",
@@ -56,7 +57,8 @@ class AccountModelMapperTest {
                 lastName = "lastName2",
                 email = "email2",
                 avatarUrl = "avatarUrl2",
-                url = "url2"
+                url = "url2",
+                serverId = "serverId2"
             )
         )
         val result = mapper.map(accountsList)

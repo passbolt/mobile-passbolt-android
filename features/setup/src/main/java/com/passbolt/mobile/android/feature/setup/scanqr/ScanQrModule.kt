@@ -40,7 +40,18 @@ fun Module.scanQrModule() {
 
     scope(named<ScanQrFragment>()) {
         scoped<ScanQrContract.Presenter> {
-            ScanQrPresenter(get(), get(), get(), get(), get(), get(), get(), get(), get())
+            ScanQrPresenter(
+                coroutineLaunchContext = get(),
+                updateTransferUseCase = get(),
+                qrParser = get(),
+                saveSelectedAccountUseCase = get(),
+                saveAccountDataUseCase = get(),
+                saveAccountUseCase = get(),
+                uuidProvider = get(),
+                savePrivateKeyUseCase = get(),
+                updateAccountDataUseCase = get(),
+                checkAccountExistsUseCase = get()
+            )
         }
         scoped { QrScanResultsMapper(gson = get()) }
         scoped { KeyAssembler(gson = get()) }

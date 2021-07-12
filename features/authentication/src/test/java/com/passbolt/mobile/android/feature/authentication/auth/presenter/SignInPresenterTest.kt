@@ -48,7 +48,7 @@ import org.koin.test.inject
 
 class SignInPresenterTest : KoinTest {
 
-    private val presenter: AuthContract.Presenter by inject(named(AuthenticationType.SIGN_IN.name))
+    private val presenter: AuthContract.Presenter by inject(named(AuthenticationType.SignIn.name))
     private val mockView = mock<AuthContract.View>()
 
     @get:Rule

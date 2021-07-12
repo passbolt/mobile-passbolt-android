@@ -32,6 +32,11 @@ fun Module.accountsModule() {
         )
     }
     single {
+        CheckAccountExistsUseCase(
+            getAllAccountsDataUseCase = get()
+        )
+    }
+    single {
         GetAllAccountsDataUseCase(
             getAccountDataUseCase = get(),
             getAccountsUseCase = get()

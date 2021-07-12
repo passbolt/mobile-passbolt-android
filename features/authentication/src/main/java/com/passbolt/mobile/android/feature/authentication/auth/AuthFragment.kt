@@ -54,7 +54,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         authStrategy = strategyFactory.get(args.authenticationStrategy, this)
-        presenter = get(named(args.authenticationStrategy.name))
+        presenter = get(named(args.authenticationStrategy.javaClass.simpleName))
         presenter.argsRetrieved(args.userId)
         presenter.attach(this)
         setListeners()
