@@ -2,12 +2,14 @@ package com.passbolt.mobile.android.feature.authentication.auth
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.hideSoftInput
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
@@ -57,6 +59,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         presenter = get(named(args.authenticationStrategy.javaClass.simpleName))
         presenter.argsRetrieved(args.userId)
         presenter.attach(this)
+        presenter.viewCreated(authStrategy.domainVisible())
         setListeners()
     }
 
@@ -72,10 +75,15 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
                 presenter.forgotPasswordClick()
             }
             with(toolbar) {
-                setNavigationIcon(com.passbolt.mobile.android.core.ui.R.drawable.ic_back)
-                setNavigationOnClickListener { presenter.backClick() }
+                setNavigationIcon(R.drawable.ic_back)
+                setNavigationOnClickListener { presenter.backClick(authStrategy.showLeaveConfirmationDialog()) }
             }
         }
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                presenter.backClick(authStrategy.showLeaveConfirmationDialog())
+            }
+        })
     }
 
     override fun onDestroyView() {
@@ -127,6 +135,13 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         binding.emailLabel.text = email
     }
 
+    override fun showDomain(domain: String) {
+        with(binding) {
+            domainLabel.visible()
+            domainLabel.text = domain
+        }
+    }
+
     override fun showAvatar(url: String) {
         binding.avatarImage.load(url) {
             transformations(CircleCropTransformation())
@@ -140,6 +155,15 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
             .setTitle(R.string.auth_forgot_password_title)
             .setMessage(R.string.auth_forgot_password_message)
             .setPositiveButton(R.string.got_it) { _, _ -> }
+            .show()
+    }
+
+    override fun showLeaveConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.auth_exit_dialog_title)
+            .setMessage(R.string.auth_exit_dialog_message)
+            .setPositiveButton(R.string.yes) { _, _ -> presenter.leaveConfirmationClick() }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
             .show()
     }
 

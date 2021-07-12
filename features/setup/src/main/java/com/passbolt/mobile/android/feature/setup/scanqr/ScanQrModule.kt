@@ -46,7 +46,6 @@ fun Module.scanQrModule() {
                 qrParser = get(),
                 saveSelectedAccountUseCase = get(),
                 saveAccountDataUseCase = get(),
-                saveAccountUseCase = get(),
                 uuidProvider = get(),
                 savePrivateKeyUseCase = get(),
                 updateAccountDataUseCase = get(),

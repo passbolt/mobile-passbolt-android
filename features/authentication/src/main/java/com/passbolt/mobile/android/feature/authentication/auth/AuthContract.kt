@@ -36,19 +36,23 @@ interface AuthContract {
         fun showName(name: String)
         fun showEmail(email: String)
         fun showAvatar(url: String)
+        fun showDomain(domain: String)
         fun showForgotPasswordDialog()
         fun showTitle()
         fun disableAuthButton()
         fun enableAuthButton()
         fun authSuccess()
         fun hideKeyboard()
+        fun showLeaveConfirmationDialog()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun signInClick(passphrase: CharArray?)
-        fun backClick()
+        fun backClick(showConfirmationDialog: Boolean)
         fun argsRetrieved(userId: String)
         fun forgotPasswordClick()
         fun passphraseInputIsEmpty(isEmpty: Boolean)
+        fun viewCreated(domainVisible: Boolean)
+        fun leaveConfirmationClick()
     }
 }

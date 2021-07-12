@@ -107,7 +107,8 @@ private fun ScopeDSL.authPresenters() {
             coroutineLaunchContext = get(),
             passphraseRepository = get(),
             getSelectedUserPrivateKeyUseCase = get(),
-            verifyPassphraseUseCase = get()
+            verifyPassphraseUseCase = get(),
+            saveAccountUseCase = get()
         )
     }
 }

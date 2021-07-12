@@ -53,16 +53,22 @@ abstract class AuthBasePresenter(
 
     override fun argsRetrieved(userId: String) {
         this.userId = userId
-        getAccountData()
     }
 
-    private fun getAccountData() {
+    override fun viewCreated(domainVisible: Boolean) {
+        getAccountData(domainVisible)
+    }
+
+    private fun getAccountData(domainVisible: Boolean) {
         scope.launch {
             val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
 
             view?.showName("${accountData.firstName.orEmpty()} ${accountData.lastName.orEmpty()}")
             accountData.email?.let { view?.showEmail(it) }
             accountData.avatarUrl?.let { view?.showAvatar(it) }
+            if (domainVisible) {
+                view?.showDomain(accountData.url)
+            }
         }
     }
 
@@ -78,7 +84,15 @@ abstract class AuthBasePresenter(
         }
     }
 
-    override fun backClick() {
+    override fun backClick(showConfirmationDialog: Boolean) {
+        if (showConfirmationDialog) {
+            view?.showLeaveConfirmationDialog()
+        } else {
+            view?.navigateBack()
+        }
+    }
+
+    override fun leaveConfirmationClick() {
         view?.navigateBack()
     }
 

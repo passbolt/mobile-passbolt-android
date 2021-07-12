@@ -3,12 +3,15 @@ package com.passbolt.mobile.android.feature.setup.summary
 import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentSummaryBinding
 import org.koin.android.ext.android.inject
 
@@ -60,6 +63,11 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
 
     private fun setListeners() {
         binding.resultView.setButtonAction { presenter.buttonClick() }
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                presenter.backClick()
+            }
+        })
     }
 
     override fun setTitle(title: Int) {
@@ -82,6 +90,10 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
         findNavController().popBackStack()
     }
 
+    override fun navigateToStart() {
+        startActivity(ActivityIntents.start(requireContext()))
+    }
+
     override fun navigateToAuth() {
         authenticationResult.launch(
             ActivityIntents.authentication(
@@ -89,6 +101,15 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
                 AuthenticationType.Passphrase
             )
         )
+    }
+
+    override fun showLeaveConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.auth_exit_dialog_title)
+            .setMessage(R.string.auth_exit_dialog_message)
+            .setPositiveButton(R.string.yes) { _, _ -> presenter.leaveConfirmationClick() }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .show()
     }
 
     override fun navigateToLogin(userId: String?) {

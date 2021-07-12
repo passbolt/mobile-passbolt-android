@@ -14,6 +14,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUs
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
+import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
@@ -73,6 +74,7 @@ internal val mockChallengeProvider = mock<ChallengeProvider>()
 internal val mockSignInUseCase = mock<SiginInUseCase>()
 internal val mockChallengeDecryptor = mock<ChallengeDecryptor>()
 internal val mockChallengeVerifier = mock<ChallengeVerifier>()
+internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
 
 val testAuthModule = module {
     factory<AuthContract.Presenter>(named(AuthenticationType.Passphrase.javaClass.simpleName)) {
@@ -81,7 +83,8 @@ val testAuthModule = module {
             coroutineLaunchContext = get(),
             passphraseRepository = mockPassphraseRepository,
             getSelectedUserPrivateKeyUseCase = mockGetSelectedPrivateKeyUseCase,
-            verifyPassphraseUseCase = mockVerifyPassphraseUseCase
+            verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+            saveAccountUseCase = mockSaveAccountUseCase
         )
     }
     factory<AuthContract.Presenter>(named(AuthenticationType.SignIn.name)) {

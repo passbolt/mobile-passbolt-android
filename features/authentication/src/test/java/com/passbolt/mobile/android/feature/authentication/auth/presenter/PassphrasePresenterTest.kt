@@ -90,6 +90,7 @@ class PassphrasePresenterTest : KoinTest {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
 
+        presenter.argsRetrieved(ACCOUNT)
         presenter.signInClick("".toCharArray())
 
         verify(mockView).showTitle()
@@ -113,11 +114,13 @@ class PassphrasePresenterTest : KoinTest {
     @Test
     fun `view should show account data on attach`() {
         presenter.argsRetrieved(ACCOUNT)
+        presenter.viewCreated(true)
 
         verify(mockView).showTitle()
         verify(mockView).showName("$MOCK_ACCOUNT_DATA_FIRST_NAME $MOCK_ACCOUNT_DATA_LAST_NAME")
         verify(mockView).showEmail(MOCK_ACCOUNT_DATA_EMAIL)
         verify(mockView).showAvatar(MOCK_ACCOUNT_DATA_AVATAR_URL)
+        verify(mockView).showDomain(MOCK_ACCOUNT_DATA_URL)
         verifyNoMoreInteractions(mockView)
     }
 }
