@@ -79,7 +79,6 @@ val testScanQrModule = module {
             uuidProvider = get(),
             savePrivateKeyUseCase = get(),
             updateAccountDataUseCase = get(),
-            saveAccountUseCase = get(),
             checkAccountExistsUseCase = get()
         )
     }

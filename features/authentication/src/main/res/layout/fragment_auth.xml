@@ -48,6 +48,18 @@
             app:layout_constraintTop_toBottomOf="@id/nameLabel"
             tools:text="passbolt@passbolt.com" />
 
+        <TextView
+            android:id="@+id/domainLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:textSize="@dimen/sp_12"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/emailLabel"
+            tools:text="https://passbolt.com" />
+
         <com.passbolt.mobile.android.core.ui.textinputfield.PasswordInputView
             android:id="@+id/passphraseInput"
             android:layout_width="match_parent"
@@ -56,7 +68,7 @@
             android:layout_marginTop="@dimen/dp_40"
             app:inputTitle="@string/auth_password_title"
             app:layout_constraintBottom_toTopOf="@id/authButton"
-            app:layout_constraintTop_toBottomOf="@id/emailLabel"
+            app:layout_constraintTop_toBottomOf="@id/domainLabel"
             app:layout_constraintVertical_bias="0"
             app:layout_goneMarginTop="@dimen/dp_32" />
 

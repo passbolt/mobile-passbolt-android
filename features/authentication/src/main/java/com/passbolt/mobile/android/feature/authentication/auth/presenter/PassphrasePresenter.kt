@@ -3,7 +3,9 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
+import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import kotlinx.coroutines.launch
 
@@ -36,6 +38,7 @@ class PassphrasePresenter(
     private val passphraseRepository: PassphraseRepository,
     private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
     private val verifyPassphraseUseCase: VerifyPassphraseUseCase,
+    private val saveAccountUseCase: SaveAccountUseCase,
     getAccountDataUseCase: GetAccountDataUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthBasePresenter(getAccountDataUseCase, coroutineLaunchContext) {
@@ -56,6 +59,7 @@ class PassphrasePresenter(
                 view?.showWrongPassphrase()
                 passphraseRepository.clearPassphrase()
             } else {
+                saveAccountUseCase.execute(UserIdInput(userId))
                 passphraseRepository.setPassphrase(passphrase)
                 view?.authSuccess()
             }

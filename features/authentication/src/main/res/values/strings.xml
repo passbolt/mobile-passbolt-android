@@ -21,4 +21,6 @@
     <string name="auth_forgot_password_title">Did you forgot your passphrase?</string>
     <string name="auth_forgot_password_message">Unfortunately you cannot access your data if you do not remember your passphrase. Please contact your administrator to unlock your account.</string>
     <string name="auth_enter_passphrase">Enter your passphrase</string>
+    <string name="auth_exit_dialog_title">Are you sure?</string>
+    <string name="auth_exit_dialog_message">If you leave, you will need to set up your account again.</string>
 </resources>

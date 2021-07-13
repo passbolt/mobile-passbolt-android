@@ -37,11 +37,15 @@ interface SummaryContract {
         fun navigateToAuth()
         fun navigateToFingerprintSetup()
         fun navigateToLogin(userId: String? = null)
+        fun showLeaveConfirmationDialog()
+        fun navigateToStart()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun start(status: ResultStatus)
         fun buttonClick()
         fun authenticationSucceeded()
+        fun backClick()
+        fun leaveConfirmationClick()
     }
 }

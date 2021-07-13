@@ -5,6 +5,7 @@ import android.content.Intent
 import com.gaelmarhic.quadrant.Authentication
 import com.gaelmarhic.quadrant.Main
 import com.gaelmarhic.quadrant.Setup
+import com.gaelmarhic.quadrant.Startup
 
 /**
  * Passbolt - Open source password manager for teams
@@ -52,5 +53,10 @@ object ActivityIntents {
 
     fun home(context: Context) = Intent().apply {
         setClassName(context, Main.MAIN_ACTIVITY)
+    }
+
+    fun start(context: Context) = Intent().apply {
+        setClassName(context, Startup.START_UP_ACTIVITY)
+        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 }

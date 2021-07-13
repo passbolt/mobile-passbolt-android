@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.uistrategy
 
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 
@@ -11,7 +12,7 @@ class PassphraseAuthStrategy(override var authFragment: AuthFragment?) : AuthStr
         activeAuthFragment.getString(R.string.auth_enter_passphrase)
 
     override fun navigateBack() {
-        activeAuthFragment.requireActivity().finish()
+        activeAuthFragment.startActivity(ActivityIntents.start(activeAuthFragment.requireActivity()))
     }
 
     override fun authSuccess() {
@@ -20,4 +21,8 @@ class PassphraseAuthStrategy(override var authFragment: AuthFragment?) : AuthStr
             finish()
         }
     }
+
+    override fun domainVisible(): Boolean = true
+
+    override fun showLeaveConfirmationDialog(): Boolean = true
 }

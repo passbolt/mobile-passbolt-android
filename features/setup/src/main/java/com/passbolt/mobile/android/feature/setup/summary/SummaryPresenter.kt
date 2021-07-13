@@ -54,4 +54,16 @@ class SummaryPresenter : SummaryContract.Presenter {
     override fun authenticationSucceeded() {
         view?.navigateToFingerprintSetup()
     }
+
+    override fun backClick() {
+        if (status == ResultStatus.Success) {
+            view?.showLeaveConfirmationDialog()
+        } else {
+            view?.navigateBack()
+        }
+    }
+
+    override fun leaveConfirmationClick() {
+        view?.navigateToStart()
+    }
 }

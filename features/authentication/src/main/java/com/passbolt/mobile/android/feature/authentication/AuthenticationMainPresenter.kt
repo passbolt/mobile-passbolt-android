@@ -46,7 +46,7 @@ class AuthenticationMainPresenter(
 
     private fun processAuthentication(authenticationStrategy: AuthenticationType) {
         when (authenticationStrategy) {
-            AuthenticationType.Passphrase -> {
+            is AuthenticationType.Passphrase -> {
                 val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
                 view?.navigateToAuth(selectedAccount, authenticationStrategy)
             }

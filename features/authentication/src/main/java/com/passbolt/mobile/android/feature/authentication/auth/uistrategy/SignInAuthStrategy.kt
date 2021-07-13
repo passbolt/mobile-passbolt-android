@@ -20,4 +20,8 @@ class SignInAuthStrategy(override var authFragment: AuthFragment?) : AuthStrateg
             requireActivity().finish()
         }
     }
+
+    override fun domainVisible(): Boolean = false
+
+    override fun showLeaveConfirmationDialog(): Boolean = false
 }
