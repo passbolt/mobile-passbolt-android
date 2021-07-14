@@ -11,9 +11,9 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -56,11 +56,6 @@ class PassphrasePresenterTest : KoinTest {
         modules(testAuthModule)
     }
 
-    @Before
-    fun setup() {
-        presenter.attach(mockView)
-    }
-
     @After
     fun tearDown() {
         reset(mockVerifyPassphraseUseCase)
@@ -70,11 +65,14 @@ class PassphrasePresenterTest : KoinTest {
     fun `view should show wrong passphrase if passphrase is not correct`() {
         whenever(mockGetSelectedPrivateKeyUseCase.execute(Unit))
             .doReturn(GetSelectedUserPrivateKeyUseCase.Output("privateKey"))
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(false))
         }
 
-        presenter.signInClick("pass".toCharArray())
+        presenter.attach(mockView)
+        presenter.signInClick("pass".toByteArray())
 
         verify(mockView).showTitle()
         verify(mockView).hideKeyboard()
@@ -86,12 +84,15 @@ class PassphrasePresenterTest : KoinTest {
     fun `view should show auth success if passphrase is correct`() {
         whenever(mockGetSelectedPrivateKeyUseCase.execute(Unit))
             .doReturn(GetSelectedUserPrivateKeyUseCase.Output("privateKey"))
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
 
+        presenter.attach(mockView)
         presenter.argsRetrieved(ACCOUNT)
-        presenter.signInClick("".toCharArray())
+        presenter.signInClick("".toByteArray())
 
         verify(mockView).showTitle()
         verify(mockView).hideKeyboard()
@@ -101,6 +102,10 @@ class PassphrasePresenterTest : KoinTest {
 
     @Test
     fun `view should disable and enable sign in button if on passphrase empty flag change`() {
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
+
+        presenter.attach(mockView)
         presenter.passphraseInputIsEmpty(true)
         verify(mockView).showTitle()
         verify(mockView).disableAuthButton()
@@ -113,6 +118,10 @@ class PassphrasePresenterTest : KoinTest {
 
     @Test
     fun `view should show account data on attach`() {
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
+
+        presenter.attach(mockView)
         presenter.argsRetrieved(ACCOUNT)
         presenter.viewCreated(true)
 
@@ -122,5 +131,17 @@ class PassphrasePresenterTest : KoinTest {
         verify(mockView).showAvatar(MOCK_ACCOUNT_DATA_AVATAR_URL)
         verify(mockView).showDomain(MOCK_ACCOUNT_DATA_URL)
         verifyNoMoreInteractions(mockView)
+    }
+
+    @Test
+    fun `view should show biometric prompt when fingerprint configured`() {
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = true))
+
+        presenter.attach(mockView)
+        presenter.argsRetrieved(ACCOUNT)
+
+        verify(mockView).setBiometricAuthButtonVisible()
+        verify(mockView).showBiometricPrompt()
     }
 }

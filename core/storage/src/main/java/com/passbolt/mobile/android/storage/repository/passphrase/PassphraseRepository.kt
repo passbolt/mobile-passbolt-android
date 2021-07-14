@@ -2,11 +2,9 @@ package com.passbolt.mobile.android.storage.repository.passphrase
 
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,27 +32,18 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 class PassphraseRepository(
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val getPassphraseUseCase: GetPassphraseUseCase,
-    private val savePassphraseUseCase: SavePassphraseUseCase,
-    private val selectedAccountUseCase: GetSelectedAccountUseCase,
-    private val removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase
+    private val selectedAccountUseCase: GetSelectedAccountUseCase
 ) {
 
-    fun getPotentialPassphrase(): PotentialPassphrase =
+    fun getCaching(): PotentialPassphrase =
         if (passphraseMemoryCache.hasPassphrase()) {
             passphraseMemoryCache.get()
         } else {
             val userId = selectedAccountUseCase.execute(Unit).selectedAccount
-            getPassphraseUseCase.execute(UserIdInput(userId)).potentialPassphrase
+            val potentialPassphrase = getPassphraseUseCase.execute(UserIdInput(userId)).potentialPassphrase
+            if (potentialPassphrase is PotentialPassphrase.Passphrase) {
+                passphraseMemoryCache.set(potentialPassphrase.passphrase)
+            }
+            potentialPassphrase
         }
-
-    fun clearPassphrase() {
-        passphraseMemoryCache.clear()
-        removeSelectedAccountPassphraseUseCase.execute(Unit)
-    }
-
-    fun setPassphrase(passphrase: CharArray) {
-        removeSelectedAccountPassphraseUseCase.execute(Unit)
-        savePassphraseUseCase.execute(SavePassphraseUseCase.Input(passphrase))
-        passphraseMemoryCache.set(passphrase)
-    }
 }

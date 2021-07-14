@@ -56,7 +56,7 @@ class PassphraseMemoryCache(
     private val lifecycleObserverJob = SupervisorJob()
     private val lifecycleObserverScope = CoroutineScope(lifecycleObserverJob + Dispatchers.Main)
 
-    fun set(passphrase: CharArray) {
+    fun set(passphrase: ByteArray) {
         clear()
         initializeObservers()
         value = PotentialPassphrase.Passphrase(passphrase)

@@ -31,22 +31,11 @@ import java.io.File
 
 class EncryptedFileFactory internal constructor(
     private val context: Context,
-    private val keySpecProvider: KeySpecProvider
+    private val masterKey: MasterKey
 ) {
 
-    fun get(
-        fileName: String,
-        keyBiometricSettings: KeyBiometricSettings = KeyBiometricSettings(
-            authenticationRequired = false,
-            invalidatedByBiometricEnrollment = false
-        )
-    ): EncryptedFile {
-        val masterKey: MasterKey = MasterKey.Builder(context)
-            .setKeyGenParameterSpec(keySpecProvider.get(keyBiometricSettings))
-            .build()
-
+    fun get(fileName: String): EncryptedFile {
         val file = File(EncryptedFileBaseDirectory(context).baseDirectory, fileName)
-
         return EncryptedFile.Builder(
             context,
             file,

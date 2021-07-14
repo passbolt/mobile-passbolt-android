@@ -11,7 +11,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
-import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.PasswordModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest

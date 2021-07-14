@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricPrompt
 import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -20,6 +22,7 @@ import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAu
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import java.util.concurrent.Executor
 
 /**
  * Passbolt - Open source password manager for teams
@@ -52,6 +55,8 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     private lateinit var presenter: AuthContract.Presenter
 
     private var progressDialog = ProgressDialog()
+    private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
+    private val executor: Executor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -69,10 +74,13 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
                 presenter.passphraseInputIsEmpty(it)
             }
             authButton.setDebouncingOnClick {
-                presenter.signInClick(binding.passphraseInput.getText())
+                presenter.signInClick(binding.passphraseInput.getInputBytes())
             }
             forgotPasswordButton.setDebouncingOnClick {
                 presenter.forgotPasswordClick()
+            }
+            biometricAuthButton.setDebouncingOnClick {
+                presenter.biometricAuthClick()
             }
             with(toolbar) {
                 setNavigationIcon(R.drawable.ic_back)
@@ -84,6 +92,27 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
                 presenter.backClick(authStrategy.showLeaveConfirmationDialog())
             }
         })
+    }
+
+    override fun setBiometricAuthButtonVisible() {
+        binding.biometricAuthButton.visible()
+    }
+
+    override fun showBiometricPrompt() {
+        val biometricPrompt = BiometricPrompt(
+            this, executor, AuthBiometricCallback(
+                presenter::biometricAuthError,
+                presenter::biometricAuthSuccess
+            )
+        )
+
+        val promptInfo = biometricPromptBuilder
+            .setTitle(getString(R.string.auth_biometric_title))
+            .setSubtitle(getString(R.string.auth_biometric_subtitle))
+            .setNegativeButtonText(getString(R.string.cancel))
+            .setAllowedAuthenticators(BIOMETRIC_STRONG)
+            .build()
+        biometricPrompt.authenticate(promptInfo)
     }
 
     override fun onDestroyView() {

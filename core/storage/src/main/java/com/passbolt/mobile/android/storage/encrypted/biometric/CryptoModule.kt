@@ -1,6 +1,9 @@
-package com.passbolt.mobile.android.common.extension
+package com.passbolt.mobile.android.storage.encrypted.biometric
 
-import android.text.Editable
+import android.security.keystore.KeyProperties
+import org.koin.core.module.Module
+import java.security.KeyStore
+import javax.crypto.KeyGenerator
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,8 +27,25 @@ import android.text.Editable
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-fun Editable.toCharArray(): CharArray {
-    val charArray = CharArray(length)
-    getChars(0, length, charArray, 0)
-    return charArray
+
+private const val ANDROID_KEY_STORE = "AndroidKeyStore"
+
+fun Module.cryptoModule() {
+    factory {
+        Crypto(keyStoreWrapper = get())
+    }
+    factory {
+        KeyStoreWrapper(
+            keyStore = get(),
+            keyGenerator = get()
+        )
+    }
+    factory {
+        KeyStore.getInstance(ANDROID_KEY_STORE).apply {
+            load(null)
+        }
+    }
+    factory {
+        KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEY_STORE)
+    }
 }

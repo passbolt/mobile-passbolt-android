@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.storage.usecase.passphrase
 
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 
@@ -35,7 +36,8 @@ fun Module.passphraseModule() {
     }
     single {
         GetPassphraseUseCase(
-            encryptedFileFactory = get()
+            crypto = get(),
+            appContext = androidApplication()
         )
     }
     factory {
@@ -49,8 +51,9 @@ fun Module.passphraseModule() {
     }
     single {
         SavePassphraseUseCase(
-            encryptedFileFactory = get(),
-            getSelectedAccountUseCase = get()
+            getSelectedAccountUseCase = get(),
+            crypto = get(),
+            appContext = androidApplication()
         )
     }
 }

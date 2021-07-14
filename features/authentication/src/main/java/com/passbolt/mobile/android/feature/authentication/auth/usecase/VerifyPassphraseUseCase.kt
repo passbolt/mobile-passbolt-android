@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.enterpassphrase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.common.extension.toByteArray
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import timber.log.Timber
 
@@ -33,7 +32,7 @@ class VerifyPassphraseUseCase(
 
     override suspend fun execute(input: Input): Output {
         return try {
-            Output(openPgp.unlockKey(input.privateKey, input.passphrase.toByteArray()!!))
+            Output(openPgp.unlockKey(input.privateKey, input.passphrase))
         } catch (exception: Exception) {
             Timber.e(exception)
             Output(false)
@@ -42,7 +41,7 @@ class VerifyPassphraseUseCase(
 
     class Input(
         val privateKey: String,
-        val passphrase: CharArray
+        val passphrase: ByteArray
     )
 
     class Output(

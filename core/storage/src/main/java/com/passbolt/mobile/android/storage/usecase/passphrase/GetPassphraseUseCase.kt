@@ -1,15 +1,14 @@
 package com.passbolt.mobile.android.storage.usecase.passphrase
 
-import android.util.Base64
+import android.content.Context
 import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.common.extension.toCharArray
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.encrypted.EncryptedFileFactory
-import com.passbolt.mobile.android.storage.encrypted.KeyBiometricSettings
+import com.passbolt.mobile.android.storage.encrypted.biometric.Crypto
+import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
 import com.passbolt.mobile.android.storage.paths.PassphraseFileName
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import timber.log.Timber
-import java.io.IOException
+import java.io.File
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,30 +34,24 @@ import java.io.IOException
  */
 
 class GetPassphraseUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory
+    private val crypto: Crypto,
+    private val appContext: Context
 ) : UseCase<UserIdInput, GetPassphraseUseCase.Output> {
 
     override fun execute(input: UserIdInput): Output {
         return try {
             val fileName = PassphraseFileName(input.userId).name
-            val encryptedFile = encryptedFileFactory.get(
-                fileName = fileName,
-                keyBiometricSettings = KeyBiometricSettings(
-                    authenticationRequired = true,
-                    invalidatedByBiometricEnrollment = true
-                )
-            )
+            val file = File(EncryptedFileBaseDirectory(appContext).baseDirectory, fileName)
 
-            encryptedFile.openFileInput().use {
-                val bytes = it.readBytes()
-                if (bytes.isNotEmpty()) {
-                    val decodedPassphrase = Base64.decode(bytes, Base64.DEFAULT)
-                    Output(PotentialPassphrase.Passphrase(decodedPassphrase.toCharArray()))
+            file.readText().let {
+                if (it.isNotEmpty()) {
+                    val decrypted = crypto.decryptData(it)
+                    Output(PotentialPassphrase.Passphrase(decrypted))
                 } else {
                     Output(PotentialPassphrase.PassphraseNotPresent)
                 }
             }
-        } catch (exception: IOException) {
+        } catch (exception: Exception) {
             Timber.e(exception)
             Output(PotentialPassphrase.PassphraseNotPresent)
         }

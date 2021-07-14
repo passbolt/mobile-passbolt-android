@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth
 
+import androidx.biometric.BiometricPrompt
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
@@ -83,6 +84,9 @@ fun Module.authModule() {
                 openPgp = get()
             )
         }
+        scoped {
+            BiometricPrompt.PromptInfo.Builder()
+        }
     }
 }
 
@@ -98,17 +102,20 @@ private fun ScopeDSL.authPresenters() {
             challengeVerifier = get(),
             getAccountDataUseCase = get(),
             saveSessionUseCase = get(),
-            saveSelectedAccountUseCase = get()
+            saveSelectedAccountUseCase = get(),
+            checkIfPassphraseFileExistsUseCase = get(),
+            passphraseRepository = get()
         )
     }
     scoped<AuthContract.Presenter>(named(AuthenticationType.Passphrase.javaClass.simpleName)) {
         PassphrasePresenter(
             getAccountDataUseCase = get(),
             coroutineLaunchContext = get(),
-            passphraseRepository = get(),
+            passphraseMemoryCache = get(),
             getSelectedUserPrivateKeyUseCase = get(),
             verifyPassphraseUseCase = get(),
-            saveAccountUseCase = get()
+            saveAccountUseCase = get(),
+            checkIfPassphraseFileExistsUseCase = get()
         )
     }
 }

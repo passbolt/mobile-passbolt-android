@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
+import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,7 +30,8 @@ import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepos
 class FingerprintPresenter(
     private val fingerprintInformationProvider: FingerprintInformationProvider,
     private val autofillInformationProvider: AutofillInformationProvider,
-    private val passphraseRepository: PassphraseRepository
+    private val passphraseRepository: PassphraseRepository,
+    private val savePassphraseUseCase: SavePassphraseUseCase
 ) : FingerprintContract.Presenter {
 
     override var view: FingerprintContract.View? = null
@@ -51,18 +53,19 @@ class FingerprintPresenter(
     }
 
     override fun maybeLaterClick() {
-        handleAutofillSetup()
+        handleAutofillSetup(withBiometry = false)
     }
 
     override fun authenticationSucceeded() {
-        handleAutofillSetup()
+        handleAutofillSetup(withBiometry = true)
     }
 
-    private fun handleAutofillSetup() {
-        when (val cachedPassphrase = passphraseRepository.getPotentialPassphrase()) {
+    private fun handleAutofillSetup(withBiometry: Boolean) {
+        when (val cachedPassphrase = passphraseRepository.getCaching()) {
             is PotentialPassphrase.Passphrase -> {
-                // fingerprint is good and passphrase in cache not expired - renew cache duration
-                passphraseRepository.setPassphrase(cachedPassphrase.passphrase)
+                if (withBiometry) {
+                    savePassphraseUseCase.execute(SavePassphraseUseCase.Input(cachedPassphrase.passphrase))
+                }
                 if (!autofillInformationProvider.isPassboltAutofillServiceSet()) {
                     view?.showEncourageAutofillDialog()
                 } else {

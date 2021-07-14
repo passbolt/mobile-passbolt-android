@@ -31,9 +31,7 @@ fun Module.repositoryModule() {
         PassphraseRepository(
             passphraseMemoryCache = get(),
             getPassphraseUseCase = get(),
-            savePassphraseUseCase = get(),
-            selectedAccountUseCase = get(),
-            removeSelectedAccountPassphraseUseCase = get()
+            selectedAccountUseCase = get()
         )
     }
 }

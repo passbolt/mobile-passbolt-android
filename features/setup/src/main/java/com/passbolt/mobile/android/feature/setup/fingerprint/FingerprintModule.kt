@@ -35,7 +35,8 @@ fun Module.fingerprintModule() {
             FingerprintPresenter(
                 fingerprintInformationProvider = get(),
                 passphraseRepository = get(),
-                autofillInformationProvider = get()
+                autofillInformationProvider = get(),
+                savePassphraseUseCase = get()
             )
         }
         scoped { BiometricPrompt.PromptInfo.Builder() }

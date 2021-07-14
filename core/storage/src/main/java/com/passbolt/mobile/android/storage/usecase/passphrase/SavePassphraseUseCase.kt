@@ -1,12 +1,14 @@
 package com.passbolt.mobile.android.storage.usecase.passphrase
 
-import android.util.Base64
+import android.content.Context
+import android.security.keystore.UserNotAuthenticatedException
+import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.common.extension.toByteArray
-import com.passbolt.mobile.android.storage.encrypted.EncryptedFileFactory
-import com.passbolt.mobile.android.storage.encrypted.KeyBiometricSettings
+import com.passbolt.mobile.android.storage.encrypted.biometric.Crypto
+import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
 import com.passbolt.mobile.android.storage.paths.PassphraseFileName
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import java.io.File
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,24 +34,25 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
  */
 
 class SavePassphraseUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val crypto: Crypto,
+    private val appContext: Context
 ) : UseCase<SavePassphraseUseCase.Input, Unit> {
 
+    @Throws(UserNotAuthenticatedException::class)
     override fun execute(input: Input) {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
         val fileName = PassphraseFileName(userId).name
-        val encryptedFile = encryptedFileFactory.get(
-            fileName,
-            KeyBiometricSettings(authenticationRequired = true, invalidatedByBiometricEnrollment = true)
-        )
-        encryptedFile.openFileOutput().use {
-            val encodedPassphrase = Base64.encode(input.passphrase.toByteArray(), Base64.DEFAULT)
-            it.write(encodedPassphrase)
+        val file = File(EncryptedFileBaseDirectory(appContext).baseDirectory, fileName)
+        val passphraseCopy = input.passphrase.copyOf()
+        file.outputStream().use {
+            val encrypted = crypto.encryptData(passphraseCopy)
+            it.write(encrypted)
         }
+        passphraseCopy.erase()
     }
 
     class Input(
-        val passphrase: CharArray
+        internal val passphrase: ByteArray
     )
 }

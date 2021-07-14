@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.storage.encrypted
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+import androidx.security.crypto.MasterKey
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,22 +30,14 @@ import androidx.security.crypto.MasterKeys
 
 class EncryptedSharedPreferencesFactory internal constructor(
     private val context: Context,
-    private val keySpecProvider: KeySpecProvider
+    private val masterKey: MasterKey
 ) {
 
-    fun get(
-        fileName: String,
-        keyBiometricSettings: KeyBiometricSettings = KeyBiometricSettings(
-            authenticationRequired = false,
-            invalidatedByBiometricEnrollment = false
-        )
-    ): SharedPreferences {
-        val masterKeyAlias = MasterKeys.getOrCreate(keySpecProvider.get(keyBiometricSettings))
-
+    fun get(fileName: String): SharedPreferences {
         return EncryptedSharedPreferences.create(
-            fileName,
-            masterKeyAlias,
             context,
+            fileName,
+            masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )

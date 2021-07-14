@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.storage.usecase.accountdata
 
-import com.passbolt.mobile.android.storage.usecase.GetSelectedAccountDataUseCase
 import org.koin.core.module.Module
 
 /**

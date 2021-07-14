@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -33,9 +34,10 @@ import kotlinx.coroutines.launch
  */
 
 // base presenter for auth view
-// handles account details display and forgot password dialog
+// handles account details display, forgot password dialog, biometry
 abstract class AuthBasePresenter(
     private val getAccountDataUseCase: GetAccountDataUseCase,
+    private val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthContract.Presenter {
 
@@ -49,6 +51,20 @@ abstract class AuthBasePresenter(
     override fun attach(view: AuthContract.View) {
         super.attach(view)
         view.showTitle()
+        if (checkIfPassphraseFileExistsUseCase.execute(Unit).passphraseFileExists) {
+            with(view) {
+                setBiometricAuthButtonVisible()
+                showBiometricPrompt()
+            }
+        }
+    }
+
+    override fun biometricAuthError(messageResId: Int) {
+        // TODO
+    }
+
+    override fun biometricAuthClick() {
+        view?.showBiometricPrompt()
     }
 
     override fun argsRetrieved(userId: String) {
@@ -97,7 +113,7 @@ abstract class AuthBasePresenter(
     }
 
     @CallSuper
-    override fun signInClick(passphrase: CharArray?) {
+    override fun signInClick(passphrase: ByteArray?) {
         view?.hideKeyboard()
     }
 }

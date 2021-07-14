@@ -1,7 +1,5 @@
 package com.passbolt.mobile.android.common.extension
 
-import java.nio.ByteBuffer
-import java.nio.CharBuffer
 import java.util.Arrays
 
 /**
@@ -26,11 +24,6 @@ import java.util.Arrays
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-fun ByteArray.toCharArray(): CharArray {
-    val charBuffer: CharBuffer = Charsets.UTF_8.decode(ByteBuffer.wrap(this))
-    return Arrays.copyOf(charBuffer.array(), charBuffer.limit())
-}
 
 fun ByteArray.erase() {
     Arrays.fill(this, 0)

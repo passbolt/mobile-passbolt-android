@@ -13,10 +13,12 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -64,9 +66,11 @@ internal val mockGetAccountDataUseCase = mock<GetAccountDataUseCase> {
         )
     )
 }
-internal val mockPassphraseRepository = mock<PassphraseRepository>()
+internal val mockPassphraseMemoryCache = mock<PassphraseMemoryCache>()
 internal val mockGetSelectedPrivateKeyUseCase = mock<GetSelectedUserPrivateKeyUseCase>()
 internal val mockVerifyPassphraseUseCase = mock<VerifyPassphraseUseCase>()
+internal val mockCheckIfPassphraseExistsUseCase = mock<CheckIfPassphraseFileExistsUseCase>()
+internal val mockPassphraseRepository = mock<PassphraseRepository>()
 
 internal val mockGetServerPublicPgpKeyUseCase = mock<GetServerPublicPgpKeyUseCase>()
 internal val mockGetServerPublicRsaKeyUseCase = mock<GetServerPublicRsaKeyUseCase>()
@@ -81,10 +85,11 @@ val testAuthModule = module {
         PassphrasePresenter(
             getAccountDataUseCase = mockGetAccountDataUseCase,
             coroutineLaunchContext = get(),
-            passphraseRepository = mockPassphraseRepository,
+            passphraseMemoryCache = mockPassphraseMemoryCache,
             getSelectedUserPrivateKeyUseCase = mockGetSelectedPrivateKeyUseCase,
             verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
-            saveAccountUseCase = mockSaveAccountUseCase
+            saveAccountUseCase = mockSaveAccountUseCase,
+            checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase
         )
     }
     factory<AuthContract.Presenter>(named(AuthenticationType.SignIn.name)) {
@@ -98,7 +103,9 @@ val testAuthModule = module {
             challengeVerifier = mockChallengeVerifier,
             getAccountDataUseCase = mockGetAccountDataUseCase,
             saveSessionUseCase = mock(),
-            saveSelectedAccountUseCase = mock()
+            saveSelectedAccountUseCase = mock(),
+            passphraseRepository = mockPassphraseRepository,
+            checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
