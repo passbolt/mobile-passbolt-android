@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ProcessLifecycleOwner
 import coil.ImageLoader
 import com.google.gson.GsonBuilder
+import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.TimeProvider
 import com.passbolt.mobile.android.common.UuidProvider
@@ -64,6 +65,7 @@ internal val appModule = module {
     }
     single { InitialsProvider() }
     single { WebsiteOpener() }
+    single { HttpsVerifier() }
 }
 
 private fun provideImageLoader(okHttpClient: OkHttpClient, context: Context) {

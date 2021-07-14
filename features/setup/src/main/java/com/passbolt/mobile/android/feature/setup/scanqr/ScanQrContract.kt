@@ -42,6 +42,7 @@ interface ScanQrContract {
         fun showMultipleCodesInRange()
         fun showCenterCameraOnBarcode()
         fun showKeepGoing()
+        fun showSomethingWentWrong()
         fun initializeProgress(totalPages: Int)
         fun setProgress(progress: Int)
         fun showNotAPassboltQr()

@@ -1,9 +1,6 @@
 package com.passbolt.mobile.android.common
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.widget.Toast
+import android.webkit.URLUtil
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,13 +24,8 @@ import android.widget.Toast
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class WebsiteOpener {
+class HttpsVerifier {
 
-    fun open(context: Context, url: String) {
-        runCatching {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            context.startActivity(intent)
-        }
-            .onFailure { Toast.makeText(context, R.string.common_failure, Toast.LENGTH_SHORT).show() }
-    }
+    fun isHttps(url: String) =
+        URLUtil.isHttpsUrl(url)
 }
