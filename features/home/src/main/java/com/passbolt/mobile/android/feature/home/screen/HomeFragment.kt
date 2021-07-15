@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.home.screen
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,7 +16,6 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.home.R
@@ -97,9 +97,18 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
         ))
     }
 
+    private fun setState(state: State) {
+        with(binding) {
+            recyclerView.isVisible = state.listVisible
+            searchTextInput.isEnabled = state.searchEnabled
+            emptyListContainer.isVisible = state.emptyVisible
+            errorContainer.isVisible = state.errorVisible
+            progress.isVisible = state.progressVisible
+        }
+    }
+
     override fun showEmptyList() {
-        binding.recyclerView.gone()
-        binding.emptyListContainer.visible()
+        setState(State.EMPTY)
     }
 
     private fun setListeners() {
@@ -117,11 +126,7 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
     }
 
     override fun showPasswords(list: List<PasswordModel>) {
-        with(binding) {
-            recyclerView.visible()
-            errorContainer.gone()
-            emptyListContainer.gone()
-        }
+        setState(State.SUCCESS)
         FastAdapterDiffUtil.calculateDiff(itemAdapter, list.map { PasswordItem(it) })
         fastAdapter.notifyAdapterDataSetChanged()
     }
@@ -135,13 +140,11 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
     }
 
     override fun showError() {
-        binding.recyclerView.gone()
-        binding.errorContainer.visible()
+        setState(State.ERROR)
     }
 
     override fun showProgress() {
-        binding.progress.visible()
-        binding.errorContainer.gone()
+        setState(State.PROGRESS)
     }
 
     override fun navigateToMore(passwordModel: PasswordModel) {
@@ -163,5 +166,18 @@ class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBind
 
     companion object {
         private val AVATAR_SIZE = 30.px
+    }
+
+    enum class State(
+        val progressVisible: Boolean,
+        val errorVisible: Boolean,
+        val emptyVisible: Boolean,
+        val listVisible: Boolean,
+        val searchEnabled: Boolean
+    ) {
+        EMPTY(false, false, true, false, false),
+        ERROR(false, true, false, false, false),
+        PROGRESS(true, false, false, false, false),
+        SUCCESS(false, false, false, true, true)
     }
 }
