@@ -8,5 +8,6 @@ class AuthStrategyFactory {
     fun get(type: AuthenticationType, view: AuthFragment?) = when (type) {
         is AuthenticationType.Passphrase -> PassphraseAuthStrategy(view)
         is AuthenticationType.SignIn -> SignInAuthStrategy(view)
+        is AuthenticationType.Refresh -> RefreshAuthStrategy(view)
     }
 }

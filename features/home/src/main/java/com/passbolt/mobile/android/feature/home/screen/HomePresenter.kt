@@ -1,10 +1,12 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.ui.PasswordModel
+import com.passbolt.mobile.android.core.mvp.networking.BaseNetworkingPresenter
+import com.passbolt.mobile.android.core.networking.session.runRequest
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.ui.PasswordModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -37,7 +39,7 @@ class HomePresenter(
     private val getResourcesUseCase: GetResourcesUseCase,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
-) : HomeContract.Presenter {
+) : BaseNetworkingPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
     private val job = SupervisorJob()
@@ -46,7 +48,7 @@ class HomePresenter(
     private var allItemsList: List<PasswordModel> = emptyList()
 
     override fun attach(view: HomeContract.View) {
-        super.attach(view)
+        super<BaseNetworkingPresenter>.attach(view)
         fetchPasswords()
         getSelectedAccountDataUseCase.execute(Unit).avatarUrl?.let {
             view.displayAvatar(it)
@@ -55,7 +57,7 @@ class HomePresenter(
 
     override fun detach() {
         scope.coroutineContext.cancelChildren()
-        super.detach()
+        super<BaseNetworkingPresenter>.detach()
     }
 
     override fun searchTextChange(text: String) {
@@ -65,8 +67,9 @@ class HomePresenter(
 
     private fun fetchPasswords() {
         scope.launch {
-            when (val result = getResourcesUseCase.execute(Unit)) {
-                GetResourcesUseCase.Output.Failure -> {
+            when (val result =
+                runRequest(needSessionRefreshFlow, sessionRefreshedFlow) { getResourcesUseCase.execute(Unit) }) {
+                is GetResourcesUseCase.Output.Failure<*> -> {
                     view?.hideRefreshProgress()
                     view?.hideProgress()
                     view?.showError()
