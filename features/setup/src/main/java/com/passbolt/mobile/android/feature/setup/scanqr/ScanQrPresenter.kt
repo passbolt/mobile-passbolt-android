@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
+import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
@@ -9,9 +10,7 @@ import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.storage.usecase.accountdata.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -47,12 +46,12 @@ class ScanQrPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val updateTransferUseCase: UpdateTransferUseCase,
     private val qrParser: ScanQrParser,
-    private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val saveAccountDataUseCase: SaveAccountDataUseCase,
     private val uuidProvider: UuidProvider,
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
     private val updateAccountDataUseCase: UpdateAccountDataUseCase,
-    private val checkAccountExistsUseCase: CheckAccountExistsUseCase
+    private val checkAccountExistsUseCase: CheckAccountExistsUseCase,
+    private val httpsVerifier: HttpsVerifier
 ) : ScanQrContract.Presenter {
 
     override var view: ScanQrContract.View? = null
@@ -97,23 +96,29 @@ class ScanQrPresenter(
     private suspend fun parserFailure(exception: Throwable?) {
         exception?.let { Timber.e(it) }
         updateTransfer(pageNumber = currentPage, Status.ERROR)
-        view?.navigateToSummary(ResultStatus.Failure(""))
     }
 
     private suspend fun parserFirstPage(firstPage: ParseResult.PassboltQr.FirstPage) {
         val userId = firstPage.content.userId
+        transferUuid = firstPage.content.transferId
+        authToken = firstPage.content.authenticationToken
+        totalPages = firstPage.content.totalPages
+
         val userExistsResult = checkAccountExistsUseCase.execute(CheckAccountExistsUseCase.Input(userId))
         if (userExistsResult.exist) {
-            view?.navigateToSummary(ResultStatus.AlreadyLinked(requireNotNull(userExistsResult.userId)))
+            currentPage = totalPages - 1
+            updateTransferAlreadyLinked(currentPage, requireNotNull(userExistsResult.userId))
+        } else if (!httpsVerifier.isHttps(firstPage.content.domain)) {
+            parserFailure(Throwable("Domain should start with https"))
         } else {
-            transferUuid = firstPage.content.transferId
-            authToken = firstPage.content.authenticationToken
-            totalPages = firstPage.content.totalPages
-            currentPage = 0
-            view?.initializeProgress(totalPages)
-            view?.showKeepGoing()
-            saveAccountDetails(userId, firstPage.content.domain)
-            updateTransfer(pageNumber = firstPage.reservedBytesDto.page + 1)
+            if (currentPage > 0) {
+                parserFailure(Throwable("Other qr code scanning has been already started"))
+            } else {
+                view?.initializeProgress(totalPages)
+                view?.showKeepGoing()
+                saveAccountDetails(userId, firstPage.content.domain)
+                updateTransfer(pageNumber = firstPage.reservedBytesDto.page + 1)
+            }
         }
     }
 
@@ -141,12 +146,25 @@ class ScanQrPresenter(
         }
     }
 
+    private suspend fun updateTransferAlreadyLinked(pageNumber: Int, userId: String) {
+        updateTransferUseCase.execute(
+            UpdateTransferUseCase.Input(
+                uuid = transferUuid,
+                authToken = authToken,
+                currentPage = pageNumber,
+                status = Status.COMPLETE
+            )
+        )
+        // ignoring result
+        view?.navigateToSummary(ResultStatus.AlreadyLinked(userId))
+    }
+
     private suspend fun updateTransfer(pageNumber: Int, status: Status = Status.IN_PROGRESS) {
         // in case of the first qr code is not a correct one
         if (!::transferUuid.isInitialized || !::authToken.isInitialized) {
+            view?.navigateToSummary(ResultStatus.Failure(""))
             return
         }
-
         val response = updateTransferUseCase.execute(
             UpdateTransferUseCase.Input(
                 uuid = transferUuid,
@@ -158,9 +176,15 @@ class ScanQrPresenter(
         when (response) {
             is UpdateTransferUseCase.Output.Failure -> {
                 Timber.e(response.exception, "There was an error during transfer update")
-                view?.navigateToSummary(ResultStatus.Failure(""))
+                if (status == Status.ERROR || status == Status.CANCEL) {
+                    // ignoring
+                } else {
+                    view?.showSomethingWentWrong()
+                }
             }
-            is UpdateTransferUseCase.Output.Success -> onUpdateTransferSuccess(pageNumber, status, response)
+            is UpdateTransferUseCase.Output.Success -> {
+                onUpdateTransferSuccess(pageNumber, status, response)
+            }
         }
     }
 
@@ -170,21 +194,28 @@ class ScanQrPresenter(
         response: UpdateTransferUseCase.Output.Success
     ) {
         view?.setProgress(pageNumber)
-        if (status == Status.COMPLETE) {
-            updateAccountDataUseCase.execute(
-                UpdateAccountDataUseCase.Input(
-                    firstName = response.updateTransferResponseModel.firstName,
-                    lastName = response.updateTransferResponseModel.lastName,
-                    avatarUrl = response.updateTransferResponseModel.avatarUrl,
-                    email = response.updateTransferResponseModel.email
+        when (status) {
+            Status.COMPLETE -> {
+                updateAccountDataUseCase.execute(
+                    UpdateAccountDataUseCase.Input(
+                        firstName = response.updateTransferResponseModel.firstName,
+                        lastName = response.updateTransferResponseModel.lastName,
+                        avatarUrl = response.updateTransferResponseModel.avatarUrl,
+                        email = response.updateTransferResponseModel.email
+                    )
                 )
-            )
+            }
+            Status.ERROR -> {
+                view?.navigateToSummary(ResultStatus.Failure(""))
+            }
+            else -> {
+                // ignoring
+            }
         }
     }
 
     private fun saveAccountDetails(serverId: String, url: String) {
         userId = uuidProvider.get()
-        saveSelectedAccountUseCase.execute(UserIdInput(userId))
         saveAccountDataUseCase.execute(
             SaveAccountDataUseCase.Input(
                 userId = userId,

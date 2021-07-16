@@ -126,6 +126,10 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
         binding.tooltip.text = getString(R.string.scan_qr_keep_going)
     }
 
+    override fun showSomethingWentWrong() {
+        binding.tooltip.text = getString(R.string.common_failure)
+    }
+
     override fun showNotAPassboltQr() {
         binding.tooltip.text = getString(R.string.scan_qr_not_a_passbolt_qr)
     }

@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
@@ -19,9 +20,11 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult.UserResolvableError.ErrorType.NOT_A_PASSBOLT_QR
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE
+import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
+import com.passbolt.mobile.android.ui.UpdateTransferResponseModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runBlockingTest
@@ -136,6 +139,7 @@ class ScanQrPresenterTest : KoinTest {
     fun `view should initialize progress and show keep going after first page scan`() = runBlockingTest {
         whenever(uuidProvider.get()).doReturn("testUserId")
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
+        whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
 
         reset(view)
 
@@ -143,7 +147,6 @@ class ScanQrPresenterTest : KoinTest {
 
         verify(view).initializeProgress(TOTAL_PAGES)
         verify(view).showKeepGoing()
-        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -165,7 +168,12 @@ class ScanQrPresenterTest : KoinTest {
         whenever(uuidProvider.get()).doReturn("testUserId")
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
-
+        whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
+        whenever(updateTransferUseCase.execute(any())).doReturn(
+            UpdateTransferUseCase.Output.Success(
+                UpdateTransferResponseModel("id", null, null, null, null)
+            )
+        )
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
         parseFlow.emit(ParseResult.FinishedWithSuccess("key"))
 
@@ -175,14 +183,41 @@ class ScanQrPresenterTest : KoinTest {
             verify(view).navigateToSummary(capture())
             assertThat(firstValue).isInstanceOf(ResultStatus.Success::class.java)
         }
-        verifyNoMoreInteractions(view)
     }
 
     @Test
-    fun `view should navigate to failure after scanning existing key`() = runBlockingTest {
+    fun `view should navigate to failure after scanning non https domain`() = runBlockingTest {
         reset(view)
         whenever(uuidProvider.get()).doReturn("testUserId")
+        whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
+        whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
+        whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(false)
+        whenever(updateTransferUseCase.execute(any())).doReturn(
+            UpdateTransferUseCase.Output.Success(
+                UpdateTransferResponseModel("id", null, null, null, null)
+            )
+        )
+
+        parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
+
+        argumentCaptor<ResultStatus>().apply {
+            verify(view).navigateToSummary(capture())
+            assertThat(firstValue).isInstanceOf(ResultStatus.Failure::class.java)
+        }
+    }
+
+
+    @Test
+    fun `view should navigate to already linked after scanning existing key`() = runBlockingTest {
+        reset(view)
+        whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
+        whenever(uuidProvider.get()).doReturn("testUserId")
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Failure)
+        whenever(updateTransferUseCase.execute(any())).doReturn(
+            UpdateTransferUseCase.Output.Success(
+                UpdateTransferResponseModel("id", null, null, null, null)
+            )
+        )
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(
             CheckAccountExistsUseCase.Output(
                 true,

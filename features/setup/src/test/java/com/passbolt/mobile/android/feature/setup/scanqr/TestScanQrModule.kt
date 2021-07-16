@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.nhaarman.mockitokotlin2.mock
+import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
@@ -39,18 +40,18 @@ import org.koin.dsl.module
 
 internal val updateTransferUseCase = mock<UpdateTransferUseCase>()
 internal val saveAccountDataUseCase = mock<SaveAccountDataUseCase>()
-internal val selectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
 internal val uuidProvider = mock<UuidProvider>()
 internal val savePrivateKeyUseCase = mock<SavePrivateKeyUseCase>()
 internal val updateAccountDataUseCase = mock<UpdateAccountDataUseCase>()
 internal val addAccountUseCase = mock<SaveAccountUseCase>()
 internal val checkAccountExistsUseCase = mock<CheckAccountExistsUseCase>()
 internal val qrParser = mock<ScanQrParser>()
+internal val httpsVerifier = mock<HttpsVerifier>()
 
 val testScanQrModule = module {
+    factory { httpsVerifier }
     factory { updateTransferUseCase }
     factory { saveAccountDataUseCase }
-    factory { selectedAccountUseCase }
     factory { uuidProvider }
     factory { savePrivateKeyUseCase }
     factory { updateAccountDataUseCase }
@@ -75,11 +76,11 @@ val testScanQrModule = module {
             qrParser = qrParser,
             updateTransferUseCase = get(),
             saveAccountDataUseCase = get(),
-            saveSelectedAccountUseCase = get(),
             uuidProvider = get(),
             savePrivateKeyUseCase = get(),
             updateAccountDataUseCase = get(),
-            checkAccountExistsUseCase = get()
+            checkAccountExistsUseCase = get(),
+            httpsVerifier = get()
         )
     }
 }

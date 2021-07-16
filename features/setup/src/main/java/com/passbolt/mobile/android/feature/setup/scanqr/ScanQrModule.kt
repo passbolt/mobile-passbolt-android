@@ -44,12 +44,12 @@ fun Module.scanQrModule() {
                 coroutineLaunchContext = get(),
                 updateTransferUseCase = get(),
                 qrParser = get(),
-                saveSelectedAccountUseCase = get(),
                 saveAccountDataUseCase = get(),
                 uuidProvider = get(),
                 savePrivateKeyUseCase = get(),
                 updateAccountDataUseCase = get(),
-                checkAccountExistsUseCase = get()
+                checkAccountExistsUseCase = get(),
+                httpsVerifier = get()
             )
         }
         scoped { QrScanResultsMapper(gson = get()) }
