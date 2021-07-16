@@ -41,5 +41,12 @@ sealed class PotentialPassphrase {
         }
     }
 
-    object PassphraseNotPresent : PotentialPassphrase()
+    class PassphraseNotPresent(
+        val keyStatus: KeyStatus = KeyStatus.VALID
+    ) : PotentialPassphrase()
+
+    enum class KeyStatus {
+        VALID,
+        INVALID
+    }
 }

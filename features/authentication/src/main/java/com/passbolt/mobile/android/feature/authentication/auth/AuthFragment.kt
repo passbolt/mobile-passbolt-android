@@ -10,6 +10,7 @@ import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.hideSoftInput
@@ -98,6 +99,10 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         binding.biometricAuthButton.visible()
     }
 
+    override fun setBiometricAuthButtonGone() {
+        binding.biometricAuthButton.gone()
+    }
+
     override fun showBiometricPrompt() {
         val biometricPrompt = BiometricPrompt(
             this, executor, AuthBiometricCallback(
@@ -113,6 +118,11 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
             .setAllowedAuthenticators(BIOMETRIC_STRONG)
             .build()
         biometricPrompt.authenticate(promptInfo)
+    }
+
+    override fun showAuthenticationError(errorMessage: Int) {
+        Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG)
+            .show()
     }
 
     override fun onDestroyView() {
@@ -145,6 +155,11 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun showError(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+            .show()
+    }
+
+    override fun showFingerprintChangedError() {
+        Snackbar.make(binding.root, R.string.fingerprint_biometric_changed, Snackbar.LENGTH_LONG)
             .show()
     }
 

@@ -44,7 +44,7 @@ class PassphraseMemoryCache(
     private val lifecycleOwner: LifecycleOwner
 ) : LifecycleObserver {
 
-    private var value: PotentialPassphrase = PotentialPassphrase.PassphraseNotPresent
+    private var value: PotentialPassphrase = PotentialPassphrase.PassphraseNotPresent()
 
     private val timerFlow = timerFlow(TIMER_REPEAT_TIMES, TIMER_TICK_MILLIS)
 
@@ -81,7 +81,7 @@ class PassphraseMemoryCache(
         (value as? PotentialPassphrase.Passphrase).let {
             it?.passphrase?.erase()
         }
-        value = PotentialPassphrase.PassphraseNotPresent
+        value = PotentialPassphrase.PassphraseNotPresent()
         lifecycleObserverScope.launch {
             lifecycleOwner.lifecycle.removeObserver(this@PassphraseMemoryCache)
         }

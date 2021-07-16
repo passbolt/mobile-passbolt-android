@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
@@ -7,6 +8,7 @@ import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import kotlinx.coroutines.launch
 
@@ -40,12 +42,16 @@ class PassphrasePresenter(
     private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
     private val verifyPassphraseUseCase: VerifyPassphraseUseCase,
     private val saveAccountUseCase: SaveAccountUseCase,
+    fingerprintInfoProvider: FingerprintInformationProvider,
+    removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     getAccountDataUseCase: GetAccountDataUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthBasePresenter(
     getAccountDataUseCase,
     checkIfPassphraseFileExistsUseCase,
+    fingerprintInfoProvider,
+    removeSelectedAccountPassphraseUseCase,
     coroutineLaunchContext
 ) {
 

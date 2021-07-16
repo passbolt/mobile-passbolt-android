@@ -96,7 +96,7 @@ class FingerprintPresenterTest : KoinTest {
     fun `when biometrics auth is a success and cache passphrase expired should authenticate`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
         whenever(passphraseRepository.getCaching()).thenReturn(
-            PotentialPassphrase.PassphraseNotPresent
+            PotentialPassphrase.PassphraseNotPresent()
         )
 
         presenter.authenticationSucceeded()

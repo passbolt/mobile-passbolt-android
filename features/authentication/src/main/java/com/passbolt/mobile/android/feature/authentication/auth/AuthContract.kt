@@ -29,6 +29,7 @@ interface AuthContract {
     interface View : BaseContract.View {
         fun showWrongPassphrase()
         fun showError(message: String)
+        fun showFingerprintChangedError()
         fun navigateBack()
         fun showGenericError()
         fun showProgress()
@@ -46,6 +47,8 @@ interface AuthContract {
         fun showLeaveConfirmationDialog()
         fun showBiometricPrompt()
         fun setBiometricAuthButtonVisible()
+        fun setBiometricAuthButtonGone()
+        fun showAuthenticationError(errorMessage: Int)
     }
 
     interface Presenter : BaseContract.Presenter<View> {

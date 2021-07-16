@@ -51,12 +51,12 @@ class SetupBiometricCallback(
 
     private fun handleError(errorCode: Int) {
         when (errorCode) {
-            ERROR_LOCKOUT -> authError.invoke(R.string.fingerprint_setup_biometric_error_blocked)
-            ERROR_LOCKOUT_PERMANENT -> authError.invoke(R.string.fingerprint_setup_biometric_error_too_many_attempts)
+            ERROR_LOCKOUT -> authError.invoke(R.string.fingerprint_biometric_error_blocked)
+            ERROR_LOCKOUT_PERMANENT -> authError.invoke(R.string.fingerprint_biometric_error_too_many_attempts)
             ERROR_NEGATIVE_BUTTON, ERROR_USER_CANCELED, ERROR_TIMEOUT -> {
                 // ignoring
             }
-            else -> authError.invoke(R.string.fingerprint_setup_biometric_error_generic)
+            else -> authError.invoke(R.string.fingerprint_biometric_error_generic)
         }
     }
 }

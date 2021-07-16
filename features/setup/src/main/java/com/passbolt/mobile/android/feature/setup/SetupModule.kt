@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.setup
 
 import android.content.Context
 import androidx.biometric.BiometricManager
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.feature.setup.fingerprint.di.fingerprintModule
 import com.passbolt.mobile.android.feature.setup.scanqr.di.scanQrModule
 import com.passbolt.mobile.android.feature.setup.summary.di.summaryModule

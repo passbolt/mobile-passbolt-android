@@ -137,6 +137,7 @@ class PassphrasePresenterTest : KoinTest {
     fun `view should show biometric prompt when fingerprint configured`() {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = true))
+        whenever(mockFingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
 
         presenter.attach(mockView)
         presenter.argsRetrieved(ACCOUNT)
