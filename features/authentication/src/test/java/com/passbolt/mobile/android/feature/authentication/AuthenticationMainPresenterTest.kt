@@ -132,6 +132,7 @@ class AuthenticationMainPresenterTest : KoinTest {
             shouldLogOut = false
         )
 
+        verify(mockView).setDefaultNavGraph()
         verifyNoMoreInteractions(mockView)
     }
 

@@ -4,12 +4,14 @@ import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListContract
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListPresenter
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.service.logout.LogoutRepository
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.RemoveAllAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 
@@ -39,7 +41,8 @@ import org.koin.dsl.module
 internal val mockGetAllAccountsDataUseCase = mock<GetAllAccountsDataUseCase>()
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val mockRemoveAllAccountsDataUseCase = mock<RemoveAllAccountDataUseCase>()
-internal val mockLogoutRepository = mock<LogoutRepository>()
+internal val mockSignOutUseCase = mock<SignOutUseCase>()
+internal val mockSaveSelectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
 
 @ExperimentalCoroutinesApi
 val testAccountListModule = module {
@@ -49,8 +52,9 @@ val testAccountListModule = module {
             getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
             accountModelMapper = get(),
             removeAllAccountDataUseCase = mockRemoveAllAccountsDataUseCase,
-            logoutRepository = mockLogoutRepository,
-            coroutineLaunchContext = get()
+            signOutUseCase = mockSignOutUseCase,
+            coroutineLaunchContext = get(),
+            saveSelectedAccountUseCase = mockSaveSelectedAccountUseCase
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

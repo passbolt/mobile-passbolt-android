@@ -57,7 +57,7 @@ class AuthenticationMainPresenter(
         // navigate to auth if user is selected else stay on account list
         userId?.let {
             view?.navigateToAuth(it, authenticationStrategy)
-        }
+        } ?: view?.setDefaultNavGraph()
     }
 
     override fun detach() {

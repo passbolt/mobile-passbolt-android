@@ -50,6 +50,11 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         presenter.attach(this)
     }
 
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
     private fun setListeners() {
         with(binding) {
             fingerprintSetting.onChanged = {

@@ -55,7 +55,9 @@ class AccountItem(
                     R.drawable.background_ripple
                 }
             )
-            icon.load(accountModel.avatar) {
+            // TODO load avatar when in logged out state
+            // icon.load(accountModel.avatar) {
+            icon.load(R.drawable.ic_logo) {
                 error(R.drawable.ic_avatar_placeholder)
                 placeholder(R.drawable.ic_avatar_placeholder)
             }
