@@ -1,7 +1,13 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.core.mvp.networking
 
-import com.passbolt.mobile.android.core.mvp.networking.BaseNetworkingContract
-import com.passbolt.mobile.android.ui.PasswordModel
+import android.app.Activity
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.viewbinding.ViewBinding
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,25 +31,22 @@ import com.passbolt.mobile.android.ui.PasswordModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
 
-    interface View : BaseNetworkingContract.View {
-        fun showPasswords(list: List<PasswordModel>)
-        fun navigateToMore(passwordModel: PasswordModel)
-        fun navigateToDetails()
-        fun hideProgress()
-        fun showProgress()
-        fun hideRefreshProgress()
-        fun showError()
-        fun showEmptyList()
-        fun displayAvatar(url: String)
+abstract class BindingScopedNetworkingFragment
+<T : ViewBinding, V : BaseNetworkingContract.View>(viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
+    BindingScopedFragment<T>(viewInflater), BaseNetworkingContract.View {
+
+    abstract val presenter: BaseNetworkingContract.Presenter<V>
+
+    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            presenter.sessionRefreshed()
+        }
     }
 
-    interface Presenter : BaseNetworkingContract.Presenter<View> {
-        fun moreClick(passwordModel: PasswordModel)
-        fun itemClick()
-        fun refreshSwipe()
-        fun refreshClick()
-        fun searchTextChange(text: String)
+    override fun showAuth() {
+        authenticationResult.launch(
+            ActivityIntents.refreshAuthentication(requireContext(), AuthenticationType.Refresh)
+        )
     }
 }

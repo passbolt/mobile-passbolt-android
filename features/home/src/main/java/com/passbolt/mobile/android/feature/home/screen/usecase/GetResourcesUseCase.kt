@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.home.screen.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.core.networking.session.NetworkingUseCaseOutput
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.service.resource.ResourceRepository
 
@@ -33,15 +34,19 @@ class GetResourcesUseCase(
 
     override suspend fun execute(input: Unit): Output =
         when (val response = resourceRepository.getResources()) {
-            is NetworkResult.Failure -> Output.Failure
+            is NetworkResult.Failure -> Output.Failure(response)
             is NetworkResult.Success -> Output.Success(response.value.body)
         }
 
-    sealed class Output {
+    sealed class Output : NetworkingUseCaseOutput {
+
+        override val isUnauthorized: Boolean
+            get() = this is Failure<*> && this.response.isUnauthorized
+
         class Success(
             val resources: List<ResourceResponseDto>
         ) : Output()
 
-        object Failure : Output()
+        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }
 }

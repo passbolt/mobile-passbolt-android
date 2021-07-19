@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.core.mvp.networking
 
-import com.passbolt.mobile.android.core.mvp.networking.BaseNetworkingContract
-import com.passbolt.mobile.android.ui.PasswordModel
+import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,25 +24,13 @@ import com.passbolt.mobile.android.ui.PasswordModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
+interface BaseNetworkingContract {
 
-    interface View : BaseNetworkingContract.View {
-        fun showPasswords(list: List<PasswordModel>)
-        fun navigateToMore(passwordModel: PasswordModel)
-        fun navigateToDetails()
-        fun hideProgress()
-        fun showProgress()
-        fun hideRefreshProgress()
-        fun showError()
-        fun showEmptyList()
-        fun displayAvatar(url: String)
+    interface View : BaseContract.View {
+        fun showAuth()
     }
 
-    interface Presenter : BaseNetworkingContract.Presenter<View> {
-        fun moreClick(passwordModel: PasswordModel)
-        fun itemClick()
-        fun refreshSwipe()
-        fun refreshClick()
-        fun searchTextChange(text: String)
+    interface Presenter<T : View> : BaseContract.Presenter<T> {
+        fun sessionRefreshed()
     }
 }

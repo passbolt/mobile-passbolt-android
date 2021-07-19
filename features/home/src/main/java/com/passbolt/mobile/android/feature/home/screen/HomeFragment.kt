@@ -17,7 +17,7 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
-import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.mvp.networking.BindingScopedNetworkingFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
@@ -47,11 +47,13 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class HomeFragment : BindingScopedFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), HomeContract.View {
+class HomeFragment :
+    BindingScopedNetworkingFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
+    HomeContract.View {
 
+    override val presenter: HomeContract.Presenter by inject()
     private val itemAdapter: ItemAdapter<PasswordItem> by inject()
     private val fastAdapter: FastAdapter<PasswordItem> by inject()
-    private val presenter: HomeContract.Presenter by inject()
     private val imageLoader: ImageLoader by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

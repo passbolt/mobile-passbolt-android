@@ -9,7 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class AuthenticationMainPresenter(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
@@ -45,29 +44,19 @@ class AuthenticationMainPresenter(
     }
 
     private fun processAuthentication(authenticationStrategy: AuthenticationType) {
-        when (authenticationStrategy) {
-            is AuthenticationType.Passphrase -> {
-                val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
-                view?.navigateToAuth(selectedAccount, authenticationStrategy)
-            }
-            is AuthenticationType.SignIn -> navigateToSingIn(authenticationStrategy)
-        }
-    }
-
-    private fun navigateToSingIn(authenticationStrategy: AuthenticationType.SignIn) {
-        authenticationStrategy.userId?.let {
-            view?.navigateToAuth(it, authenticationStrategy)
-        } ?: run {
-            runCatching {
+        val userId = try {
+            if (authenticationStrategy is AuthenticationType.SignIn) {
+                authenticationStrategy.userId ?: getSelectedAccountUseCase.execute(Unit).selectedAccount
+            } else {
                 getSelectedAccountUseCase.execute(Unit).selectedAccount
             }
-                .onSuccess {
-                    view?.navigateToAuth(it, authenticationStrategy)
-                }
-                .onFailure {
-                    Timber.d(it)
-                    // no account selected - remain on account list
-                }
+        } catch (exception: Exception) {
+            null
+        }
+
+        // navigate to auth if user is selected else stay on account list
+        userId?.let {
+            view?.navigateToAuth(it, authenticationStrategy)
         }
     }
 

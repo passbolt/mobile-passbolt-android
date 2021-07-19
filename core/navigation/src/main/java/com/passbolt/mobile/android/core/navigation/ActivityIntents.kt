@@ -45,6 +45,13 @@ object ActivityIntents {
         putExtra(EXTRA_AUTH_TARGET, AuthenticationTarget.AUTHENTICATE)
     }
 
+    fun refreshAuthentication(context: Context, authenticationType: AuthenticationType) = Intent().apply {
+        setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
+        putExtra(EXTRA_AUTH_TARGET, AuthenticationTarget.AUTHENTICATE)
+        putExtra(EXTRA_AUTH_STRATEGY_TYPE, authenticationType)
+        flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP
+    }
+
     fun manageAccounts(context: Context, withSignOut: Boolean = false) = Intent().apply {
         setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
         putExtra(EXTRA_AUTH_TARGET, AuthenticationTarget.MANAGE_ACCOUNTS)

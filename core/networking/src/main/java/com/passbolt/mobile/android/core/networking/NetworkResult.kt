@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.core.networking
 
+import java.net.HttpURLConnection
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -33,6 +35,9 @@ sealed class NetworkResult<T : Any> {
         val errorCode: Int? = null,
         val headerMessage: String
     ) : NetworkResult<T>() {
+
+        val isUnauthorized: Boolean
+            get() = errorCode == HttpURLConnection.HTTP_UNAUTHORIZED
 
         class ServerError<T : Any>(
             exception: Exception,

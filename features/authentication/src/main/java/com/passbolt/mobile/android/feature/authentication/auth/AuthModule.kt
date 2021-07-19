@@ -14,6 +14,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUs
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
+import org.koin.core.scope.Scope
 import org.koin.dsl.ScopeDSL
 
 /**
@@ -92,30 +93,37 @@ fun Module.authModule() {
 
 private fun ScopeDSL.authPresenters() {
     scoped<AuthContract.Presenter>(named(AuthenticationType.SignIn.name)) {
-        SignInPresenter(
-            getServerPublicPgpKeyUseCase = get(),
-            getServerPublicRsaKeyUseCase = get(),
-            signInUseCase = get(),
-            coroutineLaunchContext = get(),
-            challengeProvider = get(),
-            challengeDecryptor = get(),
-            challengeVerifier = get(),
-            getAccountDataUseCase = get(),
-            saveSessionUseCase = get(),
-            saveSelectedAccountUseCase = get(),
-            checkIfPassphraseFileExistsUseCase = get(),
-            passphraseRepository = get()
-        )
+        signInPresenter()
+    }
+    scoped<AuthContract.Presenter>(named(AuthenticationType.Refresh.javaClass.simpleName)) {
+        signInPresenter()
     }
     scoped<AuthContract.Presenter>(named(AuthenticationType.Passphrase.javaClass.simpleName)) {
-        PassphrasePresenter(
-            getAccountDataUseCase = get(),
-            coroutineLaunchContext = get(),
-            passphraseMemoryCache = get(),
-            getSelectedUserPrivateKeyUseCase = get(),
-            verifyPassphraseUseCase = get(),
-            saveAccountUseCase = get(),
-            checkIfPassphraseFileExistsUseCase = get()
-        )
+        passphrasePresenter()
     }
 }
+
+private fun Scope.passphrasePresenter() = PassphrasePresenter(
+    getAccountDataUseCase = get(),
+    coroutineLaunchContext = get(),
+    passphraseMemoryCache = get(),
+    getSelectedUserPrivateKeyUseCase = get(),
+    verifyPassphraseUseCase = get(),
+    saveAccountUseCase = get(),
+    checkIfPassphraseFileExistsUseCase = get()
+)
+
+private fun Scope.signInPresenter() = SignInPresenter(
+    getServerPublicPgpKeyUseCase = get(),
+    getServerPublicRsaKeyUseCase = get(),
+    signInUseCase = get(),
+    coroutineLaunchContext = get(),
+    challengeProvider = get(),
+    challengeDecryptor = get(),
+    challengeVerifier = get(),
+    getAccountDataUseCase = get(),
+    saveSessionUseCase = get(),
+    saveSelectedAccountUseCase = get(),
+    checkIfPassphraseFileExistsUseCase = get(),
+    passphraseRepository = get()
+)

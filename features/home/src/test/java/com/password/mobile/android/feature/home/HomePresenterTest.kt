@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
+import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
@@ -21,6 +22,7 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import java.io.IOException
 
 @ExperimentalCoroutinesApi
 class HomePresenterTest : KoinTest {
@@ -119,7 +121,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `error should be displayed when request failures`() = runBlockingTest {
         whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Failure
+            GetResourcesUseCase.Output.Failure(NetworkResult.Failure.ServerError(IOException(), headerMessage = ""))
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -132,7 +134,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `refresh clicked should fetch resources`() = runBlockingTest {
         whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Failure
+            GetResourcesUseCase.Output.Failure(NetworkResult.Failure.ServerError(IOException(), headerMessage = ""))
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -148,7 +150,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `item clicked should open details screen`() = runBlockingTest {
         whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Failure
+            GetResourcesUseCase.Output.Failure(NetworkResult.Failure.ServerError(IOException(), headerMessage = ""))
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -169,7 +171,7 @@ class HomePresenterTest : KoinTest {
             searchCriteria = ""
         )
         whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Failure
+            GetResourcesUseCase.Output.Failure(NetworkResult.Failure.ServerError(IOException(), headerMessage = ""))
         )
         mockAccountData(null)
         presenter.attach(view)
