@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.storage.usecase.passphrase
 
 import android.content.Context
+import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.Crypto
@@ -48,12 +49,15 @@ class GetPassphraseUseCase(
                     val decrypted = crypto.decryptData(it)
                     Output(PotentialPassphrase.Passphrase(decrypted))
                 } else {
-                    Output(PotentialPassphrase.PassphraseNotPresent)
+                    Output(PotentialPassphrase.PassphraseNotPresent())
                 }
             }
+        } catch (exception: KeyPermanentlyInvalidatedException) {
+            Timber.e(exception)
+            Output(PotentialPassphrase.PassphraseNotPresent(PotentialPassphrase.KeyStatus.INVALID))
         } catch (exception: Exception) {
             Timber.e(exception)
-            Output(PotentialPassphrase.PassphraseNotPresent)
+            Output(PotentialPassphrase.PassphraseNotPresent())
         }
     }
 

@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
@@ -13,6 +14,7 @@ import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepos
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
 import kotlinx.coroutines.async
@@ -54,11 +56,15 @@ class SignInPresenter(
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val getAccountDataUseCase: GetAccountDataUseCase,
     private val passphraseRepository: PassphraseRepository,
+    private val removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
+    fingerprintInfoProvider: FingerprintInformationProvider,
     checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthBasePresenter(
     getAccountDataUseCase,
     checkIfPassphraseFileExistsUseCase,
+    fingerprintInfoProvider,
+    removeSelectedAccountPassphraseUseCase,
     coroutineLaunchContext
 ) {
 
@@ -69,10 +75,20 @@ class SignInPresenter(
 
     override fun biometricAuthSuccess() {
         val potentialPassphrase = passphraseRepository.getCaching()
-        if (potentialPassphrase is PotentialPassphrase.Passphrase) {
-            performSignIn(potentialPassphrase.passphrase)
-        } else {
-            Timber.e("Passphrase not found in repository")
+        when {
+            potentialPassphrase is PotentialPassphrase.Passphrase -> {
+                performSignIn(potentialPassphrase.passphrase)
+            }
+            potentialPassphrase is PotentialPassphrase.PassphraseNotPresent &&
+                    potentialPassphrase.keyStatus == PotentialPassphrase.KeyStatus.INVALID -> {
+                removeSelectedAccountPassphraseUseCase.execute(Unit)
+                view?.setBiometricAuthButtonGone()
+                view?.showFingerprintChangedError()
+            }
+            else -> {
+                view?.showGenericError()
+                Timber.e("Passphrase not found in repository")
+            }
         }
     }
 

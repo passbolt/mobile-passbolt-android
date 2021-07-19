@@ -110,7 +110,9 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
     getSelectedUserPrivateKeyUseCase = get(),
     verifyPassphraseUseCase = get(),
     saveAccountUseCase = get(),
-    checkIfPassphraseFileExistsUseCase = get()
+    checkIfPassphraseFileExistsUseCase = get(),
+    removeSelectedAccountPassphraseUseCase = get(),
+    fingerprintInfoProvider = get()
 )
 
 private fun Scope.signInPresenter() = SignInPresenter(
@@ -125,5 +127,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
     saveSessionUseCase = get(),
     saveSelectedAccountUseCase = get(),
     checkIfPassphraseFileExistsUseCase = get(),
-    passphraseRepository = get()
+    passphraseRepository = get(),
+    removeSelectedAccountPassphraseUseCase = get(),
+    fingerprintInfoProvider = get()
 )

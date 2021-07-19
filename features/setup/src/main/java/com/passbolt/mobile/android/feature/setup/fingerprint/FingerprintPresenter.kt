@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
+import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository

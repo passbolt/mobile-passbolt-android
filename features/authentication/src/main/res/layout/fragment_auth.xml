@@ -67,7 +67,6 @@
             android:layout_marginHorizontal="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_40"
             app:inputTitle="@string/auth_password_title"
-            app:layout_constraintBottom_toTopOf="@id/biometricAuthButton"
             app:layout_constraintTop_toBottomOf="@id/domainLabel"
             app:layout_constraintVertical_bias="0"
             app:layout_goneMarginTop="@dimen/dp_32" />

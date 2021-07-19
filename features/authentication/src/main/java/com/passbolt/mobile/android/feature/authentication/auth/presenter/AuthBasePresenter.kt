@@ -1,11 +1,13 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import androidx.annotation.CallSuper
+import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -38,6 +40,8 @@ import kotlinx.coroutines.launch
 abstract class AuthBasePresenter(
     private val getAccountDataUseCase: GetAccountDataUseCase,
     private val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
+    private val fingerprintInfoProvider: FingerprintInformationProvider,
+    private val removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthContract.Presenter {
 
@@ -52,15 +56,19 @@ abstract class AuthBasePresenter(
         super.attach(view)
         view.showTitle()
         if (checkIfPassphraseFileExistsUseCase.execute(Unit).passphraseFileExists) {
-            with(view) {
-                setBiometricAuthButtonVisible()
-                showBiometricPrompt()
+            if (fingerprintInfoProvider.hasBiometricSetUp()) {
+                with(view) {
+                    setBiometricAuthButtonVisible()
+                    showBiometricPrompt()
+                }
+            } else {
+                removeSelectedAccountPassphraseUseCase.execute(Unit)
             }
         }
     }
 
     override fun biometricAuthError(messageResId: Int) {
-        // TODO
+        view?.showAuthenticationError(messageResId)
     }
 
     override fun biometricAuthClick() {

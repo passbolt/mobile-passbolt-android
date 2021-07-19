@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import com.nhaarman.mockitokotlin2.mock
+import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
