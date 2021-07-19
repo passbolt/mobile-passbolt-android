@@ -59,7 +59,7 @@ class PassphraseMemoryCache(
     fun set(passphrase: ByteArray) {
         clear()
         initializeObservers()
-        value = PotentialPassphrase.Passphrase(passphrase)
+        value = PotentialPassphrase.Passphrase(passphrase.copyOf())
         Timber.d("Passphrase cached")
     }
 

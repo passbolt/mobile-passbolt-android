@@ -96,6 +96,7 @@ class PassphrasePresenterTest : KoinTest {
 
         verify(mockView).showTitle()
         verify(mockView).hideKeyboard()
+        verify(mockView).clearPassphraseInput()
         verify(mockView).authSuccess()
         verifyNoMoreInteractions(mockView)
     }

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.auth.challenge
 
 import com.google.gson.Gson
+import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
@@ -40,6 +41,7 @@ class ChallengeDecryptor(
         userId: String,
         challenge: String
     ): ChallengeResponseDto {
+        val passphraseCopy = passphrase.copyOf()
         val privateKey = getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
         val encryptedChallenge = openPgp.decryptVerifyMessageArmored(
             publicKey = serverPublicKey,
@@ -47,7 +49,7 @@ class ChallengeDecryptor(
             passphrase = passphrase,
             cipherText = challenge
         )
-
+        passphraseCopy.erase()
         return gson.fromJson(String(encryptedChallenge), ChallengeResponseDto::class.java)
     }
 }

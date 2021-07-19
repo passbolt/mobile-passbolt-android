@@ -47,11 +47,13 @@ internal val addAccountUseCase = mock<SaveAccountUseCase>()
 internal val checkAccountExistsUseCase = mock<CheckAccountExistsUseCase>()
 internal val qrParser = mock<ScanQrParser>()
 internal val httpsVerifier = mock<HttpsVerifier>()
+internal val selectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
 
 val testScanQrModule = module {
     factory { httpsVerifier }
     factory { updateTransferUseCase }
     factory { saveAccountDataUseCase }
+    factory { selectedAccountUseCase }
     factory { uuidProvider }
     factory { savePrivateKeyUseCase }
     factory { updateAccountDataUseCase }
@@ -80,7 +82,8 @@ val testScanQrModule = module {
             savePrivateKeyUseCase = get(),
             updateAccountDataUseCase = get(),
             checkAccountExistsUseCase = get(),
-            httpsVerifier = get()
+            httpsVerifier = get(),
+            saveSelectedAccountUseCase = selectedAccountUseCase
         )
     }
 }

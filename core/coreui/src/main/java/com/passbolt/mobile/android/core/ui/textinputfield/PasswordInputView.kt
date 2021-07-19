@@ -35,11 +35,16 @@ class PasswordInputView @JvmOverloads constructor(
 
     init {
         with(binding.textLayout) {
-            editText?.let {
-                it.isSingleLine = true
-                it.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            editText?.apply {
+                isSingleLine = true
+                inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                isSaveEnabled = false
             }
             endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
         }
+    }
+
+    fun clearText() {
+        binding.textLayout.editText?.setText("")
     }
 }

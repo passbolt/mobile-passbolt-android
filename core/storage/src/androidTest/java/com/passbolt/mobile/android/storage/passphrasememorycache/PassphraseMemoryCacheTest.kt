@@ -126,7 +126,7 @@ class PassphraseMemoryCacheTest : KoinTest {
     }
 
     private companion object {
-        private val TEST_PASSPHRASE = "passphrase".toCharArray()
+        private val TEST_PASSPHRASE = "passphrase".toByteArray()
         private const val LIFECYCLE_OBSERVATION_TIMEOUT_MILLIS = 1_000L
 
         fun launcherIntent() = Intent(Intent.ACTION_MAIN).apply {

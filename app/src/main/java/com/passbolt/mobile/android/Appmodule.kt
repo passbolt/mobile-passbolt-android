@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.core.networking.COIL_HTTP_CLIENT
 import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import okhttp3.OkHttpClient
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -66,6 +67,7 @@ internal val appModule = module {
     single { InitialsProvider() }
     single { WebsiteOpener() }
     single { HttpsVerifier() }
+    factory { androidApplication().packageManager }
 }
 
 private fun provideImageLoader(okHttpClient: OkHttpClient, context: Context) {

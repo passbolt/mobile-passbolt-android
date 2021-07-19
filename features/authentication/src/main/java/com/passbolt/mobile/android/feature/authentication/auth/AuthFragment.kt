@@ -222,4 +222,8 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     override fun hideKeyboard() {
         hideSoftInput()
     }
+
+    override fun clearPassphraseInput() {
+        binding.passphraseInput.clearText()
+    }
 }

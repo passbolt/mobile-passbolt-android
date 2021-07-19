@@ -128,8 +128,8 @@ open class TextInputView @JvmOverloads constructor(
         }
     }
 
-    fun getInputBytes(): ByteArray? =
-        binding.input.text?.toString()?.toByteArray()
+    fun getInputBytes(): ByteArray =
+        binding.input.text?.toString()?.toByteArray() ?: byteArrayOf()
 
     sealed class State {
         object Initial : State()
