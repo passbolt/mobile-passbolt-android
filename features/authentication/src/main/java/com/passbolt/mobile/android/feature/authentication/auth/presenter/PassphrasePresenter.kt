@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
@@ -55,11 +56,9 @@ class PassphrasePresenter(
     coroutineLaunchContext
 ) {
 
-    override fun signInClick(passphrase: ByteArray?) {
+    override fun signInClick(passphrase: ByteArray) {
         super.signInClick(passphrase)
-        passphrase?.let {
-            validatePassphrase(passphrase)
-        }
+        validatePassphrase(passphrase)
     }
 
     override fun biometricAuthSuccess() {
@@ -76,7 +75,11 @@ class PassphrasePresenter(
             } else {
                 saveAccountUseCase.execute(UserIdInput(userId))
                 passphraseMemoryCache.set(passphrase)
-                view?.authSuccess()
+                passphrase.erase()
+                view?.apply {
+                    clearPassphraseInput()
+                    authSuccess()
+                }
             }
         }
     }

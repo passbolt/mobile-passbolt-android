@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
@@ -68,7 +69,7 @@ class SignInPresenter(
     coroutineLaunchContext
 ) {
 
-    override fun signInClick(passphrase: ByteArray?) {
+    override fun signInClick(passphrase: ByteArray) {
         super.signInClick(passphrase)
         performSignIn(passphrase)
     }
@@ -92,7 +93,7 @@ class SignInPresenter(
         }
     }
 
-    private fun performSignIn(passphrase: ByteArray?) {
+    private fun performSignIn(passphrase: ByteArray) {
         view?.showProgress()
         scope.launch {
             val pgpKey = async { getServerPublicPgpKeyUseCase.execute(Unit) }
@@ -108,15 +109,14 @@ class SignInPresenter(
         }
     }
 
-    private suspend fun signIn(passphrase: ByteArray?, serverPublicKey: String, rsaKey: String) {
-        // TODO verify passphrase use case?
-        // TODO refactor using local user id and server user id
+    private suspend fun signIn(passphrase: ByteArray, serverPublicKey: String, rsaKey: String) {
+        // TODO verify passphrase use case? Use stored url; PAS-214
         val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
         val challenge = challengeProvider.get(
             version = "1.0.0",
             domain = "https://passbolt.dev",
             serverPublicKey = serverPublicKey,
-            passphrase = requireNotNull(passphrase),
+            passphrase = passphrase,
             userId
         )
         when (challenge) {
@@ -152,6 +152,7 @@ class SignInPresenter(
                     userId,
                     result.challenge
                 )
+                passphrase.erase()
                 verifyChallenge(challengeDecryptResult, rsaKey, userId)
             }
         }
@@ -175,17 +176,24 @@ class SignInPresenter(
             )
         )
         saveSelectedAccountUseCase.execute(UserIdInput(userId))
-        view?.hideProgress()
-        view?.authSuccess()
+        view?.apply {
+            hideProgress()
+            clearPassphraseInput()
+            authSuccess()
+        }
     }
 
     private fun showGenericError() {
-        view?.hideProgress()
-        view?.showGenericError()
+        view?.apply {
+            hideProgress()
+            showGenericError()
+        }
     }
 
     private fun showWrongPassphrase() {
-        view?.hideProgress()
-        view?.showWrongPassphrase()
+        view?.apply {
+            hideProgress()
+            showWrongPassphrase()
+        }
     }
 }

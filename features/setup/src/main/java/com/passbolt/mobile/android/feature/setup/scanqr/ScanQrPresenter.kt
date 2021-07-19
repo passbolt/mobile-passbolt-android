@@ -10,7 +10,9 @@ import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.storage.usecase.accountdata.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -46,6 +48,7 @@ class ScanQrPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val updateTransferUseCase: UpdateTransferUseCase,
     private val qrParser: ScanQrParser,
+    private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val saveAccountDataUseCase: SaveAccountDataUseCase,
     private val uuidProvider: UuidProvider,
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
@@ -216,6 +219,7 @@ class ScanQrPresenter(
 
     private fun saveAccountDetails(serverId: String, url: String) {
         userId = uuidProvider.get()
+        saveSelectedAccountUseCase.execute(UserIdInput(userId))
         saveAccountDataUseCase.execute(
             SaveAccountDataUseCase.Input(
                 userId = userId,

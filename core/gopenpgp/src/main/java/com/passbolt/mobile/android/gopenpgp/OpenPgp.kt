@@ -42,7 +42,7 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
     ): String {
         return try {
             withContext(Dispatchers.IO) {
-                val passphraseCopy = ByteArray(passphrase.size) { passphrase[it] }
+                val passphraseCopy = passphrase.copyOf()
 
                 val encrypted = Helper.encryptSignMessageArmored(
                     publicKey, privateKey, passphrase, message
@@ -68,7 +68,7 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
     ): ByteArray {
         return try {
             withContext(Dispatchers.IO) {
-                val passphraseCopy = ByteArray(passphrase.size) { passphrase[it] }
+                val passphraseCopy = passphrase.copyOf()
 
                 val decrypted = Helper.decryptVerifyMessageArmored(
                     publicKey, privateKey, passphrase, cipherText
@@ -94,7 +94,7 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
     ): Boolean {
         return try {
             withContext(Dispatchers.IO) {
-                val passphraseCopy = ByteArray(passphrase.size) { passphrase[it] }
+                val passphraseCopy = passphrase.copyOf()
 
                 val key = Key(privateKey)
                 val unlockedKey = key.unlock(passphraseCopy)

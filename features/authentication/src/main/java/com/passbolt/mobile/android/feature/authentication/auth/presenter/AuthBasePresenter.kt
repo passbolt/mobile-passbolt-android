@@ -121,7 +121,7 @@ abstract class AuthBasePresenter(
     }
 
     @CallSuper
-    override fun signInClick(passphrase: ByteArray?) {
+    override fun signInClick(passphrase: ByteArray) {
         view?.hideKeyboard()
     }
 }

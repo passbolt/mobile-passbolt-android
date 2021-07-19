@@ -44,6 +44,7 @@ fun Module.scanQrModule() {
                 coroutineLaunchContext = get(),
                 updateTransferUseCase = get(),
                 qrParser = get(),
+                saveSelectedAccountUseCase = get(),
                 saveAccountDataUseCase = get(),
                 uuidProvider = get(),
                 savePrivateKeyUseCase = get(),

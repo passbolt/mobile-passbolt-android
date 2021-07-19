@@ -49,10 +49,11 @@ interface AuthContract {
         fun setBiometricAuthButtonVisible()
         fun setBiometricAuthButtonGone()
         fun showAuthenticationError(errorMessage: Int)
+        fun clearPassphraseInput()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun signInClick(passphrase: ByteArray?)
+        fun signInClick(passphrase: ByteArray)
         fun backClick(showConfirmationDialog: Boolean)
         fun argsRetrieved(userId: String)
         fun forgotPasswordClick()

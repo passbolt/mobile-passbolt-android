@@ -37,7 +37,8 @@ fun Module.cryptoModule() {
     factory {
         KeyStoreWrapper(
             keyStore = get(),
-            keyGenerator = get()
+            keyGenerator = get(),
+            packageManager = get()
         )
     }
     factory {

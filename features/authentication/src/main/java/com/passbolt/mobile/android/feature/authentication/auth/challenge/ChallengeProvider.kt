@@ -3,10 +3,11 @@ package com.passbolt.mobile.android.feature.authentication.auth.challenge
 import com.google.gson.Gson
 import com.passbolt.mobile.android.common.TimeProvider
 import com.passbolt.mobile.android.common.UuidProvider
+import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.dto.request.ChallengeDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,8 +46,8 @@ class ChallengeProvider(
         passphrase: ByteArray,
         userId: String
     ): Output {
+        val passphraseCopy = passphrase.copyOf()
         val privateKey = requireNotNull(privateKeyUseCase.execute(UserIdInput(userId)).privateKey)
-
         val tokenExpiry = getVerifyTokenExpiry()
 
         val challengeJson = ChallengeDto(version, domain, uuidProvider.get(), tokenExpiry)
@@ -56,9 +57,10 @@ class ChallengeProvider(
             val encryptedChallenge = openPgp.encryptSignMessageArmored(
                 publicKey = serverPublicKey,
                 privateKey = privateKey,
-                passphrase = passphrase,
+                passphrase = passphraseCopy,
                 message = challengeJson
             )
+            passphraseCopy.erase()
             Output.Success(encryptedChallenge)
         } catch (e: Exception) {
             Output.WrongPassphrase
