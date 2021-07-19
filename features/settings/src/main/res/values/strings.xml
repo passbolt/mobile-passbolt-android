@@ -10,7 +10,7 @@
     <string name="settings_privacy_policy">Privacy policy</string>
     <string name="settings_title">Settings</string>
     <string name="settings_disable_fingerprint_confirmation_title">Are you sure?</string>
-    <string name="settings_disable_fingerprint_confirmation_message">After disabling Face ID you will need to login by using your passphrase.</string>
+    <string name="settings_disable_fingerprint_confirmation_message">After disabling Fingerprint you will need to login by using your passphrase.</string>
     <string name="settings_disable">Disable</string>
     <string name="settings_logout_dialog_title">Are you sure?</string>
     <string name="settings_logout_dialog_message">If you sign out you will need to sign in again.</string>
