@@ -68,6 +68,7 @@
             android:layout_marginTop="@dimen/dp_40"
             app:inputTitle="@string/auth_password_title"
             app:layout_constraintTop_toBottomOf="@id/domainLabel"
+            app:layout_constraintBottom_toTopOf="@id/biometricAuthButton"
             app:layout_constraintVertical_bias="0"
             app:layout_goneMarginTop="@dimen/dp_32" />
 
@@ -94,6 +95,7 @@
             android:layout_marginBottom="@dimen/dp_16"
             android:enabled="false"
             android:text="@string/auth_sign_in"
+            app:layout_constraintTop_toBottomOf="@id/biometricAuthButton"
             app:layout_constraintBottom_toTopOf="@id/forgotPasswordButton" />
 
         <TextView
