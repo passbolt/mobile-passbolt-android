@@ -27,8 +27,10 @@
 plugins {
     id "com.android.library"
     id "kotlin-android"
+    id "kotlinx-serialization"
 }
 
 dependencies {
     implementation libs.networking.retrofitGsonConverter
+    implementation libs.kotlin.serializationJson
 }

@@ -30,5 +30,5 @@ import org.koin.dsl.module
 val testParserModule = module {
     factory { ScanQrParser(get(), get(), get()) }
     factory { KeyAssembler(get()) }
-    factory { QrScanResultsMapper(get()) }
+    factory { QrScanResultsMapper() }
 }

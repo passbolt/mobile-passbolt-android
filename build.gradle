@@ -10,7 +10,7 @@ buildscript {
     dependencies {
         classpath libs.androidGradlePlugin
         classpath libs.kotlin.gradlePlugin
-        classpath libs.kotlin.serialization
+        classpath libs.kotlin.serializationPlugin
         classpath libs.gradleVersionsPlugin
         classpath libs.quadrant
         classpath libs.androidx.navigation_safe_args

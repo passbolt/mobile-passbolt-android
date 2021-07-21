@@ -1,16 +1,16 @@
 package com.passbolt.mobile.android.feature.setup.scanqr.qrparser
 
 import androidx.annotation.VisibleForTesting
-import com.google.gson.Gson
 import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
-import com.passbolt.mobile.android.dto.response.qrcode.QrFirstPageDto
 import com.passbolt.mobile.android.dto.response.qrcode.ReservedBytesDto
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult.UserResolvableError.ErrorType.MULTIPLE_BARCODES
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult.UserResolvableError.ErrorType.NOT_A_PASSBOLT_QR
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import timber.log.Timber
 
-class QrScanResultsMapper(private val gson: Gson) {
+class QrScanResultsMapper {
 
     fun apply(scanResult: BarcodeScanResult) = when (scanResult) {
         is BarcodeScanResult.Failure ->
@@ -27,7 +27,7 @@ class QrScanResultsMapper(private val gson: Gson) {
             }
     }
 
-    private fun mapPassboltQr(scanResult: ByteArray?): ParseResult.PassboltQr? {
+    private fun mapPassboltQr(scanResult: ByteArray?): ParseResult {
         return try {
             val data = requireNotNull(scanResult) // already checked for null during isPassboltQr
             val reservedBytesDto = createReservedBytesDto(data)
@@ -35,14 +35,14 @@ class QrScanResultsMapper(private val gson: Gson) {
 
             if (reservedBytesDto.page == FIRST_PAGE_INDEX) {
                 ParseResult.PassboltQr.FirstPage(
-                    reservedBytesDto, gson.fromJson(String(payloadBytes), QrFirstPageDto::class.java)
+                    reservedBytesDto, Json.decodeFromString(String(payloadBytes))
                 )
             } else {
                 ParseResult.PassboltQr.SubsequentPage(reservedBytesDto, payloadBytes)
             }
         } catch (exception: Exception) {
             Timber.e(exception)
-            null
+            ParseResult.Failure(exception)
         }
     }
 
