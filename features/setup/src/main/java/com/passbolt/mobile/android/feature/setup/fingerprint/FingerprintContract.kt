@@ -35,7 +35,7 @@ interface FingerprintContract {
         fun showBiometricPrompt()
         fun showAuthenticationError(@StringRes errorMessage: Int)
         fun showEncourageAutofillDialog()
-        fun navigateToSignIn()
+        fun navigateToHome()
         fun showAutofillEnabledDialog()
         fun startAuthActivity()
     }

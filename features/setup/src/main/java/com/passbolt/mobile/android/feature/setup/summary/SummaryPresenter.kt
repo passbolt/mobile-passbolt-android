@@ -1,5 +1,9 @@
 package com.passbolt.mobile.android.feature.setup.summary
 
+import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,7 +26,10 @@ package com.passbolt.mobile.android.feature.setup.summary
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SummaryPresenter : SummaryContract.Presenter {
+class SummaryPresenter(
+    private val saveAccountUseCase: SaveAccountUseCase,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : SummaryContract.Presenter {
 
     override var view: SummaryContract.View? = null
     private lateinit var status: ResultStatus
@@ -52,6 +59,7 @@ class SummaryPresenter : SummaryContract.Presenter {
     }
 
     override fun authenticationSucceeded() {
+        saveAccountUseCase.execute(UserIdInput(getSelectedAccountUseCase.execute(Unit).selectedAccount))
         view?.navigateToFingerprintSetup()
     }
 

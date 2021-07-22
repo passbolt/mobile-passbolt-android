@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
@@ -57,6 +58,7 @@ class SignInPresenter(
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val getAccountDataUseCase: GetAccountDataUseCase,
     private val passphraseRepository: PassphraseRepository,
+    private val passphraseMemoryCache: PassphraseMemoryCache,
     private val removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     fingerprintInfoProvider: FingerprintInformationProvider,
     checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
@@ -152,22 +154,26 @@ class SignInPresenter(
                     userId,
                     result.challenge
                 )
-                passphrase.erase()
-                verifyChallenge(challengeDecryptResult, rsaKey, userId)
+                verifyChallenge(challengeDecryptResult, rsaKey, userId, passphrase)
             }
         }
     }
 
-    private fun verifyChallenge(challengeResponseDto: ChallengeResponseDto, rsaKey: String, userId: String) {
+    private fun verifyChallenge(
+        challengeResponseDto: ChallengeResponseDto,
+        rsaKey: String,
+        userId: String,
+        passphrase: ByteArray
+    ) {
         when (val result = challengeVerifier.verify(challengeResponseDto, rsaKey)) {
             ChallengeVerifier.Output.Failure -> showGenericError()
             ChallengeVerifier.Output.InvalidSignature -> showGenericError()
             ChallengeVerifier.Output.TokenExpired -> showGenericError()
-            is ChallengeVerifier.Output.Verified -> signInSuccess(result.accessToken, userId)
+            is ChallengeVerifier.Output.Verified -> signInSuccess(result.accessToken, userId, passphrase)
         }
     }
 
-    private fun signInSuccess(accessToken: String, userId: String) {
+    private fun signInSuccess(accessToken: String, userId: String, passphrase: ByteArray) {
         saveSessionUseCase.execute(
             SaveSessionUseCase.Input(
                 userId = userId,
@@ -176,6 +182,8 @@ class SignInPresenter(
             )
         )
         saveSelectedAccountUseCase.execute(UserIdInput(userId))
+        passphraseMemoryCache.set(passphrase)
+        passphrase.erase()
         view?.apply {
             hideProgress()
             clearPassphraseInput()

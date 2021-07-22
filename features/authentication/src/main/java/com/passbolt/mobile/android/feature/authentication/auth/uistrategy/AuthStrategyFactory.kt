@@ -9,5 +9,6 @@ class AuthStrategyFactory {
         is AuthenticationType.Passphrase -> PassphraseAuthStrategy(view)
         is AuthenticationType.SignIn -> SignInAuthStrategy(view)
         is AuthenticationType.Refresh -> RefreshAuthStrategy(view)
+        is AuthenticationType.SignInForResult -> SignInForResultAuthStrategy(view)
     }
 }

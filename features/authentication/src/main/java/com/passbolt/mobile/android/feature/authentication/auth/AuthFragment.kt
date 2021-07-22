@@ -23,7 +23,6 @@ import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAu
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
-import java.lang.ref.WeakReference
 import java.util.concurrent.Executor
 
 /**
@@ -56,7 +55,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     private lateinit var authStrategy: AuthStrategy
     private lateinit var presenter: AuthContract.Presenter
 
-    private val progressDialogRef = WeakReference(ProgressDialog())
+    private var progressDialog: ProgressDialog? = ProgressDialog()
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
     private val executor: Executor by inject()
 
@@ -127,6 +126,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun onDestroyView() {
+        progressDialog = null
         authStrategy.detach()
         presenter.detach()
         super.onDestroyView()
@@ -165,11 +165,11 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showProgress() {
-        progressDialogRef.get()?.show(childFragmentManager, ProgressDialog::class.java.name)
+        progressDialog?.show(childFragmentManager, ProgressDialog::class.java.name)
     }
 
     override fun hideProgress() {
-        progressDialogRef.get()?.dismiss()
+        progressDialog?.dismiss()
     }
 
     override fun showName(name: String) {

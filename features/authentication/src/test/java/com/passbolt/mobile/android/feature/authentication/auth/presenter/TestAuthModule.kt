@@ -87,15 +87,14 @@ internal val mockFingerprintInformationProvider = mock<FingerprintInformationPro
 val testAuthModule = module {
     factory<AuthContract.Presenter>(named(AuthenticationType.Passphrase.javaClass.simpleName)) {
         PassphrasePresenter(
-            getAccountDataUseCase = mockGetAccountDataUseCase,
-            coroutineLaunchContext = get(),
             passphraseMemoryCache = mockPassphraseMemoryCache,
             getSelectedUserPrivateKeyUseCase = mockGetSelectedPrivateKeyUseCase,
             verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
-            saveAccountUseCase = mockSaveAccountUseCase,
-            checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
+            fingerprintInfoProvider = mockFingerprintInformationProvider,
             removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
-            fingerprintInfoProvider = mockFingerprintInformationProvider
+            checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
+            getAccountDataUseCase = mockGetAccountDataUseCase,
+            coroutineLaunchContext = get()
         )
     }
     factory<AuthContract.Presenter>(named(AuthenticationType.SignIn.name)) {
@@ -113,7 +112,8 @@ val testAuthModule = module {
             passphraseRepository = mockPassphraseRepository,
             checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
             removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
-            fingerprintInfoProvider = mockFingerprintInformationProvider
+            fingerprintInfoProvider = mockFingerprintInformationProvider,
+            passphraseMemoryCache = mockPassphraseMemoryCache
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

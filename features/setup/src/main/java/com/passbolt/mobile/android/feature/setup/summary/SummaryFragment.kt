@@ -98,7 +98,7 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                AuthenticationType.Passphrase
+                AuthenticationType.SignInForResult
             )
         )
     }
