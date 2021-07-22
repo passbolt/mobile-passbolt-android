@@ -9,4 +9,5 @@
     <string name="more_delete">Delete</string>
     <string name="search_hint">Search name, user or url</string>
     <string name="home_empty_list">Empty list</string>
+    <string name="home_no_passwords">There are no passwords</string>
 </resources>

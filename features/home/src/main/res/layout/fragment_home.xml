@@ -77,7 +77,9 @@
     <LinearLayout
         android:id="@+id/errorContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -112,16 +114,32 @@
             android:textAllCaps="false" />
     </LinearLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/emptyListContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            style="@style/Heading1Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/home_empty_list" />
-    </FrameLayout>
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="@dimen/dp_72"
+            android:gravity="center_horizontal"
+            android:text="@string/home_no_passwords"
+            android:textColor="@color/text_primary" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_32"
+            android:src="@drawable/empty_state" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
