@@ -26,4 +26,5 @@ object AuthPaths {
     const val AUTH_VERIFY = "/auth/verify.json"
     const val AUTH_RSA = "/auth/jwt/rsa.json"
     const val AUTH_SIGN_IN = "/auth/jwt/login.json"
+    const val AUTH_SIGN_OUT = "/auth/jwt/logout.json"
 }

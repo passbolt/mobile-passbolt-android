@@ -1,10 +1,8 @@
-package com.passbolt.mobile.android.feature
+package com.passbolt.mobile.android.feature.authentication
 
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.authentication.AuthenticationMainContract
-import com.passbolt.mobile.android.feature.authentication.AuthenticationMainPresenter
-import com.passbolt.mobile.android.service.logout.LogoutRepository
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,14 +32,14 @@ import org.koin.dsl.module
  */
 
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
-internal val mockLogoutRepository = mock<LogoutRepository>()
+internal val mockSignOutUseCase = mock<SignOutUseCase>()
 
 @ExperimentalCoroutinesApi
 val testAuthenticationMainModule = module {
     factory<AuthenticationMainContract.Presenter> {
         AuthenticationMainPresenter(
             getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
-            logoutRepository = mockLogoutRepository,
+            signOutUseCase = mockSignOutUseCase,
             coroutineLaunchContext = get()
         )
     }

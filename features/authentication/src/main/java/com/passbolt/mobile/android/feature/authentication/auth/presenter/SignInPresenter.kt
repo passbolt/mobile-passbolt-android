@@ -169,16 +169,21 @@ class SignInPresenter(
             ChallengeVerifier.Output.Failure -> showGenericError()
             ChallengeVerifier.Output.InvalidSignature -> showGenericError()
             ChallengeVerifier.Output.TokenExpired -> showGenericError()
-            is ChallengeVerifier.Output.Verified -> signInSuccess(result.accessToken, userId, passphrase)
+            is ChallengeVerifier.Output.Verified -> signInSuccess(
+                result.accessToken,
+                result.refreshToken,
+                userId,
+                passphrase
+            )
         }
     }
 
-    private fun signInSuccess(accessToken: String, userId: String, passphrase: ByteArray) {
+    private fun signInSuccess(accessToken: String, refreshToken: String, userId: String, passphrase: ByteArray) {
         saveSessionUseCase.execute(
             SaveSessionUseCase.Input(
                 userId = userId,
                 accessToken = accessToken,
-                refreshToken = ""
+                refreshToken = refreshToken
             )
         )
         saveSelectedAccountUseCase.execute(UserIdInput(userId))

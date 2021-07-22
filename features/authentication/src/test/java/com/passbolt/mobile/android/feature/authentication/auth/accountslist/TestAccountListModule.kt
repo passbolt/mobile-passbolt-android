@@ -6,11 +6,10 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsL
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.service.logout.LogoutRepository
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.storage.usecase.accountdata.RemoveAllAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.RemoveAllAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module

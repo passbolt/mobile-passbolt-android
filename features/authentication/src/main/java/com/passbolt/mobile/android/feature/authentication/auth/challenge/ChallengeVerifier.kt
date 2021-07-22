@@ -41,7 +41,7 @@ class ChallengeVerifier {
             Output.TokenExpired
         }
 
-        Output.Verified(challengeResponseDto.accessToken)
+        Output.Verified(challengeResponseDto.accessToken, challengeResponseDto.refreshToken)
     } catch (exception: InvalidJWTSignatureException) {
         Timber.e(exception)
         Output.InvalidSignature
@@ -56,7 +56,8 @@ class ChallengeVerifier {
     sealed class Output {
         object TokenExpired : Output()
         class Verified(
-            val accessToken: String
+            val accessToken: String,
+            val refreshToken: String
         ) : Output()
 
         object InvalidSignature : Output()

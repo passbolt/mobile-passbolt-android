@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
@@ -9,10 +10,9 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
-import com.passbolt.mobile.android.feature.mockGetSelectedAccountUseCase
-import com.passbolt.mobile.android.feature.mockLogoutRepository
-import com.passbolt.mobile.android.feature.testAuthenticationMainModule
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -45,6 +45,7 @@ import org.koin.test.inject
  * @since v1.0
  */
 
+@ExperimentalCoroutinesApi
 class AuthenticationMainPresenterTest : KoinTest {
 
     private val presenter: AuthenticationMainContract.Presenter by inject()
@@ -67,21 +68,21 @@ class AuthenticationMainPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should navigate to manage account when manage account target is set`() {
+    fun `view should navigate to manage account when manage account target is set`() = runBlockingTest {
         presenter.bundleRetrieved(AuthenticationTarget.MANAGE_ACCOUNTS, null, shouldLogOut = false)
 
         verify(mockView, never()).showProgress()
-        verify(mockLogoutRepository, never()).logout()
+        verify(mockSignOutUseCase, never()).execute(any())
         verify(mockView).navigateToManageAccounts()
         verifyNoMoreInteractions(mockView)
     }
 
     @Test
-    fun `user should be logged out when appropriate flag is set`() {
+    fun `user should be logged out when appropriate flag is set`() = runBlockingTest {
         presenter.bundleRetrieved(AuthenticationTarget.MANAGE_ACCOUNTS, null, shouldLogOut = true)
 
         verify(mockView).showProgress()
-        verify(mockLogoutRepository).logout()
+        verify(mockSignOutUseCase).execute(any())
         verify(mockView).hideProgress()
         verify(mockView).navigateToManageAccounts()
         verifyNoMoreInteractions(mockView)

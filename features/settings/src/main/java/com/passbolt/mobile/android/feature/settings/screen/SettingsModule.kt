@@ -36,9 +36,7 @@ fun Module.settingsModule() {
                 checkIfPassphraseExistsUseCase = get(),
                 autofillInfoProvider = get(),
                 removePassphraseUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                signOutUseCase = get(),
-                coroutineLaunchContext = get()
+                getSelectedAccountUseCase = get()
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }
@@ -52,7 +50,9 @@ fun Module.settingsModule() {
                 passphraseMemoryCache = get(),
                 removeSelectedAccountUseCase = get(),
                 getSelectedAccountUseCase = get(),
-                logoutRepository = get()
+                authRepository = get(),
+                signOutMapper = get(),
+                getSessionUseCase = get()
             )
         }
     }

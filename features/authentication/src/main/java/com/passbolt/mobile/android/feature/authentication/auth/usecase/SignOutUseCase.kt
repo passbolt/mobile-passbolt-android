@@ -1,11 +1,13 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.service.logout.LogoutRepository
+import com.passbolt.mobile.android.mappers.SignOutMapper
+import com.passbolt.mobile.android.service.auth.AuthRepository
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.RemoveSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,13 +35,17 @@ class SignOutUseCase(
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val removeSelectedAccountUseCase: RemoveSelectedAccountUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val logoutRepository: LogoutRepository
+    private val authRepository: AuthRepository,
+    private val signOutMapper: SignOutMapper,
+    private val getSessionUseCase: GetSessionUseCase
 ) : AsyncUseCase<Unit, Unit> {
 
     override suspend fun execute(input: Unit) {
+        getSessionUseCase.execute(Unit).refreshToken?.let {
+            authRepository.signOut(signOutMapper.mapRequestToDto(it))
+        }
         passphraseMemoryCache.clear()
         val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
         removeSelectedAccountUseCase.execute(UserIdInput(selectedAccount))
-        logoutRepository.logout()
     }
 }

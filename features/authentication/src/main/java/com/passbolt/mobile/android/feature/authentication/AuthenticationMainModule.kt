@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication
 
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import org.koin.core.module.Module
 
 /**
@@ -30,8 +31,18 @@ fun Module.authenticationMainModule() {
         scoped<AuthenticationMainContract.Presenter> {
             AuthenticationMainPresenter(
                 getSelectedAccountUseCase = get(),
-                logoutRepository = get(),
+                signOutUseCase = get(),
                 coroutineLaunchContext = get()
+            )
+        }
+        scoped {
+            SignOutUseCase(
+                passphraseMemoryCache = get(),
+                removeSelectedAccountUseCase = get(),
+                getSelectedAccountUseCase = get(),
+                authRepository = get(),
+                signOutMapper = get(),
+                getSessionUseCase = get()
             )
         }
     }

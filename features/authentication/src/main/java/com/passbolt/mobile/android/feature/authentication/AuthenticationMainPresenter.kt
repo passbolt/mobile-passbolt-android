@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.feature.authentication
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
-import com.passbolt.mobile.android.service.logout.LogoutRepository
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class AuthenticationMainPresenter(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val logoutRepository: LogoutRepository,
+    private val signOutUseCase: SignOutUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthenticationMainContract.Presenter {
 
@@ -28,7 +28,7 @@ class AuthenticationMainPresenter(
         scope.launch {
             if (shouldLogOut) {
                 view?.showProgress()
-                logoutRepository.logout()
+                signOutUseCase.execute(Unit)
                 view?.hideProgress()
             }
         }
