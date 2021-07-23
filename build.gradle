@@ -5,6 +5,7 @@ buildscript {
     repositories {
         maven { url projectRepositories.google }
         maven { url projectRepositories.mavenCentral }
+        maven { url projectRepositories.jitPack }
         maven { url projectRepositories.gradlePlugins }
     }
     dependencies {
@@ -21,9 +22,9 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url projectRepositories.mavenCentral }
         maven { url projectRepositories.google }
-        maven { url projectRepositories.jcenter }
+        maven { url projectRepositories.mavenCentral }
+        maven { url projectRepositories.jitPack }
         flatDir { dirs "${rootProject.projectDir}/core/gopenpgp/libs" }
     }
 }
