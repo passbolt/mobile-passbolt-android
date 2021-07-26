@@ -35,9 +35,11 @@ interface SettingsContract {
         fun showEncourageAutofillDialog()
         fun showAutofillEnabledDialog()
         fun showDisableFingerprintConfirmationDialog()
-        fun navigateToAuthenticationSignIn()
+        fun navigateToAuthGetPassphrase()
         fun hideAutofillSetting()
         fun showLogoutDialog()
+        fun showBiometricPrompt()
+        fun showAuthenticationError(errorMessage: Int)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -52,5 +54,8 @@ interface SettingsContract {
         fun disableFingerprintCanceled()
         fun autofillEnabledDialogDismissed()
         fun logoutConfirmed()
+        fun getPassphraseSucceeded()
+        fun biometricAuthError(errorMessage: Int)
+        fun biometricAuthSucceeded()
     }
 }

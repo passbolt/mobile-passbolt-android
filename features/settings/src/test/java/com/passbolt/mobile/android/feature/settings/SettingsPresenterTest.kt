@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.feature.settings
 
+import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
@@ -8,8 +10,10 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
+import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -75,7 +79,7 @@ class SettingsPresenterTest : KoinTest {
     @Test
     fun `enabling biometric should navigate to authentication sign in`() {
         presenter.fingerprintSettingChanged(true)
-        verify(view).navigateToAuthenticationSignIn()
+        verify(view).navigateToAuthGetPassphrase()
         verifyNoMoreInteractions(view)
     }
 
@@ -138,5 +142,29 @@ class SettingsPresenterTest : KoinTest {
         presenter.disableFingerprintCanceled()
         verify(view).toggleFingerprintOn(eq(true))
         verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `re-enabling fingerprint should show proper ui`() {
+        whenever(checkIfPassphraseFileExistsUseCase.execute(anyOrNull())).thenReturn(
+            CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false)
+        )
+        whenever(passphraseMemoryCache.get()).thenReturn(PotentialPassphrase.Passphrase(PASSPHRASE))
+
+        presenter.fingerprintSettingChanged(isEnabled = true)
+
+        verify(view).navigateToAuthGetPassphrase()
+        presenter.getPassphraseSucceeded() // user entered passphrase
+        verify(view).showBiometricPrompt()
+        presenter.biometricAuthSucceeded() // user touched fingerprint
+        argumentCaptor<SavePassphraseUseCase.Input>().apply {
+            verify(savePassphraseUseCase).execute(capture())
+            assertThat(firstValue.passphrase).isEqualTo(PASSPHRASE)
+        }
+        verifyNoMoreInteractions(view)
+    }
+
+    private companion object {
+        private val PASSPHRASE = "passphrase".toByteArray()
     }
 }

@@ -53,6 +53,6 @@ class SavePassphraseUseCase(
     }
 
     class Input(
-        internal val passphrase: ByteArray
+        val passphrase: ByteArray
     )
 }

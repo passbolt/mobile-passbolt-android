@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
 import android.view.autofill.AutofillManager
+import androidx.biometric.BiometricPrompt
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import org.koin.android.ext.koin.androidContext
@@ -36,7 +37,9 @@ fun Module.settingsModule() {
                 checkIfPassphraseExistsUseCase = get(),
                 autofillInfoProvider = get(),
                 removePassphraseUseCase = get(),
-                getSelectedAccountUseCase = get()
+                getSelectedAccountUseCase = get(),
+                savePassphraseUseCase = get(),
+                passphraseMemoryCache = get()
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }
@@ -55,5 +58,6 @@ fun Module.settingsModule() {
                 getSessionUseCase = get()
             )
         }
+        scoped { BiometricPrompt.PromptInfo.Builder() }
     }
 }

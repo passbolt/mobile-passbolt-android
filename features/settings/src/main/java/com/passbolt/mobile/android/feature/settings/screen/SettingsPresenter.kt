@@ -1,16 +1,22 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
+import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import timber.log.Timber
 
 class SettingsPresenter(
     private val checkIfPassphraseExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     private val autofillInfoProvider: AutofillInformationProvider,
     private val removePassphraseUseCase: RemovePassphraseUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val savePassphraseUseCase: SavePassphraseUseCase,
+    private val passphraseMemoryCache: PassphraseMemoryCache
 ) : SettingsContract.Presenter {
 
     override var view: SettingsContract.View? = null
@@ -75,7 +81,7 @@ class SettingsPresenter(
         if (!isEnabled) {
             view?.showDisableFingerprintConfirmationDialog()
         } else {
-            view?.navigateToAuthenticationSignIn()
+            view?.navigateToAuthGetPassphrase()
         }
     }
 
@@ -87,5 +93,22 @@ class SettingsPresenter(
 
     override fun disableFingerprintCanceled() {
         view?.toggleFingerprintOn(silently = true)
+    }
+
+    override fun getPassphraseSucceeded() {
+        view?.showBiometricPrompt()
+    }
+
+    override fun biometricAuthError(errorMessage: Int) {
+        view?.showAuthenticationError(errorMessage)
+    }
+
+    override fun biometricAuthSucceeded() {
+        val passphrase = passphraseMemoryCache.get()
+        if (passphrase is PotentialPassphrase.Passphrase) {
+            savePassphraseUseCase.execute(SavePassphraseUseCase.Input(passphrase.passphrase))
+        } else {
+            Timber.e("Error during turing biometrics on. Passphrase not in cache after auth.")
+        }
     }
 }
