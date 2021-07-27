@@ -145,8 +145,20 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         // no action - dialog closed
     }
 
-    override fun navigateToAccountList(withSignOut: Boolean) {
-        startActivity(ActivityIntents.manageAccounts(requireContext(), withSignOut))
+    override fun navigateToAccountListWithLogout() {
+        startActivity(ActivityIntents.manageAccounts(requireContext(), withSignOut = true))
+        requireActivity().finish()
+    }
+
+    override fun navigateToSignInWithLogout() {
+        startActivity(
+            ActivityIntents.authentication(
+                requireContext(),
+                AuthenticationType.SignIn(),
+                withSignOut = true
+            )
+        )
+        requireActivity().finish()
     }
 
     override fun showDisableFingerprintConfirmationDialog() {

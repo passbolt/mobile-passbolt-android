@@ -28,7 +28,7 @@ interface SettingsContract {
 
     interface View : BaseContract.View {
         fun openUrl(url: String)
-        fun navigateToAccountList(withSignOut: Boolean = false)
+        fun navigateToAccountListWithLogout()
         fun toggleFingerprintOn(silently: Boolean)
         fun toggleFingerprintOff(silently: Boolean)
         fun showAutofillSetting()
@@ -40,6 +40,7 @@ interface SettingsContract {
         fun showLogoutDialog()
         fun showBiometricPrompt()
         fun showAuthenticationError(errorMessage: Int)
+        fun navigateToSignInWithLogout()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
