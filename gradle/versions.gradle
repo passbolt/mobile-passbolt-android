@@ -10,7 +10,7 @@ ext {
         androidGradlePlugin: '4.2.0',
         gradleVersionsPlugin: "0.28.0",
         desugarJdkLibs: "1.0.9",
-        kotlin: "1.4.30",
+        kotlin: "1.5.21",
         coroutines: "1.4.3",
         koin: "3.0.1",
         quadrant: "1.5",
@@ -60,7 +60,8 @@ ext {
         fastAdapter: "5.4.1",
         easylauncher: "4.0.0",
         fusionauthJwt: "4.2.0",
-        textDrawable: "1.0.1"
+        textDrawable: "1.0.1",
+        serializationJson: "1.2.2"
     ]
 
     libs = [
@@ -77,9 +78,10 @@ ext {
         kotlin: [
             gradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
             stdlib: "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",
-            serialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}",
+            serializationPlugin: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}",
             coroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}",
-            io: "org.jetbrains.kotlin:kotlin-util-io:${versions.kotlin}"
+            io: "org.jetbrains.kotlin:kotlin-util-io:${versions.kotlin}",
+            serializationJson: "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serializationJson}"
         ],
         test: [
             junit: "junit:junit:${versions.test.junit}",

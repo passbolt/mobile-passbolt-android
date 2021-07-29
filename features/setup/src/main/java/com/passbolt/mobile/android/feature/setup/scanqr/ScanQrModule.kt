@@ -53,7 +53,7 @@ fun Module.scanQrModule() {
                 httpsVerifier = get()
             )
         }
-        scoped { QrScanResultsMapper(gson = get()) }
+        scoped { QrScanResultsMapper() }
         scoped { KeyAssembler(gson = get()) }
         scoped {
             UpdateTransferUseCase(

@@ -71,7 +71,7 @@ val testScanQrModule = module {
             gson = get()
         )
     }
-    factory { QrScanResultsMapper(get()) }
+    factory { QrScanResultsMapper() }
     factory<ScanQrContract.Presenter> {
         ScanQrPresenter(
             coroutineLaunchContext = get(),

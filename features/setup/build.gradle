@@ -2,6 +2,7 @@ plugins {
     id "com.android.library"
     id "kotlin-android"
     id "kotlin-kapt"
+    id ("kotlinx-serialization")
 }
 
 apply plugin: "androidx.navigation.safeargs"
@@ -36,12 +37,11 @@ dependencies {
     implementation libs.androidx.cameraX
     implementation libs.androidx.cameraXLifecycle
     implementation libs.gson
-
     implementation libs.di.koin
     implementation libs.di.koinExt
-
     implementation libs.coil.core
     implementation libs.coil.base
+    implementation libs.kotlin.serializationJson
 }
 
 android {

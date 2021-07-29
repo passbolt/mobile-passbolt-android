@@ -1,7 +1,7 @@
-package com.passbolt.mobile.android.dto.response.qrcode
+package com.passbolt.mobile.android.feature.setup.scanqr.mapper
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +26,8 @@ import kotlinx.serialization.Serializable
  * @since v1.0
  */
 
-@Serializable
-data class QrFirstPageDto(
-    @SerialName("transfer_id")
-    val transferId: String,
-    @SerialName("user_id")
-    val userId: String,
-    @SerialName("total_pages")
-    val totalPages: Int,
-    @SerialName("authentication_token")
-    val authenticationToken: String,
-    val hash: String,
-    val domain: String
-)
+val testMapperModule = module {
+    factory {
+        QrScanResultsMapper()
+    }
+}
