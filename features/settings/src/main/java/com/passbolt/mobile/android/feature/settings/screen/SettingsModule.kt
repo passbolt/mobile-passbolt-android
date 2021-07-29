@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.settings.screen
 
 import android.view.autofill.AutofillManager
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 
@@ -35,13 +36,23 @@ fun Module.settingsModule() {
                 checkIfPassphraseExistsUseCase = get(),
                 autofillInfoProvider = get(),
                 removePassphraseUseCase = get(),
-                getSelectedAccountUseCase = get()
+                getSelectedAccountUseCase = get(),
+                signOutUseCase = get(),
+                coroutineLaunchContext = get()
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }
         factory {
             AutofillInformationProvider(
                 autofillManager = get()
+            )
+        }
+        scoped {
+            SignOutUseCase(
+                passphraseMemoryCache = get(),
+                removeSelectedAccountUseCase = get(),
+                getSelectedAccountUseCase = get(),
+                logoutRepository = get()
             )
         }
     }

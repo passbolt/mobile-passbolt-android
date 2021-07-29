@@ -77,6 +77,12 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
         presenter.attach(this)
     }
 
+    override fun onDestroyView() {
+        binding.recyclerView.adapter = null
+        presenter.detach()
+        super.onDestroyView()
+    }
+
     private fun initLogo() {
         binding.icon.visibility = uiStrategy.logoVisibility()
     }
@@ -94,11 +100,6 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
             initDefaultToolbar(this)
             setNavigationOnClickListener { requireActivity().finish() }
         }
-    }
-
-    override fun onDestroyView() {
-        presenter.detach()
-        super.onDestroyView()
     }
 
     private fun setListeners() {

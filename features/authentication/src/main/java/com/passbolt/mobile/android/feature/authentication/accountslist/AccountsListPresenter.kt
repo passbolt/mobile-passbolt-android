@@ -1,12 +1,13 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.service.logout.LogoutRepository
-import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.RemoveAllAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -39,9 +40,10 @@ import timber.log.Timber
 class AccountsListPresenter(
     private val getAllAccountsDataUseCase: GetAllAccountsDataUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val accountModelMapper: AccountModelMapper,
     private val removeAllAccountDataUseCase: RemoveAllAccountDataUseCase,
-    private val logoutRepository: LogoutRepository,
+    private val signOutUseCase: SignOutUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AccountsListContract.Presenter {
 
@@ -70,6 +72,7 @@ class AccountsListPresenter(
     }
 
     override fun accountItemClick(model: AccountModelUi.AccountModel) {
+        saveSelectedAccountUseCase.execute(UserIdInput(model.userId))
         view?.navigateToSignIn(model)
     }
 
@@ -119,7 +122,7 @@ class AccountsListPresenter(
             runCatching { getSelectedAccountUseCase.execute(Unit).selectedAccount }
                 .onSuccess { selectedAccountId ->
                     if (accountToRemoveId != selectedAccountId) {
-                        logoutRepository.logout()
+                        signOutUseCase.execute(Unit)
                     }
                 }
                 .onFailure {

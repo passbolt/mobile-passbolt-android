@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsL
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragmentDirections
 import com.passbolt.mobile.android.feature.authentication.databinding.ActivityAuthenticationMainBinding
 import org.koin.android.ext.android.inject
+import java.lang.ref.WeakReference
 
 /**
  * Passbolt - Open source password manager for teams
@@ -41,7 +42,7 @@ class AuthenticationMainActivity :
     AuthenticationMainContract.View {
 
     private val presenter: AuthenticationMainContract.Presenter by inject()
-    private val progressDialog = ProgressDialog()
+    private val progressDialogRef = WeakReference(ProgressDialog())
 
     private val navController by lifecycleAwareLazy {
         findNavHostFragment(binding.fragmentContainer.id).navController
@@ -77,6 +78,7 @@ class AuthenticationMainActivity :
     }
 
     override fun onDestroy() {
+        progressDialogRef.clear()
         presenter.detach()
         super.onDestroy()
     }
@@ -95,11 +97,15 @@ class AuthenticationMainActivity :
         navController.setGraph(navGraph, AccountsListFragment.newBundle(AuthenticationTarget.MANAGE_ACCOUNTS))
     }
 
+    override fun setDefaultNavGraph() {
+        navController.setGraph(navGraph, AccountsListFragment.newBundle(AuthenticationTarget.AUTHENTICATE))
+    }
+
     override fun showProgress() {
-        progressDialog.show(supportFragmentManager, ProgressDialog::class.java.name)
+        progressDialogRef.get()?.show(supportFragmentManager, ProgressDialog::class.java.name)
     }
 
     override fun hideProgress() {
-        progressDialog.dismiss()
+        progressDialogRef.get()?.dismiss()
     }
 }

@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.feature.authentication
+package com.passbolt.mobile.android.storage.base
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,21 +26,11 @@ import com.passbolt.mobile.android.core.navigation.AuthenticationType
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface AuthenticationMainContract {
 
-    interface View : BaseContract.View {
-        fun navigateToAuth(userId: String, authenticationStrategy: AuthenticationType)
-        fun showProgress()
-        fun hideProgress()
-        fun navigateToManageAccounts()
-        fun setDefaultNavGraph()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun bundleRetrieved(
-            authTarget: AuthenticationTarget,
-            authenticationStrategy: AuthenticationType?,
-            shouldLogOut: Boolean
-        )
-    }
+//TODO refactor to test module and remove duplicates - PAS-145
+@ExperimentalCoroutinesApi
+class TestCoroutineLaunchContext : CoroutineLaunchContext {
+    override val ui = TestCoroutineDispatcher()
+    override val default = TestCoroutineDispatcher()
+    override val io = TestCoroutineDispatcher()
 }

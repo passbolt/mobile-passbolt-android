@@ -12,6 +12,9 @@ dependencies {
     implementation project(':common')
     implementation project(':storage')
     implementation project(':autofill')
+    implementation project(':authentication')
+    implementation project(':authentication')
+    implementation project(':passboltapi')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

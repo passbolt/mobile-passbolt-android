@@ -1,8 +1,11 @@
-package com.passbolt.mobile.android.feature.authentication
+package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.service.logout.LogoutRepository
+import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.RemoveSelectedAccountUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,21 +29,17 @@ import com.passbolt.mobile.android.core.navigation.AuthenticationType
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface AuthenticationMainContract {
+class SignOutUseCase(
+    private val passphraseMemoryCache: PassphraseMemoryCache,
+    private val removeSelectedAccountUseCase: RemoveSelectedAccountUseCase,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val logoutRepository: LogoutRepository
+) : AsyncUseCase<Unit, Unit> {
 
-    interface View : BaseContract.View {
-        fun navigateToAuth(userId: String, authenticationStrategy: AuthenticationType)
-        fun showProgress()
-        fun hideProgress()
-        fun navigateToManageAccounts()
-        fun setDefaultNavGraph()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun bundleRetrieved(
-            authTarget: AuthenticationTarget,
-            authenticationStrategy: AuthenticationType?,
-            shouldLogOut: Boolean
-        )
+    override suspend fun execute(input: Unit) {
+        passphraseMemoryCache.clear()
+        val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
+        removeSelectedAccountUseCase.execute(UserIdInput(selectedAccount))
+        logoutRepository.logout()
     }
 }

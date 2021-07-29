@@ -79,6 +79,7 @@ class HomeFragment :
     }
 
     override fun onDestroyView() {
+        binding.recyclerView.adapter = null
         presenter.detach()
         super.onDestroyView()
     }
