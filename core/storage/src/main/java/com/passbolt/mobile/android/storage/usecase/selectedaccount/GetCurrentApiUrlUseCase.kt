@@ -1,8 +1,9 @@
-package com.passbolt.mobile.android.storage.usecase.passphrase
+package com.passbolt.mobile.android.storage.usecase.selectedaccount
 
-import org.koin.android.ext.koin.androidApplication
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.Module
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.usecase.CURRENT_URL_ALIAS
+import com.passbolt.mobile.android.storage.usecase.CURRENT_URL_KEY
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,32 +28,24 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.passphraseModule() {
-    factory {
-        CheckIfPassphraseFileExistsUseCase(
-            appContext = androidContext()
-        )
+class GetCurrentApiUrlUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : UseCase<Unit, GetCurrentApiUrlUseCase.Output> {
+
+    override fun execute(input: Unit): Output {
+        val sharedPreferences =
+            encryptedSharedPreferencesFactory.get("$CURRENT_URL_ALIAS.xml")
+        val selectedAccount =
+            sharedPreferences.getString(CURRENT_URL_KEY, null)
+
+        return if (selectedAccount != null) {
+            Output(selectedAccount)
+        } else {
+            throw IllegalStateException("No api url is currently saved")
+        }
     }
-    single {
-        GetPassphraseUseCase(
-            crypto = get(),
-            appContext = androidApplication()
-        )
-    }
-    factory {
-        RemovePassphraseUseCase(androidContext())
-    }
-    factory {
-        RemoveSelectedAccountPassphraseUseCase(
-            androidContext(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        SavePassphraseUseCase(
-            getSelectedAccountUseCase = get(),
-            crypto = get(),
-            appContext = androidApplication()
-        )
-    }
+
+    class Output(
+        val currentUrl: String
+    )
 }

@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.setup.summary
 
 import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,8 +26,7 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
  * @since v1.0
  */
 class SummaryPresenter(
-    private val saveAccountUseCase: SaveAccountUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val saveAccountUseCase: SaveAccountUseCase
 ) : SummaryContract.Presenter {
 
     override var view: SummaryContract.View? = null
@@ -54,17 +52,19 @@ class SummaryPresenter(
         when (val currentStatus = status) {
             is ResultStatus.AlreadyLinked -> view?.navigateToLogin(currentStatus.userId)
             is ResultStatus.Failure -> view?.navigateBack()
-            is ResultStatus.Success -> view?.navigateToAuth()
+            is ResultStatus.Success -> view?.navigateToAuth(currentStatus.userId)
         }
     }
 
     override fun authenticationSucceeded() {
-        saveAccountUseCase.execute(UserIdInput(getSelectedAccountUseCase.execute(Unit).selectedAccount))
+        when (val currentStatus = status) {
+            is ResultStatus.Success -> saveAccountUseCase.execute(UserIdInput(currentStatus.userId))
+        }
         view?.navigateToFingerprintSetup()
     }
 
     override fun backClick() {
-        if (status == ResultStatus.Success) {
+        if (status is ResultStatus.Success) {
             view?.showLeaveConfirmationDialog()
         } else {
             view?.navigateBack()

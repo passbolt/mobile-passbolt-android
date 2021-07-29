@@ -55,7 +55,7 @@ abstract class AuthBasePresenter(
     override fun attach(view: AuthContract.View) {
         super.attach(view)
         view.showTitle()
-        if (checkIfPassphraseFileExistsUseCase.execute(Unit).passphraseFileExists) {
+        if (checkIfPassphraseFileExistsUseCase.execute(UserIdInput(userId)).passphraseFileExists) {
             if (fingerprintInfoProvider.hasBiometricSetUp()) {
                 with(view) {
                     setBiometricAuthButtonVisible()

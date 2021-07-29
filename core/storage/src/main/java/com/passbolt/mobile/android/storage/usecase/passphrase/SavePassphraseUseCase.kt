@@ -42,7 +42,7 @@ class SavePassphraseUseCase(
     @Throws(UserNotAuthenticatedException::class)
     override fun execute(input: Input) {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        val fileName = PassphraseFileName(userId).name
+        val fileName = PassphraseFileName(requireNotNull(userId)).name
         val file = File(EncryptedFileBaseDirectory(appContext).baseDirectory, fileName)
         val passphraseCopy = input.passphrase.copyOf()
         file.outputStream().use {

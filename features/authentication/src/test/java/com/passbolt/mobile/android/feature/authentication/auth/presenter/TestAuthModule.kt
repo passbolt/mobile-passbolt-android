@@ -97,7 +97,7 @@ val testAuthModule = module {
             coroutineLaunchContext = get()
         )
     }
-    factory<AuthContract.Presenter>(named(AuthenticationType.SignIn.name)) {
+    factory<AuthContract.Presenter>(named(AuthenticationType.SignIn.javaClass.simpleName)) {
         SignInPresenter(
             getServerPublicPgpKeyUseCase = mockGetServerPublicPgpKeyUseCase,
             getServerPublicRsaKeyUseCase = mockGetServerPublicRsaKeyUseCase,

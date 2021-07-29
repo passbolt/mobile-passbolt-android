@@ -41,11 +41,11 @@ class GetSelectedAccountUseCase(
         return if (selectedAccount != null) {
             Output(selectedAccount)
         } else {
-            throw IllegalStateException("No account is currently selected")
+            Output(null)
         }
     }
 
     class Output(
-        val selectedAccount: String
+        val selectedAccount: String?
     )
 }

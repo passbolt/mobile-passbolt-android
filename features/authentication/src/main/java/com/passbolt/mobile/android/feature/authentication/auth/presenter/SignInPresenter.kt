@@ -77,7 +77,7 @@ class SignInPresenter(
     }
 
     override fun biometricAuthSuccess() {
-        val potentialPassphrase = passphraseRepository.getCaching()
+        val potentialPassphrase = passphraseRepository.getCaching(userId)
         when {
             potentialPassphrase is PotentialPassphrase.Passphrase -> {
                 performSignIn(potentialPassphrase.passphrase)

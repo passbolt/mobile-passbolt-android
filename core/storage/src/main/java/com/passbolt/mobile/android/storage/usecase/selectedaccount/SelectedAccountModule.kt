@@ -39,4 +39,14 @@ fun Module.selectedAccountModule() {
             encryptedSharedPreferencesFactory = get()
         )
     }
+    single {
+        GetCurrentApiUrlUseCase(
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
+    single {
+        SaveCurrentApiUrlUseCase(
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
 }

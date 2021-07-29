@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.core.networking.interceptor
 
 import com.passbolt.mobile.android.core.networking.PLACEHOLDER_BASE_URL
-import com.passbolt.mobile.android.core.networking.usecase.GetBaseUrlUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetCurrentApiUrlUseCase
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -28,13 +28,13 @@ import okhttp3.Response
  * @since v1.0
  */
 class ChangeableBaseUrlInterceptor(
-    private val getBaseUrlUseCase: GetBaseUrlUseCase
+    private val getCurrentApiUrlUseCase: GetCurrentApiUrlUseCase
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val oldRequest = chain.request()
         val oldUrl = oldRequest.url
-        val baseUrl: String = getBaseUrlUseCase.execute(Unit).url
+        val baseUrl: String = getCurrentApiUrlUseCase.execute(Unit).currentUrl
         val newUrl = oldUrl.toString().replaceBaseUrlWithNew(baseUrl)
         val newRequest = oldRequest.newBuilder().url(newUrl).build()
         return chain.proceed(newRequest)

@@ -32,7 +32,9 @@ sealed class ResultStatus(
     @StringRes val title: Int,
     @StringRes val buttonText: Int
 ) : Serializable {
-    object Success : ResultStatus(
+    class Success(
+        val userId: String
+    ) : ResultStatus(
         R.drawable.ic_success,
         R.string.scan_qr_summary_success_title,
         R.string.continue_label

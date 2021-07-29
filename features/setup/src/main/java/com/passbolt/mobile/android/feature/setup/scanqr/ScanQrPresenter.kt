@@ -10,9 +10,8 @@ import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.storage.usecase.accountdata.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveCurrentApiUrlUseCase
 import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -48,13 +47,13 @@ class ScanQrPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val updateTransferUseCase: UpdateTransferUseCase,
     private val qrParser: ScanQrParser,
-    private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val saveAccountDataUseCase: SaveAccountDataUseCase,
     private val uuidProvider: UuidProvider,
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
     private val updateAccountDataUseCase: UpdateAccountDataUseCase,
     private val checkAccountExistsUseCase: CheckAccountExistsUseCase,
-    private val httpsVerifier: HttpsVerifier
+    private val httpsVerifier: HttpsVerifier,
+    private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase
 ) : ScanQrContract.Presenter {
 
     override var view: ScanQrContract.View? = null
@@ -144,7 +143,7 @@ class ScanQrPresenter(
             }
             SavePrivateKeyUseCase.Output.Success -> {
                 updateTransfer(pageNumber = currentPage, Status.COMPLETE)
-                view?.navigateToSummary(ResultStatus.Success)
+                view?.navigateToSummary(ResultStatus.Success(userId))
             }
         }
     }
@@ -201,6 +200,7 @@ class ScanQrPresenter(
             Status.COMPLETE -> {
                 updateAccountDataUseCase.execute(
                     UpdateAccountDataUseCase.Input(
+                        userId = userId,
                         firstName = response.updateTransferResponseModel.firstName,
                         lastName = response.updateTransferResponseModel.lastName,
                         avatarUrl = response.updateTransferResponseModel.avatarUrl,
@@ -219,7 +219,7 @@ class ScanQrPresenter(
 
     private fun saveAccountDetails(serverId: String, url: String) {
         userId = uuidProvider.get()
-        saveSelectedAccountUseCase.execute(UserIdInput(userId))
+        saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(url))
         saveAccountDataUseCase.execute(
             SaveAccountDataUseCase.Input(
                 userId = userId,

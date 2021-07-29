@@ -34,8 +34,7 @@ internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 val summaryModule = module {
     factory<SummaryContract.Presenter> {
         SummaryPresenter(
-            saveAccountUseCase = mockSaveAccountUseCase,
-            getSelectedAccountUseCase = mockGetSelectedAccountUseCase
+            saveAccountUseCase = mockSaveAccountUseCase
         )
     }
 }

@@ -94,11 +94,12 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
         startActivity(ActivityIntents.start(requireContext()))
     }
 
-    override fun navigateToAuth() {
+    override fun navigateToAuth(userId: String) {
         authenticationResult.launch(
             ActivityIntents.authentication(
-                requireContext(),
-                AuthenticationType.SignInForResult
+                context = requireContext(),
+                authenticationType = AuthenticationType.SignInForResult,
+                userId = userId
             )
         )
     }
@@ -116,7 +117,8 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                AuthenticationType.SignIn(userId)
+                AuthenticationType.SignIn,
+                userId = userId
             )
         )
     }

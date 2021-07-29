@@ -32,7 +32,9 @@ fun Module.authenticationMainModule() {
             AuthenticationMainPresenter(
                 getSelectedAccountUseCase = get(),
                 signOutUseCase = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
+                getAccountDataUseCase = get(),
+                saveCurrentApiUrlUseCase = get()
             )
         }
         scoped {

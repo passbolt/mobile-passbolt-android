@@ -42,6 +42,7 @@ dependencies {
     implementation libs.coil.core
     implementation libs.coil.base
     implementation libs.kotlin.serializationJson
+    testImplementation libs.kotlin.serializationJson
 }
 
 android {

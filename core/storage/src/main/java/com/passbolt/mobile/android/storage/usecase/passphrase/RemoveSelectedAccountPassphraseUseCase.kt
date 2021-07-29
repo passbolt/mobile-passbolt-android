@@ -39,7 +39,7 @@ class RemoveSelectedAccountPassphraseUseCase(
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
         val passphraseFile = File(
             EncryptedFileBaseDirectory(appContext).baseDirectory,
-            PassphraseFileName(userId).name
+            PassphraseFileName(requireNotNull(userId)).name
         )
         if (passphraseFile.exists()) {
             val deleted = passphraseFile.delete()

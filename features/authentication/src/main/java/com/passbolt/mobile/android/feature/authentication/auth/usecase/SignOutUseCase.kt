@@ -46,6 +46,6 @@ class SignOutUseCase(
         }
         passphraseMemoryCache.clear()
         val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        removeSelectedAccountUseCase.execute(UserIdInput(selectedAccount))
+        removeSelectedAccountUseCase.execute(UserIdInput(requireNotNull(selectedAccount)))
     }
 }

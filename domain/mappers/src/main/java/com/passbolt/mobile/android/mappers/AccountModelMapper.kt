@@ -38,6 +38,7 @@ class AccountModelMapper {
             title = "${accountEntity.firstName} ${accountEntity.lastName}",
             email = accountEntity.email,
             avatar = accountEntity.avatarUrl,
-            isFirstItem = isFirstItem
+            isFirstItem = isFirstItem,
+            url = accountEntity.url
         )
 }

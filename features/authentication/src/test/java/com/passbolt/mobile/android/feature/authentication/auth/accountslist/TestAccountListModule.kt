@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.usecase.accountdata.RemoveAllAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveCurrentApiUrlUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
@@ -40,8 +41,8 @@ import org.koin.dsl.module
 internal val mockGetAllAccountsDataUseCase = mock<GetAllAccountsDataUseCase>()
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val mockRemoveAllAccountsDataUseCase = mock<RemoveAllAccountDataUseCase>()
+internal val saveCurrentApiUrlUseCase = mock<SaveCurrentApiUrlUseCase>()
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
-internal val mockSaveSelectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
 
 @ExperimentalCoroutinesApi
 val testAccountListModule = module {
@@ -53,9 +54,10 @@ val testAccountListModule = module {
             removeAllAccountDataUseCase = mockRemoveAllAccountsDataUseCase,
             signOutUseCase = mockSignOutUseCase,
             coroutineLaunchContext = get(),
-            saveSelectedAccountUseCase = mockSaveSelectedAccountUseCase
+            saveCurrentApiUrlUseCase = get()
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
     factory { AccountModelMapper() }
+    factory { saveCurrentApiUrlUseCase }
 }

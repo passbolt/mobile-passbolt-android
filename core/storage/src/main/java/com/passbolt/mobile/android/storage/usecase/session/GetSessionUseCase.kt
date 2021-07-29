@@ -37,12 +37,14 @@ class GetSessionUseCase(
 
     override fun execute(input: Unit): Output {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        val alias = SessionFileName(userId).name
-        val sharedPreferences = encryptedSharedPreferencesFactory.get("$alias.xml")
-        return Output(
-            sharedPreferences.getString(ACCESS_TOKEN_KEY, null),
-            sharedPreferences.getString(REFRESH_TOKEN_KEY, null)
-        )
+        userId?.let {
+            val alias = SessionFileName(it).name
+            val sharedPreferences = encryptedSharedPreferencesFactory.get("$alias.xml")
+            return Output(
+                sharedPreferences.getString(ACCESS_TOKEN_KEY, null),
+                sharedPreferences.getString(REFRESH_TOKEN_KEY, null)
+            )
+        } ?: return Output(null, null)
     }
 
     class Output(
