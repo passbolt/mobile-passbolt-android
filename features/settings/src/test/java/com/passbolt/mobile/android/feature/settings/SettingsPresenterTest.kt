@@ -107,16 +107,16 @@ class SettingsPresenterTest : KoinTest {
     }
 
     @Test
-    fun `sign out confirmation clicked should navigate to accounts list`() {
+    fun `sign out confirmation clicked should navigate to sign in`() {
         presenter.logoutConfirmed()
-        verify(view).navigateToAccountList(eq(true))
+        verify(view).navigateToSignInWithLogout()
         verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `manage accounts clicked should navigate to accounts list`() {
         presenter.manageAccountsClick()
-        verify(view).navigateToAccountList(eq(false))
+        verify(view).navigateToAccountListWithLogout()
         verifyNoMoreInteractions(view)
     }
 

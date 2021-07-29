@@ -62,11 +62,11 @@ class SettingsPresenter(
     }
 
     override fun logoutConfirmed() {
-        view?.navigateToAccountList(withSignOut = true)
+        view?.navigateToSignInWithLogout()
     }
 
     override fun manageAccountsClick() {
-        view?.navigateToAccountList()
+        view?.navigateToAccountListWithLogout()
     }
 
     override fun autofillClick() {
@@ -81,7 +81,11 @@ class SettingsPresenter(
         if (!isEnabled) {
             view?.showDisableFingerprintConfirmationDialog()
         } else {
-            view?.navigateToAuthGetPassphrase()
+            if (passphraseMemoryCache.hasPassphrase()) {
+                getPassphraseSucceeded()
+            } else {
+                view?.navigateToAuthGetPassphrase()
+            }
         }
     }
 

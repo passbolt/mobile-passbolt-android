@@ -31,14 +31,14 @@ class AuthenticationMainPresenter(
                 signOutUseCase.execute(Unit)
                 view?.hideProgress()
             }
-        }
 
-        when (authTarget) {
-            AuthenticationTarget.MANAGE_ACCOUNTS -> {
-                view?.navigateToManageAccounts()
-            }
-            AuthenticationTarget.AUTHENTICATE -> {
-                processAuthentication(requireNotNull(authenticationStrategy))
+            when (authTarget) {
+                AuthenticationTarget.MANAGE_ACCOUNTS -> {
+                    view?.navigateToManageAccounts()
+                }
+                AuthenticationTarget.AUTHENTICATE -> {
+                    processAuthentication(requireNotNull(authenticationStrategy))
+                }
             }
         }
     }
