@@ -85,11 +85,11 @@ class FingerprintPresenter(
     }
 
     override fun setupAutofillLaterClick() {
-        view?.navigateToSignIn()
+        view?.navigateToHome()
     }
 
     override fun goToTheAppClick() {
-        view?.navigateToSignIn()
+        view?.navigateToHome()
     }
 
     override fun autofillSetupSuccessfully() {

@@ -95,6 +95,9 @@ private fun ScopeDSL.authPresenters() {
     scoped<AuthContract.Presenter>(named(AuthenticationType.SignIn.name)) {
         signInPresenter()
     }
+    scoped<AuthContract.Presenter>(named(AuthenticationType.SignInForResult.javaClass.simpleName)) {
+        signInPresenter()
+    }
     scoped<AuthContract.Presenter>(named(AuthenticationType.Refresh.javaClass.simpleName)) {
         signInPresenter()
     }
@@ -104,15 +107,14 @@ private fun ScopeDSL.authPresenters() {
 }
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(
-    getAccountDataUseCase = get(),
-    coroutineLaunchContext = get(),
     passphraseMemoryCache = get(),
     getSelectedUserPrivateKeyUseCase = get(),
     verifyPassphraseUseCase = get(),
-    saveAccountUseCase = get(),
-    checkIfPassphraseFileExistsUseCase = get(),
+    fingerprintInfoProvider = get(),
     removeSelectedAccountPassphraseUseCase = get(),
-    fingerprintInfoProvider = get()
+    checkIfPassphraseFileExistsUseCase = get(),
+    getAccountDataUseCase = get(),
+    coroutineLaunchContext = get()
 )
 
 private fun Scope.signInPresenter() = SignInPresenter(
@@ -129,5 +131,6 @@ private fun Scope.signInPresenter() = SignInPresenter(
     checkIfPassphraseFileExistsUseCase = get(),
     passphraseRepository = get(),
     removeSelectedAccountPassphraseUseCase = get(),
-    fingerprintInfoProvider = get()
+    fingerprintInfoProvider = get(),
+    passphraseMemoryCache = get()
 )

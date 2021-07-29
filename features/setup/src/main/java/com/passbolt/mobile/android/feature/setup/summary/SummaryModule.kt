@@ -32,7 +32,10 @@ import org.koin.core.qualifier.named
 fun Module.summaryModule() {
     scope(named<SummaryFragment>()) {
         scoped<SummaryContract.Presenter> {
-            SummaryPresenter()
+            SummaryPresenter(
+                saveAccountUseCase = get(),
+                getSelectedAccountUseCase = get()
+            )
         }
     }
 }

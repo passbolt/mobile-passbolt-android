@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.feature.setup.summary
 
+import com.nhaarman.mockitokotlin2.mock
+import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import org.koin.dsl.module
 
 /**
@@ -25,6 +28,14 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
+internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
+
 val summaryModule = module {
-    factory<SummaryContract.Presenter> { SummaryPresenter() }
+    factory<SummaryContract.Presenter> {
+        SummaryPresenter(
+            saveAccountUseCase = mockSaveAccountUseCase,
+            getSelectedAccountUseCase = mockGetSelectedAccountUseCase
+        )
+    }
 }
