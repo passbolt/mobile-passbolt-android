@@ -1,20 +1,27 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricPrompt
+import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.feature.authentication.auth.AuthBiometricCallback
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
 import com.passbolt.mobile.android.feature.autofill.encourage.EncourageAutofillDialog
 import com.passbolt.mobile.android.feature.settings.R
 import com.passbolt.mobile.android.feature.settings.databinding.FragmentSettingsBinding
 import org.koin.android.ext.android.inject
+import java.util.concurrent.Executor
 
 /**
  * Passbolt - Open source password manager for teams
@@ -43,6 +50,13 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     private val presenter: SettingsContract.Presenter by inject()
     private val websiteOpener: WebsiteOpener by inject()
+    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            presenter.getPassphraseSucceeded()
+        }
+    }
+    private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
+    private val executor: Executor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -144,12 +158,35 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
             .show()
     }
 
-    override fun navigateToAuthenticationSignIn() {
-        // TODO authenticate to re-enable biometrics
-        Toast.makeText(requireContext(), "TODO", Toast.LENGTH_SHORT).show()
+    override fun navigateToAuthGetPassphrase() {
+        authenticationResult.launch(
+            ActivityIntents.authentication(requireContext(), AuthenticationType.Passphrase)
+        )
     }
 
     override fun autofillEnabledDialogDismissed() {
         presenter.autofillEnabledDialogDismissed()
+    }
+
+    override fun showBiometricPrompt() {
+        val biometricPrompt = BiometricPrompt(
+            this, executor, AuthBiometricCallback(
+                presenter::biometricAuthError,
+                presenter::biometricAuthSucceeded
+            )
+        )
+
+        val promptInfo = biometricPromptBuilder
+            .setTitle(getString(R.string.settings_turn_on_biometric_title))
+            .setSubtitle(getString(R.string.settings_turn_on_biometric_subtitle))
+            .setNegativeButtonText(getString(R.string.cancel))
+            .setAllowedAuthenticators(BIOMETRIC_STRONG)
+            .build()
+        biometricPrompt.authenticate(promptInfo)
+    }
+
+    override fun showAuthenticationError(errorMessage: Int) {
+        Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG)
+            .show()
     }
 }

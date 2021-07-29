@@ -69,9 +69,7 @@ class ScanQrParser(
                         _pareResultFlow.tryEmit(ParseResult.Failure())
                     }
                 } else {
-                    it?.let {
-                        _pareResultFlow.tryEmit(it)
-                    }
+                    _pareResultFlow.tryEmit(it)
                 }
             }
     }
