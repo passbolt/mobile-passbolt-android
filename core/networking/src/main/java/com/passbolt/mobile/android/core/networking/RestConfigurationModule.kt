@@ -11,6 +11,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import java.time.Duration
 
 /**
  * Passbolt - Open source password manager for teams
@@ -88,28 +89,29 @@ private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
 private fun provideHttpClient(
     loggingInterceptor: HttpLoggingInterceptor,
     interceptors: List<Interceptor>
-): OkHttpClient {
-    val builder = OkHttpClient.Builder()
-    interceptors.forEach { builder.addInterceptor(it) }
-    builder.addNetworkInterceptor(loggingInterceptor)
-    // TODO remove in production version - PAS-105
-    builder.hostnameVerifier { _, _ -> true }
-    return builder.build()
-}
+) =
+    OkHttpClient.Builder()
+        .hostnameVerifier { _, _ -> true } // TODO remove in production version - PAS-105
+        .addNetworkInterceptor(loggingInterceptor)
+        .connectTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+        .writeTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+        .readTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+        .apply {
+            interceptors.forEach { addInterceptor(it) }
+        }
+        .build()
 
 private fun provideCoilHttpClient(
     loggingInterceptor: HttpLoggingInterceptor,
     changeableBaseUrlInterceptor: ChangeableBaseUrlInterceptor,
     cache: Cache
-): OkHttpClient {
-    val builder = OkHttpClient.Builder()
-    builder.addNetworkInterceptor(loggingInterceptor)
-    builder.addInterceptor(changeableBaseUrlInterceptor)
-    // TODO remove in production version - PAS-105
-    builder.hostnameVerifier { _, _ -> true }
-    builder.cache(cache)
-    return builder.build()
-}
+) =
+    OkHttpClient.Builder()
+        .addNetworkInterceptor(loggingInterceptor)
+        .addInterceptor(changeableBaseUrlInterceptor)
+        .hostnameVerifier { _, _ -> true } // TODO remove in production version - PAS-105
+        .cache(cache)
+        .build()
 
 const val DEFAULT_HTTP_CLIENT = "DEFAULT_HTTP_CLIENT"
 const val COIL_HTTP_CLIENT = "COIL_HTTP_CLIENT"
