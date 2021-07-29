@@ -29,7 +29,7 @@ ext {
         ],
         quality: [
             ktlint: "0.36.0",
-            detekt: "1.9.1",
+            detekt: "1.17.1",
             leakcanary: "2.3"
         ],
         androidx: [
@@ -60,7 +60,7 @@ ext {
         fastAdapter: "5.4.1",
         easylauncher: "4.0.0",
         fusionauthJwt: "4.2.0",
-        textDrawable: "1.0.1",
+        textDrawable: "558677ea31",
         serializationJson: "1.2.2"
     ]
 
@@ -129,7 +129,7 @@ ext {
         timber: "com.jakewharton.timber:timber:${versions.timber}",
         qrScan: "com.google.mlkit:barcode-scanning:${versions.mlkit}",
         gson: "com.google.code.gson:gson:${versions.gson}",
-        debugDatabase: "com.amitshekhar.android:debug-db:${versions.debugDatabase}",
+        debugDatabase: "com.github.amitshekhariitbhu.Android-Debug-Database:debug-db:${versions.debugDatabase}",
         appDistribution: "com.google.firebase:firebase-appdistribution-gradle:${versions.appDistribution}",
         coil: [
             core: "io.coil-kt:coil:${versions.coil}",
@@ -144,6 +144,6 @@ ext {
         ],
         easylauncher: "com.project.starter:easylauncher:${versions.easylauncher}",
         fusionauthJwt: "io.fusionauth:fusionauth-jwt:${versions.fusionauthJwt}",
-        textDrawable: "com.amulyakhare:com.amulyakhare.textdrawable:${versions.textDrawable}"
+        textDrawable: "com.github.amulyakhare:TextDrawable:${versions.textDrawable}"
     ]
 }
