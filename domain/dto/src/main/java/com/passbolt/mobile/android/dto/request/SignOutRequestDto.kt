@@ -1,8 +1,6 @@
-package com.passbolt.mobile.android.service.logout
+package com.passbolt.mobile.android.dto.request
 
-import android.content.Context
-import android.widget.Toast
-import timber.log.Timber
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,13 +24,7 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LogoutRepository(
-    private val appContext: Context
-) {
-
-    fun logout() {
-        // TODO
-        Toast.makeText(appContext, "TODO Logging out", Toast.LENGTH_SHORT).show()
-        Timber.d("Logging out")
-    }
-}
+data class SignOutRequestDto(
+    @SerializedName("refresh_token")
+    val refreshToken: String
+)

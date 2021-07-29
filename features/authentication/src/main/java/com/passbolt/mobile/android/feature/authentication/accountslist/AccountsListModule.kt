@@ -76,7 +76,9 @@ fun Module.accountsListModule() {
                 passphraseMemoryCache = get(),
                 removeSelectedAccountUseCase = get(),
                 getSelectedAccountUseCase = get(),
-                logoutRepository = get()
+                authRepository = get(),
+                getSessionUseCase = get(),
+                signOutMapper = get()
             )
         }
     }

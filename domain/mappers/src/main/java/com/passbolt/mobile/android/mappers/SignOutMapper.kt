@@ -1,8 +1,5 @@
-package com.passbolt.mobile.android.service.auth
+package com.passbolt.mobile.android.mappers
 
-import com.passbolt.mobile.android.core.networking.ResponseHandler
-import com.passbolt.mobile.android.core.networking.callWithHandler
-import com.passbolt.mobile.android.dto.request.SignInRequestDto
 import com.passbolt.mobile.android.dto.request.SignOutRequestDto
 
 /**
@@ -27,23 +24,8 @@ import com.passbolt.mobile.android.dto.request.SignOutRequestDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AuthRepository(
-    private val authDataSource: AuthDataSource,
-    private val responseHandler: ResponseHandler
-) {
-    suspend fun getServerPublicPgpKey() = callWithHandler(responseHandler) {
-        authDataSource.getServerPublicPgpKey()
-    }
+class SignOutMapper {
 
-    suspend fun getServerPublicRsaKey() = callWithHandler(responseHandler) {
-        authDataSource.getServerPublicRsaKey()
-    }
-
-    suspend fun signIn(signInRequestDto: SignInRequestDto) = callWithHandler(responseHandler) {
-        authDataSource.signIn(signInRequestDto)
-    }
-
-    suspend fun signOut(signOutRequestDto: SignOutRequestDto) = callWithHandler(responseHandler) {
-        authDataSource.signOut(signOutRequestDto)
-    }
+    fun mapRequestToDto(refreshToken: String): SignOutRequestDto =
+        SignOutRequestDto(refreshToken)
 }

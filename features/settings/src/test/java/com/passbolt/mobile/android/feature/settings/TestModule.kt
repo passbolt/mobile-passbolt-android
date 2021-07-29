@@ -31,9 +31,7 @@ val testModule = module {
             checkIfPassphraseExistsUseCase = get(),
             autofillInfoProvider = get(),
             removePassphraseUseCase = get(),
-            getSelectedAccountUseCase = get(),
-            signOutUseCase = get(),
-            coroutineLaunchContext = get()
+            getSelectedAccountUseCase = get()
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

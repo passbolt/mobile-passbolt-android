@@ -15,10 +15,10 @@ dependencies {
     implementation project(':authentication')
     implementation project(':authentication')
     implementation project(':passboltapi')
+    implementation project(':mappers')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
-
     implementation libs.di.koin
     implementation libs.di.koinExt
 }

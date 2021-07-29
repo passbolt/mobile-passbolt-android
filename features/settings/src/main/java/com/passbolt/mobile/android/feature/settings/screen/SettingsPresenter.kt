@@ -1,39 +1,24 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
 
 class SettingsPresenter(
     private val checkIfPassphraseExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     private val autofillInfoProvider: AutofillInformationProvider,
     private val removePassphraseUseCase: RemovePassphraseUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val signOutUseCase: SignOutUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
 ) : SettingsContract.Presenter {
 
     override var view: SettingsContract.View? = null
-    private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     override fun attach(view: SettingsContract.View) {
         super.attach(view)
         handleAutofillVisibility()
         handleFingerprintSwitchState(view)
-    }
-
-    override fun detach() {
-        scope.coroutineContext.cancelChildren()
-        super.detach()
     }
 
     override fun autofillEnabledDialogDismissed() {
@@ -71,10 +56,7 @@ class SettingsPresenter(
     }
 
     override fun logoutConfirmed() {
-        scope.launch {
-            signOutUseCase.execute(Unit)
-            view?.navigateToAccountList(withSignOut = true)
-        }
+        view?.navigateToAccountList(withSignOut = true)
     }
 
     override fun manageAccountsClick() {

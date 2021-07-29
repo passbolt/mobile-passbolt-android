@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.service.auth.data
 
 import com.passbolt.mobile.android.dto.request.SignInRequestDto
+import com.passbolt.mobile.android.dto.request.SignOutRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.SignInResponseDto
 import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
@@ -41,4 +42,7 @@ internal class AuthRemoteDataSource(
 
     override suspend fun signIn(signInRequestDto: SignInRequestDto): BaseResponse<SignInResponseDto> =
         authApi.signIn(signInRequestDto)
+
+    override suspend fun signOut(signOutRequestDto: SignOutRequestDto): BaseResponse<Unit> =
+        authApi.signOut(signOutRequestDto)
 }

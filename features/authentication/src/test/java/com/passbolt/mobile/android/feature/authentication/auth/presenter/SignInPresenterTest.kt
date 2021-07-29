@@ -101,7 +101,7 @@ class SignInPresenterTest : KoinTest {
         }
         mockChallengeVerifier.stub {
             onBlocking { verify(any(), any()) }.doReturn(
-                ChallengeVerifier.Output.Verified("accessToken")
+                ChallengeVerifier.Output.Verified("accessToken", "refreshToken")
             )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
