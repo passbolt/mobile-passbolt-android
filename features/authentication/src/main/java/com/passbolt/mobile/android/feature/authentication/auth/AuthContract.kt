@@ -50,6 +50,8 @@ interface AuthContract {
         fun setBiometricAuthButtonGone()
         fun showAuthenticationError(errorMessage: Int)
         fun clearPassphraseInput()
+        fun showFeatureFlagsErrorDialog()
+        fun closeFeatureFlagsFetchErrorDialog()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

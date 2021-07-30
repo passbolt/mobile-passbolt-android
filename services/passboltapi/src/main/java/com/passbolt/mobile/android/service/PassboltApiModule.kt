@@ -15,6 +15,10 @@ import com.passbolt.mobile.android.service.resource.ResourceApi
 import com.passbolt.mobile.android.service.resource.ResourceDataSource
 import com.passbolt.mobile.android.service.resource.ResourceRemoteDataSource
 import com.passbolt.mobile.android.service.resource.ResourceRepository
+import com.passbolt.mobile.android.service.settings.SettingsApi
+import com.passbolt.mobile.android.service.settings.SettingsDataSource
+import com.passbolt.mobile.android.service.settings.SettingsRemoteDataSource
+import com.passbolt.mobile.android.service.settings.SettingsRepository
 import okhttp3.OkHttpClient
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -44,9 +48,11 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 val passboltApiModule = module {
     single { provideRestService(get(named(DEFAULT_HTTP_CLIENT))) }
+
     single { getRegistrationApi(get()) }
     single { getAuthApi(get()) }
     single { getResourceApi(get()) }
+    single { getSettingsApi(get()) }
 
     single<RegistrationDataSource> {
         RegistrationRemoteDataSource(
@@ -81,6 +87,15 @@ val passboltApiModule = module {
             responseHandler = get()
         )
     }
+    single {
+        SettingsRepository(
+            settingsDataSource = get(),
+            responseHandler = get()
+        )
+    }
+    single<SettingsDataSource> {
+        SettingsRemoteDataSource(settingsApi = get())
+    }
 }
 
 private fun provideRestService(okHttpClient: OkHttpClient): RestService {
@@ -98,3 +113,6 @@ private fun getAuthApi(restService: RestService): AuthApi =
 
 private fun getResourceApi(restService: RestService): ResourceApi =
     restService.service(ResourceApi::class.java)
+
+private fun getSettingsApi(restService: RestService): SettingsApi =
+    restService.service(SettingsApi::class.java)

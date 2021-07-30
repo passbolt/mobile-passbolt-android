@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthSt
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -39,6 +40,8 @@ import org.koin.dsl.ScopeDSL
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+@Suppress("LongMethod")
 fun Module.authModule() {
     scope(named<AuthFragment>()) {
         authPresenters()
@@ -88,6 +91,16 @@ fun Module.authModule() {
         scoped {
             BiometricPrompt.PromptInfo.Builder()
         }
+        scoped {
+            SignOutUseCase(
+                passphraseMemoryCache = get(),
+                removeSelectedAccountUseCase = get(),
+                getSelectedAccountUseCase = get(),
+                authRepository = get(),
+                signOutMapper = get(),
+                getSessionUseCase = get()
+            )
+        }
     }
 }
 
@@ -132,5 +145,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
     passphraseRepository = get(),
     removeSelectedAccountPassphraseUseCase = get(),
     fingerprintInfoProvider = get(),
-    passphraseMemoryCache = get()
+    passphraseMemoryCache = get(),
+    featureFlagsUseCase = get(),
+    signOutUseCase = get()
 )

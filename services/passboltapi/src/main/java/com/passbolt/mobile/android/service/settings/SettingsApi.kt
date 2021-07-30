@@ -1,12 +1,8 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.service.settings
 
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.FeatureFlagsMapper
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.mappers.SignInMapper
-import com.passbolt.mobile.android.mappers.SignOutMapper
-import com.passbolt.mobile.android.mappers.UpdateTransferMapper
-import org.koin.dsl.module
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.SettingsResponseDto
+import retrofit2.http.GET
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,15 +26,13 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mappersModule = module {
-    single { UpdateTransferMapper() }
-    single { AccountModelMapper() }
-    single { SignInMapper() }
-    single {
-        ResourceModelMapper(
-            initialsProvider = get()
-        )
+
+internal interface SettingsApi {
+
+    @GET(GET_SETTINGS)
+    suspend fun getSettings(): BaseResponse<SettingsResponseDto>
+
+    private companion object {
+        private const val GET_SETTINGS = "settings.json"
     }
-    single { SignOutMapper() }
-    single { FeatureFlagsMapper() }
 }

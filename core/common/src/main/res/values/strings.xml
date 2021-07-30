@@ -11,6 +11,7 @@
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_refresh">Refresh</string>
+    <string name="common_sign_out">Sign out</string>
 
     <string name="fingerprint_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Biometric authorization has been blocked due to too many attempts.</string>

@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.featureflags
 
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.FeatureFlagsMapper
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.mappers.SignInMapper
-import com.passbolt.mobile.android.mappers.SignOutMapper
-import com.passbolt.mobile.android.mappers.UpdateTransferMapper
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import org.koin.dsl.module
 
 /**
@@ -30,15 +25,12 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mappersModule = module {
-    single { UpdateTransferMapper() }
-    single { AccountModelMapper() }
-    single { SignInMapper() }
+
+val featureFlagsModule = module {
     single {
-        ResourceModelMapper(
-            initialsProvider = get()
+        GetFeatureFlagsUseCase(
+            settingsRepository = get(),
+            featureFlagsMapper = get()
         )
     }
-    single { SignOutMapper() }
-    single { FeatureFlagsMapper() }
 }

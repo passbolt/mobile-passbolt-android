@@ -11,6 +11,7 @@ coreModule "common"
 coreModule "navigation"
 coreModule "common"
 coreModule "qrscan"
+coreModule "featureflags"
 
 featureModule "startup"
 featureModule "setup"
