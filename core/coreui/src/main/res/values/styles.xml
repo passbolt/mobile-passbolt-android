@@ -69,6 +69,11 @@
         <item name="android:textSize">@dimen/sp_14</item>
     </style>
 
+    <style name="ValueText">
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">@dimen/sp_14</item>
+    </style>
+
     <style name="BodyLight"
         parent="BodyText">
         <item name="android:textColor">@color/text_secondary</item>
@@ -77,5 +82,17 @@
     <style name="ToolbarTitleText">
         <item name="android:textSize">@dimen/sp_14</item>
         <item name="android:textFontWeight">600</item>
+    </style>
+
+    <style name="PasswordMenuItem"
+        parent="Heading4Text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/dp_48</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:background">?selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/dp_16</item>
+        <item name="android:textColor">@color/text_primary</item>
     </style>
 </resources>

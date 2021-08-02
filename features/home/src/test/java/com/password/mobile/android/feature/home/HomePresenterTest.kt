@@ -152,19 +152,20 @@ class HomePresenterTest : KoinTest {
         whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
             GetResourcesUseCase.Output.Failure(NetworkResult.Failure.ServerError(IOException(), headerMessage = ""))
         )
+        val model = PasswordModel("title", "subtitle", "", "initials", "", "")
         mockAccountData(null)
         presenter.attach(view)
         reset(view)
-        presenter.itemClick()
-        verify(view).navigateToDetails()
+        presenter.itemClick(model)
+        verify(view).navigateToDetails(model)
         verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `3 dots clicked should open more screen`() = runBlockingTest {
         val model = PasswordModel(
-            title = "title",
-            subtitle = "subtitle",
+            name = "title",
+            username = "subtitle",
             initials = "T",
             icon = null,
             url = "",

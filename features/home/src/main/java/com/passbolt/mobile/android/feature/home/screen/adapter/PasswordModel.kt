@@ -22,7 +22,7 @@ package com.passbolt.mobile.android.feature.home.screen.adapter
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class PasswordModel(
+data class PasswordModel(
     val title: String,
     val subtitle: String,
     val icon: String?,

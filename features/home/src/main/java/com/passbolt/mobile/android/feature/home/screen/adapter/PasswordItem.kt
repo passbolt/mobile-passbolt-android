@@ -56,8 +56,8 @@ class PasswordItem(
     override fun bindView(binding: ItemPasswordBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            title.text = passwordModel.title
-            subtitle.text = passwordModel.subtitle
+            title.text = passwordModel.name
+            subtitle.text = passwordModel.username
 
             val initialsIcons = getInitialsIcon(binding.root.context)
             icon.setImageDrawable(initialsIcons)
@@ -72,7 +72,7 @@ class PasswordItem(
 
     private fun getInitialsIcon(context: Context): Drawable {
         val generator = ColorGenerator.MATERIAL
-        val generatedColor = generator.getColor(passwordModel.title)
+        val generatedColor = generator.getColor(passwordModel.name)
         val color = ColorUtils.blendARGB(generatedColor, Color.WHITE, LIGHT_RATIO)
         return TextDrawable.builder()
             .beginConfig()
@@ -102,7 +102,7 @@ class PasswordItem(
     }
 
     class ItemClick(
-        private val clickListener: () -> Unit
+        private val clickListener: (PasswordModel) -> Unit
     ) : ClickEventHook<PasswordItem>() {
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
             return viewHolder.asBinding<ItemPasswordBinding> {
@@ -116,7 +116,7 @@ class PasswordItem(
             fastAdapter: FastAdapter<PasswordItem>,
             item: PasswordItem
         ) {
-            clickListener.invoke()
+            clickListener.invoke(item.passwordModel)
         }
     }
 

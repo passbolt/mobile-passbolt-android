@@ -1,6 +1,9 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.feature.resources
 
-import java.io.Serializable
+import android.os.Bundle
+import com.passbolt.mobile.android.core.extension.findNavHostFragment
+import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.feature.resources.databinding.ActivityResourcesBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,11 +27,19 @@ import java.io.Serializable
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class PasswordModel(
-    val name: String,
-    val username: String,
-    val icon: String?,
-    val initials: String,
-    val url: String,
-    val searchCriteria: String
-) : Serializable
+class ResourcesActivity : BindingActivity<ActivityResourcesBinding>(ActivityResourcesBinding::inflate) {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val navHostFragment = findNavHostFragment(R.id.fragmentContainer)
+        val inflater = navHostFragment.navController.navInflater
+        val graph = inflater.inflate(R.navigation.resources)
+
+        navHostFragment.navController.setGraph(graph, intent.extras)
+    }
+
+    companion object {
+        const val PASSWORD_MODEL_KEY = "passwordModel"
+    }
+}

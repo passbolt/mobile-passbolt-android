@@ -32,8 +32,8 @@ class ResourceModelMapper(
 
     fun map(resource: ResourceResponseDto): PasswordModel =
         PasswordModel(
-            title = resource.name,
-            subtitle = resource.username,
+            name = resource.name,
+            username = resource.username,
             initials = initialsProvider.get(resource.name),
             icon = null,
             url = resource.uri,

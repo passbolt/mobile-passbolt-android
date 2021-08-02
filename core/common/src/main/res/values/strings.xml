@@ -7,6 +7,7 @@
     <string name="got_it">Got it</string>
     <string name="try_again">Try again</string>
     <string name="continue_label">Continue</string>
+    <string name="copied_info">%s copied!</string>
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_refresh">Refresh</string>

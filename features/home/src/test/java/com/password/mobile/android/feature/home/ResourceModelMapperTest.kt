@@ -28,7 +28,7 @@ class ResourceModelMapperTest {
         assertEquals("f", result.initials)
         assertEquals("firstnameusernameuri", result.searchCriteria)
         assertEquals("uri", result.url)
-        assertEquals("username", result.subtitle)
-        assertEquals("firstname", result.title)
+        assertEquals("username", result.username)
+        assertEquals("firstname", result.name)
     }
 }
