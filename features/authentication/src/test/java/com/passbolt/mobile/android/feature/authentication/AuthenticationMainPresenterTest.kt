@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
@@ -10,6 +11,7 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -69,7 +71,7 @@ class AuthenticationMainPresenterTest : KoinTest {
 
     @Test
     fun `view should navigate to manage account when manage account target is set`() = runBlockingTest {
-        presenter.bundleRetrieved(AuthenticationTarget.MANAGE_ACCOUNTS, null, shouldLogOut = false)
+        presenter.bundleRetrieved(AuthenticationTarget.MANAGE_ACCOUNTS, null, shouldLogOut = false, userId = "userId1")
 
         verify(mockView, never()).showProgress()
         verify(mockSignOutUseCase, never()).execute(any())
@@ -79,7 +81,7 @@ class AuthenticationMainPresenterTest : KoinTest {
 
     @Test
     fun `user should be logged out when appropriate flag is set`() = runBlockingTest {
-        presenter.bundleRetrieved(AuthenticationTarget.MANAGE_ACCOUNTS, null, shouldLogOut = true)
+        presenter.bundleRetrieved(AuthenticationTarget.MANAGE_ACCOUNTS, null, shouldLogOut = true, userId = "userId1")
 
         verify(mockView).showProgress()
         verify(mockSignOutUseCase).execute(any())
@@ -94,11 +96,22 @@ class AuthenticationMainPresenterTest : KoinTest {
             .doReturn(
                 GetSelectedAccountUseCase.Output(TEST_SELECTED_ACCOUNT)
             )
+        whenever(getAccountDataUseCase.execute(anyOrNull())).doReturn(
+            GetAccountDataUseCase.Output(
+                firstName = null,
+                lastName = null,
+                email = null,
+                avatarUrl = null,
+                url = "url1",
+                serverId = null
+            )
+        )
 
         presenter.bundleRetrieved(
             AuthenticationTarget.AUTHENTICATE,
             AuthenticationType.Passphrase,
-            shouldLogOut = false
+            shouldLogOut = false,
+            userId = TEST_SELECTED_ACCOUNT
         )
 
         verify(mockView).navigateToAuth(TEST_SELECTED_ACCOUNT, AuthenticationType.Passphrase)
@@ -114,11 +127,12 @@ class AuthenticationMainPresenterTest : KoinTest {
 
         presenter.bundleRetrieved(
             AuthenticationTarget.AUTHENTICATE,
-            AuthenticationType.SignIn(),
-            shouldLogOut = false
+            AuthenticationType.SignIn,
+            shouldLogOut = false,
+            userId = TEST_SELECTED_ACCOUNT
         )
 
-        verify(mockView).navigateToAuth(TEST_SELECTED_ACCOUNT, AuthenticationType.SignIn())
+        verify(mockView).navigateToAuth(TEST_SELECTED_ACCOUNT, AuthenticationType.SignIn)
         verifyNoMoreInteractions(mockView)
     }
 
@@ -129,8 +143,9 @@ class AuthenticationMainPresenterTest : KoinTest {
 
         presenter.bundleRetrieved(
             AuthenticationTarget.AUTHENTICATE,
-            AuthenticationType.SignIn(),
-            shouldLogOut = false
+            AuthenticationType.SignIn,
+            shouldLogOut = false,
+            userId = null
         )
 
         verify(mockView).setDefaultNavGraph()

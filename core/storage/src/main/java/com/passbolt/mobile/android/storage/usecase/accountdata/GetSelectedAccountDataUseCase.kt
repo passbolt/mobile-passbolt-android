@@ -41,7 +41,7 @@ class GetSelectedAccountDataUseCase(
 
     override fun execute(input: Unit): Output {
         val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        val fileName = AccountDataFileName(userId).name
+        val fileName = AccountDataFileName(requireNotNull(userId)).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
 
         return Output(

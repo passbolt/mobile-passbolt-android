@@ -24,6 +24,7 @@ package com.passbolt.mobile.android.storage.usecase
  */
 
 internal const val SELECTED_ACCOUNT_ALIAS = "selected_account"
+internal const val CURRENT_URL_ALIAS = "current_url"
 internal const val ACCOUNTS_ALIAS = "accounts_list"
 internal const val USER_FIRST_NAME_KEY = "USER_FIRST_NAME_KEY"
 internal const val USER_LAST_NAME_KEY = "USER_LAST_NAME_KEY"
@@ -32,6 +33,6 @@ internal const val SERVER_ID_KEY = "SERVER_ID_KEY"
 internal const val AVATAR_URL_KEY = "AVATAR_URL_KEY"
 internal const val ACCESS_TOKEN_KEY = "ACCESS_TOKEN_KEY"
 internal const val SELECTED_ACCOUNT_KEY = "SELECTED_ACCOUNT_KEY"
+internal const val CURRENT_URL_KEY = "CURRENT_URL_KEY"
 internal const val REFRESH_TOKEN_KEY = "REFRESH_TOKEN_KEY"
 internal const val EMAIL_KEY = "EMAIL_KEY"
-internal const val KEY_SIZE = 256

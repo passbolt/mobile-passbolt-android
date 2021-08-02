@@ -11,13 +11,7 @@ sealed class AuthenticationType : Serializable {
     object Refresh : AuthenticationType()
 
     // sign into the account and launch home - used at app start
-    data class SignIn(
-        val userId: String? = null
-    ) : AuthenticationType() {
-        companion object {
-            const val name = "SignIn"
-        }
-    }
+    object SignIn : AuthenticationType()
 
     // sign into the account and close sign in
     object SignInForResult : AuthenticationType()

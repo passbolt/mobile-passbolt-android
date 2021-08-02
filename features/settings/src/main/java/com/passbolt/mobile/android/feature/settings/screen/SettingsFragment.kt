@@ -154,7 +154,7 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         startActivity(
             ActivityIntents.authentication(
                 requireContext(),
-                AuthenticationType.SignIn(),
+                AuthenticationType.SignIn,
                 withSignOut = true
             )
         )

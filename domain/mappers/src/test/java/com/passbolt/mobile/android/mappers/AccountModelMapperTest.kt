@@ -69,7 +69,8 @@ class AccountModelMapperTest {
                 title = "firstName1 lastName1",
                 isFirstItem = true,
                 isTrashIconVisible = false,
-                avatar = "avatarUrl1"
+                avatar = "avatarUrl1",
+                url = "url1"
             ),
             AccountModelUi.AccountModel(
                 userId = "id2",
@@ -77,7 +78,8 @@ class AccountModelMapperTest {
                 title = "firstName2 lastName2",
                 isFirstItem = false,
                 isTrashIconVisible = false,
-                avatar = "avatarUrl2"
+                avatar = "avatarUrl2",
+                url = "url2"
             ),
             AccountModelUi.AddNewAccount
         )

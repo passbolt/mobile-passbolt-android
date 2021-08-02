@@ -40,7 +40,10 @@ class SettingsPresenter(
     }
 
     private fun handleFingerprintSwitchState(view: SettingsContract.View) {
-        if (checkIfPassphraseExistsUseCase.execute(Unit).passphraseFileExists) {
+        if (checkIfPassphraseExistsUseCase.execute(
+                UserIdInput(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
+            ).passphraseFileExists
+        ) {
             view.toggleFingerprintOn(silently = true)
         } else {
             view.toggleFingerprintOff(silently = true)
@@ -91,7 +94,7 @@ class SettingsPresenter(
 
     override fun disableFingerprintConfirmed() {
         val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        removePassphraseUseCase.execute(UserIdInput(selectedAccount))
+        removePassphraseUseCase.execute(UserIdInput(requireNotNull(selectedAccount)))
         view?.toggleFingerprintOff(silently = true)
     }
 

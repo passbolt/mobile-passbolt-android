@@ -136,7 +136,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     override fun navigateToSignIn(model: AccountModelUi.AccountModel) {
         findNavController().navigate(
             AccountsListFragmentDirections.actionAccountsListFragmentToAuthFragment(
-                model.userId, AuthenticationType.SignIn()
+                model.userId, AuthenticationType.SignIn
             )
         )
     }

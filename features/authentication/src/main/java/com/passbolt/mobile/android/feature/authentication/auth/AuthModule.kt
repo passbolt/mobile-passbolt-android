@@ -92,7 +92,7 @@ fun Module.authModule() {
 }
 
 private fun ScopeDSL.authPresenters() {
-    scoped<AuthContract.Presenter>(named(AuthenticationType.SignIn.name)) {
+    scoped<AuthContract.Presenter>(named(AuthenticationType.SignIn.javaClass.simpleName)) {
         signInPresenter()
     }
     scoped<AuthContract.Presenter>(named(AuthenticationType.SignInForResult.javaClass.simpleName)) {

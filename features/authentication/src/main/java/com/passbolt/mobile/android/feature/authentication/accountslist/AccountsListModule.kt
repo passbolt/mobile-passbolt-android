@@ -48,7 +48,7 @@ fun Module.accountsListModule() {
                 getSelectedAccountUseCase = get(),
                 signOutUseCase = get(),
                 removeAllAccountDataUseCase = get(),
-                saveSelectedAccountUseCase = get()
+                saveCurrentApiUrlUseCase = get()
             )
         }
         scoped { AccountUiItemsMapper() }

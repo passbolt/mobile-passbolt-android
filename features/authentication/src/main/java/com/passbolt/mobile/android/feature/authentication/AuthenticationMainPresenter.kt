@@ -4,7 +4,10 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveCurrentApiUrlUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -13,6 +16,8 @@ import kotlinx.coroutines.launch
 class AuthenticationMainPresenter(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
+    private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase,
+    private val getAccountDataUseCase: GetAccountDataUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthenticationMainContract.Presenter {
 
@@ -23,7 +28,8 @@ class AuthenticationMainPresenter(
     override fun bundleRetrieved(
         authTarget: AuthenticationTarget,
         authenticationStrategy: AuthenticationType?,
-        shouldLogOut: Boolean
+        shouldLogOut: Boolean,
+        userId: String?
     ) {
         scope.launch {
             if (shouldLogOut) {
@@ -37,25 +43,23 @@ class AuthenticationMainPresenter(
                     view?.navigateToManageAccounts()
                 }
                 AuthenticationTarget.AUTHENTICATE -> {
-                    processAuthentication(requireNotNull(authenticationStrategy))
+                    processAuthentication(requireNotNull(authenticationStrategy), userId)
                 }
             }
         }
     }
 
-    private fun processAuthentication(authenticationStrategy: AuthenticationType) {
-        val userId = try {
-            if (authenticationStrategy is AuthenticationType.SignIn) {
-                authenticationStrategy.userId ?: getSelectedAccountUseCase.execute(Unit).selectedAccount
-            } else {
-                getSelectedAccountUseCase.execute(Unit).selectedAccount
-            }
+    private fun processAuthentication(authenticationStrategy: AuthenticationType, userId: String?) {
+        val selectedUserId = try {
+            userId ?: getSelectedAccountUseCase.execute(Unit).selectedAccount
         } catch (exception: Exception) {
             null
         }
 
         // navigate to auth if user is selected else stay on account list
-        userId?.let {
+        selectedUserId?.let {
+            val userUrl = getAccountDataUseCase.execute(UserIdInput(it)).url
+            saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(userUrl))
             view?.navigateToAuth(it, authenticationStrategy)
         } ?: view?.setDefaultNavGraph()
     }

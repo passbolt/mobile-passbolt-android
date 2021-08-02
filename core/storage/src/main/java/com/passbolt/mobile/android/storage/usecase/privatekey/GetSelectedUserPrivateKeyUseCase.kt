@@ -38,7 +38,7 @@ class GetSelectedUserPrivateKeyUseCase(
     override fun execute(input: Unit): Output {
         return try {
             val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-            val name = PrivateKeyFileName(userId).name
+            val name = PrivateKeyFileName(requireNotNull(userId)).name
             Timber.d("Getting private key. Filename: $name")
 
             val encryptedFile = encryptedFileFactory.get(name)

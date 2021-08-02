@@ -65,6 +65,9 @@ class SettingsPresenterTest : KoinTest {
                 true
             )
         )
+        whenever(getSelectedAccountUseCase.execute(anyOrNull())).thenReturn(
+            GetSelectedAccountUseCase.Output("userId")
+        )
         presenter.attach(view)
         reset(view)
     }

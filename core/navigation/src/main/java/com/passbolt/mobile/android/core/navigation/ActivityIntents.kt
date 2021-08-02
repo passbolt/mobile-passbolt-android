@@ -34,17 +34,24 @@ object ActivityIntents {
     const val EXTRA_AUTH_STRATEGY_TYPE = "AUTH_STRATEGY_TYPE"
     const val EXTRA_AUTH_TARGET = "AUTH_TARGET"
     const val EXTRA_MANAGE_ACCOUNTS_SIGN_OUT = "MANAGE_ACCOUNTS_LOG_OUT"
+    const val EXTRA_USER_ID = "EXTRA_USER_ID"
 
     fun setup(context: Context) = Intent().apply {
         setClassName(context, Setup.SET_UP_ACTIVITY)
     }
 
-    fun authentication(context: Context, authenticationType: AuthenticationType, withSignOut: Boolean = false) =
+    fun authentication(
+        context: Context,
+        authenticationType: AuthenticationType,
+        withSignOut: Boolean = false,
+        userId: String? = null
+    ) =
         Intent().apply {
             setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
             putExtra(EXTRA_AUTH_STRATEGY_TYPE, authenticationType)
             putExtra(EXTRA_AUTH_TARGET, AuthenticationTarget.AUTHENTICATE)
             putExtra(EXTRA_MANAGE_ACCOUNTS_SIGN_OUT, withSignOut)
+            userId?.let { putExtra(EXTRA_USER_ID, it) }
         }
 
     fun refreshAuthentication(context: Context, authenticationType: AuthenticationType) = Intent().apply {

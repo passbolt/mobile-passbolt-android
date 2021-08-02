@@ -40,7 +40,8 @@ interface AuthenticationMainContract {
         fun bundleRetrieved(
             authTarget: AuthenticationTarget,
             authenticationStrategy: AuthenticationType?,
-            shouldLogOut: Boolean
+            shouldLogOut: Boolean,
+            userId: String?
         )
     }
 }

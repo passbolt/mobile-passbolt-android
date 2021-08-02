@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
@@ -65,12 +66,13 @@ class PassphrasePresenterTest : KoinTest {
     fun `view should show wrong passphrase if passphrase is not correct`() {
         whenever(mockGetSelectedPrivateKeyUseCase.execute(Unit))
             .doReturn(GetSelectedUserPrivateKeyUseCase.Output("privateKey"))
-        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(false))
         }
 
+        presenter.argsRetrieved(ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick("pass".toByteArray())
 
@@ -84,14 +86,14 @@ class PassphrasePresenterTest : KoinTest {
     fun `view should show auth success if passphrase is correct`() {
         whenever(mockGetSelectedPrivateKeyUseCase.execute(Unit))
             .doReturn(GetSelectedUserPrivateKeyUseCase.Output("privateKey"))
-        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
 
-        presenter.attach(mockView)
         presenter.argsRetrieved(ACCOUNT)
+        presenter.attach(mockView)
         presenter.signInClick("".toByteArray())
 
         verify(mockView).showTitle()
@@ -103,9 +105,10 @@ class PassphrasePresenterTest : KoinTest {
 
     @Test
     fun `view should disable and enable sign in button if on passphrase empty flag change`() {
-        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
+        presenter.argsRetrieved(ACCOUNT)
         presenter.attach(mockView)
         presenter.passphraseInputIsEmpty(true)
         verify(mockView).showTitle()
@@ -119,11 +122,11 @@ class PassphrasePresenterTest : KoinTest {
 
     @Test
     fun `view should show account data on attach`() {
-        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.attach(mockView)
         presenter.argsRetrieved(ACCOUNT)
+        presenter.attach(mockView)
         presenter.viewCreated(true)
 
         verify(mockView).showTitle()
@@ -136,12 +139,12 @@ class PassphrasePresenterTest : KoinTest {
 
     @Test
     fun `view should show biometric prompt when fingerprint configured`() {
-        whenever(mockCheckIfPassphraseExistsUseCase.execute(Unit))
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = true))
         whenever(mockFingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
 
-        presenter.attach(mockView)
         presenter.argsRetrieved(ACCOUNT)
+        presenter.attach(mockView)
 
         verify(mockView).setBiometricAuthButtonVisible()
         verify(mockView).showBiometricPrompt()

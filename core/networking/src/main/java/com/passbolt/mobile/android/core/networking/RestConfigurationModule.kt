@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.core.networking
 import coil.util.CoilUtils
 import com.passbolt.mobile.android.core.networking.interceptor.AuthInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
-import com.passbolt.mobile.android.core.networking.usecase.GetBaseUrlUseCase
 import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -50,16 +49,10 @@ val networkingModule = module {
             cache = get()
         )
     }
-    single { ChangeableBaseUrlInterceptor(getBaseUrlUseCase = get()) }
+    single { ChangeableBaseUrlInterceptor(getCurrentApiUrlUseCase = get()) }
     single {
         AuthInterceptor(
             getSessionUseCase = get()
-        )
-    }
-    single {
-        GetBaseUrlUseCase(
-            getAccountDataUseCase = get(),
-            getSelectedAccountUseCase = get()
         )
     }
     single {

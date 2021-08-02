@@ -7,7 +7,7 @@ import com.passbolt.mobile.android.storage.usecase.accountdata.RemoveAllAccountD
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveCurrentApiUrlUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -40,10 +40,10 @@ import timber.log.Timber
 class AccountsListPresenter(
     private val getAllAccountsDataUseCase: GetAllAccountsDataUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val accountModelMapper: AccountModelMapper,
     private val removeAllAccountDataUseCase: RemoveAllAccountDataUseCase,
     private val signOutUseCase: SignOutUseCase,
+    private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AccountsListContract.Presenter {
 
@@ -72,7 +72,7 @@ class AccountsListPresenter(
     }
 
     override fun accountItemClick(model: AccountModelUi.AccountModel) {
-        saveSelectedAccountUseCase.execute(UserIdInput(model.userId))
+        saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(model.url))
         view?.navigateToSignIn(model)
     }
 

@@ -35,15 +35,17 @@ class PassphraseRepository(
     private val selectedAccountUseCase: GetSelectedAccountUseCase
 ) {
 
-    fun getCaching(): PotentialPassphrase =
+    fun getCaching(userId: String? = null): PotentialPassphrase =
         if (passphraseMemoryCache.hasPassphrase()) {
             passphraseMemoryCache.get()
         } else {
-            val userId = selectedAccountUseCase.execute(Unit).selectedAccount
-            val potentialPassphrase = getPassphraseUseCase.execute(UserIdInput(userId)).potentialPassphrase
-            if (potentialPassphrase is PotentialPassphrase.Passphrase) {
-                passphraseMemoryCache.set(potentialPassphrase.passphrase)
-            }
-            potentialPassphrase
+            val currentUserId = userId ?: selectedAccountUseCase.execute(Unit).selectedAccount
+            currentUserId?.let {
+                val potentialPassphrase = getPassphraseUseCase.execute(UserIdInput(it)).potentialPassphrase
+                if (potentialPassphrase is PotentialPassphrase.Passphrase) {
+                    passphraseMemoryCache.set(potentialPassphrase.passphrase)
+                }
+                potentialPassphrase
+            } ?: PotentialPassphrase.PassphraseNotPresent()
         }
 }

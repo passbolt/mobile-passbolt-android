@@ -29,6 +29,7 @@ sealed class AccountModelUi {
         val title: String,
         val email: String?,
         val avatar: String?,
+        val url: String,
         val isFirstItem: Boolean = false,
         val isTrashIconVisible: Boolean = false
     ) : AccountModelUi()

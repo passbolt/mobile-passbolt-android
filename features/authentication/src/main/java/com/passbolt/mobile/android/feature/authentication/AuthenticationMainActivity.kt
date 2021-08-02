@@ -69,10 +69,14 @@ class AuthenticationMainActivity :
         intent.getBooleanExtra(ActivityIntents.EXTRA_MANAGE_ACCOUNTS_SIGN_OUT, false)
     }
 
+    private val userId by lifecycleAwareLazy {
+        intent.getStringExtra(ActivityIntents.EXTRA_USER_ID)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         presenter.attach(this)
-        presenter.bundleRetrieved(authTarget, authStrategy, shouldSignOut)
+        presenter.bundleRetrieved(authTarget, authStrategy, shouldSignOut, userId)
         setResult(Activity.RESULT_CANCELED)
     }
 
