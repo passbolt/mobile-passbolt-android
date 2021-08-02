@@ -20,6 +20,7 @@ featureModule "main"
 featureModule "home"
 featureModule "settings"
 featureModule "folders"
+featureModule "resources"
 
 serviceModule "passboltapi"
 

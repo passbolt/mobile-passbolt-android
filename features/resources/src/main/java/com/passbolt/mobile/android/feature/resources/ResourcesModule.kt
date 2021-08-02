@@ -1,6 +1,7 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.feature.folders
 
-import java.io.Serializable
+import com.passbolt.mobile.android.feature.resources.details.detailsModule
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,11 +25,7 @@ import java.io.Serializable
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class PasswordModel(
-    val name: String,
-    val username: String,
-    val icon: String?,
-    val initials: String,
-    val url: String,
-    val searchCriteria: String
-) : Serializable
+
+val resourcesModule = module {
+    detailsModule()
+}

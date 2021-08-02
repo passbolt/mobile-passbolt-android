@@ -1,6 +1,8 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.feature.resources.details
 
-import java.io.Serializable
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMoreModel
+import com.passbolt.mobile.android.ui.PasswordModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,11 +26,23 @@ import java.io.Serializable
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class PasswordModel(
-    val name: String,
-    val username: String,
-    val icon: String?,
-    val initials: String,
-    val url: String,
-    val searchCriteria: String
-) : Serializable
+interface ResourceDetailsContract {
+
+    interface View : BaseContract.View {
+        fun displayTitle(title: String)
+        fun displayUsername(username: String)
+        fun addToClipboard(label: String, value: String)
+        fun displayUrl(url: String)
+        fun displayInitialsIcon(name: String, initials: String)
+        fun navigateToMore(model: ResourceDetailsMoreModel)
+        fun navigateBack()
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun argsReceived(passwordModel: PasswordModel)
+        fun usernameCopyClick()
+        fun urlCopyClick()
+        fun moreClick()
+        fun backArrowClick()
+    }
+}

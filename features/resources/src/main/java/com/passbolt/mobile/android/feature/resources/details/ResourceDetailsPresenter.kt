@@ -1,6 +1,6 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.feature.resources.details
 
-import com.passbolt.mobile.android.core.mvp.networking.BaseNetworkingContract
+import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMoreModel
 import com.passbolt.mobile.android.ui.PasswordModel
 
 /**
@@ -25,25 +25,39 @@ import com.passbolt.mobile.android.ui.PasswordModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
+class ResourceDetailsPresenter : ResourceDetailsContract.Presenter {
 
-    interface View : BaseNetworkingContract.View {
-        fun showPasswords(list: List<PasswordModel>)
-        fun navigateToMore(passwordModel: PasswordModel)
-        fun navigateToDetails(passwordModel: PasswordModel)
-        fun hideProgress()
-        fun showProgress()
-        fun hideRefreshProgress()
-        fun showError()
-        fun showEmptyList()
-        fun displayAvatar(url: String)
+    override var view: ResourceDetailsContract.View? = null
+    private lateinit var passwordModel: PasswordModel
+
+    override fun argsReceived(passwordModel: PasswordModel) {
+        this.passwordModel = passwordModel
+        view?.displayTitle(passwordModel.name)
+        view?.displayUsername(passwordModel.username)
+        view?.displayInitialsIcon(passwordModel.name, passwordModel.initials)
+        if (passwordModel.url.isNotEmpty()) {
+            view?.displayUrl(passwordModel.url)
+        }
     }
 
-    interface Presenter : BaseNetworkingContract.Presenter<View> {
-        fun moreClick(passwordModel: PasswordModel)
-        fun itemClick(passwordModel: PasswordModel)
-        fun refreshSwipe()
-        fun refreshClick()
-        fun searchTextChange(text: String)
+    override fun usernameCopyClick() {
+        view?.addToClipboard(USERNAME_LABEL, passwordModel.username)
+    }
+
+    override fun urlCopyClick() {
+        view?.addToClipboard(WEBSITE_LABEL, passwordModel.url)
+    }
+
+    override fun moreClick() {
+        view?.navigateToMore(ResourceDetailsMoreModel(passwordModel.name))
+    }
+
+    override fun backArrowClick() {
+        view?.navigateBack()
+    }
+
+    companion object {
+        private const val WEBSITE_LABEL = "Website"
+        private const val USERNAME_LABEL = "Username"
     }
 }

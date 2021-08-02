@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.home.screen
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.fragment.findNavController
@@ -22,6 +22,7 @@ import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
 import com.passbolt.mobile.android.feature.home.screen.more.PasswordMoreModel
+import com.passbolt.mobile.android.feature.resources.ResourcesActivity
 import com.passbolt.mobile.android.ui.PasswordModel
 import org.koin.android.ext.android.inject
 
@@ -92,7 +93,7 @@ class HomeFragment :
         }
         fastAdapter.addEventHooks(listOf(
             PasswordItem.ItemClick {
-                presenter.itemClick()
+                presenter.itemClick(it)
             },
             PasswordItem.MoreClick {
                 presenter.moreClick(it)
@@ -154,17 +155,19 @@ class HomeFragment :
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToMore(
                 PasswordMoreModel(
-                    title = passwordModel.title,
+                    title = passwordModel.name,
                     password = "password",
-                    username = passwordModel.subtitle,
+                    username = passwordModel.username,
                     url = passwordModel.url
                 )
             )
         )
     }
 
-    override fun navigateToDetails() {
-        Toast.makeText(requireContext(), "Details clicked!", Toast.LENGTH_SHORT).show()
+    override fun navigateToDetails(passwordModel: PasswordModel) {
+        startActivity(Intent(requireContext(), ResourcesActivity::class.java).apply {
+            putExtra(ResourcesActivity.PASSWORD_MODEL_KEY, passwordModel)
+        })
     }
 
     companion object {

@@ -120,7 +120,7 @@ class HomePresenter(
         view?.navigateToMore(passwordModel)
     }
 
-    override fun itemClick() {
-        view?.navigateToDetails()
+    override fun itemClick(passwordModel: PasswordModel) {
+        view?.navigateToDetails(passwordModel)
     }
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/resources"
+    app:startDestination="@id/resourceDetails">
+
+    <fragment
+        android:id="@+id/resourceDetails"
+        android:name="com.passbolt.mobile.android.feature.resources.details.ResourceDetailsFragment"
+        android:label="ResourceDetailsFragment"
+        tools:layout="@layout/fragment_resource_details">
+        <argument
+            android:name="passwordModel"
+            app:argType="com.passbolt.mobile.android.ui.PasswordModel" />
+        <action
+            android:id="@+id/action_resourceDetails_to_more"
+            app:destination="@id/more" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/more"
+        android:name="com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuFragment"
+        android:label="PasswordDetailsSheetFragment"
+        tools:layout="@layout/view_password_details_bottomsheet">
+        <argument
+            android:name="passwordModel"
+            app:argType="com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMoreModel" />
+    </dialog>
+</navigation>
