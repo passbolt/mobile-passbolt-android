@@ -16,6 +16,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.ui.FeatureFlagsModel
@@ -63,6 +64,9 @@ class SignInPresenterTest : KoinTest {
 
     @Test
     fun `view should show error when server public keys cannot be fetched`() {
+        mockVerifyPassphraseUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
+        }
         mockGetServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Failure)
         }
@@ -83,6 +87,9 @@ class SignInPresenterTest : KoinTest {
 
     @Test
     fun `view should show auth success when sign in in succeeds`() {
+        mockVerifyPassphraseUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
+        }
         mockGetServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey"))
         }
@@ -127,6 +134,9 @@ class SignInPresenterTest : KoinTest {
 
     @Test
     fun `view should show wrong passphrase when challenge provider cannot encrypt challenge`() {
+        mockVerifyPassphraseUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
+        }
         mockGetServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey"))
         }
@@ -152,6 +162,9 @@ class SignInPresenterTest : KoinTest {
 
     @Test
     fun `view should show server error message when sign in fails`() {
+        mockVerifyPassphraseUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
+        }
         mockGetServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey"))
         }
@@ -180,6 +193,9 @@ class SignInPresenterTest : KoinTest {
 
     @Test
     fun `view should show generic error when challenge cannot be verified`() {
+        mockVerifyPassphraseUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
+        }
         mockGetServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey"))
         }

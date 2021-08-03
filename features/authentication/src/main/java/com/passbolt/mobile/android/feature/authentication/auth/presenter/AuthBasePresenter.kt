@@ -4,10 +4,12 @@ import androidx.annotation.CallSuper
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
+import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -42,6 +44,8 @@ abstract class AuthBasePresenter(
     private val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     private val fingerprintInfoProvider: FingerprintInformationProvider,
     private val removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
+    private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
+    private val verifyPassphraseUseCase: VerifyPassphraseUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthContract.Presenter {
 
@@ -123,5 +127,23 @@ abstract class AuthBasePresenter(
     @CallSuper
     override fun signInClick(passphrase: ByteArray) {
         view?.hideKeyboard()
+        validatePassphrase(passphrase)
     }
+
+    private fun validatePassphrase(passphrase: ByteArray) {
+        scope.launch {
+            val privateKey = requireNotNull(
+                getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
+            )
+            val isPassphraseCorrect =
+                verifyPassphraseUseCase.execute(VerifyPassphraseUseCase.Input(privateKey, passphrase)).isCorrect
+            if (isPassphraseCorrect) {
+                onPassphraseVerified(passphrase)
+            } else {
+                view?.showWrongPassphrase()
+            }
+        }
+    }
+
+    abstract fun onPassphraseVerified(passphrase: ByteArray)
 }

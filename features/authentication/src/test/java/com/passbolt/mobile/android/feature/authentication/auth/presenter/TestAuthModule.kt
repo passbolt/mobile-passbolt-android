@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
@@ -18,12 +19,11 @@ import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
-import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -71,7 +71,9 @@ internal val mockGetAccountDataUseCase = mock<GetAccountDataUseCase> {
     )
 }
 internal val mockPassphraseMemoryCache = mock<PassphraseMemoryCache>()
-internal val mockGetSelectedPrivateKeyUseCase = mock<GetSelectedUserPrivateKeyUseCase>()
+internal val mockPrivateKeyUseCase = mock<GetPrivateKeyUseCase> {
+    on { execute(any()) }.doReturn(GetPrivateKeyUseCase.Output("privateKey"))
+}
 internal val mockVerifyPassphraseUseCase = mock<VerifyPassphraseUseCase>()
 internal val mockCheckIfPassphraseExistsUseCase = mock<CheckIfPassphraseFileExistsUseCase>()
 internal val mockPassphraseRepository = mock<PassphraseRepository>()
@@ -83,7 +85,6 @@ internal val mockChallengeProvider = mock<ChallengeProvider>()
 internal val mockSignInUseCase = mock<SiginInUseCase>()
 internal val mockChallengeDecryptor = mock<ChallengeDecryptor>()
 internal val mockChallengeVerifier = mock<ChallengeVerifier>()
-internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
 internal val mockFingerprintInformationProvider = mock<FingerprintInformationProvider>()
 internal val mockFetureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
@@ -92,7 +93,7 @@ val testAuthModule = module {
     factory<AuthContract.Presenter>(named(AuthenticationType.Passphrase.javaClass.simpleName)) {
         PassphrasePresenter(
             passphraseMemoryCache = mockPassphraseMemoryCache,
-            getSelectedUserPrivateKeyUseCase = mockGetSelectedPrivateKeyUseCase,
+            getPrivateKeyUseCase = mockPrivateKeyUseCase,
             verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
             fingerprintInfoProvider = mockFingerprintInformationProvider,
             removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
@@ -119,7 +120,9 @@ val testAuthModule = module {
             fingerprintInfoProvider = mockFingerprintInformationProvider,
             passphraseMemoryCache = mockPassphraseMemoryCache,
             featureFlagsUseCase = mockFetureFlagsUseCase,
-            signOutUseCase = mockSignOutUseCase
+            signOutUseCase = mockSignOutUseCase,
+            getPrivateKeyUseCase = mockPrivateKeyUseCase,
+            verifyPassphraseUseCase = mockVerifyPassphraseUseCase
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

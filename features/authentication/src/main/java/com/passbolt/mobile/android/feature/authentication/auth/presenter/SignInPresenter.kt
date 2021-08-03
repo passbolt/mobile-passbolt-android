@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
+import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
@@ -19,6 +20,7 @@ import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUse
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
 import kotlinx.coroutines.async
@@ -64,6 +66,8 @@ class SignInPresenter(
     private val removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     private val featureFlagsUseCase: GetFeatureFlagsUseCase,
     private val signOutUseCase: SignOutUseCase,
+    getPrivateKeyUseCase: GetPrivateKeyUseCase,
+    verifyPassphraseUseCase: VerifyPassphraseUseCase,
     fingerprintInfoProvider: FingerprintInformationProvider,
     checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
@@ -72,11 +76,12 @@ class SignInPresenter(
     checkIfPassphraseFileExistsUseCase,
     fingerprintInfoProvider,
     removeSelectedAccountPassphraseUseCase,
+    getPrivateKeyUseCase,
+    verifyPassphraseUseCase,
     coroutineLaunchContext
 ) {
 
-    override fun signInClick(passphrase: ByteArray) {
-        super.signInClick(passphrase)
+    override fun onPassphraseVerified(passphrase: ByteArray) {
         performSignIn(passphrase)
     }
 
@@ -119,8 +124,8 @@ class SignInPresenter(
         // TODO verify passphrase use case? Use stored url; PAS-214
         val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
         val challenge = challengeProvider.get(
-            version = "1.0.0",
-            domain = "https://passbolt.dev",
+            version = CHALLENGE_VERSION,
+            domain = accountData.url,
             serverPublicKey = serverPublicKey,
             passphrase = passphrase,
             userId
@@ -247,5 +252,9 @@ class SignInPresenter(
             is PotentialPassphrase.Passphrase -> performSignIn(potentialPassphrase.passphrase)
             is PotentialPassphrase.PassphraseNotPresent -> view?.closeFeatureFlagsFetchErrorDialog()
         }
+    }
+
+    private companion object {
+        private const val CHALLENGE_VERSION = "1.0.0"
     }
 }
