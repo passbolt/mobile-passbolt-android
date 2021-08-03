@@ -17,9 +17,11 @@ import com.passbolt.mobile.android.core.extension.hideSoftInput
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.authentication.R
+import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategy
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
 import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAuthBinding
+import com.passbolt.mobile.android.featureflags.ui.FeatureFlagsFetchErrorDialog
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -47,7 +49,9 @@ import java.util.concurrent.Executor
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate), AuthContract.View {
+@Suppress("TooManyFunctions")
+class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate), AuthContract.View,
+    FeatureFlagsFetchErrorDialog.Listener {
 
     private val args: AuthFragmentArgs by navArgs()
     private val strategyFactory: AuthStrategyFactory by inject()
@@ -58,6 +62,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     private var progressDialog: ProgressDialog? = ProgressDialog()
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
     private val executor: Executor by inject()
+    private var featureFlagsFetchErrorDialog: FeatureFlagsFetchErrorDialog? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -127,6 +132,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun onDestroyView() {
         progressDialog = null
+        featureFlagsFetchErrorDialog = null
         authStrategy.detach()
         presenter.detach()
         super.onDestroyView()
@@ -165,7 +171,9 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showProgress() {
-        progressDialog?.show(childFragmentManager, ProgressDialog::class.java.name)
+        if (progressDialog?.isAdded != true) {
+            progressDialog?.show(childFragmentManager, ProgressDialog::class.java.name)
+        }
     }
 
     override fun hideProgress() {
@@ -226,5 +234,24 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun clearPassphraseInput() {
         binding.passphraseInput.clearText()
+    }
+
+    override fun showFeatureFlagsErrorDialog() {
+        featureFlagsFetchErrorDialog = FeatureFlagsFetchErrorDialog()
+        featureFlagsFetchErrorDialog?.show(childFragmentManager, FeatureFlagsFetchErrorDialog::class.java.name)
+    }
+
+    override fun fetchFeatureFlagsErrorDialogRefreshClick() {
+        // possible only during sign in
+        (presenter as SignInPresenter).refreshClick()
+    }
+
+    override fun fetchFeatureFlagsErrorDialogSignOutClick() {
+        // possible only during sign in
+        (presenter as SignInPresenter).signOutClick()
+    }
+
+    override fun closeFeatureFlagsFetchErrorDialog() {
+        featureFlagsFetchErrorDialog?.dismiss()
     }
 }

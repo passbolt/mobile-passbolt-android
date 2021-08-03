@@ -10,6 +10,8 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
@@ -60,6 +62,8 @@ class SignInPresenter(
     private val passphraseRepository: PassphraseRepository,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
+    private val featureFlagsUseCase: GetFeatureFlagsUseCase,
+    private val signOutUseCase: SignOutUseCase,
     fingerprintInfoProvider: FingerprintInformationProvider,
     checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
@@ -189,10 +193,24 @@ class SignInPresenter(
         saveSelectedAccountUseCase.execute(UserIdInput(userId))
         passphraseMemoryCache.set(passphrase)
         passphrase.erase()
-        view?.apply {
-            hideProgress()
-            clearPassphraseInput()
-            authSuccess()
+        fetchFeatureFlags()
+    }
+
+    private fun fetchFeatureFlags() {
+        scope.launch {
+            when (featureFlagsUseCase.execute(Unit)) {
+                is GetFeatureFlagsUseCase.Output.Failure<*> -> {
+                    view?.showFeatureFlagsErrorDialog()
+                }
+                is GetFeatureFlagsUseCase.Output.Success -> {
+                    // TODO save feature flags or use dynamic koin module
+                    view?.apply {
+                        hideProgress()
+                        clearPassphraseInput()
+                        authSuccess()
+                    }
+                }
+            }
         }
     }
 
@@ -207,6 +225,27 @@ class SignInPresenter(
         view?.apply {
             hideProgress()
             showWrongPassphrase()
+        }
+    }
+
+    fun signOutClick() {
+        view?.apply {
+            closeFeatureFlagsFetchErrorDialog()
+            showProgress()
+        }
+        scope.launch {
+            signOutUseCase.execute(Unit)
+            view?.apply {
+                hideProgress()
+                navigateBack()
+            }
+        }
+    }
+
+    fun refreshClick() {
+        when (val potentialPassphrase = passphraseMemoryCache.get()) {
+            is PotentialPassphrase.Passphrase -> performSignIn(potentialPassphrase.passphrase)
+            is PotentialPassphrase.PassphraseNotPresent -> view?.closeFeatureFlagsFetchErrorDialog()
         }
     }
 }

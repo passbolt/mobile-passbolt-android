@@ -92,6 +92,7 @@ dependencies {
     implementation project(':settings')
     implementation project(':folders')
     implementation project(':resources')
+    implementation project(':featureflags')
 
     debugImplementation libs.quality.leakcanary
 

@@ -12,7 +12,9 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
@@ -83,6 +85,8 @@ internal val mockChallengeDecryptor = mock<ChallengeDecryptor>()
 internal val mockChallengeVerifier = mock<ChallengeVerifier>()
 internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
 internal val mockFingerprintInformationProvider = mock<FingerprintInformationProvider>()
+internal val mockFetureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
+internal val mockSignOutUseCase = mock<SignOutUseCase>()
 
 val testAuthModule = module {
     factory<AuthContract.Presenter>(named(AuthenticationType.Passphrase.javaClass.simpleName)) {
@@ -113,7 +117,9 @@ val testAuthModule = module {
             checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
             removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
             fingerprintInfoProvider = mockFingerprintInformationProvider,
-            passphraseMemoryCache = mockPassphraseMemoryCache
+            passphraseMemoryCache = mockPassphraseMemoryCache,
+            featureFlagsUseCase = mockFetureFlagsUseCase,
+            signOutUseCase = mockSignOutUseCase
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
