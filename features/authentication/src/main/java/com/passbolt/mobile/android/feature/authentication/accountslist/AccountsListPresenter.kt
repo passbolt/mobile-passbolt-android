@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -119,16 +118,11 @@ class AccountsListPresenter(
             val accountToRemoveId = model.userId
             removeAllAccountDataUseCase.execute(UserIdInput(accountToRemoveId))
 
-            runCatching { getSelectedAccountUseCase.execute(Unit).selectedAccount }
-                .onSuccess { selectedAccountId ->
-                    if (accountToRemoveId != selectedAccountId) {
-                        signOutUseCase.execute(Unit)
-                    }
+            getSelectedAccountUseCase.execute(Unit).selectedAccount?.let { selectedAccount ->
+                if (accountToRemoveId != selectedAccount) {
+                    signOutUseCase.execute(Unit)
                 }
-                .onFailure {
-                    // do not logout the current account when removing other account
-                    Timber.d(it)
-                }
+            }
         }
         removeModeOn(isOn = false)
         displayAccounts()
