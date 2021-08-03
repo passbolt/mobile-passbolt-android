@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import coil.load
+import coil.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.databinding.ItemAccountBinding
@@ -55,10 +56,9 @@ class AccountItem(
                     R.drawable.background_ripple
                 }
             )
-            // TODO load avatar when in logged out state
-            // icon.load(accountModel.avatar) {
-            icon.load(R.drawable.ic_logo) {
+            icon.load(accountModel.avatar) {
                 error(R.drawable.ic_avatar_placeholder)
+                transformations(CircleCropTransformation())
                 placeholder(R.drawable.ic_avatar_placeholder)
             }
         }

@@ -8,7 +8,6 @@ import com.passbolt.mobile.android.storage.usecase.privatekey.RemovePrivateKeyUs
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.RemoveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.session.RemoveSessionUseCase
-import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -46,17 +45,10 @@ class RemoveAllAccountDataUseCase(
         val accountToRemoveId = UserIdInput(input.userId)
         removeAccountData(accountToRemoveId)
 
-        runCatching {
-            val selectedAccountId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-
-            if (accountToRemoveId.userId == selectedAccountId) {
-                removeSelectedAccountUseCase.execute(accountToRemoveId)
-            }
+        val selectedAccountId = getSelectedAccountUseCase.execute(Unit).selectedAccount
+        if (accountToRemoveId.userId == selectedAccountId) {
+            removeSelectedAccountUseCase.execute(accountToRemoveId)
         }
-            .onFailure {
-                // ignore removing selected account id when no account is selected
-                Timber.d(it)
-            }
     }
 
     private fun removeAccountData(userIdInput: UserIdInput) {
