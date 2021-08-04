@@ -1,7 +1,12 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.service.registration
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
+import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import retrofit2.http.Body
+import retrofit2.http.PUT
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,26 +30,21 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
 
-    interface View : BaseAuthenticatedContract.View {
-        fun showPasswords(list: List<ResourceModel>)
-        fun navigateToMore(resourceModel: ResourceModel)
-        fun navigateToDetails(resourceModel: ResourceModel)
-        fun hideProgress()
-        fun showProgress()
-        fun hideRefreshProgress()
-        fun showError()
-        fun showEmptyList()
-        fun showSearchEmptyList()
-        fun displayAvatar(url: String)
-    }
+internal interface RegistrationApi {
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun moreClick(resourceModel: ResourceModel)
-        fun itemClick(resourceModel: ResourceModel)
-        fun refreshSwipe()
-        fun refreshClick()
-        fun searchTextChange(text: String)
+    @PUT(UPDATE_TRANSFER)
+    suspend fun updateTransfer(
+        @Path(UUID) uuid: String,
+        @Path(AUTH_TOKEN) authToken: String,
+        @Body pageRequestDto: UpdateTransferRequestDto,
+        @Query(USER_PROFILE_INFO) userProfile: String?
+    ): BaseResponse<UpdateTransferResponseDto>
+
+    private companion object {
+        private const val UUID = "uuid"
+        private const val AUTH_TOKEN = "AUTH_TOKEN"
+        private const val USER_PROFILE_INFO = "contain[user.profile]"
+        private const val UPDATE_TRANSFER = "mobile/transfers/{$UUID}/{$AUTH_TOKEN}.json"
     }
 }

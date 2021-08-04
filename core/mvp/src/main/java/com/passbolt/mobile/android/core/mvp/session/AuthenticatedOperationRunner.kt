@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.networking.session
+package com.passbolt.mobile.android.core.mvp.session
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,35 +29,36 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SessionAwareRequestRunner(
-    private val needSessionRefreshedFlow: MutableStateFlow<Unit?>,
-    private val sessionRefreshedFlow: StateFlow<Unit?>
+class AuthenticatedOperationRunner(
+    private val needAuthenticationRefreshedFlow: MutableStateFlow<UnauthenticatedReason?>,
+    private val authenticationRefreshedFlow: StateFlow<Unit?>
 ) {
 
-    suspend fun <OUTPUT : NetworkingUseCaseOutput> runRequest(
+    suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runOperation(
         request: suspend () -> OUTPUT
     ): OUTPUT {
         val response = request.invoke()
-        return if (!response.isUnauthorized) {
-            response
-        } else {
-            Timber.d("[Session] Request runner $this waits for session refresh")
-            needSessionRefreshedFlow.tryEmit(Unit)
-            sessionRefreshedFlow
+        val authenticationState = response.authenticationState
+        return if (authenticationState is AuthenticationState.Unauthenticated) {
+            Timber.d("Authenticated operation runner $this waits for auth refresh")
+            needAuthenticationRefreshedFlow.tryEmit(authenticationState.reason)
+            authenticationRefreshedFlow
                 .drop(1) // drop initial value
                 .take(1) // wait for first session refreshed item
                 .collect {
-                    Timber.d("[Session] Request runner $this got refreshed session")
+                    Timber.d("Authenticated operation runner $this got refreshed auth")
                 }
-            Timber.d("[Session] Request runner $this restarts initial request")
+            Timber.d("Authenticated operation runner $this restarts initial operation")
             request.invoke()
+        } else {
+            response
         }
     }
 }
 
-suspend fun <OUTPUT : NetworkingUseCaseOutput> runRequest(
-    needSessionRefresh: MutableStateFlow<Unit?>,
-    sessionRefreshedFlow: StateFlow<Unit?>,
+suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runAuthenticatedOperation(
+    needAuthenticationRefresh: MutableStateFlow<UnauthenticatedReason?>,
+    authenticationRefreshedFlow: StateFlow<Unit?>,
     request: suspend () -> OUTPUT
 ): OUTPUT =
-    SessionAwareRequestRunner(needSessionRefresh, sessionRefreshedFlow).runRequest(request)
+    AuthenticatedOperationRunner(needAuthenticationRefresh, authenticationRefreshedFlow).runOperation(request)

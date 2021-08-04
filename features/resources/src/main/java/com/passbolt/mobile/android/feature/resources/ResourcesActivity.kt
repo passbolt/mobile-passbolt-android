@@ -40,6 +40,6 @@ class ResourcesActivity : BindingActivity<ActivityResourcesBinding>(ActivityReso
     }
 
     companion object {
-        const val PASSWORD_MODEL_KEY = "passwordModel"
+        const val RESOURCE_MODEL_KEY = "resourceModel"
     }
 }

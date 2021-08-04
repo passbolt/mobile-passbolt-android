@@ -1,12 +1,12 @@
 package com.passbolt.mobile.android.feature.home.screen
 
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.mvp.networking.BaseNetworkingPresenter
-import com.passbolt.mobile.android.core.networking.session.runRequest
+import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.ui.PasswordModel
+import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -39,16 +39,16 @@ class HomePresenter(
     private val getResourcesUseCase: GetResourcesUseCase,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
-) : BaseNetworkingPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
+) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private var currentSearchText: String = ""
-    private var allItemsList: List<PasswordModel> = emptyList()
+    private var allItemsList: List<ResourceModel> = emptyList()
 
     override fun attach(view: HomeContract.View) {
-        super<BaseNetworkingPresenter>.attach(view)
+        super<BaseAuthenticatedPresenter>.attach(view)
         fetchPasswords()
         getSelectedAccountDataUseCase.execute(Unit).avatarUrl?.let {
             view.displayAvatar(it)
@@ -57,7 +57,7 @@ class HomePresenter(
 
     override fun detach() {
         scope.coroutineContext.cancelChildren()
-        super<BaseNetworkingPresenter>.detach()
+        super<BaseAuthenticatedPresenter>.detach()
     }
 
     override fun searchTextChange(text: String) {
@@ -68,7 +68,9 @@ class HomePresenter(
     private fun fetchPasswords() {
         scope.launch {
             when (val result =
-                runRequest(needSessionRefreshFlow, sessionRefreshedFlow) { getResourcesUseCase.execute(Unit) }) {
+                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    getResourcesUseCase.execute(Unit)
+                }) {
                 is GetResourcesUseCase.Output.Failure<*> -> {
                     view?.hideRefreshProgress()
                     view?.hideProgress()
@@ -116,11 +118,11 @@ class HomePresenter(
         fetchPasswords()
     }
 
-    override fun moreClick(passwordModel: PasswordModel) {
-        view?.navigateToMore(passwordModel)
+    override fun moreClick(resourceModel: ResourceModel) {
+        view?.navigateToMore(resourceModel)
     }
 
-    override fun itemClick(passwordModel: PasswordModel) {
-        view?.navigateToDetails(passwordModel)
+    override fun itemClick(resourceModel: ResourceModel) {
+        view?.navigateToDetails(resourceModel)
     }
 }

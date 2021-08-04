@@ -28,7 +28,10 @@ import org.koin.core.module.Module
 fun Module.detailsModule() {
     scope<ResourceDetailsFragment> {
         scoped<ResourceDetailsContract.Presenter> {
-            ResourceDetailsPresenter()
+            ResourceDetailsPresenter(
+                secretInteractor = get(),
+                coroutineLaunchContext = get()
+            )
         }
     }
 }

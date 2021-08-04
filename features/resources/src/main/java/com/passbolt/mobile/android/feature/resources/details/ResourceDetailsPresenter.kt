@@ -1,7 +1,16 @@
 package com.passbolt.mobile.android.feature.resources.details
 
-import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMoreModel
-import com.passbolt.mobile.android.ui.PasswordModel
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuModel
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,18 +34,36 @@ import com.passbolt.mobile.android.ui.PasswordModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResourceDetailsPresenter : ResourceDetailsContract.Presenter {
+class ResourceDetailsPresenter(
+    private val secretInteractor: SecretInteractor,
+    coroutineLaunchContext: CoroutineLaunchContext
+) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext), ResourceDetailsContract.Presenter {
 
     override var view: ResourceDetailsContract.View? = null
-    private lateinit var passwordModel: PasswordModel
+    private lateinit var passwordModel: ResourceModel
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private var isPasswordVisible = false
 
-    override fun argsReceived(passwordModel: PasswordModel) {
+    override fun argsReceived(passwordModel: ResourceModel) {
         this.passwordModel = passwordModel
-        view?.displayTitle(passwordModel.name)
-        view?.displayUsername(passwordModel.username)
-        view?.displayInitialsIcon(passwordModel.name, passwordModel.initials)
-        if (passwordModel.url.isNotEmpty()) {
-            view?.displayUrl(passwordModel.url)
+        view?.apply {
+            displayTitle(passwordModel.name)
+            displayUsername(passwordModel.username)
+            displayInitialsIcon(passwordModel.name, passwordModel.initials)
+            if (passwordModel.url.isNotEmpty()) {
+                displayUrl(passwordModel.url)
+            }
+            showPasswordHidden()
+            showPasswordHiddenIcon()
+        }
+    }
+
+    override fun viewStopped() {
+        view?.apply {
+            clearPasswordInput()
+            showPasswordHidden()
+            showPasswordHiddenIcon()
         }
     }
 
@@ -49,11 +76,50 @@ class ResourceDetailsPresenter : ResourceDetailsContract.Presenter {
     }
 
     override fun moreClick() {
-        view?.navigateToMore(ResourceDetailsMoreModel(passwordModel.name))
+        view?.navigateToMore(ResourceDetailsMenuModel(passwordModel.name))
     }
 
     override fun backArrowClick() {
         view?.navigateBack()
+    }
+
+    override fun secretIconClick() {
+        if (!isPasswordVisible) {
+            view?.showProgress()
+            scope.launch {
+                when (val output =
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        secretInteractor.fetchAndDecrypt(
+                            passwordModel.resourceId
+                        )
+                    }
+                ) {
+                    is SecretInteractor.Output.DecryptFailure -> view?.showDecryptionFailure()
+                    is SecretInteractor.Output.FetchFailure -> view?.showFetchFailure()
+                    is SecretInteractor.Output.Success -> {
+                        view?.apply {
+                            showPasswordVisibleIcon()
+                            showPassword(String(output.decryptedSecret))
+                        }
+                    }
+                    SecretInteractor.Output.Unauthorized -> Timber.e("TODO")
+                }
+                view?.hideProgress()
+            }
+            isPasswordVisible = true
+        } else {
+            view?.apply {
+                clearPasswordInput()
+                showPasswordHidden()
+                showPasswordHiddenIcon()
+            }
+            isPasswordVisible = false
+        }
+    }
+
+    override fun detach() {
+        scope.coroutineContext.cancelChildren()
+        super<BaseAuthenticatedPresenter>.detach()
     }
 
     companion object {

@@ -22,6 +22,7 @@ featureModule "home"
 featureModule "settings"
 featureModule "folders"
 featureModule "resources"
+featureModule "secrets"
 
 serviceModule "passboltapi"
 

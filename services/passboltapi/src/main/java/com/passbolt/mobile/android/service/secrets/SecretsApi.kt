@@ -1,7 +1,9 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.service.secrets
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.SecretResponseDto
+import retrofit2.http.GET
+import retrofit2.http.Path
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,26 +27,18 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
 
-    interface View : BaseAuthenticatedContract.View {
-        fun showPasswords(list: List<ResourceModel>)
-        fun navigateToMore(resourceModel: ResourceModel)
-        fun navigateToDetails(resourceModel: ResourceModel)
-        fun hideProgress()
-        fun showProgress()
-        fun hideRefreshProgress()
-        fun showError()
-        fun showEmptyList()
-        fun showSearchEmptyList()
-        fun displayAvatar(url: String)
-    }
+internal interface SecretsApi {
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun moreClick(resourceModel: ResourceModel)
-        fun itemClick(resourceModel: ResourceModel)
-        fun refreshSwipe()
-        fun refreshClick()
-        fun searchTextChange(text: String)
+    @GET(RESOURCE_SECRET_BY_ID)
+    suspend fun getSecret(
+        @Path(RESOURCE_ID) resourceId: String
+    ): BaseResponse<SecretResponseDto>
+
+    private companion object {
+        private const val RESOURCE_ID = "resourceId"
+        private const val SECRETS = "secrets"
+        private const val RESOURCE_SECRET = "/$SECRETS/resource"
+        private const val RESOURCE_SECRET_BY_ID = "$RESOURCE_SECRET/{$RESOURCE_ID}.json"
     }
 }

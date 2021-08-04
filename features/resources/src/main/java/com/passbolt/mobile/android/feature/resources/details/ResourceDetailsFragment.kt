@@ -9,15 +9,19 @@ import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
+import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
-import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.resources.R
+import com.passbolt.mobile.android.feature.resources.ResourcesActivity
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
-import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMoreModel
+import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuModel
+import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 
 /**
@@ -43,18 +47,35 @@ import org.koin.android.ext.android.inject
  * @since v1.0
  */
 class ResourceDetailsFragment :
-    BindingScopedFragment<FragmentResourceDetailsBinding>(FragmentResourceDetailsBinding::inflate),
-    ResourceDetailsContract.View {
+    BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
+        FragmentResourceDetailsBinding::inflate
+    ), ResourceDetailsContract.View {
 
-    private val args: ResourceDetailsFragmentArgs by navArgs()
-    private val presenter: ResourceDetailsContract.Presenter by inject()
+    override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
+    private val bundledResourceModel: ResourceModel by lifecycleAwareLazy {
+        requireNotNull(
+            requireActivity().intent.getParcelableExtra(ResourcesActivity.RESOURCE_MODEL_KEY)
+        )
+    }
+    private var progressDialog: ProgressDialog? = ProgressDialog()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
-        presenter.argsReceived(args.passwordModel)
+        presenter.argsReceived(bundledResourceModel)
+    }
+
+    override fun onStop() {
+        presenter.viewStopped()
+        super.onStop()
+    }
+
+    override fun onDestroyView() {
+        progressDialog = null
+        presenter.detach()
+        super.onDestroyView()
     }
 
     private fun setListeners() {
@@ -63,6 +84,7 @@ class ResourceDetailsFragment :
             urlIcon.setDebouncingOnClick { presenter.urlCopyClick() }
             backArrow.setDebouncingOnClick { presenter.backArrowClick() }
             moreIcon.setDebouncingOnClick { presenter.moreClick() }
+            passwordIcon.setDebouncingOnClick { presenter.secretIconClick() }
         }
     }
 
@@ -78,7 +100,7 @@ class ResourceDetailsFragment :
         requireActivity().finish()
     }
 
-    override fun navigateToMore(model: ResourceDetailsMoreModel) {
+    override fun navigateToMore(model: ResourceDetailsMenuModel) {
         findNavController().navigate(ResourceDetailsFragmentDirections.actionResourceDetailsToMore(model))
     }
 
@@ -109,6 +131,44 @@ class ResourceDetailsFragment :
             ClipData.newPlainText(label, value)
         )
         Toast.makeText(requireContext(), getString(R.string.copied_info, label), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun showProgress() {
+        progressDialog?.show(childFragmentManager, ProgressDialog::class.java.name)
+    }
+
+    override fun hideProgress() {
+        progressDialog?.dismiss()
+    }
+
+    override fun showPasswordVisibleIcon() {
+        binding.passwordIcon.setImageResource(R.drawable.ic_eye_invisible)
+    }
+
+    override fun showPasswordHiddenIcon() {
+        binding.passwordIcon.setImageResource(R.drawable.ic_eye_visible)
+    }
+
+    override fun showDecryptionFailure() {
+        Snackbar.make(requireView(), R.string.resource_details_decryption_failure, Snackbar.LENGTH_LONG)
+            .show()
+    }
+
+    override fun showFetchFailure() {
+        Snackbar.make(requireView(), R.string.resource_details_fetch_failure, Snackbar.LENGTH_LONG)
+            .show()
+    }
+
+    override fun showPasswordHidden() {
+        binding.passwordValue.text = getString(R.string.resource_details_hide_password)
+    }
+
+    override fun showPassword(decryptedSecret: String) {
+        binding.passwordValue.text = decryptedSecret
+    }
+
+    override fun clearPasswordInput() {
+        binding.passwordValue.text = ""
     }
 
     companion object {

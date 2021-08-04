@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.feature.resources.details.more
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.ui.ResourceModel
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,26 +24,11 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
 
-    interface View : BaseAuthenticatedContract.View {
-        fun showPasswords(list: List<ResourceModel>)
-        fun navigateToMore(resourceModel: ResourceModel)
-        fun navigateToDetails(resourceModel: ResourceModel)
-        fun hideProgress()
-        fun showProgress()
-        fun hideRefreshProgress()
-        fun showError()
-        fun showEmptyList()
-        fun showSearchEmptyList()
-        fun displayAvatar(url: String)
-    }
-
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun moreClick(resourceModel: ResourceModel)
-        fun itemClick(resourceModel: ResourceModel)
-        fun refreshSwipe()
-        fun refreshClick()
-        fun searchTextChange(text: String)
+fun Module.detailsMenuModule() {
+    scope<ResourceDetailsMenuFragment> {
+        scoped<ResourceDetailsMenuContract.Presenter> {
+            ResourceDetailsMenuPresenter()
+        }
     }
 }

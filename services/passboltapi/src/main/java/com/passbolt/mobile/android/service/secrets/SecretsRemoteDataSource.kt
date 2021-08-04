@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.home.screen.adapter
+package com.passbolt.mobile.android.service.secrets
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,9 +22,10 @@ package com.passbolt.mobile.android.feature.home.screen.adapter
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class PasswordModel(
-    val title: String,
-    val subtitle: String,
-    val icon: String?,
-    val initials: String
-)
+internal class SecretsRemoteDataSource(
+    private val secretsApi: SecretsApi
+) : SecretsDataSource {
+
+    override suspend fun getSecret(resourceId: String) =
+        secretsApi.getSecret(resourceId)
+}

@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.service.registration.data
 import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
 import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.service.registration.RegistrationApi
 import com.passbolt.mobile.android.service.registration.RegistrationDataSource
 
 /**

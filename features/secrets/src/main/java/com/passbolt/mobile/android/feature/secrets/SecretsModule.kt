@@ -1,6 +1,9 @@
-package com.passbolt.mobile.android.core.mvp.networking
+package com.passbolt.mobile.android.feature.secrets
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.DecryptSecretUseCase
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.FetchSecretUseCase
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,13 +27,25 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface BaseNetworkingContract {
 
-    interface View : BaseContract.View {
-        fun showAuth()
+val secretsModule = module {
+    single {
+        FetchSecretUseCase(
+            secretsRepository = get()
+        )
     }
-
-    interface Presenter<T : View> : BaseContract.Presenter<T> {
-        fun sessionRefreshed()
+    single {
+        DecryptSecretUseCase(
+            gopenPgp = get(),
+            passphraseRepository = get(),
+            getSelectedAccountUseCase = get(),
+            getPrivateKeyUseCase = get()
+        )
+    }
+    single {
+        SecretInteractor(
+            fetchSecretUseCase = get(),
+            decryptSecretUseCase = get()
+        )
     }
 }

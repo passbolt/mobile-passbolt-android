@@ -17,13 +17,13 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
-import com.passbolt.mobile.android.core.mvp.networking.BindingScopedNetworkingFragment
+import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
 import com.passbolt.mobile.android.feature.home.screen.more.PasswordMoreModel
 import com.passbolt.mobile.android.feature.resources.ResourcesActivity
-import com.passbolt.mobile.android.ui.PasswordModel
+import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 
 /**
@@ -49,7 +49,7 @@ import org.koin.android.ext.android.inject
  * @since v1.0
  */
 class HomeFragment :
-    BindingScopedNetworkingFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
+    BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
     HomeContract.View {
 
     override val presenter: HomeContract.Presenter by inject()
@@ -133,7 +133,7 @@ class HomeFragment :
         }
     }
 
-    override fun showPasswords(list: List<PasswordModel>) {
+    override fun showPasswords(list: List<ResourceModel>) {
         setState(State.SUCCESS)
         FastAdapterDiffUtil.calculateDiff(itemAdapter, list.map { PasswordItem(it) })
         fastAdapter.notifyAdapterDataSetChanged()
@@ -155,22 +155,22 @@ class HomeFragment :
         setState(State.PROGRESS)
     }
 
-    override fun navigateToMore(passwordModel: PasswordModel) {
+    override fun navigateToMore(resourceModel: ResourceModel) {
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToMore(
                 PasswordMoreModel(
-                    title = passwordModel.name,
+                    title = resourceModel.name,
                     password = "password",
-                    username = passwordModel.username,
-                    url = passwordModel.url
+                    username = resourceModel.username,
+                    url = resourceModel.url
                 )
             )
         )
     }
 
-    override fun navigateToDetails(passwordModel: PasswordModel) {
+    override fun navigateToDetails(resourceModel: ResourceModel) {
         startActivity(Intent(requireContext(), ResourcesActivity::class.java).apply {
-            putExtra(ResourcesActivity.PASSWORD_MODEL_KEY, passwordModel)
+            putExtra(ResourcesActivity.RESOURCE_MODEL_KEY, resourceModel)
         })
     }
 
