@@ -61,7 +61,12 @@ ext {
         easylauncher: "4.0.0",
         fusionauthJwt: "4.2.0",
         textDrawable: "558677ea31",
-        serializationJson: "1.2.2"
+        serializationJson: "1.2.2",
+        room: [
+            core: "2.3.0",
+            cipher: "4.4.3@aar",
+            sqlite: "2.0.1"
+        ]
     ]
 
     libs = [
@@ -144,6 +149,13 @@ ext {
         ],
         easylauncher: "com.project.starter:easylauncher:${versions.easylauncher}",
         fusionauthJwt: "io.fusionauth:fusionauth-jwt:${versions.fusionauthJwt}",
-        textDrawable: "com.github.amulyakhare:TextDrawable:${versions.textDrawable}"
+        textDrawable: "com.github.amulyakhare:TextDrawable:${versions.textDrawable}",
+        room: [
+            core: "androidx.room:room-ktx:${versions.room.core}",
+            runtime: "androidx.room:room-runtime:${versions.room.core}",
+            cipher: "net.zetetic:android-database-sqlcipher:${versions.room.cipher}",
+            compiler: "androidx.room:room-compiler:${versions.room.core}",
+            sqlite: "androidx.sqlite:sqlite-ktx:${versions.room.sqlite}"
+        ]
     ]
 }

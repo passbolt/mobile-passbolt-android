@@ -1,11 +1,9 @@
-package com.passbolt.mobile.android.feature.setup.summary
+package com.passbolt.mobile.android.feature.home.screen.usecase
 
-import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.UuidProvider
-import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import org.koin.dsl.module
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.ui.PasswordModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,17 +27,15 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
-internal val saveResourcesDatabasePassphraseUseCase = mock<SaveResourcesDatabasePassphraseUseCase>()
-internal val uuidProvider = mock<UuidProvider>()
-
-val summaryModule = module {
-    factory<SummaryContract.Presenter> {
-        SummaryPresenter(
-            saveAccountUseCase = mockSaveAccountUseCase,
-            saveResourcesDatabasePassphraseUseCase = saveResourcesDatabasePassphraseUseCase,
-            uuidProvider = uuidProvider
-        )
+class AddLocalResourceUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val resourceModelMapper: ResourceModelMapper
+) : AsyncUseCase<AddLocalResourceUseCase.Input, Unit> {
+    override suspend fun execute(input: Input) {
+        databaseProvider.get().resourcesDao().insert(resourceModelMapper.map(input.passwordModel))
     }
+
+    class Input(
+        val passwordModel: PasswordModel
+    )
 }

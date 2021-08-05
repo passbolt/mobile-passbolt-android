@@ -18,6 +18,7 @@ dependencies {
     implementation project(':dto')
     implementation project(':storage')
     implementation project(':resources')
+    implementation project(':database')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -34,6 +35,13 @@ dependencies {
 
     implementation libs.coil.core
     implementation libs.coil.base
+
+    implementation libs.room.core
+    implementation libs.room.runtime
+    implementation libs.room.cipher
+    kapt libs.room.compiler
+    implementation libs.room.sqlite
+
 }
 
 android {

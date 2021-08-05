@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.core.mvp.mvpModule
 import com.passbolt.mobile.android.core.networking.networkingModule
 import com.passbolt.mobile.android.core.qrscan.di.barcodeScanModule
 import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
+import com.passbolt.mobile.android.database.databaseModule
 import com.passbolt.mobile.android.feature.autofill.autofillModule
 import com.passbolt.mobile.android.feature.folders.foldersModule
 import com.passbolt.mobile.android.feature.home.homeModule
@@ -95,6 +96,7 @@ class PassboltApplication : Application(), KoinComponent {
                 startUpModule,
                 resourcesModule,
                 featureFlagsModule,
+                databaseModule,
                 secretsModule
             )
         }

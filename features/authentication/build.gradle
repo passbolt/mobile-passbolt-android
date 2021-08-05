@@ -18,6 +18,7 @@ dependencies {
     implementation project(':gopenpgp')
     implementation project(':navigation')
     implementation project(':featureflags')
+    implementation project(':database')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

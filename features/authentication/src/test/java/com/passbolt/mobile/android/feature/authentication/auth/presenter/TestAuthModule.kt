@@ -4,8 +4,10 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider

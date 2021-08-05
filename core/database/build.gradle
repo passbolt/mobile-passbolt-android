@@ -1,0 +1,76 @@
+/*
+ * *
+ *  * Passbolt - Open source password manager for teams
+ *  * Copyright (c) 2021 Passbolt SA
+ *  *
+ *  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ *  * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *  *
+ *  * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ *  * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ *  * agreement with Passbolt SA.
+ *  *
+ *  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ *  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *  *
+ *  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ *  * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *  *
+ *  * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ *  * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ *  * @link https://www.passbolt.com Passbolt (tm)
+ *  * @since v1.0
+ *
+ *
+ */
+
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "kotlin-kapt"
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':mvp')
+    implementation project(':entity')
+    implementation project(':storage')
+
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.security
+    implementation libs.di.koin
+    implementation libs.di.koinExt
+    kapt libs.androidx.lifecycleAnnotationProcessor
+    implementation libs.androidx.processLifecycle
+
+    debugImplementation libs.debugDatabase
+
+    androidTestImplementation libs.di.koinTest
+    androidTestImplementation libs.di.koinTestJUnit
+    androidTestImplementation libs.test.coroutinesTest
+    androidTestImplementation libs.test.androidTestsRunner
+    androidTestImplementation libs.test.androidTestRules
+    androidTestImplementation libs.test.androidTest
+
+    implementation libs.room.core
+    implementation libs.room.runtime
+    implementation libs.room.cipher
+    kapt libs.room.compiler
+    implementation libs.room.sqlite
+}
+
+android {
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    useLibrary("android.test.runner")
+    useLibrary("android.test.base")
+    useLibrary("android.test.mock")
+
+    packagingOptions {
+        exclude "META-INF/AL2.0"
+        exclude "META-INF/LGPL2.1"
+    }
+}

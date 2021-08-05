@@ -1,11 +1,10 @@
-package com.passbolt.mobile.android.feature.setup.summary
+package com.passbolt.mobile.android.database
 
-import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.UuidProvider
-import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import org.koin.dsl.module
+import android.content.Context
+import androidx.room.Room
+import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
+import net.sqlcipher.database.SQLiteDatabase
+import net.sqlcipher.database.SupportFactory
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,17 +28,31 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class DatabaseProvider(
+    private val getResourcesDatabasePassphraseUseCase: GetResourcesDatabasePassphraseUseCase,
+    private val context: Context
+) {
 
-internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
-internal val saveResourcesDatabasePassphraseUseCase = mock<SaveResourcesDatabasePassphraseUseCase>()
-internal val uuidProvider = mock<UuidProvider>()
+    @Volatile
+    private var instance: ResourceDatabase? = null
 
-val summaryModule = module {
-    factory<SummaryContract.Presenter> {
-        SummaryPresenter(
-            saveAccountUseCase = mockSaveAccountUseCase,
-            saveResourcesDatabasePassphraseUseCase = saveResourcesDatabasePassphraseUseCase,
-            uuidProvider = uuidProvider
-        )
+    fun get(): ResourceDatabase {
+        instance?.let {
+            return it
+        }
+        val passphrase = getResourcesDatabasePassphraseUseCase.execute(Unit).passphrase
+        val factory = SupportFactory(SQLiteDatabase.getBytes(passphrase.toCharArray()))
+        val newInstance = Room.databaseBuilder(
+            context,
+            ResourceDatabase::class.java, RESOURCE_DATABASE_NAME
+        ).openHelperFactory(factory)
+            .build()
+
+        instance = newInstance
+        return newInstance
+    }
+
+    companion object {
+        private const val RESOURCE_DATABASE_NAME = "resources.db"
     }
 }

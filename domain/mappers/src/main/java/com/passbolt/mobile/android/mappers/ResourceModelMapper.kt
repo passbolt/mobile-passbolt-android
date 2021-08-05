@@ -1,6 +1,10 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.common.InitialsProvider
+import com.passbolt.mobile.android.database.entity.FolderEntity
+import com.passbolt.mobile.android.database.entity.Permission
+import com.passbolt.mobile.android.database.entity.ResourceEntity
+import com.passbolt.mobile.android.database.entity.SecretTypeEntity
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.ui.ResourceModel
 
@@ -39,5 +43,26 @@ class ResourceModelMapper(
             icon = null,
             url = resource.uri,
             searchCriteria = "${resource.name}${resource.username}${resource.uri}"
+        )
+
+    fun map(passwordModel: PasswordModel): ResourceEntity =
+        ResourceEntity(
+            resourceName = passwordModel.name,
+            description = "",
+            resourcePermission = Permission.READ,
+            url = passwordModel.url,
+            username = passwordModel.username,
+            secretType = SecretTypeEntity(),
+            folder = FolderEntity(name = "name", permission = Permission.READ, parentId = 0)
+        )
+
+    fun map(passwordModel: ResourceEntity): PasswordModel =
+        PasswordModel(
+            name = passwordModel.resourceName,
+            url = passwordModel.url,
+            username = passwordModel.username,
+            icon = null,
+            initials = "DD",
+            searchCriteria = ""
         )
 }

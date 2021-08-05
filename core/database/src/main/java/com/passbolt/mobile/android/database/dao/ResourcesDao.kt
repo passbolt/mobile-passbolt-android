@@ -1,11 +1,9 @@
-package com.passbolt.mobile.android.feature.setup.summary
+package com.passbolt.mobile.android.database.dao
 
-import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.UuidProvider
-import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import org.koin.dsl.module
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import com.passbolt.mobile.android.database.entity.ResourceEntity
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,17 +27,11 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Dao
+interface ResourcesDao {
+    @Query("SELECT * FROM resourceentity")
+    suspend fun getAll(): List<ResourceEntity>
 
-internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
-internal val saveResourcesDatabasePassphraseUseCase = mock<SaveResourcesDatabasePassphraseUseCase>()
-internal val uuidProvider = mock<UuidProvider>()
-
-val summaryModule = module {
-    factory<SummaryContract.Presenter> {
-        SummaryPresenter(
-            saveAccountUseCase = mockSaveAccountUseCase,
-            saveResourcesDatabasePassphraseUseCase = saveResourcesDatabasePassphraseUseCase,
-            uuidProvider = uuidProvider
-        )
-    }
+    @Insert
+    suspend fun insert(resourceEntity: ResourceEntity)
 }

@@ -1,11 +1,8 @@
-package com.passbolt.mobile.android.feature.setup.summary
+package com.passbolt.mobile.android.database.entity
 
-import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.UuidProvider
-import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import org.koin.dsl.module
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,17 +26,15 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
-internal val saveResourcesDatabasePassphraseUseCase = mock<SaveResourcesDatabasePassphraseUseCase>()
-internal val uuidProvider = mock<UuidProvider>()
-
-val summaryModule = module {
-    factory<SummaryContract.Presenter> {
-        SummaryPresenter(
-            saveAccountUseCase = mockSaveAccountUseCase,
-            saveResourcesDatabasePassphraseUseCase = saveResourcesDatabasePassphraseUseCase,
-            uuidProvider = uuidProvider
-        )
-    }
-}
+@Entity
+data class ResourceEntity(
+    @PrimaryKey(autoGenerate = true)
+    val resourceId: Int = 0,
+    val resourceName: String,
+    val resourcePermission: Permission,
+    val url: String,
+    val username: String,
+    val description: String?,
+    @Embedded val secretType: SecretTypeEntity,
+    @Embedded val folder: FolderEntity
+)

@@ -1,7 +1,10 @@
 package com.passbolt.mobile.android.feature.setup.summary
 
+import com.passbolt.mobile.android.common.UuidProvider
+import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +29,9 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
  * @since v1.0
  */
 class SummaryPresenter(
-    private val saveAccountUseCase: SaveAccountUseCase
+    private val saveAccountUseCase: SaveAccountUseCase,
+    private val saveResourcesDatabasePassphraseUseCase: SaveResourcesDatabasePassphraseUseCase,
+    private val uuidProvider: UuidProvider
 ) : SummaryContract.Presenter {
 
     override var view: SummaryContract.View? = null
@@ -60,6 +65,9 @@ class SummaryPresenter(
         when (val currentStatus = status) {
             is ResultStatus.Success -> saveAccountUseCase.execute(UserIdInput(currentStatus.userId))
         }
+        val pass = uuidProvider.get()
+        Timber.d("DDD save pass: $pass")
+        saveResourcesDatabasePassphraseUseCase.execute(SaveResourcesDatabasePassphraseUseCase.Input(pass))
         view?.navigateToFingerprintSetup()
     }
 

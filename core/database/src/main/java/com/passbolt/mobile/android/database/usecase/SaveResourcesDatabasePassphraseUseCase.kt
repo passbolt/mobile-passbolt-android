@@ -1,11 +1,10 @@
-package com.passbolt.mobile.android.feature.setup.summary
+package com.passbolt.mobile.android.database.usecase
 
-import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.UuidProvider
-import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.database.PASSPHRASE_KEY
+import com.passbolt.mobile.android.database.RESOURCE_DATABASE_ALIAS
+import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,16 +29,23 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
-internal val saveResourcesDatabasePassphraseUseCase = mock<SaveResourcesDatabasePassphraseUseCase>()
-internal val uuidProvider = mock<UuidProvider>()
+class SaveResourcesDatabasePassphraseUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : UseCase<SaveResourcesDatabasePassphraseUseCase.Input, Unit> {
 
-val summaryModule = module {
-    factory<SummaryContract.Presenter> {
-        SummaryPresenter(
-            saveAccountUseCase = mockSaveAccountUseCase,
-            saveResourcesDatabasePassphraseUseCase = saveResourcesDatabasePassphraseUseCase,
-            uuidProvider = uuidProvider
-        )
+    override fun execute(input: Input) {
+        val account = getSelectedAccountUseCase.execute(Unit).selectedAccount
+        val sharedPreferences =
+            encryptedSharedPreferencesFactory.get("${RESOURCE_DATABASE_ALIAS}_$account.xml")
+
+        with(sharedPreferences.edit()) {
+            putString(PASSPHRASE_KEY, input.passphrase)
+            apply()
+        }
     }
+
+    class Input(
+        val passphrase: String
+    )
 }

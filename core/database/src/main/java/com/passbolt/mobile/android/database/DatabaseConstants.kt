@@ -1,11 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.summary
-
-import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.UuidProvider
-import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import org.koin.dsl.module
+package com.passbolt.mobile.android.database
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,16 +23,5 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
-internal val saveResourcesDatabasePassphraseUseCase = mock<SaveResourcesDatabasePassphraseUseCase>()
-internal val uuidProvider = mock<UuidProvider>()
-
-val summaryModule = module {
-    factory<SummaryContract.Presenter> {
-        SummaryPresenter(
-            saveAccountUseCase = mockSaveAccountUseCase,
-            saveResourcesDatabasePassphraseUseCase = saveResourcesDatabasePassphraseUseCase,
-            uuidProvider = uuidProvider
-        )
-    }
-}
+internal const val RESOURCE_DATABASE_ALIAS = "current_url"
+internal const val PASSPHRASE_KEY = "passphrase_key"
