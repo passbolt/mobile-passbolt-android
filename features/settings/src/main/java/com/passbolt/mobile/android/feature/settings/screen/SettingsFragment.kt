@@ -184,7 +184,8 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         val biometricPrompt = BiometricPrompt(
             this, executor, AuthBiometricCallback(
                 presenter::biometricAuthError,
-                presenter::biometricAuthSucceeded
+                presenter::biometricAuthSucceeded,
+                presenter::biometricAuthCanceled
             )
         )
 

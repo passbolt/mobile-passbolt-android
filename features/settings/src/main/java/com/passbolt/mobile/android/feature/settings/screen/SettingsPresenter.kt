@@ -107,6 +107,7 @@ class SettingsPresenter(
     }
 
     override fun biometricAuthError(errorMessage: Int) {
+        view?.toggleFingerprintOff(silently = true)
         view?.showAuthenticationError(errorMessage)
     }
 
@@ -117,5 +118,9 @@ class SettingsPresenter(
         } else {
             Timber.e("Error during turing biometrics on. Passphrase not in cache after auth.")
         }
+    }
+
+    override fun biometricAuthCanceled() {
+        view?.toggleFingerprintOff(silently = true)
     }
 }
