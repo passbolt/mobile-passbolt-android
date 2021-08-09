@@ -13,9 +13,11 @@ import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -34,6 +36,13 @@ class HomePresenterTest : KoinTest {
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
         modules(testModule)
+    }
+
+    @Before
+    fun setUp() {
+        whenever(getSelectedAccountUseCase.execute(anyOrNull())).thenReturn(
+            GetSelectedAccountUseCase.Output("id")
+        )
     }
 
     @Test

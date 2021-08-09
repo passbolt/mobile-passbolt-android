@@ -1,10 +1,7 @@
-package com.passbolt.mobile.android.database.dao
+package com.passbolt.mobile.android.entity.account
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import com.passbolt.mobile.android.entity.account.ResourceEntity
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,14 +25,8 @@ import com.passbolt.mobile.android.entity.account.ResourceEntity
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface ResourcesDao {
-    @Query("SELECT * FROM ${ResourceEntity.RESOURCE_ENTITY_TABLE_NAME}")
-    suspend fun getAll(): List<ResourceEntity>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(resourceEntities: List<ResourceEntity>)
-
-    @Query("DELETE FROM ${ResourceEntity.RESOURCE_ENTITY_TABLE_NAME}")
-    suspend fun deleteAll()
-}
+@Entity
+data class SecretTypeEntity(
+    @PrimaryKey(autoGenerate = true)
+    val secretTypeId: Int = 0
+)

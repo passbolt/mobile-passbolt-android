@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.database.entity
+package com.passbolt.mobile.android.database.usecase
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,8 +26,11 @@ import androidx.room.PrimaryKey
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Entity
-data class SecretTypeEntity(
-    @PrimaryKey(autoGenerate = true)
-    val secretTypeId: Int = 0
-)
+class RemoveLocalResourcesUseCase(
+    private val databaseProvider: DatabaseProvider
+) : AsyncUseCase<UserIdInput, Unit> {
+
+    override suspend fun execute(input: UserIdInput) {
+        databaseProvider.get(input.userId).resourcesDao().deleteAll()
+    }
+}

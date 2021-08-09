@@ -3,9 +3,13 @@ package com.passbolt.mobile.android.feature.home.screen
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -38,7 +42,10 @@ class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getResourcesUseCase: GetResourcesUseCase,
     private val resourceModelMapper: ResourceModelMapper,
-    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
+    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
+    private val addLocalResourcesUseCase: AddLocalResourcesUseCase,
+    private val removeLocalResourcesUseCase: RemoveLocalResourcesUseCase,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
@@ -79,7 +86,10 @@ class HomePresenter(
                 is GetResourcesUseCase.Output.Success -> {
                     view?.hideRefreshProgress()
                     view?.hideProgress()
+                    val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
                     allItemsList = result.resources.map { resourceModelMapper.map(it) }
+                    removeLocalResourcesUseCase.execute(UserIdInput(selectedAccount))
+                    addLocalResourcesUseCase.execute(AddLocalResourcesUseCase.Input(allItemsList, selectedAccount))
                     displayPasswords()
                 }
             }

@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.feature.home.screen.usecase
+package com.passbolt.mobile.android.database.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.ui.PasswordModel
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,12 +31,12 @@ import com.passbolt.mobile.android.ui.PasswordModel
 class GetLocalResourcesUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper
-) : AsyncUseCase<Unit, GetLocalResourcesUseCase.Output> {
-    override suspend fun execute(input: Unit): Output {
-        return Output(databaseProvider.get().resourcesDao().getAll().map { resourceModelMapper.map(it) })
+) : AsyncUseCase<UserIdInput, GetLocalResourcesUseCase.Output> {
+    override suspend fun execute(input: UserIdInput): Output {
+        return Output(databaseProvider.get(input.userId).resourcesDao().getAll().map { resourceModelMapper.map(it) })
     }
 
     class Output(
-        val resources: List<PasswordModel>
+        val resources: List<ResourceModel>
     )
 }

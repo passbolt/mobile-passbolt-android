@@ -1,6 +1,5 @@
-package com.passbolt.mobile.android.database.entity
+package com.passbolt.mobile.android.entity.account
 
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -27,14 +26,10 @@ import androidx.room.PrimaryKey
  * @since v1.0
  */
 @Entity
-data class ResourceEntity(
+data class FolderEntity(
     @PrimaryKey(autoGenerate = true)
-    val resourceId: Int = 0,
-    val resourceName: String,
-    val resourcePermission: Permission,
-    val url: String,
-    val username: String,
-    val description: String?,
-    @Embedded val secretType: SecretTypeEntity,
-    @Embedded val folder: FolderEntity
+    val folderId: Int = 0,
+    val name: String,
+    val permission: Permission,
+    val parentId: Int?
 )

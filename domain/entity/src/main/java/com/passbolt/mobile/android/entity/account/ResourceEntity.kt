@@ -1,7 +1,9 @@
-package com.passbolt.mobile.android.database.entity
+package com.passbolt.mobile.android.entity.account
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.passbolt.mobile.android.entity.account.ResourceEntity.Companion.RESOURCE_ENTITY_TABLE_NAME
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,11 +27,19 @@ import androidx.room.PrimaryKey
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Entity
-data class FolderEntity(
-    @PrimaryKey(autoGenerate = true)
-    val folderId: Int = 0,
-    val name: String,
-    val permission: Permission,
-    val parentId: Int
-)
+@Entity(tableName = RESOURCE_ENTITY_TABLE_NAME)
+data class ResourceEntity(
+    @PrimaryKey
+    val resourceId: String,
+    val resourceName: String,
+    val resourcePermission: Permission,
+    val url: String,
+    val username: String,
+    val description: String?,
+    @Embedded val secretType: SecretTypeEntity,
+    @Embedded val folder: FolderEntity
+) {
+    companion object {
+        const val RESOURCE_ENTITY_TABLE_NAME = "resources"
+    }
+}

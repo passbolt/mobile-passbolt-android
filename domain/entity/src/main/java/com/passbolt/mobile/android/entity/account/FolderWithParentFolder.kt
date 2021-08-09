@@ -1,9 +1,7 @@
-package com.passbolt.mobile.android.feature.home.screen.usecase
+package com.passbolt.mobile.android.entity.account
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.ui.PasswordModel
+import androidx.room.Embedded
+import androidx.room.Relation
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,15 +25,13 @@ import com.passbolt.mobile.android.ui.PasswordModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AddLocalResourceUseCase(
-    private val databaseProvider: DatabaseProvider,
-    private val resourceModelMapper: ResourceModelMapper
-) : AsyncUseCase<AddLocalResourceUseCase.Input, Unit> {
-    override suspend fun execute(input: Input) {
-        databaseProvider.get().resourcesDao().insert(resourceModelMapper.map(input.passwordModel))
-    }
+class FolderWithParentFolder(
+    @Embedded
+    val folder: FolderEntity,
 
-    class Input(
-        val passwordModel: PasswordModel
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "parentId"
     )
-}
+    val parentFolder: FolderEntity
+)

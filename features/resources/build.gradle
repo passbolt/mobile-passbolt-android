@@ -15,6 +15,7 @@ dependencies {
     implementation project(':secrets')
     implementation project(path: ':ui')
     implementation project(':networking')
+    implementation project(':database')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

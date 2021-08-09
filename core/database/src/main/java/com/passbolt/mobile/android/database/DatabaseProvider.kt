@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SupportFactory
+import java.security.MessageDigest
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,22 +35,29 @@ class DatabaseProvider(
 ) {
 
     @Volatile
-    private var instance: ResourceDatabase? = null
+    private var instance: HashMap<String, ResourceDatabase?> = hashMapOf()
 
-    fun get(): ResourceDatabase {
-        instance?.let {
+    fun get(userId: String): ResourceDatabase {
+        val currentUser = hashString(userId)
+        instance[currentUser]?.let {
             return it
         }
         val passphrase = getResourcesDatabasePassphraseUseCase.execute(Unit).passphrase
         val factory = SupportFactory(SQLiteDatabase.getBytes(passphrase.toCharArray()))
         val newInstance = Room.databaseBuilder(
             context,
-            ResourceDatabase::class.java, RESOURCE_DATABASE_NAME
+            ResourceDatabase::class.java, "${currentUser}_$RESOURCE_DATABASE_NAME"
         ).openHelperFactory(factory)
             .build()
 
-        instance = newInstance
+        instance[currentUser] = newInstance
         return newInstance
+    }
+
+    private fun hashString(input: String, algorithm: String = "SHA-256"): String {
+        return MessageDigest.getInstance(algorithm)
+            .digest(input.toByteArray())
+            .fold("", { str, it -> str + "%02x".format(it) })
     }
 
     companion object {

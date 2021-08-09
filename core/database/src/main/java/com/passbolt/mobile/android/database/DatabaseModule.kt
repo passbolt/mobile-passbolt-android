@@ -1,6 +1,9 @@
 package com.passbolt.mobile.android.database
 
+import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
+import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
 import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
@@ -44,6 +47,23 @@ val databaseModule = module {
         SaveResourcesDatabasePassphraseUseCase(
             encryptedSharedPreferencesFactory = get(),
             getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        AddLocalResourcesUseCase(
+            databaseProvider = get(),
+            resourceModelMapper = get()
+        )
+    }
+    single {
+        GetLocalResourcesUseCase(
+            databaseProvider = get(),
+            resourceModelMapper = get()
+        )
+    }
+    single {
+        RemoveLocalResourcesUseCase(
+            databaseProvider = get()
         )
     }
 }

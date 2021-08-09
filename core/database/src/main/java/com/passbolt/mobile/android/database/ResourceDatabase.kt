@@ -3,9 +3,9 @@ package com.passbolt.mobile.android.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.passbolt.mobile.android.database.dao.ResourcesDao
-import com.passbolt.mobile.android.database.entity.FolderEntity
-import com.passbolt.mobile.android.database.entity.ResourceEntity
-import com.passbolt.mobile.android.database.entity.SecretTypeEntity
+import com.passbolt.mobile.android.entity.account.FolderEntity
+import com.passbolt.mobile.android.entity.account.ResourceEntity
+import com.passbolt.mobile.android.entity.account.SecretTypeEntity
 
 /**
  * Passbolt - Open source password manager for teams
