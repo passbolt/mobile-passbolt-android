@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.service.auth.data
+package com.passbolt.mobile.android.service.auth
 
 import com.passbolt.mobile.android.core.networking.AuthPaths.AUTH_RSA
 import com.passbolt.mobile.android.core.networking.AuthPaths.AUTH_SIGN_IN

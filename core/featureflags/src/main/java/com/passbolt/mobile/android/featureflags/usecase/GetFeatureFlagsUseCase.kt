@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.featureflags.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.core.networking.session.NetworkingUseCaseOutput
 import com.passbolt.mobile.android.mappers.FeatureFlagsMapper
 import com.passbolt.mobile.android.service.settings.SettingsRepository
 import com.passbolt.mobile.android.ui.FeatureFlagsModel
@@ -44,10 +43,7 @@ class GetFeatureFlagsUseCase(
             }
         }
 
-    sealed class Output : NetworkingUseCaseOutput {
-
-        override val isUnauthorized: Boolean
-            get() = this is Failure<*> && this.response.isUnauthorized
+    sealed class Output {
 
         class Success(
             val featureFlags: FeatureFlagsModel

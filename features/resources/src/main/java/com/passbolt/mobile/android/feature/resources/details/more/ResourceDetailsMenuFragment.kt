@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.feature.resources.databinding.ViewPasswordDetailsBottomsheetBinding
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,10 +33,13 @@ import com.passbolt.mobile.android.feature.resources.databinding.ViewPasswordDet
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResourceDetailsMenuFragment : BottomSheetDialogFragment() {
+class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetailsMenuContract.View,
+    AndroidScopeComponent {
 
+    override val scope by fragmentScope()
     private val passwordArgs: ResourceDetailsMenuFragmentArgs by navArgs()
     private lateinit var binding: ViewPasswordDetailsBottomsheetBinding
+    private val presenter: ResourceDetailsMenuContract.Presenter by scope.inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,17 +53,32 @@ class ResourceDetailsMenuFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
-        binding.title.text = passwordArgs.passwordModel.title
+        presenter.attach(this)
+        presenter.argsRetrieved(passwordArgs.resourceMenuModel)
+    }
+
+    override fun onDestroyView() {
+        scope.close()
+        presenter.detach()
+        super.onDestroyView()
     }
 
     private fun setListeners() {
         with(binding) {
             copyPassword.setDebouncingOnClick {
-                Toast.makeText(requireContext(), "TODO", Toast.LENGTH_SHORT).show()
+                presenter.copyPasswordClick()
             }
             close.setDebouncingOnClick {
-                dismiss()
+                presenter.closeClick()
             }
         }
+    }
+
+    override fun close() {
+        dismiss()
+    }
+
+    override fun showTitle(title: String) {
+        binding.title.text = title
     }
 }

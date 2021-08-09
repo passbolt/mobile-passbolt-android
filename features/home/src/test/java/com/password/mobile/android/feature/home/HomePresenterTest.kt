@@ -13,7 +13,7 @@ import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.ui.PasswordModel
+import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
@@ -152,7 +152,7 @@ class HomePresenterTest : KoinTest {
         whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
             GetResourcesUseCase.Output.Failure(NetworkResult.Failure.ServerError(IOException(), headerMessage = ""))
         )
-        val model = PasswordModel("title", "subtitle", "", "initials", "", "")
+        val model = ResourceModel("id", "title", "subtitle", "", "initials", "", "")
         mockAccountData(null)
         presenter.attach(view)
         reset(view)
@@ -163,7 +163,8 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `3 dots clicked should open more screen`() = runBlockingTest {
-        val model = PasswordModel(
+        val model = ResourceModel(
+            resourceId = "id",
             name = "title",
             username = "subtitle",
             initials = "T",

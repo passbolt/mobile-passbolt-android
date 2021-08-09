@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.SignInResponseDto
 import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
 import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
+import com.passbolt.mobile.android.service.auth.AuthApi
 import com.passbolt.mobile.android.service.auth.AuthDataSource
 
 /**

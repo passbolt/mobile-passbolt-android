@@ -1,7 +1,7 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.core.mvp.authentication
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,26 +25,13 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
+interface BaseAuthenticatedContract {
 
-    interface View : BaseAuthenticatedContract.View {
-        fun showPasswords(list: List<ResourceModel>)
-        fun navigateToMore(resourceModel: ResourceModel)
-        fun navigateToDetails(resourceModel: ResourceModel)
-        fun hideProgress()
-        fun showProgress()
-        fun hideRefreshProgress()
-        fun showError()
-        fun showEmptyList()
-        fun showSearchEmptyList()
-        fun displayAvatar(url: String)
+    interface View : BaseContract.View {
+        fun showAuth(reason: UnauthenticatedReason)
     }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun moreClick(resourceModel: ResourceModel)
-        fun itemClick(resourceModel: ResourceModel)
-        fun refreshSwipe()
-        fun refreshClick()
-        fun searchTextChange(text: String)
+    interface Presenter<T : View> : BaseContract.Presenter<T> {
+        fun authenticationRefreshed()
     }
 }

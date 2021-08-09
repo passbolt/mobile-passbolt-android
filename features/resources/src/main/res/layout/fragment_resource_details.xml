@@ -111,6 +111,17 @@
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/passwordHeader" />
 
+    <ImageView
+        android:id="@+id/passwordIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_12"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_eye_visible"
+        app:layout_constraintBottom_toBottomOf="@+id/passwordValue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/passwordHeader" />
+
     <TextView
         android:id="@+id/urlHeader"
         style="@style/Heading"
@@ -147,6 +158,7 @@
         android:layout_marginEnd="@dimen/dp_12"
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_copy"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/urlValue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/urlHeader" />

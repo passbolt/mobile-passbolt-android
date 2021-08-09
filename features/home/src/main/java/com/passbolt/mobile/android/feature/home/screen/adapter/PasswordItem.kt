@@ -19,7 +19,7 @@ import com.passbolt.mobile.android.common.extension.DebounceClickEventHook
 import com.passbolt.mobile.android.common.extension.asBinding
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.ItemPasswordBinding
-import com.passbolt.mobile.android.ui.PasswordModel
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -44,7 +44,7 @@ import com.passbolt.mobile.android.ui.PasswordModel
  * @since v1.0
  */
 class PasswordItem(
-    val passwordModel: PasswordModel
+    val resourceModel: ResourceModel
 ) : AbstractBindingItem<ItemPasswordBinding>() {
 
     override val type: Int
@@ -57,13 +57,13 @@ class PasswordItem(
     override fun bindView(binding: ItemPasswordBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            title.text = passwordModel.name
-            subtitle.text = passwordModel.username
+            title.text = resourceModel.name
+            subtitle.text = resourceModel.username
 
             val initialsIcons = getInitialsIcon(binding.root.context)
             icon.setImageDrawable(initialsIcons)
 
-            passwordModel.icon?.let {
+            resourceModel.icon?.let {
                 icon.load(it) {
                     placeholder(initialsIcons)
                 }
@@ -73,18 +73,18 @@ class PasswordItem(
 
     private fun getInitialsIcon(context: Context): Drawable {
         val generator = ColorGenerator.MATERIAL
-        val generatedColor = generator.getColor(passwordModel.name)
+        val generatedColor = generator.getColor(resourceModel.name)
         val color = ColorUtils.blendARGB(generatedColor, Color.WHITE, LIGHT_RATIO)
         return TextDrawable.builder()
             .beginConfig()
             .textColor(ColorUtils.blendARGB(color, generatedColor, DARK_RATIO))
             .useFont(ResourcesCompat.getFont(context, R.font.inter_medium))
             .endConfig()
-            .buildRoundRect(passwordModel.initials, color, ICON_RADIUS)
+            .buildRoundRect(resourceModel.initials, color, ICON_RADIUS)
     }
 
     class MoreClick(
-        private val clickListener: (PasswordModel) -> Unit
+        private val clickListener: (ResourceModel) -> Unit
     ) : DebounceClickEventHook<PasswordItem>() {
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
             return viewHolder.asBinding<ItemPasswordBinding> {
@@ -98,12 +98,12 @@ class PasswordItem(
             fastAdapter: FastAdapter<PasswordItem>,
             item: PasswordItem
         ) {
-            clickListener.invoke(item.passwordModel)
+            clickListener.invoke(item.resourceModel)
         }
     }
 
     class ItemClick(
-        private val clickListener: (PasswordModel) -> Unit
+        private val clickListener: (ResourceModel) -> Unit
     ) : ClickEventHook<PasswordItem>() {
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
             return viewHolder.asBinding<ItemPasswordBinding> {
@@ -117,7 +117,7 @@ class PasswordItem(
             fastAdapter: FastAdapter<PasswordItem>,
             item: PasswordItem
         ) {
-            clickListener.invoke(item.passwordModel)
+            clickListener.invoke(item.resourceModel)
         }
     }
 

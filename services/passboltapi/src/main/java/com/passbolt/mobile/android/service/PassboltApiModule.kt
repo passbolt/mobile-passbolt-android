@@ -3,18 +3,22 @@ package com.passbolt.mobile.android.service
 import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import com.passbolt.mobile.android.core.networking.RestService
 import com.passbolt.mobile.android.core.networking.RetrofitRestService
+import com.passbolt.mobile.android.service.auth.AuthApi
 import com.passbolt.mobile.android.service.auth.AuthDataSource
 import com.passbolt.mobile.android.service.auth.AuthRepository
-import com.passbolt.mobile.android.service.auth.data.AuthApi
 import com.passbolt.mobile.android.service.auth.data.AuthRemoteDataSource
+import com.passbolt.mobile.android.service.registration.RegistrationApi
 import com.passbolt.mobile.android.service.registration.RegistrationDataSource
 import com.passbolt.mobile.android.service.registration.RegistrationRepository
-import com.passbolt.mobile.android.service.registration.data.RegistrationApi
 import com.passbolt.mobile.android.service.registration.data.RegistrationRemoteDataSource
 import com.passbolt.mobile.android.service.resource.ResourceApi
 import com.passbolt.mobile.android.service.resource.ResourceDataSource
 import com.passbolt.mobile.android.service.resource.ResourceRemoteDataSource
 import com.passbolt.mobile.android.service.resource.ResourceRepository
+import com.passbolt.mobile.android.service.secrets.SecretsApi
+import com.passbolt.mobile.android.service.secrets.SecretsDataSource
+import com.passbolt.mobile.android.service.secrets.SecretsRemoteDataSource
+import com.passbolt.mobile.android.service.secrets.SecretsRepository
 import com.passbolt.mobile.android.service.settings.SettingsApi
 import com.passbolt.mobile.android.service.settings.SettingsDataSource
 import com.passbolt.mobile.android.service.settings.SettingsRemoteDataSource
@@ -53,6 +57,7 @@ val passboltApiModule = module {
     single { getAuthApi(get()) }
     single { getResourceApi(get()) }
     single { getSettingsApi(get()) }
+    single { getSecretsApi(get()) }
 
     single<RegistrationDataSource> {
         RegistrationRemoteDataSource(
@@ -96,6 +101,17 @@ val passboltApiModule = module {
     single<SettingsDataSource> {
         SettingsRemoteDataSource(settingsApi = get())
     }
+    single<SecretsDataSource> {
+        SecretsRemoteDataSource(
+            secretsApi = get()
+        )
+    }
+    single {
+        SecretsRepository(
+            secretsDataSource = get(),
+            responseHandler = get()
+        )
+    }
 }
 
 private fun provideRestService(okHttpClient: OkHttpClient): RestService {
@@ -116,3 +132,6 @@ private fun getResourceApi(restService: RestService): ResourceApi =
 
 private fun getSettingsApi(restService: RestService): SettingsApi =
     restService.service(SettingsApi::class.java)
+
+private fun getSecretsApi(restService: RestService): SecretsApi =
+    restService.service(SecretsApi::class.java)

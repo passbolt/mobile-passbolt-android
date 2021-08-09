@@ -1,12 +1,7 @@
-package com.passbolt.mobile.android.service.registration.data
+package com.passbolt.mobile.android.ui
 
-import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
-import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import retrofit2.http.Body
-import retrofit2.http.PUT
-import retrofit2.http.Path
-import retrofit2.http.Query
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,20 +26,13 @@ import retrofit2.http.Query
  * @since v1.0
  */
 
-internal interface RegistrationApi {
-
-    @PUT(UPDATE_TRANSFER)
-    suspend fun updateTransfer(
-        @Path(UUID) uuid: String,
-        @Path(AUTH_TOKEN) authToken: String,
-        @Body pageRequestDto: UpdateTransferRequestDto,
-        @Query(USER_PROFILE_INFO) userProfile: String?
-    ): BaseResponse<UpdateTransferResponseDto>
-
-    private companion object {
-        private const val UUID = "uuid"
-        private const val AUTH_TOKEN = "AUTH_TOKEN"
-        private const val USER_PROFILE_INFO = "contain[user.profile]"
-        private const val UPDATE_TRANSFER = "mobile/transfers/{$UUID}/{$AUTH_TOKEN}.json"
-    }
-}
+@Parcelize
+data class ResourceModel(
+    val resourceId: String,
+    val name: String,
+    val username: String,
+    val icon: String?,
+    val initials: String,
+    val url: String,
+    val searchCriteria: String
+) : Parcelable

@@ -17,6 +17,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogEncourageAutofillBinding
+import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
 
 /**
@@ -41,10 +42,10 @@ import org.koin.androidx.scope.fragmentScope
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class EncourageAutofillDialog : DialogFragment(), EncourageAutofillContract.View {
+class EncourageAutofillDialog : DialogFragment(), EncourageAutofillContract.View, AndroidScopeComponent {
 
+    override val scope by fragmentScope()
     private var listener: Listener? = null
-    private val scope by fragmentScope()
     private val presenter: EncourageAutofillContract.Presenter by scope.inject()
     private var autofillSystemSettingsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()

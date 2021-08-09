@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.feature.secrets.usecase.decrypt
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.service.secrets.SecretsRepository
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,26 +26,22 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HomeContract {
+class FetchSecretUseCase(
+    private val secretsRepository: SecretsRepository
+) : AsyncUseCase<FetchSecretUseCase.Input, FetchSecretUseCase.Output> {
 
-    interface View : BaseAuthenticatedContract.View {
-        fun showPasswords(list: List<ResourceModel>)
-        fun navigateToMore(resourceModel: ResourceModel)
-        fun navigateToDetails(resourceModel: ResourceModel)
-        fun hideProgress()
-        fun showProgress()
-        fun hideRefreshProgress()
-        fun showError()
-        fun showEmptyList()
-        fun showSearchEmptyList()
-        fun displayAvatar(url: String)
-    }
+    override suspend fun execute(input: Input) =
+        when (val response = secretsRepository.getSecret(input.resourceId)) {
+            is NetworkResult.Failure<*> -> Output.Failure(response.exception)
+            is NetworkResult.Success -> Output.EncryptedSecret(response.value.body.data)
+        }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun moreClick(resourceModel: ResourceModel)
-        fun itemClick(resourceModel: ResourceModel)
-        fun refreshSwipe()
-        fun refreshClick()
-        fun searchTextChange(text: String)
+    data class Input(
+        val resourceId: String
+    )
+
+    sealed class Output {
+        class EncryptedSecret(val encryptedSecret: String) : Output()
+        class Failure(val exception: Exception) : Output()
     }
 }

@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.feature.home.screen.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.core.networking.session.NetworkingUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.service.resource.ResourceRepository
 
@@ -38,10 +40,14 @@ class GetResourcesUseCase(
             is NetworkResult.Success -> Output.Success(response.value.body)
         }
 
-    sealed class Output : NetworkingUseCaseOutput {
+    sealed class Output : AuthenticatedUseCaseOutput {
 
-        override val isUnauthorized: Boolean
-            get() = this is Failure<*> && this.response.isUnauthorized
+        override val authenticationState: AuthenticationState
+            get() = if ((this is Failure<*> && this.response.isUnauthorized)) {
+                AuthenticationState.Unauthenticated(UnauthenticatedReason.SESSION)
+            } else {
+                AuthenticationState.Authenticated
+            }
 
         class Success(
             val resources: List<ResourceResponseDto>

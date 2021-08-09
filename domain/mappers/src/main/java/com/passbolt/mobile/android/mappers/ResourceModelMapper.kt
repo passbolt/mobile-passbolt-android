@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
-import com.passbolt.mobile.android.ui.PasswordModel
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,8 +30,9 @@ class ResourceModelMapper(
     private val initialsProvider: InitialsProvider
 ) {
 
-    fun map(resource: ResourceResponseDto): PasswordModel =
-        PasswordModel(
+    fun map(resource: ResourceResponseDto): ResourceModel =
+        ResourceModel(
+            resourceId = resource.id,
             name = resource.name,
             username = resource.username,
             initials = initialsProvider.get(resource.name),

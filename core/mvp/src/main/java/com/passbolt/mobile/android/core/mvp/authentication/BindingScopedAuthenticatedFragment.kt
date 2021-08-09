@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.mvp.networking
+package com.passbolt.mobile.android.core.mvp.authentication
 
 import android.app.Activity
 import android.view.LayoutInflater
@@ -8,6 +8,8 @@ import androidx.viewbinding.ViewBinding
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,21 +34,25 @@ import com.passbolt.mobile.android.core.navigation.AuthenticationType
  * @since v1.0
  */
 
-abstract class BindingScopedNetworkingFragment
-<T : ViewBinding, V : BaseNetworkingContract.View>(viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
-    BindingScopedFragment<T>(viewInflater), BaseNetworkingContract.View {
+abstract class BindingScopedAuthenticatedFragment
+<T : ViewBinding, V : BaseAuthenticatedContract.View>(viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
+    BindingScopedFragment<T>(viewInflater), BaseAuthenticatedContract.View {
 
-    abstract val presenter: BaseNetworkingContract.Presenter<V>
+    abstract val presenter: BaseAuthenticatedContract.Presenter<V>
 
     private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
-            presenter.sessionRefreshed()
+            presenter.authenticationRefreshed()
         }
     }
 
-    override fun showAuth() {
+    override fun showAuth(reason: UnauthenticatedReason) {
+        val authType = when (reason) {
+            AuthenticationState.Unauthenticated.Reason.PASSPHRASE -> AuthenticationType.Passphrase
+            AuthenticationState.Unauthenticated.Reason.SESSION -> AuthenticationType.Refresh
+        }
         authenticationResult.launch(
-            ActivityIntents.refreshAuthentication(requireContext(), AuthenticationType.Refresh)
+            ActivityIntents.refreshAuthentication(requireContext(), authType)
         )
     }
 }

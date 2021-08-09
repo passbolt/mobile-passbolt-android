@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.core.mvp.networking
+package com.passbolt.mobile.android.core.mvp.authentication
 
 import androidx.annotation.CallSuper
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -35,15 +36,15 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-abstract class BaseNetworkingPresenter<T : BaseNetworkingContract.View>(
+abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
     coroutineLaunchContext: CoroutineLaunchContext
-) : BaseNetworkingContract.Presenter<T> {
+) : BaseAuthenticatedContract.Presenter<T> {
 
     private var _sessionRefreshFlow = MutableStateFlow<Unit?>(null)
     protected val sessionRefreshedFlow
         get() = _sessionRefreshFlow.asStateFlow()
 
-    protected lateinit var needSessionRefreshFlow: MutableStateFlow<Unit?>
+    protected lateinit var needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
@@ -63,7 +64,7 @@ abstract class BaseNetworkingPresenter<T : BaseNetworkingContract.View>(
                 .take(1)
                 .collect {
                     Timber.d("[Session] Session refresh needed - showing auth")
-                    view?.showAuth()
+                    it?.let { view?.showAuth(it) }
                     listenForRefreshSessionEvents()
                 }
         }
@@ -76,7 +77,7 @@ abstract class BaseNetworkingPresenter<T : BaseNetworkingContract.View>(
         super.detach()
     }
 
-    override fun sessionRefreshed() {
+    override fun authenticationRefreshed() {
         _sessionRefreshFlow.value = Unit
         _sessionRefreshFlow = MutableStateFlow(null)
     }
