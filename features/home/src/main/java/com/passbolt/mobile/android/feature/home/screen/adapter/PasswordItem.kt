@@ -15,6 +15,7 @@ import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
+import com.passbolt.mobile.android.common.extension.DebounceClickEventHook
 import com.passbolt.mobile.android.common.extension.asBinding
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.ItemPasswordBinding
@@ -84,14 +85,14 @@ class PasswordItem(
 
     class MoreClick(
         private val clickListener: (PasswordModel) -> Unit
-    ) : ClickEventHook<PasswordItem>() {
+    ) : DebounceClickEventHook<PasswordItem>() {
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
             return viewHolder.asBinding<ItemPasswordBinding> {
                 it.more
             }
         }
 
-        override fun onClick(
+        override fun onDebounceClick(
             v: View,
             position: Int,
             fastAdapter: FastAdapter<PasswordItem>,
