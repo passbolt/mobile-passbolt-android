@@ -36,6 +36,7 @@ interface HomeContract {
         fun hideRefreshProgress()
         fun showError()
         fun showEmptyList()
+        fun showSearchEmptyList()
         fun displayAvatar(url: String)
     }
 

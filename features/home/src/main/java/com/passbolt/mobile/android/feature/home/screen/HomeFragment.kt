@@ -115,6 +115,10 @@ class HomeFragment :
         setState(State.EMPTY)
     }
 
+    override fun showSearchEmptyList() {
+        setState(State.SEARCH_EMPTY)
+    }
+
     private fun setListeners() {
         with(binding) {
             refreshButton.setDebouncingOnClick {
@@ -182,6 +186,7 @@ class HomeFragment :
         val searchEnabled: Boolean
     ) {
         EMPTY(false, false, true, false, false),
+        SEARCH_EMPTY(false, false, true, false, true),
         ERROR(false, true, false, false, false),
         PROGRESS(true, false, false, false, false),
         SUCCESS(false, false, false, true, true)

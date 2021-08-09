@@ -101,7 +101,7 @@ class HomePresenterTest : KoinTest {
         presenter.refreshSwipe()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
-        verify(view).showEmptyList()
+        verify(view).showSearchEmptyList()
         verifyNoMoreInteractions(view)
     }
 
