@@ -101,7 +101,7 @@ class HomePresenter(
             it.searchCriteria.contains(currentSearchText)
         }
         if (filtered.isEmpty()) {
-            view?.showEmptyList()
+            view?.showSearchEmptyList()
         } else {
             view?.showPasswords(filtered)
         }
