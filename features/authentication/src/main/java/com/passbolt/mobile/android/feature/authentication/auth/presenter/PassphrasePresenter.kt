@@ -8,8 +8,7 @@ import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCach
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
-import kotlinx.coroutines.launch
+import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,8 +37,8 @@ import kotlinx.coroutines.launch
 // handles storing passphrase in cache after sign in button clicked
 class PassphrasePresenter(
     private val passphraseMemoryCache: PassphraseMemoryCache,
-    private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
-    private val verifyPassphraseUseCase: VerifyPassphraseUseCase,
+    getPrivateKeyUseCase: GetPrivateKeyUseCase,
+    verifyPassphraseUseCase: VerifyPassphraseUseCase,
     fingerprintInfoProvider: FingerprintInformationProvider,
     removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
@@ -50,33 +49,21 @@ class PassphrasePresenter(
     checkIfPassphraseFileExistsUseCase,
     fingerprintInfoProvider,
     removeSelectedAccountPassphraseUseCase,
+    getPrivateKeyUseCase,
+    verifyPassphraseUseCase,
     coroutineLaunchContext
 ) {
 
-    override fun signInClick(passphrase: ByteArray) {
-        super.signInClick(passphrase)
-        validatePassphrase(passphrase)
+    override fun onPassphraseVerified(passphrase: ByteArray) {
+        passphraseMemoryCache.set(passphrase)
+        passphrase.erase()
+        view?.apply {
+            clearPassphraseInput()
+            authSuccess()
+        }
     }
 
     override fun biometricAuthSuccess() {
         view?.authSuccess()
-    }
-
-    private fun validatePassphrase(passphrase: ByteArray) {
-        scope.launch {
-            val privateKey = requireNotNull(getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey)
-            val isCorrect =
-                verifyPassphraseUseCase.execute(VerifyPassphraseUseCase.Input(privateKey, passphrase)).isCorrect
-            if (!isCorrect) {
-                view?.showWrongPassphrase()
-            } else {
-                passphraseMemoryCache.set(passphrase)
-                passphrase.erase()
-                view?.apply {
-                    clearPassphraseInput()
-                    authSuccess()
-                }
-            }
-        }
     }
 }

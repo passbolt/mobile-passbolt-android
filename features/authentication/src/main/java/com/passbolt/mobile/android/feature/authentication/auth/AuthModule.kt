@@ -121,7 +121,7 @@ private fun ScopeDSL.authPresenters() {
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(
     passphraseMemoryCache = get(),
-    getSelectedUserPrivateKeyUseCase = get(),
+    getPrivateKeyUseCase = get(),
     verifyPassphraseUseCase = get(),
     fingerprintInfoProvider = get(),
     removeSelectedAccountPassphraseUseCase = get(),
@@ -147,5 +147,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
     fingerprintInfoProvider = get(),
     passphraseMemoryCache = get(),
     featureFlagsUseCase = get(),
-    signOutUseCase = get()
+    signOutUseCase = get(),
+    getPrivateKeyUseCase = get(),
+    verifyPassphraseUseCase = get()
 )

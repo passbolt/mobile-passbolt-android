@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import org.junit.After
 import org.junit.Rule
@@ -64,8 +65,6 @@ class PassphrasePresenterTest : KoinTest {
 
     @Test
     fun `view should show wrong passphrase if passphrase is not correct`() {
-        whenever(mockGetSelectedPrivateKeyUseCase.execute(Unit))
-            .doReturn(GetSelectedUserPrivateKeyUseCase.Output("privateKey"))
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
         mockVerifyPassphraseUseCase.stub {
@@ -84,8 +83,6 @@ class PassphrasePresenterTest : KoinTest {
 
     @Test
     fun `view should show auth success if passphrase is correct`() {
-        whenever(mockGetSelectedPrivateKeyUseCase.execute(Unit))
-            .doReturn(GetSelectedUserPrivateKeyUseCase.Output("privateKey"))
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
         mockVerifyPassphraseUseCase.stub {
