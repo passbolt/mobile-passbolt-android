@@ -5,7 +5,8 @@ import com.passbolt.mobile.android.feature.authentication.R
 
 class AuthBiometricCallback(
     private val authError: (Int) -> Unit,
-    private val authSucceeded: () -> Unit
+    private val authSucceeded: () -> Unit,
+    private val authCanceled: (() -> Unit)? = null
 ) : BiometricPrompt.AuthenticationCallback() {
 
     override fun onAuthenticationError(
@@ -29,7 +30,7 @@ class AuthBiometricCallback(
             BiometricPrompt.ERROR_NEGATIVE_BUTTON,
             BiometricPrompt.ERROR_USER_CANCELED,
             BiometricPrompt.ERROR_TIMEOUT -> {
-                // ignoring
+                authCanceled?.invoke()
             }
             else -> authError.invoke(R.string.fingerprint_biometric_error_generic)
         }

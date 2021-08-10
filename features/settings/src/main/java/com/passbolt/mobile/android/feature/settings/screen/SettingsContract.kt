@@ -58,5 +58,6 @@ interface SettingsContract {
         fun getPassphraseSucceeded()
         fun biometricAuthError(errorMessage: Int)
         fun biometricAuthSucceeded()
+        fun biometricAuthCanceled()
     }
 }
