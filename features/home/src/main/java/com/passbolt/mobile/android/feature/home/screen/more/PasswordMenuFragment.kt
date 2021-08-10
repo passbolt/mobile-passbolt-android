@@ -1,19 +1,15 @@
 package com.passbolt.mobile.android.feature.home.screen.more
 
-import android.content.ClipData
-import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.navigation.fragment.navArgs
+import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.feature.home.R
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.feature.home.databinding.ViewPasswordBottomsheetBinding
-import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,10 +35,13 @@ import org.koin.android.ext.android.inject
  */
 class PasswordMenuFragment : BottomSheetDialogFragment() {
 
-    private val passwordArgs: PasswordMenuFragmentArgs by navArgs()
-    private val clipboardManager: ClipboardManager? by inject()
-    private val websiteOpener: WebsiteOpener by inject()
     private lateinit var binding: ViewPasswordBottomsheetBinding
+    private var listener: Listener? = null
+    private val menuModel: PasswordMoreModel by lifecycleAwareLazy {
+        requireNotNull(
+            requireArguments().getParcelable(EXTRA_RESOURCE_MENU_MODEL)
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,22 +55,31 @@ class PasswordMenuFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
-        binding.title.text = passwordArgs.passwordModel.title
+        binding.title.text = menuModel.title
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = when {
+            activity is Listener -> activity as Listener
+            parentFragment is Listener -> parentFragment as Listener
+            else -> error("Parent must implement ${Listener::class.java.name}")
+        }
     }
 
     private fun setListeners() {
         with(binding) {
             copyPassword.setDebouncingOnClick {
-                addToClipboard(PASSWORD_LABEL, passwordArgs.passwordModel.password)
+                listener?.menuCopyPasswordClick()
             }
             copyUrl.setDebouncingOnClick {
-                addToClipboard(URL_LABEL, passwordArgs.passwordModel.url)
+                listener?.menuCopyUrlClick()
             }
             copyUsername.setDebouncingOnClick {
-                addToClipboard(USERNAME_LABEL, passwordArgs.passwordModel.username)
+                listener?.menuCopyUsernameClick()
             }
             launchWebsite.setDebouncingOnClick {
-                websiteOpener.open(requireContext(), passwordArgs.passwordModel.url)
+                listener?.menuLaunchWebsiteClick()
             }
             close.setDebouncingOnClick {
                 dismiss()
@@ -79,16 +87,19 @@ class PasswordMenuFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun addToClipboard(label: String, value: String) {
-        clipboardManager?.setPrimaryClip(
-            ClipData.newPlainText(label, value)
-        )
-        Toast.makeText(requireContext(), getString(R.string.copied_info, label), Toast.LENGTH_SHORT).show()
+    companion object {
+        private const val EXTRA_RESOURCE_MENU_MODEL = "RESOURCE_MENU_MODEL"
+
+        fun newInstance(model: PasswordMoreModel) =
+            PasswordMenuFragment().apply {
+                arguments = bundleOf(EXTRA_RESOURCE_MENU_MODEL to model)
+            }
     }
 
-    companion object {
-        private const val PASSWORD_LABEL = "Password"
-        private const val USERNAME_LABEL = "Username"
-        private const val URL_LABEL = "Url"
+    interface Listener {
+        fun menuCopyPasswordClick()
+        fun menuCopyUrlClick()
+        fun menuCopyUsernameClick()
+        fun menuLaunchWebsiteClick()
     }
 }

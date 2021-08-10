@@ -1,12 +1,14 @@
 package com.passbolt.mobile.android.feature.resources.details.more
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.navArgs
+import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.feature.resources.databinding.ViewPasswordDetailsBottomsheetBinding
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
@@ -37,9 +39,14 @@ class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetails
     AndroidScopeComponent {
 
     override val scope by fragmentScope()
-    private val passwordArgs: ResourceDetailsMenuFragmentArgs by navArgs()
     private lateinit var binding: ViewPasswordDetailsBottomsheetBinding
     private val presenter: ResourceDetailsMenuContract.Presenter by scope.inject()
+    private val resourceMenuModel: ResourceDetailsMenuModel by lifecycleAwareLazy {
+        requireNotNull(
+            requireArguments().getParcelable(EXTRA_RESOURCE_DETAILS_MENU_MODEL)
+        )
+    }
+    private var listener: Listener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,7 +61,16 @@ class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetails
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
-        presenter.argsRetrieved(passwordArgs.resourceMenuModel)
+        presenter.argsRetrieved(resourceMenuModel)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = when {
+            activity is Listener -> activity as Listener
+            parentFragment is Listener -> parentFragment as Listener
+            else -> error("Parent must implement ${Listener::class.java.name}")
+        }
     }
 
     override fun onDestroyView() {
@@ -66,7 +82,7 @@ class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetails
     private fun setListeners() {
         with(binding) {
             copyPassword.setDebouncingOnClick {
-                presenter.copyPasswordClick()
+                listener?.menuCopyClick()
             }
             close.setDebouncingOnClick {
                 presenter.closeClick()
@@ -80,5 +96,18 @@ class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetails
 
     override fun showTitle(title: String) {
         binding.title.text = title
+    }
+
+    companion object {
+        private const val EXTRA_RESOURCE_DETAILS_MENU_MODEL = "RESOURCE_DETAILS_MENU_MODEL"
+
+        fun newInstance(model: ResourceDetailsMenuModel) =
+            ResourceDetailsMenuFragment().apply {
+                arguments = bundleOf(EXTRA_RESOURCE_DETAILS_MENU_MODEL to model)
+            }
+    }
+
+    interface Listener {
+        fun menuCopyClick()
     }
 }

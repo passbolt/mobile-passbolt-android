@@ -1,10 +1,9 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.feature.resources.base
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
-import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
-import org.koin.core.module.Module
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,30 +28,9 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                getResourcesUseCase = get(),
-                coroutineLaunchContext = get(),
-                resourceModelMapper = get(),
-                getSelectedAccountDataUseCase = get(),
-                addLocalResourcesUseCase = get(),
-                removeLocalResourcesUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                secretInteractor = get()
-            )
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            GetResourcesUseCase(
-                resourceRepository = get()
-            )
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
-    }
+@ExperimentalCoroutinesApi
+class TestCoroutineLaunchContext : CoroutineLaunchContext {
+    override val ui: CoroutineContext = TestCoroutineDispatcher()
+    override val default = TestCoroutineDispatcher()
+    override val io = TestCoroutineDispatcher()
 }

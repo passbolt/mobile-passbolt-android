@@ -10,19 +10,6 @@
         android:id="@+id/home"
         android:name="com.passbolt.mobile.android.feature.home.screen.HomeFragment"
         android:label="HomeFragment"
-        tools:layout="@layout/fragment_home">
-        <action
-            android:id="@+id/action_home_to_more"
-            app:destination="@id/more" />
-    </fragment>
+        tools:layout="@layout/fragment_home" />
 
-    <dialog
-        android:id="@+id/more"
-        android:name="com.passbolt.mobile.android.feature.home.screen.more.PasswordMenuFragment"
-        android:label="PasswordDetailsSheetFragment"
-        tools:layout="@layout/view_password_bottomsheet">
-        <argument
-            android:name="passwordModel"
-            app:argType="com.passbolt.mobile.android.feature.home.screen.more.PasswordMoreModel" />
-    </dialog>
 </navigation>

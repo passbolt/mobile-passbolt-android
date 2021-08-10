@@ -105,6 +105,9 @@ class AuthenticationMainActivity :
     }
 
     override fun showProgress() {
+        if (progressDialog == null) {
+            progressDialog = ProgressDialog()
+        }
         progressDialog?.show(supportFragmentManager, ProgressDialog::class.java.name)
     }
 

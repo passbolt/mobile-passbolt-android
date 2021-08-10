@@ -1,11 +1,13 @@
 package com.passbolt.mobile.android.feature.home.screen
 
+import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
@@ -45,7 +47,8 @@ class HomePresenter(
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val addLocalResourcesUseCase: AddLocalResourcesUseCase,
     private val removeLocalResourcesUseCase: RemoveLocalResourcesUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val secretInteractor: SecretInteractor
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
@@ -53,6 +56,7 @@ class HomePresenter(
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private var currentSearchText: String = ""
     private var allItemsList: List<ResourceModel> = emptyList()
+    private var currentMoreMenuResource: ResourceModel? = null
 
     override fun attach(view: HomeContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
@@ -129,10 +133,61 @@ class HomePresenter(
     }
 
     override fun moreClick(resourceModel: ResourceModel) {
+        currentMoreMenuResource = resourceModel
         view?.navigateToMore(resourceModel)
     }
 
     override fun itemClick(resourceModel: ResourceModel) {
         view?.navigateToDetails(resourceModel)
+    }
+
+    override fun menuLaunchWebsiteClick() {
+        currentMoreMenuResource?.let {
+            if (it.url.isNotEmpty()) {
+                view?.openWebsite(it.url)
+            }
+        }
+    }
+
+    override fun menuCopyUsernameClick() {
+        currentMoreMenuResource?.let {
+            view?.addToClipboard(USERNAME_LABEL, it.username)
+        }
+    }
+
+    override fun menuCopyUrlClick() {
+        currentMoreMenuResource?.let {
+            view?.addToClipboard(URL_LABEL, it.url)
+        }
+    }
+
+    override fun menuCopyPasswordClick() {
+        doAfterFetchAndDecrypt { decryptedSecret ->
+            view?.addToClipboard(SECRET_LABEL, String(decryptedSecret))
+        }
+    }
+
+    private fun doAfterFetchAndDecrypt(action: (ByteArray) -> Unit) {
+        scope.launch {
+            when (val output =
+                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    secretInteractor.fetchAndDecrypt(requireNotNull(currentMoreMenuResource?.resourceId))
+                }
+            ) {
+                is SecretInteractor.Output.DecryptFailure -> view?.showDecryptionFailure()
+                is SecretInteractor.Output.FetchFailure -> view?.showFetchFailure()
+                is SecretInteractor.Output.Success -> {
+                    action(output.decryptedSecret)
+                }
+            }
+        }
+    }
+
+    companion object {
+        @VisibleForTesting
+        const val SECRET_LABEL = "Secret"
+
+        private const val USERNAME_LABEL = "Username"
+        private const val URL_LABEL = "Url"
     }
 }

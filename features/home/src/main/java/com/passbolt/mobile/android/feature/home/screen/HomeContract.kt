@@ -38,6 +38,10 @@ interface HomeContract {
         fun showEmptyList()
         fun showSearchEmptyList()
         fun displayAvatar(url: String)
+        fun addToClipboard(label: String, value: String)
+        fun openWebsite(url: String)
+        fun showDecryptionFailure()
+        fun showFetchFailure()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -46,5 +50,9 @@ interface HomeContract {
         fun refreshSwipe()
         fun refreshClick()
         fun searchTextChange(text: String)
+        fun menuLaunchWebsiteClick()
+        fun menuCopyUsernameClick()
+        fun menuCopyUrlClick()
+        fun menuCopyPasswordClick()
     }
 }
