@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.autofill.encourage
 
+import com.passbolt.mobile.android.feature.autofill.StructureParser
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -33,5 +34,8 @@ fun Module.encourageAutofillModule() {
                 autofillInformationProvider = get()
             )
         }
+    }
+    single {
+        StructureParser()
     }
 }

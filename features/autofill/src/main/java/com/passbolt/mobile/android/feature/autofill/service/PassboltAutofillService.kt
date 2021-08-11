@@ -1,11 +1,25 @@
 package com.passbolt.mobile.android.feature.autofill.service
 
+import android.annotation.SuppressLint
+import android.app.PendingIntent
+import android.app.assist.AssistStructure
+import android.content.Intent
 import android.os.CancellationSignal
 import android.service.autofill.AutofillService
+import android.service.autofill.Dataset
 import android.service.autofill.FillCallback
 import android.service.autofill.FillRequest
+import android.service.autofill.FillResponse
 import android.service.autofill.SaveCallback
 import android.service.autofill.SaveRequest
+import android.view.View
+import android.view.autofill.AutofillId
+import android.view.autofill.AutofillValue
+import android.widget.RemoteViews
+import com.passbolt.mobile.android.feature.autofill.StructureParser
+import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesActivity
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,13 +43,72 @@ import android.service.autofill.SaveRequest
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class PassboltAutofillService : AutofillService() {
+class PassboltAutofillService : AutofillService(), KoinComponent {
+
+    private val structureParser: StructureParser by inject()
 
     override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback) {
-        // TODO implement
+        val structure: AssistStructure = request.fillContexts.last().structure
+        val parsedStructure = structureParser.parse(structure)
+
+        val passwordParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_PASSWORD, parsedStructure)
+        val usernameParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_USERNAME, parsedStructure)
+
+        if (usernameParsedAssistStructure == null || passwordParsedAssistStructure == null) {
+            callback.onSuccess(null)
+            return
+        }
+
+        callback.onSuccess(
+            getManualFillResponse(usernameParsedAssistStructure, passwordParsedAssistStructure)
+        )
     }
 
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
-        // TODO implement
+        // ignored now
+    }
+
+    @SuppressLint("UnspecifiedImmutableFlag")
+    private fun getManualFillResponse(
+        passwordParsedAssistStructure: ParsedStructure,
+        usernameParsedAssistStructure: ParsedStructure
+    ): FillResponse {
+        val manualPresentation = preparePresentation("Tap to manually select data")
+
+        val intent = Intent(applicationContext, AutofillResourcesActivity::class.java)
+
+        val sender = PendingIntent.getActivity(
+            applicationContext, 0, intent,
+            PendingIntent.FLAG_CANCEL_CURRENT
+        ).intentSender
+
+        return FillResponse.Builder()
+            .addDataset(
+                Dataset.Builder()
+                    .setAuthentication(sender)
+                    .setValue(
+                        passwordParsedAssistStructure.id,
+                        AutofillValue.forText(null),
+                        manualPresentation
+                    )
+                    .setValue(
+                        usernameParsedAssistStructure.id,
+                        AutofillValue.forText(null),
+                        manualPresentation
+                    )
+                    .build()
+            )
+            .build()
+    }
+
+    private fun preparePresentation(text: String): RemoteViews {
+        return RemoteViews(packageName, android.R.layout.simple_list_item_1).apply {
+            setTextViewText(android.R.id.text1, text)
+        }
     }
 }
+
+data class ParsedStructure(
+    var id: AutofillId,
+    val hints: List<String>
+)
