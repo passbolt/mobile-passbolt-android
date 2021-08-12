@@ -1,10 +1,11 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.database
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
-import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
-import org.koin.core.module.Module
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import com.passbolt.mobile.android.database.dao.ResourcesDao
+import com.passbolt.mobile.android.entity.account.FolderEntity
+import com.passbolt.mobile.android.entity.account.ResourceEntity
+import com.passbolt.mobile.android.entity.account.SecretTypeEntity
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,30 +29,7 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                getResourcesUseCase = get(),
-                coroutineLaunchContext = get(),
-                resourceModelMapper = get(),
-                getSelectedAccountDataUseCase = get(),
-                addLocalResourcesUseCase = get(),
-                removeLocalResourcesUseCase = get(),
-                getSelectedAccountUseCase = get()
-            )
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            GetResourcesUseCase(
-                resourceRepository = get()
-            )
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
-    }
+@Database(entities = [ResourceEntity::class, SecretTypeEntity::class, FolderEntity::class], version = 1)
+abstract class ResourceDatabase : RoomDatabase() {
+    abstract fun resourcesDao(): ResourcesDao
 }

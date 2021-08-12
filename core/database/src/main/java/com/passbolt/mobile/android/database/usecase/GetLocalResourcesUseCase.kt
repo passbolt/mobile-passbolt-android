@@ -1,10 +1,10 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.database.usecase
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
-import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
-import org.koin.core.module.Module
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,30 +28,15 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                getResourcesUseCase = get(),
-                coroutineLaunchContext = get(),
-                resourceModelMapper = get(),
-                getSelectedAccountDataUseCase = get(),
-                addLocalResourcesUseCase = get(),
-                removeLocalResourcesUseCase = get(),
-                getSelectedAccountUseCase = get()
-            )
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            GetResourcesUseCase(
-                resourceRepository = get()
-            )
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
+class GetLocalResourcesUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val resourceModelMapper: ResourceModelMapper
+) : AsyncUseCase<UserIdInput, GetLocalResourcesUseCase.Output> {
+    override suspend fun execute(input: UserIdInput): Output {
+        return Output(databaseProvider.get(input.userId).resourcesDao().getAll().map { resourceModelMapper.map(it) })
     }
+
+    class Output(
+        val resources: List<ResourceModel>
+    )
 }

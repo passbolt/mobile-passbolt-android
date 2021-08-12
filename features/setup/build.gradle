@@ -21,6 +21,7 @@ dependencies {
     implementation project(':gopenpgp')
     implementation project(':autofill')
     implementation project(':authentication')
+    implementation project(':database')
 
     //TODO
     implementation project(':autofill')

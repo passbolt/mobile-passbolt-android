@@ -1,10 +1,11 @@
-package com.passbolt.mobile.android.feature.setup.summary
+package com.passbolt.mobile.android.database
 
-import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.UuidProvider
+import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
+import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
 import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
 /**
@@ -29,17 +30,40 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-internal val mockSaveAccountUseCase = mock<SaveAccountUseCase>()
-internal val saveResourcesDatabasePassphraseUseCase = mock<SaveResourcesDatabasePassphraseUseCase>()
-internal val uuidProvider = mock<UuidProvider>()
-
-val summaryModule = module {
-    factory<SummaryContract.Presenter> {
-        SummaryPresenter(
-            saveAccountUseCase = mockSaveAccountUseCase,
-            saveResourcesDatabasePassphraseUseCase = saveResourcesDatabasePassphraseUseCase,
-            uuidProvider = uuidProvider
+val databaseModule = module {
+    single {
+        DatabaseProvider(
+            getResourcesDatabasePassphraseUseCase = get(),
+            androidApplication()
+        )
+    }
+    single {
+        GetResourcesDatabasePassphraseUseCase(
+            encryptedSharedPreferencesFactory = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        SaveResourcesDatabasePassphraseUseCase(
+            encryptedSharedPreferencesFactory = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        AddLocalResourcesUseCase(
+            databaseProvider = get(),
+            resourceModelMapper = get()
+        )
+    }
+    single {
+        GetLocalResourcesUseCase(
+            databaseProvider = get(),
+            resourceModelMapper = get()
+        )
+    }
+    single {
+        RemoveLocalResourcesUseCase(
+            databaseProvider = get()
         )
     }
 }

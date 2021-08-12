@@ -1,10 +1,9 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.entity.account
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
-import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
-import org.koin.core.module.Module
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.passbolt.mobile.android.entity.account.ResourceEntity.Companion.RESOURCE_ENTITY_TABLE_NAME
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,30 +27,19 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                getResourcesUseCase = get(),
-                coroutineLaunchContext = get(),
-                resourceModelMapper = get(),
-                getSelectedAccountDataUseCase = get(),
-                addLocalResourcesUseCase = get(),
-                removeLocalResourcesUseCase = get(),
-                getSelectedAccountUseCase = get()
-            )
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            GetResourcesUseCase(
-                resourceRepository = get()
-            )
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
+@Entity(tableName = RESOURCE_ENTITY_TABLE_NAME)
+data class ResourceEntity(
+    @PrimaryKey
+    val resourceId: String,
+    val resourceName: String,
+    val resourcePermission: Permission,
+    val url: String,
+    val username: String,
+    val description: String?,
+    @Embedded val secretType: SecretTypeEntity,
+    @Embedded val folder: FolderEntity
+) {
+    companion object {
+        const val RESOURCE_ENTITY_TABLE_NAME = "resources"
     }
 }

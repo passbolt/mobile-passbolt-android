@@ -1,10 +1,10 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.database.usecase
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
-import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
-import org.koin.core.module.Module
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.database.PASSPHRASE_KEY
+import com.passbolt.mobile.android.database.RESOURCE_DATABASE_ALIAS
+import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,29 +29,22 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                getResourcesUseCase = get(),
-                coroutineLaunchContext = get(),
-                resourceModelMapper = get(),
-                getSelectedAccountDataUseCase = get(),
-                addLocalResourcesUseCase = get(),
-                removeLocalResourcesUseCase = get(),
-                getSelectedAccountUseCase = get()
-            )
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            GetResourcesUseCase(
-                resourceRepository = get()
-            )
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
+class GetResourcesDatabasePassphraseUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : UseCase<Unit, GetResourcesDatabasePassphraseUseCase.Output> {
+
+    override fun execute(input: Unit): Output {
+        val account = getSelectedAccountUseCase.execute(Unit).selectedAccount
+        val sharedPreferences =
+            encryptedSharedPreferencesFactory.get("${RESOURCE_DATABASE_ALIAS}_$account.xml")
+
+        val passphrase = requireNotNull(sharedPreferences.getString(PASSPHRASE_KEY, null))
+
+        return Output(passphrase)
     }
+
+    class Output(
+        val passphrase: String
+    )
 }

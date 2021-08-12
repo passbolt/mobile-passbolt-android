@@ -33,7 +33,9 @@ fun Module.summaryModule() {
     scope(named<SummaryFragment>()) {
         scoped<SummaryContract.Presenter> {
             SummaryPresenter(
-                saveAccountUseCase = get()
+                saveAccountUseCase = get(),
+                saveResourcesDatabasePassphraseUseCase = get(),
+                uuidProvider = get()
             )
         }
     }

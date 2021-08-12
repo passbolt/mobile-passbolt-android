@@ -1,10 +1,10 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.database.dao
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
-import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
-import org.koin.core.module.Module
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.passbolt.mobile.android.entity.account.ResourceEntity
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,30 +28,14 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Dao
+interface ResourcesDao {
+    @Query("SELECT * FROM ${ResourceEntity.RESOURCE_ENTITY_TABLE_NAME}")
+    suspend fun getAll(): List<ResourceEntity>
 
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                getResourcesUseCase = get(),
-                coroutineLaunchContext = get(),
-                resourceModelMapper = get(),
-                getSelectedAccountDataUseCase = get(),
-                addLocalResourcesUseCase = get(),
-                removeLocalResourcesUseCase = get(),
-                getSelectedAccountUseCase = get()
-            )
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            GetResourcesUseCase(
-                resourceRepository = get()
-            )
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
-    }
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(resourceEntities: List<ResourceEntity>)
+
+    @Query("DELETE FROM ${ResourceEntity.RESOURCE_ENTITY_TABLE_NAME}")
+    suspend fun deleteAll()
 }
