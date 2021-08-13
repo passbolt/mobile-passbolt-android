@@ -13,8 +13,6 @@ import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -71,7 +69,7 @@ class PassphrasePresenterTest : KoinTest {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(false))
         }
 
-        presenter.argsRetrieved(ACCOUNT)
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
         presenter.attach(mockView)
         presenter.signInClick("pass".toByteArray())
 
@@ -89,7 +87,7 @@ class PassphrasePresenterTest : KoinTest {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
 
-        presenter.argsRetrieved(ACCOUNT)
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
         presenter.attach(mockView)
         presenter.signInClick("".toByteArray())
 
@@ -105,7 +103,7 @@ class PassphrasePresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT)
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
         presenter.attach(mockView)
         presenter.passphraseInputIsEmpty(true)
         verify(mockView).showTitle()
@@ -122,7 +120,7 @@ class PassphrasePresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT)
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
         presenter.attach(mockView)
         presenter.viewCreated(true)
 
@@ -140,10 +138,23 @@ class PassphrasePresenterTest : KoinTest {
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = true))
         whenever(mockFingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
 
-        presenter.argsRetrieved(ACCOUNT)
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.Passphrase)
         presenter.attach(mockView)
 
         verify(mockView).setBiometricAuthButtonVisible()
-        verify(mockView).showBiometricPrompt()
+        verify(mockView).showBiometricPrompt(AuthContract.View.RefreshAuthReason.PASSPHRASE)
+    }
+
+    @Test
+    fun `view should show auth reason when authentication is refreshed`() {
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = true))
+        whenever(mockFingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.Passphrase)
+        presenter.attach(mockView)
+
+        verify(mockView).showAuthenticationReason(AuthContract.View.RefreshAuthReason.PASSPHRASE)
+        verify(mockView).showBiometricPrompt(AuthContract.View.RefreshAuthReason.PASSPHRASE)
     }
 }

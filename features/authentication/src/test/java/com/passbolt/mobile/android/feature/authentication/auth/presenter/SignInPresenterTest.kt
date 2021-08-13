@@ -73,7 +73,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT)
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -123,7 +123,7 @@ class SignInPresenterTest : KoinTest {
             )
         }
 
-        presenter.argsRetrieved(ACCOUNT)
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -151,7 +151,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT)
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -182,7 +182,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT)
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -224,7 +224,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT)
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 

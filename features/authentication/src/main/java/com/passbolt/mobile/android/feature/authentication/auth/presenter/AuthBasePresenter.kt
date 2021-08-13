@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import androidx.annotation.CallSuper
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
@@ -55,15 +56,30 @@ abstract class AuthBasePresenter(
     protected val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     protected lateinit var userId: String
+    private lateinit var authType: AuthenticationType
+
+    private val authReason: AuthContract.View.RefreshAuthReason?
+        get() = when (authType) {
+            is AuthenticationType.Passphrase -> AuthContract.View.RefreshAuthReason.PASSPHRASE
+            is AuthenticationType.Refresh -> AuthContract.View.RefreshAuthReason.SESSION
+            else -> {
+                null /* reason is shown only for session and passphrase refresh*/
+            }
+        }
 
     override fun attach(view: AuthContract.View) {
         super.attach(view)
         view.showTitle()
+        authReason?.let { view.showAuthenticationReason(it) }
+        handleBiometry(view)
+    }
+
+    private fun handleBiometry(view: AuthContract.View) {
         if (checkIfPassphraseFileExistsUseCase.execute(UserIdInput(userId)).passphraseFileExists) {
             if (fingerprintInfoProvider.hasBiometricSetUp()) {
                 with(view) {
                     setBiometricAuthButtonVisible()
-                    showBiometricPrompt()
+                    showBiometricPrompt(authReason)
                 }
             } else {
                 removeSelectedAccountPassphraseUseCase.execute(Unit)
@@ -76,11 +92,12 @@ abstract class AuthBasePresenter(
     }
 
     override fun biometricAuthClick() {
-        view?.showBiometricPrompt()
+        view?.showBiometricPrompt(authReason)
     }
 
-    override fun argsRetrieved(userId: String) {
+    override fun argsRetrieved(userId: String, authenticationStrategy: AuthenticationType) {
         this.userId = userId
+        this.authType = authenticationStrategy
     }
 
     override fun viewCreated(domainVisible: Boolean) {

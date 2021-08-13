@@ -25,4 +25,6 @@
     <string name="auth_exit_dialog_message">If you leave, you will need to set up your account again.</string>
     <string name="auth_biometric_title">Confirm Using Your Fingerprint</string>
     <string name="auth_biometric_subtitle" />
+    <string name="auth_reason_session_expired">Please authenticate to refresh session</string>
+    <string name="auth_reason_passphrase_expired">Please authenticate passphrase access</string>
 </resources>

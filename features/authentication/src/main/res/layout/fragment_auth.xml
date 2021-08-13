@@ -67,8 +67,8 @@
             android:layout_marginHorizontal="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_40"
             app:inputTitle="@string/auth_password_title"
-            app:layout_constraintTop_toBottomOf="@id/domainLabel"
             app:layout_constraintBottom_toTopOf="@id/biometricAuthButton"
+            app:layout_constraintTop_toBottomOf="@id/domainLabel"
             app:layout_constraintVertical_bias="0"
             app:layout_goneMarginTop="@dimen/dp_32" />
 
@@ -86,6 +86,16 @@
             app:layout_constraintTop_toBottomOf="@id/passphraseInput"
             app:layout_constraintVertical_bias="0" />
 
+        <TextView
+            android:id="@+id/authReasonLabel"
+            style="@style/Heading4Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/authButton"
+            app:layout_constraintTop_toBottomOf="@id/biometricAuthButton" />
+
         <Button
             android:id="@+id/authButton"
             style="@style/PrimaryButton"
@@ -95,8 +105,9 @@
             android:layout_marginBottom="@dimen/dp_16"
             android:enabled="false"
             android:text="@string/auth_sign_in"
-            app:layout_constraintTop_toBottomOf="@id/biometricAuthButton"
-            app:layout_constraintBottom_toTopOf="@id/forgotPasswordButton" />
+            app:layout_constraintBottom_toTopOf="@id/forgotPasswordButton"
+            app:layout_constraintTop_toBottomOf="@id/authReasonLabel"
+            app:layout_constraintVertical_bias="1" />
 
         <TextView
             android:id="@+id/forgotPasswordButton"
