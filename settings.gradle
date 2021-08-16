@@ -13,6 +13,7 @@ coreModule "common"
 coreModule "qrscan"
 coreModule "featureflags"
 coreModule "database"
+coreModule "commonresource"
 
 featureModule "startup"
 featureModule "setup"

@@ -1,9 +1,7 @@
-package com.passbolt.mobile.android.feature.autofill.resources
+package com.passbolt.mobile.android.feature.autofill.service
 
-import android.app.assist.AssistStructure
-import android.service.autofill.Dataset
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.networking.NetworkResult
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,24 +25,23 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface AutofillResourcesContract {
-    interface View : BaseContract.View {
-        fun returnData(dataset: Dataset)
-        fun navigateBack()
-        fun showResources(resources: List<ResourceModel>)
-        fun showGeneralError()
-        fun startAuthActivity()
-        fun showSearchEmptyList()
-        fun showFullScreenError()
-        fun showEmptyList()
-        fun showProgress()
+class CheckUrlLinksUseCase(
+    private val checkUrlLinksRepository: CheckUrlLinksRepository
+) : AsyncUseCase<CheckUrlLinksUseCase.Input, Unit> {
+
+    override suspend fun execute(input: Input) {
+        when (val response = checkUrlLinksRepository.getAssetLinks(input.domain)) {
+            is NetworkResult.Failure -> Output.Failure
+            is NetworkResult.Success -> Output.Success
+        }
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun returnClick(resourceModel: ResourceModel)
-        fun argsReceived(structure: AssistStructure)
-        fun refreshSwipe()
-        fun userAuthenticated()
-        fun searchTextChange(text: String)
+    class Input(
+        val domain: String
+    )
+
+    sealed class Output {
+        object Success : Output()
+        object Failure : Output()
     }
 }

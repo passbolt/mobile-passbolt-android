@@ -4,14 +4,11 @@ import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
-import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
-import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.core.commonresource.GetResourcesUseCase
+import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -45,9 +42,7 @@ class HomePresenter(
     private val getResourcesUseCase: GetResourcesUseCase,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
-    private val addLocalResourcesUseCase: AddLocalResourcesUseCase,
-    private val removeLocalResourcesUseCase: RemoveLocalResourcesUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
     private val secretInteractor: SecretInteractor
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
 
@@ -90,10 +85,8 @@ class HomePresenter(
                 is GetResourcesUseCase.Output.Success -> {
                     view?.hideRefreshProgress()
                     view?.hideProgress()
-                    val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
                     allItemsList = result.resources.map { resourceModelMapper.map(it) }
-                    removeLocalResourcesUseCase.execute(UserIdInput(selectedAccount))
-                    addLocalResourcesUseCase.execute(AddLocalResourcesUseCase.Input(allItemsList, selectedAccount))
+                    fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
                     displayPasswords()
                 }
             }

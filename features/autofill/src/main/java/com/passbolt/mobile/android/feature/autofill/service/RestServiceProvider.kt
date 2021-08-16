@@ -1,9 +1,8 @@
-package com.passbolt.mobile.android.feature.autofill.resources
+package com.passbolt.mobile.android.feature.autofill.service
 
-import android.app.assist.AssistStructure
-import android.service.autofill.Dataset
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.ResourceModel
+import okhttp3.OkHttpClient
+import retrofit2.Converter
+import retrofit2.Retrofit
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,24 +26,15 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface AutofillResourcesContract {
-    interface View : BaseContract.View {
-        fun returnData(dataset: Dataset)
-        fun navigateBack()
-        fun showResources(resources: List<ResourceModel>)
-        fun showGeneralError()
-        fun startAuthActivity()
-        fun showSearchEmptyList()
-        fun showFullScreenError()
-        fun showEmptyList()
-        fun showProgress()
-    }
+class RestServiceProvider(
+    private val client: OkHttpClient,
+    private val converterFactory: Converter.Factory
+) {
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun returnClick(resourceModel: ResourceModel)
-        fun argsReceived(structure: AssistStructure)
-        fun refreshSwipe()
-        fun userAuthenticated()
-        fun searchTextChange(text: String)
-    }
+    fun get(url: String) =
+        Retrofit.Builder()
+            .baseUrl(url)
+            .client(client)
+            .addConverterFactory(converterFactory)
+            .build()
 }

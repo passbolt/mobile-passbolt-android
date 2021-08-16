@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.home.screen.adapter
+package com.passbolt.mobile.android.core.commonresource
 
 import android.content.Context
 import android.graphics.Color
@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.amulyakhare.textdrawable.TextDrawable
@@ -17,8 +18,8 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.DebounceClickEventHook
 import com.passbolt.mobile.android.common.extension.asBinding
-import com.passbolt.mobile.android.feature.home.R
-import com.passbolt.mobile.android.feature.home.databinding.ItemPasswordBinding
+import com.passbolt.mobile.android.commonresource.R
+import com.passbolt.mobile.android.commonresource.databinding.ItemPasswordBinding
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -44,7 +45,8 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @since v1.0
  */
 class PasswordItem(
-    val resourceModel: ResourceModel
+    val resourceModel: ResourceModel,
+    val dotsVisible: Boolean = true
 ) : AbstractBindingItem<ItemPasswordBinding>() {
 
     override val type: Int
@@ -59,7 +61,7 @@ class PasswordItem(
         with(binding) {
             title.text = resourceModel.name
             subtitle.text = resourceModel.username
-
+            more.isVisible = dotsVisible
             val initialsIcons = getInitialsIcon(binding.root.context)
             icon.setImageDrawable(initialsIcons)
 

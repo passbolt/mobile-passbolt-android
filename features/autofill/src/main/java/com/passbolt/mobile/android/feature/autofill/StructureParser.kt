@@ -59,7 +59,11 @@ class StructureParser {
     private fun parseNode(viewNode: AssistStructure.ViewNode): ParsedStructure? {
         val id = viewNode.autofillId ?: return null
         val contentDescription = viewNode.contentDescription
-        val autoFillHints = viewNode.autofillHints.orEmpty().toMutableList()
+        val autoFillHints = if (viewNode.autofillHints?.isNotEmpty() == true) {
+            viewNode.autofillHints.orEmpty().toMutableList()
+        } else {
+            mutableListOf(viewNode.text.toString(), viewNode.hint.toString())
+        }
 
         if (verifyHint(contentDescription, autoFillHints, View.AUTOFILL_HINT_PASSWORD)) {
             autoFillHints.add(View.AUTOFILL_HINT_PASSWORD)

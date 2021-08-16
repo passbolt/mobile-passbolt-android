@@ -65,6 +65,6 @@ class ResourceModelMapper(
             username = resourceEntity.username,
             icon = null,
             initials = initialsProvider.get(resourceEntity.resourceName),
-            searchCriteria = ""
+            searchCriteria = "${resourceEntity.resourceName}${resourceEntity.username}${resourceEntity.url}"
         )
 }

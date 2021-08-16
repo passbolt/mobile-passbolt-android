@@ -3,6 +3,7 @@ package com.passbolt.mobile.android
 import android.app.Application
 import coil.Coil
 import coil.ImageLoader
+import com.passbolt.mobile.android.core.commonresource.commonResourceModule
 import com.passbolt.mobile.android.core.mvp.mvpModule
 import com.passbolt.mobile.android.core.networking.networkingModule
 import com.passbolt.mobile.android.core.qrscan.di.barcodeScanModule
@@ -97,7 +98,8 @@ class PassboltApplication : Application(), KoinComponent {
                 resourcesModule,
                 featureFlagsModule,
                 databaseModule,
-                secretsModule
+                secretsModule,
+                commonResourceModule
             )
         }
     }
