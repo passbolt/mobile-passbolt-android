@@ -16,5 +16,6 @@
     <string name="fingerprint_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Biometric authorization has been blocked due to too many attempts.</string>
     <string name="fingerprint_biometric_error_blocked">Biometric authorization has been blocked for 30 seconds.</string>
-    <string name="fingerprint_biometric_changed">Fingerprint changes detected. You have to login via password this time and enable fingerprint in Settings again.</string>
+    <string name="fingerprint_biometric_changed_title">Fingerprint changes detected</string>
+    <string name="fingerprint_biometric_changed_message">You have to login via password this time and enable fingerprint in Settings again.</string>
 </resources>

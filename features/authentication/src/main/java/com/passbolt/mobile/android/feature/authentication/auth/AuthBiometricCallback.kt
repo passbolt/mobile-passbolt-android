@@ -2,10 +2,11 @@ package com.passbolt.mobile.android.feature.authentication.auth
 
 import androidx.biometric.BiometricPrompt
 import com.passbolt.mobile.android.feature.authentication.R
+import javax.crypto.Cipher
 
 class AuthBiometricCallback(
     private val authError: (Int) -> Unit,
-    private val authSucceeded: () -> Unit,
+    private val authSucceeded: (Cipher?) -> Unit,
     private val authCanceled: (() -> Unit)? = null
 ) : BiometricPrompt.AuthenticationCallback() {
 
@@ -19,7 +20,7 @@ class AuthBiometricCallback(
 
     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
         super.onAuthenticationSucceeded(result)
-        authSucceeded.invoke()
+        authSucceeded.invoke(result.cryptoObject?.cipher)
     }
 
     private fun handleError(errorCode: Int) {

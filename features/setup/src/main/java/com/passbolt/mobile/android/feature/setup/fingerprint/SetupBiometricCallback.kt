@@ -1,12 +1,13 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import androidx.biometric.BiometricPrompt
-import androidx.biometric.BiometricPrompt.ERROR_NEGATIVE_BUTTON
 import androidx.biometric.BiometricPrompt.ERROR_LOCKOUT
 import androidx.biometric.BiometricPrompt.ERROR_LOCKOUT_PERMANENT
+import androidx.biometric.BiometricPrompt.ERROR_NEGATIVE_BUTTON
 import androidx.biometric.BiometricPrompt.ERROR_TIMEOUT
 import androidx.biometric.BiometricPrompt.ERROR_USER_CANCELED
 import com.passbolt.mobile.android.feature.setup.R
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,7 +34,7 @@ import com.passbolt.mobile.android.feature.setup.R
 
 class SetupBiometricCallback(
     private val authError: (Int) -> Unit,
-    private val authSucceeded: () -> Unit
+    private val authSucceeded: (Cipher?) -> Unit
 ) : BiometricPrompt.AuthenticationCallback() {
 
     override fun onAuthenticationError(
@@ -46,7 +47,7 @@ class SetupBiometricCallback(
 
     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
         super.onAuthenticationSucceeded(result)
-        authSucceeded.invoke()
+        authSucceeded.invoke(result.cryptoObject?.cipher)
     }
 
     private fun handleError(errorCode: Int) {

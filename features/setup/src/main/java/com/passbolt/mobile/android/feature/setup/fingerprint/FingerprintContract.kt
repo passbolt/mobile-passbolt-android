@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import androidx.annotation.StringRes
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,7 +33,7 @@ interface FingerprintContract {
         fun showUseFingerprint()
         fun showConfigureFingerprint()
         fun navigateToBiometricSettings()
-        fun showBiometricPrompt()
+        fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
         fun showAuthenticationError(@StringRes errorMessage: Int)
         fun showEncourageAutofillDialog()
         fun navigateToHome()
@@ -43,7 +44,7 @@ interface FingerprintContract {
     interface Presenter : BaseContract.Presenter<View> {
         fun useFingerprintClick()
         fun resume()
-        fun authenticationSucceeded()
+        fun authenticationSucceeded(authenticatedCipher: Cipher? = null)
         fun authenticationError(errorMessage: Int)
         fun setupAutofillLaterClick()
         fun maybeLaterClick()

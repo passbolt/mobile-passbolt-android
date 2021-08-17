@@ -14,13 +14,13 @@ class KeyStoreWrapper(
     private val packageManager: PackageManager
 ) {
 
-    fun getOrCreateKey(alias: String): SecretKey =
-        getAndroidKeyStoreSymmetricKey(alias) ?: createAndroidKeyStoreSymmetricKey(alias)
+    fun getOrCreateSymmetricKey(alias: String): SecretKey =
+        getSymmetricKey(alias) ?: createSymmetricKey(alias)
 
-    fun getAndroidKeyStoreSymmetricKey(alias: String): SecretKey? =
+    fun getSymmetricKey(alias: String): SecretKey? =
         keyStore.getKey(alias, null) as SecretKey?
 
-    private fun createAndroidKeyStoreSymmetricKey(alias: String): SecretKey {
+    private fun createSymmetricKey(alias: String): SecretKey {
         val keyParamsSpec = KeyGenParameterSpec.Builder(
             alias,
             KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
@@ -39,9 +39,9 @@ class KeyStoreWrapper(
 
     private fun KeyGenParameterSpec.Builder.setAuthTimeoutParameters() = let {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            setUserAuthenticationParameters(KEY_AUTH_TIMEOUT_SECS, KeyProperties.AUTH_BIOMETRIC_STRONG)
+            setUserAuthenticationParameters(KEY_AUTH_DURATION_ZERO, KeyProperties.AUTH_BIOMETRIC_STRONG)
         } else {
-            setUserAuthenticationValidityDurationSeconds(KEY_AUTH_TIMEOUT_SECS)
+            setUserAuthenticationValidityDurationSeconds(KEY_AUTH_EVERY_USAGE)
         }
     }
 
@@ -57,6 +57,7 @@ class KeyStoreWrapper(
     }
 
     private companion object {
-        private const val KEY_AUTH_TIMEOUT_SECS = 10
+        private const val KEY_AUTH_DURATION_ZERO = 0
+        private const val KEY_AUTH_EVERY_USAGE = -1
     }
 }

@@ -37,7 +37,7 @@ val secretsModule = module {
     single {
         DecryptSecretUseCase(
             gopenPgp = get(),
-            passphraseRepository = get(),
+            passphraseMemoryCache = get(),
             getSelectedAccountUseCase = get(),
             getPrivateKeyUseCase = get()
         )

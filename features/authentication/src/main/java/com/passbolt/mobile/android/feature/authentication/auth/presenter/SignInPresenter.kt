@@ -15,10 +15,12 @@ import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphras
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
+import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
@@ -26,6 +28,7 @@ import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.crypto.Cipher
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase.Output.Success as PgpSuccess
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase.Output.Success as RsaSuccess
 
@@ -51,6 +54,8 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+@Suppress("LongParameterList") // TODO extract interactors
 class SignInPresenter(
     private val getServerPublicPgpKeyUseCase: GetServerPublicPgpKeyUseCase,
     private val getServerPublicRsaKeyUseCase: GetServerPublicRsaKeyUseCase,
@@ -61,11 +66,13 @@ class SignInPresenter(
     private val saveSessionUseCase: SaveSessionUseCase,
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val getAccountDataUseCase: GetAccountDataUseCase,
-    private val passphraseRepository: PassphraseRepository,
     private val passphraseMemoryCache: PassphraseMemoryCache,
-    private val removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     private val featureFlagsUseCase: GetFeatureFlagsUseCase,
     private val signOutUseCase: SignOutUseCase,
+    removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
+    biometricCipher: BiometricCipher,
+    getPassphraseUseCase: GetPassphraseUseCase,
+    removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
     getPrivateKeyUseCase: GetPrivateKeyUseCase,
     verifyPassphraseUseCase: VerifyPassphraseUseCase,
     fingerprintInfoProvider: FingerprintInformationProvider,
@@ -78,6 +85,10 @@ class SignInPresenter(
     removeSelectedAccountPassphraseUseCase,
     getPrivateKeyUseCase,
     verifyPassphraseUseCase,
+    biometricCipher,
+    getPassphraseUseCase,
+    passphraseMemoryCache,
+    removeBiometricKeyUseCase,
     coroutineLaunchContext
 ) {
 
@@ -85,21 +96,15 @@ class SignInPresenter(
         performSignIn(passphrase)
     }
 
-    override fun biometricAuthSuccess() {
-        val potentialPassphrase = passphraseRepository.getCaching(userId)
-        when {
-            potentialPassphrase is PotentialPassphrase.Passphrase -> {
+    override fun biometricAuthSuccess(authenticatedCipher: Cipher?) {
+        super.biometricAuthSuccess(authenticatedCipher)
+        when (val potentialPassphrase = passphraseMemoryCache.get()) {
+            is PotentialPassphrase.Passphrase -> {
                 performSignIn(potentialPassphrase.passphrase)
-            }
-            potentialPassphrase is PotentialPassphrase.PassphraseNotPresent &&
-                    potentialPassphrase.keyStatus == PotentialPassphrase.KeyStatus.INVALID -> {
-                removeSelectedAccountPassphraseUseCase.execute(Unit)
-                view?.setBiometricAuthButtonGone()
-                view?.showFingerprintChangedError()
             }
             else -> {
                 view?.showGenericError()
-                Timber.e("Passphrase not found in repository")
+                Timber.e("Passphrase not found in cache")
             }
         }
     }

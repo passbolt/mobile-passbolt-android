@@ -127,7 +127,10 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
     removeSelectedAccountPassphraseUseCase = get(),
     checkIfPassphraseFileExistsUseCase = get(),
     getAccountDataUseCase = get(),
-    coroutineLaunchContext = get()
+    coroutineLaunchContext = get(),
+    biometricCipher = get(),
+    getPassphraseUseCase = get(),
+    removeBiometricKeyUseCase = get()
 )
 
 private fun Scope.signInPresenter() = SignInPresenter(
@@ -142,12 +145,14 @@ private fun Scope.signInPresenter() = SignInPresenter(
     saveSessionUseCase = get(),
     saveSelectedAccountUseCase = get(),
     checkIfPassphraseFileExistsUseCase = get(),
-    passphraseRepository = get(),
+    passphraseMemoryCache = get(),
     removeSelectedAccountPassphraseUseCase = get(),
     fingerprintInfoProvider = get(),
-    passphraseMemoryCache = get(),
     featureFlagsUseCase = get(),
     signOutUseCase = get(),
     getPrivateKeyUseCase = get(),
-    verifyPassphraseUseCase = get()
+    verifyPassphraseUseCase = get(),
+    biometricCipher = get(),
+    getPassphraseUseCase = get(),
+    removeBiometricKeyUseCase = get()
 )

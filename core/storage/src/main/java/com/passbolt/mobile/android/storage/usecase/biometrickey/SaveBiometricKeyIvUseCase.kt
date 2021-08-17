@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.storage.repository.passphrase
+package com.passbolt.mobile.android.storage.usecase.biometrickey
 
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
+import android.util.Base64
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.paths.BiometricKeyIvFileName
+import com.passbolt.mobile.android.storage.usecase.IV_KEY
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 
 /**
@@ -28,24 +29,20 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class SaveBiometricKeyIvUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : UseCase<SaveBiometricKeyIvUseCase.Input, Unit> {
 
-class PassphraseRepository(
-    private val passphraseMemoryCache: PassphraseMemoryCache,
-    private val getPassphraseUseCase: GetPassphraseUseCase,
-    private val selectedAccountUseCase: GetSelectedAccountUseCase
-) {
-
-    fun getCaching(userId: String? = null): PotentialPassphrase =
-        if (passphraseMemoryCache.hasPassphrase()) {
-            passphraseMemoryCache.get()
-        } else {
-            val currentUserId = userId ?: selectedAccountUseCase.execute(Unit).selectedAccount
-            currentUserId?.let {
-                val potentialPassphrase = getPassphraseUseCase.execute(UserIdInput(it)).potentialPassphrase
-                if (potentialPassphrase is PotentialPassphrase.Passphrase) {
-                    passphraseMemoryCache.set(potentialPassphrase.passphrase)
-                }
-                potentialPassphrase
-            } ?: PotentialPassphrase.PassphraseNotPresent()
+    override fun execute(input: Input) {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        val fileName = BiometricKeyIvFileName(userId)
+        with(encryptedSharedPreferencesFactory.get(fileName.name).edit()) {
+            val encodedIv = Base64.encodeToString(input.iv, Base64.DEFAULT)
+            putString(IV_KEY, encodedIv)
+            apply()
         }
+    }
+
+    class Input(val iv: ByteArray)
 }

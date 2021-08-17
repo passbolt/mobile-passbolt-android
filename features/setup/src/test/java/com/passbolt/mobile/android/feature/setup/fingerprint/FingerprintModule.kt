@@ -1,11 +1,15 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
-import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
+import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
+import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
+import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import org.koin.dsl.module
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,19 +36,28 @@ import org.koin.dsl.module
 
 internal val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
 internal val autofillInformationProvider = mock<AutofillInformationProvider>()
-internal val passphraseRepository = mock<PassphraseRepository>()
+internal val passphraseMemoryCache = mock<PassphraseMemoryCache>()
 internal val savePassphraseUseCase = mock<SavePassphraseUseCase>()
+internal val mockCipher = mock<Cipher> {
+    on { iv }.doReturn(ByteArray(0))
+}
+internal val biometricCipher = mock<BiometricCipher> {
+    on { getBiometricEncryptCipher() }.doReturn(mockCipher)
+}
+internal val saveBiometricKayIvUseCase = mock<SaveBiometricKeyIvUseCase>()
 
 val fingerprintModule = module {
     factory<FingerprintContract.Presenter> {
         FingerprintPresenter(
             fingerprintInformationProvider = get(),
-            passphraseRepository = get(),
+            passphraseMemoryCache = get(),
             autofillInformationProvider = get(),
-            savePassphraseUseCase = savePassphraseUseCase
+            savePassphraseUseCase = savePassphraseUseCase,
+            biometricCipher = biometricCipher,
+            saveBiometricKeyIvUseCase = saveBiometricKayIvUseCase
         )
     }
     factory { fingerprintInformationProvider }
-    factory { passphraseRepository }
+    factory { passphraseMemoryCache }
     factory { autofillInformationProvider }
 }

@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -46,7 +47,7 @@ interface AuthContract {
         fun authSuccess()
         fun hideKeyboard()
         fun showLeaveConfirmationDialog()
-        fun showBiometricPrompt(authReason: RefreshAuthReason?)
+        fun showBiometricPrompt(authReason: RefreshAuthReason?, fingeprintCipherCrypto: Cipher)
         fun setBiometricAuthButtonVisible()
         fun setBiometricAuthButtonGone()
         fun showAuthenticationError(errorMessage: Int)
@@ -68,7 +69,7 @@ interface AuthContract {
         fun passphraseInputIsEmpty(isEmpty: Boolean)
         fun viewCreated(domainVisible: Boolean)
         fun leaveConfirmationClick()
-        fun biometricAuthSuccess()
+        fun biometricAuthSuccess(authenticatedCipher: Cipher?)
         fun biometricAuthError(messageResId: Int)
         fun biometricAuthClick()
     }

@@ -2,9 +2,13 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
+import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
+import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
+import org.koin.core.component.KoinComponent
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,9 +35,11 @@ import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseC
 class FingerprintPresenter(
     private val fingerprintInformationProvider: FingerprintInformationProvider,
     private val autofillInformationProvider: AutofillInformationProvider,
-    private val passphraseRepository: PassphraseRepository,
-    private val savePassphraseUseCase: SavePassphraseUseCase
-) : FingerprintContract.Presenter {
+    internal val passphraseMemoryCache: PassphraseMemoryCache,
+    private val savePassphraseUseCase: SavePassphraseUseCase,
+    private val biometricCipher: BiometricCipher,
+    private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase
+) : FingerprintContract.Presenter, KoinComponent {
 
     override var view: FingerprintContract.View? = null
 
@@ -47,25 +53,30 @@ class FingerprintPresenter(
 
     override fun useFingerprintClick() {
         if (fingerprintInformationProvider.hasBiometricSetUp()) {
-            view?.showBiometricPrompt()
+            view?.showBiometricPrompt(biometricCipher.getBiometricEncryptCipher())
         } else {
             view?.navigateToBiometricSettings()
         }
     }
 
     override fun maybeLaterClick() {
-        handleAutofillSetup(withBiometry = false)
+        handleAutofillSetup()
     }
 
-    override fun authenticationSucceeded() {
-        handleAutofillSetup(withBiometry = true)
+    override fun authenticationSucceeded(authenticatedCipher: Cipher?) {
+        handleAutofillSetup(authenticatedCipher)
     }
 
-    private fun handleAutofillSetup(withBiometry: Boolean) {
-        when (val cachedPassphrase = passphraseRepository.getCaching()) {
+    private fun handleAutofillSetup(authenticatedCipher: Cipher? = null) {
+        when (val cachedPassphrase = passphraseMemoryCache.get()) {
             is PotentialPassphrase.Passphrase -> {
-                if (withBiometry) {
-                    savePassphraseUseCase.execute(SavePassphraseUseCase.Input(cachedPassphrase.passphrase))
+                authenticatedCipher?.let {
+                    savePassphraseUseCase.execute(
+                        SavePassphraseUseCase.Input(cachedPassphrase.passphrase, it)
+                    )
+                    saveBiometricKeyIvUseCase.execute(
+                        SaveBiometricKeyIvUseCase.Input(authenticatedCipher.iv)
+                    )
                 }
                 if (!autofillInformationProvider.isPassboltAutofillServiceSet()) {
                     view?.showEncourageAutofillDialog()

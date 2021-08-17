@@ -1,19 +1,27 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import android.security.keystore.KeyPermanentlyInvalidatedException
 import androidx.annotation.CallSuper
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
+import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
+import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
+import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,6 +46,7 @@ import kotlinx.coroutines.launch
  * @since v1.0
  */
 
+@Suppress("LongParameterList") // TODO extract interactors
 // base presenter for auth view
 // handles account details display, forgot password dialog, biometry
 abstract class AuthBasePresenter(
@@ -47,6 +56,10 @@ abstract class AuthBasePresenter(
     private val removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
     private val verifyPassphraseUseCase: VerifyPassphraseUseCase,
+    private val biometricCipher: BiometricCipher,
+    private val getPassphraseUseCase: GetPassphraseUseCase,
+    private val passphraseMemoryCache: PassphraseMemoryCache,
+    private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthContract.Presenter {
 
@@ -79,7 +92,7 @@ abstract class AuthBasePresenter(
             if (fingerprintInfoProvider.hasBiometricSetUp()) {
                 with(view) {
                     setBiometricAuthButtonVisible()
-                    showBiometricPrompt(authReason)
+                    tryShowingBiometricPrompt()
                 }
             } else {
                 removeSelectedAccountPassphraseUseCase.execute(Unit)
@@ -92,7 +105,22 @@ abstract class AuthBasePresenter(
     }
 
     override fun biometricAuthClick() {
-        view?.showBiometricPrompt(authReason)
+        tryShowingBiometricPrompt()
+    }
+
+    private fun tryShowingBiometricPrompt() {
+        try {
+            view?.showBiometricPrompt(authReason, biometricCipher.getBiometricDecryptCipher(userId))
+        } catch (exception: KeyPermanentlyInvalidatedException) {
+            Timber.e(exception)
+            removeSelectedAccountPassphraseUseCase.execute(Unit)
+            removeBiometricKeyUseCase.execute(Unit)
+            view?.setBiometricAuthButtonGone()
+            view?.showFingerprintChangedError()
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            view?.showGenericError()
+        }
     }
 
     override fun argsRetrieved(userId: String, authenticationStrategy: AuthenticationType) {
@@ -163,4 +191,18 @@ abstract class AuthBasePresenter(
     }
 
     abstract fun onPassphraseVerified(passphrase: ByteArray)
+
+    @CallSuper
+    override fun biometricAuthSuccess(authenticatedCipher: Cipher?) {
+        authenticatedCipher?.let {
+            val potentialPassphrase = getPassphraseUseCase.execute(
+                GetPassphraseUseCase.Input(userId, authenticatedCipher)
+            ).potentialPassphrase
+            if (potentialPassphrase is PotentialPassphrase.Passphrase) {
+                passphraseMemoryCache.set(potentialPassphrase.passphrase)
+            } else {
+                view?.showGenericError()
+            }
+        }
+    }
 }

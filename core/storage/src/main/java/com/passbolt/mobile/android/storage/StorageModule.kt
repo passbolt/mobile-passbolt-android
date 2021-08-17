@@ -4,10 +4,10 @@ import android.content.Context
 import com.passbolt.mobile.android.storage.cache.cacheModule
 import com.passbolt.mobile.android.storage.encrypted.biometric.cryptoModule
 import com.passbolt.mobile.android.storage.encrypted.encryptedStorageModule
-import com.passbolt.mobile.android.storage.repository.repositoryModule
 import com.passbolt.mobile.android.storage.usecase.account.accountModule
 import com.passbolt.mobile.android.storage.usecase.accountdata.accountDataModule
 import com.passbolt.mobile.android.storage.usecase.accounts.accountsModule
+import com.passbolt.mobile.android.storage.usecase.biometrickey.biometricKeyIvModule
 import com.passbolt.mobile.android.storage.usecase.passphrase.passphraseModule
 import com.passbolt.mobile.android.storage.usecase.privatekey.privateKeyModule
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.selectedAccountModule
@@ -41,7 +41,6 @@ import org.koin.dsl.module
 val storageModule = module {
     cacheModule()
     encryptedStorageModule()
-    repositoryModule()
     accountModule()
     accountDataModule()
     accountsModule()
@@ -50,6 +49,7 @@ val storageModule = module {
     selectedAccountModule()
     sessionModule()
     cryptoModule()
+    biometricKeyIvModule()
     single {
         androidApplication().getSharedPreferences("user-accounts", Context.MODE_PRIVATE)
     }
