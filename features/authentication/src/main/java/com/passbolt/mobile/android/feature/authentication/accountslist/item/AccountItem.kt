@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.accountslist.item
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
@@ -61,6 +62,7 @@ class AccountItem(
                 transformations(CircleCropTransformation())
                 placeholder(R.drawable.ic_avatar_placeholder)
             }
+            currentAccountIcon.isVisible = accountModel.isCurrentUser
         }
     }
 }

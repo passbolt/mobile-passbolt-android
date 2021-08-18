@@ -14,8 +14,10 @@ import com.passbolt.mobile.android.entity.account.AccountEntity
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListContract
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -56,6 +58,11 @@ class AccountListPresenterTest : KoinTest {
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
         modules(testAccountListModule)
+    }
+
+    @Before
+    fun setUp() {
+        whenever(mockGetSelectedAccountUseCase.execute(Unit)).doReturn(GetSelectedAccountUseCase.Output("id"))
     }
 
     @Test
