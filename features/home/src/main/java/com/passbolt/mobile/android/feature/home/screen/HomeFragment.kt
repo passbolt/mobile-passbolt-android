@@ -1,19 +1,23 @@
 package com.passbolt.mobile.android.feature.home.screen
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
@@ -21,6 +25,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenti
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
+import com.passbolt.mobile.android.feature.home.screen.more.PasswordMenuFragment
 import com.passbolt.mobile.android.feature.home.screen.more.PasswordMoreModel
 import com.passbolt.mobile.android.feature.resources.ResourcesActivity
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -50,12 +55,14 @@ import org.koin.android.ext.android.inject
  */
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
-    HomeContract.View {
+    HomeContract.View, PasswordMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
     private val itemAdapter: ItemAdapter<PasswordItem> by inject()
     private val fastAdapter: FastAdapter<PasswordItem> by inject()
     private val imageLoader: ImageLoader by inject()
+    private val clipboardManager: ClipboardManager? by inject()
+    private val websiteOpener: WebsiteOpener by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -156,22 +163,52 @@ class HomeFragment :
     }
 
     override fun navigateToMore(resourceModel: ResourceModel) {
-        findNavController().navigate(
-            HomeFragmentDirections.actionHomeToMore(
-                PasswordMoreModel(
-                    title = resourceModel.name,
-                    password = "password",
-                    username = resourceModel.username,
-                    url = resourceModel.url
-                )
-            )
-        )
+        val model = PasswordMoreModel(resourceModel.name)
+        PasswordMenuFragment.newInstance(model)
+            .show(childFragmentManager, PasswordMenuFragment::class.java.name)
     }
 
     override fun navigateToDetails(resourceModel: ResourceModel) {
         startActivity(Intent(requireContext(), ResourcesActivity::class.java).apply {
             putExtra(ResourcesActivity.RESOURCE_MODEL_KEY, resourceModel)
         })
+    }
+
+    override fun addToClipboard(label: String, value: String) {
+        clipboardManager?.setPrimaryClip(
+            ClipData.newPlainText(label, value)
+        )
+        Toast.makeText(requireContext(), getString(R.string.copied_info, label), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun menuCopyPasswordClick() {
+        presenter.menuCopyPasswordClick()
+    }
+
+    override fun menuCopyUrlClick() {
+        presenter.menuCopyUrlClick()
+    }
+
+    override fun menuCopyUsernameClick() {
+        presenter.menuCopyUsernameClick()
+    }
+
+    override fun menuLaunchWebsiteClick() {
+        presenter.menuLaunchWebsiteClick()
+    }
+
+    override fun openWebsite(url: String) {
+        websiteOpener.open(requireContext(), url)
+    }
+
+    override fun showDecryptionFailure() {
+        Snackbar.make(requireView(), R.string.home_decryption_failure, Snackbar.LENGTH_LONG)
+            .show()
+    }
+
+    override fun showFetchFailure() {
+        Snackbar.make(requireView(), R.string.home_fetch_failure, Snackbar.LENGTH_LONG)
+            .show()
     }
 
     companion object {

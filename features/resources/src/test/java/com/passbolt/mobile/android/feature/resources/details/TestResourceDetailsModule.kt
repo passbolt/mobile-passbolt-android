@@ -1,10 +1,10 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.feature.resources.details
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
-import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
-import org.koin.core.module.Module
+import com.nhaarman.mockitokotlin2.mock
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.resources.base.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,30 +29,14 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                getResourcesUseCase = get(),
-                coroutineLaunchContext = get(),
-                resourceModelMapper = get(),
-                getSelectedAccountDataUseCase = get(),
-                addLocalResourcesUseCase = get(),
-                removeLocalResourcesUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                secretInteractor = get()
-            )
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            GetResourcesUseCase(
-                resourceRepository = get()
-            )
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
+val mockSecretInterActor = mock<SecretInteractor>()
+
+val testResourceDetailsModule = module {
+    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+    factory<ResourceDetailsContract.Presenter> {
+        ResourceDetailsPresenter(
+            secretInteractor = mockSecretInterActor,
+            coroutineLaunchContext = get()
+        )
     }
 }

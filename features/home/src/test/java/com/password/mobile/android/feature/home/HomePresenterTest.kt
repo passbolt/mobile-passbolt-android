@@ -1,17 +1,22 @@
 package com.password.mobile.android.feature.home
 
 import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.reset
+import com.nhaarman.mockitokotlin2.stub
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
+import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
+import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -192,6 +197,66 @@ class HomePresenterTest : KoinTest {
         verifyNoMoreInteractions(view)
     }
 
+    @Test
+    fun `view should show decrypt error correct`() {
+        mockSecretInteractor.stub {
+            onBlocking { fetchAndDecrypt(ID) }.doReturn(
+                SecretInteractor.Output.DecryptFailure(RuntimeException())
+            )
+        }
+
+        presenter.attach(view)
+        presenter.moreClick(RESOURCE_MODEL)
+        presenter.menuCopyPasswordClick()
+
+        verify(view).showDecryptionFailure()
+    }
+
+    @Test
+    fun `view should show fetch error correct`() {
+        mockSecretInteractor.stub {
+            onBlocking { fetchAndDecrypt(ID) }.doReturn(
+                SecretInteractor.Output.FetchFailure(RuntimeException())
+            )
+        }
+
+        presenter.attach(view)
+        presenter.moreClick(RESOURCE_MODEL)
+        presenter.menuCopyPasswordClick()
+
+        verify(view).showFetchFailure()
+    }
+
+    @Test
+    fun `view should show auth when passphrase not in cache`() {
+        mockSecretInteractor.stub {
+            onBlocking { fetchAndDecrypt(ID) }.doReturn(
+                SecretInteractor.Output.Unauthorized
+            )
+        }
+
+        presenter.attach(view)
+        presenter.moreClick(RESOURCE_MODEL)
+        presenter.menuCopyPasswordClick()
+
+        verify(view).showAuth(UnauthenticatedReason.PASSPHRASE)
+    }
+
+    @Test
+    fun `view should copy secret after successful decrypt`() {
+        mockSecretInteractor.stub {
+            onBlocking { fetchAndDecrypt(ID) }.doReturn(
+                SecretInteractor.Output.Success(DECRYPTED_SECRET)
+            )
+        }
+
+        presenter.attach(view)
+        presenter.moreClick(RESOURCE_MODEL)
+        presenter.menuCopyPasswordClick()
+
+        verify(view).addToClipboard(HomePresenter.SECRET_LABEL, String(DECRYPTED_SECRET))
+    }
+
     private fun mockResourcesList() = listOf(
         ResourceResponseDto(
             id = "id1",
@@ -220,5 +285,24 @@ class HomePresenterTest : KoinTest {
                 serverId = ""
             )
         )
+    }
+
+    private companion object {
+        private const val NAME = "name"
+        private const val USERNAME = "username"
+        private const val INITIALS = "NN"
+        private const val URL = "https://www.passbolt.com"
+        private const val SEARCH_CRITERIA = "name username"
+        private const val ID = "id"
+        private val RESOURCE_MODEL = ResourceModel(
+            ID,
+            NAME,
+            USERNAME,
+            null,
+            INITIALS,
+            URL,
+            SEARCH_CRITERIA
+        )
+        private val DECRYPTED_SECRET = "secret".toByteArray()
     }
 }

@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -19,6 +20,7 @@ internal val getSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseCase>
 internal val addLocalResourcesUseCase = mock<AddLocalResourcesUseCase>()
 internal val getSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val removeLocalResourcesUseCase = mock<RemoveLocalResourcesUseCase>()
+internal val mockSecretInteractor = mock<SecretInteractor>()
 
 @ExperimentalCoroutinesApi
 val testModule = module {
@@ -42,7 +44,8 @@ val testModule = module {
             getSelectedAccountDataUseCase = get(),
             addLocalResourcesUseCase = get(),
             removeLocalResourcesUseCase = get(),
-            getSelectedAccountUseCase = get()
+            getSelectedAccountUseCase = get(),
+            secretInteractor = mockSecretInteractor
         )
     }
 }

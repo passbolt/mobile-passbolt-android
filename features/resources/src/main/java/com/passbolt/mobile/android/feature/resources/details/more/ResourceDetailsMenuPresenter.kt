@@ -10,10 +10,6 @@ class ResourceDetailsMenuPresenter : ResourceDetailsMenuContract.Presenter {
         view?.showTitle(resourceMenuModel.title)
     }
 
-    override fun copyPasswordClick() {
-        // TODO fetch from API & decrypt & copy
-    }
-
     override fun closeClick() {
         view?.close()
     }

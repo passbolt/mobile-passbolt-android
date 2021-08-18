@@ -33,7 +33,6 @@ interface ResourceDetailsMenuContract {
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun copyPasswordClick()
         fun closeClick()
         fun argsRetrieved(menuModel: ResourceDetailsMenuModel)
     }

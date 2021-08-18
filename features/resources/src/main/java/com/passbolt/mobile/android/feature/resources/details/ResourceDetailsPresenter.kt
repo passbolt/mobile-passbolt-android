@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.resources.details
 
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuModel
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
@@ -10,7 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,7 +36,8 @@ import timber.log.Timber
 class ResourceDetailsPresenter(
     private val secretInteractor: SecretInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext), ResourceDetailsContract.Presenter {
+) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
+    ResourceDetailsContract.Presenter {
 
     override var view: ResourceDetailsContract.View? = null
     private lateinit var passwordModel: ResourceModel
@@ -85,26 +85,11 @@ class ResourceDetailsPresenter(
 
     override fun secretIconClick() {
         if (!isPasswordVisible) {
-            view?.showProgress()
-            scope.launch {
-                when (val output =
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                        secretInteractor.fetchAndDecrypt(
-                            passwordModel.resourceId
-                        )
-                    }
-                ) {
-                    is SecretInteractor.Output.DecryptFailure -> view?.showDecryptionFailure()
-                    is SecretInteractor.Output.FetchFailure -> view?.showFetchFailure()
-                    is SecretInteractor.Output.Success -> {
-                        view?.apply {
-                            showPasswordVisibleIcon()
-                            showPassword(String(output.decryptedSecret))
-                        }
-                    }
-                    SecretInteractor.Output.Unauthorized -> Timber.e("TODO")
+            doAfterFetchAndDecrypt { decryptedSecret ->
+                view?.apply {
+                    showPasswordVisibleIcon()
+                    showPassword(String(decryptedSecret))
                 }
-                view?.hideProgress()
             }
             isPasswordVisible = true
         } else {
@@ -117,6 +102,30 @@ class ResourceDetailsPresenter(
         }
     }
 
+    private fun doAfterFetchAndDecrypt(action: (ByteArray) -> Unit) {
+        scope.launch {
+            when (val output =
+                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    secretInteractor.fetchAndDecrypt(
+                        passwordModel.resourceId
+                    )
+                }
+            ) {
+                is SecretInteractor.Output.DecryptFailure -> view?.showDecryptionFailure()
+                is SecretInteractor.Output.FetchFailure -> view?.showFetchFailure()
+                is SecretInteractor.Output.Success -> {
+                    action(output.decryptedSecret)
+                }
+            }
+        }
+    }
+
+    override fun menuCopyClick() {
+        doAfterFetchAndDecrypt { decryptedSecret ->
+            view?.addToClipboard(SECRET_LABEL, String(decryptedSecret))
+        }
+    }
+
     override fun detach() {
         scope.coroutineContext.cancelChildren()
         super<BaseAuthenticatedPresenter>.detach()
@@ -125,5 +134,6 @@ class ResourceDetailsPresenter(
     companion object {
         private const val WEBSITE_LABEL = "Website"
         private const val USERNAME_LABEL = "Username"
+        private const val SECRET_LABEL = "Secret"
     }
 }

@@ -14,18 +14,5 @@
         <argument
             android:name="resourceModel"
             app:argType="com.passbolt.mobile.android.ui.ResourceModel" />
-        <action
-            android:id="@+id/action_resourceDetails_to_more"
-            app:destination="@id/more" />
     </fragment>
-
-    <dialog
-        android:id="@+id/more"
-        android:name="com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuFragment"
-        android:label="PasswordDetailsSheetFragment"
-        tools:layout="@layout/view_password_details_bottomsheet">
-        <argument
-            android:name="resourceMenuModel"
-            app:argType="com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuModel" />
-    </dialog>
 </navigation>

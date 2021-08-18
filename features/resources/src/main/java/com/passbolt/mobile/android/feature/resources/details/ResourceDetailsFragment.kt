@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
-import androidx.navigation.fragment.findNavController
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.google.android.material.snackbar.Snackbar
@@ -20,6 +19,7 @@ import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.ResourcesActivity
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
+import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuFragment
 import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
@@ -49,7 +49,7 @@ import org.koin.android.ext.android.inject
 class ResourceDetailsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
         FragmentResourceDetailsBinding::inflate
-    ), ResourceDetailsContract.View {
+    ), ResourceDetailsContract.View, ResourceDetailsMenuFragment.Listener {
 
     override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
@@ -101,7 +101,8 @@ class ResourceDetailsFragment :
     }
 
     override fun navigateToMore(model: ResourceDetailsMenuModel) {
-        findNavController().navigate(ResourceDetailsFragmentDirections.actionResourceDetailsToMore(model))
+        ResourceDetailsMenuFragment.newInstance(model)
+            .show(childFragmentManager, ResourceDetailsMenuFragment::class.java.name)
     }
 
     override fun displayUrl(url: String) {
@@ -169,6 +170,10 @@ class ResourceDetailsFragment :
 
     override fun clearPasswordInput() {
         binding.passwordValue.text = ""
+    }
+
+    override fun menuCopyClick() {
+        presenter.menuCopyClick()
     }
 
     companion object {
