@@ -1,11 +1,8 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.mappers
 
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.FeatureFlagsMapper
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.mappers.SignInMapper
-import com.passbolt.mobile.android.mappers.SignOutMapper
-import com.passbolt.mobile.android.mappers.UpdateTransferMapper
+import com.nhaarman.mockitokotlin2.mock
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 
 /**
@@ -30,19 +27,12 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mappersModule = module {
-    single { UpdateTransferMapper() }
-    single {
-        AccountModelMapper(
-            selectedAccountUseCase = get()
-        )
+
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
+
+@ExperimentalCoroutinesApi
+val testMappersModule = module {
+    factory {
+        AccountModelMapper(mockGetSelectedAccountUseCase)
     }
-    single { SignInMapper() }
-    single {
-        ResourceModelMapper(
-            initialsProvider = get()
-        )
-    }
-    single { SignOutMapper() }
-    single { FeatureFlagsMapper() }
 }

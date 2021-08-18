@@ -58,6 +58,10 @@ val testAccountListModule = module {
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory { AccountModelMapper() }
+    factory {
+        AccountModelMapper(
+            selectedAccountUseCase = mockGetSelectedAccountUseCase
+        )
+    }
     factory { saveCurrentApiUrlUseCase }
 }

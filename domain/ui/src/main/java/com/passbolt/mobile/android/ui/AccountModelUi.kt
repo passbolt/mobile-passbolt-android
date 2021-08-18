@@ -31,7 +31,8 @@ sealed class AccountModelUi {
         val avatar: String?,
         val url: String,
         val isFirstItem: Boolean = false,
-        val isTrashIconVisible: Boolean = false
+        val isTrashIconVisible: Boolean = false,
+        val isCurrentUser: Boolean = false
     ) : AccountModelUi()
 
     object AddNewAccount : AccountModelUi()

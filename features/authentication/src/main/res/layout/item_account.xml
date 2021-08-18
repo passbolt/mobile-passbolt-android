@@ -18,6 +18,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/currentAccountIcon"
+        android:layout_width="@dimen/dp_9"
+        android:layout_height="@dimen/dp_9"
+        android:paddingTop="@dimen/dp_1"
+        android:paddingEnd="@dimen/dp_1"
+        android:src="@drawable/view_green_dot"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/icon"
+        app:layout_constraintTop_toTopOf="@+id/icon"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@+id/title"
         style="@style/Heading4Text"

@@ -1,13 +1,23 @@
 package com.passbolt.mobile.android.mappers
 
 import com.google.common.truth.Truth.assertThat
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
 import com.passbolt.mobile.android.dto.request.StatusRequest
 import com.passbolt.mobile.android.entity.account.AccountEntity
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
 import com.passbolt.mobile.android.ui.Status
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.koin.test.KoinTestRule
+import org.koin.core.logger.Level
+import org.koin.java.KoinJavaComponent.inject
+import org.koin.test.KoinTest
+import org.koin.test.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,12 +41,19 @@ import org.junit.Test
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountModelMapperTest {
-    private lateinit var mapper: AccountModelMapper
+@ExperimentalCoroutinesApi
+class AccountModelMapperTest : KoinTest {
+    private val mapper: AccountModelMapper by inject()
+
+    @get:Rule
+    val koinTestRule = KoinTestRule.create {
+        printLogger(Level.ERROR)
+        modules(testMappersModule)
+    }
 
     @Before
     fun setUp() {
-        mapper = AccountModelMapper()
+        whenever(mockGetSelectedAccountUseCase.execute(Unit)).doReturn(GetSelectedAccountUseCase.Output("id1"))
     }
 
     @Test
@@ -49,7 +66,7 @@ class AccountModelMapperTest {
                 email = "email1",
                 avatarUrl = "avatarUrl1",
                 url = "url1",
-                serverId = "serverId1"
+                serverId = "serverId1",
             ),
             AccountEntity(
                 userId = "id2",
@@ -70,7 +87,8 @@ class AccountModelMapperTest {
                 isFirstItem = true,
                 isTrashIconVisible = false,
                 avatar = "avatarUrl1",
-                url = "url1"
+                url = "url1",
+                isCurrentUser = true
             ),
             AccountModelUi.AccountModel(
                 userId = "id2",

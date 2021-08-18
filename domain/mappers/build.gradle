@@ -9,6 +9,7 @@ dependencies {
     implementation project(':dto')
     implementation project(':entity')
     implementation project(':common')
+    implementation project(':storage')
 
     implementation libs.di.koin
 }
