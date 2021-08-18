@@ -68,7 +68,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         super.onViewCreated(view, savedInstanceState)
         authStrategy = strategyFactory.get(args.authenticationStrategy, this)
         presenter = get(named(args.authenticationStrategy.javaClass.simpleName))
-        presenter.argsRetrieved(args.userId)
+        presenter.argsRetrieved(args.userId, args.authenticationStrategy)
         presenter.attach(this)
         presenter.viewCreated(authStrategy.domainVisible())
         setListeners()
@@ -100,6 +100,19 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         })
     }
 
+    override fun showAuthenticationReason(reason: AuthContract.View.RefreshAuthReason) {
+        with(binding.authReasonLabel) {
+            text = getMessageForReason(reason)
+            visible()
+        }
+    }
+
+    private fun getMessageForReason(reason: AuthContract.View.RefreshAuthReason) =
+        when (reason) {
+            AuthContract.View.RefreshAuthReason.SESSION -> getString(R.string.auth_reason_session_expired)
+            AuthContract.View.RefreshAuthReason.PASSPHRASE -> getString(R.string.auth_reason_passphrase_expired)
+        }
+
     override fun setBiometricAuthButtonVisible() {
         binding.biometricAuthButton.visible()
     }
@@ -108,7 +121,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         binding.biometricAuthButton.gone()
     }
 
-    override fun showBiometricPrompt() {
+    override fun showBiometricPrompt(authReason: AuthContract.View.RefreshAuthReason?) {
         val biometricPrompt = BiometricPrompt(
             this, executor, AuthBiometricCallback(
                 presenter::biometricAuthError,
@@ -116,9 +129,11 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
             )
         )
 
+        val promptSubtitle =
+            authReason?.let { getMessageForReason(authReason) } ?: getString(R.string.auth_biometric_subtitle)
         val promptInfo = biometricPromptBuilder
             .setTitle(getString(R.string.auth_biometric_title))
-            .setSubtitle(getString(R.string.auth_biometric_subtitle))
+            .setSubtitle(promptSubtitle)
             .setNegativeButtonText(getString(R.string.cancel))
             .setAllowedAuthenticators(BIOMETRIC_STRONG)
             .build()

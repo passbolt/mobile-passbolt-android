@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.auth
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,19 +46,24 @@ interface AuthContract {
         fun authSuccess()
         fun hideKeyboard()
         fun showLeaveConfirmationDialog()
-        fun showBiometricPrompt()
+        fun showBiometricPrompt(authReason: RefreshAuthReason?)
         fun setBiometricAuthButtonVisible()
         fun setBiometricAuthButtonGone()
         fun showAuthenticationError(errorMessage: Int)
         fun clearPassphraseInput()
         fun showFeatureFlagsErrorDialog()
         fun closeFeatureFlagsFetchErrorDialog()
+        fun showAuthenticationReason(reason: RefreshAuthReason)
+
+        enum class RefreshAuthReason {
+            SESSION, PASSPHRASE
+        }
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun signInClick(passphrase: ByteArray)
         fun backClick(showConfirmationDialog: Boolean)
-        fun argsRetrieved(userId: String)
+        fun argsRetrieved(userId: String, authenticationStrategy: AuthenticationType)
         fun forgotPasswordClick()
         fun passphraseInputIsEmpty(isEmpty: Boolean)
         fun viewCreated(domainVisible: Boolean)
