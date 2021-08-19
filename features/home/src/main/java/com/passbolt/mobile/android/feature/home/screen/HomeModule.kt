@@ -2,8 +2,7 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.home.screen.adapter.PasswordItem
-import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
+import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import org.koin.core.module.Module
 
 /**
@@ -37,19 +36,12 @@ fun Module.homeModule() {
                 coroutineLaunchContext = get(),
                 resourceModelMapper = get(),
                 getSelectedAccountDataUseCase = get(),
-                addLocalResourcesUseCase = get(),
-                removeLocalResourcesUseCase = get(),
-                getSelectedAccountUseCase = get(),
+                fetchAndUpdateDatabaseUseCase = get(),
                 secretInteractor = get()
             )
         }
         scoped<ItemAdapter<PasswordItem>> {
             ItemAdapter.items()
-        }
-        scoped {
-            GetResourcesUseCase(
-                resourceRepository = get()
-            )
         }
         scoped {
             FastAdapter.with(get<ItemAdapter<PasswordItem>>())

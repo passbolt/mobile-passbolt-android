@@ -1,22 +1,21 @@
 package com.password.mobile.android.feature.home
 
 import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.reset
-import com.nhaarman.mockitokotlin2.stub
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
+import com.nhaarman.mockitokotlin2.stub
+import com.nhaarman.mockitokotlin2.doReturn
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
+import com.passbolt.mobile.android.core.commonresource.GetResourcesUseCase
+import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
-import com.passbolt.mobile.android.feature.home.screen.usecase.GetResourcesUseCase
-import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -30,6 +29,7 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import java.io.IOException
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 
 @ExperimentalCoroutinesApi
 class HomePresenterTest : KoinTest {

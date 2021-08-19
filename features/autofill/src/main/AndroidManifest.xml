@@ -12,5 +12,6 @@
                 <action android:name="android.service.autofill.AutofillService" />
             </intent-filter>
         </service>
+        <activity android:name=".resources.AutofillResourcesActivity" />
     </application>
 </manifest>

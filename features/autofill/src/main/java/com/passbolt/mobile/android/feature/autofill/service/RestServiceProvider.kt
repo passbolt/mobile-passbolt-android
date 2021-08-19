@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.feature.autofill.encourage
+package com.passbolt.mobile.android.feature.autofill.service
 
-import com.passbolt.mobile.android.feature.autofill.StructureParser
-import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import okhttp3.OkHttpClient
+import retrofit2.Converter
+import retrofit2.Retrofit
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +26,15 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class RestServiceProvider(
+    private val client: OkHttpClient,
+    private val converterFactory: Converter.Factory
+) {
 
-fun Module.encourageAutofillModule() {
-    scope(named<EncourageAutofillDialog>()) {
-        scoped<EncourageAutofillContract.Presenter> {
-            EncourageAutofillPresenter(
-                autofillInformationProvider = get()
-            )
-        }
-    }
-    single {
-        StructureParser()
-    }
+    fun get(url: String) =
+        Retrofit.Builder()
+            .baseUrl(url)
+            .client(client)
+            .addConverterFactory(converterFactory)
+            .build()
 }

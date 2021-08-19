@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.feature.autofill.encourage
+package com.passbolt.mobile.android.feature.autofill.service
 
-import com.passbolt.mobile.android.feature.autofill.StructureParser
-import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.networking.ResponseHandler
+import com.passbolt.mobile.android.core.networking.callWithHandler
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +25,13 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class CheckUrlLinksRepository(
+    private val restServiceProvider: RestServiceProvider,
+    private val responseHandler: ResponseHandler
+) {
 
-fun Module.encourageAutofillModule() {
-    scope(named<EncourageAutofillDialog>()) {
-        scoped<EncourageAutofillContract.Presenter> {
-            EncourageAutofillPresenter(
-                autofillInformationProvider = get()
-            )
-        }
-    }
-    single {
-        StructureParser()
+    suspend fun getAssetLinks(url: String) = callWithHandler(responseHandler) {
+        val api = restServiceProvider.get(url).create(AssetLinksApi::class.java)
+        api.getAssetLinks()
     }
 }

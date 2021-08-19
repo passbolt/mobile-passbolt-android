@@ -1,10 +1,23 @@
 package com.passbolt.mobile.android.feature.autofill
 
 import android.view.autofill.AutofillManager
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.core.commonresource.PasswordItem
+import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
+import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesActivity
+import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesContract
+import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesPresenter
+import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
+import com.passbolt.mobile.android.feature.autofill.service.CheckUrlLinksRepository
+import com.passbolt.mobile.android.feature.autofill.service.CheckUrlLinksUseCase
+import com.passbolt.mobile.android.feature.autofill.service.RestServiceProvider
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import retrofit2.converter.gson.GsonConverterFactory
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,6 +48,50 @@ val autofillModule = module {
     factory {
         AutofillInformationProvider(
             autofillManager = get()
+        )
+    }
+    scope<AutofillResourcesActivity> {
+        scoped<AutofillResourcesContract.Presenter> {
+            AutofillResourcesPresenter(
+                structureParser = get(),
+                coroutineLaunchContext = get(),
+                getSelectedAccountUseCase = get(),
+                getLocalResourcesUse = get(),
+                checkUrlLinksUseCase = get(),
+                getResourcesUseCase = get(),
+                resourceModelMapper = get(),
+                fetchAndUpdateDatabaseUseCase = get()
+            )
+        }
+        scoped<ItemAdapter<PasswordItem>> {
+            ItemAdapter.items()
+        }
+        scoped {
+            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
+        }
+        scoped {
+            CheckUrlLinksUseCase(
+                checkUrlLinksRepository = get()
+            )
+        }
+        scoped {
+            CheckUrlLinksRepository(
+                restServiceProvider = get(),
+                responseHandler = get()
+            )
+        }
+    }
+    single {
+        RestServiceProvider(
+            client = get(named(DEFAULT_HTTP_CLIENT)),
+            converterFactory = GsonConverterFactory.create()
+        )
+    }
+    single {
+        FetchAndUpdateDatabaseUseCase(
+            getSelectedAccountUseCase = get(),
+            removeLocalResourcesUseCase = get(),
+            addLocalResourcesUseCase = get()
         )
     }
 }
