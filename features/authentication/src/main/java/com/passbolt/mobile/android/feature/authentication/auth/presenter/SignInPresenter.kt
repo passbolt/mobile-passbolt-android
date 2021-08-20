@@ -118,7 +118,7 @@ class SignInPresenter(
             val pgpKeyResult = pgpKey.await()
             val rsaKeyResult = rsaKey.await()
             if (pgpKeyResult is PgpSuccess && rsaKeyResult is RsaSuccess) {
-                signIn(passphrase, pgpKeyResult.publicKey, rsaKeyResult.rsaKey)
+                signIn(passphrase.copyOf(), pgpKeyResult.publicKey, rsaKeyResult.rsaKey)
             } else {
                 showGenericError()
             }
