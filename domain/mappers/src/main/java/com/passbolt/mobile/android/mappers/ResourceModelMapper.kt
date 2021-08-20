@@ -39,10 +39,9 @@ class ResourceModelMapper(
             resourceId = resource.id,
             name = resource.name,
             username = resource.username,
-            initials = initialsProvider.get(resource.name),
             icon = null,
-            url = resource.uri,
-            searchCriteria = "${resource.name}${resource.username}${resource.uri}"
+            initials = initialsProvider.get(resource.name),
+            url = resource.uri
         )
 
     fun map(resourceModel: ResourceModel): ResourceEntity =
@@ -61,10 +60,9 @@ class ResourceModelMapper(
         ResourceModel(
             resourceId = resourceEntity.resourceId,
             name = resourceEntity.resourceName,
-            url = resourceEntity.url,
             username = resourceEntity.username,
             icon = null,
             initials = initialsProvider.get(resourceEntity.resourceName),
-            searchCriteria = "${resourceEntity.resourceName}${resourceEntity.username}${resourceEntity.url}"
+            url = resourceEntity.url
         )
 }

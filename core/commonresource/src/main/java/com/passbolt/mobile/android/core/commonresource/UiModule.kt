@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.core.commonresource
 
-import android.os.Parcelable
-import com.passbolt.mobile.android.common.search.Searchable
-import kotlinx.parcelize.Parcelize
+import com.passbolt.mobile.android.common.search.SearchableMatcher
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,13 +26,8 @@ import kotlinx.parcelize.Parcelize
  * @since v1.0
  */
 
-@Parcelize
-data class ResourceModel(
-    val resourceId: String,
-    val name: String,
-    val username: String,
-    val icon: String?,
-    val initials: String,
-    val url: String,
-    override val searchCriteria: String = "$name$username$url"
-) : Parcelable, Searchable
+val uiModule = module {
+    factory {
+        SearchableMatcher()
+    }
+}

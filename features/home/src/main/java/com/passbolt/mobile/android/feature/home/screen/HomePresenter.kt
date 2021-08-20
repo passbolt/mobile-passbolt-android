@@ -1,12 +1,13 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import androidx.annotation.VisibleForTesting
+import com.passbolt.mobile.android.core.commonresource.GetResourcesUseCase
+import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.core.commonresource.GetResourcesUseCase
 import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -43,7 +44,8 @@ class HomePresenter(
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
-    private val secretInteractor: SecretInteractor
+    private val secretInteractor: SecretInteractor,
+    private val resourceMatcher: SearchableMatcher
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
@@ -107,7 +109,7 @@ class HomePresenter(
 
     private fun filterList() {
         val filtered = allItemsList.filter {
-            it.searchCriteria.contains(currentSearchText)
+            resourceMatcher.matches(it, currentSearchText)
         }
         if (filtered.isEmpty()) {
             view?.showSearchEmptyList()

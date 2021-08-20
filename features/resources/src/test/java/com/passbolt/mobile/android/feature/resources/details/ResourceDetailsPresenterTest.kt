@@ -121,7 +121,6 @@ class ResourceDetailsPresenterTest : KoinTest {
         private const val USERNAME = "username"
         private const val INITIALS = "NN"
         private const val URL = "https://www.passbolt.com"
-        private const val SEARCH_CRITERIA = "name username"
         private const val ID = "id"
         private val RESOURCE_MODEL = ResourceModel(
             ID,
@@ -129,8 +128,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             USERNAME,
             null,
             INITIALS,
-            URL,
-            SEARCH_CRITERIA
+            URL
         )
         private val DECRYPTED_SECRET = "decrypted".toByteArray()
     }

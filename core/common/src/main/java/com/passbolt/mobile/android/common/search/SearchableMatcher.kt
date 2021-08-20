@@ -1,8 +1,4 @@
-package com.passbolt.mobile.android.ui
-
-import android.os.Parcelable
-import com.passbolt.mobile.android.common.search.Searchable
-import kotlinx.parcelize.Parcelize
+package com.passbolt.mobile.android.common.search
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,14 +22,12 @@ import kotlinx.parcelize.Parcelize
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class SearchableMatcher {
 
-@Parcelize
-data class ResourceModel(
-    val resourceId: String,
-    val name: String,
-    val username: String,
-    val icon: String?,
-    val initials: String,
-    val url: String,
-    override val searchCriteria: String = "$name$username$url"
-) : Parcelable, Searchable
+    fun matches(searchable: Searchable, query: String): Boolean =
+        searchable.searchCriteria.removeWhiteSpace()
+            .contains(query.removeWhiteSpace(), ignoreCase = true)
+
+    private fun String.removeWhiteSpace() =
+        replace("\\s".toRegex(), "")
+}
