@@ -26,6 +26,7 @@ import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import java.util.concurrent.Executor
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -121,7 +122,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         binding.biometricAuthButton.gone()
     }
 
-    override fun showBiometricPrompt(authReason: AuthContract.View.RefreshAuthReason?) {
+    override fun showBiometricPrompt(authReason: AuthContract.View.RefreshAuthReason?, fingeprintCipherCrypto: Cipher) {
         val biometricPrompt = BiometricPrompt(
             this, executor, AuthBiometricCallback(
                 presenter::biometricAuthError,
@@ -137,7 +138,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
             .setNegativeButtonText(getString(R.string.cancel))
             .setAllowedAuthenticators(BIOMETRIC_STRONG)
             .build()
-        biometricPrompt.authenticate(promptInfo)
+        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingeprintCipherCrypto))
     }
 
     override fun showAuthenticationError(errorMessage: Int) {
@@ -181,7 +182,10 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showFingerprintChangedError() {
-        Snackbar.make(binding.root, R.string.fingerprint_biometric_changed, Snackbar.LENGTH_LONG)
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.fingerprint_biometric_changed_title)
+            .setMessage(R.string.fingerprint_biometric_changed_message)
+            .setPositiveButton(R.string.got_it) { _, _ -> }
             .show()
     }
 

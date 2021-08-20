@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.storage.repository
+package com.passbolt.mobile.android.storage.usecase.biometrickey
 
-import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
-import org.koin.core.module.Module
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCrypto
+import com.passbolt.mobile.android.storage.encrypted.biometric.KeyStoreWrapper
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,13 +26,11 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class RemoveBiometricKeyUseCase(
+    private val keyStoreWrapper: KeyStoreWrapper
+) : UseCase<Unit, Unit> {
 
-fun Module.repositoryModule() {
-    factory {
-        PassphraseRepository(
-            passphraseMemoryCache = get(),
-            getPassphraseUseCase = get(),
-            selectedAccountUseCase = get()
-        )
+    override fun execute(input: Unit) {
+        keyStoreWrapper.removeKey(BiometricCrypto.BIOMETRIC_KEY_ALIAS)
     }
 }

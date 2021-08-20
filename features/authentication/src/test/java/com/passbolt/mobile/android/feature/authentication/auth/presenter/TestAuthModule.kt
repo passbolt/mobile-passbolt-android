@@ -4,10 +4,8 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
-import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
-import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
@@ -20,14 +18,17 @@ import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphras
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
+import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -78,7 +79,6 @@ internal val mockPrivateKeyUseCase = mock<GetPrivateKeyUseCase> {
 }
 internal val mockVerifyPassphraseUseCase = mock<VerifyPassphraseUseCase>()
 internal val mockCheckIfPassphraseExistsUseCase = mock<CheckIfPassphraseFileExistsUseCase>()
-internal val mockPassphraseRepository = mock<PassphraseRepository>()
 
 internal val mockGetServerPublicPgpKeyUseCase = mock<GetServerPublicPgpKeyUseCase>()
 internal val mockRemoveSelectedAccountPassphraseUseCase = mock<RemoveSelectedAccountPassphraseUseCase>()
@@ -90,6 +90,14 @@ internal val mockChallengeVerifier = mock<ChallengeVerifier>()
 internal val mockFingerprintInformationProvider = mock<FingerprintInformationProvider>()
 internal val mockFetureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
+internal val mockCipher = mock<Cipher> {
+    on { iv }.doReturn(ByteArray(0))
+}
+internal val mockBiometricCipher = mock<BiometricCipher> {
+    on { getBiometricDecryptCipher(any()) }.doReturn(mockCipher)
+}
+internal val mockGetPassphraseUseCase = mock<GetPassphraseUseCase>()
+internal val mockRemoveBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
 
 val testAuthModule = module {
     factory<AuthContract.Presenter>(named(AuthenticationType.Passphrase.javaClass.simpleName)) {
@@ -101,7 +109,10 @@ val testAuthModule = module {
             removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
             checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
             getAccountDataUseCase = mockGetAccountDataUseCase,
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            biometricCipher = mockBiometricCipher,
+            getPassphraseUseCase = mockGetPassphraseUseCase,
+            removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase
         )
     }
     factory<AuthContract.Presenter>(named(AuthenticationType.SignIn.javaClass.simpleName)) {
@@ -116,7 +127,6 @@ val testAuthModule = module {
             getAccountDataUseCase = mockGetAccountDataUseCase,
             saveSessionUseCase = mock(),
             saveSelectedAccountUseCase = mock(),
-            passphraseRepository = mockPassphraseRepository,
             checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
             removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
             fingerprintInfoProvider = mockFingerprintInformationProvider,
@@ -124,7 +134,10 @@ val testAuthModule = module {
             featureFlagsUseCase = mockFetureFlagsUseCase,
             signOutUseCase = mockSignOutUseCase,
             getPrivateKeyUseCase = mockPrivateKeyUseCase,
-            verifyPassphraseUseCase = mockVerifyPassphraseUseCase
+            verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+            biometricCipher = mockBiometricCipher,
+            getPassphraseUseCase = mockGetPassphraseUseCase,
+            removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

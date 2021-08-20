@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.feature.secrets.usecase.decrypt
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
+import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.repository.passphrase.PassphraseRepository
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -34,7 +34,7 @@ import timber.log.Timber
  */
 class DecryptSecretUseCase(
     private val gopenPgp: OpenPgp,
-    private val passphraseRepository: PassphraseRepository,
+    private val passphraseMemoryCache: PassphraseMemoryCache,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase
 ) : AsyncUseCase<DecryptSecretUseCase.Input, DecryptSecretUseCase.Output> {
@@ -45,7 +45,7 @@ class DecryptSecretUseCase(
         )
 
         return try {
-            val potentialPassphrase = passphraseRepository.getCaching()
+            val potentialPassphrase = passphraseMemoryCache.get()
             if (potentialPassphrase is PotentialPassphrase.Passphrase) {
                 val passphraseCopy = potentialPassphrase.passphrase.copyOf()
                 val decrypted = gopenPgp.decryptMessageArmored(

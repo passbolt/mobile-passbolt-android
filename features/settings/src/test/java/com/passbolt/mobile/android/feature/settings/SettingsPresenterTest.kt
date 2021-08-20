@@ -158,8 +158,8 @@ class SettingsPresenterTest : KoinTest {
 
         verify(view).navigateToAuthGetPassphrase()
         presenter.getPassphraseSucceeded() // user entered passphrase
-        verify(view).showBiometricPrompt()
-        presenter.biometricAuthSucceeded() // user touched fingerprint
+        verify(view).showBiometricPrompt(mockCipher)
+        presenter.biometricAuthSucceeded(mockCipher) // user touched fingerprint
         argumentCaptor<SavePassphraseUseCase.Input>().apply {
             verify(savePassphraseUseCase).execute(capture())
             assertThat(firstValue.passphrase).isEqualTo(PASSPHRASE)

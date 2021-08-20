@@ -4,11 +4,12 @@ import android.content.Context
 import android.security.keystore.UserNotAuthenticatedException
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.storage.encrypted.biometric.Crypto
+import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCrypto
 import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
 import com.passbolt.mobile.android.storage.paths.PassphraseFileName
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import java.io.File
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,7 +36,7 @@ import java.io.File
 
 class SavePassphraseUseCase(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val crypto: Crypto,
+    private val biometricCrypto: BiometricCrypto,
     private val appContext: Context
 ) : UseCase<SavePassphraseUseCase.Input, Unit> {
 
@@ -46,13 +47,14 @@ class SavePassphraseUseCase(
         val file = File(EncryptedFileBaseDirectory(appContext).baseDirectory, fileName)
         val passphraseCopy = input.passphrase.copyOf()
         file.outputStream().use {
-            val encrypted = crypto.encryptData(passphraseCopy)
+            val encrypted = biometricCrypto.encryptData(passphraseCopy, input.authenticatedCipher)
             it.write(encrypted)
         }
         passphraseCopy.erase()
     }
 
     class Input(
-        val passphrase: ByteArray
+        val passphrase: ByteArray,
+        val authenticatedCipher: Cipher
     )
 }

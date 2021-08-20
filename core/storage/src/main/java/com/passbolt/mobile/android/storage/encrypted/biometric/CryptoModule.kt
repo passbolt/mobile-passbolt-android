@@ -32,7 +32,7 @@ private const val ANDROID_KEY_STORE = "AndroidKeyStore"
 
 fun Module.cryptoModule() {
     factory {
-        Crypto(keyStoreWrapper = get())
+        BiometricCrypto()
     }
     factory {
         KeyStoreWrapper(
@@ -48,5 +48,11 @@ fun Module.cryptoModule() {
     }
     factory {
         KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEY_STORE)
+    }
+    factory {
+        BiometricCipher(
+            keyStoreWrapper = get(),
+            getBiometricKeyIvUseCase = get()
+        )
     }
 }

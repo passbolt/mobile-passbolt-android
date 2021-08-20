@@ -1,12 +1,11 @@
-package com.passbolt.mobile.android.storage.repository.passphrase
+package com.passbolt.mobile.android.storage.usecase.biometrickey
 
-import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
-import org.koin.dsl.module
+import android.util.Base64
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.paths.BiometricKeyIvFileName
+import com.passbolt.mobile.android.storage.usecase.IV_KEY
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,17 +29,17 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GetBiometricKeyIvUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : UseCase<UserIdInput, GetBiometricKeyIvUseCase.Output> {
 
-internal val passphraseMemoryCacheMock = mock<PassphraseMemoryCache>()
-internal val getSelectedAccountUseCaseMock = mock<GetSelectedAccountUseCase>()
-internal val getPassphraseUseCaseMock = mock<GetPassphraseUseCase>()
-
-val passphraseRepositoryTestModule = module {
-    factory {
-        PassphraseRepository(
-            passphraseMemoryCache = passphraseMemoryCacheMock,
-            getPassphraseUseCase = getPassphraseUseCaseMock,
-            selectedAccountUseCase = getSelectedAccountUseCaseMock
-        )
+    override fun execute(input: UserIdInput): Output {
+        val fileName = BiometricKeyIvFileName(input.userId)
+        val encodedIv = encryptedSharedPreferencesFactory.get(fileName.name)
+            .getString(IV_KEY, "")
+        require(!encodedIv.isNullOrBlank())
+        return Output(Base64.decode(encodedIv, Base64.DEFAULT))
     }
+
+    class Output(val iv: ByteArray)
 }

@@ -35,7 +35,7 @@ fun Module.passphraseModule() {
     }
     single {
         GetPassphraseUseCase(
-            crypto = get(),
+            biometricCrypto = get(),
             appContext = androidApplication()
         )
     }
@@ -51,7 +51,7 @@ fun Module.passphraseModule() {
     single {
         SavePassphraseUseCase(
             getSelectedAccountUseCase = get(),
-            crypto = get(),
+            biometricCrypto = get(),
             appContext = androidApplication()
         )
     }

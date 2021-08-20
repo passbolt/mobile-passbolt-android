@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint.di
+package com.passbolt.mobile.android.storage.usecase.biometrickey
 
-import androidx.biometric.BiometricPrompt
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintContract
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintFragment
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintPresenter
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,18 +24,22 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-fun Module.fingerprintModule() {
-    scope(named<FingerprintFragment>()) {
-        scoped<FingerprintContract.Presenter> {
-            FingerprintPresenter(
-                fingerprintInformationProvider = get(),
-                passphraseMemoryCache = get(),
-                autofillInformationProvider = get(),
-                savePassphraseUseCase = get(),
-                biometricCipher = get(),
-                saveBiometricKeyIvUseCase = get()
-            )
-        }
-        scoped { BiometricPrompt.PromptInfo.Builder() }
+
+fun Module.biometricKeyIvModule() {
+    factory {
+        GetBiometricKeyIvUseCase(
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
+    factory {
+        SaveBiometricKeyIvUseCase(
+            encryptedSharedPreferencesFactory = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    factory {
+        RemoveBiometricKeyUseCase(
+            keyStoreWrapper = get()
+        )
     }
 }

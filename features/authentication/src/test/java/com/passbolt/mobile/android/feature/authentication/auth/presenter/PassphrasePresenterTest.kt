@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
@@ -142,7 +143,7 @@ class PassphrasePresenterTest : KoinTest {
         presenter.attach(mockView)
 
         verify(mockView).setBiometricAuthButtonVisible()
-        verify(mockView).showBiometricPrompt(AuthContract.View.RefreshAuthReason.PASSPHRASE)
+        verify(mockView).showBiometricPrompt(AuthContract.View.RefreshAuthReason.PASSPHRASE, mockCipher)
     }
 
     @Test
@@ -155,6 +156,20 @@ class PassphrasePresenterTest : KoinTest {
         presenter.attach(mockView)
 
         verify(mockView).showAuthenticationReason(AuthContract.View.RefreshAuthReason.PASSPHRASE)
-        verify(mockView).showBiometricPrompt(AuthContract.View.RefreshAuthReason.PASSPHRASE)
+        verify(mockView).showBiometricPrompt(AuthContract.View.RefreshAuthReason.PASSPHRASE, mockCipher)
+    }
+
+    @Test
+    fun `view should hide biometric auth when key is invalidated`() {
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = true))
+        whenever(mockFingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+        whenever(mockBiometricCipher.getBiometricDecryptCipher(any())).thenThrow(KeyPermanentlyInvalidatedException())
+
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.Passphrase)
+        presenter.attach(mockView)
+
+        verify(mockView).setBiometricAuthButtonGone()
+        verify(mockView).showFingerprintChangedError()
     }
 }

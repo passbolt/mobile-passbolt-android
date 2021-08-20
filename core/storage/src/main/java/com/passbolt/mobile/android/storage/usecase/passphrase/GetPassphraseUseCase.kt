@@ -1,15 +1,13 @@
 package com.passbolt.mobile.android.storage.usecase.passphrase
 
 import android.content.Context
-import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.encrypted.biometric.Crypto
+import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCrypto
 import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
 import com.passbolt.mobile.android.storage.paths.PassphraseFileName
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import timber.log.Timber
 import java.io.File
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,31 +33,28 @@ import java.io.File
  */
 
 class GetPassphraseUseCase(
-    private val crypto: Crypto,
+    private val biometricCrypto: BiometricCrypto,
     private val appContext: Context
-) : UseCase<UserIdInput, GetPassphraseUseCase.Output> {
+) : UseCase<GetPassphraseUseCase.Input, GetPassphraseUseCase.Output> {
 
-    override fun execute(input: UserIdInput): Output {
-        return try {
-            val fileName = PassphraseFileName(input.userId).name
-            val file = File(EncryptedFileBaseDirectory(appContext).baseDirectory, fileName)
+    override fun execute(input: Input): Output {
+        val fileName = PassphraseFileName(input.userId).name
+        val file = File(EncryptedFileBaseDirectory(appContext).baseDirectory, fileName)
 
-            file.readText().let {
-                if (it.isNotEmpty()) {
-                    val decrypted = crypto.decryptData(it)
-                    Output(PotentialPassphrase.Passphrase(decrypted))
-                } else {
-                    Output(PotentialPassphrase.PassphraseNotPresent())
-                }
+        file.readText().let {
+            return if (it.isNotEmpty()) {
+                val decrypted = biometricCrypto.decryptData(it, input.authenticatedCipher)
+                Output(PotentialPassphrase.Passphrase(decrypted))
+            } else {
+                Output(PotentialPassphrase.PassphraseNotPresent())
             }
-        } catch (exception: KeyPermanentlyInvalidatedException) {
-            Timber.e(exception)
-            Output(PotentialPassphrase.PassphraseNotPresent(PotentialPassphrase.KeyStatus.INVALID))
-        } catch (exception: Exception) {
-            Timber.e(exception)
-            Output(PotentialPassphrase.PassphraseNotPresent())
         }
     }
+
+    data class Input(
+        val userId: String,
+        val authenticatedCipher: Cipher
+    )
 
     class Output(
         val potentialPassphrase: PotentialPassphrase

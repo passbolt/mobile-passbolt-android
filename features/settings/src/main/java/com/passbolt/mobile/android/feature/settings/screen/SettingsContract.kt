@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,7 +39,7 @@ interface SettingsContract {
         fun navigateToAuthGetPassphrase()
         fun hideAutofillSetting()
         fun showLogoutDialog()
-        fun showBiometricPrompt()
+        fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
         fun showAuthenticationError(errorMessage: Int)
         fun navigateToSignInWithLogout()
     }
@@ -57,7 +58,7 @@ interface SettingsContract {
         fun logoutConfirmed()
         fun getPassphraseSucceeded()
         fun biometricAuthError(errorMessage: Int)
-        fun biometricAuthSucceeded()
+        fun biometricAuthSucceeded(authenticatedCipher: Cipher?)
         fun biometricAuthCanceled()
     }
 }

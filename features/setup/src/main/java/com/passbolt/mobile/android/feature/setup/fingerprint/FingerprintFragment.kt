@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentFingerprintBinding
 import org.koin.android.ext.android.inject
 import java.util.concurrent.Executor
+import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -119,7 +120,7 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         requireActivity().finish()
     }
 
-    override fun showBiometricPrompt() {
+    override fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher) {
         val biometricPrompt = BiometricPrompt(
             this, executor, SetupBiometricCallback(
                 presenter::authenticationError,
@@ -133,7 +134,7 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
             .setNegativeButtonText(getString(R.string.cancel))
             .setAllowedAuthenticators(BIOMETRIC_STRONG)
             .build()
-        biometricPrompt.authenticate(promptInfo)
+        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingerprintEncryptionCipher))
     }
 
     override fun showAuthenticationError(errorMessage: Int) {
