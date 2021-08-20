@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -56,6 +57,30 @@ class ProgressDialog : DialogFragment(), LifecycleObserver {
             (activity as LifecycleOwner).lifecycle.removeObserver(this)
             // hide dialog to prevent leaked widows after navigating back or parent recreation
             dismiss()
+        }
+    }
+
+    companion object {
+        val TAG: String = ProgressDialog::class.java.name
+    }
+}
+
+fun showProgressDialog(fragmentManager: FragmentManager) {
+    with(fragmentManager) {
+        val progressFragment = findFragmentByTag(ProgressDialog.TAG)
+        if (progressFragment?.isAdded != true) {
+            ProgressDialog().show(this, ProgressDialog.TAG)
+            executePendingTransactions()
+        }
+    }
+}
+
+fun hideProgressDialog(fragmentManager: FragmentManager) {
+    with(fragmentManager) {
+        val progressFragment = findFragmentByTag(ProgressDialog.TAG)
+        progressFragment?.let {
+            beginTransaction().remove(progressFragment).commit()
+            executePendingTransactions()
         }
     }
 }

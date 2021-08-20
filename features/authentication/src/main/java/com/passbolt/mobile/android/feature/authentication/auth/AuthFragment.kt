@@ -15,7 +15,8 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.hideSoftInput
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategy
@@ -60,7 +61,6 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     private lateinit var authStrategy: AuthStrategy
     private lateinit var presenter: AuthContract.Presenter
 
-    private var progressDialog: ProgressDialog? = ProgressDialog()
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
     private val executor: Executor by inject()
     private var featureFlagsFetchErrorDialog: FeatureFlagsFetchErrorDialog? = null
@@ -147,7 +147,6 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun onDestroyView() {
-        progressDialog = null
         featureFlagsFetchErrorDialog = null
         authStrategy.detach()
         presenter.detach()
@@ -191,13 +190,11 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showProgress() {
-        if (progressDialog?.isAdded != true) {
-            progressDialog?.show(childFragmentManager, ProgressDialog::class.java.name)
-        }
+        showProgressDialog(childFragmentManager)
     }
 
     override fun hideProgress() {
-        progressDialog?.dismiss()
+        hideProgressDialog(childFragmentManager)
     }
 
     override fun showName(name: String) {
