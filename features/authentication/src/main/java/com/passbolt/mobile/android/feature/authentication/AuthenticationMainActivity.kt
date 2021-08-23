@@ -8,7 +8,8 @@ import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
-import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragmentDirections
 import com.passbolt.mobile.android.feature.authentication.databinding.ActivityAuthenticationMainBinding
@@ -41,7 +42,6 @@ class AuthenticationMainActivity :
     AuthenticationMainContract.View {
 
     private val presenter: AuthenticationMainContract.Presenter by inject()
-    private var progressDialog: ProgressDialog? = ProgressDialog()
 
     private val navController by lifecycleAwareLazy {
         findNavHostFragment(binding.fragmentContainer.id).navController
@@ -81,7 +81,6 @@ class AuthenticationMainActivity :
     }
 
     override fun onDestroy() {
-        progressDialog = null
         presenter.detach()
         super.onDestroy()
     }
@@ -105,13 +104,10 @@ class AuthenticationMainActivity :
     }
 
     override fun showProgress() {
-        if (progressDialog == null) {
-            progressDialog = ProgressDialog()
-        }
-        progressDialog?.show(supportFragmentManager, ProgressDialog::class.java.name)
+        showProgressDialog(supportFragmentManager)
     }
 
     override fun hideProgress() {
-        progressDialog?.dismiss()
+        hideProgressDialog(supportFragmentManager)
     }
 }

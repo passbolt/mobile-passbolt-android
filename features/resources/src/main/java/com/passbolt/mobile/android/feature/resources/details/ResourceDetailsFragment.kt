@@ -15,7 +15,8 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.core.ui.progressdialog.ProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.ResourcesActivity
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
@@ -58,7 +59,6 @@ class ResourceDetailsFragment :
             requireActivity().intent.getParcelableExtra(ResourcesActivity.RESOURCE_MODEL_KEY)
         )
     }
-    private var progressDialog: ProgressDialog? = ProgressDialog()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,7 +73,6 @@ class ResourceDetailsFragment :
     }
 
     override fun onDestroyView() {
-        progressDialog = null
         presenter.detach()
         super.onDestroyView()
     }
@@ -135,11 +134,11 @@ class ResourceDetailsFragment :
     }
 
     override fun showProgress() {
-        progressDialog?.show(childFragmentManager, ProgressDialog::class.java.name)
+        showProgressDialog(childFragmentManager)
     }
 
     override fun hideProgress() {
-        progressDialog?.dismiss()
+        hideProgressDialog(childFragmentManager)
     }
 
     override fun showPasswordVisibleIcon() {
