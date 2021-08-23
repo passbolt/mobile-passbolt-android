@@ -1,13 +1,16 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
+import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
+import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import org.koin.core.component.KoinComponent
+import timber.log.Timber
 import javax.crypto.Cipher
 
 /**
@@ -35,10 +38,11 @@ import javax.crypto.Cipher
 class FingerprintPresenter(
     private val fingerprintInformationProvider: FingerprintInformationProvider,
     private val autofillInformationProvider: AutofillInformationProvider,
-    internal val passphraseMemoryCache: PassphraseMemoryCache,
+    private val passphraseMemoryCache: PassphraseMemoryCache,
     private val savePassphraseUseCase: SavePassphraseUseCase,
     private val biometricCipher: BiometricCipher,
-    private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase
+    private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase,
+    private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase
 ) : FingerprintContract.Presenter, KoinComponent {
 
     override var view: FingerprintContract.View? = null
@@ -53,14 +57,35 @@ class FingerprintPresenter(
 
     override fun useFingerprintClick() {
         if (fingerprintInformationProvider.hasBiometricSetUp()) {
-            view?.showBiometricPrompt(biometricCipher.getBiometricEncryptCipher())
+            tryShowingBiometricPrompt()
         } else {
-            view?.navigateToBiometricSettings()
+            view?.navigateToSystemSettings()
         }
+    }
+
+    private fun tryShowingBiometricPrompt() {
+        try {
+            view?.showBiometricPrompt(biometricCipher.getBiometricEncryptCipher())
+        } catch (exception: KeyPermanentlyInvalidatedException) {
+            Timber.e(exception)
+            removeBiometricKeyUseCase.execute(Unit)
+            view?.showKeyChangesDetected()
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            view?.showGenericError()
+        }
+    }
+
+    override fun keyChangesInfoConfirmClick() {
+        view?.startAuthActivity()
     }
 
     override fun maybeLaterClick() {
         handleAutofillSetup()
+    }
+
+    override fun getPassphraseSucceeded() {
+        tryShowingBiometricPrompt()
     }
 
     override fun authenticationSucceeded(authenticatedCipher: Cipher?) {

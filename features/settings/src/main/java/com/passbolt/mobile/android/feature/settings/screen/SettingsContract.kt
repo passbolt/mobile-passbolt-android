@@ -42,6 +42,10 @@ interface SettingsContract {
         fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
         fun showAuthenticationError(errorMessage: Int)
         fun navigateToSignInWithLogout()
+        fun showKeyChangesDetected()
+        fun showGenericError()
+        fun showConfigureFingerprintFirst()
+        fun navigateToSystemSettings()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -60,5 +64,7 @@ interface SettingsContract {
         fun biometricAuthError(errorMessage: Int)
         fun biometricAuthSucceeded(authenticatedCipher: Cipher?)
         fun biometricAuthCanceled()
+        fun keyChangesInfoConfirmClick()
+        fun systemSettingsClick()
     }
 }

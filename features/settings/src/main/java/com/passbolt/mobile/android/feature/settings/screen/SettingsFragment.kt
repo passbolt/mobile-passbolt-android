@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -201,6 +203,30 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     override fun showAuthenticationError(errorMessage: Int) {
         Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG)
+            .show()
+    }
+
+    override fun showGenericError() {
+        Snackbar.make(binding.root, R.string.common_failure, Snackbar.LENGTH_SHORT)
+            .show()
+    }
+
+    override fun showConfigureFingerprintFirst() {
+        Snackbar.make(binding.root, R.string.settings_add_first_fingerprint, Snackbar.LENGTH_LONG)
+            .setAction(R.string.settings) { presenter.systemSettingsClick() }
+            .show()
+    }
+
+    override fun navigateToSystemSettings() {
+        startActivity(Intent(Settings.ACTION_SETTINGS))
+    }
+
+    override fun showKeyChangesDetected() {
+        android.app.AlertDialog.Builder(requireContext())
+            .setTitle(R.string.fingerprint_biometric_changed_title)
+            .setTitle(R.string.fingerprint_authenticate_again)
+            .setPositiveButton(R.string.got_it) { _, _ -> presenter.keyChangesInfoConfirmClick() }
+            .setCancelable(false)
             .show()
     }
 }

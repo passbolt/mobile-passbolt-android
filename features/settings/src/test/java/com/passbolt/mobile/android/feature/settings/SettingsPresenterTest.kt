@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.settings
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
@@ -80,9 +81,19 @@ class SettingsPresenterTest : KoinTest {
     }
 
     @Test
-    fun `enabling biometric should navigate to authentication sign in`() {
+    fun `enabling biometric should navigate to authentication sign in if fingerprint is configured`() {
+        whenever(fingerprintInformationProvider.hasBiometricSetUp()).doReturn(true)
         presenter.fingerprintSettingChanged(true)
         verify(view).navigateToAuthGetPassphrase()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `enabling biometric should show info when fingerprint is not configured`() {
+        whenever(fingerprintInformationProvider.hasBiometricSetUp()).doReturn(false)
+        presenter.fingerprintSettingChanged(true)
+        verify(view).showConfigureFingerprintFirst()
+        verify(view).toggleFingerprintOff(true)
         verifyNoMoreInteractions(view)
     }
 
@@ -149,6 +160,7 @@ class SettingsPresenterTest : KoinTest {
 
     @Test
     fun `re-enabling fingerprint should show proper ui`() {
+        whenever(fingerprintInformationProvider.hasBiometricSetUp()).doReturn(true)
         whenever(checkIfPassphraseFileExistsUseCase.execute(anyOrNull())).thenReturn(
             CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false)
         )

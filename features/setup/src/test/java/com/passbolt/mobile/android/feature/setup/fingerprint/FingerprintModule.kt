@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
+import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import org.koin.dsl.module
@@ -45,6 +46,8 @@ internal val biometricCipher = mock<BiometricCipher> {
     on { getBiometricEncryptCipher() }.doReturn(mockCipher)
 }
 internal val saveBiometricKayIvUseCase = mock<SaveBiometricKeyIvUseCase>()
+internal val removeBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
+
 
 val fingerprintModule = module {
     factory<FingerprintContract.Presenter> {
@@ -54,7 +57,8 @@ val fingerprintModule = module {
             autofillInformationProvider = get(),
             savePassphraseUseCase = savePassphraseUseCase,
             biometricCipher = biometricCipher,
-            saveBiometricKeyIvUseCase = saveBiometricKayIvUseCase
+            saveBiometricKeyIvUseCase = saveBiometricKayIvUseCase,
+            removeBiometricKeyUseCase = removeBiometricKeyUseCase
         )
     }
     factory { fingerprintInformationProvider }

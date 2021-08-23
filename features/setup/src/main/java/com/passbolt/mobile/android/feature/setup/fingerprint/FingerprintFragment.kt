@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import com.google.android.material.snackbar.Snackbar
@@ -52,7 +53,7 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
     private val executor: Executor by inject()
     private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
-            presenter.authenticationSucceeded()
+            presenter.getPassphraseSucceeded()
         }
     }
 
@@ -99,8 +100,8 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         }
     }
 
-    override fun navigateToBiometricSettings() {
-        startActivity(Intent(Settings.ACTION_SECURITY_SETTINGS))
+    override fun navigateToSystemSettings() {
+        startActivity(Intent(Settings.ACTION_SETTINGS))
     }
 
     override fun showEncourageAutofillDialog() {
@@ -161,5 +162,19 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
                 AuthenticationType.SignInForResult
             )
         )
+    }
+
+    override fun showGenericError() {
+        Snackbar.make(binding.root, R.string.common_failure, Snackbar.LENGTH_SHORT)
+            .show()
+    }
+
+    override fun showKeyChangesDetected() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.fingerprint_biometric_changed_title)
+            .setTitle(R.string.fingerprint_authenticate_again)
+            .setPositiveButton(R.string.got_it) { _, _ -> presenter.keyChangesInfoConfirmClick() }
+            .setCancelable(false)
+            .show()
     }
 }
