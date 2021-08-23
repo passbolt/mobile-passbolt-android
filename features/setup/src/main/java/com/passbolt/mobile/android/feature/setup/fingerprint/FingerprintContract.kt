@@ -32,13 +32,15 @@ interface FingerprintContract {
     interface View : BaseContract.View {
         fun showUseFingerprint()
         fun showConfigureFingerprint()
-        fun navigateToBiometricSettings()
+        fun navigateToSystemSettings()
         fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
         fun showAuthenticationError(@StringRes errorMessage: Int)
         fun showEncourageAutofillDialog()
         fun navigateToHome()
         fun showAutofillEnabledDialog()
         fun startAuthActivity()
+        fun showKeyChangesDetected()
+        fun showGenericError()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -50,5 +52,7 @@ interface FingerprintContract {
         fun maybeLaterClick()
         fun autofillSetupSuccessfully()
         fun goToTheAppClick()
+        fun keyChangesInfoConfirmClick()
+        fun getPassphraseSucceeded()
     }
 }

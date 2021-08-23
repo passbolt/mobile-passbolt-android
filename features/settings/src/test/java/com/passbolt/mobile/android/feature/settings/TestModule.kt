@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.settings
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -10,6 +11,7 @@ import com.passbolt.mobile.android.feature.settings.screen.SettingsPresenter
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
+import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
@@ -33,6 +35,8 @@ internal val biometricCipher = mock<BiometricCipher> {
     on { getBiometricEncryptCipher() }.doReturn(mockCipher)
 }
 internal val saveBiometricKayIvUseCase = mock<SaveBiometricKeyIvUseCase>()
+internal val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
+internal val removeBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
 
 @ExperimentalCoroutinesApi
 val testModule = module {
@@ -45,6 +49,8 @@ val testModule = module {
     factory { passphraseMemoryCache }
     factory { biometricCipher }
     factory { saveBiometricKayIvUseCase }
+    factory { fingerprintInformationProvider }
+    factory { removeBiometricKeyUseCase }
     factory<SettingsContract.Presenter> {
         SettingsPresenter(
             checkIfPassphraseExistsUseCase = get(),
@@ -54,7 +60,9 @@ val testModule = module {
             savePassphraseUseCase = get(),
             passphraseMemoryCache = get(),
             biometricCipher = get(),
-            saveBiometricKeyIvUseCase = get()
+            saveBiometricKeyIvUseCase = get(),
+            fingerprintInformationProvider = get(),
+            removeBiometricKeyUseCase = get()
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

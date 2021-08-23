@@ -58,7 +58,7 @@ class FingerprintPresenterTest : KoinTest {
     fun `click use fingerprint when no biometrics is set up should open settings`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(false)
         presenter.useFingerprintClick()
-        verify(view).navigateToBiometricSettings()
+        verify(view).navigateToSystemSettings()
         verifyNoMoreInteractions(view)
     }
 

@@ -183,6 +183,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun showFingerprintChangedError() {
         AlertDialog.Builder(requireContext())
+            .setCancelable(false)
             .setTitle(R.string.fingerprint_biometric_changed_title)
             .setMessage(R.string.fingerprint_biometric_changed_message)
             .setPositiveButton(R.string.got_it) { _, _ -> }

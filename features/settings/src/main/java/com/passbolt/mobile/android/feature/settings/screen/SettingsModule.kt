@@ -41,7 +41,9 @@ fun Module.settingsModule() {
                 savePassphraseUseCase = get(),
                 passphraseMemoryCache = get(),
                 biometricCipher = get(),
-                saveBiometricKeyIvUseCase = get()
+                saveBiometricKeyIvUseCase = get(),
+                removeBiometricKeyUseCase = get(),
+                fingerprintInformationProvider = get()
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }

@@ -1,9 +1,12 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
+import android.security.keystore.KeyPermanentlyInvalidatedException
+import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
+import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
@@ -21,7 +24,9 @@ class SettingsPresenter(
     private val savePassphraseUseCase: SavePassphraseUseCase,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val biometricCipher: BiometricCipher,
-    private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase
+    private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase,
+    private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
+    private val fingerprintInformationProvider: FingerprintInformationProvider
 ) : SettingsContract.Presenter {
 
     override var view: SettingsContract.View? = null
@@ -89,12 +94,21 @@ class SettingsPresenter(
         if (!isEnabled) {
             view?.showDisableFingerprintConfirmationDialog()
         } else {
-            if (passphraseMemoryCache.hasPassphrase()) {
-                getPassphraseSucceeded()
+            if (fingerprintInformationProvider.hasBiometricSetUp()) {
+                if (passphraseMemoryCache.hasPassphrase()) {
+                    getPassphraseSucceeded()
+                } else {
+                    view?.navigateToAuthGetPassphrase()
+                }
             } else {
-                view?.navigateToAuthGetPassphrase()
+                view?.toggleFingerprintOff(silently = true)
+                view?.showConfigureFingerprintFirst()
             }
         }
+    }
+
+    override fun systemSettingsClick() {
+        view?.navigateToSystemSettings()
     }
 
     override fun disableFingerprintConfirmed() {
@@ -108,7 +122,20 @@ class SettingsPresenter(
     }
 
     override fun getPassphraseSucceeded() {
-        view?.showBiometricPrompt(biometricCipher.getBiometricEncryptCipher())
+        tryShowingBiometricPrompt()
+    }
+
+    private fun tryShowingBiometricPrompt() {
+        try {
+            view?.showBiometricPrompt(biometricCipher.getBiometricEncryptCipher())
+        } catch (exception: KeyPermanentlyInvalidatedException) {
+            Timber.e(exception)
+            removeBiometricKeyUseCase.execute(Unit)
+            view?.showKeyChangesDetected()
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            view?.showGenericError()
+        }
     }
 
     override fun biometricAuthError(errorMessage: Int) {
@@ -132,5 +159,9 @@ class SettingsPresenter(
 
     override fun biometricAuthCanceled() {
         view?.toggleFingerprintOff(silently = true)
+    }
+
+    override fun keyChangesInfoConfirmClick() {
+        view?.navigateToAuthGetPassphrase()
     }
 }
