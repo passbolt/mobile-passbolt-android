@@ -1,6 +1,7 @@
-package com.passbolt.mobile.android.core.commonresource
+package com.passbolt.mobile.android.service.resourcetypes
 
-import org.koin.dsl.module
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,21 +25,10 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val commonResourceModule = module {
-    single {
-        GetResourcesUseCase(
-            resourceRepository = get()
-        )
-    }
-    single {
-        GetResourceTypesUseCase(
-            resourceTypesRepository = get()
-        )
-    }
-    single {
-        ResourceInteractor(
-            getResourceTypesUseCase = get(),
-            getResourcesUseCase = get()
-        )
-    }
+internal class ResourceTypesRemoteDataSource(
+    private val resourceTypesApi: ResourceTypesApi
+) : ResourceTypesDataSource {
+
+    override suspend fun getResourceTypes(): BaseResponse<List<ResourceTypeDto>> =
+        resourceTypesApi.getResourceTypes()
 }

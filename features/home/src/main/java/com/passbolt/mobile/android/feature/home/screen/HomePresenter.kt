@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import androidx.annotation.VisibleForTesting
-import com.passbolt.mobile.android.core.commonresource.GetResourcesUseCase
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
  */
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
-    private val getResourcesUseCase: GetResourcesUseCase,
+    private val resourcesInteractor: ResourceInteractor,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
@@ -57,7 +57,7 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
-        fetchPasswords()
+        fetchResources()
         getSelectedAccountDataUseCase.execute(Unit).avatarUrl?.let {
             view.displayAvatar(it)
         }
@@ -73,29 +73,29 @@ class HomePresenter(
         filterList()
     }
 
-    private fun fetchPasswords() {
+    private fun fetchResources() {
         scope.launch {
             when (val result =
                 runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    getResourcesUseCase.execute(Unit)
+                    resourcesInteractor.fetchResourcesWithTypes()
                 }) {
-                is GetResourcesUseCase.Output.Failure<*> -> {
+                is ResourceInteractor.Output.Failure -> {
                     view?.hideRefreshProgress()
                     view?.hideProgress()
                     view?.showError()
                 }
-                is GetResourcesUseCase.Output.Success -> {
+                is ResourceInteractor.Output.Success -> {
                     view?.hideRefreshProgress()
                     view?.hideProgress()
                     allItemsList = result.resources.map { resourceModelMapper.map(it) }
                     fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
-                    displayPasswords()
+                    displayResources()
                 }
             }
         }
     }
 
-    private fun displayPasswords() {
+    private fun displayResources() {
         if (allItemsList.isEmpty()) {
             view?.showEmptyList()
         } else {
@@ -120,11 +120,11 @@ class HomePresenter(
 
     override fun refreshClick() {
         view?.showProgress()
-        fetchPasswords()
+        fetchResources()
     }
 
     override fun refreshSwipe() {
-        fetchPasswords()
+        fetchResources()
     }
 
     override fun moreClick(resourceModel: ResourceModel) {

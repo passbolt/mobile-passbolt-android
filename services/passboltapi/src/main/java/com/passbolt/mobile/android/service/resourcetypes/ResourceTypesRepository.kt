@@ -1,6 +1,7 @@
-package com.passbolt.mobile.android.core.commonresource
+package com.passbolt.mobile.android.service.resourcetypes
 
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.networking.ResponseHandler
+import com.passbolt.mobile.android.core.networking.callWithHandler
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,21 +25,12 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val commonResourceModule = module {
-    single {
-        GetResourcesUseCase(
-            resourceRepository = get()
-        )
-    }
-    single {
-        GetResourceTypesUseCase(
-            resourceTypesRepository = get()
-        )
-    }
-    single {
-        ResourceInteractor(
-            getResourceTypesUseCase = get(),
-            getResourcesUseCase = get()
-        )
+class ResourceTypesRepository(
+    private val resourceTypesDataSource: ResourceTypesDataSource,
+    private val responseHandler: ResponseHandler
+) {
+
+    suspend fun getResourceTypes() = callWithHandler(responseHandler) {
+        resourceTypesDataSource.getResourceTypes()
     }
 }

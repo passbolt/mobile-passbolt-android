@@ -39,7 +39,7 @@ fun Module.autofillResourcesModule() {
                 getSelectedAccountUseCase = get(),
                 getLocalResourcesUse = get(),
                 checkUrlLinksUseCase = get(),
-                getResourcesUseCase = get(),
+                resourcesInteractor = get(),
                 resourceModelMapper = get(),
                 fetchAndUpdateDatabaseUseCase = get(),
                 resourceSearch = get()

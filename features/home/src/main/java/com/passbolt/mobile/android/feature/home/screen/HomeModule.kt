@@ -33,7 +33,7 @@ fun Module.homeModule() {
     scope<HomeFragment> {
         scoped<HomeContract.Presenter> {
             HomePresenter(
-                getResourcesUseCase = get(),
+                resourcesInteractor = get(),
                 coroutineLaunchContext = get(),
                 resourceModelMapper = get(),
                 getSelectedAccountDataUseCase = get(),
