@@ -1,6 +1,9 @@
-package com.passbolt.mobile.android.core.commonresource
+package com.passbolt.mobile.android.feature.autofill.resources
 
-import org.koin.dsl.module
+import com.mikepenz.fastadapter.GenericItem
+import com.passbolt.mobile.android.core.commonresource.PasswordHeaderItem
+import com.passbolt.mobile.android.core.commonresource.PasswordItem
+import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,22 +27,10 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val commonResourceModule = module {
-    single {
-        GetResourcesUseCase(
-            resourceRepository = get(),
-            mapper = get()
-        )
-    }
-    single {
-        GetResourceTypesUseCase(
-            resourceTypesRepository = get()
-        )
-    }
-    single {
-        ResourceInteractor(
-            getResourceTypesUseCase = get(),
-            getResourcesUseCase = get()
-        )
-    }
+class ResourceUiItemsMapper {
+    fun mapModelToItem(model: ResourceListUiModel): GenericItem =
+        when (model) {
+            is ResourceListUiModel.Data -> PasswordItem(model.resourceModel, false)
+            is ResourceListUiModel.Header -> PasswordHeaderItem(model)
+        }
 }

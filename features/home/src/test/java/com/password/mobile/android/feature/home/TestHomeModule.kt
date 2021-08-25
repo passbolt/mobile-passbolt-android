@@ -38,7 +38,6 @@ val testHomeModule = module {
         HomePresenter(
             coroutineLaunchContext = get(),
             resourcesInteractor = get(),
-            resourceModelMapper = get(),
             getSelectedAccountDataUseCase = get(),
             fetchAndUpdateDatabaseUseCase = get(),
             secretInteractor = mockSecretInteractor,

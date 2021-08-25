@@ -110,5 +110,7 @@ class PassboltAutofillService : AutofillService(), KoinComponent {
 
 data class ParsedStructure(
     var id: AutofillId,
-    val hints: List<String>
+    val hints: List<String>,
+    val domain: String?,
+    val packageName: String?
 )

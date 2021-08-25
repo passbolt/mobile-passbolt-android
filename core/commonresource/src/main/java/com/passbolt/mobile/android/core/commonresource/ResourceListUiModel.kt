@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.core.commonresource
 
-import org.koin.dsl.module
+import android.os.Parcelable
+import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.parcelize.Parcelize
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,22 +26,14 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val commonResourceModule = module {
-    single {
-        GetResourcesUseCase(
-            resourceRepository = get(),
-            mapper = get()
-        )
-    }
-    single {
-        GetResourceTypesUseCase(
-            resourceTypesRepository = get()
-        )
-    }
-    single {
-        ResourceInteractor(
-            getResourceTypesUseCase = get(),
-            getResourcesUseCase = get()
-        )
-    }
+sealed class ResourceListUiModel : Parcelable {
+    @Parcelize
+    class Data(
+        val resourceModel: ResourceModel
+    ) : ResourceListUiModel()
+
+    @Parcelize
+    class Header(
+        val title: String
+    ) : ResourceListUiModel()
 }

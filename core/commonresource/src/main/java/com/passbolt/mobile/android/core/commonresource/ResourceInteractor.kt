@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.core.commonresource
 import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
-import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,7 +40,10 @@ class ResourceInteractor(
         return if (resourcesResult is GetResourcesUseCase.Output.Success &&
             resourceTypesResult is GetResourceTypesUseCase.Output.Success
         ) {
-            Output.Success(resourcesResult.resources, resourceTypesResult.resourceTypes)
+            Output.Success(
+                resourcesResult.resources,
+                resourceTypesResult.resourceTypes
+            )
         } else {
             Output.Failure(resourcesResult.authenticationState + resourceTypesResult.authenticationState)
         }
@@ -57,7 +60,7 @@ class ResourceInteractor(
     sealed class Output : AuthenticatedUseCaseOutput {
 
         class Success(
-            val resources: List<ResourceResponseDto>,
+            val resources: List<ResourceModel>,
             val resourceTypes: List<ResourceTypeDto>
         ) : Output() {
             override val authenticationState: AuthenticationState

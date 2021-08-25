@@ -1,9 +1,10 @@
 package com.passbolt.mobile.android.feature.autofill
 
 import android.view.autofill.AutofillManager
+import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
-import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
+import com.passbolt.mobile.android.feature.autofill.resources.DomainProvider
 import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.autofill.resources.autofillResourcesModule
 import com.passbolt.mobile.android.feature.autofill.service.RestServiceProvider
@@ -56,5 +57,8 @@ val autofillModule = module {
             removeLocalResourcesUseCase = get(),
             addLocalResourcesUseCase = get()
         )
+    }
+    single {
+        DomainProvider()
     }
 }

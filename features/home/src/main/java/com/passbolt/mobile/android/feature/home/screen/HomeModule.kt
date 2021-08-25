@@ -35,7 +35,6 @@ fun Module.homeModule() {
             HomePresenter(
                 resourcesInteractor = get(),
                 coroutineLaunchContext = get(),
-                resourceModelMapper = get(),
                 getSelectedAccountDataUseCase = get(),
                 fetchAndUpdateDatabaseUseCase = get(),
                 secretInteractor = get(),

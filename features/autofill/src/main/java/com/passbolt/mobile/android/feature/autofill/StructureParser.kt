@@ -58,6 +58,8 @@ class StructureParser {
 
     private fun parseNode(viewNode: AssistStructure.ViewNode): ParsedStructure? {
         val id = viewNode.autofillId ?: return null
+        val domain = createDomain(viewNode.webDomain)
+        val packageName = viewNode.idPackage
         val contentDescription = viewNode.contentDescription
         val autoFillHints = if (viewNode.autofillHints?.isNotEmpty() == true) {
             viewNode.autofillHints.orEmpty().toMutableList()
@@ -72,7 +74,15 @@ class StructureParser {
             autoFillHints.add(View.AUTOFILL_HINT_USERNAME)
         }
 
-        return ParsedStructure(id, autoFillHints)
+        return ParsedStructure(id, autoFillHints, domain, packageName)
+    }
+
+    private fun createDomain(url: String?): String {
+        return if (url.isNullOrEmpty() || url.startsWith("http://")) {
+            ""
+        } else if (!url.startsWith("https://")) {
+            "https://$url"
+        } else url
     }
 
     private fun verifyHint(

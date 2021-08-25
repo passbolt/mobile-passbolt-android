@@ -1,11 +1,14 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
 import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.core.commonresource.PasswordItem
+import com.mikepenz.fastadapter.GenericItem
+import com.mikepenz.fastadapter.adapters.ModelAdapter
+import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.feature.autofill.service.CheckUrlLinksRepository
 import com.passbolt.mobile.android.feature.autofill.service.CheckUrlLinksUseCase
 import org.koin.core.module.Module
+import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,29 +41,31 @@ fun Module.autofillResourcesModule() {
                 coroutineLaunchContext = get(),
                 getSelectedAccountUseCase = get(),
                 getLocalResourcesUse = get(),
-                checkUrlLinksUseCase = get(),
                 resourcesInteractor = get(),
-                resourceModelMapper = get(),
                 fetchAndUpdateDatabaseUseCase = get(),
-                resourceSearch = get()
+                resourceSearch = get(),
+                domainProvider = get()
             )
         }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
+        scoped { (accountUiItemsMapper: ResourceUiItemsMapper) ->
+            ModelAdapter(accountUiItemsMapper::mapModelToItem)
         }
         scoped {
             CheckUrlLinksUseCase(
                 checkUrlLinksRepository = get()
             )
         }
+        scoped { ResourceUiItemsMapper() }
         scoped {
             CheckUrlLinksRepository(
                 restServiceProvider = get(),
                 responseHandler = get()
             )
+        }
+        scoped(named<ResourceListUiModel>()) {
+            FastAdapter.with(get<ModelAdapter<ResourceListUiModel, GenericItem>> {
+                parametersOf(get<ResourceUiItemsMapper>())
+            })
         }
     }
 }
