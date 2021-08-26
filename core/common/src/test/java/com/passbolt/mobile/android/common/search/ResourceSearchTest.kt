@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.common.search
 
-import android.os.Parcelable
-import com.passbolt.mobile.android.common.search.Searchable
-import kotlinx.parcelize.Parcelize
+import org.junit.Test
+import kotlin.test.assertTrue
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,14 +25,32 @@ import kotlinx.parcelize.Parcelize
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class ResourceSearchTest {
+    private val matcher = SearchableMatcher()
 
-@Parcelize
-data class ResourceModel(
-    val resourceId: String,
-    val name: String,
-    val username: String,
-    val icon: String?,
-    val initials: String,
-    val url: String,
-    override val searchCriteria: String = "$name$username$url"
-) : Parcelable, Searchable
+    @Test
+    fun `test if basic search matches`() {
+        assertTrue { matcher.matches(searchable, SEARCH_1) }
+    }
+
+    @Test
+    fun `test if case search matches`() {
+        assertTrue { matcher.matches(searchable, SEARCH_1.uppercase()) }
+    }
+
+    @Test
+    fun `test if adding whitespace matches`() {
+        assertTrue { matcher.matches(searchable, "$SEARCH_1 $SEARCH_2 ") }
+    }
+
+    private companion object {
+        private const val SEARCH_1 = "name"
+        private const val SEARCH_2 = "username"
+
+        private val searchable = object : Searchable {
+            override val searchCriteria: String
+                get() = "$SEARCH_1$SEARCH_2"
+
+        }
+    }
+}

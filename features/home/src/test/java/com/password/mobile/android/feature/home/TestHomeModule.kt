@@ -2,11 +2,12 @@ package com.password.mobile.android.feature.home
 
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.InitialsProvider
+import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.commonresource.GetResourcesUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
-import com.passbolt.mobile.android.core.commonresource.GetResourcesUseCase
-import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -21,7 +22,7 @@ internal val fetchAndUpdateDatabaseUseCase = mock<FetchAndUpdateDatabaseUseCase>
 internal val mockSecretInteractor = mock<SecretInteractor>()
 
 @ExperimentalCoroutinesApi
-val testModule = module {
+val testHomeModule = module {
     factory { getResourcesUseCase }
     factory {
         ResourceModelMapper(
@@ -32,6 +33,7 @@ val testModule = module {
     factory { fetchAndUpdateDatabaseUseCase }
     factory { InitialsProvider() }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+    factory { SearchableMatcher() }
     factory<HomeContract.Presenter> {
         HomePresenter(
             coroutineLaunchContext = get(),
@@ -39,7 +41,8 @@ val testModule = module {
             resourceModelMapper = get(),
             getSelectedAccountDataUseCase = get(),
             fetchAndUpdateDatabaseUseCase = get(),
-            secretInteractor = mockSecretInteractor
+            secretInteractor = mockSecretInteractor,
+            resourceMatcher = get()
         )
     }
 }

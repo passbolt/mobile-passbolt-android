@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.feature.autofill.resources
 
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
-import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.feature.autofill.service.CheckUrlLinksRepository
+import com.passbolt.mobile.android.feature.autofill.service.CheckUrlLinksUseCase
 import org.koin.core.module.Module
 
 /**
@@ -29,17 +30,19 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                getResourcesUseCase = get(),
+fun Module.autofillResourcesModule() {
+    scope<AutofillResourcesActivity> {
+        scoped<AutofillResourcesContract.Presenter> {
+            AutofillResourcesPresenter(
+                structureParser = get(),
                 coroutineLaunchContext = get(),
+                getSelectedAccountUseCase = get(),
+                getLocalResourcesUse = get(),
+                checkUrlLinksUseCase = get(),
+                getResourcesUseCase = get(),
                 resourceModelMapper = get(),
-                getSelectedAccountDataUseCase = get(),
                 fetchAndUpdateDatabaseUseCase = get(),
-                secretInteractor = get(),
-                resourceMatcher = SearchableMatcher()
+                resourceSearch = get()
             )
         }
         scoped<ItemAdapter<PasswordItem>> {
@@ -47,6 +50,17 @@ fun Module.homeModule() {
         }
         scoped {
             FastAdapter.with(get<ItemAdapter<PasswordItem>>())
+        }
+        scoped {
+            CheckUrlLinksUseCase(
+                checkUrlLinksRepository = get()
+            )
+        }
+        scoped {
+            CheckUrlLinksRepository(
+                restServiceProvider = get(),
+                responseHandler = get()
+            )
         }
     }
 }

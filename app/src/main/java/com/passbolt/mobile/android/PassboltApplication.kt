@@ -4,16 +4,17 @@ import android.app.Application
 import coil.Coil
 import coil.ImageLoader
 import com.passbolt.mobile.android.core.commonresource.commonResourceModule
+import com.passbolt.mobile.android.core.commonresource.uiModule
 import com.passbolt.mobile.android.core.mvp.mvpModule
 import com.passbolt.mobile.android.core.networking.networkingModule
 import com.passbolt.mobile.android.core.qrscan.di.barcodeScanModule
 import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
 import com.passbolt.mobile.android.database.databaseModule
+import com.passbolt.mobile.android.feature.authenticationModule
 import com.passbolt.mobile.android.feature.autofill.autofillModule
 import com.passbolt.mobile.android.feature.folders.foldersModule
-import com.passbolt.mobile.android.feature.home.homeModule
-import com.passbolt.mobile.android.feature.authenticationModule
 import com.passbolt.mobile.android.feature.folders.resourcesModule
+import com.passbolt.mobile.android.feature.home.homeModule
 import com.passbolt.mobile.android.feature.main.mainModule
 import com.passbolt.mobile.android.feature.secrets.secretsModule
 import com.passbolt.mobile.android.feature.settings.settingsModule
@@ -99,7 +100,8 @@ class PassboltApplication : Application(), KoinComponent {
                 featureFlagsModule,
                 databaseModule,
                 secretsModule,
-                commonResourceModule
+                commonResourceModule,
+                uiModule
             )
         }
     }

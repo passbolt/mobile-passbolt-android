@@ -6,6 +6,7 @@ import android.view.View
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
 import com.passbolt.mobile.android.core.commonresource.GetResourcesUseCase
+import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
@@ -15,10 +16,10 @@ import com.passbolt.mobile.android.feature.autofill.service.ParsedStructure
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -50,7 +51,8 @@ class AutofillResourcesPresenter(
     private val checkUrlLinksUseCase: CheckUrlLinksUseCase,
     private val getResourcesUseCase: GetResourcesUseCase,
     private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
-    private val resourceModelMapper: ResourceModelMapper
+    private val resourceModelMapper: ResourceModelMapper,
+    private val resourceSearch: SearchableMatcher
 ) : AutofillResourcesContract.Presenter {
 
     override var view: AutofillResourcesContract.View? = null
@@ -143,7 +145,7 @@ class AutofillResourcesPresenter(
 
     private fun filterList() {
         val filtered = allItemsList.filter {
-            it.searchCriteria.contains(currentSearchText)
+            resourceSearch.matches(it, currentSearchText)
         }
         if (filtered.isEmpty()) {
             view?.showSearchEmptyList()
