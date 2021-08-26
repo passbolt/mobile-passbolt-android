@@ -10,9 +10,9 @@ import com.nhaarman.mockitokotlin2.stub
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import com.passbolt.mobile.android.core.commonresource.GetResourcesUseCase
+import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
+import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
-import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
@@ -29,7 +29,6 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
-import java.io.IOException
 
 @ExperimentalCoroutinesApi
 class HomePresenterTest : KoinTest {
@@ -52,8 +51,8 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `empty user avatar should not be displayed`() = runBlockingTest {
-        whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Success(emptyList())
+        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Success(emptyList(), emptyList())
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -62,8 +61,8 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `user avatar should be displayed when provided`() = runBlockingTest {
-        whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Success(emptyList())
+        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Success(emptyList(), emptyList())
         )
         val url = "avatar_url"
         mockAccountData(url)
@@ -74,8 +73,8 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `all fetched resources should be displayed when empty search text`() = runBlockingTest {
         val mockedList = mockResourcesList()
-        whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Success(mockedList)
+        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Success(mockedList, emptyList())
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -88,8 +87,8 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `refresh swiped should reload data with filter applied when search text entered`() = runBlockingTest {
         val mockedList = mockResourcesList()
-        whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Success(mockedList)
+        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Success(mockedList, emptyList())
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -105,8 +104,8 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `empty view should be displayed when search is empty`() = runBlockingTest {
         val mockedList = mockResourcesList()
-        whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Success(mockedList)
+        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Success(mockedList, emptyList())
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -121,8 +120,8 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `empty view should be displayed when there are no resources`() = runBlockingTest {
-        whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Success(emptyList())
+        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Success(emptyList(), emptyList())
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -134,8 +133,8 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `error should be displayed when request failures`() = runBlockingTest {
-        whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Failure(NetworkResult.Failure.ServerError(IOException(), headerMessage = ""))
+        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -147,8 +146,8 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `refresh clicked should fetch resources`() = runBlockingTest {
-        whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Failure(NetworkResult.Failure.ServerError(IOException(), headerMessage = ""))
+        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -163,8 +162,8 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `item clicked should open details screen`() = runBlockingTest {
-        whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Failure(NetworkResult.Failure.ServerError(IOException(), headerMessage = ""))
+        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         val model = ResourceModel("id", "title", "subtitle", "", "initials", "")
         mockAccountData(null)
@@ -185,8 +184,8 @@ class HomePresenterTest : KoinTest {
             initials = "T",
             url = ""
         )
-        whenever(getResourcesUseCase.execute(anyOrNull())).thenReturn(
-            GetResourcesUseCase.Output.Failure(NetworkResult.Failure.ServerError(IOException(), headerMessage = ""))
+        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         mockAccountData(null)
         presenter.attach(view)

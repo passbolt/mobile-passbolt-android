@@ -1,6 +1,6 @@
-package com.passbolt.mobile.android.core.commonresource
+package com.passbolt.mobile.android.dto.response
 
-import org.koin.dsl.module
+import com.google.gson.JsonElement
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,21 +24,15 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val commonResourceModule = module {
-    single {
-        GetResourcesUseCase(
-            resourceRepository = get()
-        )
-    }
-    single {
-        GetResourceTypesUseCase(
-            resourceTypesRepository = get()
-        )
-    }
-    single {
-        ResourceInteractor(
-            getResourceTypesUseCase = get(),
-            getResourcesUseCase = get()
-        )
-    }
-}
+data class ResourceTypeDto(
+    val id: String,
+    val slug: String,
+    val name: String,
+    val description: String,
+    val definition: ResourceDefinition
+)
+
+data class ResourceDefinition(
+    val resource: Map<String, JsonElement>,
+    val secret: Map<String, JsonElement>
+)

@@ -5,8 +5,8 @@ import android.service.autofill.Dataset
 import android.view.View
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
-import com.passbolt.mobile.android.core.commonresource.GetResourcesUseCase
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
@@ -49,7 +49,7 @@ class AutofillResourcesPresenter(
     private val getLocalResourcesUse: GetLocalResourcesUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val checkUrlLinksUseCase: CheckUrlLinksUseCase,
-    private val getResourcesUseCase: GetResourcesUseCase,
+    private val resourcesInteractor: ResourceInteractor,
     private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
     private val resourceModelMapper: ResourceModelMapper,
     private val resourceSearch: SearchableMatcher
@@ -91,15 +91,15 @@ class AutofillResourcesPresenter(
 
     private fun fetchResources(localListIsEmpty: Boolean = false) {
         scope.launch {
-            when (val result = getResourcesUseCase.execute(Unit)) {
-                is GetResourcesUseCase.Output.Failure<*> -> {
+            when (val result = resourcesInteractor.fetchResourcesWithTypes()) {
+                is ResourceInteractor.Output.Failure -> {
                     if (localListIsEmpty) {
                         view?.showFullScreenError()
                     } else {
                         view?.showGeneralError()
                     }
                 }
-                is GetResourcesUseCase.Output.Success -> {
+                is ResourceInteractor.Output.Success -> {
                     if (result.resources.isEmpty()) {
                         updateLocalDatabase(result.resources)
                         view?.showEmptyList()
