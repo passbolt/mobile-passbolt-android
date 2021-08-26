@@ -3,19 +3,15 @@ package com.passbolt.mobile.android.mappers
 import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
-import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
-import com.passbolt.mobile.android.dto.request.StatusRequest
-import com.passbolt.mobile.android.entity.account.AccountEntity
+import com.passbolt.mobile.android.entity.account.Account
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
-import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.test.KoinTestRule
 import org.koin.core.logger.Level
-import org.koin.java.KoinJavaComponent.inject
 import org.koin.test.KoinTest
 import org.koin.test.inject
 
@@ -59,7 +55,7 @@ class AccountModelMapperTest : KoinTest {
     @Test
     fun `Mapping accounts entities should return proper models with add account`() {
         val accountsList = listOf(
-            AccountEntity(
+            Account(
                 userId = "id1",
                 firstName = "firstName1",
                 lastName = "lastName1",
@@ -68,7 +64,7 @@ class AccountModelMapperTest : KoinTest {
                 url = "url1",
                 serverId = "serverId1",
             ),
-            AccountEntity(
+            Account(
                 userId = "id2",
                 firstName = "firstName2",
                 lastName = "lastName2",

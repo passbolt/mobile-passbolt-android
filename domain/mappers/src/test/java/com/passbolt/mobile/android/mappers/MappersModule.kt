@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.mappers
 
+import com.google.gson.GsonBuilder
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 
 /**
@@ -30,9 +30,16 @@ import org.koin.dsl.module
 
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 
-@ExperimentalCoroutinesApi
 val testMappersModule = module {
     factory {
         AccountModelMapper(mockGetSelectedAccountUseCase)
+    }
+    factory {
+        GsonBuilder().create()
+    }
+    factory {
+        ResourceTypesModelMapper(
+            gson = get()
+        )
     }
 }

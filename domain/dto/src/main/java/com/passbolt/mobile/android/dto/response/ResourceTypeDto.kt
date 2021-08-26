@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.dto.response
 
-import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,6 +33,6 @@ data class ResourceTypeDto(
 )
 
 data class ResourceDefinition(
-    val resource: Map<String, JsonElement>,
-    val secret: Map<String, JsonElement>
+    val resource: JsonObject,
+    val secret: JsonObject
 )

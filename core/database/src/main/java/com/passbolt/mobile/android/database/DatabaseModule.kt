@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.database
 
+import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
@@ -64,6 +65,13 @@ val databaseModule = module {
     single {
         RemoveLocalResourcesUseCase(
             databaseProvider = get()
+        )
+    }
+    single {
+        AddLocalResourceTypesUseCase(
+            databaseProvider = get(),
+            resourceTypesModelMapper = get(),
+            getSelectedAccountUseCase = get()
         )
     }
 }

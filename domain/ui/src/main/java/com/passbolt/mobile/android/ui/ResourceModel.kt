@@ -30,12 +30,14 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class ResourceModel(
     val resourceId: String,
+    val resourceTypeId: String,
     val name: String,
     val username: String,
     val icon: String?,
     val initials: String,
     val url: String,
-    override val searchCriteria: String = "$name$username$url",
+    val description: String?,
     var loaderVisible: Boolean = false,
-    var clickable: Boolean = true
+    var clickable: Boolean = true,
+    override val searchCriteria: String = "$name$username$url"
 ) : Parcelable, Searchable

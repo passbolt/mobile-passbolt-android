@@ -12,4 +12,5 @@ dependencies {
     implementation project(':storage')
 
     implementation libs.di.koin
+    implementation libs.gson
 }

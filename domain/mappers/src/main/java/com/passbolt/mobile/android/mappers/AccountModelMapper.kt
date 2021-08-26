@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.mappers
 
-import com.passbolt.mobile.android.entity.account.AccountEntity
+import com.passbolt.mobile.android.entity.account.Account
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
 
@@ -30,22 +30,22 @@ class AccountModelMapper(
     val selectedAccountUseCase: GetSelectedAccountUseCase
 ) {
 
-    fun map(accounts: List<AccountEntity>): List<AccountModelUi> =
+    fun map(accounts: List<Account>): List<AccountModelUi> =
         accounts
             .mapIndexed { i, item -> map(item, i == 0) }
             .let { it + AccountModelUi.AddNewAccount }
 
-    private fun map(accountEntity: AccountEntity, isFirstItem: Boolean) =
+    private fun map(account: Account, isFirstItem: Boolean) =
         AccountModelUi.AccountModel(
-            userId = accountEntity.userId,
-            title = "${accountEntity.firstName} ${accountEntity.lastName}",
-            email = accountEntity.email,
-            avatar = accountEntity.avatarUrl,
+            userId = account.userId,
+            title = "${account.firstName} ${account.lastName}",
+            email = account.email,
+            avatar = account.avatarUrl,
             isFirstItem = isFirstItem,
-            url = accountEntity.url,
-            isCurrentUser = isCurrentUser(accountEntity)
+            url = account.url,
+            isCurrentUser = isCurrentUser(account)
         )
 
-    private fun isCurrentUser(accountEntity: AccountEntity) =
-        accountEntity.userId == selectedAccountUseCase.execute(Unit).selectedAccount
+    private fun isCurrentUser(account: Account) =
+        account.userId == selectedAccountUseCase.execute(Unit).selectedAccount
 }

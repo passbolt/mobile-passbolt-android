@@ -22,6 +22,12 @@ package com.passbolt.mobile.android.entity.account
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-enum class Permission {
-    READ, WRITE, OWNER
-}
+class Account(
+    val userId: String,
+    val firstName: String?,
+    val lastName: String?,
+    val email: String?,
+    val avatarUrl: String?,
+    val url: String,
+    val serverId: String?
+)

@@ -30,7 +30,9 @@ fun Module.detailsModule() {
         scoped<ResourceDetailsContract.Presenter> {
             ResourceDetailsPresenter(
                 secretInteractor = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
+                databaseProvider = get(),
+                getSelectedAccountUseCase = get()
             )
         }
     }

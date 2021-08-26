@@ -13,7 +13,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
-import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
@@ -165,7 +164,16 @@ class HomePresenterTest : KoinTest {
         whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
-        val model = ResourceModel("id", "title", "subtitle", "", "initials", "")
+        val model = ResourceModel(
+            "id",
+            "resTypeId",
+            "title",
+            "subtitle",
+            "",
+            "initials",
+            "",
+            ""
+        )
         mockAccountData(null)
         presenter.attach(view)
         reset(view)
@@ -178,11 +186,13 @@ class HomePresenterTest : KoinTest {
     fun `3 dots clicked should open more screen`() = runBlockingTest {
         val model = ResourceModel(
             resourceId = "id",
+            resourceTypeId = "resTypeId",
             name = "title",
             username = "subtitle",
             icon = null,
             initials = "T",
-            url = ""
+            url = "",
+            description = "desc"
         )
         whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
@@ -258,20 +268,22 @@ class HomePresenterTest : KoinTest {
     private fun mockResourcesList() = listOf(
         ResourceModel(
             resourceId = "id1",
+            resourceTypeId = "resTypeId",
             name = "first name",
             url = "",
             username = "",
             icon = "",
             initials = "",
-            searchCriteria = "first name"
+            description = "desc",
         ), ResourceModel(
             resourceId = "id2",
+            resourceTypeId = "resTypeId",
             name = "second name",
             url = "",
             username = "",
             icon = "",
             initials = "",
-            searchCriteria = "second name"
+            description = "desc"
         )
     )
 
@@ -294,15 +306,19 @@ class HomePresenterTest : KoinTest {
         private const val USERNAME = "username"
         private const val INITIALS = "NN"
         private const val URL = "https://www.passbolt.com"
-        private const val SEARCH_CRITERIA = "name username"
         private const val ID = "id"
+        private const val RESOURCE_TYPE_ID = "resTypeId"
+        private const val DESCRIPTION = "desc"
+
         private val RESOURCE_MODEL = ResourceModel(
             ID,
+            RESOURCE_TYPE_ID,
             NAME,
             USERNAME,
             null,
             INITIALS,
-            URL
+            URL,
+            DESCRIPTION
         )
         private val DECRYPTED_SECRET = "secret".toByteArray()
     }

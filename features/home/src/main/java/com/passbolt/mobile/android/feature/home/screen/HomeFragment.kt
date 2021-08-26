@@ -21,10 +21,10 @@ import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
+import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
-import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.feature.home.screen.more.PasswordMenuFragment
 import com.passbolt.mobile.android.feature.home.screen.more.PasswordMoreModel
 import com.passbolt.mobile.android.feature.resources.ResourcesActivity

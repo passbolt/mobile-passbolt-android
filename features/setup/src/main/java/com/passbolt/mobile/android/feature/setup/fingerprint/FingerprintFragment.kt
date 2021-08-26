@@ -51,11 +51,6 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
     private val presenter: FingerprintContract.Presenter by inject()
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
     private val executor: Executor by inject()
-    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            presenter.getPassphraseSucceeded()
-        }
-    }
 
     override fun onStart() {
         super.onStart()
@@ -153,6 +148,12 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
 
     override fun goToAppClick() {
         presenter.goToTheAppClick()
+    }
+
+    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            presenter.getPassphraseSucceeded()
+        }
     }
 
     override fun startAuthActivity() {

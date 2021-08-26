@@ -11,6 +11,7 @@ import androidx.core.graphics.ColorUtils
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
@@ -169,6 +170,20 @@ class ResourceDetailsFragment :
 
     override fun clearPasswordInput() {
         binding.passwordValue.text = ""
+    }
+
+    override fun showDescription(description: String) {
+        with(binding) {
+            descriptionValue.text = description
+            seeDescriptionButton.gone()
+        }
+    }
+
+    override fun showDescriptionIsEncrypted() {
+        with(binding) {
+            descriptionValue.text = getString(R.string.resource_details_encrypted_description)
+            seeDescriptionButton.visible()
+        }
     }
 
     override fun menuCopyClick() {

@@ -45,10 +45,12 @@ interface ResourceDetailsContract {
         fun showPasswordHidden()
         fun showPassword(decryptedSecret: String)
         fun clearPasswordInput()
+        fun showDescriptionIsEncrypted()
+        fun showDescription(description: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsReceived(passwordModel: ResourceModel)
+        fun argsReceived(resourceModel: ResourceModel)
         fun usernameCopyClick()
         fun urlCopyClick()
         fun moreClick()

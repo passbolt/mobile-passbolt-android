@@ -16,13 +16,19 @@ dependencies {
     implementation project(path: ':ui')
     implementation project(':networking')
     implementation project(':database')
+    implementation project(':storage')
+    implementation project(':entity')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
-
     implementation libs.di.koin
     implementation libs.di.koinExt
     implementation libs.textDrawable
+    implementation libs.room.core
+    implementation libs.room.runtime
+    implementation libs.room.cipher
+    kapt libs.room.compiler
+    implementation libs.room.sqlite
 }
 
 android {

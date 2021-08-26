@@ -2,10 +2,13 @@ package com.passbolt.mobile.android.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.passbolt.mobile.android.database.dao.ResourceTypesDao
 import com.passbolt.mobile.android.database.dao.ResourcesDao
-import com.passbolt.mobile.android.entity.account.FolderEntity
-import com.passbolt.mobile.android.entity.account.ResourceEntity
-import com.passbolt.mobile.android.entity.account.SecretTypeEntity
+import com.passbolt.mobile.android.entity.resource.Folder
+import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.entity.resource.ResourceField
+import com.passbolt.mobile.android.entity.resource.ResourceType
+import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRef
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,7 +32,18 @@ import com.passbolt.mobile.android.entity.account.SecretTypeEntity
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Database(entities = [ResourceEntity::class, SecretTypeEntity::class, FolderEntity::class], version = 1)
+
+@Database(
+    entities = [
+        Resource::class,
+        Folder::class,
+        ResourceType::class,
+        ResourceField::class,
+        ResourceTypesAndFieldsCrossRef::class],
+    version = 1
+)
+
 abstract class ResourceDatabase : RoomDatabase() {
     abstract fun resourcesDao(): ResourcesDao
+    abstract fun resourceTypesDao(): ResourceTypesDao
 }

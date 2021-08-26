@@ -16,6 +16,7 @@ dependencies {
     implementation project(':dto')
     implementation project(':networking')
     implementation project(':passboltapi')
+    implementation project(':database')
 
     implementation libs.androidx.core
     implementation libs.androidx.appcompat

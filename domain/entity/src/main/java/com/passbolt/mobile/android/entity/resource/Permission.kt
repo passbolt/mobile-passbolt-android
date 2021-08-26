@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.entity.account
+package com.passbolt.mobile.android.entity.resource
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,12 +22,6 @@ package com.passbolt.mobile.android.entity.account
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountEntity(
-    val userId: String,
-    val firstName: String?,
-    val lastName: String?,
-    val email: String?,
-    val avatarUrl: String?,
-    val url: String,
-    val serverId: String?
-)
+enum class Permission {
+    READ, WRITE, OWNER
+}

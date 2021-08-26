@@ -5,7 +5,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.entity.resource.ResourceField
+import com.passbolt.mobile.android.entity.resource.ResourceType
+import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
+import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRef
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,17 +33,33 @@ import com.passbolt.mobile.android.entity.resource.Resource
  * @since v1.0
  */
 @Dao
-interface ResourcesDao {
+interface ResourceTypesDao {
 
     @Transaction
-    @Query("SELECT * FROM Resource")
-    suspend fun getAll(): List<Resource>
+    @Query("SELECT * FROM ResourceType")
+    suspend fun getResourceTypesWithFields(): List<ResourceTypeIdWithFields>
+
+    @Transaction
+    @Query("SELECT * FROM ResourceType WHERE resourceTypeId = :resourceType")
+    suspend fun getResourceTypeWithFields(resourceType: String): ResourceTypeIdWithFields
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(resourceEntities: List<Resource>)
+    suspend fun insertResourceType(resourceType: ResourceType)
 
     @Transaction
-    @Query("DELETE FROM Resource")
-    suspend fun deleteAll()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertResourceField(resourceField: ResourceField): Long
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertResourceTypeAndFieldCrossRef(crossRef: ResourceTypesAndFieldsCrossRef)
+
+    @Transaction
+    @Query("DELETE FROM ResourceField")
+    suspend fun deleteResourceFields()
+
+    @Transaction
+    @Query("DELETE FROM ResourceTypesAndFieldsCrossRef")
+    suspend fun deleteResourceTypesAndFieldsCrossRef()
 }

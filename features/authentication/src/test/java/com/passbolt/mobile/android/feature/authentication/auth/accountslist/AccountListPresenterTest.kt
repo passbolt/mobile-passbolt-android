@@ -10,7 +10,7 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import com.passbolt.mobile.android.entity.account.AccountEntity
+import com.passbolt.mobile.android.entity.account.Account
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListContract
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
@@ -156,7 +156,7 @@ class AccountListPresenterTest : KoinTest {
 
     private companion object {
         private val SAVED_ACCOUNTS = listOf(
-            AccountEntity(userId = "1", null, null, null, null, "dev.test", "server_id")
+            Account(userId = "1", null, null, null, null, "dev.test", "server_id")
         )
 
     }
