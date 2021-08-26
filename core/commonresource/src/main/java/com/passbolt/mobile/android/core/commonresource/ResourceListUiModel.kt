@@ -26,6 +26,7 @@ import kotlinx.parcelize.Parcelize
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
 sealed class ResourceListUiModel : Parcelable {
     @Parcelize
     class Data(
