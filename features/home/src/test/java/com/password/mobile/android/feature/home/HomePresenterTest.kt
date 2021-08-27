@@ -256,18 +256,22 @@ class HomePresenterTest : KoinTest {
     }
 
     private fun mockResourcesList() = listOf(
-        ResourceResponseDto(
-            id = "id1",
-            description = "first description",
+        ResourceModel(
+            resourceId = "id1",
             name = "first name",
-            uri = "",
-            username = ""
-        ), ResourceResponseDto(
-            id = "id2",
-            description = "second description",
+            url = "",
+            username = "",
+            icon = "",
+            initials = "",
+            searchCriteria = "first name"
+        ), ResourceModel(
+            resourceId = "id2",
             name = "second name",
-            uri = "",
-            username = ""
+            url = "",
+            username = "",
+            icon = "",
+            initials = "",
+            searchCriteria = "second name"
         )
     )
 

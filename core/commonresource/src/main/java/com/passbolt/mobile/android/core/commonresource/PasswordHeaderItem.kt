@@ -1,6 +1,10 @@
 package com.passbolt.mobile.android.core.commonresource
 
-import org.koin.dsl.module
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.passbolt.mobile.android.commonresource.R
+import com.passbolt.mobile.android.commonresource.databinding.ItemPasswordHeaderBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,22 +28,21 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val commonResourceModule = module {
-    single {
-        GetResourcesUseCase(
-            resourceRepository = get(),
-            mapper = get()
-        )
+class PasswordHeaderItem(
+    val resourceModel: ResourceListUiModel.Header
+) : AbstractBindingItem<ItemPasswordHeaderBinding>() {
+
+    override val type: Int
+        get() = R.id.itemHeaderPassword
+
+    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemPasswordHeaderBinding {
+        return ItemPasswordHeaderBinding.inflate(inflater, parent, false)
     }
-    single {
-        GetResourceTypesUseCase(
-            resourceTypesRepository = get()
-        )
-    }
-    single {
-        ResourceInteractor(
-            getResourceTypesUseCase = get(),
-            getResourcesUseCase = get()
-        )
+
+    override fun bindView(binding: ItemPasswordHeaderBinding, payloads: List<Any>) {
+        super.bindView(binding, payloads)
+        with(binding) {
+            title.text = resourceModel.title
+        }
     }
 }

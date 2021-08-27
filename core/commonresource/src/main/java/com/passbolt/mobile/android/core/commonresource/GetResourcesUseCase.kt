@@ -5,8 +5,9 @@ import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
-import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.service.resource.ResourceRepository
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,13 +32,14 @@ import com.passbolt.mobile.android.service.resource.ResourceRepository
  * @since v1.0
  */
 class GetResourcesUseCase(
-    private val resourceRepository: ResourceRepository
+    private val resourceRepository: ResourceRepository,
+    private val mapper: ResourceModelMapper
 ) : AsyncUseCase<Unit, GetResourcesUseCase.Output> {
 
     override suspend fun execute(input: Unit): Output =
         when (val response = resourceRepository.getResources()) {
             is NetworkResult.Failure -> Output.Failure(response)
-            is NetworkResult.Success -> Output.Success(response.value.body)
+            is NetworkResult.Success -> Output.Success(response.value.body.map { mapper.map(it) })
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
@@ -50,7 +52,7 @@ class GetResourcesUseCase(
             }
 
         class Success(
-            val resources: List<ResourceResponseDto>
+            val resources: List<ResourceModel>
         ) : Output()
 
         class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()

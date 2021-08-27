@@ -8,7 +8,6 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
@@ -41,7 +40,6 @@ import kotlinx.coroutines.launch
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val resourcesInteractor: ResourceInteractor,
-    private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
     private val secretInteractor: SecretInteractor,
@@ -87,7 +85,7 @@ class HomePresenter(
                 is ResourceInteractor.Output.Success -> {
                     view?.hideRefreshProgress()
                     view?.hideProgress()
-                    allItemsList = result.resources.map { resourceModelMapper.map(it) }
+                    allItemsList = result.resources
                     fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
                     displayResources()
                 }

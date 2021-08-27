@@ -14,17 +14,19 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.GenericItem
+import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
+import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.autofill.R
-import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -51,9 +53,12 @@ import org.koin.android.ext.android.inject
 class AutofillResourcesActivity :
     BindingScopedActivity<ActivityAutofillResourcesBinding>(ActivityAutofillResourcesBinding::inflate),
     AutofillResourcesContract.View {
+
     private val presenter: AutofillResourcesContract.Presenter by inject()
-    private val itemAdapter: ItemAdapter<PasswordItem> by inject()
-    private val fastAdapter: FastAdapter<PasswordItem> by inject()
+    private val modelAdapter: ModelAdapter<ResourceListUiModel, GenericItem> by inject()
+    private val fastAdapter: FastAdapter<GenericItem> by inject(named<ResourceListUiModel>())
+    private val resourceUiItemsMapper: ResourceUiItemsMapper by inject()
+
     private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             presenter.userAuthenticated()
@@ -128,9 +133,10 @@ class AutofillResourcesActivity :
         setState(State.EMPTY)
     }
 
-    override fun showResources(resources: List<ResourceModel>) {
+    override fun showResources(resources: List<ResourceListUiModel>) {
         setState(State.SUCCESS)
-        FastAdapterDiffUtil.calculateDiff(itemAdapter, resources.map { PasswordItem(it, false) })
+        val uiItems = resources.map { resourceUiItemsMapper.mapModelToItem(it) }
+        FastAdapterDiffUtil.calculateDiff(modelAdapter, uiItems)
         fastAdapter.notifyAdapterDataSetChanged()
     }
 

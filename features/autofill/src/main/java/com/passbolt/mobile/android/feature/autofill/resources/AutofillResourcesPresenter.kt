@@ -5,15 +5,13 @@ import android.service.autofill.Dataset
 import android.view.View
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
+import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.feature.autofill.StructureParser
-import com.passbolt.mobile.android.feature.autofill.service.CheckUrlLinksUseCase
 import com.passbolt.mobile.android.feature.autofill.service.ParsedStructure
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -48,10 +46,9 @@ class AutofillResourcesPresenter(
     private val structureParser: StructureParser,
     private val getLocalResourcesUse: GetLocalResourcesUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val checkUrlLinksUseCase: CheckUrlLinksUseCase,
-    private val resourcesInteractor: ResourceInteractor,
     private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
-    private val resourceModelMapper: ResourceModelMapper,
+    private val domainProvider: DomainProvider,
+    private val resourcesInteractor: ResourceInteractor,
     private val resourceSearch: SearchableMatcher
 ) : AutofillResourcesContract.Presenter {
 
@@ -68,52 +65,66 @@ class AutofillResourcesPresenter(
     }
 
     override fun userAuthenticated() {
-        scope.launch {
-            // TODO
-            val links = checkUrlLinksUseCase.execute(
-                CheckUrlLinksUseCase.Input(
-                    "https://www.instagram.com"
-                )
-            )
-            val accountId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-            allItemsList = getLocalResourcesUse.execute(UserIdInput(accountId)).resources
-            if (allItemsList.isEmpty()) {
-                fetchResources()
-            } else {
-                view?.showResources(allItemsList)
-            }
-        }
+        fetchResources()
     }
 
     override fun refreshSwipe() {
         fetchResources()
     }
 
-    private fun fetchResources(localListIsEmpty: Boolean = false) {
+    private fun fetchResources() {
         scope.launch {
             when (val result = resourcesInteractor.fetchResourcesWithTypes()) {
-                is ResourceInteractor.Output.Failure -> {
-                    if (localListIsEmpty) {
-                        view?.showFullScreenError()
-                    } else {
-                        view?.showGeneralError()
-                    }
-                }
-                is ResourceInteractor.Output.Success -> {
-                    if (result.resources.isEmpty()) {
-                        updateLocalDatabase(result.resources)
-                        view?.showEmptyList()
-                    } else {
-                        updateLocalDatabase(result.resources)
-                        view?.showResources(allItemsList)
-                    }
-                }
+                is ResourceInteractor.Output.Failure -> fetchingResourcesFailure()
+                is ResourceInteractor.Output.Success -> fetchingResourcesSuccess(result.resources)
             }
         }
     }
 
-    private suspend fun updateLocalDatabase(resources: List<ResourceResponseDto>) {
-        allItemsList = resources.map { resourceModelMapper.map(it) }
+    private suspend fun fetchingResourcesSuccess(list: List<ResourceModel>) {
+        allItemsList = list
+        updateLocalDatabase()
+        if (list.isEmpty()) {
+            view?.showEmptyList()
+        } else {
+            showItems()
+        }
+    }
+
+    private suspend fun fetchingResourcesFailure() {
+        val accountId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        allItemsList = getLocalResourcesUse.execute(UserIdInput(accountId)).resources
+        if (allItemsList.isNullOrEmpty()) {
+            view?.showFullScreenError()
+        } else {
+            showItems()
+            view?.showGeneralError()
+        }
+    }
+
+    private fun showItems() {
+        val itemsList = mutableListOf<ResourceListUiModel>()
+        getSuggested()?.let {
+            itemsList.add(ResourceListUiModel.Header("Suggested password"))
+            itemsList.addAll(it.map { ResourceListUiModel.Data(it) })
+            itemsList.add(ResourceListUiModel.Header("Other password"))
+        }
+        itemsList.addAll(allItemsList.map { ResourceListUiModel.Data(it) })
+        view?.showResources(itemsList)
+    }
+
+    private fun getSuggested() =
+        parsedStructure.firstOrNull { !it.domain.isNullOrEmpty() }?.let { parsedStructure ->
+            val domain = domainProvider.getHost(requireNotNull(parsedStructure.domain))
+            val suggested = allItemsList.filter { domainProvider.getHost(it.url) == domain }
+            if (suggested.isEmpty()) {
+                fetchLinksApi(parsedStructure.domain)
+            } else {
+                suggested
+            }
+        }
+
+    private suspend fun updateLocalDatabase() {
         fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
     }
 
@@ -138,6 +149,19 @@ class AutofillResourcesPresenter(
         parsedStructure = structureParser.parse(structure)
     }
 
+    private fun fetchLinksApi(domain: String): List<ResourceModel>? {
+        return null
+        // TODO
+        /* return when (val links = checkUrlLinksUseCase.execute(CheckUrlLinksUseCase.Input(domain))) {
+             CheckUrlLinksUseCase.Output.Failure -> {
+                 null
+             }
+             is CheckUrlLinksUseCase.Output.Success -> {
+                 null
+             }
+         }*/
+    }
+
     override fun searchTextChange(text: String) {
         currentSearchText = text
         filterList()
@@ -150,7 +174,7 @@ class AutofillResourcesPresenter(
         if (filtered.isEmpty()) {
             view?.showSearchEmptyList()
         } else {
-            view?.showResources(filtered)
+            view?.showResources(filtered.map { ResourceListUiModel.Data(it) })
         }
     }
 

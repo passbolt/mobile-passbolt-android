@@ -46,7 +46,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
  */
 class PasswordItem(
     val resourceModel: ResourceModel,
-    val dotsVisible: Boolean = true
+    private val dotsVisible: Boolean = true
 ) : AbstractBindingItem<ItemPasswordBinding>() {
 
     override val type: Int

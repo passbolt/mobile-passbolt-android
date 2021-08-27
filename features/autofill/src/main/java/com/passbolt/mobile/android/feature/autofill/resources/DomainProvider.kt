@@ -1,6 +1,6 @@
-package com.passbolt.mobile.android.core.commonresource
+package com.passbolt.mobile.android.feature.autofill.resources
 
-import org.koin.dsl.module
+import java.net.URL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,22 +24,12 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val commonResourceModule = module {
-    single {
-        GetResourcesUseCase(
-            resourceRepository = get(),
-            mapper = get()
-        )
-    }
-    single {
-        GetResourceTypesUseCase(
-            resourceTypesRepository = get()
-        )
-    }
-    single {
-        ResourceInteractor(
-            getResourceTypesUseCase = get(),
-            getResourcesUseCase = get()
-        )
-    }
+class DomainProvider {
+
+    fun getHost(url: String): String =
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            URL("http://$url").host
+        } else {
+            URL(url).host
+        }
 }
