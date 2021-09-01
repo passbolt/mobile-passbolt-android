@@ -45,7 +45,8 @@ fun Module.autofillResourcesModule() {
                 fetchAndUpdateDatabaseUseCase = get(),
                 resourceSearch = get(),
                 domainProvider = get(),
-                secretInteractor = get()
+                secretInteractor = get(),
+                getSelectedAccountDataUseCase = get()
             )
         }
         scoped { (accountUiItemsMapper: ResourceUiItemsMapper) ->

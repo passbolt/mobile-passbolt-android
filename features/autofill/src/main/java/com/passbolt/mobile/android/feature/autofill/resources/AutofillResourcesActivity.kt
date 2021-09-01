@@ -12,12 +12,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
@@ -60,6 +65,7 @@ class AutofillResourcesActivity :
     private val modelAdapter: ModelAdapter<ResourceListUiModel, GenericItem> by inject()
     private val fastAdapter: FastAdapter<GenericItem> by inject(named<ResourceListUiModel>())
     private val resourceUiItemsMapper: ResourceUiItemsMapper by inject()
+    private val imageLoader: ImageLoader by inject()
 
     private val initialAuthenticationResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -83,6 +89,24 @@ class AutofillResourcesActivity :
         setListeners()
         presenter.attach(this)
         presenter.argsReceived(structure)
+    }
+
+    override fun displayAvatar(url: String) {
+        val request = ImageRequest.Builder(this)
+            .data(url)
+            .transformations(CircleCropTransformation())
+            .size(30.px, 30.px)
+            .placeholder(R.drawable.ic_avatar_placeholder)
+            .target { drawable ->
+                binding.searchTextInput.endIconMode = TextInputLayout.END_ICON_CUSTOM
+                binding.searchTextInput.endIconDrawable = drawable
+                binding.searchTextInput.setEndIconOnClickListener {
+                    presenter.avatarClick()
+                }
+            }
+            .error(R.drawable.ic_avatar_placeholder)
+            .build()
+        imageLoader.enqueue(request)
     }
 
     override fun startAuthActivity() {
@@ -169,6 +193,16 @@ class AutofillResourcesActivity :
 
     override fun showProgress() {
         setState(State.PROGRESS)
+    }
+
+    override fun navigateToManageAccount() {
+        initialAuthenticationResult.launch(
+            ActivityIntents.authentication(
+                this,
+                AuthenticationType.SignInForResult,
+                withSignOut = true
+            )
+        )
     }
 
     enum class State(

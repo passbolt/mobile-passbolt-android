@@ -44,12 +44,13 @@ object ActivityIntents {
         context: Context,
         authenticationType: AuthenticationType,
         withSignOut: Boolean = false,
-        userId: String? = null
+        userId: String? = null,
+        authenticationTarget: AuthenticationTarget = AuthenticationTarget.AUTHENTICATE
     ) =
         Intent().apply {
             setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
             putExtra(EXTRA_AUTH_STRATEGY_TYPE, authenticationType)
-            putExtra(EXTRA_AUTH_TARGET, AuthenticationTarget.AUTHENTICATE)
+            putExtra(EXTRA_AUTH_TARGET, authenticationTarget)
             putExtra(EXTRA_MANAGE_ACCOUNTS_SIGN_OUT, withSignOut)
             userId?.let { putExtra(EXTRA_USER_ID, it) }
         }

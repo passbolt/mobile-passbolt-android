@@ -64,6 +64,9 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     private val authTarget by lifecycleAwareLazy {
         requireArguments().getSerializable(ARG_AUTH_TARGET) as AuthenticationTarget
     }
+    private val authenticationType by lifecycleAwareLazy {
+        requireArguments().getSerializable(ARG_AUTH_TYPE) as AuthenticationType
+    }
     private lateinit var uiStrategy: AccountListStrategy
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -136,7 +139,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     override fun navigateToSignIn(model: AccountModelUi.AccountModel) {
         findNavController().navigate(
             AccountsListFragmentDirections.actionAccountsListFragmentToAuthFragment(
-                model.userId, AuthenticationType.SignIn
+                model.userId, authenticationType
             )
         )
     }
@@ -175,10 +178,12 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     }
 
     companion object {
-        private const val ARG_AUTH_TARGET = "AUTH_TARGET"
+        const val ARG_AUTH_TARGET = "AUTH_TARGET"
+        const val ARG_AUTH_TYPE = "ARG_AUTH_TYPE"
 
-        fun newBundle(authTarget: AuthenticationTarget) = bundleOf(
-            ARG_AUTH_TARGET to authTarget
+        fun newBundle(authTarget: AuthenticationTarget, authenticationType: AuthenticationType?) = bundleOf(
+            ARG_AUTH_TARGET to authTarget,
+            ARG_AUTH_TYPE to authenticationType
         )
     }
 }

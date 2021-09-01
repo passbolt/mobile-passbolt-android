@@ -5,7 +5,7 @@ import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 
-class SignInForResultAuthStrategy(override var authFragment: AuthFragment?) : AuthStrategy {
+class AuthForResultAuthStrategy(override var authFragment: AuthFragment?) : AuthStrategy {
 
     override fun title() =
         activeAuthFragment.getString(R.string.auth_enter_passphrase)
