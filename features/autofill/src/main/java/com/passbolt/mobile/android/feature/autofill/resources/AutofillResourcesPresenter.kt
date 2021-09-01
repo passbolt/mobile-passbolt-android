@@ -8,10 +8,13 @@ import android.view.autofill.AutofillValue
 import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.autofill.StructureParser
 import com.passbolt.mobile.android.feature.autofill.service.ParsedStructure
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -49,8 +52,10 @@ class AutofillResourcesPresenter(
     private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
     private val domainProvider: DomainProvider,
     private val resourcesInteractor: ResourceInteractor,
-    private val resourceSearch: SearchableMatcher
-) : AutofillResourcesContract.Presenter {
+    private val resourceSearch: SearchableMatcher,
+    private val secretInteractor: SecretInteractor
+) : BaseAuthenticatedPresenter<AutofillResourcesContract.View>(coroutineLaunchContext),
+    AutofillResourcesContract.Presenter {
 
     override var view: AutofillResourcesContract.View? = null
     private lateinit var parsedStructure: Set<ParsedStructure>
@@ -60,7 +65,7 @@ class AutofillResourcesPresenter(
     private var currentSearchText: String = ""
 
     override fun attach(view: AutofillResourcesContract.View) {
-        super.attach(view)
+        super<BaseAuthenticatedPresenter>.attach(view)
         view.startAuthActivity()
     }
 
@@ -74,11 +79,31 @@ class AutofillResourcesPresenter(
 
     private fun fetchResources() {
         scope.launch {
-            when (val result = resourcesInteractor.fetchResourcesWithTypes()) {
+            when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                resourcesInteractor.fetchResourcesWithTypes()
+            }) {
                 is ResourceInteractor.Output.Failure -> fetchingResourcesFailure()
                 is ResourceInteractor.Output.Success -> fetchingResourcesSuccess(result.resources)
             }
         }
+    }
+
+    private fun returnDataSet(password: ByteArray, username: String) {
+        val usernameParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_USERNAME, parsedStructure)
+        val passwordParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_PASSWORD, parsedStructure)
+
+        if (passwordParsedAssistStructure == null || usernameParsedAssistStructure == null) {
+            view?.navigateBack()
+            return
+        }
+
+        val dataSet = createDataSet(
+            usernameParsedAssistStructure.id,
+            passwordParsedAssistStructure.id,
+            username,
+            password
+        )
+        view?.returnData(dataSet)
     }
 
     private suspend fun fetchingResourcesSuccess(list: List<ResourceModel>) {
@@ -128,21 +153,47 @@ class AutofillResourcesPresenter(
         fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
     }
 
-    override fun returnClick(resourceModel: ResourceModel) {
-        val usernameParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_USERNAME, parsedStructure)
-        val passwordParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_PASSWORD, parsedStructure)
+    private fun showItemLoader(resourceId: String) {
+        allItemsList.find { it.resourceId == resourceId }?.loaderVisible = true
+        allItemsList.filter { it.resourceId != resourceId }.forEach { it.clickable = false }
+        showItems()
+    }
 
-        if (passwordParsedAssistStructure == null || usernameParsedAssistStructure == null) {
-            view?.navigateBack()
-            return
+    private fun hideItemLoader(resourceId: String) {
+        allItemsList.find { it.resourceId == resourceId }?.loaderVisible = false
+        allItemsList.forEach { it.clickable = true }
+        showItems()
+    }
+
+    override fun itemClick(resourceModel: ResourceModel) {
+        showItemLoader(resourceModel.resourceId)
+        doAfterFetchAndDecrypt(resourceModel.resourceId, {
+            hideItemLoader(resourceModel.resourceId)
+            returnDataSet(it, resourceModel.username)
+        }) {
+            hideItemLoader(resourceModel.resourceId)
+            view?.showGeneralError()
         }
+    }
 
-        val dataSet = createDataSet(
-            usernameParsedAssistStructure.id,
-            passwordParsedAssistStructure.id,
-            resourceModel.username
-        )
-        view?.returnData(dataSet)
+    private fun doAfterFetchAndDecrypt(
+        resourceId: String,
+        action: (ByteArray) -> Unit,
+        errorAction: () -> Unit
+    ) {
+        scope.launch {
+            when (val output =
+                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    secretInteractor.fetchAndDecrypt(resourceId)
+                }
+            ) {
+                is SecretInteractor.Output.DecryptFailure -> errorAction.invoke()
+                is SecretInteractor.Output.FetchFailure -> errorAction.invoke()
+                is SecretInteractor.Output.Success -> {
+                    action(output.decryptedSecret)
+                }
+            }
+        }
     }
 
     override fun argsReceived(structure: AssistStructure) {
@@ -181,7 +232,8 @@ class AutofillResourcesPresenter(
     private fun createDataSet(
         usernameId: AutofillId,
         passwordId: AutofillId,
-        usernameValue: String
+        usernameValue: String,
+        password: ByteArray
     ) =
         Dataset.Builder()
             .setValue(
@@ -190,7 +242,7 @@ class AutofillResourcesPresenter(
             )
             .setValue(
                 passwordId,
-                AutofillValue.forText("Mocked password")
+                AutofillValue.forText(String(password))
             )
             .build()
 }

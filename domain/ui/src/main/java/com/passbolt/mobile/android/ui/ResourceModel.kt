@@ -35,5 +35,7 @@ data class ResourceModel(
     val icon: String?,
     val initials: String,
     val url: String,
-    override val searchCriteria: String = "$name$username$url"
+    override val searchCriteria: String = "$name$username$url",
+    var loaderVisible: Boolean = false,
+    var clickable: Boolean = true
 ) : Parcelable, Searchable

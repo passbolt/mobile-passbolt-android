@@ -18,10 +18,10 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
+import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.autofill.R
@@ -51,21 +51,24 @@ import org.koin.core.qualifier.named
  * @since v1.0
  */
 class AutofillResourcesActivity :
-    BindingScopedActivity<ActivityAutofillResourcesBinding>(ActivityAutofillResourcesBinding::inflate),
+    BindingScopedAuthenticatedActivity<ActivityAutofillResourcesBinding, AutofillResourcesContract.View>(
+        ActivityAutofillResourcesBinding::inflate
+    ),
     AutofillResourcesContract.View {
 
-    private val presenter: AutofillResourcesContract.Presenter by inject()
+    override val presenter: AutofillResourcesContract.Presenter by inject()
     private val modelAdapter: ModelAdapter<ResourceListUiModel, GenericItem> by inject()
     private val fastAdapter: FastAdapter<GenericItem> by inject(named<ResourceListUiModel>())
     private val resourceUiItemsMapper: ResourceUiItemsMapper by inject()
 
-    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            presenter.userAuthenticated()
-        } else {
-            finish()
+    private val initialAuthenticationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.userAuthenticated()
+            } else {
+                finish()
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,7 +86,7 @@ class AutofillResourcesActivity :
     }
 
     override fun startAuthActivity() {
-        authenticationResult.launch(
+        initialAuthenticationResult.launch(
             ActivityIntents.authentication(
                 this,
                 AuthenticationType.SignInForResult
@@ -110,7 +113,7 @@ class AutofillResourcesActivity :
             adapter = fastAdapter
         }
         fastAdapter.addEventHook(PasswordItem.ItemClick {
-            presenter.returnClick(it)
+            presenter.itemClick(it)
         })
     }
 

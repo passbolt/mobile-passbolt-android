@@ -62,6 +62,8 @@ class PasswordItem(
             title.text = resourceModel.name
             subtitle.text = resourceModel.username
             more.isVisible = dotsVisible
+            loader.isVisible = resourceModel.loaderVisible
+            itemPassword.isEnabled = resourceModel.clickable
             val initialsIcons = getInitialsIcon(binding.root.context)
             icon.setImageDrawable(initialsIcons)
 
