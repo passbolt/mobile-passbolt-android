@@ -45,6 +45,8 @@ class AuthenticationMainPresenter(
                 AuthenticationTarget.AUTHENTICATE -> {
                     processAuthentication(requireNotNull(authenticationStrategy), userId)
                 }
+                AuthenticationTarget.AUTHENTICATE_FOR_RESULT ->
+                    processAuthentication(requireNotNull(authenticationStrategy), userId)
             }
         }
     }
