@@ -7,6 +7,8 @@ import com.nhaarman.mockitokotlin2.stub
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
+import com.nhaarman.mockitokotlin2.whenever
+import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceType
@@ -126,6 +128,13 @@ class ResourceDetailsPresenterTest : KoinTest {
         mockSecretInterActor.stub {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.Success(DECRYPTED_SECRET))
         }
+        mockResourceTypeFactory.stub {
+            onBlocking { getResourceTypeEnum(any()) }.doReturn(
+                ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+            )
+        }
+        whenever(mockSecretParser.extractPassword(any(), any()))
+            .doReturn(String(DECRYPTED_SECRET))
 
         presenter.argsReceived(RESOURCE_MODEL)
         presenter.secretIconClick()

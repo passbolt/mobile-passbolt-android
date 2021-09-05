@@ -30,4 +30,10 @@ val uiModule = module {
     factory {
         SearchableMatcher()
     }
+    factory {
+        ResourceTypeFactory(
+            databaseProvider = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
 }

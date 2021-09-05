@@ -1,11 +1,13 @@
 package com.passbolt.mobile.android.feature.resources.details
 
+import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuModel
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
@@ -39,12 +41,14 @@ class ResourceDetailsPresenter(
     private val secretInteractor: SecretInteractor,
     private val databaseProvider: DatabaseProvider,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val resourceTypeFactory: ResourceTypeFactory,
+    private val secretParser: SecretParser,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter {
 
     override var view: ResourceDetailsContract.View? = null
-    private lateinit var passwordModel: ResourceModel
+    private lateinit var resourceModel: ResourceModel
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private var isPasswordVisible = false
@@ -52,7 +56,7 @@ class ResourceDetailsPresenter(
     // TODO consider resource types - for now only description can be both encrypted and unencrypted
     // TODO for future draw and set encrypted properties dynamically based on database input
     override fun argsReceived(resourceModel: ResourceModel) {
-        this.passwordModel = resourceModel
+        this.resourceModel = resourceModel
         view?.apply {
             displayTitle(resourceModel.name)
             displayUsername(resourceModel.username)
@@ -93,15 +97,15 @@ class ResourceDetailsPresenter(
     }
 
     override fun usernameCopyClick() {
-        view?.addToClipboard(USERNAME_LABEL, passwordModel.username)
+        view?.addToClipboard(USERNAME_LABEL, resourceModel.username)
     }
 
     override fun urlCopyClick() {
-        view?.addToClipboard(WEBSITE_LABEL, passwordModel.url)
+        view?.addToClipboard(WEBSITE_LABEL, resourceModel.url)
     }
 
     override fun moreClick() {
-        view?.navigateToMore(ResourceDetailsMenuModel(passwordModel.name))
+        view?.navigateToMore(ResourceDetailsMenuModel(resourceModel.name))
     }
 
     override fun backArrowClick() {
@@ -110,10 +114,14 @@ class ResourceDetailsPresenter(
 
     override fun secretIconClick() {
         if (!isPasswordVisible) {
-            doAfterFetchAndDecrypt { decryptedSecret ->
-                view?.apply {
-                    showPasswordVisibleIcon()
-                    showPassword(String(decryptedSecret))
+            scope.launch {
+                val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)
+                doAfterFetchAndDecrypt { decryptedSecret ->
+                    view?.apply {
+                        showPasswordVisibleIcon()
+                        val password = secretParser.extractPassword(resourceTypeEnum, decryptedSecret)
+                        showPassword(password)
+                    }
                 }
             }
             isPasswordVisible = true
@@ -127,12 +135,24 @@ class ResourceDetailsPresenter(
         }
     }
 
+    override fun seeDescriptionButtonClick() {
+        scope.launch {
+            val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)
+            doAfterFetchAndDecrypt { decryptedSecret ->
+                view?.apply {
+                    val description = secretParser.extractDescription(resourceTypeEnum, decryptedSecret)
+                    showDescription(description)
+                }
+            }
+        }
+    }
+
     private fun doAfterFetchAndDecrypt(action: (ByteArray) -> Unit) {
         scope.launch {
             when (val output =
                 runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                     secretInteractor.fetchAndDecrypt(
-                        passwordModel.resourceId
+                        resourceModel.resourceId
                     )
                 }
             ) {
@@ -146,8 +166,12 @@ class ResourceDetailsPresenter(
     }
 
     override fun menuCopyClick() {
-        doAfterFetchAndDecrypt { decryptedSecret ->
-            view?.addToClipboard(SECRET_LABEL, String(decryptedSecret))
+        scope.launch {
+            val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)
+            doAfterFetchAndDecrypt { decryptedSecret ->
+                val password = secretParser.extractPassword(resourceTypeEnum, decryptedSecret)
+                view?.addToClipboard(SECRET_LABEL, password)
+            }
         }
     }
 

@@ -3,11 +3,13 @@ package com.passbolt.mobile.android.feature.home.screen
 import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
+import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
@@ -43,7 +45,9 @@ class HomePresenter(
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
     private val secretInteractor: SecretInteractor,
-    private val resourceMatcher: SearchableMatcher
+    private val resourceMatcher: SearchableMatcher,
+    private val resourceTypeFactory: ResourceTypeFactory,
+    private val secretParser: SecretParser
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
@@ -155,23 +159,25 @@ class HomePresenter(
     }
 
     override fun menuCopyPasswordClick() {
-        doAfterFetchAndDecrypt { decryptedSecret ->
-            view?.addToClipboard(SECRET_LABEL, String(decryptedSecret))
+        scope.launch {
+            val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(currentMoreMenuResource!!.resourceTypeId)
+            doAfterFetchAndDecrypt { decryptedSecret ->
+                val password = secretParser.extractPassword(resourceTypeEnum, decryptedSecret)
+                view?.addToClipboard(SECRET_LABEL, password)
+            }
         }
     }
 
-    private fun doAfterFetchAndDecrypt(action: (ByteArray) -> Unit) {
-        scope.launch {
-            when (val output =
-                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    secretInteractor.fetchAndDecrypt(requireNotNull(currentMoreMenuResource?.resourceId))
-                }
-            ) {
-                is SecretInteractor.Output.DecryptFailure -> view?.showDecryptionFailure()
-                is SecretInteractor.Output.FetchFailure -> view?.showFetchFailure()
-                is SecretInteractor.Output.Success -> {
-                    action(output.decryptedSecret)
-                }
+    private suspend fun doAfterFetchAndDecrypt(action: (ByteArray) -> Unit) {
+        when (val output =
+            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                secretInteractor.fetchAndDecrypt(requireNotNull(currentMoreMenuResource?.resourceId))
+            }
+        ) {
+            is SecretInteractor.Output.DecryptFailure -> view?.showDecryptionFailure()
+            is SecretInteractor.Output.FetchFailure -> view?.showFetchFailure()
+            is SecretInteractor.Output.Success -> {
+                action(output.decryptedSecret)
             }
         }
     }

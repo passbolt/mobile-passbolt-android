@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.secrets
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.DecryptSecretUseCase
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.FetchSecretUseCase
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import org.koin.dsl.module
 
 /**
@@ -46,6 +47,11 @@ val secretsModule = module {
         SecretInteractor(
             fetchSecretUseCase = get(),
             decryptSecretUseCase = get()
+        )
+    }
+    single {
+        SecretParser(
+            gson = get()
         )
     }
 }

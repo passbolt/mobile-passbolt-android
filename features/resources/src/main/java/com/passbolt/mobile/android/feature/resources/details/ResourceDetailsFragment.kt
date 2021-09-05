@@ -85,6 +85,7 @@ class ResourceDetailsFragment :
             backArrow.setDebouncingOnClick { presenter.backArrowClick() }
             moreIcon.setDebouncingOnClick { presenter.moreClick() }
             passwordIcon.setDebouncingOnClick { presenter.secretIconClick() }
+            seeDescriptionButton.setDebouncingOnClick { presenter.seeDescriptionButtonClick() }
         }
     }
 

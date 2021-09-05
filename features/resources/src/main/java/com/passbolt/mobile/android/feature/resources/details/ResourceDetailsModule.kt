@@ -32,7 +32,9 @@ fun Module.detailsModule() {
                 secretInteractor = get(),
                 coroutineLaunchContext = get(),
                 databaseProvider = get(),
-                getSelectedAccountUseCase = get()
+                getSelectedAccountUseCase = get(),
+                resourceTypeFactory = get(),
+                secretParser = get()
             )
         }
     }

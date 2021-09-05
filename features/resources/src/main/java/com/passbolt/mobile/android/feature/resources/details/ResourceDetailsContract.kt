@@ -58,5 +58,6 @@ interface ResourceDetailsContract {
         fun secretIconClick()
         fun viewStopped()
         fun menuCopyClick()
+        fun seeDescriptionButtonClick()
     }
 }
