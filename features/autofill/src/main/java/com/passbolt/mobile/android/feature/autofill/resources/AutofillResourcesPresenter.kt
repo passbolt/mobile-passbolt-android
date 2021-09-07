@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.autofill.StructureParser
 import com.passbolt.mobile.android.feature.autofill.service.ParsedStructure
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -53,7 +54,8 @@ class AutofillResourcesPresenter(
     private val domainProvider: DomainProvider,
     private val resourcesInteractor: ResourceInteractor,
     private val resourceSearch: SearchableMatcher,
-    private val secretInteractor: SecretInteractor
+    private val secretInteractor: SecretInteractor,
+    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
 ) : BaseAuthenticatedPresenter<AutofillResourcesContract.View>(coroutineLaunchContext),
     AutofillResourcesContract.Presenter {
 
@@ -70,11 +72,18 @@ class AutofillResourcesPresenter(
     }
 
     override fun userAuthenticated() {
+        getSelectedAccountDataUseCase.execute(Unit).avatarUrl?.let {
+            view?.displayAvatar(it)
+        }
         fetchResources()
     }
 
     override fun refreshSwipe() {
         fetchResources()
+    }
+
+    override fun avatarClick() {
+        view?.navigateToManageAccount()
     }
 
     private fun fetchResources() {

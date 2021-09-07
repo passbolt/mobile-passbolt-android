@@ -27,6 +27,9 @@ dependencies {
     implementation libs.androidx.constraintLayout
     implementation libs.androidx.swiperefresh
 
+    implementation libs.coil.core
+    implementation libs.coil.base
+
     implementation libs.di.koin
     implementation libs.di.koinExt
 

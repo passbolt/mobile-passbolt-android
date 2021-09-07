@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication
 
 import android.app.Activity
 import android.os.Bundle
+import androidx.navigation.NavArgument
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
@@ -54,6 +55,8 @@ class AuthenticationMainActivity :
     private val navGraph by lifecycleAwareLazy {
         navInflater.inflate(R.navigation.authentication).apply {
             setStartDestination(R.id.accountsListFragment)
+            val arg = NavArgument.Builder().setDefaultValue(authTarget).build()
+            addArgument(AccountsListFragment.ARG_AUTH_TARGET, arg)
         }
     }
 
@@ -89,18 +92,21 @@ class AuthenticationMainActivity :
         userId: String,
         authenticationStrategy: AuthenticationType
     ) {
-        navController.setGraph(navGraph, AccountsListFragment.newBundle(AuthenticationTarget.AUTHENTICATE))
+        navController.setGraph(navGraph, AccountsListFragment.newBundle(authTarget, authenticationStrategy))
         navController.navigate(
             AccountsListFragmentDirections.actionAccountsListFragmentToAuthFragment(userId, authenticationStrategy)
         )
     }
 
     override fun navigateToManageAccounts() {
-        navController.setGraph(navGraph, AccountsListFragment.newBundle(AuthenticationTarget.MANAGE_ACCOUNTS))
+        navController.setGraph(
+            navGraph,
+            AccountsListFragment.newBundle(AuthenticationTarget.MANAGE_ACCOUNTS, authStrategy)
+        )
     }
 
     override fun setDefaultNavGraph() {
-        navController.setGraph(navGraph, AccountsListFragment.newBundle(AuthenticationTarget.AUTHENTICATE))
+        navController.setGraph(navGraph, AccountsListFragment.newBundle(authTarget, authStrategy))
     }
 
     override fun showProgress() {
