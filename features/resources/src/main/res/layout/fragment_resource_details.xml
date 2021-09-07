@@ -206,14 +206,15 @@
             <TextView
                 android:id="@+id/seeDescriptionButton"
                 style="@style/ValueText"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_8"
                 android:text="@string/resource_details_see_description"
                 android:textColor="@color/primary"
                 android:textSize="@dimen/sp_12"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:paddingVertical="@dimen/dp_8"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
+                android:background="?selectableItemBackground"
                 app:layout_constraintTop_toBottomOf="@+id/descriptionValue" />
 
             <androidx.constraintlayout.widget.Guideline

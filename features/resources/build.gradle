@@ -18,6 +18,7 @@ dependencies {
     implementation project(':database')
     implementation project(':storage')
     implementation project(':entity')
+    implementation project(':commonresource')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

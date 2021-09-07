@@ -3,12 +3,14 @@ package com.passbolt.mobile.android.feature.resources.details
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.ResourceDatabase
 import com.passbolt.mobile.android.database.dao.ResourceTypesDao
 import com.passbolt.mobile.android.feature.resources.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import org.koin.dsl.module
 
@@ -46,6 +48,8 @@ val mockDatabaseProvider = mock<DatabaseProvider> {
 val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>() {
     on { execute(Unit) }.doReturn(GetSelectedAccountUseCase.Output("userId"))
 }
+val mockSecretParser = mock<SecretParser>()
+val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 
 val testResourceDetailsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
@@ -54,7 +58,9 @@ val testResourceDetailsModule = module {
             secretInteractor = mockSecretInterActor,
             coroutineLaunchContext = get(),
             databaseProvider = mockDatabaseProvider,
-            getSelectedAccountUseCase = mockGetSelectedAccountUseCase
+            getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
+            secretParser = mockSecretParser,
+            resourceTypeFactory = mockResourceTypeFactory
         )
     }
 }

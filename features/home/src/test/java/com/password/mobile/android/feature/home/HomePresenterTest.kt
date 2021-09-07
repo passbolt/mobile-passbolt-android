@@ -1,5 +1,6 @@
 package com.password.mobile.android.feature.home
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
@@ -11,6 +12,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
+import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
@@ -251,12 +253,20 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should copy secret after successful decrypt`() {
+    fun `view should copy secret after successful decrypt`() = runBlockingTest {
+        mockAccountData(null)
         mockSecretInteractor.stub {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(
                 SecretInteractor.Output.Success(DECRYPTED_SECRET)
             )
         }
+        mockResourceTypeFactory.stub {
+            onBlocking { getResourceTypeEnum(any()) }.doReturn(
+                ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+            )
+        }
+        whenever(mockSecretParser.extractPassword(any(), any()))
+            .doReturn(String(DECRYPTED_SECRET))
 
         presenter.attach(view)
         presenter.moreClick(RESOURCE_MODEL)
