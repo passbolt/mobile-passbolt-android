@@ -1,0 +1,158 @@
+package com.passbolt.mobile.android.mappers
+
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
+import com.passbolt.mobile.android.dto.response.ResourceTypeDto
+import com.passbolt.mobile.android.entity.resource.ResourceField
+import com.passbolt.mobile.android.entity.resource.ResourceType
+import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
+
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
+/*
+ * Mapper that uses Resource Types JSON Schema returned from backend to produce application resource fileds model
+ * that can be saved into the database and easily be understood by the application.
+ *
+ * Note: only a small subset of JSON Schema is supported for now as new resources are not expected have the full
+ * possible primitives range and full possible type enumerators range. For now the only supported type is `string`
+ * and the only supported type enumerator is `anyOf`. Nullable field type is handled via a separate flag returned by
+ * the backend in `required` properties array.
+ */
+class ResourceTypesModelMapper(
+    private val gson: Gson
+) {
+
+    fun map(resourceTypesDto: List<ResourceTypeDto>): List<ResourceTypeIdWithFields> =
+        resourceTypesDto.map {
+            val resourceFields = processFieldsDefinition(it.definition.resource, FieldKind.RESOURCE)
+            val secretFields = processFieldsDefinition(it.definition.secret, FieldKind.SECRET)
+
+            ResourceTypeIdWithFields(
+                ResourceType(it.id, it.name),
+                resourceFields + secretFields
+            )
+        }
+
+    private fun processFieldsDefinition(
+        resourceDefinitionObject: JsonObject,
+        resourceFieldKind: FieldKind
+    ): List<ResourceField> {
+        val result = mutableListOf<ResourceField>()
+
+        when (resourceDefinitionObject.getMemberAsString(FIELD_TYPE)) {
+            FieldType.OBJECT.type -> {
+                val propertiesObject = resourceDefinitionObject.getAsJsonObject(FIELD_PROPERTIES)
+                val requiredPropertiesNames = resourceDefinitionObject.getAsJsonArray(FIELD_REQUIRED)
+                    .map { it.asString }
+
+                propertiesObject.keySet().forEach { propertyName ->
+                    val possibleTypeObject = propertiesObject.getAsJsonObject(propertyName)
+                    val typeEnumerator: TypeEnumerator
+                    val typesList = if (possibleTypeObject.hasTypeEnumeration()) {
+                        typeEnumerator = TypeEnumerator.ANY_OF // only `anyOf` is supported for now
+                        val typesObject = possibleTypeObject.entrySet().iterator().next().value
+                        gson.fromJson(typesObject, FIELD_TYPE_DEFINITION_LIST_TYPE_TOKEN)
+                    } else {
+                        typeEnumerator = TypeEnumerator.SINGLE
+                        listOf(
+                            gson.fromJson(possibleTypeObject, FieldTypeDefinition::class.java)
+                        )
+                    }
+
+                    result += ResourceField(
+                        name = propertyName,
+                        isSecret = resourceFieldKind == FieldKind.SECRET,
+                        maxLength = getFieldMaxLength(typesList),
+                        isRequired = requiredPropertiesNames.contains(propertyName),
+                        type = getFieldType(typeEnumerator, typesList)
+                    )
+                }
+            }
+            FieldType.STRING.type -> {
+                val type = gson.fromJson(resourceDefinitionObject, FieldTypeDefinition::class.java)
+                result += ResourceField(
+                    name = resourceFieldKind.kind,
+                    isSecret = resourceFieldKind == FieldKind.SECRET,
+                    maxLength = getFieldMaxLength(listOf(type)),
+                    isRequired = true,
+                    type = getFieldType(TypeEnumerator.SINGLE, listOf(type))
+                )
+            }
+        }
+
+        return result
+    }
+
+    /*
+     * This method returns a String representation of possible resource field types.
+     *
+     * typesList - contains possible types("string", "int", "boolean", etc and their validations("maxLenght", etc);
+     *   Currently only "string" is supported;
+     * typeEnumerator - contains types relation ("anyOf", "oneOf", etc);
+     *   Currently only "anyOf" is supported
+     */
+    private fun getFieldType(typeEnumerator: TypeEnumerator, typesList: List<FieldTypeDefinition>?): String {
+        return FieldType.STRING.type
+    }
+
+    private fun getFieldMaxLength(typesList: List<FieldTypeDefinition>?) =
+        typesList
+            ?.mapNotNull { it.maxLength }
+            ?.maxOrNull()
+
+    private fun JsonObject.hasTypeEnumeration() =
+        TypeEnumerator.values().map { it.enumerator }.any { this.has(it) }
+
+    private fun JsonObject.getMemberAsString(fieldType: String) =
+        getAsJsonPrimitive(fieldType).asString
+
+    private companion object {
+        private const val FIELD_TYPE = "type"
+        private const val FIELD_PROPERTIES = "properties"
+        private const val FIELD_REQUIRED = "required"
+        private val FIELD_TYPE_DEFINITION_LIST_TYPE_TOKEN =
+            object : TypeToken<List<FieldTypeDefinition>>() {}.type
+    }
+}
+
+data class FieldTypeDefinition(
+    val type: String,
+    val maxLength: Int?
+)
+
+enum class FieldType(val type: String) {
+    STRING("string"),
+    OBJECT("object")
+}
+
+enum class FieldKind(val kind: String) {
+    RESOURCE("resource"),
+    SECRET("secret")
+}
+
+enum class TypeEnumerator(val enumerator: String) {
+    ANY_OF("anyOf"),
+    SINGLE("single")
+}

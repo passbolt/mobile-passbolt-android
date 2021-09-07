@@ -19,6 +19,7 @@ class ResourceModelMapperTest {
     fun `resource is properly mapped`() {
         val responseDto = ResourceResponseDto(
             id = "id1",
+            resourceTypeId = "resTypeId",
             description = "description",
             name = "firstname",
             uri = "uri",

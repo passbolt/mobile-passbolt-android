@@ -39,7 +39,8 @@ val commonResourceModule = module {
     single {
         ResourceInteractor(
             getResourceTypesUseCase = get(),
-            getResourcesUseCase = get()
+            getResourcesUseCase = get(),
+            addLocalResourceTypesUseCase = get()
         )
     }
 }

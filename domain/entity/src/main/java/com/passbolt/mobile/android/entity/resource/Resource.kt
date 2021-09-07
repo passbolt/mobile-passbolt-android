@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.entity.account
+package com.passbolt.mobile.android.entity.resource
 
 import androidx.room.Embedded
-import androidx.room.Relation
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,13 +26,16 @@ import androidx.room.Relation
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class FolderWithParentFolder(
-    @Embedded
-    val folder: FolderEntity,
 
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "parentId"
-    )
-    val parentFolder: FolderEntity
+@Entity
+data class Resource(
+    @PrimaryKey
+    val resourceId: String,
+    val resourceName: String,
+    val resourcePermission: Permission,
+    val url: String,
+    val username: String,
+    val description: String?,
+    val resourceTypeId: String,
+    @Embedded val folder: Folder
 )

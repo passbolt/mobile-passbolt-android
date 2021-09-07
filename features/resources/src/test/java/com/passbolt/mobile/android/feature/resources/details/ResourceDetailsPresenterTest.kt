@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resources.details
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.stub
@@ -7,6 +8,9 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
+import com.passbolt.mobile.android.entity.resource.ResourceField
+import com.passbolt.mobile.android.entity.resource.ResourceType
+import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.junit.Before
@@ -54,11 +58,12 @@ class ResourceDetailsPresenterTest : KoinTest {
     @Before
     fun setup() {
         presenter.attach(view)
-        presenter.argsReceived(RESOURCE_MODEL)
     }
 
     @Test
-    fun `password details should be shown correct`() {
+    fun `constant password details should be shown correct`() {
+        presenter.argsReceived(RESOURCE_MODEL)
+
         verify(view).displayTitle(NAME)
         verify(view).displayUsername(USERNAME)
         verify(view).displayInitialsIcon(NAME, INITIALS)
@@ -69,11 +74,60 @@ class ResourceDetailsPresenterTest : KoinTest {
     }
 
     @Test
+    fun `password details description encryption state should be shown correct for simple password`() {
+        mockResourceTypesDao.stub {
+            onBlocking { getResourceTypeWithFields(any()) }.doReturn(
+                ResourceTypeIdWithFields(
+                    ResourceType("id", "simple password"),
+                    listOf(
+                        ResourceField(
+                            name = "description",
+                            isSecret = false,
+                            maxLength = null,
+                            isRequired = false,
+                            type = "string"
+                        )
+                    )
+                )
+            )
+        }
+
+        presenter.argsReceived(RESOURCE_MODEL)
+
+        verify(view).showDescription(DESCRIPTION)
+    }
+
+    @Test
+    fun `password details description encryption state should be shown correct for default password`() {
+        mockResourceTypesDao.stub {
+            onBlocking { getResourceTypeWithFields(any()) }.doReturn(
+                ResourceTypeIdWithFields(
+                    ResourceType("id", "password"),
+                    listOf(
+                        ResourceField(
+                            name = "description",
+                            isSecret = true,
+                            maxLength = null,
+                            isRequired = false,
+                            type = "string"
+                        )
+                    )
+                )
+            )
+        }
+
+        presenter.argsReceived(RESOURCE_MODEL)
+
+        verify(view).showDescriptionIsEncrypted()
+    }
+
+    @Test
     fun `eye icon should react to password visibility change correct`() {
         mockSecretInterActor.stub {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.Success(DECRYPTED_SECRET))
         }
 
+        presenter.argsReceived(RESOURCE_MODEL)
         presenter.secretIconClick()
         presenter.secretIconClick()
 
@@ -89,6 +143,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.DecryptFailure(RuntimeException()))
         }
 
+        presenter.argsReceived(RESOURCE_MODEL)
         presenter.secretIconClick()
 
         verify(view).showDecryptionFailure()
@@ -100,6 +155,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.FetchFailure(RuntimeException()))
         }
 
+        presenter.argsReceived(RESOURCE_MODEL)
         presenter.secretIconClick()
 
         verify(view).showFetchFailure()
@@ -111,6 +167,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.Unauthorized)
         }
 
+        presenter.argsReceived(RESOURCE_MODEL)
         presenter.secretIconClick()
 
         verify(view).showAuth(UnauthenticatedReason.PASSPHRASE)
@@ -122,13 +179,17 @@ class ResourceDetailsPresenterTest : KoinTest {
         private const val INITIALS = "NN"
         private const val URL = "https://www.passbolt.com"
         private const val ID = "id"
+        private const val DESCRIPTION = "desc"
+        private const val RESOURCE_TYPE_ID = "resTypeId"
         private val RESOURCE_MODEL = ResourceModel(
             ID,
+            RESOURCE_TYPE_ID,
             NAME,
             USERNAME,
             null,
             INITIALS,
-            URL
+            URL,
+            DESCRIPTION
         )
         private val DECRYPTED_SECRET = "decrypted".toByteArray()
     }

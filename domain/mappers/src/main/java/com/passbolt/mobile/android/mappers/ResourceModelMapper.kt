@@ -2,10 +2,9 @@ package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
-import com.passbolt.mobile.android.entity.account.FolderEntity
-import com.passbolt.mobile.android.entity.account.Permission
-import com.passbolt.mobile.android.entity.account.ResourceEntity
-import com.passbolt.mobile.android.entity.account.SecretTypeEntity
+import com.passbolt.mobile.android.entity.resource.Folder
+import com.passbolt.mobile.android.entity.resource.Permission
+import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -37,32 +36,36 @@ class ResourceModelMapper(
     fun map(resource: ResourceResponseDto): ResourceModel =
         ResourceModel(
             resourceId = resource.id,
+            resourceTypeId = resource.resourceTypeId,
             name = resource.name,
             username = resource.username,
             icon = null,
             initials = initialsProvider.get(resource.name),
-            url = resource.uri
+            url = resource.uri,
+            description = resource.description
         )
 
-    fun map(resourceModel: ResourceModel): ResourceEntity =
-        ResourceEntity(
+    fun map(resourceModel: ResourceModel): Resource =
+        Resource(
             resourceId = resourceModel.resourceId,
             resourceName = resourceModel.name,
             description = "",
             resourcePermission = Permission.READ,
             url = resourceModel.url,
             username = resourceModel.username,
-            secretType = SecretTypeEntity(),
-            folder = FolderEntity(name = "name", permission = Permission.READ, parentId = 0)
+            resourceTypeId = resourceModel.resourceTypeId,
+            folder = Folder(name = "name", permission = Permission.READ, parentId = 0)
         )
 
-    fun map(resourceEntity: ResourceEntity): ResourceModel =
+    fun map(resourceEntity: Resource): ResourceModel =
         ResourceModel(
             resourceId = resourceEntity.resourceId,
+            resourceTypeId = resourceEntity.resourceTypeId,
             name = resourceEntity.resourceName,
             username = resourceEntity.username,
             icon = null,
             initials = initialsProvider.get(resourceEntity.resourceName),
-            url = resourceEntity.url
+            url = resourceEntity.url,
+            description = resourceEntity.description
         )
 }

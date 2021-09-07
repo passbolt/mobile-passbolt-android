@@ -204,7 +204,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/descriptionHeader" />
 
             <TextView
-                android:id="@+id/descriptionEncrypted"
+                android:id="@+id/seeDescriptionButton"
                 style="@style/ValueText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

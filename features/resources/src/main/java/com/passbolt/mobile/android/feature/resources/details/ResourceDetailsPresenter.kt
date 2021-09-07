@@ -3,8 +3,10 @@ package com.passbolt.mobile.android.feature.resources.details
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuModel
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -35,6 +37,8 @@ import kotlinx.coroutines.launch
  */
 class ResourceDetailsPresenter(
     private val secretInteractor: SecretInteractor,
+    private val databaseProvider: DatabaseProvider,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter {
@@ -45,17 +49,38 @@ class ResourceDetailsPresenter(
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private var isPasswordVisible = false
 
-    override fun argsReceived(passwordModel: ResourceModel) {
-        this.passwordModel = passwordModel
+    // TODO consider resource types - for now only description can be both encrypted and unencrypted
+    // TODO for future draw and set encrypted properties dynamically based on database input
+    override fun argsReceived(resourceModel: ResourceModel) {
+        this.passwordModel = resourceModel
         view?.apply {
-            displayTitle(passwordModel.name)
-            displayUsername(passwordModel.username)
-            displayInitialsIcon(passwordModel.name, passwordModel.initials)
-            if (passwordModel.url.isNotEmpty()) {
-                displayUrl(passwordModel.url)
+            displayTitle(resourceModel.name)
+            displayUsername(resourceModel.username)
+            displayInitialsIcon(resourceModel.name, resourceModel.initials)
+            if (resourceModel.url.isNotEmpty()) {
+                displayUrl(resourceModel.url)
             }
             showPasswordHidden()
             showPasswordHiddenIcon()
+            handleDescriptionField(resourceModel)
+        }
+    }
+
+    private fun handleDescriptionField(resourceModel: ResourceModel) {
+        scope.launch {
+            val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+            val resourceWithFields = databaseProvider
+                .get(userId)
+                .resourceTypesDao()
+                .getResourceTypeWithFields(resourceModel.resourceTypeId)
+            val isDescriptionSecret = resourceWithFields.resourceFields
+                .find { it.name == "description" }
+                ?.isSecret ?: false
+            if (isDescriptionSecret) {
+                view?.showDescriptionIsEncrypted()
+            } else {
+                view?.showDescription(resourceModel.description.orEmpty())
+            }
         }
     }
 

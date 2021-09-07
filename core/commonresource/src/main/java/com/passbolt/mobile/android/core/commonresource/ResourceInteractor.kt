@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.commonresource
 import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
+import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 import com.passbolt.mobile.android.ui.ResourceModel
 
@@ -30,7 +31,8 @@ import com.passbolt.mobile.android.ui.ResourceModel
  */
 class ResourceInteractor(
     private val getResourceTypesUseCase: GetResourceTypesUseCase,
-    private val getResourcesUseCase: GetResourcesUseCase
+    private val getResourcesUseCase: GetResourcesUseCase,
+    private val addLocalResourceTypesUseCase: AddLocalResourceTypesUseCase
 ) {
 
     suspend fun fetchResourcesWithTypes(): Output {
@@ -40,10 +42,10 @@ class ResourceInteractor(
         return if (resourcesResult is GetResourcesUseCase.Output.Success &&
             resourceTypesResult is GetResourceTypesUseCase.Output.Success
         ) {
-            Output.Success(
-                resourcesResult.resources,
-                resourceTypesResult.resourceTypes
+            addLocalResourceTypesUseCase.execute(
+                AddLocalResourceTypesUseCase.Input(resourceTypesResult.resourceTypes)
             )
+            Output.Success(resourcesResult.resources, resourceTypesResult.resourceTypes)
         } else {
             Output.Failure(resourcesResult.authenticationState + resourceTypesResult.authenticationState)
         }

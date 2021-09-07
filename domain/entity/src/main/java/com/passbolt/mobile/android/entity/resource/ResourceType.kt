@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.entity.account
+package com.passbolt.mobile.android.entity.resource
 
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Junction
 import androidx.room.PrimaryKey
-import com.passbolt.mobile.android.entity.account.ResourceEntity.Companion.RESOURCE_ENTITY_TABLE_NAME
+import androidx.room.Relation
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,19 +28,40 @@ import com.passbolt.mobile.android.entity.account.ResourceEntity.Companion.RESOU
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Entity(tableName = RESOURCE_ENTITY_TABLE_NAME)
-data class ResourceEntity(
+
+const val RESOURCE_TYPE_ID = "resourceTypeId"
+const val RESOURCE_FIELD_ID = "resourceFieldId"
+
+@Entity
+data class ResourceType(
     @PrimaryKey
-    val resourceId: String,
-    val resourceName: String,
-    val resourcePermission: Permission,
-    val url: String,
-    val username: String,
-    val description: String?,
-    @Embedded val secretType: SecretTypeEntity,
-    @Embedded val folder: FolderEntity
-) {
-    companion object {
-        const val RESOURCE_ENTITY_TABLE_NAME = "resources"
-    }
-}
+    val resourceTypeId: String,
+    val name: String
+)
+
+@Entity
+data class ResourceField(
+    @PrimaryKey(autoGenerate = true)
+    val resourceFieldId: Long = 0,
+    val name: String,
+    val isSecret: Boolean,
+    val maxLength: Int?,
+    val isRequired: Boolean,
+    val type: String
+)
+
+@Entity(primaryKeys = [RESOURCE_TYPE_ID, RESOURCE_FIELD_ID])
+data class ResourceTypesAndFieldsCrossRef(
+    val resourceTypeId: String,
+    val resourceFieldId: Long
+)
+
+data class ResourceTypeIdWithFields(
+    @Embedded val resourceType: ResourceType,
+    @Relation(
+        parentColumn = RESOURCE_TYPE_ID,
+        entityColumn = RESOURCE_FIELD_ID,
+        associateBy = Junction(ResourceTypesAndFieldsCrossRef::class)
+    )
+    val resourceFields: List<ResourceField>
+)

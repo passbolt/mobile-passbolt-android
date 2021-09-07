@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.storage.usecase.accounts
 
 import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.entity.account.AccountEntity
+import com.passbolt.mobile.android.entity.account.Account
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
@@ -36,7 +36,7 @@ class GetAllAccountsDataUseCase(
     override fun execute(input: Unit): Output {
         val accountsData = getAccountsUseCase.execute(Unit).users.map { userId ->
             val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
-            AccountEntity(
+            Account(
                 userId = userId,
                 firstName = accountData.firstName,
                 lastName = accountData.lastName,
@@ -51,6 +51,6 @@ class GetAllAccountsDataUseCase(
     }
 
     class Output(
-        val accounts: List<AccountEntity>
+        val accounts: List<Account>
     )
 }
