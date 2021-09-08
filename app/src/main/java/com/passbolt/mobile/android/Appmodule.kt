@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.TimeProvider
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.networking.COIL_HTTP_CLIENT
 import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import okhttp3.OkHttpClient
@@ -68,6 +69,7 @@ internal val appModule = module {
     single { WebsiteOpener() }
     single { HttpsVerifier() }
     factory { androidApplication().packageManager }
+    single { AppForegroundListener() }
 }
 
 private fun provideImageLoader(okHttpClient: OkHttpClient, context: Context) {
