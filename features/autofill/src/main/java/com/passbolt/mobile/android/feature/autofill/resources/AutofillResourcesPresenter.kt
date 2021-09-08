@@ -69,6 +69,7 @@ class AutofillResourcesPresenter(
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private var allItemsList: List<ResourceModel> = emptyList()
     private var currentSearchText: String = ""
+    private val mode = AutofillMode.ACCESSIBILITY
 
     override fun attach(view: AutofillResourcesContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
@@ -101,7 +102,11 @@ class AutofillResourcesPresenter(
         }
     }
 
-    private fun returnDataSet(password: String, username: String) {
+    private fun returnAccessibility(password: String, username: String) {
+        view?.returnData(username, password)
+    }
+
+    private fun returnAutofill(password: String, username: String) {
         val usernameParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_USERNAME, parsedStructure)
         val passwordParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_PASSWORD, parsedStructure)
 
@@ -117,6 +122,13 @@ class AutofillResourcesPresenter(
             password
         )
         view?.returnData(dataSet)
+    }
+
+    private fun returnDataSet(password: String, username: String) {
+        when (mode) {
+            AutofillMode.ACCESSIBILITY -> returnAccessibility(password, username)
+            AutofillMode.AUTOFILL -> returnAutofill(password, username)
+        }
     }
 
     private suspend fun fetchingResourcesSuccess(list: List<ResourceModel>) {
@@ -142,11 +154,11 @@ class AutofillResourcesPresenter(
 
     private fun showItems() {
         val itemsList = mutableListOf<ResourceListUiModel>()
-        getSuggested()?.let {
+        /*getSuggested()?.let {
             itemsList.add(ResourceListUiModel.Header("Suggested password"))
             itemsList.addAll(it.map { ResourceListUiModel.Data(it) })
             itemsList.add(ResourceListUiModel.Header("Other password"))
-        }
+        }*/
         itemsList.addAll(allItemsList.map { ResourceListUiModel.Data(it) })
         view?.showResources(itemsList)
     }
@@ -211,8 +223,10 @@ class AutofillResourcesPresenter(
         }
     }
 
-    override fun argsReceived(structure: AssistStructure) {
-        parsedStructure = structureParser.parse(structure)
+    override fun argsReceived(structure: AssistStructure?) {
+        structure?.let {
+            parsedStructure = structureParser.parse(structure)
+        }
     }
 
     private fun fetchLinksApi(domain: String): List<ResourceModel>? {

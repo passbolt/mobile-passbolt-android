@@ -1,11 +1,5 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
-import android.app.assist.AssistStructure
-import android.service.autofill.Dataset
-import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.ui.ResourceModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,28 +22,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface AutofillResourcesContract {
-    interface View : BaseAuthenticatedContract.View {
-        fun returnData(username: String, password: String)
-        fun returnData(dataset: Dataset)
-        fun navigateBack()
-        fun showResources(resources: List<ResourceListUiModel>)
-        fun showGeneralError()
-        fun startAuthActivity()
-        fun showSearchEmptyList()
-        fun showFullScreenError()
-        fun showEmptyList()
-        fun showProgress()
-        fun displayAvatar(url: String)
-        fun navigateToManageAccount()
-    }
-
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun itemClick(resourceModel: ResourceModel)
-        fun argsReceived(structure: AssistStructure?)
-        fun refreshSwipe()
-        fun userAuthenticated()
-        fun searchTextChange(text: String)
-        fun avatarClick()
-    }
+enum class AutofillMode {
+    ACCESSIBILITY,
+    AUTOFILL
 }

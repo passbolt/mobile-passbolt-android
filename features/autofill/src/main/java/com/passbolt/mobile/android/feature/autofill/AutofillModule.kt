@@ -1,13 +1,18 @@
 package com.passbolt.mobile.android.feature.autofill
 
+import android.content.Context
+import android.os.PowerManager
+import android.view.WindowManager
 import android.view.autofill.AutofillManager
 import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider
 import com.passbolt.mobile.android.feature.autofill.resources.DomainProvider
 import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.autofill.resources.autofillResourcesModule
 import com.passbolt.mobile.android.feature.autofill.service.RestServiceProvider
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -52,6 +57,9 @@ val autofillModule = module {
         )
     }
     single {
+        AccessibilityOperationsProvider()
+    }
+    single {
         FetchAndUpdateDatabaseUseCase(
             getSelectedAccountUseCase = get(),
             removeLocalResourcesUseCase = get(),
@@ -60,5 +68,11 @@ val autofillModule = module {
     }
     single {
         DomainProvider()
+    }
+    single {
+        androidApplication().getSystemService(Context.POWER_SERVICE) as PowerManager
+    }
+    single {
+        androidApplication().getSystemService(Context.WINDOW_SERVICE) as WindowManager
     }
 }

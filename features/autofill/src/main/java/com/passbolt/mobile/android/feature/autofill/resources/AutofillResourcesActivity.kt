@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.service.autofill.Dataset
 import android.view.autofill.AutofillManager
 import android.view.autofill.AutofillManager.EXTRA_AUTHENTICATION_RESULT
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -29,6 +28,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenti
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityCommunicator
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 
@@ -79,11 +79,6 @@ class AutofillResourcesActivity :
         super.onCreate(savedInstanceState)
         val structure = intent.getParcelableExtra<AssistStructure>(AutofillManager.EXTRA_ASSIST_STRUCTURE)
 
-        if (structure == null) {
-            Toast.makeText(this, R.string.autofill_error, Toast.LENGTH_SHORT).show()
-            navigateBack()
-            return
-        }
         initAdapter()
         setListeners()
         presenter.attach(this)
@@ -171,6 +166,15 @@ class AutofillResourcesActivity :
         finish()
     }
 
+    override fun returnData(username: String, password: String) {
+        AccessibilityCommunicator.lastCredentials = AccessibilityCommunicator.Credentials(
+            username,
+            password,
+            intent.extras?.getString(URI_KEY, null)
+        )
+        finishAffinity()
+    }
+
     override fun returnData(dataset: Dataset) {
         val replyIntent = Intent().apply {
             putExtra(EXTRA_AUTHENTICATION_RESULT, dataset)
@@ -216,5 +220,9 @@ class AutofillResourcesActivity :
         ERROR(false, false, false, false, false, false),
         PROGRESS(true, false, false, false, false, false),
         SUCCESS(false, false, false, true, true, false)
+    }
+
+    companion object {
+        const val URI_KEY = "URI_KEY"
     }
 }
