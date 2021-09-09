@@ -6,6 +6,10 @@ import coil.ImageLoader
 import com.passbolt.mobile.android.core.commonresource.commonResourceModule
 import com.passbolt.mobile.android.core.commonresource.uiModule
 import com.passbolt.mobile.android.core.mvp.mvpModule
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppForegroundListener
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.core.navigation.isAuthenticatedActivity
 import com.passbolt.mobile.android.core.networking.networkingModule
 import com.passbolt.mobile.android.core.qrscan.di.barcodeScanModule
 import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
@@ -24,6 +28,11 @@ import com.passbolt.mobile.android.featureflags.featureFlagsModule
 import com.passbolt.mobile.android.gopenpgp.di.openPgpModule
 import com.passbolt.mobile.android.service.passboltApiModule
 import com.passbolt.mobile.android.storage.storageModule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -56,12 +65,31 @@ import timber.log.Timber
 class PassboltApplication : Application(), KoinComponent {
 
     private val imageLoader: ImageLoader by inject()
+    private val appForegroundListener: AppForegroundListener by inject()
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     override fun onCreate() {
         super.onCreate()
         initTimber()
         initKoin()
         setupCoil()
+        registerAppForegroundListener()
+    }
+
+    private fun registerAppForegroundListener() {
+        registerActivityLifecycleCallbacks(appForegroundListener)
+        applicationScope.launch {
+            appForegroundListener.appWentForegroundFlow.collect {
+                if (it.isAuthenticatedActivity()) {
+                    it.startActivity(
+                        ActivityIntents.refreshAuthentication(
+                            it,
+                            AuthenticationType.Refresh
+                        )
+                    )
+                }
+            }
+        }
     }
 
     private fun initTimber() {
