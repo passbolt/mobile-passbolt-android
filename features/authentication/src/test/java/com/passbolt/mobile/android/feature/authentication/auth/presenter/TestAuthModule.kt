@@ -15,7 +15,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
@@ -88,7 +88,7 @@ internal val mockSignInUseCase = mock<SiginInUseCase>()
 internal val mockChallengeDecryptor = mock<ChallengeDecryptor>()
 internal val mockChallengeVerifier = mock<ChallengeVerifier>()
 internal val mockFingerprintInformationProvider = mock<FingerprintInformationProvider>()
-internal val mockFetureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
+internal val mockFeatureFlagsInteractor = mock<FeatureFlagsInteractor>()
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
 internal val mockCipher = mock<Cipher> {
     on { iv }.doReturn(ByteArray(0))
@@ -131,7 +131,7 @@ val testAuthModule = module {
             removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
             fingerprintInfoProvider = mockFingerprintInformationProvider,
             passphraseMemoryCache = mockPassphraseMemoryCache,
-            featureFlagsUseCase = mockFetureFlagsUseCase,
+            featureFlagsInteractor = mockFeatureFlagsInteractor,
             signOutUseCase = mockSignOutUseCase,
             getPrivateKeyUseCase = mockPrivateKeyUseCase,
             verifyPassphraseUseCase = mockVerifyPassphraseUseCase,

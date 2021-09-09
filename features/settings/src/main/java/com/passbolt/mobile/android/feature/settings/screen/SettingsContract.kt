@@ -46,6 +46,8 @@ interface SettingsContract {
         fun showGenericError()
         fun showConfigureFingerprintFirst()
         fun navigateToSystemSettings()
+        fun hidePrivacyPolicyButton()
+        fun hideTermsAndConditionsButton()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

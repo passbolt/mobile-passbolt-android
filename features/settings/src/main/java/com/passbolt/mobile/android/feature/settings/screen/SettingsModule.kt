@@ -43,7 +43,9 @@ fun Module.settingsModule() {
                 biometricCipher = get(),
                 saveBiometricKeyIvUseCase = get(),
                 removeBiometricKeyUseCase = get(),
-                fingerprintInformationProvider = get()
+                fingerprintInformationProvider = get(),
+                getFeatureFlagsUseCase = get(),
+                coroutineLaunchContext = get()
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }

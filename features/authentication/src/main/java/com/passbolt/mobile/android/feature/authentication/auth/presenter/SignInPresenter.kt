@@ -12,7 +12,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
@@ -67,7 +67,7 @@ class SignInPresenter(
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val getAccountDataUseCase: GetAccountDataUseCase,
     private val passphraseMemoryCache: PassphraseMemoryCache,
-    private val featureFlagsUseCase: GetFeatureFlagsUseCase,
+    internal val featureFlagsInteractor: FeatureFlagsInteractor,
     private val signOutUseCase: SignOutUseCase,
     removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     biometricCipher: BiometricCipher,
@@ -208,17 +208,16 @@ class SignInPresenter(
 
     private fun fetchFeatureFlags() {
         scope.launch {
-            when (featureFlagsUseCase.execute(Unit)) {
-                is GetFeatureFlagsUseCase.Output.Failure<*> -> {
-                    view?.showFeatureFlagsErrorDialog()
-                }
-                is GetFeatureFlagsUseCase.Output.Success -> {
-                    // TODO save feature flags or use dynamic koin module
+            when (featureFlagsInteractor.fetchAndSaveFeatureFlags()) {
+                is FeatureFlagsInteractor.Output.Success -> {
                     view?.apply {
                         hideProgress()
                         clearPassphraseInput()
                         authSuccess()
                     }
+                }
+                is FeatureFlagsInteractor.Output.Failure -> {
+                    view?.showFeatureFlagsErrorDialog()
                 }
             }
         }

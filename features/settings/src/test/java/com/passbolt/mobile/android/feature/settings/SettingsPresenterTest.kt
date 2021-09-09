@@ -7,10 +7,13 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
+import com.nhaarman.mockitokotlin2.stub
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
+import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
@@ -69,6 +72,13 @@ class SettingsPresenterTest : KoinTest {
         whenever(getSelectedAccountUseCase.execute(anyOrNull())).thenReturn(
             GetSelectedAccountUseCase.Output("userId")
         )
+        getFeatureFlagsUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetFeatureFlagsUseCase.Output(
+                    FeatureFlagsModel(URL, URL, true)
+                )
+            )
+        }
         presenter.attach(view)
         reset(view)
     }
@@ -99,17 +109,31 @@ class SettingsPresenterTest : KoinTest {
 
     @Test
     fun `privacy policy clicked should navigate to privacy policy website`() {
-        // TODO use url from endpoint
         presenter.privacyPolicyClick()
-        verify(view).openUrl("https://www.passbolt.com")
+        verify(view).openUrl(URL)
         verifyNoMoreInteractions(view)
     }
 
     @Test
+    fun `privacy policy and terms should hide if urls not provided`() {
+        getFeatureFlagsUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetFeatureFlagsUseCase.Output(
+                    FeatureFlagsModel(null, null, true)
+                )
+            )
+        }
+
+        presenter.attach(view)
+
+        verify(view).hidePrivacyPolicyButton()
+        verify(view).hideTermsAndConditionsButton()
+    }
+
+    @Test
     fun `terms clicked should navigate to terms website`() {
-        // TODO use url from endpoint
         presenter.termsClick()
-        verify(view).openUrl("https://www.passbolt.com")
+        verify(view).openUrl(URL)
         verifyNoMoreInteractions(view)
     }
 
@@ -181,5 +205,6 @@ class SettingsPresenterTest : KoinTest {
 
     private companion object {
         private val PASSPHRASE = "passphrase".toByteArray()
+        private const val URL = "https://www.passbolt.com"
     }
 }

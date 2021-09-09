@@ -17,9 +17,9 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
+import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
-import com.passbolt.mobile.android.ui.FeatureFlagsModel
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -117,9 +117,11 @@ class SignInPresenterTest : KoinTest {
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
-        mockFetureFlagsUseCase.stub {
-            onBlocking { execute(Unit) }.doReturn(
-                GetFeatureFlagsUseCase.Output.Success(FeatureFlagsModel())
+        mockFeatureFlagsInteractor.stub {
+            onBlocking { fetchAndSaveFeatureFlags() }.doReturn(
+                FeatureFlagsInteractor.Output.Success(
+                    FeatureFlagsModel(null, null, true)
+                )
             )
         }
 

@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
 import com.passbolt.mobile.android.feature.settings.screen.SettingsPresenter
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
@@ -37,6 +38,7 @@ internal val biometricCipher = mock<BiometricCipher> {
 internal val saveBiometricKayIvUseCase = mock<SaveBiometricKeyIvUseCase>()
 internal val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
 internal val removeBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
+internal val getFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 
 @ExperimentalCoroutinesApi
 val testModule = module {
@@ -51,6 +53,7 @@ val testModule = module {
     factory { saveBiometricKayIvUseCase }
     factory { fingerprintInformationProvider }
     factory { removeBiometricKeyUseCase }
+    factory { getFeatureFlagsUseCase }
     factory<SettingsContract.Presenter> {
         SettingsPresenter(
             checkIfPassphraseExistsUseCase = get(),
@@ -62,7 +65,9 @@ val testModule = module {
             biometricCipher = get(),
             saveBiometricKeyIvUseCase = get(),
             fingerprintInformationProvider = get(),
-            removeBiometricKeyUseCase = get()
+            removeBiometricKeyUseCase = get(),
+            getFeatureFlagsUseCase = get(),
+            coroutineLaunchContext = get()
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
