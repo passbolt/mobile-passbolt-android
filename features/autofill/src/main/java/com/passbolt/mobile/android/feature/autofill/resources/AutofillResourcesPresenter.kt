@@ -5,9 +5,10 @@ import android.service.autofill.Dataset
 import android.view.View
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
-import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
+import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
+import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
@@ -15,6 +16,7 @@ import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.autofill.StructureParser
 import com.passbolt.mobile.android.feature.autofill.service.ParsedStructure
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -55,7 +57,9 @@ class AutofillResourcesPresenter(
     private val resourcesInteractor: ResourceInteractor,
     private val resourceSearch: SearchableMatcher,
     private val secretInteractor: SecretInteractor,
-    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
+    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
+    private val resourceTypeFactory: ResourceTypeFactory,
+    private val secretParser: SecretParser
 ) : BaseAuthenticatedPresenter<AutofillResourcesContract.View>(coroutineLaunchContext),
     AutofillResourcesContract.Presenter {
 
@@ -97,7 +101,7 @@ class AutofillResourcesPresenter(
         }
     }
 
-    private fun returnDataSet(password: ByteArray, username: String) {
+    private fun returnDataSet(password: String, username: String) {
         val usernameParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_USERNAME, parsedStructure)
         val passwordParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_PASSWORD, parsedStructure)
 
@@ -176,31 +180,33 @@ class AutofillResourcesPresenter(
 
     override fun itemClick(resourceModel: ResourceModel) {
         showItemLoader(resourceModel.resourceId)
-        doAfterFetchAndDecrypt(resourceModel.resourceId, {
-            hideItemLoader(resourceModel.resourceId)
-            returnDataSet(it, resourceModel.username)
-        }) {
-            hideItemLoader(resourceModel.resourceId)
-            view?.showGeneralError()
+        scope.launch {
+            val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)
+            doAfterFetchAndDecrypt(resourceModel.resourceId, {
+                hideItemLoader(resourceModel.resourceId)
+                val password = secretParser.extractPassword(resourceTypeEnum, it)
+                returnDataSet(password, resourceModel.username)
+            }) {
+                hideItemLoader(resourceModel.resourceId)
+                view?.showGeneralError()
+            }
         }
     }
 
-    private fun doAfterFetchAndDecrypt(
+    private suspend fun doAfterFetchAndDecrypt(
         resourceId: String,
         action: (ByteArray) -> Unit,
         errorAction: () -> Unit
     ) {
-        scope.launch {
-            when (val output =
-                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    secretInteractor.fetchAndDecrypt(resourceId)
-                }
-            ) {
-                is SecretInteractor.Output.DecryptFailure -> errorAction.invoke()
-                is SecretInteractor.Output.FetchFailure -> errorAction.invoke()
-                is SecretInteractor.Output.Success -> {
-                    action(output.decryptedSecret)
-                }
+        when (val output =
+            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                secretInteractor.fetchAndDecrypt(resourceId)
+            }
+        ) {
+            is SecretInteractor.Output.DecryptFailure -> errorAction.invoke()
+            is SecretInteractor.Output.FetchFailure -> errorAction.invoke()
+            is SecretInteractor.Output.Success -> {
+                action(output.decryptedSecret)
             }
         }
     }
@@ -242,7 +248,7 @@ class AutofillResourcesPresenter(
         usernameId: AutofillId,
         passwordId: AutofillId,
         usernameValue: String,
-        password: ByteArray
+        password: String
     ) =
         Dataset.Builder()
             .setValue(
@@ -251,7 +257,7 @@ class AutofillResourcesPresenter(
             )
             .setValue(
                 passwordId,
-                AutofillValue.forText(String(password))
+                AutofillValue.forText(password)
             )
             .build()
 }

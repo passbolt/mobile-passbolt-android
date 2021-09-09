@@ -10,7 +10,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
-import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
@@ -152,12 +151,12 @@ class ResourceDetailsFragment :
     }
 
     override fun showDecryptionFailure() {
-        Snackbar.make(requireView(), R.string.resource_details_decryption_failure, Snackbar.LENGTH_LONG)
+        Toast.makeText(requireContext(), R.string.resource_details_decryption_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showFetchFailure() {
-        Snackbar.make(requireView(), R.string.resource_details_fetch_failure, Snackbar.LENGTH_LONG)
+        Toast.makeText(requireContext(), R.string.resource_details_fetch_failure, Toast.LENGTH_SHORT)
             .show()
     }
 

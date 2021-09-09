@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -202,12 +201,12 @@ class HomeFragment :
     }
 
     override fun showDecryptionFailure() {
-        Snackbar.make(requireView(), R.string.home_decryption_failure, Snackbar.LENGTH_LONG)
+        Toast.makeText(requireContext(), R.string.home_decryption_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showFetchFailure() {
-        Snackbar.make(requireView(), R.string.home_fetch_failure, Snackbar.LENGTH_LONG)
+        Toast.makeText(requireContext(), R.string.home_fetch_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
