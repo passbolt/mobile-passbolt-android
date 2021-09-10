@@ -14,6 +14,8 @@ import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceType
 import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.junit.Before
 import org.junit.Rule
@@ -180,6 +182,21 @@ class ResourceDetailsPresenterTest : KoinTest {
         presenter.secretIconClick()
 
         verify(view).showAuth(UnauthenticatedReason.PASSPHRASE)
+    }
+
+    @Test
+    fun `view should hide preview password when appropriate feature flag is set`() {
+        mockGetFeatureFlagsUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetFeatureFlagsUseCase.Output(
+                    FeatureFlagsModel(null, null, isPreviewPasswordAvailable = false)
+                )
+            )
+        }
+
+        presenter.argsReceived(RESOURCE_MODEL)
+
+        verify(view).hidePasswordEyeIcon()
     }
 
     private companion object {

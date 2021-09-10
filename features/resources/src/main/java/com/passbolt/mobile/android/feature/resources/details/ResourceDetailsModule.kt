@@ -34,7 +34,8 @@ fun Module.detailsModule() {
                 databaseProvider = get(),
                 getSelectedAccountUseCase = get(),
                 resourceTypeFactory = get(),
-                secretParser = get()
+                secretParser = get(),
+                getFeatureFlagsUseCase = get()
             )
         }
     }
