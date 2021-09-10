@@ -29,6 +29,5 @@ class AccountListStrategyFactory {
     fun get(type: AuthenticationTarget) = when (type) {
         AuthenticationTarget.MANAGE_ACCOUNTS -> ManageAccountListStrategy()
         AuthenticationTarget.AUTHENTICATE -> AuthAccountListStrategy()
-        AuthenticationTarget.AUTHENTICATE_FOR_RESULT -> AuthForResultAccountListStrategy()
     }
 }

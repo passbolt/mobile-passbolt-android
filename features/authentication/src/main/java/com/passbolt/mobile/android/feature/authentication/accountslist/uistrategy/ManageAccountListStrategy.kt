@@ -1,12 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy
 
 import android.view.View
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.R
-import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragmentDirections
-import com.passbolt.mobile.android.ui.AccountModelUi
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,12 +34,4 @@ class ManageAccountListStrategy : AccountListStrategy {
     override fun headerVisibility() = View.INVISIBLE
 
     override fun toolbarVisibility() = View.VISIBLE
-
-    override fun navigateToSignIn(model: AccountModelUi.AccountModel, fragment: Fragment) {
-        fragment.findNavController().navigate(
-            AccountsListFragmentDirections.actionAccountsListFragmentToAuthFragment(
-                model.userId, AuthenticationType.SignIn
-            )
-        )
-    }
 }
