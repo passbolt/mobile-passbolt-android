@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.startup
 
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AuthenticationType
@@ -13,6 +14,8 @@ class StartUpActivity : BindingScopedActivity<ActivityStartupBinding>(ActivitySt
     private val presenter: StartUpContract.Presenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // TODO remove when dark mode implemented
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
         presenter.attach(this)
     }
