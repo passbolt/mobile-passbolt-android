@@ -1,7 +1,10 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy
 
-import androidx.annotation.StringRes
+import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragmentDirections
 import com.passbolt.mobile.android.ui.AccountModelUi
 
 /**
@@ -26,16 +29,21 @@ import com.passbolt.mobile.android.ui.AccountModelUi
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface AccountListStrategy {
+class AuthForResultAccountListStrategy : AccountListStrategy {
 
-    fun toolbarVisibility(): Int
+    override fun toolbarVisibility() = View.GONE
 
-    @StringRes
-    fun getTitleRes(): Int?
+    override fun getTitleRes(): Int? = null
 
-    fun logoVisibility(): Int
+    override fun logoVisibility() = View.VISIBLE
 
-    fun headerVisibility(): Int
+    override fun headerVisibility() = View.VISIBLE
 
-    fun navigateToSignIn(model: AccountModelUi.AccountModel, fragment: Fragment)
+    override fun navigateToSignIn(model: AccountModelUi.AccountModel, fragment: Fragment) {
+        fragment.findNavController().navigate(
+            AccountsListFragmentDirections.actionAccountsListFragmentToAuthFragment(
+                model.userId, AuthenticationType.SignInForResult
+            )
+        )
+    }
 }
