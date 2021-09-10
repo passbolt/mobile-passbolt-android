@@ -13,6 +13,6 @@ class MainPresenter : MainContract.Presenter {
 
     private companion object {
         // TODO implement feature flag
-        private const val SHOW_FOLDERS_FEATURE_FLAG = true
+        private const val SHOW_FOLDERS_FEATURE_FLAG = false
     }
 }

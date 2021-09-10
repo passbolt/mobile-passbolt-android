@@ -1,7 +1,4 @@
-package com.passbolt.mobile.android.mappers
-
-import com.passbolt.mobile.android.dto.response.SettingsResponseDto
-import com.passbolt.mobile.android.ui.FeatureFlagsModel
+package com.passbolt.mobile.android.featureflags
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,8 +22,9 @@ import com.passbolt.mobile.android.ui.FeatureFlagsModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class FeatureFlagsMapper {
 
-    fun map(settingsResponseDto: SettingsResponseDto): FeatureFlagsModel =
-        FeatureFlagsModel()
+object Constants {
+    const val PRIVACY_POLICY_KEY = "PRIVACY_POLICY_KEY"
+    const val TERMS_AND_CONDITIONS_KEY = "TERMS_AND_CONDITIONS_KEY"
+    const val PREVIEW_PASSWORD_KEY = "PREVIEW_PASSWORD_KEY"
 }

@@ -1,11 +1,10 @@
-package com.passbolt.mobile.android.featureflags
+package com.passbolt.mobile.android.featureflags.usecase
 
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.mapper.FeatureFlagsMapper
-import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
-import com.passbolt.mobile.android.featureflags.usecase.FetchFeatureFlagsUseCase
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.featureflags.usecase.SaveFeatureFlagsUseCase
-import org.koin.dsl.module
+import com.passbolt.mobile.android.service.settings.SettingsRepository
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,31 +28,27 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class FetchFeatureFlagsUseCase(
+    private val settingsRepository: SettingsRepository,
+    private val featureFlagsMapper: FeatureFlagsMapper
+) : AsyncUseCase<Unit, FetchFeatureFlagsUseCase.Output> {
 
-val featureFlagsModule = module {
-    single {
-        FetchFeatureFlagsUseCase(
-            settingsRepository = get(),
-            featureFlagsMapper = get()
-        )
-    }
-    single { FeatureFlagsMapper() }
-    single {
-        GetFeatureFlagsUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        SaveFeatureFlagsUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        FeatureFlagsInteractor(
-            fetchFeatureFlagsUseCase = get(),
-            saveFeatureFlagsUseCase = get()
-        )
+    override suspend fun execute(input: Unit): Output =
+        when (val response = settingsRepository.getSettings()) {
+            is NetworkResult.Failure -> Output.Failure(response)
+            is NetworkResult.Success -> {
+                Output.Success(
+                    featureFlagsMapper.map(response.value.body)
+                )
+            }
+        }
+
+    sealed class Output {
+
+        class Success(
+            val featureFlags: FeatureFlagsModel
+        ) : Output()
+
+        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }
 }

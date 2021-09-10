@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.dto.response
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,5 +25,32 @@ package com.passbolt.mobile.android.dto.response
  * @since v1.0
  */
 
-// TODO
-class SettingsResponseDto
+data class SettingsResponseDto(
+    @SerializedName("passbolt")
+    val passboltSettings: PassboltSettingsDto
+)
+
+data class PassboltSettingsDto(
+    @SerializedName("legal")
+    val legalSettings: LegalSettingsDto,
+    val plugins: PluginsDto
+)
+
+data class LegalSettingsDto(
+    @SerializedName("privacy_policy")
+    val privacyPolicyUrl: UrlDto,
+    @SerializedName("terms")
+    val termsAndConditionsUrl: UrlDto
+)
+
+data class UrlDto(
+    val url: String
+)
+
+data class PluginsDto(
+    val previewPassword: PreviewPasswordPluginDto?
+)
+
+data class PreviewPasswordPluginDto(
+    val enabled: Boolean?
+)

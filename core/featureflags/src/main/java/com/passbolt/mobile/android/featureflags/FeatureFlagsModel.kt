@@ -1,12 +1,5 @@
 package com.passbolt.mobile.android.featureflags
 
-import com.passbolt.mobile.android.featureflags.mapper.FeatureFlagsMapper
-import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
-import com.passbolt.mobile.android.featureflags.usecase.FetchFeatureFlagsUseCase
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.featureflags.usecase.SaveFeatureFlagsUseCase
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,30 +23,8 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val featureFlagsModule = module {
-    single {
-        FetchFeatureFlagsUseCase(
-            settingsRepository = get(),
-            featureFlagsMapper = get()
-        )
-    }
-    single { FeatureFlagsMapper() }
-    single {
-        GetFeatureFlagsUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        SaveFeatureFlagsUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        FeatureFlagsInteractor(
-            fetchFeatureFlagsUseCase = get(),
-            saveFeatureFlagsUseCase = get()
-        )
-    }
-}
+data class FeatureFlagsModel(
+    val privacyPolicyUrl: String?,
+    val termsAndConditionsUrl: String?,
+    val isPreviewPasswordAvailable: Boolean
+)

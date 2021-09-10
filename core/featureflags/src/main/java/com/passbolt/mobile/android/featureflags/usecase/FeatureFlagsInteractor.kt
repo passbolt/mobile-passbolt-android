@@ -1,4 +1,6 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.featureflags.usecase
+
+import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -23,5 +25,29 @@ package com.passbolt.mobile.android.ui
  * @since v1.0
  */
 
-// TODO
-class FeatureFlagsModel
+class FeatureFlagsInteractor(
+    private val fetchFeatureFlagsUseCase: FetchFeatureFlagsUseCase,
+    private val saveFeatureFlagsUseCase: SaveFeatureFlagsUseCase
+) {
+
+    suspend fun fetchAndSaveFeatureFlags(): Output {
+        return when (val response = fetchFeatureFlagsUseCase.execute(Unit)) {
+            is FetchFeatureFlagsUseCase.Output.Success ->
+                saveFeatureFlags(response.featureFlags)
+            is FetchFeatureFlagsUseCase.Output.Failure<*> ->
+                Output.Failure
+        }
+    }
+
+    private suspend fun saveFeatureFlags(featureFlags: FeatureFlagsModel): Output {
+        saveFeatureFlagsUseCase.execute(SaveFeatureFlagsUseCase.Input(featureFlags))
+        return Output.Success(featureFlags)
+    }
+
+    sealed class Output {
+
+        data class Success(val featureFlags: FeatureFlagsModel) : Output()
+
+        object Failure : Output()
+    }
+}

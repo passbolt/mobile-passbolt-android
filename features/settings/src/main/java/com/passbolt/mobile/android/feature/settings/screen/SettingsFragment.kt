@@ -229,4 +229,12 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
             .setCancelable(false)
             .show()
     }
+
+    override fun hidePrivacyPolicyButton() {
+        binding.privacySetting.gone()
+    }
+
+    override fun hideTermsAndConditionsButton() {
+        binding.termsSetting.gone()
+    }
 }

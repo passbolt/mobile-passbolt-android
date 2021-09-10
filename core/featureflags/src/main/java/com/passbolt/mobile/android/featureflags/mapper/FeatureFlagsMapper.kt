@@ -1,11 +1,8 @@
-package com.passbolt.mobile.android.featureflags
+package com.passbolt.mobile.android.featureflags.mapper
 
-import com.passbolt.mobile.android.featureflags.mapper.FeatureFlagsMapper
-import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
-import com.passbolt.mobile.android.featureflags.usecase.FetchFeatureFlagsUseCase
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.featureflags.usecase.SaveFeatureFlagsUseCase
-import org.koin.dsl.module
+import com.passbolt.mobile.android.dto.response.SettingsResponseDto
+import com.passbolt.mobile.android.featureflags.Defaults
+import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,31 +26,15 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class FeatureFlagsMapper {
 
-val featureFlagsModule = module {
-    single {
-        FetchFeatureFlagsUseCase(
-            settingsRepository = get(),
-            featureFlagsMapper = get()
-        )
-    }
-    single { FeatureFlagsMapper() }
-    single {
-        GetFeatureFlagsUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        SaveFeatureFlagsUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        FeatureFlagsInteractor(
-            fetchFeatureFlagsUseCase = get(),
-            saveFeatureFlagsUseCase = get()
-        )
-    }
+    fun map(settingsResponseDto: SettingsResponseDto): FeatureFlagsModel =
+        settingsResponseDto.passboltSettings.let {
+            return FeatureFlagsModel(
+                it.legalSettings.privacyPolicyUrl.url,
+                it.legalSettings.termsAndConditionsUrl.url,
+                it.plugins.previewPassword?.enabled
+                    ?: Defaults.IS_PREVIEW_PASSWORD_AVAILABLE
+            )
+        }
 }

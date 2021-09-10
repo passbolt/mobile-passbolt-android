@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.featureflags.Constants.PREVIEW_PASSWORD_KEY
 import com.passbolt.mobile.android.featureflags.Constants.PRIVACY_POLICY_KEY
 import com.passbolt.mobile.android.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
-import com.passbolt.mobile.android.featureflags.Defaults
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -31,21 +30,22 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetFeatureFlagsUseCase(
+class SaveFeatureFlagsUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<Unit, GetFeatureFlagsUseCase.Output> {
+) : AsyncUseCase<SaveFeatureFlagsUseCase.Input, Unit> {
 
-    override suspend fun execute(input: Unit): Output {
+    override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         val fileName = FeatureFlagsFileName(selectedAccount).name
-        encryptedSharedPreferencesFactory.get("$fileName.xml").let {
-            val privacyPolicyUrl = it.getString(PRIVACY_POLICY_KEY, null)
-            val termsUrl = it.getString(TERMS_AND_CONDITIONS_KEY, null)
-            val previewPasswordAvailable = it.getBoolean(PREVIEW_PASSWORD_KEY, Defaults.IS_PREVIEW_PASSWORD_AVAILABLE)
-            return Output(FeatureFlagsModel(privacyPolicyUrl, termsUrl, previewPasswordAvailable))
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
+        with(sharedPreferences.edit()) {
+            putString(PRIVACY_POLICY_KEY, input.featureFlags.privacyPolicyUrl)
+            putString(TERMS_AND_CONDITIONS_KEY, input.featureFlags.termsAndConditionsUrl)
+            putBoolean(PREVIEW_PASSWORD_KEY, input.featureFlags.isPreviewPasswordAvailable)
+            apply()
         }
     }
 
-    data class Output(val featureFlags: FeatureFlagsModel)
+    data class Input(val featureFlags: FeatureFlagsModel)
 }
