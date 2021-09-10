@@ -1,8 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy
 
 import androidx.annotation.StringRes
-import androidx.fragment.app.Fragment
-import com.passbolt.mobile.android.ui.AccountModelUi
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,6 +34,4 @@ interface AccountListStrategy {
     fun logoVisibility(): Int
 
     fun headerVisibility(): Int
-
-    fun navigateToSignIn(model: AccountModelUi.AccountModel, fragment: Fragment)
 }

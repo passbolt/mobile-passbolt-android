@@ -24,6 +24,5 @@ package com.passbolt.mobile.android.core.navigation
  */
 enum class AuthenticationTarget {
     MANAGE_ACCOUNTS,
-    AUTHENTICATE,
-    AUTHENTICATE_FOR_RESULT
+    AUTHENTICATE
 }
