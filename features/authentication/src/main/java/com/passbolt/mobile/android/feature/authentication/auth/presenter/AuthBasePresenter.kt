@@ -205,4 +205,8 @@ abstract class AuthBasePresenter(
             }
         }
     }
+
+    override fun connectToExistingAccountClick() {
+        view?.navigateToAccountList()
+    }
 }
