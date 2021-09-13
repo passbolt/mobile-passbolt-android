@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuModel
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +44,7 @@ class ResourceDetailsPresenter(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val resourceTypeFactory: ResourceTypeFactory,
     private val secretParser: SecretParser,
+    private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter {
@@ -67,6 +69,16 @@ class ResourceDetailsPresenter(
             showPasswordHidden()
             showPasswordHiddenIcon()
             handleDescriptionField(resourceModel)
+            handleFeatureFlags()
+        }
+    }
+
+    private fun handleFeatureFlags() {
+        scope.launch {
+            val isPasswordEyeIconVisible = getFeatureFlagsUseCase.execute(Unit).featureFlags.isPreviewPasswordAvailable
+            if (!isPasswordEyeIconVisible) {
+                view?.hidePasswordEyeIcon()
+            }
         }
     }
 

@@ -190,6 +190,10 @@ class ResourceDetailsFragment :
         presenter.menuCopyClick()
     }
 
+    override fun hidePasswordEyeIcon() {
+        binding.passwordIcon.gone()
+    }
+
     companion object {
         private const val LIGHT_RATIO = 0.5f
         private const val DARK_RATIO = 0.88f
