@@ -154,5 +154,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
     verifyPassphraseUseCase = get(),
     biometricCipher = get(),
     getPassphraseUseCase = get(),
-    removeBiometricKeyUseCase = get()
+    removeBiometricKeyUseCase = get(),
+    saveServerFingerprintUseCase = get(),
+    isServerFingerprintCorrectUseCase = get()
 )

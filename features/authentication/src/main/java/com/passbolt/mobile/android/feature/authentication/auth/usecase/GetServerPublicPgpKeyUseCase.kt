@@ -34,13 +34,17 @@ class GetServerPublicPgpKeyUseCase(
         when (val result = authRepository.getServerPublicPgpKey()) {
             is NetworkResult.Failure.NetworkError -> Output.Failure
             is NetworkResult.Failure.ServerError -> Output.Failure
-            is NetworkResult.Success -> Output.Success(result.value.body.keydata)
+            is NetworkResult.Success -> Output.Success(
+                result.value.body.keydata,
+                result.value.body.fingerprint
+            )
         }
 
     sealed class Output {
 
         data class Success(
-            val publicKey: String
+            val publicKey: String,
+            val fingerprint: String
         ) : Output()
 
         object Failure : Output()

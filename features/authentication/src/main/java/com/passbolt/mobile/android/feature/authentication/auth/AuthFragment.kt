@@ -53,7 +53,7 @@ import javax.crypto.Cipher
  */
 @Suppress("TooManyFunctions")
 class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate), AuthContract.View,
-    FeatureFlagsFetchErrorDialog.Listener {
+    FeatureFlagsFetchErrorDialog.Listener, ServerFingerprintChangedDialog.Listener {
 
     private val args: AuthFragmentArgs by navArgs()
     private val strategyFactory: AuthStrategyFactory by inject()
@@ -187,6 +187,16 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
             .setMessage(R.string.fingerprint_biometric_changed_message)
             .setPositiveButton(R.string.got_it) { _, _ -> }
             .show()
+    }
+
+    override fun showServerFingerprintChanged(newFingerprint: String) {
+        ServerFingerprintChangedDialog.newInstance(newFingerprint).show(
+            childFragmentManager, ServerFingerprintChangedDialog::class.java.name
+        )
+    }
+
+    override fun confirmationClick(fingerprint: String) {
+        presenter.fingerprintServerConfirmationClick(fingerprint)
     }
 
     override fun showProgress() {

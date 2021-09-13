@@ -55,6 +55,7 @@ interface AuthContract {
         fun showFeatureFlagsErrorDialog()
         fun closeFeatureFlagsFetchErrorDialog()
         fun showAuthenticationReason(reason: RefreshAuthReason)
+        fun showServerFingerprintChanged(newFingerprint: String)
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE
@@ -72,5 +73,6 @@ interface AuthContract {
         fun biometricAuthSuccess(authenticatedCipher: Cipher?)
         fun biometricAuthError(messageResId: Int)
         fun biometricAuthClick()
+        fun fingerprintServerConfirmationClick(fingerprint: String)
     }
 }

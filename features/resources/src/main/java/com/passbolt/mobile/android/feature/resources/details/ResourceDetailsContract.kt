@@ -47,6 +47,7 @@ interface ResourceDetailsContract {
         fun clearPasswordInput()
         fun showDescriptionIsEncrypted()
         fun showDescription(description: String)
+        fun hidePasswordEyeIcon()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

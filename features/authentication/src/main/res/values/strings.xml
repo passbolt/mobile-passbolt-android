@@ -27,4 +27,8 @@
     <string name="auth_biometric_subtitle" />
     <string name="auth_reason_session_expired">Please authenticate to refresh session</string>
     <string name="auth_reason_passphrase_expired">Please authenticate passphrase access</string>
+    <string name="auth_server_fingerprint_changed_title">Sorry, the server key has changed.</string>
+    <string name="auth_server_fingerprint_changed_message">For security reasons please check with your administrator that this is a change that they initiated. The new fingerprint:</string>
+    <string name="auth_server_fingerprint_changed_button">Accept new key</string>
+    <string name="auth_server_fingerprint_changed_checkbox">Yes, I checked and it is all fine.</string>
 </resources>

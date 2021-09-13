@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.database.dao.ResourceTypesDao
 import com.passbolt.mobile.android.feature.resources.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import org.koin.dsl.module
 
@@ -50,6 +51,7 @@ val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>() {
 }
 val mockSecretParser = mock<SecretParser>()
 val mockResourceTypeFactory = mock<ResourceTypeFactory>()
+val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 
 val testResourceDetailsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
@@ -60,7 +62,8 @@ val testResourceDetailsModule = module {
             databaseProvider = mockDatabaseProvider,
             getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
             secretParser = mockSecretParser,
-            resourceTypeFactory = mockResourceTypeFactory
+            resourceTypeFactory = mockResourceTypeFactory,
+            getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase
         )
     }
 }
