@@ -31,4 +31,8 @@
     <string name="auth_server_fingerprint_changed_message">For security reasons please check with your administrator that this is a change that they initiated. The new fingerprint:</string>
     <string name="auth_server_fingerprint_changed_button">Accept new key</string>
     <string name="auth_server_fingerprint_changed_checkbox">Yes, I checked and it is all fine.</string>
+
+    <string name="dialog_account_does_not_exist_title">The account doesn’t exist</string>
+    <string name="dialog_account_does_not_exist_subtitle">The account has been deleted</string>
+    <string name="dialog_account_does_not_exist_connect_account">Connect to an existing account</string>
 </resources>

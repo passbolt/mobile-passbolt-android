@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.SaveServerFingerprintUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
@@ -157,7 +158,8 @@ class SignInPresenter(
                 passphrase,
                 rsaKey,
                 requireNotNull(accountData.serverId),
-                fingerprint
+                fingerprint,
+                accountData
             )
             ChallengeProvider.Output.WrongPassphrase -> showWrongPassphrase()
         }
@@ -170,10 +172,25 @@ class SignInPresenter(
         passphrase: ByteArray,
         rsaKey: String,
         serverId: String,
-        fingerprint: String
+        fingerprint: String,
+        accountData: GetAccountDataUseCase.Output
     ) {
         when (val result = signInUseCase.execute(SiginInUseCase.Input(serverId, challenge))) {
-            is SiginInUseCase.Output.Failure -> signInFailure(result.message, fingerprint)
+            is SiginInUseCase.Output.Failure -> {
+                view?.hideProgress()
+                when (result.type) {
+                    SignInFailureType.ACCOUNT_DOES_NOT_EXIST -> {
+                        view?.showAccountDoesNotExistDialog(
+                            "${accountData.firstName} ${accountData.lastName}",
+                            accountData.email,
+                            accountData.url
+                        )
+                    }
+                    SignInFailureType.OTHER -> {
+                        signInFailure(result.message, fingerprint)
+                    }
+                }
+            }
             is SiginInUseCase.Output.Success -> {
                 val challengeDecryptResult = challengeDecryptor.decrypt(
                     serverPublicKey,
@@ -190,10 +207,8 @@ class SignInPresenter(
         val input = IsServerFingerprintCorrectUseCase.Input(userId, fingerprint)
         if (isServerFingerprintCorrectUseCase.execute(input).isCorrect) {
             view?.showError(message)
-            view?.hideProgress()
         } else {
             view?.showServerFingerprintChanged(fingerprint)
-            view?.hideProgress()
         }
     }
 

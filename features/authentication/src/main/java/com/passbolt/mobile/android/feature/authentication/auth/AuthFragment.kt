@@ -6,6 +6,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -18,6 +19,7 @@ import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.R
+import com.passbolt.mobile.android.feature.authentication.auth.accountdoesnotexist.AccountDoesNotExistDialog
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategy
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
@@ -53,7 +55,7 @@ import javax.crypto.Cipher
  */
 @Suppress("TooManyFunctions")
 class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate), AuthContract.View,
-    FeatureFlagsFetchErrorDialog.Listener, ServerFingerprintChangedDialog.Listener {
+    FeatureFlagsFetchErrorDialog.Listener, ServerFingerprintChangedDialog.Listener, AccountDoesNotExistDialog.Listener {
 
     private val args: AuthFragmentArgs by navArgs()
     private val strategyFactory: AuthStrategyFactory by inject()
@@ -280,5 +282,18 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun closeFeatureFlagsFetchErrorDialog() {
         featureFlagsFetchErrorDialog?.dismiss()
+    }
+
+    override fun showAccountDoesNotExistDialog(name: String, email: String?, url: String) {
+        AccountDoesNotExistDialog.newInstance(name, email, url)
+            .show(childFragmentManager, AccountDoesNotExistDialog::class.java.name)
+    }
+
+    override fun connectToExistingAccountClick() {
+        presenter.connectToExistingAccountClick()
+    }
+
+    override fun navigateToAccountList() {
+        findNavController().popBackStack()
     }
 }
