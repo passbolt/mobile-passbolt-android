@@ -4,7 +4,7 @@ import android.security.keystore.KeyPermanentlyInvalidatedException
 import androidx.annotation.CallSuper
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
@@ -60,6 +60,7 @@ abstract class AuthBasePresenter(
     private val getPassphraseUseCase: GetPassphraseUseCase,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
+    private val authReasonMapper: AuthReasonMapper,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthContract.Presenter {
 
@@ -69,16 +70,10 @@ abstract class AuthBasePresenter(
     protected val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     protected lateinit var userId: String
-    private lateinit var authType: AuthenticationType
+    private lateinit var authConfig: ActivityIntents.AuthConfig
 
     private val authReason: AuthContract.View.RefreshAuthReason?
-        get() = when (authType) {
-            is AuthenticationType.Passphrase -> AuthContract.View.RefreshAuthReason.PASSPHRASE
-            is AuthenticationType.Refresh -> AuthContract.View.RefreshAuthReason.SESSION
-            else -> {
-                null /* reason is shown only for session and passphrase refresh*/
-            }
-        }
+        get() = authReasonMapper.map(authConfig)
 
     override fun attach(view: AuthContract.View) {
         super.attach(view)
@@ -123,9 +118,9 @@ abstract class AuthBasePresenter(
         }
     }
 
-    override fun argsRetrieved(userId: String, authenticationStrategy: AuthenticationType) {
+    override fun argsRetrieved(authConfig: ActivityIntents.AuthConfig, userId: String) {
         this.userId = userId
-        this.authType = authenticationStrategy
+        this.authConfig = authConfig
     }
 
     override fun viewCreated(domainVisible: Boolean) {

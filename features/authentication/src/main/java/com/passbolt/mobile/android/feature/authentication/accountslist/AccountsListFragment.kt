@@ -1,9 +1,13 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist
 
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
@@ -17,14 +21,15 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AccountItemClick
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AccountUiItemsMapper
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AddNewAccountItem
 import com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy.AccountListStrategy
+import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAccountsListBinding
 import com.passbolt.mobile.android.ui.AccountModelUi
 import org.koin.android.ext.android.get
@@ -61,17 +66,19 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val accountsUiMapper: AccountUiItemsMapper by inject()
     private val listDivider: DrawableListDivider by inject()
-    private val authTarget by lifecycleAwareLazy {
-        requireArguments().getSerializable(ARG_AUTH_TARGET) as AuthenticationTarget
-    }
-    private val authenticationType by lifecycleAwareLazy {
-        requireArguments().getSerializable(ARG_AUTH_TYPE) as AuthenticationType
+    private val authConfig by lifecycleAwareLazy {
+        requireArguments().getSerializable(ARG_AUTH_CONFIG) as ActivityIntents.AuthConfig
     }
     private lateinit var uiStrategy: AccountListStrategy
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            uiStrategy.navigateBack()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        uiStrategy = get { parametersOf(authTarget) }
+        uiStrategy = get { parametersOf(this, authConfig) }
         initToolbar()
         initHeader()
         initLogo()
@@ -81,6 +88,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     }
 
     override fun onDestroyView() {
+        backPressedCallback.isEnabled = false
         binding.recyclerView.adapter = null
         presenter.detach()
         super.onDestroyView()
@@ -110,6 +118,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
             removeAccountLabel.setDebouncingOnClick { presenter.removeAnAccountClick() }
             doneRemovingAccountsButton.setDebouncingOnClick { presenter.doneRemovingAccountsClick() }
         }
+        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
     private fun initAdapter() {
@@ -138,9 +147,14 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
 
     override fun navigateToSignIn(model: AccountModelUi.AccountModel) {
         findNavController().navigate(
-            AccountsListFragmentDirections.actionAccountsListFragmentToAuthFragment(
-                model.userId, authenticationType
-            )
+            R.id.authFragment,
+            AuthFragment.newBundle(authConfig, model.userId),
+            NavOptions.Builder()
+                .setEnterAnim(R.anim.slide_in_right)
+                .setExitAnim(R.anim.slide_out_left)
+                .setPopEnterAnim(R.anim.slide_in_left)
+                .setPopExitAnim(R.anim.slide_out_right)
+                .build()
         )
     }
 
@@ -177,13 +191,35 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
             .show()
     }
 
-    companion object {
-        const val ARG_AUTH_TARGET = "AUTH_TARGET"
-        const val ARG_AUTH_TYPE = "ARG_AUTH_TYPE"
+    override fun finishAffinity() {
+        requireActivity().finishAffinity()
+    }
 
-        fun newBundle(authTarget: AuthenticationTarget, authenticationType: AuthenticationType?) = bundleOf(
-            ARG_AUTH_TARGET to authTarget,
-            ARG_AUTH_TYPE to authenticationType
+    override fun finish() {
+        requireActivity().finish()
+    }
+
+    override fun clearBackgroundActivities() {
+        startActivity(
+            ActivityIntents.authentication(requireContext(), authConfig).apply {
+                flags = flags or FLAG_ACTIVITY_CLEAR_TOP or FLAG_ACTIVITY_CLEAR_TASK
+            }
+        )
+    }
+
+    override fun showProgress() {
+        showProgressDialog(childFragmentManager)
+    }
+
+    override fun hideProgress() {
+        hideProgressDialog(childFragmentManager)
+    }
+
+    companion object {
+        const val ARG_AUTH_CONFIG = "AUTH_CONFIG"
+
+        fun newBundle(authConfig: ActivityIntents.AuthConfig) = bundleOf(
+            ARG_AUTH_CONFIG to authConfig
         )
     }
 }

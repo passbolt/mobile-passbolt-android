@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy
 
-import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,8 +27,14 @@ import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
  */
 class AccountListStrategyFactory {
 
-    fun get(type: AuthenticationTarget) = when (type) {
-        AuthenticationTarget.MANAGE_ACCOUNTS -> ManageAccountListStrategy()
-        AuthenticationTarget.AUTHENTICATE -> AuthAccountListStrategy()
+    fun get(
+        accountsListFragment: AccountsListFragment,
+        type: ActivityIntents.AuthConfig
+    ) = when (type) {
+        ActivityIntents.AuthConfig.MANAGE_ACCOUNT -> ManageAccountListStrategy(accountsListFragment)
+        ActivityIntents.AuthConfig.STARTUP -> AuthAccountListStrategy(accountsListFragment)
+        ActivityIntents.AuthConfig.SETUP -> AuthAccountListStrategy(accountsListFragment)
+        ActivityIntents.AuthConfig.REFRESH_FULL -> AuthAccountListStrategy(accountsListFragment)
+        ActivityIntents.AuthConfig.REFRESH_PASSPHRASE -> AuthAccountListStrategy(accountsListFragment)
     }
 }

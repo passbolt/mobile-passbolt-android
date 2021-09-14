@@ -1,17 +1,12 @@
 package com.passbolt.mobile.android.feature.authentication
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -70,89 +65,60 @@ class AuthenticationMainPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should navigate to manage account when manage account target is set`() = runBlockingTest {
-        presenter.bundleRetrieved(AuthenticationTarget.MANAGE_ACCOUNTS, null, shouldLogOut = false, userId = "userId1")
+    fun `view should be initialized with no account list if on setup`() =
+        runBlockingTest {
+            whenever(mockGetSelectedAccountUseCase.execute(Unit))
+                .doReturn(GetSelectedAccountUseCase.Output(null))
 
-        verify(mockView, never()).showProgress()
-        verify(mockSignOutUseCase, never()).execute(any())
-        verify(mockView).navigateToManageAccounts()
-        verifyNoMoreInteractions(mockView)
-    }
+            presenter.bundleRetrieved(ActivityIntents.AuthConfig.SETUP, USER_ID)
 
-    @Test
-    fun `user should be logged out when appropriate flag is set`() = runBlockingTest {
-        presenter.bundleRetrieved(AuthenticationTarget.MANAGE_ACCOUNTS, null, shouldLogOut = true, userId = "userId1")
-
-        verify(mockView).showProgress()
-        verify(mockSignOutUseCase).execute(any())
-        verify(mockView).hideProgress()
-        verify(mockView).navigateToManageAccounts()
-        verifyNoMoreInteractions(mockView)
-    }
+            verify(mockView).initNavWithoutAccountList(USER_ID)
+            verifyNoMoreInteractions(mockView)
+        }
 
     @Test
-    fun `view should navigate to auth with passphrase mode when appropriate flags are set`() {
-        whenever(mockGetSelectedAccountUseCase.execute(Unit))
-            .doReturn(
-                GetSelectedAccountUseCase.Output(TEST_SELECTED_ACCOUNT)
-            )
-        whenever(getAccountDataUseCase.execute(anyOrNull())).doReturn(
-            GetAccountDataUseCase.Output(
-                firstName = null,
-                lastName = null,
-                email = null,
-                avatarUrl = null,
-                url = "url1",
-                serverId = null
-            )
-        )
+    fun `view should be initialized with account list if not on setup`() =
+        runBlockingTest {
+            whenever(mockGetSelectedAccountUseCase.execute(Unit))
+                .doReturn(GetSelectedAccountUseCase.Output(null))
 
-        presenter.bundleRetrieved(
-            AuthenticationTarget.AUTHENTICATE,
-            AuthenticationType.Passphrase,
-            shouldLogOut = false,
-            userId = TEST_SELECTED_ACCOUNT
-        )
+            val testForConfigurationValue: (config: ActivityIntents.AuthConfig) -> Unit = {
+                reset(mockView)
+                presenter.bundleRetrieved(it, null)
+                verify(mockView).initNavWithAccountList()
+                verifyNoMoreInteractions(mockView)
+            }
 
-        verify(mockView).navigateToAuth(TEST_SELECTED_ACCOUNT, AuthenticationType.Passphrase)
-        verifyNoMoreInteractions(mockView)
-    }
+            ActivityIntents.AuthConfig.values()
+                .filter { it != ActivityIntents.AuthConfig.SETUP }
+                .forEach { testForConfigurationValue(it) }
+        }
 
     @Test
-    fun `view should navigate to auth with sign in mode when appropriate flags are set`() {
-        whenever(mockGetSelectedAccountUseCase.execute(Unit))
-            .doReturn(
-                GetSelectedAccountUseCase.Output(TEST_SELECTED_ACCOUNT)
-            )
+    fun `view should be initialized with account list and navigate to auth if selected account during auth`() =
+        runBlockingTest {
+            whenever(mockGetSelectedAccountUseCase.execute(Unit))
+                .doReturn(GetSelectedAccountUseCase.Output(USER_ID))
 
-        presenter.bundleRetrieved(
-            AuthenticationTarget.AUTHENTICATE,
-            AuthenticationType.SignIn,
-            shouldLogOut = false,
-            userId = TEST_SELECTED_ACCOUNT
-        )
+            val testForConfigurationValue: (config: ActivityIntents.AuthConfig) -> Unit = {
+                reset(mockView)
+                presenter.bundleRetrieved(it, null)
+                verify(mockView).initNavWithAccountList()
+                verify(mockView).navigateToSignIn(USER_ID)
+                verifyNoMoreInteractions(mockView)
+            }
 
-        verify(mockView).navigateToAuth(TEST_SELECTED_ACCOUNT, AuthenticationType.SignIn)
-        verifyNoMoreInteractions(mockView)
-    }
-
-    @Test
-    fun `view should stay on account list to choose when no account is selected`() {
-        whenever(mockGetSelectedAccountUseCase.execute(Unit))
-            .thenThrow(IllegalStateException())
-
-        presenter.bundleRetrieved(
-            AuthenticationTarget.AUTHENTICATE,
-            AuthenticationType.SignIn,
-            shouldLogOut = false,
-            userId = null
-        )
-
-        verify(mockView).setDefaultNavGraph()
-        verifyNoMoreInteractions(mockView)
-    }
+            ActivityIntents.AuthConfig.values()
+                .filter {
+                    it !in setOf(
+                        ActivityIntents.AuthConfig.MANAGE_ACCOUNT,
+                        ActivityIntents.AuthConfig.SETUP
+                    )
+                }
+                .forEach { testForConfigurationValue(it) }
+        }
 
     private companion object {
-        private const val TEST_SELECTED_ACCOUNT = "aaa-bbb-ccc"
+        private const val USER_ID = "aaa-bbb-ccc"
     }
 }

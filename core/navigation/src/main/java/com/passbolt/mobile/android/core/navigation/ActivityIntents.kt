@@ -31,41 +31,11 @@ import com.gaelmarhic.quadrant.Startup
  */
 object ActivityIntents {
 
-    const val EXTRA_AUTH_STRATEGY_TYPE = "AUTH_STRATEGY_TYPE"
-    const val EXTRA_AUTH_TARGET = "AUTH_TARGET"
-    const val EXTRA_MANAGE_ACCOUNTS_SIGN_OUT = "MANAGE_ACCOUNTS_LOG_OUT"
+    const val EXTRA_AUTH_CONFIG = "AUTH_CONFIG"
     const val EXTRA_USER_ID = "EXTRA_USER_ID"
 
     fun setup(context: Context) = Intent().apply {
         setClassName(context, Setup.SET_UP_ACTIVITY)
-    }
-
-    fun authentication(
-        context: Context,
-        authenticationType: AuthenticationType,
-        withSignOut: Boolean = false,
-        userId: String? = null,
-        authenticationTarget: AuthenticationTarget = AuthenticationTarget.AUTHENTICATE
-    ) =
-        Intent().apply {
-            setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
-            putExtra(EXTRA_AUTH_STRATEGY_TYPE, authenticationType)
-            putExtra(EXTRA_AUTH_TARGET, authenticationTarget)
-            putExtra(EXTRA_MANAGE_ACCOUNTS_SIGN_OUT, withSignOut)
-            userId?.let { putExtra(EXTRA_USER_ID, it) }
-        }
-
-    fun refreshAuthentication(context: Context, authenticationType: AuthenticationType) = Intent().apply {
-        setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
-        putExtra(EXTRA_AUTH_TARGET, AuthenticationTarget.AUTHENTICATE)
-        putExtra(EXTRA_AUTH_STRATEGY_TYPE, authenticationType)
-        flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP
-    }
-
-    fun manageAccounts(context: Context, withSignOut: Boolean = false) = Intent().apply {
-        setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
-        putExtra(EXTRA_AUTH_TARGET, AuthenticationTarget.MANAGE_ACCOUNTS)
-        putExtra(EXTRA_MANAGE_ACCOUNTS_SIGN_OUT, withSignOut)
     }
 
     fun home(context: Context) = Intent().apply {
@@ -75,5 +45,25 @@ object ActivityIntents {
     fun start(context: Context) = Intent().apply {
         setClassName(context, Startup.START_UP_ACTIVITY)
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+
+    fun authentication(
+        context: Context,
+        authConfig: AuthConfig,
+        userId: String? = null
+    ) =
+        Intent().apply {
+            setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
+            putExtra(EXTRA_AUTH_CONFIG, authConfig)
+            putExtra(EXTRA_USER_ID, userId)
+            flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+
+    enum class AuthConfig {
+        STARTUP,
+        SETUP,
+        MANAGE_ACCOUNT,
+        REFRESH_FULL, // refreshes backend session and passphrase
+        REFRESH_PASSPHRASE // refreshes only passphrase
     }
 }

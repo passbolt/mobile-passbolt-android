@@ -42,6 +42,7 @@ interface HomeContract {
         fun openWebsite(url: String)
         fun showDecryptionFailure()
         fun showFetchFailure()
+        fun navigateToManageAccount()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -54,5 +55,7 @@ interface HomeContract {
         fun menuCopyUsernameClick()
         fun menuCopyUrlClick()
         fun menuCopyPasswordClick()
+        fun avatarClick()
+        fun userAuthenticated()
     }
 }

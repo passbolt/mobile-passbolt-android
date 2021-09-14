@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy
 
 import android.view.View
+import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,7 +25,9 @@ import android.view.View
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AuthAccountListStrategy : AccountListStrategy {
+class AuthAccountListStrategy(
+    override var accountListFragment: AccountsListFragment?
+) : AccountListStrategy {
 
     override fun toolbarVisibility() = View.GONE
 
@@ -33,4 +36,8 @@ class AuthAccountListStrategy : AccountListStrategy {
     override fun logoVisibility() = View.VISIBLE
 
     override fun headerVisibility() = View.VISIBLE
+
+    override fun navigateBack() {
+        activeAccountListFragment.finishAffinity()
+    }
 }

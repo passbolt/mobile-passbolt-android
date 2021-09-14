@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.auth
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import javax.crypto.Cipher
 
 /**
@@ -67,7 +67,7 @@ interface AuthContract {
     interface Presenter : BaseContract.Presenter<View> {
         fun signInClick(passphrase: ByteArray)
         fun backClick(showConfirmationDialog: Boolean)
-        fun argsRetrieved(userId: String, authenticationStrategy: AuthenticationType)
+        fun argsRetrieved(authConfig: ActivityIntents.AuthConfig, userId: String)
         fun forgotPasswordClick()
         fun passphraseInputIsEmpty(isEmpty: Boolean)
         fun viewCreated(domainVisible: Boolean)

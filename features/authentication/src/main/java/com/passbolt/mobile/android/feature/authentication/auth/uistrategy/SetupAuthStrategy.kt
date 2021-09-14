@@ -1,17 +1,17 @@
 package com.passbolt.mobile.android.feature.authentication.auth.uistrategy
 
 import android.app.Activity
-import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 
-class SignInForResultAuthStrategy(override var authFragment: AuthFragment?) : AuthStrategy {
+class SetupAuthStrategy(override var authFragment: AuthFragment?) : AuthStrategy {
 
     override fun title() =
         activeAuthFragment.getString(R.string.auth_enter_passphrase)
 
     override fun navigateBack() {
-        activeAuthFragment.findNavController().popBackStack()
+        activeAuthFragment.startActivity(ActivityIntents.start(activeAuthFragment.requireActivity()))
     }
 
     private fun finishWithResult(result: Int) {
@@ -27,5 +27,5 @@ class SignInForResultAuthStrategy(override var authFragment: AuthFragment?) : Au
 
     override fun domainVisible(): Boolean = false
 
-    override fun showLeaveConfirmationDialog(): Boolean = false
+    override fun showLeaveConfirmationDialog(): Boolean = true
 }

@@ -29,7 +29,7 @@ interface SettingsContract {
 
     interface View : BaseContract.View {
         fun openUrl(url: String)
-        fun navigateToAccountListWithLogout()
+        fun navigateToManageAccounts()
         fun toggleFingerprintOn(silently: Boolean)
         fun toggleFingerprintOff(silently: Boolean)
         fun showAutofillSetting()
@@ -48,6 +48,8 @@ interface SettingsContract {
         fun navigateToSystemSettings()
         fun hidePrivacyPolicyButton()
         fun hideTermsAndConditionsButton()
+        fun showProgress()
+        fun hideProgress()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

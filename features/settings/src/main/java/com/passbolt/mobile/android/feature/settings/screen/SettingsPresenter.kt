@@ -4,6 +4,7 @@ import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
@@ -35,6 +36,7 @@ class SettingsPresenter(
     private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
     private val fingerprintInformationProvider: FingerprintInformationProvider,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
+    private val signOutUseCase: SignOutUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : SettingsContract.Presenter {
 
@@ -100,11 +102,16 @@ class SettingsPresenter(
     }
 
     override fun logoutConfirmed() {
-        view?.navigateToSignInWithLogout()
+        scope.launch {
+            view?.showProgress()
+            signOutUseCase.execute(Unit)
+            view?.hideProgress()
+            view?.navigateToSignInWithLogout()
+        }
     }
 
     override fun manageAccountsClick() {
-        view?.navigateToAccountListWithLogout()
+        view?.navigateToManageAccounts()
     }
 
     override fun autofillClick() {

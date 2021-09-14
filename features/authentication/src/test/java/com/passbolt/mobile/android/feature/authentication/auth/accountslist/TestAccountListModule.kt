@@ -43,6 +43,7 @@ internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val mockRemoveAllAccountsDataUseCase = mock<RemoveAllAccountDataUseCase>()
 internal val saveCurrentApiUrlUseCase = mock<SaveCurrentApiUrlUseCase>()
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
+internal val mockSaveSelectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
 
 @ExperimentalCoroutinesApi
 val testAccountListModule = module {
@@ -54,7 +55,8 @@ val testAccountListModule = module {
             removeAllAccountDataUseCase = mockRemoveAllAccountsDataUseCase,
             signOutUseCase = mockSignOutUseCase,
             coroutineLaunchContext = get(),
-            saveCurrentApiUrlUseCase = get()
+            saveCurrentApiUrlUseCase = get(),
+            saveSelectedAccountUseCase = get()
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
@@ -64,4 +66,5 @@ val testAccountListModule = module {
         )
     }
     factory { saveCurrentApiUrlUseCase }
+    factory { mockSaveSelectedAccountUseCase }
 }

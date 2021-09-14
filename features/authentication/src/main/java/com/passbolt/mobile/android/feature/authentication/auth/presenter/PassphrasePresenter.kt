@@ -50,7 +50,8 @@ class PassphrasePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     biometricCipher: BiometricCipher,
     getPassphraseUseCase: GetPassphraseUseCase,
-    removeBiometricKeyUseCase: RemoveBiometricKeyUseCase
+    removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
+    authReasonMapper: AuthReasonMapper
 ) : AuthBasePresenter(
     getAccountDataUseCase,
     checkIfPassphraseFileExistsUseCase,
@@ -62,6 +63,7 @@ class PassphrasePresenter(
     getPassphraseUseCase,
     passphraseMemoryCache,
     removeBiometricKeyUseCase,
+    authReasonMapper,
     coroutineLaunchContext
 ) {
 

@@ -67,7 +67,8 @@ val testModule = module {
             fingerprintInformationProvider = get(),
             removeBiometricKeyUseCase = get(),
             getFeatureFlagsUseCase = get(),
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            signOutUseCase = get()
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

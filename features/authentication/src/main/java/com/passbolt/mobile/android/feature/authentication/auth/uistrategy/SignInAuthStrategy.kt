@@ -1,24 +1,28 @@
 package com.passbolt.mobile.android.feature.authentication.auth.uistrategy
 
+import android.app.Activity
 import androidx.navigation.fragment.findNavController
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 
 class SignInAuthStrategy(override var authFragment: AuthFragment?) : AuthStrategy {
 
     override fun title() =
-        activeAuthFragment.getString(R.string.auth_sign_in)
+        activeAuthFragment.getString(R.string.auth_enter_passphrase)
 
     override fun navigateBack() {
         activeAuthFragment.findNavController().popBackStack()
     }
 
-    override fun authSuccess() {
-        activeAuthFragment.apply {
-            startActivity(ActivityIntents.home(requireActivity()))
-            requireActivity().finish()
+    private fun finishWithResult(result: Int) {
+        with(activeAuthFragment.requireActivity()) {
+            setResult(result)
+            finish()
         }
+    }
+
+    override fun authSuccess() {
+        finishWithResult(Activity.RESULT_OK)
     }
 
     override fun domainVisible(): Boolean = false

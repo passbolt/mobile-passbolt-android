@@ -1,11 +1,13 @@
 package com.passbolt.mobile.android.feature.home.screen
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +24,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.screen.more.PasswordMenuFragment
@@ -63,6 +66,13 @@ class HomeFragment :
     private val clipboardManager: ClipboardManager? by inject()
     private val websiteOpener: WebsiteOpener by inject()
 
+    private val authenticationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.userAuthenticated()
+            }
+        }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
@@ -77,8 +87,13 @@ class HomeFragment :
             .size(AVATAR_SIZE, AVATAR_SIZE)
             .placeholder(R.drawable.ic_avatar_placeholder)
             .target { drawable ->
-                binding.searchTextInput.endIconMode = TextInputLayout.END_ICON_CUSTOM
-                binding.searchTextInput.endIconDrawable = drawable
+                with(binding.searchTextInput) {
+                    endIconMode = TextInputLayout.END_ICON_CUSTOM
+                    endIconDrawable = drawable
+                    setEndIconOnClickListener {
+                        presenter.avatarClick()
+                    }
+                }
             }
             .error(R.drawable.ic_avatar_placeholder)
             .build()
@@ -208,6 +223,15 @@ class HomeFragment :
     override fun showFetchFailure() {
         Toast.makeText(requireContext(), R.string.home_fetch_failure, Toast.LENGTH_SHORT)
             .show()
+    }
+
+    override fun navigateToManageAccount() {
+        authenticationResult.launch(
+            ActivityIntents.authentication(
+                requireContext(),
+                ActivityIntents.AuthConfig.MANAGE_ACCOUNT
+            )
+        )
     }
 
     companion object {

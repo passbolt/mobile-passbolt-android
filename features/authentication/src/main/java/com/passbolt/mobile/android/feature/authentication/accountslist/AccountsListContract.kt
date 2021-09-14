@@ -36,6 +36,11 @@ interface AccountsListContract {
         fun showRemoveAccountConfirmationDialog(model: AccountModelUi.AccountModel)
         fun navigateToSignIn(model: AccountModelUi.AccountModel)
         fun navigateToSetup()
+        fun finishAffinity()
+        fun finish()
+        fun clearBackgroundActivities()
+        fun showProgress()
+        fun hideProgress()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

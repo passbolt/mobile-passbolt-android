@@ -1,10 +1,11 @@
 package com.passbolt.mobile.android.feature.authentication.auth
 
 import androidx.biometric.BiometricPrompt
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
+import com.passbolt.mobile.android.feature.authentication.auth.presenter.AuthReasonMapper
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.PassphrasePresenter
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
@@ -44,7 +45,7 @@ import org.koin.dsl.ScopeDSL
 @Suppress("LongMethod")
 fun Module.authModule() {
     scope(named<AuthFragment>()) {
-        authPresenters()
+        authPresenter()
         scoped {
             GetServerPublicPgpKeyUseCase(
                 authRepository = get()
@@ -101,21 +102,21 @@ fun Module.authModule() {
                 getSessionUseCase = get()
             )
         }
+        scoped {
+            AuthReasonMapper()
+        }
     }
 }
 
-private fun ScopeDSL.authPresenters() {
-    scoped<AuthContract.Presenter>(named(AuthenticationType.SignIn.javaClass.simpleName)) {
-        signInPresenter()
-    }
-    scoped<AuthContract.Presenter>(named(AuthenticationType.SignInForResult.javaClass.simpleName)) {
-        signInPresenter()
-    }
-    scoped<AuthContract.Presenter>(named(AuthenticationType.Refresh.javaClass.simpleName)) {
-        signInPresenter()
-    }
-    scoped<AuthContract.Presenter>(named(AuthenticationType.Passphrase.javaClass.simpleName)) {
-        passphrasePresenter()
+private fun ScopeDSL.authPresenter() {
+    scoped<AuthContract.Presenter> { (authConfig: ActivityIntents.AuthConfig) ->
+        when (authConfig) {
+            ActivityIntents.AuthConfig.STARTUP -> signInPresenter()
+            ActivityIntents.AuthConfig.SETUP -> signInPresenter()
+            ActivityIntents.AuthConfig.MANAGE_ACCOUNT -> signInPresenter()
+            ActivityIntents.AuthConfig.REFRESH_FULL -> signInPresenter()
+            ActivityIntents.AuthConfig.REFRESH_PASSPHRASE -> passphrasePresenter()
+        }
     }
 }
 
@@ -130,7 +131,8 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
     coroutineLaunchContext = get(),
     biometricCipher = get(),
     getPassphraseUseCase = get(),
-    removeBiometricKeyUseCase = get()
+    removeBiometricKeyUseCase = get(),
+    authReasonMapper = get()
 )
 
 private fun Scope.signInPresenter() = SignInPresenter(
@@ -156,5 +158,6 @@ private fun Scope.signInPresenter() = SignInPresenter(
     getPassphraseUseCase = get(),
     removeBiometricKeyUseCase = get(),
     saveServerFingerprintUseCase = get(),
-    isServerFingerprintCorrectUseCase = get()
+    isServerFingerprintCorrectUseCase = get(),
+    authReasonMapper = get()
 )
