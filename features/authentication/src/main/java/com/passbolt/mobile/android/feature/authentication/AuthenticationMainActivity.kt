@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication
 import android.app.Activity
 import android.os.Bundle
 import androidx.navigation.NavArgument
+import androidx.navigation.NavOptions
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
@@ -94,7 +95,13 @@ class AuthenticationMainActivity :
     ) {
         navController.setGraph(navGraph, AccountsListFragment.newBundle(authTarget, authenticationStrategy))
         navController.navigate(
-            AccountsListFragmentDirections.actionAccountsListFragmentToAuthFragment(userId, authenticationStrategy)
+            AccountsListFragmentDirections.actionAccountsListFragmentToAuthFragment(userId, authenticationStrategy),
+            NavOptions.Builder()
+                .setEnterAnim(R.anim.slide_in_right)
+                .setExitAnim(R.anim.slide_out_left)
+                .setPopEnterAnim(R.anim.slide_in_left)
+                .setPopExitAnim(R.anim.slide_out_right)
+                .build()
         )
     }
 

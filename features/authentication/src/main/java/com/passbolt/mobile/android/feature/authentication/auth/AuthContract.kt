@@ -55,6 +55,8 @@ interface AuthContract {
         fun showFeatureFlagsErrorDialog()
         fun closeFeatureFlagsFetchErrorDialog()
         fun showAuthenticationReason(reason: RefreshAuthReason)
+        fun showAccountDoesNotExistDialog(name: String, email: String?, url: String)
+        fun navigateToAccountList()
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE
@@ -72,5 +74,6 @@ interface AuthContract {
         fun biometricAuthSuccess(authenticatedCipher: Cipher?)
         fun biometricAuthError(messageResId: Int)
         fun biometricAuthClick()
+        fun connectToExistingAccountClick()
     }
 }

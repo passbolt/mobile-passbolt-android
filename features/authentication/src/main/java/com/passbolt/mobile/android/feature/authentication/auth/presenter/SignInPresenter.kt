@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
@@ -142,7 +143,7 @@ class SignInPresenter(
                 serverPublicKey,
                 passphrase,
                 rsaKey,
-                requireNotNull(accountData.serverId)
+                accountData
             )
             ChallengeProvider.Output.WrongPassphrase -> showWrongPassphrase()
         }
@@ -154,12 +155,25 @@ class SignInPresenter(
         serverPublicKey: String,
         passphrase: ByteArray,
         rsaKey: String,
-        serverId: String
+        accountData: GetAccountDataUseCase.Output
     ) {
-        when (val result = signInUseCase.execute(SiginInUseCase.Input(serverId, challenge))) {
+        when (val result = signInUseCase.execute(
+            SiginInUseCase.Input(requireNotNull(accountData.serverId), challenge)
+        )) {
             is SiginInUseCase.Output.Failure -> {
-                view?.showError(result.message)
                 view?.hideProgress()
+                when (result.type) {
+                    SignInFailureType.ACCOUNT_DOES_NOT_EXIST -> {
+                        view?.showAccountDoesNotExistDialog(
+                            "${accountData.firstName} ${accountData.lastName}",
+                            accountData.email,
+                            accountData.url
+                        )
+                    }
+                    SignInFailureType.OTHER -> {
+                        view?.showError(result.message)
+                    }
+                }
             }
             is SiginInUseCase.Output.Success -> {
                 val challengeDecryptResult = challengeDecryptor.decrypt(

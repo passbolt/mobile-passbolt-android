@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.mappers.SignInMapper
 import com.passbolt.mobile.android.service.auth.AuthRepository
+import java.net.HttpURLConnection
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,6 +28,9 @@ import com.passbolt.mobile.android.service.auth.AuthRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+typealias SignInFailureType = SiginInUseCase.Output.Failure.FailureType
+
 class SiginInUseCase(
     private val authRepository: AuthRepository,
     private val signInMapper: SignInMapper
@@ -34,9 +38,22 @@ class SiginInUseCase(
 
     override suspend fun execute(input: Input): Output =
         when (val result = authRepository.signIn(signInMapper.mapRequestToDto(input.userId, input.challenge))) {
-            is NetworkResult.Failure.NetworkError -> Output.Failure(result.headerMessage)
-            is NetworkResult.Failure.ServerError -> Output.Failure(result.headerMessage)
+            is NetworkResult.Failure.NetworkError -> Output.Failure(
+                result.headerMessage,
+                Output.Failure.FailureType.OTHER
+            )
+            is NetworkResult.Failure.ServerError -> Output.Failure(
+                result.headerMessage,
+                getFailureType(result.errorCode)
+            )
             is NetworkResult.Success -> Output.Success(result.value.body.challenge)
+        }
+
+    private fun getFailureType(errorCode: Int?) =
+        if (errorCode == HttpURLConnection.HTTP_NOT_FOUND) {
+            SignInFailureType.ACCOUNT_DOES_NOT_EXIST
+        } else {
+            SignInFailureType.OTHER
         }
 
     sealed class Output {
@@ -45,8 +62,15 @@ class SiginInUseCase(
         ) : Output()
 
         class Failure(
-            val message: String
-        ) : Output()
+            val message: String,
+            val type: FailureType
+        ) : Output() {
+
+            enum class FailureType {
+                ACCOUNT_DOES_NOT_EXIST,
+                OTHER
+            }
+        }
     }
 
     data class Input(

@@ -16,6 +16,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
@@ -179,7 +180,9 @@ class SignInPresenterTest : KoinTest {
             )
         }
         mockSignInUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(SiginInUseCase.Output.Failure(ERROR_MESSAGE))
+            onBlocking { execute(any()) }.thenReturn(
+                SiginInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.OTHER)
+            )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
@@ -235,6 +238,44 @@ class SignInPresenterTest : KoinTest {
         verify(mockView).showGenericError()
     }
 
+    @Test
+    fun `view should show account deleted and account list when sign in 404`() {
+        mockVerifyPassphraseUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
+        }
+        mockGetServerPublicPgpKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey"))
+        }
+        mockGetServerPublicRsaKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
+        }
+        mockChallengeProvider.stub {
+            onBlocking { get(any(), any(), any(), any(), any()) }.doReturn(
+                ChallengeProvider.Output.Success("challenge")
+            )
+        }
+
+        mockSignInUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(
+                SiginInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.ACCOUNT_DOES_NOT_EXIST)
+            )
+        }
+
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
+
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
+        presenter.attach(mockView)
+        presenter.signInClick(SAMPLE_PASSPHRASE)
+
+        verify(mockView).showProgress()
+        verify(mockView).hideProgress()
+        verify(mockView).showAccountDoesNotExistDialog(
+            "$MOCK_ACCOUNT_DATA_FIRST_NAME $MOCK_ACCOUNT_DATA_LAST_NAME",
+            MOCK_ACCOUNT_DATA_EMAIL,
+            MOCK_ACCOUNT_DATA_URL
+        )
+    }
 
     private companion object {
         private const val ERROR_MESSAGE = "error"
