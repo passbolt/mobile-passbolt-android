@@ -20,6 +20,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFai
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
+import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import org.junit.Rule
 import org.junit.Test
@@ -92,7 +93,12 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
         mockGetServerPublicPgpKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey"))
+            onBlocking { execute(any()) }.thenReturn(
+                GetServerPublicPgpKeyUseCase.Output.Success(
+                    "publickKey",
+                    "fingerprint"
+                )
+            )
         }
         mockGetServerPublicRsaKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
@@ -141,7 +147,12 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
         mockGetServerPublicPgpKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey"))
+            onBlocking { execute(any()) }.thenReturn(
+                GetServerPublicPgpKeyUseCase.Output.Success(
+                    "publickKey",
+                    "fingerprint"
+                )
+            )
         }
         mockGetServerPublicRsaKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
@@ -169,10 +180,18 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
         mockGetServerPublicPgpKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey"))
+            onBlocking { execute(any()) }.thenReturn(
+                GetServerPublicPgpKeyUseCase.Output.Success(
+                    "publickKey",
+                    "fingerprint"
+                )
+            )
         }
         mockGetServerPublicRsaKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
+        }
+        mockIsServerFingerprintCorrectUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(IsServerFingerprintCorrectUseCase.Output(true))
         }
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any(), any()) }.doReturn(
@@ -197,12 +216,56 @@ class SignInPresenterTest : KoinTest {
     }
 
     @Test
+    fun `view should show server fingerprint changed error message when sign in fails and fingerprint changed`() {
+        mockVerifyPassphraseUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
+        }
+        mockGetServerPublicPgpKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(
+                GetServerPublicPgpKeyUseCase.Output.Success(
+                    "publickKey",
+                    "fingerprint"
+                )
+            )
+        }
+        mockGetServerPublicRsaKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
+        }
+        mockIsServerFingerprintCorrectUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(IsServerFingerprintCorrectUseCase.Output(false))
+        }
+        mockChallengeProvider.stub {
+            onBlocking { get(any(), any(), any(), any(), any()) }.doReturn(
+                ChallengeProvider.Output.Success("challenge")
+            )
+        }
+        mockSignInUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(SiginInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.OTHER))
+        }
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
+
+        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
+        presenter.attach(mockView)
+        presenter.signInClick(SAMPLE_PASSPHRASE)
+
+        verify(mockView).showProgress()
+        verify(mockView).hideProgress()
+        verify(mockView).showServerFingerprintChanged("fingerprint")
+    }
+
+    @Test
     fun `view should show generic error when challenge cannot be verified`() {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
         mockGetServerPublicPgpKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey"))
+            onBlocking { execute(any()) }.thenReturn(
+                GetServerPublicPgpKeyUseCase.Output.Success(
+                    "publickKey",
+                    "fingerprint"
+                )
+            )
         }
         mockGetServerPublicRsaKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
@@ -244,7 +307,7 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
         mockGetServerPublicPgpKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey"))
+            onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey", "fingerprint"))
         }
         mockGetServerPublicRsaKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))

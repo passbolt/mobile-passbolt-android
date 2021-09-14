@@ -1,4 +1,9 @@
-package com.passbolt.mobile.android.storage.usecase
+package com.passbolt.mobile.android.storage.usecase.accountdata
+
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.paths.PrivateKeyFileName
+import com.passbolt.mobile.android.storage.usecase.SERVER_FINGERPRINT_KEY
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,19 +27,25 @@ package com.passbolt.mobile.android.storage.usecase
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class IsServerFingerprintCorrectUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : UseCase<IsServerFingerprintCorrectUseCase.Input, IsServerFingerprintCorrectUseCase.Output> {
 
-internal const val SELECTED_ACCOUNT_ALIAS = "selected_account"
-internal const val CURRENT_URL_ALIAS = "current_url"
-internal const val ACCOUNTS_ALIAS = "accounts_list"
-internal const val USER_FIRST_NAME_KEY = "USER_FIRST_NAME_KEY"
-internal const val USER_LAST_NAME_KEY = "USER_LAST_NAME_KEY"
-internal const val URL_KEY = "URL_KEY"
-internal const val SERVER_ID_KEY = "SERVER_ID_KEY"
-internal const val AVATAR_URL_KEY = "AVATAR_URL_KEY"
-internal const val ACCESS_TOKEN_KEY = "ACCESS_TOKEN_KEY"
-internal const val SELECTED_ACCOUNT_KEY = "SELECTED_ACCOUNT_KEY"
-internal const val SERVER_FINGERPRINT_KEY = "SERVER_FINGERPRINT_KEY"
-internal const val CURRENT_URL_KEY = "CURRENT_URL_KEY"
-internal const val REFRESH_TOKEN_KEY = "REFRESH_TOKEN_KEY"
-internal const val EMAIL_KEY = "EMAIL_KEY"
-internal const val IV_KEY = "IV"
+    override fun execute(input: Input): Output {
+        val fileName = PrivateKeyFileName(input.userId).name
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
+
+        val serverFingerprint = sharedPreferences.getString(SERVER_FINGERPRINT_KEY, null)
+
+        return Output(serverFingerprint == input.fingerprint)
+    }
+
+    class Input(
+        val userId: String,
+        val fingerprint: String
+    )
+
+    class Output(
+        val isCorrect: Boolean
+    )
+}

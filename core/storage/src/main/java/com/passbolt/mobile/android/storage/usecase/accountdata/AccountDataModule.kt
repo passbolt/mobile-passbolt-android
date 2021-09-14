@@ -61,4 +61,14 @@ fun Module.accountDataModule() {
             encryptedSharedPreferencesFactory = get()
         )
     }
+    single {
+        IsServerFingerprintCorrectUseCase(
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
+    single {
+        SaveServerFingerprintUseCase(
+            encryptedSharedPreferencesFactory = get()
+        )
+    }
 }

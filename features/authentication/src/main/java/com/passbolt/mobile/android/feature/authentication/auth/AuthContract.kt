@@ -57,6 +57,7 @@ interface AuthContract {
         fun showAuthenticationReason(reason: RefreshAuthReason)
         fun showAccountDoesNotExistDialog(name: String, email: String?, url: String)
         fun navigateToAccountList()
+        fun showServerFingerprintChanged(newFingerprint: String)
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE
@@ -75,5 +76,6 @@ interface AuthContract {
         fun biometricAuthError(messageResId: Int)
         fun biometricAuthClick()
         fun connectToExistingAccountClick()
+        fun fingerprintServerConfirmationClick(fingerprint: String)
     }
 }

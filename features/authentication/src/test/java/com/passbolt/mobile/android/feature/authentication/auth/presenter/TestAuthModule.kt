@@ -20,6 +20,8 @@ import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.SaveServerFingerprintUseCase
 import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
@@ -89,6 +91,8 @@ internal val mockChallengeDecryptor = mock<ChallengeDecryptor>()
 internal val mockChallengeVerifier = mock<ChallengeVerifier>()
 internal val mockFingerprintInformationProvider = mock<FingerprintInformationProvider>()
 internal val mockFeatureFlagsInteractor = mock<FeatureFlagsInteractor>()
+internal val mockIsServerFingerprintCorrectUseCase = mock<IsServerFingerprintCorrectUseCase>()
+internal val mockSaveServerFingerprintUseCase = mock<SaveServerFingerprintUseCase>()
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
 internal val mockCipher = mock<Cipher> {
     on { iv }.doReturn(ByteArray(0))
@@ -137,7 +141,9 @@ val testAuthModule = module {
             verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
             biometricCipher = mockBiometricCipher,
             getPassphraseUseCase = mockGetPassphraseUseCase,
-            removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase
+            removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
+            isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
+            saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

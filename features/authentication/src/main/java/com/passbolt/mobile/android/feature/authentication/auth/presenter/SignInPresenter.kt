@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.SaveServerFingerprintUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -18,6 +19,7 @@ import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCach
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
 import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
@@ -70,6 +72,8 @@ class SignInPresenter(
     private val passphraseMemoryCache: PassphraseMemoryCache,
     internal val featureFlagsInteractor: FeatureFlagsInteractor,
     private val signOutUseCase: SignOutUseCase,
+    private val saveServerFingerprintUseCase: SaveServerFingerprintUseCase,
+    private val isServerFingerprintCorrectUseCase: IsServerFingerprintCorrectUseCase,
     removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     biometricCipher: BiometricCipher,
     getPassphraseUseCase: GetPassphraseUseCase,
@@ -119,14 +123,24 @@ class SignInPresenter(
             val pgpKeyResult = pgpKey.await()
             val rsaKeyResult = rsaKey.await()
             if (pgpKeyResult is PgpSuccess && rsaKeyResult is RsaSuccess) {
-                signIn(passphrase.copyOf(), pgpKeyResult.publicKey, rsaKeyResult.rsaKey)
+                signIn(
+                    passphrase.copyOf(),
+                    pgpKeyResult.publicKey,
+                    rsaKeyResult.rsaKey,
+                    pgpKeyResult.fingerprint
+                )
             } else {
                 showGenericError()
             }
         }
     }
 
-    private suspend fun signIn(passphrase: ByteArray, serverPublicKey: String, rsaKey: String) {
+    private suspend fun signIn(
+        passphrase: ByteArray,
+        serverPublicKey: String,
+        rsaKey: String,
+        fingerprint: String
+    ) {
         // TODO verify passphrase use case? Use stored url; PAS-214
         val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
         val challenge = challengeProvider.get(
@@ -143,6 +157,8 @@ class SignInPresenter(
                 serverPublicKey,
                 passphrase,
                 rsaKey,
+                requireNotNull(accountData.serverId),
+                fingerprint,
                 accountData
             )
             ChallengeProvider.Output.WrongPassphrase -> showWrongPassphrase()
@@ -155,11 +171,11 @@ class SignInPresenter(
         serverPublicKey: String,
         passphrase: ByteArray,
         rsaKey: String,
+        serverId: String,
+        fingerprint: String,
         accountData: GetAccountDataUseCase.Output
     ) {
-        when (val result = signInUseCase.execute(
-            SiginInUseCase.Input(requireNotNull(accountData.serverId), challenge)
-        )) {
+        when (val result = signInUseCase.execute(SiginInUseCase.Input(serverId, challenge))) {
             is SiginInUseCase.Output.Failure -> {
                 view?.hideProgress()
                 when (result.type) {
@@ -171,7 +187,7 @@ class SignInPresenter(
                         )
                     }
                     SignInFailureType.OTHER -> {
-                        view?.showError(result.message)
+                        signInFailure(result.message, fingerprint)
                     }
                 }
             }
@@ -182,16 +198,30 @@ class SignInPresenter(
                     userId,
                     result.challenge
                 )
-                verifyChallenge(challengeDecryptResult, rsaKey, userId, passphrase)
+                verifyChallenge(challengeDecryptResult, rsaKey, userId, passphrase, fingerprint)
             }
         }
+    }
+
+    private fun signInFailure(message: String, fingerprint: String) {
+        val input = IsServerFingerprintCorrectUseCase.Input(userId, fingerprint)
+        if (isServerFingerprintCorrectUseCase.execute(input).isCorrect) {
+            view?.showError(message)
+        } else {
+            view?.showServerFingerprintChanged(fingerprint)
+        }
+    }
+
+    override fun fingerprintServerConfirmationClick(fingerprint: String) {
+        saveServerFingerprintUseCase.execute(SaveServerFingerprintUseCase.Input(userId, fingerprint))
     }
 
     private fun verifyChallenge(
         challengeResponseDto: ChallengeResponseDto,
         rsaKey: String,
         userId: String,
-        passphrase: ByteArray
+        passphrase: ByteArray,
+        fingerprint: String
     ) {
         when (val result = challengeVerifier.verify(challengeResponseDto, rsaKey)) {
             ChallengeVerifier.Output.Failure -> showGenericError()
@@ -201,12 +231,19 @@ class SignInPresenter(
                 result.accessToken,
                 result.refreshToken,
                 userId,
-                passphrase
+                passphrase,
+                fingerprint
             )
         }
     }
 
-    private fun signInSuccess(accessToken: String, refreshToken: String, userId: String, passphrase: ByteArray) {
+    private fun signInSuccess(
+        accessToken: String,
+        refreshToken: String,
+        userId: String,
+        passphrase: ByteArray,
+        fingerprint: String
+    ) {
         saveSessionUseCase.execute(
             SaveSessionUseCase.Input(
                 userId = userId,
@@ -216,6 +253,7 @@ class SignInPresenter(
         )
         saveSelectedAccountUseCase.execute(UserIdInput(userId))
         passphraseMemoryCache.set(passphrase)
+        saveServerFingerprintUseCase.execute(SaveServerFingerprintUseCase.Input(fingerprint, userId))
         passphrase.erase()
         fetchFeatureFlags()
     }

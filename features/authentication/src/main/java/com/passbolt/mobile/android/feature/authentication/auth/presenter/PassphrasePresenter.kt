@@ -78,4 +78,8 @@ class PassphrasePresenter(
         super.biometricAuthSuccess(authenticatedCipher)
         view?.authSuccess()
     }
+
+    override fun fingerprintServerConfirmationClick(fingerprint: String) {
+        // not used
+    }
 }
