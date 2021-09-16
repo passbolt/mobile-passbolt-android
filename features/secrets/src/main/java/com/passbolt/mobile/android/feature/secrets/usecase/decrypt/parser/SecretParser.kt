@@ -10,7 +10,7 @@ class SecretParser(
     fun extractPassword(resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum, decryptedSecret: ByteArray): String {
         return when (resourceTypeEnum) {
             ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> {
-                gson.fromJson(String(decryptedSecret), String::class.java)
+                String(decryptedSecret)
             }
             ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> {
                 gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordWithDescription::class.java).password
