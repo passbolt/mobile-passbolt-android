@@ -56,7 +56,7 @@ object ActivityIntents {
             setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
             putExtra(EXTRA_AUTH_CONFIG, authConfig)
             putExtra(EXTRA_USER_ID, userId)
-            flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
 
     enum class AuthConfig {
