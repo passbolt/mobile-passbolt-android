@@ -1,30 +1,28 @@
 package com.passbolt.mobile.android.feature.autofill.accessibility
 
 import android.accessibilityservice.AccessibilityService
-import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
-import android.os.Build
 import android.os.PowerManager
+import android.view.LayoutInflater
+import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import timber.log.Timber
-import android.view.LayoutInflater
-import android.view.View
 import androidx.cardview.widget.CardView
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.autofill.R
+import com.passbolt.mobile.android.feature.autofill.accessibility.notification.AccessibilityServiceNotificationFactory
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesActivity
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesActivity.Companion.URI_KEY
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.collect
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -61,6 +59,12 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     private var overlayView: View? = null
     private val powerManager: PowerManager by inject()
     private var uri: String? = null
+    private val accessibilityServiceNotificationFactory: AccessibilityServiceNotificationFactory by inject()
+
+    override fun onCreate() {
+        super.onCreate()
+        startForeground(NOTIFICATION_ID, accessibilityServiceNotificationFactory.getNotification(this))
+    }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -75,6 +79,9 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
             focusEnabled = false
             hideOverlay()
             openResourcesActivity()
+        }
+        overlayView?.findViewById<View>(R.id.close)?.setDebouncingOnClick {
+            hideOverlay()
         }
     }
 
@@ -228,8 +235,7 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     }
 
     companion object {
-        private const val FILL_DELAY = 2000L
-        private const val EMIT_DELAY = 1000L
         private const val PASSBOLT_PACKAGE = "com.passbolt.mobile.android.debug"
+        private const val NOTIFICATION_ID = 1
     }
 }

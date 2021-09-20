@@ -1,13 +1,16 @@
 package com.passbolt.mobile.android.feature.autofill
 
+import android.app.NotificationManager
 import android.content.Context
 import android.os.PowerManager
 import android.view.WindowManager
 import android.view.autofill.AutofillManager
-import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider
+import com.passbolt.mobile.android.feature.autofill.accessibility.notification.AccessibilityServiceNotificationFactory
+import com.passbolt.mobile.android.feature.autofill.accessibility.notification.NotificationChannelManager
+import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
 import com.passbolt.mobile.android.feature.autofill.resources.DomainProvider
 import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.autofill.resources.autofillResourcesModule
@@ -45,6 +48,7 @@ val autofillModule = module {
     encourageAutofillModule()
     autofillResourcesModule()
     factory { androidContext().getSystemService(AutofillManager::class.java) }
+    factory { androidContext().getSystemService(NotificationManager::class.java) }
     factory {
         AutofillInformationProvider(
             autofillManager = get()
@@ -74,5 +78,15 @@ val autofillModule = module {
     }
     single {
         androidApplication().getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    }
+    single {
+        AccessibilityServiceNotificationFactory(
+            notificationChannelManager = get()
+        )
+    }
+    single {
+        NotificationChannelManager(
+            notificationManager = get()
+        )
     }
 }
