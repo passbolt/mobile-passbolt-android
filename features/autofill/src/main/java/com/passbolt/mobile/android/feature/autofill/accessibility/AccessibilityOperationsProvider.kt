@@ -1,13 +1,14 @@
 package com.passbolt.mobile.android.feature.autofill.accessibility
 
+import android.graphics.PixelFormat
 import android.graphics.Point
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.accessibility.AccessibilityNodeInfo.ACTION_SET_TEXT
-import timber.log.Timber
 import java.lang.Exception
 
 /**
@@ -34,16 +35,15 @@ import java.lang.Exception
  */
 class AccessibilityOperationsProvider {
 
-    fun fillEditText(node: AccessibilityNodeInfo, value: String) {
+    fun fillNode(node: AccessibilityNodeInfo, value: String) {
         val bundle = Bundle().apply {
             putString(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, value)
         }
         node.performAction(ACTION_SET_TEXT, bundle)
     }
 
-    private fun isEditText(node: AccessibilityNodeInfo): Boolean {
-        return node.className.contains("EditText")
-    }
+    private fun isEditText(node: AccessibilityNodeInfo): Boolean =
+        node.className.contains("EditText")
 
     fun getAllNodes(
         node: AccessibilityNodeInfo,
@@ -57,9 +57,9 @@ class AccessibilityOperationsProvider {
     fun isUsernameEditText(root: AccessibilityNodeInfo, event: AccessibilityEvent): Boolean {
         val allNodes = getAllNodes(root, event)
         val passwordNode = getPasswordNode(allNodes)?.viewIdResourceName
-        var usernameEditText = getUsernameNode(allNodes, passwordNode);
+        val usernameEditText = getUsernameNode(allNodes, passwordNode)
 
-        var isUsernameEditText = false;
+        var isUsernameEditText = false
         if (usernameEditText != null) {
             isUsernameEditText = isSameNode(usernameEditText, event.source)
         }
@@ -69,64 +69,59 @@ class AccessibilityOperationsProvider {
 
     private fun isSameNode(node1: AccessibilityNodeInfo?, node2: AccessibilityNodeInfo?): Boolean {
         if (node1 != null && node2 != null) {
-            return node1 == node2 || node1.hashCode() == node2.hashCode();
+            return node1 == node2 || node1.hashCode() == node2.hashCode()
         }
-        return false;
+        return false
     }
 
-    fun needToAutofill(credentials: AccessibilityCommunicator.Credentials?, currentUriString: String): Boolean {
-        Timber.d("DDD needToAutofill: $credentials")
+    fun needToAutofill(credentials: AccessibilityCommunicator.Credentials?, currentUriString: String?): Boolean {
         if (credentials == null) {
-            return false;
+            return false
         }
         val lastUri = Uri.parse(credentials.uri)
-        val currentUri = Uri.parse(currentUriString)
-        Timber.d("DDD lastUri: ${lastUri.host}")
-        Timber.d("DDD currentUri: ${currentUri.host}")
+        val currentUri = Uri.parse(currentUriString ?: "")
         return lastUri.host == currentUri.host
     }
 
     fun getUri(root: AccessibilityNodeInfo): String? {
-        val uri = androidAppProtocol + root.packageName
+        val uri = ANDROID_APP_PROTOCOL + root.packageName
         val browser = supportedBrowsers.find { it.packageName == root.packageName }
         if (browser != null) {
             val addressNode = root.findAccessibilityNodeInfosByViewId(
                 "${root.packageName}:id/${browser.viewId}"
             ).firstOrNull() ?: return null
 
-            return extractUri(uri, addressNode, browser)
+            return extractUri(uri, addressNode)
         }
         return uri
     }
 
-    public val androidAppProtocol = "androidapp://"
-
-    private fun extractUri(uri: String, addressNode: AccessibilityNodeInfo, browser: Browser): String {
+    private fun extractUri(uri: String, addressNode: AccessibilityNodeInfo): String {
         if (addressNode.text == null) {
             return uri
         }
         val newUri = addressNode.text
+        var extractedUri = uri
         if (newUri != null && newUri.contains(".")) {
             val hasHttpProtocol = uri.startsWith("http://") || uri.startsWith("https://")
             if (!hasHttpProtocol) {
                 try {
                     Uri.parse("https://$newUri")
-                    return "https://$newUri"
+                    extractedUri = "https://$newUri"
                 } catch (e: Exception) {
                     // ignoring
                 }
             } else {
                 try {
                     Uri.parse(newUri.toString())
-                    return newUri.toString()
+                    extractedUri = newUri.toString()
                 } catch (e: Exception) {
                     // ignoring
                 }
             }
-
         }
 
-        return uri
+        return extractedUri
     }
 
     fun getOverlayAnchorPosition(
@@ -187,37 +182,53 @@ class AccessibilityOperationsProvider {
         }
     }
 
-    fun skipPackage(eventPackageName: String?): Boolean {
+    fun createOverlayParams() =
+        WindowManager.LayoutParams(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, PixelFormat.TRANSPARENT
+        )
+
+    fun shouldSkipPackage(eventPackageName: String?): Boolean {
         if (eventPackageName.isNullOrEmpty() ||
             filteredPackageNames.any { it == eventPackageName } ||
             eventPackageName.contains("launcher", true)
         ) {
-            return true;
+            return true
         }
         return false
     }
 
     private val filteredPackageNames = hashSetOf(
         "com.android.systemui",
-        "com.google.android.googlequicksearchbox",
-        "com.google.android.apps.nexuslauncher",
-        "com.google.android.launcher",
-        "com.computer.desktop.ui.launcher",
-        "com.launcher.notelauncher",
-        "com.anddoes.launcher",
-        "com.actionlauncher.playstore",
-        "ch.deletescape.lawnchair.plah",
-        "com.microsoft.launcher",
-        "com.teslacoilsw.launcher",
-        "com.teslacoilsw.launcher.prime",
-        "is.shortcut",
-        "me.craftsapp.nlauncher",
-        "com.ss.squarehome2",
-        "com.treydev.pns"
+        "com.google.android.googlequicksearchbox"
     )
 
     private val supportedBrowsers = listOf(
         Browser("com.android.browser", "url"),
-        Browser("com.android.chrome", "url_bar")
+        Browser("com.android.chrome", "url_bar"),
+        Browser(
+            "org.mozilla.firefox", "mozac_browser_toolbar_url_view"
+        ),
+        Browser("org.mozilla.firefox_beta", "mozac_browser_toolbar_url_view"),
+        Browser("com.opera.browser", "url_field"),
+        Browser("com.opera.browser.beta", "url_field"),
+        Browser("com.opera.mini.native", "url_field"),
+        Browser("com.opera.mini.native.beta", "url_field"),
+        Browser("com.opera.touch", "addressbarEdit"),
+        Browser("com.brave.browser", "url_bar"),
+        Browser("com.brave.browser_beta", "url_bar"),
+        Browser("com.brave.browser_default", "url_bar"),
+        Browser("com.brave.browser_dev", "url_bar"),
+        Browser("com.brave.browser_nightly", "url_bar"),
+        Browser("com.chrome.beta", "url_bar"),
+        Browser("com.chrome.canary", "url_bar"),
+        Browser("com.chrome.dev", "url_bar")
     )
+
+    companion object {
+        private const val ANDROID_APP_PROTOCOL = "androidapp://"
+    }
 }

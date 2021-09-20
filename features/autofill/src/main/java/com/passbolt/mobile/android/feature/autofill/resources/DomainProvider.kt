@@ -30,6 +30,11 @@ class DomainProvider {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             URL("http://$url").host
         } else {
-            URL(url).host
+            val host = URL(url).host
+            if (!host.startsWith("www.")) {
+                "www.${URL(url).host}"
+            } else {
+                host
+            }
         }
 }

@@ -1,11 +1,9 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
 import android.app.Activity
-import android.app.assist.AssistStructure
 import android.content.Intent
 import android.os.Bundle
 import android.service.autofill.Dataset
-import android.view.autofill.AutofillManager
 import android.view.autofill.AutofillManager.EXTRA_AUTHENTICATION_RESULT
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
@@ -77,12 +75,12 @@ class AutofillResourcesActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val structure = intent.getParcelableExtra<AssistStructure>(AutofillManager.EXTRA_ASSIST_STRUCTURE)
+        val uri = intent.extras?.getString(URI_KEY, null)
 
         initAdapter()
         setListeners()
         presenter.attach(this)
-        presenter.argsReceived(structure)
+        presenter.argsReceived(uri)
     }
 
     override fun displayAvatar(url: String) {
@@ -166,11 +164,11 @@ class AutofillResourcesActivity :
         finish()
     }
 
-    override fun returnData(username: String, password: String) {
+    override fun returnData(username: String, password: String, uri: String?) {
         AccessibilityCommunicator.lastCredentials = AccessibilityCommunicator.Credentials(
             username,
             password,
-            intent.extras?.getString(URI_KEY, null)
+            uri
         )
         finishAffinity()
     }

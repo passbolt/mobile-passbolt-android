@@ -2,18 +2,16 @@ package com.passbolt.mobile.android.feature.autofill.accessibility
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
-import android.graphics.PixelFormat
 import android.os.PowerManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import androidx.cardview.widget.CardView
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.accessibility.notification.AccessibilityServiceNotificationFactory
+import com.passbolt.mobile.android.feature.autofill.databinding.ViewAutofillLabelBinding
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesActivity
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesActivity.Companion.URI_KEY
 import kotlinx.coroutines.CoroutineScope
@@ -53,10 +51,8 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     private val windowManager: WindowManager by inject()
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private var focusEnabled = true
     private var overlayDisplayed = false
-    private var filled = false
-    private var overlayView: View? = null
+    private var overlayView: ViewAutofillLabelBinding? = null
     private val powerManager: PowerManager by inject()
     private var uri: String? = null
     private val accessibilityServiceNotificationFactory: AccessibilityServiceNotificationFactory by inject()
@@ -73,14 +69,12 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     }
 
     private fun createOverlayView() {
-        val inflater = applicationContext.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater?
-        overlayView = inflater?.inflate(R.layout.view_autofill_label, null) as CardView
-        overlayView?.setDebouncingOnClick {
-            focusEnabled = false
+        overlayView = ViewAutofillLabelBinding.inflate(LayoutInflater.from(applicationContext))
+        overlayView?.root?.setDebouncingOnClick {
             hideOverlay()
             openResourcesActivity()
         }
-        overlayView?.findViewById<View>(R.id.close)?.setDebouncingOnClick {
+        overlayView?.close?.setDebouncingOnClick {
             hideOverlay()
         }
     }
@@ -89,105 +83,101 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
         if (!powerManager.isInteractive) {
             return
         }
-        if (accessibilityOperationsProvider.skipPackage(event?.packageName.toString())) {
-            if (event?.packageName != "com.android.systemui") {
+        if (accessibilityOperationsProvider.shouldSkipPackage(event?.packageName.toString())) {
+            if (event?.packageName != SYSTEM_UI_PACKAGE) {
                 hideOverlay()
             }
             return
         }
         when (event?.eventType) {
             AccessibilityEvent.TYPE_VIEW_FOCUSED,
-            AccessibilityEvent.TYPE_VIEW_CLICKED -> {
-                if (event.source == null || event.packageName == PASSBOLT_PACKAGE) {
-                    Timber.d("DDD CLICKED event.source == null || event.packageName == PASSBOLT_PACKAGE")
-                    hideOverlay()
-                    return
-                }
-                val root = rootInActiveWindow
-                if (root == null || root.packageName != event.packageName) {
-                    Timber.d("DDD CLICKED root == null || root.packageName != event.packageName")
-                    return
-                } else if (event.source?.isPassword != true &&
-                    !accessibilityOperationsProvider.isUsernameEditText(root, event)
-                ) {
-                    Timber.d("DDD CLICKED event.source?.isPassword != true && !accessibilityOperationsProvider.isUsernameEditText(root, event)")
-                    hideOverlay();
-                    return;
-                } else if (scanAndAutofill(root, event)) {
-                    Timber.d("DDD CLICKED scanAndAutofill(root, event)")
-                    hideOverlay()
-                    return
-                } else {
-                    Timber.d("DDD CLICKED else")
-                    uri = accessibilityOperationsProvider.getUri(root)
-                    displayOverlay(event)
-                }
-            }
+            AccessibilityEvent.TYPE_VIEW_CLICKED -> viewClicked(event)
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
-            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
-                val root = rootInActiveWindow
-                if (AccessibilityCommunicator.lastCredentials == null) {
-                    Timber.d("DDD lastCredentials == null")
-                    return
-                }
-                if (event.source == null || event.packageName == PASSBOLT_PACKAGE) {
-                    Timber.d("DDD event.source == null || event.packageName == PASSBOLT_PACKAGE")
-                    hideOverlay()
-                    return
-                } else if (root == null || root.packageName != event.packageName) {
-                    Timber.d("DDD root == null || root.packageName != event.packageName")
-                    return
-                } else if (scanAndAutofill(root, event)) {
-                    Timber.d("DDD scanAndAutofill(root, event)")
-                    hideOverlay()
-                    return
-                }
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> stateChanged(event)
+            else -> {
+                // ignoring
             }
         }
     }
 
+    private fun stateChanged(event: AccessibilityEvent) {
+        val root = rootInActiveWindow
+        if (AccessibilityCommunicator.lastCredentials == null) {
+            Timber.d("Last credentials are null - ignoring event")
+        } else if (event.source == null || event.packageName == PASSBOLT_PACKAGE) {
+            Timber.d("Event source is null or package is Passbolt - hiding overlay")
+            hideOverlay()
+        } else if (root == null || root.packageName != event.packageName) {
+            Timber.d("Root is null or root package name is different than event - ignoring")
+        } else if (scanAndAutofill(root, event)) {
+            Timber.d("Scanning return false - hiding overlay")
+            hideOverlay()
+        }
+    }
+
+    private fun viewClicked(event: AccessibilityEvent) {
+        val root = rootInActiveWindow
+        if (event.source == null || event.packageName == PASSBOLT_PACKAGE) {
+            Timber.d("Event source is null or package is Passbolt - hiding overlay")
+            hideOverlay()
+            return
+        } else if (root == null || root.packageName != event.packageName) {
+            Timber.d("Root is null or root package name is different than event - ignoring")
+        } else if (event.source?.isPassword != true &&
+            !accessibilityOperationsProvider.isUsernameEditText(root, event)
+        ) {
+            Timber.d("Field is not a password or username - hiding overlay")
+            hideOverlay()
+        } else if (scanAndAutofill(root, event)) {
+            Timber.d("Scanning return false - hiding overlay")
+            hideOverlay()
+        } else {
+            Timber.d("View clicked else - displaying overlay")
+            uri = accessibilityOperationsProvider.getUri(root)
+            displayOverlay(event)
+        }
+    }
+
     private fun scanAndAutofill(root: AccessibilityNodeInfo, event: AccessibilityEvent): Boolean {
-        Timber.d("DDD scanAndAutofill")
         var filled = false
         val allEditTexts = accessibilityOperationsProvider.getAllNodes(root, event)
-        val passwordNodes = accessibilityOperationsProvider.getPasswordNode(allEditTexts)
-        val usernameEditText =
-            accessibilityOperationsProvider.getUsernameNode(allEditTexts, passwordNodes?.viewIdResourceName)
-        Timber.d("DDD passwordNodes: $passwordNodes")
-        Timber.d("DDD usernameEditText: $usernameEditText")
-        val uri = accessibilityOperationsProvider.getUri(root)
-        Timber.d("DDD uri: $uri")
-        Timber.d(
-            "DDD need to autofill: ${
-                accessibilityOperationsProvider.needToAutofill(
-                    AccessibilityCommunicator.lastCredentials, uri ?: ""
-                )
-            }"
+        val passwordEditText = accessibilityOperationsProvider.getPasswordNode(allEditTexts)
+        val usernameEditText = accessibilityOperationsProvider.getUsernameNode(
+            allEditTexts,
+            passwordEditText?.viewIdResourceName
         )
+        val uri = accessibilityOperationsProvider.getUri(root)
 
-
-        if (uri != null && usernameEditText != null && passwordNodes != null && accessibilityOperationsProvider.needToAutofill(
-                AccessibilityCommunicator.lastCredentials, uri
-            )
+        if (uri != null && usernameEditText != null && passwordEditText != null &&
+            accessibilityOperationsProvider.needToAutofill(AccessibilityCommunicator.lastCredentials, uri)
         ) {
-            accessibilityOperationsProvider.fillEditText(
-                usernameEditText,
-                AccessibilityCommunicator.lastCredentials!!.username
-            )
-            accessibilityOperationsProvider.fillEditText(
-                passwordNodes,
-                AccessibilityCommunicator.lastCredentials!!.password
-            )
+            fillUsernameField(usernameEditText)
+            fillPasswordField(passwordEditText)
             filled = true
             AccessibilityCommunicator.lastCredentials = null
         }
+
         if (AccessibilityCommunicator.lastCredentials != null) {
             scope.launch {
-                delay(1000)
+                delay(CLEAR_CREDENTIALS_DELAY)
                 AccessibilityCommunicator.lastCredentials = null
             }
         }
         return filled
+    }
+
+    private fun fillUsernameField(usernameEditText: AccessibilityNodeInfo) {
+        accessibilityOperationsProvider.fillNode(
+            usernameEditText,
+            AccessibilityCommunicator.lastCredentials!!.username
+        )
+    }
+
+    private fun fillPasswordField(passwordEditText: AccessibilityNodeInfo) {
+        accessibilityOperationsProvider.fillNode(
+            passwordEditText,
+            AccessibilityCommunicator.lastCredentials!!.password
+        )
     }
 
     private fun openResourcesActivity() {
@@ -199,33 +189,24 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     }
 
     private fun displayOverlay(event: AccessibilityEvent) {
-        Timber.d("DDD displayOverlay: $overlayDisplayed")
         if (!overlayDisplayed) {
             overlayDisplayed = true
-            val params = WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                        WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, PixelFormat.TRANSPARENT
-            )
-            overlayView?.measure(View.MeasureSpec.makeMeasureSpec(0, 0), View.MeasureSpec.makeMeasureSpec(0, 0))
-            val height = overlayView?.measuredHeight ?: 0
-            val width = overlayView?.measuredWidth ?: 0
+            val params = accessibilityOperationsProvider.createOverlayParams()
+            overlayView?.root?.measure(View.MeasureSpec.makeMeasureSpec(0, 0), View.MeasureSpec.makeMeasureSpec(0, 0))
+            val height = overlayView?.root?.measuredHeight ?: 0
+            val width = overlayView?.root?.measuredWidth ?: 0
             val anchorPosition = accessibilityOperationsProvider.getOverlayAnchorPosition(
                 event.source, height, width
             )
             params.x = anchorPosition.x
             params.y = anchorPosition.y
-            windowManager.addView(overlayView, params)
+            windowManager.addView(overlayView?.root, params)
         }
     }
 
     private fun hideOverlay() {
-        Timber.d("DDD hideOverlay")
-        filled = false
         if (overlayDisplayed) {
-            windowManager.removeViewImmediate(overlayView)
+            windowManager.removeViewImmediate(overlayView?.root)
             overlayDisplayed = false
         }
     }
@@ -236,6 +217,8 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
 
     companion object {
         private const val PASSBOLT_PACKAGE = "com.passbolt.mobile.android.debug"
+        private const val SYSTEM_UI_PACKAGE = "com.android.systemui"
+        private const val CLEAR_CREDENTIALS_DELAY = 1000L
         private const val NOTIFICATION_ID = 1
     }
 }

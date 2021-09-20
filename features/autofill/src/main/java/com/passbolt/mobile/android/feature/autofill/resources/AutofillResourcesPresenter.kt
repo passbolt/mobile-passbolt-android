@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
-import android.app.assist.AssistStructure
 import android.service.autofill.Dataset
 import android.view.View
 import android.view.autofill.AutofillId
@@ -70,6 +69,7 @@ class AutofillResourcesPresenter(
     private var allItemsList: List<ResourceModel> = emptyList()
     private var currentSearchText: String = ""
     private val mode = AutofillMode.ACCESSIBILITY
+    private var uri: String? = null
 
     override fun attach(view: AutofillResourcesContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
@@ -103,7 +103,7 @@ class AutofillResourcesPresenter(
     }
 
     private fun returnAccessibility(password: String, username: String) {
-        view?.returnData(username, password)
+        view?.returnData(username, password, uri)
     }
 
     private fun returnAutofill(password: String, username: String) {
@@ -154,21 +154,21 @@ class AutofillResourcesPresenter(
 
     private fun showItems() {
         val itemsList = mutableListOf<ResourceListUiModel>()
-        /*getSuggested()?.let {
+        getSuggested()?.let {
             itemsList.add(ResourceListUiModel.Header("Suggested password"))
             itemsList.addAll(it.map { ResourceListUiModel.Data(it) })
             itemsList.add(ResourceListUiModel.Header("Other password"))
-        }*/
+        }
         itemsList.addAll(allItemsList.map { ResourceListUiModel.Data(it) })
         view?.showResources(itemsList)
     }
 
     private fun getSuggested() =
-        parsedStructure.firstOrNull { !it.domain.isNullOrEmpty() }?.let { parsedStructure ->
-            val domain = domainProvider.getHost(requireNotNull(parsedStructure.domain))
+        uri?.let { uri ->
+            val domain = domainProvider.getHost(uri)
             val suggested = allItemsList.filter { domainProvider.getHost(it.url) == domain }
             if (suggested.isEmpty()) {
-                fetchLinksApi(parsedStructure.domain)
+                fetchLinksApi(uri)
             } else {
                 suggested
             }
@@ -223,9 +223,9 @@ class AutofillResourcesPresenter(
         }
     }
 
-    override fun argsReceived(structure: AssistStructure?) {
-        structure?.let {
-            parsedStructure = structureParser.parse(structure)
+    override fun argsReceived(uri: String?) {
+        uri?.let {
+            this.uri = it
         }
     }
 

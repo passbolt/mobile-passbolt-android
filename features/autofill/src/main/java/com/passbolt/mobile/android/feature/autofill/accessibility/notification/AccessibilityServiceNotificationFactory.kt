@@ -31,10 +31,14 @@ class AccessibilityServiceNotificationFactory(
 ) {
 
     fun getNotification(context: Context): Notification {
-        notificationChannelManager.createNotificationChannel(context, CHANNEL_ID, "Passbolt autofill services")
+        notificationChannelManager.createNotificationChannel(
+            context,
+            CHANNEL_ID,
+            context.getString(R.string.autofill_service_channel_name)
+        )
         return Notification.Builder(context, CHANNEL_ID)
-            .setContentTitle("Passbolt")
-            .setContentText("Accessibility autofill service enabled")
+            .setContentTitle(context.getString(R.string.autofill_service_title))
+            .setContentText(context.getString(R.string.autofill_service_content))
             .setSmallIcon(R.drawable.ic_autofill)
             .build()
     }
@@ -43,4 +47,3 @@ class AccessibilityServiceNotificationFactory(
         private const val CHANNEL_ID = "ForegroundServiceChannel"
     }
 }
-

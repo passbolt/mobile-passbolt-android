@@ -20,4 +20,7 @@
     <string name="autofill_title">Select password</string>
     <string name="autofill_error">Autofill error occurred</string>
     <string name="autofill_select_password">Select password</string>
+    <string name="autofill_service_channel_name">Passbolt autofill services</string>
+    <string name="autofill_service_title">Passbolt</string>
+    <string name="autofill_service_content">Accessibility autofill service enabled</string>
 </resources>

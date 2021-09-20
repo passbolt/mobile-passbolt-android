@@ -26,4 +26,3 @@ data class Browser(
     val packageName: String,
     val viewId: String
 )
-

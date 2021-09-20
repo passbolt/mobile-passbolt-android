@@ -1,9 +1,5 @@
 package com.passbolt.mobile.android.feature.autofill.accessibility
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,16 +24,6 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 object AccessibilityCommunicator {
 
-    /*   val resultFlow: StateFlow<Credentials?>
-           get() = _resultFlow.asStateFlow()
-
-       private var _resultFlow = MutableStateFlow<Credentials?>(null)
-
-       fun emit(credentials: Credentials?) {
-           _resultFlow.tryEmit(credentials)
-           _resultFlow = MutableStateFlow(null)
-       }
-   */
     var lastCredentials: Credentials? = null
 
     data class Credentials(
