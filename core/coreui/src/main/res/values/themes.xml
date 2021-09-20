@@ -1,6 +1,6 @@
 <resources>
     <style name="Theme.Passbolt"
-        parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
@@ -12,6 +12,7 @@
         <item name="android:textColor">@color/text_primary</item>
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+        <item name="android:forceDarkAllowed">false</item>
     </style>
 
     <style name="Theme.Passbolt.AppBarOverlay"
