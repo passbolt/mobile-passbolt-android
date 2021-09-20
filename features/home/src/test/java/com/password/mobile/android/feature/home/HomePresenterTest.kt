@@ -79,6 +79,8 @@ class HomePresenterTest : KoinTest {
         )
         mockAccountData(null)
         presenter.attach(view)
+
+        verify(view).showProgress()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
         verify(view).showPasswords(anyOrNull())
@@ -96,6 +98,8 @@ class HomePresenterTest : KoinTest {
         presenter.searchTextChange("second")
         reset(view)
         presenter.refreshSwipe()
+
+        verify(view).showProgress()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
         verify(view).showPasswords(anyOrNull())
@@ -109,10 +113,13 @@ class HomePresenterTest : KoinTest {
             ResourceInteractor.Output.Success(mockedList, emptyList())
         )
         mockAccountData(null)
+
         presenter.attach(view)
         presenter.searchTextChange("third")
         reset(view)
         presenter.refreshSwipe()
+
+        verify(view).showProgress()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
         verify(view).showSearchEmptyList()
@@ -126,6 +133,8 @@ class HomePresenterTest : KoinTest {
         )
         mockAccountData(null)
         presenter.attach(view)
+
+        verify(view).showProgress()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
         verify(view).showEmptyList()
@@ -139,6 +148,7 @@ class HomePresenterTest : KoinTest {
         )
         mockAccountData(null)
         presenter.attach(view)
+        verify(view).showProgress()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
         verify(view).showError()
@@ -154,6 +164,7 @@ class HomePresenterTest : KoinTest {
         presenter.attach(view)
         reset(view)
         presenter.refreshClick()
+
         verify(view).showProgress()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
