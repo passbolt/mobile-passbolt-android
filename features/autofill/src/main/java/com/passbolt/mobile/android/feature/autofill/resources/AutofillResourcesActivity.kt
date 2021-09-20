@@ -23,13 +23,12 @@ import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
-import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.autofill.R
+import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 
@@ -113,7 +112,7 @@ class AutofillResourcesActivity :
         initialAuthenticationResult.launch(
             ActivityIntents.authentication(
                 this,
-                AuthenticationType.SignInForResult
+                ActivityIntents.AuthConfig.REFRESH_FULL
             )
         )
     }
@@ -199,8 +198,7 @@ class AutofillResourcesActivity :
         initialAuthenticationResult.launch(
             ActivityIntents.authentication(
                 this,
-                AuthenticationType.SignInForResult,
-                withSignOut = true
+                ActivityIntents.AuthConfig.MANAGE_ACCOUNT
             )
         )
     }

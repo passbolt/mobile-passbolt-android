@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy
 
 import androidx.annotation.StringRes
+import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,6 +27,10 @@ import androidx.annotation.StringRes
  */
 interface AccountListStrategy {
 
+    var accountListFragment: AccountsListFragment?
+    val activeAccountListFragment
+        get() = requireNotNull(accountListFragment)
+
     fun toolbarVisibility(): Int
 
     @StringRes
@@ -34,4 +39,6 @@ interface AccountListStrategy {
     fun logoVisibility(): Int
 
     fun headerVisibility(): Int
+
+    fun navigateBack()
 }

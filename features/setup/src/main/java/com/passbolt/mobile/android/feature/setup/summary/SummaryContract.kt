@@ -34,9 +34,8 @@ interface SummaryContract {
         fun setButtonLabel(@StringRes text: Int)
         fun setIcon(@DrawableRes icon: Int)
         fun navigateBack()
-        fun navigateToAuth(userId: String)
         fun navigateToFingerprintSetup()
-        fun navigateToLogin(userId: String? = null)
+        fun navigateToSignIn(userId: String)
         fun showLeaveConfirmationDialog()
         fun navigateToStart()
     }

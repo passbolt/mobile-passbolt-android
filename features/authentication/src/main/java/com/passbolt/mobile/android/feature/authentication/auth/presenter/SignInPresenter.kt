@@ -9,7 +9,6 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.SaveServerFingerprintUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -20,6 +19,7 @@ import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.SaveServerFingerprintUseCase
 import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
@@ -70,7 +70,7 @@ class SignInPresenter(
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val getAccountDataUseCase: GetAccountDataUseCase,
     private val passphraseMemoryCache: PassphraseMemoryCache,
-    internal val featureFlagsInteractor: FeatureFlagsInteractor,
+    private val featureFlagsInteractor: FeatureFlagsInteractor,
     private val signOutUseCase: SignOutUseCase,
     private val saveServerFingerprintUseCase: SaveServerFingerprintUseCase,
     private val isServerFingerprintCorrectUseCase: IsServerFingerprintCorrectUseCase,
@@ -82,7 +82,8 @@ class SignInPresenter(
     verifyPassphraseUseCase: VerifyPassphraseUseCase,
     fingerprintInfoProvider: FingerprintInformationProvider,
     checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    coroutineLaunchContext: CoroutineLaunchContext,
+    authReasonMapper: AuthReasonMapper
 ) : AuthBasePresenter(
     getAccountDataUseCase,
     checkIfPassphraseFileExistsUseCase,
@@ -94,6 +95,7 @@ class SignInPresenter(
     getPassphraseUseCase,
     passphraseMemoryCache,
     removeBiometricKeyUseCase,
+    authReasonMapper,
     coroutineLaunchContext
 ) {
 

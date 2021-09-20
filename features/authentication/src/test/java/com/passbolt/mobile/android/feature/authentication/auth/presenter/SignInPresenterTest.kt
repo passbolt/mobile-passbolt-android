@@ -5,10 +5,9 @@ import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.stub
-import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
@@ -25,10 +24,11 @@ import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseF
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
-import org.koin.core.qualifier.named
+import org.koin.core.parameter.parametersOf
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.Mockito.verify
 
 /**
  * Passbolt - Open source password manager for teams
@@ -55,7 +55,9 @@ import org.koin.test.inject
 
 class SignInPresenterTest : KoinTest {
 
-    private val presenter: AuthContract.Presenter by inject(named(AuthenticationType.SignIn.javaClass.simpleName))
+    private val presenter: AuthContract.Presenter by inject{
+        parametersOf(ActivityIntents.AuthConfig.REFRESH_FULL)
+    }
     private val mockView = mock<AuthContract.View>()
 
     @get:Rule
@@ -75,12 +77,13 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
         verify(mockView).showTitle()
         verify(mockView).hideKeyboard()
+        verify(mockView).showAuthenticationReason(AuthContract.View.RefreshAuthReason.SESSION)
         verify(mockView).showProgress()
         verify(mockView).hideProgress()
         verify(mockView).showGenericError()
@@ -132,7 +135,7 @@ class SignInPresenterTest : KoinTest {
             )
         }
 
-        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -165,7 +168,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -206,7 +209,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -245,7 +248,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -292,7 +295,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -327,7 +330,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ACCOUNT, AuthenticationType.SignIn)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 

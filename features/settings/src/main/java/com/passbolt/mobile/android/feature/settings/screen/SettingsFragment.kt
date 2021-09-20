@@ -16,7 +16,8 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.auth.AuthBiometricCallback
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
 import com.passbolt.mobile.android.feature.autofill.encourage.EncourageAutofillDialog
@@ -148,17 +149,15 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         // no action - dialog closed
     }
 
-    override fun navigateToAccountListWithLogout() {
-        startActivity(ActivityIntents.manageAccounts(requireContext(), withSignOut = true))
-        requireActivity().finish()
+    override fun navigateToManageAccounts() {
+        startActivity(ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.MANAGE_ACCOUNT))
     }
 
     override fun navigateToSignInWithLogout() {
         startActivity(
             ActivityIntents.authentication(
                 requireContext(),
-                AuthenticationType.SignIn,
-                withSignOut = true
+                ActivityIntents.AuthConfig.STARTUP
             )
         )
         requireActivity().finish()
@@ -175,7 +174,7 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     override fun navigateToAuthGetPassphrase() {
         authenticationResult.launch(
-            ActivityIntents.authentication(requireContext(), AuthenticationType.Passphrase)
+            ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.REFRESH_PASSPHRASE)
         )
     }
 
@@ -236,5 +235,13 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     override fun hideTermsAndConditionsButton() {
         binding.termsSetting.gone()
+    }
+
+    override fun showProgress() {
+        showProgressDialog(childFragmentManager)
+    }
+
+    override fun hideProgress() {
+        hideProgressDialog(childFragmentManager)
     }
 }

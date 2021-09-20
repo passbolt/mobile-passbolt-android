@@ -45,7 +45,8 @@ fun Module.settingsModule() {
                 removeBiometricKeyUseCase = get(),
                 fingerprintInformationProvider = get(),
                 getFeatureFlagsUseCase = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
+                signOutUseCase = get()
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }

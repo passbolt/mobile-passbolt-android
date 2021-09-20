@@ -54,9 +54,9 @@ class SummaryPresenter(
 
     override fun buttonClick() {
         when (val currentStatus = status) {
-            is ResultStatus.AlreadyLinked -> view?.navigateToLogin(currentStatus.userId)
+            is ResultStatus.AlreadyLinked -> view?.navigateToSignIn(currentStatus.userId)
+            is ResultStatus.Success -> view?.navigateToSignIn(currentStatus.userId)
             is ResultStatus.Failure -> view?.navigateBack()
-            is ResultStatus.Success -> view?.navigateToAuth(currentStatus.userId)
         }
     }
 

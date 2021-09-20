@@ -10,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentSummaryBinding
 import org.koin.android.ext.android.inject
@@ -94,16 +93,6 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
         startActivity(ActivityIntents.start(requireContext()))
     }
 
-    override fun navigateToAuth(userId: String) {
-        authenticationResult.launch(
-            ActivityIntents.authentication(
-                context = requireContext(),
-                authenticationType = AuthenticationType.SignInForResult,
-                userId = userId
-            )
-        )
-    }
-
     override fun showLeaveConfirmationDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.auth_exit_dialog_title)
@@ -113,12 +102,12 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
             .show()
     }
 
-    override fun navigateToLogin(userId: String?) {
+    override fun navigateToSignIn(userId: String) {
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                AuthenticationType.SignIn,
-                userId = userId
+                ActivityIntents.AuthConfig.SETUP,
+                userId
             )
         )
     }

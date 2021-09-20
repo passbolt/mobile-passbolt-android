@@ -4,7 +4,7 @@ import androidx.core.content.ContextCompat
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AccountUiItemsMapper
@@ -48,7 +48,8 @@ fun Module.accountsListModule() {
                 getSelectedAccountUseCase = get(),
                 signOutUseCase = get(),
                 removeAllAccountDataUseCase = get(),
-                saveCurrentApiUrlUseCase = get()
+                saveCurrentApiUrlUseCase = get(),
+                saveSelectedAccountUseCase = get()
             )
         }
         scoped { AccountUiItemsMapper() }
@@ -65,8 +66,8 @@ fun Module.accountsListModule() {
                 ContextCompat.getDrawable(androidContext(), R.drawable.grey_divider)
             )
         }
-        scoped { (type: AuthenticationTarget) ->
-            get<AccountListStrategyFactory>().get(type)
+        scoped { (accountListFragment: AccountsListFragment, type: ActivityIntents.AuthConfig) ->
+            get<AccountListStrategyFactory>().get(accountListFragment, type)
         }
         scoped {
             AccountListStrategyFactory()

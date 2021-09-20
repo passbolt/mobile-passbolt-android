@@ -59,10 +59,18 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
+        updateResourceList()
+    }
+
+    private fun updateResourceList() {
         fetchResources()
         getSelectedAccountDataUseCase.execute(Unit).avatarUrl?.let {
-            view.displayAvatar(it)
+            view?.displayAvatar(it)
         }
+    }
+
+    override fun userAuthenticated() {
+        updateResourceList()
     }
 
     override fun detach() {
@@ -166,6 +174,10 @@ class HomePresenter(
                 view?.addToClipboard(SECRET_LABEL, password)
             }
         }
+    }
+
+    override fun avatarClick() {
+        view?.navigateToManageAccount()
     }
 
     private suspend fun doAfterFetchAndDecrypt(action: (ByteArray) -> Unit) {

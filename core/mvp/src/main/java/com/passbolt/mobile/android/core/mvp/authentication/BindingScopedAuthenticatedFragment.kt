@@ -6,10 +6,9 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.viewbinding.ViewBinding
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 
 /**
  * Passbolt - Open source password manager for teams
@@ -48,11 +47,11 @@ abstract class BindingScopedAuthenticatedFragment
 
     override fun showAuth(reason: UnauthenticatedReason) {
         val authType = when (reason) {
-            AuthenticationState.Unauthenticated.Reason.PASSPHRASE -> AuthenticationType.Passphrase
-            AuthenticationState.Unauthenticated.Reason.SESSION -> AuthenticationType.Refresh
+            AuthenticationState.Unauthenticated.Reason.PASSPHRASE -> ActivityIntents.AuthConfig.REFRESH_PASSPHRASE
+            AuthenticationState.Unauthenticated.Reason.SESSION -> ActivityIntents.AuthConfig.REFRESH_FULL
         }
         authenticationResult.launch(
-            ActivityIntents.refreshAuthentication(requireContext(), authType)
+            ActivityIntents.authentication(requireContext(), authType)
         )
     }
 }

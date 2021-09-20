@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
@@ -28,7 +28,8 @@ import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseF
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
-import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import javax.crypto.Cipher
 
@@ -102,49 +103,60 @@ internal val mockBiometricCipher = mock<BiometricCipher> {
 }
 internal val mockGetPassphraseUseCase = mock<GetPassphraseUseCase>()
 internal val mockRemoveBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
+internal val authReasonMapper = AuthReasonMapper()
 
 val testAuthModule = module {
-    factory<AuthContract.Presenter>(named(AuthenticationType.Passphrase.javaClass.simpleName)) {
-        PassphrasePresenter(
-            passphraseMemoryCache = mockPassphraseMemoryCache,
-            getPrivateKeyUseCase = mockPrivateKeyUseCase,
-            verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
-            fingerprintInfoProvider = mockFingerprintInformationProvider,
-            removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
-            checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
-            getAccountDataUseCase = mockGetAccountDataUseCase,
-            coroutineLaunchContext = get(),
-            biometricCipher = mockBiometricCipher,
-            getPassphraseUseCase = mockGetPassphraseUseCase,
-            removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase
-        )
-    }
-    factory<AuthContract.Presenter>(named(AuthenticationType.SignIn.javaClass.simpleName)) {
-        SignInPresenter(
-            getServerPublicPgpKeyUseCase = mockGetServerPublicPgpKeyUseCase,
-            getServerPublicRsaKeyUseCase = mockGetServerPublicRsaKeyUseCase,
-            signInUseCase = mockSignInUseCase,
-            coroutineLaunchContext = get(),
-            challengeProvider = mockChallengeProvider,
-            challengeDecryptor = mockChallengeDecryptor,
-            challengeVerifier = mockChallengeVerifier,
-            getAccountDataUseCase = mockGetAccountDataUseCase,
-            saveSessionUseCase = mock(),
-            saveSelectedAccountUseCase = mock(),
-            checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
-            removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
-            fingerprintInfoProvider = mockFingerprintInformationProvider,
-            passphraseMemoryCache = mockPassphraseMemoryCache,
-            featureFlagsInteractor = mockFeatureFlagsInteractor,
-            signOutUseCase = mockSignOutUseCase,
-            getPrivateKeyUseCase = mockPrivateKeyUseCase,
-            verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
-            biometricCipher = mockBiometricCipher,
-            getPassphraseUseCase = mockGetPassphraseUseCase,
-            removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
-            isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
-            saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase
-        )
+    factory<AuthContract.Presenter> { (authConfig: ActivityIntents.AuthConfig) ->
+        when (authConfig) {
+            ActivityIntents.AuthConfig.STARTUP -> signInPresenter()
+            ActivityIntents.AuthConfig.SETUP -> signInPresenter()
+            ActivityIntents.AuthConfig.MANAGE_ACCOUNT -> signInPresenter()
+            ActivityIntents.AuthConfig.REFRESH_FULL -> signInPresenter()
+            ActivityIntents.AuthConfig.REFRESH_PASSPHRASE -> passphrasePresenter()
+        }
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
 }
+
+private fun Scope.signInPresenter() = SignInPresenter(
+    getServerPublicPgpKeyUseCase = mockGetServerPublicPgpKeyUseCase,
+    getServerPublicRsaKeyUseCase = mockGetServerPublicRsaKeyUseCase,
+    signInUseCase = mockSignInUseCase,
+    coroutineLaunchContext = get(),
+    challengeProvider = mockChallengeProvider,
+    challengeDecryptor = mockChallengeDecryptor,
+    challengeVerifier = mockChallengeVerifier,
+    getAccountDataUseCase = mockGetAccountDataUseCase,
+    saveSessionUseCase = mock(),
+    saveSelectedAccountUseCase = mock(),
+    checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
+    removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
+    fingerprintInfoProvider = mockFingerprintInformationProvider,
+    passphraseMemoryCache = mockPassphraseMemoryCache,
+    featureFlagsInteractor = mockFeatureFlagsInteractor,
+    signOutUseCase = mockSignOutUseCase,
+    getPrivateKeyUseCase = mockPrivateKeyUseCase,
+    verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+    biometricCipher = mockBiometricCipher,
+    getPassphraseUseCase = mockGetPassphraseUseCase,
+    removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
+    isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
+    saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
+    authReasonMapper = authReasonMapper
+)
+
+private fun Scope.passphrasePresenter() = PassphrasePresenter(
+    passphraseMemoryCache = mockPassphraseMemoryCache,
+    getPrivateKeyUseCase = mockPrivateKeyUseCase,
+    verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+    fingerprintInfoProvider = mockFingerprintInformationProvider,
+    removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
+    checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
+    getAccountDataUseCase = mockGetAccountDataUseCase,
+    coroutineLaunchContext = get(),
+    biometricCipher = mockBiometricCipher,
+    getPassphraseUseCase = mockGetPassphraseUseCase,
+    removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
+    authReasonMapper = authReasonMapper
+)

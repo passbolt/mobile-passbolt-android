@@ -2,18 +2,13 @@ package com.passbolt.mobile.android.feature.authentication
 
 import android.app.Activity
 import android.os.Bundle
-import androidx.navigation.NavArgument
 import androidx.navigation.NavOptions
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AuthenticationTarget
-import com.passbolt.mobile.android.core.navigation.AuthenticationType
-import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
-import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
-import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragmentDirections
+import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 import com.passbolt.mobile.android.feature.authentication.databinding.ActivityAuthenticationMainBinding
 import org.koin.android.ext.android.inject
 
@@ -49,28 +44,12 @@ class AuthenticationMainActivity :
         findNavHostFragment(binding.fragmentContainer.id).navController
     }
 
-    private val navInflater by lifecycleAwareLazy {
-        navController.navInflater
-    }
-
     private val navGraph by lifecycleAwareLazy {
-        navInflater.inflate(R.navigation.authentication).apply {
-            setStartDestination(R.id.accountsListFragment)
-            val arg = NavArgument.Builder().setDefaultValue(authTarget).build()
-            addArgument(AccountsListFragment.ARG_AUTH_TARGET, arg)
-        }
+        navController.navInflater.inflate(R.navigation.authentication)
     }
 
-    private val authTarget by lifecycleAwareLazy {
-        intent.getSerializableExtra(ActivityIntents.EXTRA_AUTH_TARGET) as AuthenticationTarget
-    }
-
-    private val authStrategy by lifecycleAwareLazy {
-        intent.getSerializableExtra(ActivityIntents.EXTRA_AUTH_STRATEGY_TYPE) as? AuthenticationType
-    }
-
-    private val shouldSignOut by lifecycleAwareLazy {
-        intent.getBooleanExtra(ActivityIntents.EXTRA_MANAGE_ACCOUNTS_SIGN_OUT, false)
+    private val authConfig by lifecycleAwareLazy {
+        intent.getSerializableExtra(ActivityIntents.EXTRA_AUTH_CONFIG) as ActivityIntents.AuthConfig
     }
 
     private val userId by lifecycleAwareLazy {
@@ -80,7 +59,7 @@ class AuthenticationMainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         presenter.attach(this)
-        presenter.bundleRetrieved(authTarget, authStrategy, shouldSignOut, userId)
+        presenter.bundleRetrieved(authConfig, userId)
         setResult(Activity.RESULT_CANCELED)
     }
 
@@ -89,13 +68,25 @@ class AuthenticationMainActivity :
         super.onDestroy()
     }
 
-    override fun navigateToAuth(
-        userId: String,
-        authenticationStrategy: AuthenticationType
-    ) {
-        navController.setGraph(navGraph, AccountsListFragment.newBundle(authTarget, authenticationStrategy))
+    override fun initNavWithAccountList() {
+        with(navGraph) {
+            setStartDestination(R.id.accountsListFragment)
+            navController.setGraph(this, AccountsListFragment.newBundle(authConfig))
+        }
+    }
+
+    override fun initNavWithoutAccountList(currentAccount: String) {
+        with(navGraph) {
+            remove(requireNotNull(findNode(R.id.accountsListFragment)))
+            setStartDestination(R.id.authFragment)
+            navController.setGraph(this, AuthFragment.newBundle(authConfig, currentAccount))
+        }
+    }
+
+    override fun navigateToSignIn(currentAccount: String) {
         navController.navigate(
-            AccountsListFragmentDirections.actionAccountsListFragmentToAuthFragment(userId, authenticationStrategy),
+            R.id.authFragment,
+            AuthFragment.newBundle(authConfig, currentAccount),
             NavOptions.Builder()
                 .setEnterAnim(R.anim.slide_in_right)
                 .setExitAnim(R.anim.slide_out_left)
@@ -103,24 +94,5 @@ class AuthenticationMainActivity :
                 .setPopExitAnim(R.anim.slide_out_right)
                 .build()
         )
-    }
-
-    override fun navigateToManageAccounts() {
-        navController.setGraph(
-            navGraph,
-            AccountsListFragment.newBundle(AuthenticationTarget.MANAGE_ACCOUNTS, authStrategy)
-        )
-    }
-
-    override fun setDefaultNavGraph() {
-        navController.setGraph(navGraph, AccountsListFragment.newBundle(authTarget, authStrategy))
-    }
-
-    override fun showProgress() {
-        showProgressDialog(supportFragmentManager)
-    }
-
-    override fun hideProgress() {
-        hideProgressDialog(supportFragmentManager)
     }
 }

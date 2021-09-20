@@ -6,19 +6,22 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.hideSoftInput
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.R
+import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment.Companion.ARG_AUTH_CONFIG
 import com.passbolt.mobile.android.feature.authentication.auth.accountdoesnotexist.AccountDoesNotExistDialog
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategy
@@ -27,7 +30,7 @@ import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAu
 import com.passbolt.mobile.android.featureflags.ui.FeatureFlagsFetchErrorDialog
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
-import org.koin.core.qualifier.named
+import org.koin.core.parameter.parametersOf
 import java.util.concurrent.Executor
 import javax.crypto.Cipher
 
@@ -57,21 +60,31 @@ import javax.crypto.Cipher
 class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate), AuthContract.View,
     FeatureFlagsFetchErrorDialog.Listener, ServerFingerprintChangedDialog.Listener, AccountDoesNotExistDialog.Listener {
 
-    private val args: AuthFragmentArgs by navArgs()
     private val strategyFactory: AuthStrategyFactory by inject()
-
     private lateinit var authStrategy: AuthStrategy
-    private lateinit var presenter: AuthContract.Presenter
 
+    private lateinit var presenter: AuthContract.Presenter
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
+
     private val executor: Executor by inject()
     private var featureFlagsFetchErrorDialog: FeatureFlagsFetchErrorDialog? = null
+    private val authConfig by lifecycleAwareLazy {
+        requireArguments().getSerializable(ARG_AUTH_CONFIG) as ActivityIntents.AuthConfig
+    }
+    private val userId by lifecycleAwareLazy {
+        requireNotNull(requireArguments().getString(EXTRA_USER_ID))
+    }
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            authStrategy.navigateBack()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        authStrategy = strategyFactory.get(args.authenticationStrategy, this)
-        presenter = get(named(args.authenticationStrategy.javaClass.simpleName))
-        presenter.argsRetrieved(args.userId, args.authenticationStrategy)
+        authStrategy = strategyFactory.get(authConfig, this)
+        presenter = get { parametersOf(authConfig) }
+        presenter.argsRetrieved(authConfig, userId)
         presenter.attach(this)
         presenter.viewCreated(authStrategy.domainVisible())
         setListeners()
@@ -96,11 +109,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
                 setNavigationOnClickListener { presenter.backClick(authStrategy.showLeaveConfirmationDialog()) }
             }
         }
-        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                presenter.backClick(authStrategy.showLeaveConfirmationDialog())
-            }
-        })
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backPressedCallback)
     }
 
     override fun showAuthenticationReason(reason: AuthContract.View.RefreshAuthReason) {
@@ -149,6 +158,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun onDestroyView() {
+        backPressedCallback.isEnabled = false
         featureFlagsFetchErrorDialog = null
         authStrategy.detach()
         presenter.detach()
@@ -295,5 +305,16 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun navigateToAccountList() {
         findNavController().popBackStack()
+    }
+
+    companion object {
+        private const val EXTRA_AUTH_CONFIG = "AUTH_CONFIG"
+        private const val EXTRA_USER_ID = "USER_ID"
+
+        fun newBundle(authConfig: ActivityIntents.AuthConfig, currentAccount: String) =
+            bundleOf(
+                EXTRA_AUTH_CONFIG to authConfig,
+                EXTRA_USER_ID to currentAccount
+            )
     }
 }
