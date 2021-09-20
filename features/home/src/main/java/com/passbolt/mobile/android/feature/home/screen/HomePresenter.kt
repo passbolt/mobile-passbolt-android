@@ -85,23 +85,22 @@ class HomePresenter(
 
     private fun fetchResources() {
         scope.launch {
+            view?.showProgress()
             when (val result =
                 runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                     resourcesInteractor.fetchResourcesWithTypes()
                 }) {
                 is ResourceInteractor.Output.Failure -> {
-                    view?.hideRefreshProgress()
-                    view?.hideProgress()
                     view?.showError()
                 }
                 is ResourceInteractor.Output.Success -> {
-                    view?.hideRefreshProgress()
-                    view?.hideProgress()
                     allItemsList = result.resources
                     fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
                     displayResources()
                 }
             }
+            view?.hideRefreshProgress()
+            view?.hideProgress()
         }
     }
 
@@ -129,7 +128,6 @@ class HomePresenter(
     }
 
     override fun refreshClick() {
-        view?.showProgress()
         fetchResources()
     }
 
