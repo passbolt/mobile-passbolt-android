@@ -19,6 +19,7 @@ dependencies {
     implementation project(':featureflags')
     implementation project(':database')
     implementation project(path: ':ui')
+    implementation project(':security')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

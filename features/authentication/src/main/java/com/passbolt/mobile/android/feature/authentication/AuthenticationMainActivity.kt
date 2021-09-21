@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.security.FlagSecureSetter
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 import com.passbolt.mobile.android.feature.authentication.databinding.ActivityAuthenticationMainBinding
@@ -56,8 +57,13 @@ class AuthenticationMainActivity :
         intent.getStringExtra(ActivityIntents.EXTRA_USER_ID)
     }
 
+    private val flagSecureSetter: FlagSecureSetter by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        flagSecureSetter.set(this)
+
         presenter.attach(this)
         presenter.bundleRetrieved(authConfig, userId)
         setResult(Activity.RESULT_CANCELED)
