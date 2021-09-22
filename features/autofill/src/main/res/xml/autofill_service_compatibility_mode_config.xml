@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ /**
+  ~  * Passbolt - Open source password manager for teams
+  ~  * Copyright (c) 2021 Passbolt SA
+  ~  *
+  ~  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+  ~  * Public License (AGPL) as published by the Free Software Foundation version 3.
+  ~  *
+  ~  * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+  ~  * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+  ~  * agreement with Passbolt SA.
+  ~  *
+  ~  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  ~  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+  ~  *
+  ~  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+  ~  * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+  ~  *
+  ~  * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+  ~  * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+  ~  * @link https://www.passbolt.com Passbolt (tm)
+  ~  * @since v1.0
+  ~  */
+  ~
+  -->
+
+<autofill-service
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:supportsInlineSuggestions="true">
+    <compatibility-package android:name="com.android.chrome" />
+    <compatibility-package android:name="com.chrome.beta" />
+    <compatibility-package android:name="com.chrome.dev" />
+    <compatibility-package android:name="com.chrome.canary" />
+    <compatibility-package android:name="com.microsoft.emmx" />
+    <compatibility-package android:name="com.opera.browser" />
+    <compatibility-package android:name="com.opera.browser.beta" />
+    <compatibility-package android:name="com.opera.mini.native" />
+    <compatibility-package android:name="com.opera.mini.native.beta" />
+    <compatibility-package android:name="com.sec.android.app.sbrowser" />
+    <compatibility-package android:name="com.sec.android.app.sbrowser.beta" />
+    <compatibility-package
+        android:name="org.chromium.chrome"
+        android:maxLongVersionCode="10000000000" />
+    <compatibility-package android:name="org.mozilla.fennec_aurora" />
+    <compatibility-package
+        android:name="org.mozilla.firefox"
+        android:maxLongVersionCode="10000000000" />
+    <compatibility-package android:name="org.mozilla.firefox_beta" />
+    <compatibility-package android:name="org.mozilla.fenix" />
+    <compatibility-package android:name="org.mozilla.focus" />
+    <compatibility-package android:name="com.sec.android.app.sbrowser" />
+    <compatibility-package android:name="com.sec.android.app.sbrowser.beta" />
+    <compatibility-package android:name="com.brave.browser" />
+    <compatibility-package android:name="com.brave.browser_beta" />
+</autofill-service>

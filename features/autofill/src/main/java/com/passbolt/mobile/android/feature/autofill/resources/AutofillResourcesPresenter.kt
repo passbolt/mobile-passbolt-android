@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
-import android.app.assist.AssistStructure
 import android.service.autofill.Dataset
 import android.view.View
 import android.view.autofill.AutofillId
@@ -69,6 +68,8 @@ class AutofillResourcesPresenter(
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private var allItemsList: List<ResourceModel> = emptyList()
     private var currentSearchText: String = ""
+    private val mode = AutofillMode.ACCESSIBILITY
+    private var uri: String? = null
 
     override fun attach(view: AutofillResourcesContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
@@ -101,7 +102,11 @@ class AutofillResourcesPresenter(
         }
     }
 
-    private fun returnDataSet(password: String, username: String) {
+    private fun returnAccessibility(password: String, username: String) {
+        view?.returnData(username, password, uri)
+    }
+
+    private fun returnAutofill(password: String, username: String) {
         val usernameParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_USERNAME, parsedStructure)
         val passwordParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_PASSWORD, parsedStructure)
 
@@ -117,6 +122,13 @@ class AutofillResourcesPresenter(
             password
         )
         view?.returnData(dataSet)
+    }
+
+    private fun returnDataSet(password: String, username: String) {
+        when (mode) {
+            AutofillMode.ACCESSIBILITY -> returnAccessibility(password, username)
+            AutofillMode.AUTOFILL -> returnAutofill(password, username)
+        }
     }
 
     private suspend fun fetchingResourcesSuccess(list: List<ResourceModel>) {
@@ -152,11 +164,11 @@ class AutofillResourcesPresenter(
     }
 
     private fun getSuggested() =
-        parsedStructure.firstOrNull { !it.domain.isNullOrEmpty() }?.let { parsedStructure ->
-            val domain = domainProvider.getHost(requireNotNull(parsedStructure.domain))
+        uri?.let { uri ->
+            val domain = domainProvider.getHost(uri)
             val suggested = allItemsList.filter { domainProvider.getHost(it.url) == domain }
             if (suggested.isEmpty()) {
-                fetchLinksApi(parsedStructure.domain)
+                fetchLinksApi(uri)
             } else {
                 suggested
             }
@@ -211,8 +223,10 @@ class AutofillResourcesPresenter(
         }
     }
 
-    override fun argsReceived(structure: AssistStructure) {
-        parsedStructure = structureParser.parse(structure)
+    override fun argsReceived(uri: String?) {
+        uri?.let {
+            this.uri = it
+        }
     }
 
     private fun fetchLinksApi(domain: String): List<ResourceModel>? {

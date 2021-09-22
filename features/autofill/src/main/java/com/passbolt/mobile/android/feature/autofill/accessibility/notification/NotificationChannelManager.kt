@@ -1,6 +1,8 @@
-package com.passbolt.mobile.android.feature.autofill.resources
+package com.passbolt.mobile.android.feature.autofill.accessibility.notification
 
-import java.net.URL
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,17 +26,16 @@ import java.net.URL
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class DomainProvider {
+class NotificationChannelManager(
+    private val notificationManager: NotificationManager
+) {
 
-    fun getHost(url: String): String =
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            URL("http://$url").host
-        } else {
-            val host = URL(url).host
-            if (!host.startsWith("www.")) {
-                "www.${URL(url).host}"
-            } else {
-                host
-            }
-        }
+    fun createNotificationChannel(context: Context, channelId: String, name: String) {
+        val serviceChannel = NotificationChannel(
+            channelId,
+            name,
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        notificationManager.createNotificationChannel(serviceChannel)
+    }
 }

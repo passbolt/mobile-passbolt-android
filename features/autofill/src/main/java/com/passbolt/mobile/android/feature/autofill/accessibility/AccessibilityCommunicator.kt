@@ -1,6 +1,4 @@
-package com.passbolt.mobile.android.feature.autofill.resources
-
-import java.net.URL
+package com.passbolt.mobile.android.feature.autofill.accessibility
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,17 +22,13 @@ import java.net.URL
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class DomainProvider {
+object AccessibilityCommunicator {
 
-    fun getHost(url: String): String =
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            URL("http://$url").host
-        } else {
-            val host = URL(url).host
-            if (!host.startsWith("www.")) {
-                "www.${URL(url).host}"
-            } else {
-                host
-            }
-        }
+    var lastCredentials: Credentials? = null
+
+    data class Credentials(
+        val username: String,
+        val password: String,
+        val uri: String?
+    )
 }

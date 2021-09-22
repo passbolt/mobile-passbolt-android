@@ -1,7 +1,5 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
-import java.net.URL
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -24,17 +22,7 @@ import java.net.URL
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class DomainProvider {
-
-    fun getHost(url: String): String =
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            URL("http://$url").host
-        } else {
-            val host = URL(url).host
-            if (!host.startsWith("www.")) {
-                "www.${URL(url).host}"
-            } else {
-                host
-            }
-        }
+enum class AutofillMode {
+    ACCESSIBILITY,
+    AUTOFILL
 }
