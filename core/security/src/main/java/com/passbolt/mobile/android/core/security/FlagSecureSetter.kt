@@ -1,11 +1,7 @@
-package com.passbolt.mobile.android.feature.resources
+package com.passbolt.mobile.android.core.security
 
-import android.os.Bundle
-import com.passbolt.mobile.android.core.extension.findNavHostFragment
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.core.security.FlagSecureSetter
-import com.passbolt.mobile.android.feature.resources.databinding.ActivityResourcesBinding
-import org.koin.android.ext.android.inject
+import android.app.Activity
+import android.view.WindowManager
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,23 +25,13 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResourcesActivity : BindingActivity<ActivityResourcesBinding>(ActivityResourcesBinding::inflate) {
 
-    private val flagSecureSetter: FlagSecureSetter by inject()
+class FlagSecureSetter {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        flagSecureSetter.set(this)
-
-        val navHostFragment = findNavHostFragment(R.id.fragmentContainer)
-        val inflater = navHostFragment.navController.navInflater
-        val graph = inflater.inflate(R.navigation.resources)
-
-        navHostFragment.navController.setGraph(graph, intent.extras)
-    }
-
-    companion object {
-        const val RESOURCE_MODEL_KEY = "resourceModel"
+    fun set(activity: Activity) {
+        activity.window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
     }
 }
