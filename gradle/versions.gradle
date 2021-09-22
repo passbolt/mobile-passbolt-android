@@ -66,6 +66,9 @@ ext {
             core: "2.3.0",
             cipher: "4.4.3@aar",
             sqlite: "2.0.1"
+        ],
+        yubikit: [
+            android: "2.0.0"
         ]
     ]
 
@@ -156,6 +159,9 @@ ext {
             cipher: "net.zetetic:android-database-sqlcipher:${versions.room.cipher}",
             compiler: "androidx.room:room-compiler:${versions.room.core}",
             sqlite: "androidx.sqlite:sqlite-ktx:${versions.room.sqlite}"
+        ],
+        yubikit: [
+            android: "com.yubico.yubikit:android:${versions.yubikit.android}"
         ]
     ]
 }

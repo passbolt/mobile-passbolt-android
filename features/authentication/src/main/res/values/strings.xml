@@ -35,4 +35,12 @@
     <string name="dialog_account_does_not_exist_title">The account doesn’t exist</string>
     <string name="dialog_account_does_not_exist_subtitle">The account has been deleted</string>
     <string name="dialog_account_does_not_exist_connect_account">Connect to an existing account</string>
+
+    <string name="dialog_mfa_mfa">Multi Factor Authentication</string>
+    <string name="dialog_mfa_yubikey_otp">Yubikey OTP</string>
+    <string name="dialog_mfa_scan_youbikey">Scan your Yubibey</string>
+    <string name="dialog_mfa_other_provider">Try with another provider</string>
+    <string name="dialog_mfa_remember_me">Remember this device for 40 days</string>
+    <string name="dialog_mfa_scan_cancelled">Scanning cancelled</string>
+    <string name="dialog_mfa_scan_empty_otp">Scanned OTP is empty</string>
 </resources>
