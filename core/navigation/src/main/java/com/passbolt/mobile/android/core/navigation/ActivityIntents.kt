@@ -40,6 +40,7 @@ object ActivityIntents {
 
     fun home(context: Context) = Intent().apply {
         setClassName(context, Main.MAIN_ACTIVITY)
+        flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
     }
 
     fun start(context: Context) = Intent().apply {
