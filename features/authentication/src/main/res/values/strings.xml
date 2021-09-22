@@ -16,7 +16,7 @@
 
     <string name="auth_password_title">Passphrase</string>
     <string name="auth_sign_in">Sign In</string>
-    <string name="auth_incorrect_passphrase">Incorrect passphrase!</string>
+    <string name="auth_incorrect_passphrase">Incorrect passphrase or decryption error. Please try again.</string>
     <string name="auth_forgot_password_button">I forgot my passphrase</string>
     <string name="auth_forgot_password_title">Did you forgot your passphrase?</string>
     <string name="auth_forgot_password_message">Unfortunately you cannot access your data if you do not remember your passphrase. Please contact your administrator to unlock your account.</string>
@@ -31,6 +31,9 @@
     <string name="auth_server_fingerprint_changed_message">For security reasons please check with your administrator that this is a change that they initiated. The new fingerprint:</string>
     <string name="auth_server_fingerprint_changed_button">Accept new key</string>
     <string name="auth_server_fingerprint_changed_checkbox">Yes, I checked and it is all fine.</string>
+    <string name="auth_decryption_error_title">Decryption error</string>
+    <string name="auth_decryption_error_description">There was a decryption error. Please try again.\n</string>
+    <string name="auth_decryption_error_cause">Open PGP error is:\n%s</string>
 
     <string name="dialog_account_does_not_exist_title">The account doesn’t exist</string>
     <string name="dialog_account_does_not_exist_subtitle">The account has been deleted</string>
