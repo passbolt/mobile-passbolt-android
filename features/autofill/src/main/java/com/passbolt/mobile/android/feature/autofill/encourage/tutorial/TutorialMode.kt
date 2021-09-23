@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.autofill.encourage.tutorial
 
 import androidx.annotation.StringRes
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import javax.crypto.Cipher
+import com.passbolt.mobile.android.feature.autofill.R
+import java.io.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,33 +26,22 @@ import javax.crypto.Cipher
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+sealed class TutorialMode(
+    @StringRes val title: Int,
+    @StringRes val description: Int
+) : Serializable {
+    val samsungUrl: String = "https://www.passbolt.com/help/mobile/android/autofill/samsung"
+    val xiaomiUrl: String = "https://www.passbolt.com/help/mobile/android/autofill/xiaomi"
+    val huaweiUrl: String = "https://www.passbolt.com/help/mobile/android/autofill/huawei"
+    val otherUrl: String = "https://www.passbolt.com/help/mobile/android/autofill/others"
 
-interface FingerprintContract {
+    object Overlay : TutorialMode(
+        R.string.dialog_encourage_autofill_overlay_header,
+        R.string.dialog_encourage_autofill_overlay_description
+    )
 
-    interface View : BaseContract.View {
-        fun showUseFingerprint()
-        fun showConfigureFingerprint()
-        fun navigateToSystemSettings()
-        fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
-        fun showAuthenticationError(@StringRes errorMessage: Int)
-        fun showEncourageAutofillDialog()
-        fun navigateToHome()
-        fun showAutofillEnabledDialog()
-        fun startAuthActivity()
-        fun showKeyChangesDetected()
-        fun showGenericError()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun useFingerprintClick()
-        fun resume()
-        fun authenticationSucceeded(authenticatedCipher: Cipher? = null)
-        fun authenticationError(errorMessage: Int)
-        fun setupAutofillLaterClick()
-        fun maybeLaterClick()
-        fun autofillDialogSuccess()
-        fun goToTheAppClick()
-        fun keyChangesInfoConfirmClick()
-        fun getPassphraseSucceeded()
-    }
+    object Service : TutorialMode(
+        R.string.dialog_encourage_autofill_service_header,
+        R.string.dialog_encourage_autofill_service_description
+    )
 }

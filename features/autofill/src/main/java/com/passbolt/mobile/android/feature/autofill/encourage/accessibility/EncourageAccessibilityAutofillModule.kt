@@ -1,8 +1,10 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.autofill.encourage.accessibility
 
-import androidx.annotation.StringRes
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import javax.crypto.Cipher
+import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.AutofillTutorialContract
+import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.AutofillTutorialDialog
+import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.AutofillTutorialPresenter
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,32 +29,17 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 
-interface FingerprintContract {
-
-    interface View : BaseContract.View {
-        fun showUseFingerprint()
-        fun showConfigureFingerprint()
-        fun navigateToSystemSettings()
-        fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
-        fun showAuthenticationError(@StringRes errorMessage: Int)
-        fun showEncourageAutofillDialog()
-        fun navigateToHome()
-        fun showAutofillEnabledDialog()
-        fun startAuthActivity()
-        fun showKeyChangesDetected()
-        fun showGenericError()
+fun Module.accessibilityAutofillModule() {
+    scope(named<EncourageAccessibilityAutofillDialog>()) {
+        scoped<EncourageAccessibilityAutofillContract.Presenter> {
+            EncourageAccessibilityAutofillPresenter(
+                autofillInformationProvider = get()
+            )
+        }
     }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun useFingerprintClick()
-        fun resume()
-        fun authenticationSucceeded(authenticatedCipher: Cipher? = null)
-        fun authenticationError(errorMessage: Int)
-        fun setupAutofillLaterClick()
-        fun maybeLaterClick()
-        fun autofillDialogSuccess()
-        fun goToTheAppClick()
-        fun keyChangesInfoConfirmClick()
-        fun getPassphraseSucceeded()
+    scope(named<AutofillTutorialDialog>()) {
+        scoped<AutofillTutorialContract.Presenter> {
+            AutofillTutorialPresenter()
+        }
     }
 }

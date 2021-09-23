@@ -1,8 +1,6 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.autofill.encourage.accessibility
 
-import androidx.annotation.StringRes
 import com.passbolt.mobile.android.core.mvp.BaseContract
-import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,32 +25,24 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 
-interface FingerprintContract {
+interface EncourageAccessibilityAutofillContract {
 
     interface View : BaseContract.View {
-        fun showUseFingerprint()
-        fun showConfigureFingerprint()
-        fun navigateToSystemSettings()
-        fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
-        fun showAuthenticationError(@StringRes errorMessage: Int)
-        fun showEncourageAutofillDialog()
-        fun navigateToHome()
-        fun showAutofillEnabledDialog()
-        fun startAuthActivity()
-        fun showKeyChangesDetected()
-        fun showGenericError()
+        fun showAutofillNotSupported()
+        fun closeWithSuccess()
+        fun dismissWithNoAction()
+        fun setOverlayEnabled(overlayEnabled: Boolean)
+        fun navigateToOverlayTutorial()
+        fun navigateToServiceTutorial()
+        fun setAccessibilityServiceEnabled(accessibilityServiceEnabled: Boolean)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun useFingerprintClick()
-        fun resume()
-        fun authenticationSucceeded(authenticatedCipher: Cipher? = null)
-        fun authenticationError(errorMessage: Int)
-        fun setupAutofillLaterClick()
+        fun closeClick()
         fun maybeLaterClick()
-        fun autofillDialogSuccess()
-        fun goToTheAppClick()
-        fun keyChangesInfoConfirmClick()
-        fun getPassphraseSucceeded()
+        fun overlayClick()
+        fun serviceClick()
+        fun resume()
+        fun backPressed()
     }
 }

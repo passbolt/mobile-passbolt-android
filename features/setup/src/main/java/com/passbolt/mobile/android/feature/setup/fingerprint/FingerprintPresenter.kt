@@ -128,7 +128,7 @@ class FingerprintPresenter(
         view?.navigateToHome()
     }
 
-    override fun autofillSetupSuccessfully() {
+    override fun autofillDialogSuccess() {
         view?.showAutofillEnabledDialog()
     }
 }

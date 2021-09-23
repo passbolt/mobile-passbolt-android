@@ -10,7 +10,9 @@ import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider
 import com.passbolt.mobile.android.feature.autofill.accessibility.notification.AccessibilityServiceNotificationFactory
 import com.passbolt.mobile.android.feature.autofill.accessibility.notification.NotificationChannelManager
-import com.passbolt.mobile.android.feature.autofill.encourage.encourageAutofillModule
+import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.accessibilityAutofillModule
+import com.passbolt.mobile.android.feature.autofill.encourage.autofill.encourageAutofillModule
+import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.SettingsNavigator
 import com.passbolt.mobile.android.feature.autofill.resources.DomainProvider
 import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.autofill.resources.autofillResourcesModule
@@ -46,12 +48,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val autofillModule = module {
     encourageAutofillModule()
+    accessibilityAutofillModule()
     autofillResourcesModule()
     factory { androidContext().getSystemService(AutofillManager::class.java) }
     factory { androidContext().getSystemService(NotificationManager::class.java) }
     factory {
         AutofillInformationProvider(
-            autofillManager = get()
+            autofillManager = get(),
+            context = androidContext()
         )
     }
     single {
@@ -62,6 +66,9 @@ val autofillModule = module {
     }
     single {
         AccessibilityOperationsProvider()
+    }
+    single {
+        SettingsNavigator()
     }
     single {
         FetchAndUpdateDatabaseUseCase(

@@ -52,7 +52,8 @@ fun Module.settingsModule() {
         factory { androidContext().getSystemService(AutofillManager::class.java) }
         factory {
             AutofillInformationProvider(
-                autofillManager = get()
+                autofillManager = get(),
+                context = androidContext()
             )
         }
         scoped {

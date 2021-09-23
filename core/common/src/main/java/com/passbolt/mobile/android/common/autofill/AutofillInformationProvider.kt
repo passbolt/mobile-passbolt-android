@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.common.autofill
 
+import android.content.Context
+import android.provider.Settings
 import android.view.autofill.AutofillManager
 
 /**
@@ -25,10 +27,20 @@ import android.view.autofill.AutofillManager
  * @since v1.0
  */
 class AutofillInformationProvider(
-    private val autofillManager: AutofillManager
+    private val autofillManager: AutofillManager,
+    private val context: Context
 ) {
 
     fun isAutofillSupported() = autofillManager.isAutofillSupported
 
     fun isPassboltAutofillServiceSet() = autofillManager.hasEnabledAutofillServices()
+
+    fun isOverlayEnabled() = Settings.canDrawOverlays(context)
+
+    fun isAccessibilityServiceEnabled(servicePath: String): Boolean {
+        val prefString =
+            Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+
+        return prefString != null && prefString.contains(context.packageName + "/" + servicePath)
+    }
 }
