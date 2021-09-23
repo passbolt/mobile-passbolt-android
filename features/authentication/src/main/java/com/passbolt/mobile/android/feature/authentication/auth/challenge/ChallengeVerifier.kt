@@ -41,8 +41,6 @@ class ChallengeVerifier {
             Output.TokenExpired
         }
 
-        val mfaProviders = challengeResponseDto.mfaProviders
-
         Output.Verified(
             challengeResponseDto.accessToken,
             challengeResponseDto.refreshToken
