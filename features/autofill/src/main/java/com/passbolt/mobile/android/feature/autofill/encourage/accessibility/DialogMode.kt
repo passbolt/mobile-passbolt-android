@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.autofill.encourage.accessibility
 
 import androidx.annotation.StringRes
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import javax.crypto.Cipher
+import com.passbolt.mobile.android.feature.autofill.R
+import java.io.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,33 +26,21 @@ import javax.crypto.Cipher
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+sealed class DialogMode(
+    @StringRes val title: Int,
+    @StringRes val description: Int,
+    val buttonVisible: Boolean
+) : Serializable {
 
-interface FingerprintContract {
+    object Settings : DialogMode(
+        R.string.dialog_encourage_autofill_accessibility_title,
+        R.string.dialog_encourage_autofill_accessibility_description,
+        false
+    )
 
-    interface View : BaseContract.View {
-        fun showUseFingerprint()
-        fun showConfigureFingerprint()
-        fun navigateToSystemSettings()
-        fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
-        fun showAuthenticationError(@StringRes errorMessage: Int)
-        fun showEncourageAutofillDialog()
-        fun navigateToHome()
-        fun showAutofillEnabledDialog()
-        fun startAuthActivity()
-        fun showKeyChangesDetected()
-        fun showGenericError()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun useFingerprintClick()
-        fun resume()
-        fun authenticationSucceeded(authenticatedCipher: Cipher? = null)
-        fun authenticationError(errorMessage: Int)
-        fun setupAutofillLaterClick()
-        fun maybeLaterClick()
-        fun autofillDialogSuccess()
-        fun goToTheAppClick()
-        fun keyChangesInfoConfirmClick()
-        fun getPassphraseSucceeded()
-    }
+    object Setup : DialogMode(
+        R.string.dialog_encourage_autofill_header,
+        R.string.dialog_encourage_autofill_accessibility_description,
+        true
+    )
 }

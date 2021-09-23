@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,6 +35,9 @@ class WebsiteOpener {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             context.startActivity(intent)
         }
-            .onFailure { Toast.makeText(context, R.string.common_failure, Toast.LENGTH_SHORT).show() }
+            .onFailure {
+                Timber.e(it)
+                Toast.makeText(context, R.string.common_failure, Toast.LENGTH_SHORT).show()
+            }
     }
 }

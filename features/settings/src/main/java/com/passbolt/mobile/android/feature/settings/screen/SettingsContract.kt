@@ -33,7 +33,7 @@ interface SettingsContract {
         fun toggleFingerprintOn(silently: Boolean)
         fun toggleFingerprintOff(silently: Boolean)
         fun showAutofillSetting()
-        fun showEncourageAutofillDialog()
+        fun navigateToAutofill()
         fun showAutofillEnabledDialog()
         fun showDisableFingerprintConfirmationDialog()
         fun navigateToAuthGetPassphrase()

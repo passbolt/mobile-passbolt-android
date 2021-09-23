@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.autofill.encourage
+package com.passbolt.mobile.android.feature.autofill.encourage.tutorial
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
 
@@ -24,20 +24,21 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-interface EncourageAutofillContract {
-
+class AutofillTutorialContract {
     interface View : BaseContract.View {
-        fun openAutofillSettings()
-        fun showAutofillNotSupported()
-        fun closeWithSuccess()
-        fun dismissWithNoAction()
+        fun closeDialog()
+        fun openWebsite(url: String)
+        fun navigateToOverlaySettings()
+        fun navigateToServiceSettings()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun goToSettingsClick()
-        fun autofillSettingsClosedWithResult()
+        fun argsReceived(tutorialMode: TutorialMode)
+        fun samsungClick()
+        fun xiaomiClick()
+        fun huaweiClick()
+        fun otherClick()
         fun closeClick()
-        fun maybeLaterClick()
+        fun goToSettingsClick()
     }
 }

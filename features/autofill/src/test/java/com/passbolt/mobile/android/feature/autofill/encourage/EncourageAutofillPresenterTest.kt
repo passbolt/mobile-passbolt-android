@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
+import com.passbolt.mobile.android.feature.autofill.encourage.autofill.EncourageAutofillContract
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

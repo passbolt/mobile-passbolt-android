@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
+import androidx.core.os.bundleOf
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.extension.gone
@@ -20,7 +21,8 @@ import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.auth.AuthBiometricCallback
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
-import com.passbolt.mobile.android.feature.autofill.encourage.EncourageAutofillDialog
+import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.DialogMode
+import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.EncourageAccessibilityAutofillDialog
 import com.passbolt.mobile.android.feature.settings.R
 import com.passbolt.mobile.android.feature.settings.databinding.FragmentSettingsBinding
 import org.koin.android.ext.android.inject
@@ -50,7 +52,7 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(FragmentSettingsBinding::inflate),
-    SettingsContract.View, EncourageAutofillDialog.Listener, AutofillEnabledDialog.Listener {
+    SettingsContract.View, EncourageAccessibilityAutofillDialog.Listener, AutofillEnabledDialog.Listener {
 
     private val presenter: SettingsContract.Presenter by inject()
     private val websiteOpener: WebsiteOpener by inject()
@@ -116,9 +118,13 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         websiteOpener.open(requireContext(), url)
     }
 
-    override fun showEncourageAutofillDialog() {
-        EncourageAutofillDialog().show(
-            childFragmentManager, EncourageAutofillDialog::class.java.name
+    override fun navigateToAutofill() {
+        EncourageAccessibilityAutofillDialog().apply {
+            arguments = bundleOf(
+                EncourageAccessibilityAutofillDialog.DIALOG_MODE_KEY to DialogMode.Settings
+            )
+        }.show(
+            childFragmentManager, EncourageAccessibilityAutofillDialog::class.java.name
         )
     }
 
@@ -135,7 +141,7 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         // no action - dialog closed
     }
 
-    override fun autofillSetupSuccessfully() {
+    override fun setupAutofillSuccess() {
         presenter.autofillSetupSuccessfully()
     }
 

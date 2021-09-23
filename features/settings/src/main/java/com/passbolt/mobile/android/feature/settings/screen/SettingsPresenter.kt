@@ -115,7 +115,7 @@ class SettingsPresenter(
     }
 
     override fun autofillClick() {
-        view?.showEncourageAutofillDialog()
+        view?.navigateToAutofill()
     }
 
     override fun autofillSetupSuccessfully() {

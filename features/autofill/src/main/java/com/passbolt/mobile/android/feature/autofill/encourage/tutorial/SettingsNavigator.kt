@@ -1,8 +1,9 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
+package com.passbolt.mobile.android.feature.autofill.encourage.tutorial
 
-import androidx.annotation.StringRes
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import javax.crypto.Cipher
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,33 +27,18 @@ import javax.crypto.Cipher
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class SettingsNavigator {
 
-interface FingerprintContract {
-
-    interface View : BaseContract.View {
-        fun showUseFingerprint()
-        fun showConfigureFingerprint()
-        fun navigateToSystemSettings()
-        fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
-        fun showAuthenticationError(@StringRes errorMessage: Int)
-        fun showEncourageAutofillDialog()
-        fun navigateToHome()
-        fun showAutofillEnabledDialog()
-        fun startAuthActivity()
-        fun showKeyChangesDetected()
-        fun showGenericError()
+    fun navigateToAppSettings(context: Context) {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val uri: Uri = Uri.fromParts("package", context.packageName, null)
+        intent.data = uri
+        context.startActivity(intent)
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun useFingerprintClick()
-        fun resume()
-        fun authenticationSucceeded(authenticatedCipher: Cipher? = null)
-        fun authenticationError(errorMessage: Int)
-        fun setupAutofillLaterClick()
-        fun maybeLaterClick()
-        fun autofillDialogSuccess()
-        fun goToTheAppClick()
-        fun keyChangesInfoConfirmClick()
-        fun getPassphraseSucceeded()
+    fun navigateToAccessibilitySettings(context: Context) {
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        context.startActivity(intent)
     }
 }

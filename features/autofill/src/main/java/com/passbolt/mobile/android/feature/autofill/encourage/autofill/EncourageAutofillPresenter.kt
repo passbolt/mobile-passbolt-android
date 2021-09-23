@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.autofill.encourage
+package com.passbolt.mobile.android.feature.autofill.encourage.autofill
 
 import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 

@@ -1,8 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint
-
-import androidx.annotation.StringRes
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import javax.crypto.Cipher
+package com.passbolt.mobile.android.feature.autofill.encourage.tutorial
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,33 +22,39 @@ import javax.crypto.Cipher
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class AutofillTutorialPresenter : AutofillTutorialContract.Presenter {
 
-interface FingerprintContract {
+    override var view: AutofillTutorialContract.View? = null
+    private lateinit var tutorialMode: TutorialMode
 
-    interface View : BaseContract.View {
-        fun showUseFingerprint()
-        fun showConfigureFingerprint()
-        fun navigateToSystemSettings()
-        fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
-        fun showAuthenticationError(@StringRes errorMessage: Int)
-        fun showEncourageAutofillDialog()
-        fun navigateToHome()
-        fun showAutofillEnabledDialog()
-        fun startAuthActivity()
-        fun showKeyChangesDetected()
-        fun showGenericError()
+    override fun argsReceived(tutorialMode: TutorialMode) {
+        this.tutorialMode = tutorialMode
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun useFingerprintClick()
-        fun resume()
-        fun authenticationSucceeded(authenticatedCipher: Cipher? = null)
-        fun authenticationError(errorMessage: Int)
-        fun setupAutofillLaterClick()
-        fun maybeLaterClick()
-        fun autofillDialogSuccess()
-        fun goToTheAppClick()
-        fun keyChangesInfoConfirmClick()
-        fun getPassphraseSucceeded()
+    override fun samsungClick() {
+        view?.openWebsite(tutorialMode.samsungUrl)
+    }
+
+    override fun xiaomiClick() {
+        view?.openWebsite(tutorialMode.xiaomiUrl)
+    }
+
+    override fun huaweiClick() {
+        view?.openWebsite(tutorialMode.huaweiUrl)
+    }
+
+    override fun otherClick() {
+        view?.openWebsite(tutorialMode.otherUrl)
+    }
+
+    override fun goToSettingsClick() {
+        when (tutorialMode) {
+            TutorialMode.Overlay -> view?.navigateToOverlaySettings()
+            TutorialMode.Service -> view?.navigateToServiceSettings()
+        }
+    }
+
+    override fun closeClick() {
+        view?.closeDialog()
     }
 }

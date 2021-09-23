@@ -1,0 +1,101 @@
+package com.passbolt.mobile.android.feature.autofill.encourage.tutorial
+
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
+import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.feature.autofill.R
+import com.passbolt.mobile.android.feature.autofill.databinding.DialogAutofillTutorialBinding
+import org.koin.android.ext.android.inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
+
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, AndroidScopeComponent {
+
+    override val scope by fragmentScope()
+    private val presenter: AutofillTutorialContract.Presenter by scope.inject()
+    private val tutorialMode: TutorialMode by lifecycleAwareLazy {
+        requireArguments().getSerializable(TUTORIAL_MODE_KEY) as TutorialMode
+    }
+    private val websiteOpener: WebsiteOpener by inject()
+    private val settingsNavigator: SettingsNavigator by inject()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_TITLE, R.style.FullscreenDialogTheme)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val binding = DialogAutofillTutorialBinding.inflate(inflater)
+        setupView(binding)
+        setupListeners(binding)
+        presenter.argsReceived(tutorialMode)
+        return binding.root
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        presenter.attach(this)
+    }
+
+    private fun setupView(binding: DialogAutofillTutorialBinding) = with(binding) {
+        headerLabel.text = context?.getString(tutorialMode.title)
+        descriptionLabel.text = context?.getString(tutorialMode.description)
+    }
+
+    override fun openWebsite(url: String) {
+        websiteOpener.open(requireContext(), url)
+    }
+
+    private fun setupListeners(binding: DialogAutofillTutorialBinding) = with(binding) {
+        samsungContainer.setDebouncingOnClick { presenter.samsungClick() }
+        xiaomiContainer.setDebouncingOnClick { presenter.xiaomiClick() }
+        huaweiContainer.setDebouncingOnClick { presenter.huaweiClick() }
+        otherContainer.setDebouncingOnClick { presenter.otherClick() }
+        closeButton.setDebouncingOnClick { presenter.closeClick() }
+        goToSettings.setDebouncingOnClick { presenter.goToSettingsClick() }
+    }
+
+    override fun navigateToOverlaySettings() {
+        settingsNavigator.navigateToAppSettings(requireActivity())
+    }
+
+    override fun navigateToServiceSettings() {
+        settingsNavigator.navigateToAccessibilitySettings(requireActivity())
+    }
+
+    override fun closeDialog() {
+        dismiss()
+    }
+
+    companion object {
+        const val TUTORIAL_MODE_KEY = "TUTORIAL_MODE_KEY"
+    }
+}
