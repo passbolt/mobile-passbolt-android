@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
+import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
@@ -119,7 +120,7 @@ class SignInPresenterTest : KoinTest {
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
                 ChallengeDecryptor.Output.DecryptedChallenge(
-                    ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken")
+                    ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken", null)
                 )
             )
         }
@@ -137,6 +138,7 @@ class SignInPresenterTest : KoinTest {
                 )
             )
         }
+        whenever(mockMfaStatusProvider.provideMfaStatus(any())).doReturn(MfaStatus.NotRequired)
 
         presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
         presenter.attach(mockView)
@@ -341,7 +343,7 @@ class SignInPresenterTest : KoinTest {
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
                 ChallengeDecryptor.Output.DecryptedChallenge(
-                    ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken")
+                    ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken", null)
                 )
             )
         }

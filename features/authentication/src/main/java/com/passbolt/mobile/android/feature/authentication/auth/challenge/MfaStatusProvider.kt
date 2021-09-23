@@ -1,12 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.challenge
 
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
-import io.fusionauth.jwt.InvalidJWTSignatureException
-import io.fusionauth.jwt.JWTExpiredException
-import io.fusionauth.jwt.Verifier
-import io.fusionauth.jwt.domain.JWT
-import io.fusionauth.jwt.rsa.RSAVerifier
-import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,42 +24,14 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ChallengeVerifier {
+class MfaStatusProvider {
 
-    fun verify(challengeResponseDto: ChallengeResponseDto, rsaPublicKey: String): Output = try {
-
-        val verifier: Verifier = RSAVerifier.newVerifier(rsaPublicKey)
-        val jwt: JWT = JWT.getDecoder().decode(challengeResponseDto.accessToken, verifier)
-
-        if (jwt.isExpired) {
-            Output.TokenExpired
+    fun provideMfaStatus(challengeResponseDto: ChallengeResponseDto) =
+        challengeResponseDto.mfaProviders.let {
+            if (it.isNullOrEmpty()) {
+                MfaStatus.NotRequired
+            } else {
+                MfaStatus.Required(it)
+            }
         }
-
-        val mfaProviders = challengeResponseDto.mfaProviders
-
-        Output.Verified(
-            challengeResponseDto.accessToken,
-            challengeResponseDto.refreshToken
-        )
-    } catch (exception: InvalidJWTSignatureException) {
-        Timber.e(exception)
-        Output.InvalidSignature
-    } catch (exception: JWTExpiredException) {
-        Timber.e(exception)
-        Output.TokenExpired
-    } catch (exception: Exception) {
-        Timber.e(exception)
-        Output.Failure
-    }
-
-    sealed class Output {
-        object TokenExpired : Output()
-        class Verified(
-            val accessToken: String,
-            val refreshToken: String
-        ) : Output()
-
-        object InvalidSignature : Output()
-        object Failure : Output()
-    }
 }

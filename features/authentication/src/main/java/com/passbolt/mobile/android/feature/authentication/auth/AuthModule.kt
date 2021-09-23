@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
+import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.AuthReasonMapper
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.PassphrasePresenter
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
@@ -105,6 +106,9 @@ fun Module.authModule() {
         scoped {
             AuthReasonMapper()
         }
+        scoped {
+            MfaStatusProvider()
+        }
     }
 }
 
@@ -159,5 +163,6 @@ private fun Scope.signInPresenter() = SignInPresenter(
     removeBiometricKeyUseCase = get(),
     saveServerFingerprintUseCase = get(),
     isServerFingerprintCorrectUseCase = get(),
-    authReasonMapper = get()
+    authReasonMapper = get(),
+    mfaStatusProvider = get()
 )

@@ -7,6 +7,8 @@ import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
+import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
+import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
@@ -74,6 +76,7 @@ class SignInPresenter(
     private val signOutUseCase: SignOutUseCase,
     private val saveServerFingerprintUseCase: SaveServerFingerprintUseCase,
     private val isServerFingerprintCorrectUseCase: IsServerFingerprintCorrectUseCase,
+    private val mfaStatusProvider: MfaStatusProvider,
     removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     biometricCipher: BiometricCipher,
     getPassphraseUseCase: GetPassphraseUseCase,
@@ -238,13 +241,22 @@ class SignInPresenter(
             ChallengeVerifier.Output.Failure -> showGenericError()
             ChallengeVerifier.Output.InvalidSignature -> showGenericError()
             ChallengeVerifier.Output.TokenExpired -> showGenericError()
-            is ChallengeVerifier.Output.Verified -> signInSuccess(
-                result.accessToken,
-                result.refreshToken,
-                userId,
-                passphrase,
-                fingerprint
-            )
+            is ChallengeVerifier.Output.Verified -> {
+                when (mfaStatusProvider.provideMfaStatus(challengeResponseDto)) {
+                    MfaStatus.NotRequired ->
+                        signInSuccess(
+                            result.accessToken,
+                            result.refreshToken,
+                            userId,
+                            passphrase,
+                            fingerprint
+                        )
+                    is MfaStatus.Required -> {
+                        // TODO val providers = result.mfaStatus.mfaProviders
+                        // TODO navigate to provider
+                    }
+                }
+            }
         }
     }
 

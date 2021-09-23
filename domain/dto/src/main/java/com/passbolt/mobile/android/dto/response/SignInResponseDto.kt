@@ -36,5 +36,7 @@ class ChallengeResponseDto(
     @SerializedName("access_token")
     val accessToken: String,
     @SerializedName("refresh_token")
-    val refreshToken: String
+    val refreshToken: String,
+    @SerializedName("mfa_providers")
+    val mfaProviders: List<String>?
 )
