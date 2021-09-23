@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.service.resourcetypes.ResourceTypesApi
 import com.passbolt.mobile.android.service.resourcetypes.ResourceTypesDataSource
 import com.passbolt.mobile.android.service.resourcetypes.ResourceTypesRemoteDataSource
 import com.passbolt.mobile.android.service.resourcetypes.ResourceTypesRepository
+import com.passbolt.mobile.android.service.secrets.MfaApi
 import com.passbolt.mobile.android.service.secrets.SecretsApi
 import com.passbolt.mobile.android.service.secrets.SecretsDataSource
 import com.passbolt.mobile.android.service.secrets.SecretsRemoteDataSource
@@ -63,6 +64,7 @@ val passboltApiModule = module {
     single { getSettingsApi(get()) }
     single { getSecretsApi(get()) }
     single { getResourceTypesApi(get()) }
+    single { getMfaApi(get()) }
 
     single<RegistrationDataSource> {
         RegistrationRemoteDataSource(
@@ -154,3 +156,6 @@ private fun getSecretsApi(restService: RestService): SecretsApi =
 
 private fun getResourceTypesApi(restService: RestService): ResourceTypesApi =
     restService.service(ResourceTypesApi::class.java)
+
+private fun getMfaApi(restService: RestService): MfaApi =
+    restService.service(MfaApi::class.java)
