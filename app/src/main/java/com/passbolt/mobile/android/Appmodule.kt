@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android
 
+import android.content.ClipboardManager
 import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -70,6 +71,9 @@ internal val appModule = module {
     single { HttpsVerifier() }
     factory { androidApplication().packageManager }
     single { AppForegroundListener() }
+    single {
+        androidContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+    }
 }
 
 private fun provideImageLoader(okHttpClient: OkHttpClient, context: Context) {
