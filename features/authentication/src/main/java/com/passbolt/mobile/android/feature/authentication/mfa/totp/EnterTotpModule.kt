@@ -1,11 +1,8 @@
-package com.passbolt.mobile.android.feature
+package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
-import com.passbolt.mobile.android.feature.authentication.accountslist.accountsListModule
-import com.passbolt.mobile.android.feature.authentication.auth.authModule
-import com.passbolt.mobile.android.feature.authentication.authenticationMainModule
-import com.passbolt.mobile.android.feature.authentication.mfa.totp.enterTotpModuleModule
-import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.scanYubikeyModule
-import org.koin.dsl.module
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,10 +26,24 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val authenticationModule = module {
-    accountsListModule()
-    authenticationMainModule()
-    authModule()
-    scanYubikeyModule()
-    enterTotpModuleModule()
+
+fun Module.enterTotpModuleModule() {
+    scope(named<EnterTotpDialog>()) {
+        scoped<EnterTotpContract.Presenter> {
+            EnterTotpPresenter(
+                signOutUseCase = get(),
+                coroutineLaunchContext = get()
+            )
+        }
+        scoped {
+            SignOutUseCase(
+                passphraseMemoryCache = get(),
+                removeSelectedAccountUseCase = get(),
+                getSelectedAccountUseCase = get(),
+                authRepository = get(),
+                signOutMapper = get(),
+                getSessionUseCase = get()
+            )
+        }
+    }
 }

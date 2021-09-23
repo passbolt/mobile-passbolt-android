@@ -1,22 +1,21 @@
-package com.passbolt.mobile.android.feature.authentication.mfa.youbikey
+package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
-import android.app.Activity
+import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
+import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
-import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.R
-import com.passbolt.mobile.android.feature.authentication.databinding.DialogScanYubikeyBinding
-import com.yubico.yubikit.android.ui.OtpActivity
+import com.passbolt.mobile.android.feature.authentication.databinding.DialogEnterTotpBinding
+import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
 
@@ -43,27 +42,21 @@ import org.koin.androidx.scope.fragmentScope
  * @since v1.0
  */
 
-class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyContract.View {
+class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContract.View {
 
     override val scope by fragmentScope()
+    private lateinit var binding: DialogEnterTotpBinding
     private var listener: Listener? = null
-    private val presenter: ScanYubikeyContract.Presenter by scope.inject()
-    private val scanYubikeyResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            val otp = it.data?.getStringExtra(OtpActivity.EXTRA_OTP)
-            presenter.yubikeyScanned(otp)
-        } else {
-            presenter.yubikeyScanCancelled()
-        }
-    }
+    private val presenter: EnterTotpContract.Presenter by scope.inject()
+    private val clipboardManager: ClipboardManager? by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DialogScanYubikeyBinding.inflate(inflater)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        binding = DialogEnterTotpBinding.inflate(inflater)
         setupListeners(binding)
         return binding.root
     }
@@ -85,35 +78,40 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         super.onDetach()
     }
 
-    private fun setupListeners(binding: DialogScanYubikeyBinding) {
+    private fun setupListeners(binding: DialogEnterTotpBinding) {
         with(binding) {
-            scanYubikeyButton.setDebouncingOnClick { presenter.scanYubikeyClick() }
             otherProviderButton.setDebouncingOnClick { presenter.otherProviderClick() }
             closeButton.setDebouncingOnClick { presenter.closeClick() }
             rememberMeCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 presenter.rememberMeCheckChanged(isChecked)
             }
+            pasteCodeButton.setDebouncingOnClick {
+                presenter.pasteButtonClick(getPasteData())
+            }
+            // TODO replace view with otp input PAS-340
+            @Suppress("MagicNumber")
+            otpInput.doAfterTextChanged {
+                if (it!!.length == 4) {
+                    presenter.otpEntered(it.toString())
+                }
+            }
         }
     }
 
-    override fun showScanYubikey() {
-        scanYubikeyResult.launch(
-            Intent(requireContext(), OtpActivity::class.java)
-        )
+    private fun getPasteData() = clipboardManager?.let {
+        if (it.hasPrimaryClip() && it.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN) == true) {
+            it.primaryClip?.getItemAt(0)?.text
+        } else {
+            return null
+        }
     }
 
-    override fun showScanOtpCancelled() {
-        Snackbar.make(requireView(), R.string.dialog_mfa_scan_cancelled, Snackbar.LENGTH_SHORT)
-            .show()
+    override fun pasteOtp(otp: String) {
+        binding.otpInput.setText(otp)
     }
 
-    override fun showEmptyScannedOtp() {
-        Snackbar.make(requireView(), R.string.dialog_mfa_scan_empty_otp, Snackbar.LENGTH_SHORT)
-            .show()
-    }
-
-    override fun navigateToTotp() {
-        listener?.changeProviderToTotp()
+    override fun navigateToYubikey() {
+        listener?.changeProviderToYubikey()
     }
 
     override fun closeAndNavigateToStartup() {
@@ -130,7 +128,7 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     interface Listener {
-        fun changeProviderToTotp()
+        fun changeProviderToYubikey()
 
         // TODO notify caller after successful otp backend verification
     }
