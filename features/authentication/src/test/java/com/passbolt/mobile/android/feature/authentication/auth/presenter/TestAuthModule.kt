@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
+import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
@@ -28,7 +29,6 @@ import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseF
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import javax.crypto.Cipher
@@ -103,8 +103,8 @@ internal val mockBiometricCipher = mock<BiometricCipher> {
 }
 internal val mockGetPassphraseUseCase = mock<GetPassphraseUseCase>()
 internal val mockRemoveBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
-internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val authReasonMapper = AuthReasonMapper()
+internal val mockMfaStatusProvider = mock<MfaStatusProvider>()
 
 val testAuthModule = module {
     factory<AuthContract.Presenter> { (authConfig: ActivityIntents.AuthConfig) ->
@@ -143,7 +143,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
     isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
     saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
-    authReasonMapper = authReasonMapper
+    authReasonMapper = authReasonMapper,
+    mfaStatusProvider = mockMfaStatusProvider
 )
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(

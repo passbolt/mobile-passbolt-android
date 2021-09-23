@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.authentication.auth.challenge
 
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.challengeTestModule
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.base.readFromFile
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -31,7 +30,7 @@ class ChallengeVerifierTest : KoinTest {
     @Test
     fun `challenge not verified when token expired`() = runBlockingTest {
         val challengeResponseDto = ChallengeResponseDto(
-            "", "", "", accessToken, ""
+            "", "", "", accessToken, "", null
         )
         val result = challengeVerifier.verify(challengeResponseDto, public)
         assertTrue(result is ChallengeVerifier.Output.TokenExpired)
@@ -40,7 +39,7 @@ class ChallengeVerifierTest : KoinTest {
     @Test
     fun `challenge not verified when wrong access token`() = runBlockingTest {
         val challengeResponseDto = ChallengeResponseDto(
-            "", "", "", "wrong access", ""
+            "", "", "", "wrong access", "", null
         )
         val result = challengeVerifier.verify(challengeResponseDto, public)
         assertTrue(result is ChallengeVerifier.Output.Failure)
@@ -49,7 +48,7 @@ class ChallengeVerifierTest : KoinTest {
     @Test
     fun `challenge not verified when wrong public key`() = runBlockingTest {
         val challengeResponseDto = ChallengeResponseDto(
-            "", "", "", accessToken, ""
+            "", "", "", accessToken, "", null
         )
         val result = challengeVerifier.verify(challengeResponseDto, wrongPublic)
         assertTrue(result is ChallengeVerifier.Output.InvalidSignature)
