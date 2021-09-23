@@ -10,6 +10,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
+import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
@@ -55,7 +56,7 @@ import org.mockito.Mockito.verify
 
 class SignInPresenterTest : KoinTest {
 
-    private val presenter: AuthContract.Presenter by inject{
+    private val presenter: AuthContract.Presenter by inject {
         parametersOf(ActivityIntents.AuthConfig.REFRESH_FULL)
     }
     private val mockView = mock<AuthContract.View>()
@@ -117,7 +118,9 @@ class SignInPresenterTest : KoinTest {
         }
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
-                ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken")
+                ChallengeDecryptor.Output.DecryptedChallenge(
+                    ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken")
+                )
             )
         }
         mockChallengeVerifier.stub {
@@ -175,6 +178,54 @@ class SignInPresenterTest : KoinTest {
         verify(mockView).showProgress()
         verify(mockView).hideProgress()
         verify(mockView).showWrongPassphrase()
+    }
+
+    @Test
+    fun `view should show decryption error if challange cannot be decrypter`() {
+        val errorMessage = "error message"
+        mockVerifyPassphraseUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
+        }
+        mockGetServerPublicPgpKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(
+                GetServerPublicPgpKeyUseCase.Output.Success(
+                    "publickKey",
+                    "fingerprint"
+                )
+            )
+        }
+        mockGetServerPublicRsaKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
+        }
+        mockChallengeProvider.stub {
+            onBlocking { get(any(), any(), any(), any(), any()) }.doReturn(
+                ChallengeProvider.Output.Success("challenge")
+            )
+        }
+        mockSignInUseCase.stub {
+            onBlocking { execute(any()) }
+                .doReturn(SiginInUseCase.Output.Success("challenge"))
+        }
+        mockChallengeDecryptor.stub {
+            onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
+                ChallengeDecryptor.Output.DecryptionError(errorMessage)
+            )
+        }
+        mockChallengeVerifier.stub {
+            onBlocking { verify(any(), any()) }.doReturn(
+                ChallengeVerifier.Output.Failure
+            )
+        }
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
+
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
+        presenter.attach(mockView)
+        presenter.signInClick(SAMPLE_PASSPHRASE)
+
+        verify(mockView).showProgress()
+        verify(mockView).hideProgress()
+        verify(mockView).showDecryptionError(errorMessage)
     }
 
     @Test
@@ -243,7 +294,12 @@ class SignInPresenterTest : KoinTest {
             )
         }
         mockSignInUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(SiginInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.OTHER))
+            onBlocking { execute(any()) }.thenReturn(
+                SiginInUseCase.Output.Failure(
+                    ERROR_MESSAGE,
+                    SignInFailureType.OTHER
+                )
+            )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
@@ -284,7 +340,9 @@ class SignInPresenterTest : KoinTest {
         }
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
-                ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken")
+                ChallengeDecryptor.Output.DecryptedChallenge(
+                    ChallengeResponseDto("1", "domain", "token", "accessToken", "refreshToken")
+                )
             )
         }
         mockChallengeVerifier.stub {
@@ -310,7 +368,12 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
         mockGetServerPublicPgpKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Success("publickKey", "fingerprint"))
+            onBlocking { execute(any()) }.thenReturn(
+                GetServerPublicPgpKeyUseCase.Output.Success(
+                    "publickKey",
+                    "fingerprint"
+                )
+            )
         }
         mockGetServerPublicRsaKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))

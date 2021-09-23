@@ -200,7 +200,16 @@ class SignInPresenter(
                     userId,
                     result.challenge
                 )
-                verifyChallenge(challengeDecryptResult, rsaKey, userId, passphrase, fingerprint)
+                when (challengeDecryptResult) {
+                    is ChallengeDecryptor.Output.DecryptedChallenge ->
+                        verifyChallenge(challengeDecryptResult.challenge, rsaKey, userId, passphrase, fingerprint)
+                    is ChallengeDecryptor.Output.DecryptionError -> {
+                        view?.apply {
+                            hideProgress()
+                            showDecryptionError(challengeDecryptResult.message)
+                        }
+                    }
+                }
             }
         }
     }

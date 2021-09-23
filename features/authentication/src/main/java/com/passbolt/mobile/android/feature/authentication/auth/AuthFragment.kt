@@ -307,6 +307,19 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         findNavController().popBackStack()
     }
 
+    override fun showDecryptionError(message: String?) {
+        val errorMessage = StringBuilder(getString(R.string.auth_decryption_error_description))
+        if (!message.isNullOrBlank()) {
+            errorMessage.append(getString(R.string.auth_decryption_error_cause, message))
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.auth_decryption_error_title)
+            .setMessage(errorMessage)
+            .setPositiveButton(R.string.got_it) { _, _ -> }
+            .show()
+    }
+
     companion object {
         private const val EXTRA_AUTH_CONFIG = "AUTH_CONFIG"
         private const val EXTRA_USER_ID = "USER_ID"

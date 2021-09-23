@@ -28,6 +28,7 @@ import javax.crypto.Cipher
  */
 interface AuthContract {
 
+    @Suppress("TooManyFunctions")
     interface View : BaseContract.View {
         fun showWrongPassphrase()
         fun showError(message: String)
@@ -58,6 +59,7 @@ interface AuthContract {
         fun showAccountDoesNotExistDialog(name: String, email: String?, url: String)
         fun navigateToAccountList()
         fun showServerFingerprintChanged(newFingerprint: String)
+        fun showDecryptionError(message: String?)
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE
