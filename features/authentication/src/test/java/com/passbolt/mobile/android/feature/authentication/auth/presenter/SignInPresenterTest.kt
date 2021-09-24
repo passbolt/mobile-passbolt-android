@@ -272,7 +272,7 @@ class SignInPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should show server fingerprint changed error message when sign in fails and fingerprint changed`() {
+    fun `view should show server fingerprint changed error message when fingerprint changed`() {
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
@@ -351,6 +351,9 @@ class SignInPresenterTest : KoinTest {
             onBlocking { verify(any(), any()) }.doReturn(
                 ChallengeVerifier.Output.Failure
             )
+        }
+        mockIsServerFingerprintCorrectUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(IsServerFingerprintCorrectUseCase.Output(true))
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
