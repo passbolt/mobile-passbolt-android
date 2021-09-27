@@ -242,7 +242,7 @@ class SignInPresenter(
             ChallengeVerifier.Output.InvalidSignature -> showGenericError()
             ChallengeVerifier.Output.TokenExpired -> showGenericError()
             is ChallengeVerifier.Output.Verified -> {
-                when (mfaStatusProvider.provideMfaStatus(challengeResponseDto)) {
+                when (val mfaStatus = mfaStatusProvider.provideMfaStatus(challengeResponseDto)) {
                     MfaStatus.NotRequired ->
                         signInSuccess(
                             result.accessToken,
@@ -252,8 +252,8 @@ class SignInPresenter(
                             fingerprint
                         )
                     is MfaStatus.Required -> {
-                        // TODO val providers = result.mfaStatus.mfaProviders
-                        // TODO navigate to provider
+                        // val providers = mfaStatus.mfaProviders
+                        view?.showTotpDialog()
                     }
                 }
             }

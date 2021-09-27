@@ -40,8 +40,12 @@ dependencies {
     implementation libs.gson
     implementation libs.fusionauthJwt
     implementation libs.yubikit.android
+    implementation (libs.pinentry) {
+        exclude group: 'androidx.appcompat', module: 'appcompat'
+    }
 
     testImplementation libs.di.koinTestJUnit
+
 }
 
 android {

@@ -60,6 +60,7 @@ interface AuthContract {
         fun navigateToAccountList()
         fun showServerFingerprintChanged(newFingerprint: String)
         fun showDecryptionError(message: String?)
+        fun showTotpDialog()
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE
