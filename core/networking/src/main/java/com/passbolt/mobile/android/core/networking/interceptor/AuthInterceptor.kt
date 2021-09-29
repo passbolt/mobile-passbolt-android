@@ -13,7 +13,8 @@ internal class AuthInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val newBuilder = request.newBuilder()
-        if (ANONYMOUS_PATHS.none { request.url.encodedPath == it }) {
+        if (ANONYMOUS_PATHS.none { request.url.encodedPath == it } &&
+            !request.url.encodedPath.contains(AuthPaths.AVATAR_PATH)) {
             addAuthTokens(newBuilder)
         }
         return chain.proceed(newBuilder.build())
@@ -28,7 +29,11 @@ internal class AuthInterceptor(
 
     companion object {
         private val ANONYMOUS_PATHS = setOf(
-            AuthPaths.AUTH_SIGN_IN
+            AuthPaths.AUTH_SIGN_IN,
+            AuthPaths.SETTINGS,
+            AuthPaths.MFA_VERIFICATION_TOTP,
+            AuthPaths.AUTH_RSA,
+            AuthPaths.AUTH_VERIFY
         )
         private const val AUTH_HEADER = "Authorization"
     }

@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.SignInResponseDto
 import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
 import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
+import retrofit2.Response
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,6 +33,6 @@ import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
 interface AuthDataSource {
     suspend fun getServerPublicPgpKey(): BaseResponse<ServerPgpResponseDto>
     suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto>
-    suspend fun signIn(signInRequestDto: SignInRequestDto): BaseResponse<SignInResponseDto>
+    suspend fun signIn(signInRequestDto: SignInRequestDto): Response<BaseResponse<SignInResponseDto>>
     suspend fun signOut(signOutRequestDto: SignOutRequestDto): BaseResponse<Unit>
 }

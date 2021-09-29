@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
+import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider.Companion.MFA_PROVIDER_TOTP
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
@@ -102,6 +103,8 @@ class SignInPresenter(
     coroutineLaunchContext
 ) {
 
+    private var loginState: LoginState? = null
+
     override fun onPassphraseVerified(passphrase: ByteArray) {
         performSignIn(passphrase)
     }
@@ -136,7 +139,8 @@ class SignInPresenter(
                     signIn(
                         passphrase.copyOf(),
                         pgpKeyResult.publicKey,
-                        rsaKeyResult.rsaKey
+                        rsaKeyResult.rsaKey,
+                        pgpKeyResult.fingerprint
                     )
                 }
             } else {
@@ -148,7 +152,8 @@ class SignInPresenter(
     private suspend fun signIn(
         passphrase: ByteArray,
         serverPublicKey: String,
-        rsaKey: String
+        rsaKey: String,
+        fingerprint: String
     ) {
         // TODO verify passphrase use case? Use stored url; PAS-214
         val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
@@ -167,6 +172,7 @@ class SignInPresenter(
                 passphrase,
                 rsaKey,
                 requireNotNull(accountData.serverId),
+                fingerprint,
                 accountData
             )
             ChallengeProvider.Output.WrongPassphrase -> showWrongPassphrase()
@@ -180,6 +186,7 @@ class SignInPresenter(
         passphrase: ByteArray,
         rsaKey: String,
         serverId: String,
+        fingerprint: String,
         accountData: GetAccountDataUseCase.Output
     ) {
         when (val result = signInUseCase.execute(SiginInUseCase.Input(serverId, challenge))) {
@@ -207,7 +214,14 @@ class SignInPresenter(
                 )
                 when (challengeDecryptResult) {
                     is ChallengeDecryptor.Output.DecryptedChallenge ->
-                        verifyChallenge(challengeDecryptResult.challenge, rsaKey, userId, passphrase)
+                        verifyChallenge(
+                            challengeDecryptResult.challenge,
+                            rsaKey,
+                            userId,
+                            passphrase,
+                            fingerprint,
+                            result.mfaToken
+                        )
                     is ChallengeDecryptor.Output.DecryptionError -> {
                         view?.apply {
                             hideProgress()
@@ -227,46 +241,64 @@ class SignInPresenter(
         challengeResponseDto: ChallengeResponseDto,
         rsaKey: String,
         userId: String,
-        passphrase: ByteArray
+        passphrase: ByteArray,
+        fingerprint: String,
+        mfaToken: String?
     ) {
         when (val result = challengeVerifier.verify(challengeResponseDto, rsaKey)) {
             ChallengeVerifier.Output.Failure -> showGenericError()
             ChallengeVerifier.Output.InvalidSignature -> showGenericError()
             ChallengeVerifier.Output.TokenExpired -> showGenericError()
             is ChallengeVerifier.Output.Verified -> {
-                when (val mfaStatus = mfaStatusProvider.provideMfaStatus(challengeResponseDto)) {
-                    MfaStatus.NotRequired ->
-                        signInSuccess(
-                            result.accessToken,
-                            result.refreshToken,
-                            userId,
-                            passphrase
-                        )
-                    is MfaStatus.Required -> {
-                        // val providers = mfaStatus.mfaProviders
-                        view?.showTotpDialog()
-                    }
+                loginState = LoginState(
+                    accessToken = result.accessToken,
+                    refreshToken = result.refreshToken,
+                    passphrase = passphrase,
+                    fingerprint = fingerprint,
+                    mfaToken = mfaToken
+                )
+                when (val mfaStatus = mfaStatusProvider.provideMfaStatus(challengeResponseDto, mfaToken)) {
+                    MfaStatus.NotRequired -> mfaNotRequired()
+                    is MfaStatus.Required -> mfaRequired(mfaStatus.mfaProviders, result.accessToken)
                 }
             }
         }
     }
 
-    private fun signInSuccess(
-        accessToken: String,
-        refreshToken: String,
-        userId: String,
-        passphrase: ByteArray
-    ) {
+    private fun mfaNotRequired() {
+        signInSuccess()
+    }
+
+    private fun mfaRequired(mfaProviders: List<String>, jwtToken: String) {
+        when (mfaProviders.first()) {
+            MFA_PROVIDER_TOTP -> view?.showTotpDialog(jwtToken)
+            else -> {
+                // TODO
+            }
+        }
+    }
+
+    override fun totpSucceeded(mfaHeader: String) {
+        loginState?.mfaToken = mfaHeader
+        signInSuccess()
+    }
+
+    private fun signInSuccess() {
+        val currentLoginState = requireNotNull(loginState)
         saveSessionUseCase.execute(
             SaveSessionUseCase.Input(
                 userId = userId,
-                accessToken = accessToken,
-                refreshToken = refreshToken
+                accessToken = currentLoginState.accessToken,
+                refreshToken = currentLoginState.refreshToken,
+                mfaToken = loginState?.mfaToken
             )
         )
         saveSelectedAccountUseCase.execute(UserIdInput(userId))
-        passphraseMemoryCache.set(passphrase)
-        passphrase.erase()
+        passphraseMemoryCache.set(currentLoginState.passphrase)
+        saveServerFingerprintUseCase.execute(SaveServerFingerprintUseCase.Input(currentLoginState.fingerprint, userId))
+        currentLoginState.passphrase.erase()
+        loginState?.passphrase?.erase()
+        loginState = null
         fetchFeatureFlags()
     }
 
@@ -321,6 +353,14 @@ class SignInPresenter(
             is PotentialPassphrase.PassphraseNotPresent -> view?.closeFeatureFlagsFetchErrorDialog()
         }
     }
+
+    private class LoginState(
+        val accessToken: String,
+        val refreshToken: String,
+        val passphrase: ByteArray,
+        val fingerprint: String,
+        var mfaToken: String? = null
+    )
 
     private companion object {
         private const val CHALLENGE_VERSION = "1.0.0"

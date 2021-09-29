@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import retrofit2.Response
+import java.lang.Exception
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,8 +33,25 @@ class ErrorHeaderMapper(
     private val gson: Gson
 ) {
 
-    fun getMessage(response: Response<*>? = null) =
-        response?.errorBody()?.let {
-            gson.fromJson(it.charStream(), BaseResponse::class.java).header.message
-        } ?: context.getString(R.string.common_failure)
+    fun getBaseResponse(response: Response<*>? = null) =
+        response?.errorBody()?.charStream()?.let {
+            gson.fromJson(it, BaseResponse::class.java)
+        }
+
+    fun getMessage(baseResponse: BaseResponse<*>? = null) =
+        baseResponse?.header?.message ?: context.getString(R.string.common_failure)
+
+    fun getValidationFieldsError(baseResponse: BaseResponse<*>? = null): List<String>? =
+        baseResponse?.let {
+            return try {
+                val map = baseResponse.body as Map<String, Map<String, String>>
+                val invalidFields = mutableListOf<String>()
+                map.values.forEach {
+                    invalidFields.addAll(it.keys)
+                }
+                invalidFields
+            } catch (e: Exception) {
+                null
+            }
+        }
 }

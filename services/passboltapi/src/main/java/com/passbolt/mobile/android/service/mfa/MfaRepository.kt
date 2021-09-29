@@ -1,6 +1,9 @@
-package com.passbolt.mobile.android.core.networking
+package com.passbolt.mobile.android.service.mfa
 
-import java.net.HttpURLConnection
+import com.passbolt.mobile.android.core.networking.ResponseHandler
+import com.passbolt.mobile.android.core.networking.callWithHandler
+import com.passbolt.mobile.android.dto.request.HotpRequest
+import com.passbolt.mobile.android.dto.request.TotpRequest
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,31 +27,16 @@ import java.net.HttpURLConnection
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-sealed class NetworkResult<T : Any> {
+class MfaRepository(
+    private val mfaDataSource: MfaDataSource,
+    private val responseHandler: ResponseHandler
+) {
 
-    class Success<T : Any>(
-        val value: T
-    ) : NetworkResult<T>()
+    suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String) = callWithHandler(responseHandler) {
+        mfaDataSource.verifyTotp(totpRequest, authHeader)
+    }
 
-    sealed class Failure<T : Any>(
-        val exception: Exception,
-        val errorCode: Int? = null,
-        val headerMessage: String
-    ) : NetworkResult<T>() {
-
-        val isUnauthorized: Boolean
-            get() = errorCode == HttpURLConnection.HTTP_UNAUTHORIZED
-
-        class ServerError<T : Any>(
-            exception: Exception,
-            errorCode: Int? = null,
-            headerMessage: String,
-            val invalidFields: List<String>? = null
-        ) : Failure<T>(exception, errorCode, headerMessage)
-
-        class NetworkError<T : Any>(
-            exception: Exception,
-            headerMessage: String
-        ) : Failure<T>(exception, null, headerMessage)
+    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest) = callWithHandler(responseHandler) {
+        mfaDataSource.verifyYubikeyOtp(hotpRequest)
     }
 }

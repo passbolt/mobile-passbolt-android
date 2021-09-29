@@ -1,8 +1,10 @@
 package com.passbolt.mobile.android.core.networking
 
 import coil.util.CoilUtils
+import com.passbolt.mobile.android.common.MfaTokenExtractor
 import com.passbolt.mobile.android.core.networking.interceptor.AuthInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
+import com.passbolt.mobile.android.core.networking.interceptor.CookiesInterceptor
 import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -39,7 +41,12 @@ val networkingModule = module {
     single(named(DEFAULT_HTTP_CLIENT)) {
         provideHttpClient(
             loggingInterceptor = get(),
-            interceptors = listOf(get<ChangeableBaseUrlInterceptor>(), get<AuthInterceptor>())
+            interceptors = listOf(
+                get<ChangeableBaseUrlInterceptor>(),
+                get<AuthInterceptor>(),
+                get<CookiesInterceptor.ReceivedCookiesInterceptor>(),
+                get<CookiesInterceptor.AddCookiesInterceptor>()
+            )
         )
     }
     single(named(COIL_HTTP_CLIENT)) {
@@ -55,6 +62,17 @@ val networkingModule = module {
             getSessionUseCase = get()
         )
     }
+    single {
+        CookiesInterceptor.ReceivedCookiesInterceptor(
+            mfaTokenExtractor = get()
+        )
+    }
+    single {
+        CookiesInterceptor.AddCookiesInterceptor(
+            getSessionUseCase = get()
+        )
+    }
+    single { MfaTokenExtractor() }
     single {
         RetrofitRestService(
             client = get(),

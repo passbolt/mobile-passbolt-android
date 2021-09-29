@@ -115,7 +115,7 @@ class SignInPresenterTest : KoinTest {
         }
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }
-                .doReturn(SiginInUseCase.Output.Success("challenge"))
+                .doReturn(SiginInUseCase.Output.Success("challenge", "mfa"))
         }
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
@@ -138,7 +138,7 @@ class SignInPresenterTest : KoinTest {
                 )
             )
         }
-        whenever(mockMfaStatusProvider.provideMfaStatus(any())).doReturn(MfaStatus.NotRequired)
+        whenever(mockMfaStatusProvider.provideMfaStatus(any(), any())).doReturn(MfaStatus.NotRequired)
 
         presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
         presenter.attach(mockView)
@@ -206,7 +206,7 @@ class SignInPresenterTest : KoinTest {
         }
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }
-                .doReturn(SiginInUseCase.Output.Success("challenge"))
+                .doReturn(SiginInUseCase.Output.Success("challenge", "mfa"))
         }
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
@@ -338,7 +338,7 @@ class SignInPresenterTest : KoinTest {
         }
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }
-                .doReturn(SiginInUseCase.Output.Success("challenge"))
+                .doReturn(SiginInUseCase.Output.Success("challenge", "mfa"))
         }
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(

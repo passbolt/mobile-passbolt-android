@@ -60,7 +60,7 @@ interface AuthContract {
         fun navigateToAccountList()
         fun showServerFingerprintChanged(newFingerprint: String)
         fun showDecryptionError(message: String?)
-        fun showTotpDialog()
+        fun showTotpDialog(token: String)
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE
@@ -80,5 +80,6 @@ interface AuthContract {
         fun biometricAuthClick()
         fun connectToExistingAccountClick()
         fun fingerprintServerConfirmationClick(fingerprint: String)
+        fun totpSucceeded(mfaHeader: String)
     }
 }

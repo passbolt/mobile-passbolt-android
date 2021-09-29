@@ -3,9 +3,8 @@ package com.passbolt.mobile.android.feature.authentication.auth.usecase
 import com.passbolt.mobile.android.common.MfaTokenExtractor
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.mappers.SignInMapper
-import com.passbolt.mobile.android.service.auth.AuthRepository
-import java.net.HttpURLConnection
+import com.passbolt.mobile.android.dto.request.TotpRequest
+import com.passbolt.mobile.android.service.mfa.MfaRepository
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,58 +28,45 @@ import java.net.HttpURLConnection
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-typealias SignInFailureType = SiginInUseCase.Output.Failure.FailureType
-
-class SiginInUseCase(
-    private val authRepository: AuthRepository,
-    private val signInMapper: SignInMapper,
+class VerifyTotpUseCase(
+    private val mfaRepository: MfaRepository,
     private val mfaTokenExtractor: MfaTokenExtractor
-) : AsyncUseCase<SiginInUseCase.Input, SiginInUseCase.Output> {
+) : AsyncUseCase<VerifyTotpUseCase.Input, VerifyTotpUseCase.Output> {
 
     override suspend fun execute(input: Input): Output =
-        when (val result = authRepository.signIn(signInMapper.mapRequestToDto(input.userId, input.challenge))) {
-            is NetworkResult.Failure.NetworkError -> Output.Failure(
-                result.headerMessage,
-                Output.Failure.FailureType.OTHER
-            )
-            is NetworkResult.Failure.ServerError -> Output.Failure(
-                result.headerMessage,
-                getFailureType(result.errorCode)
-            )
-            is NetworkResult.Success -> Output.Success(
-                requireNotNull(result.value.body()?.body?.challenge),
-                mfaTokenExtractor.get(result.value)
-            )
+        when (val result = mfaRepository.verifyTotp(
+            TotpRequest(input.totp, input.remember), "Bearer ${input.jwtHeader}"
+        )) {
+            is NetworkResult.Failure.NetworkError -> Output.Failure
+            is NetworkResult.Failure.ServerError -> {
+                if (result.invalidFields?.contains(VALID_OTP) == true) {
+                    Output.WrongCode
+                } else {
+                    Output.Failure
+                }
+            }
+            is NetworkResult.Success -> {
+                val mfaHeader = mfaTokenExtractor.get(result.value)
+                Output.Success(mfaHeader)
+            }
         }
 
-    private fun getFailureType(errorCode: Int?) =
-        if (errorCode == HttpURLConnection.HTTP_NOT_FOUND) {
-            SignInFailureType.ACCOUNT_DOES_NOT_EXIST
-        } else {
-            SignInFailureType.OTHER
-        }
+    class Input(
+        val totp: String,
+        val jwtHeader: String,
+        val remember: Boolean
+    )
 
     sealed class Output {
         class Success(
-            val challenge: String,
-            val mfaToken: String?
+            val mfaHeader: String?
         ) : Output()
 
-        class Failure(
-            val message: String,
-            val type: FailureType
-        ) : Output() {
-
-            enum class FailureType {
-                ACCOUNT_DOES_NOT_EXIST,
-                OTHER
-            }
-        }
+        object Failure : Output()
+        object WrongCode : Output()
     }
 
-    data class Input(
-        val userId: String,
-        val challenge: String
-    )
+    companion object {
+        private const val VALID_OTP = "isValidOtp"
+    }
 }

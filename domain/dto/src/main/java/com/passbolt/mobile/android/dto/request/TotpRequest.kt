@@ -23,4 +23,7 @@ package com.passbolt.mobile.android.dto.request
  * @since v1.0
  */
 
-data class TotpRequest(val totp: String)
+data class TotpRequest(
+    val totp: String,
+    val remember: Boolean
+)
