@@ -82,13 +82,29 @@
             android:maxLength="6"
             android:textIsSelectable="false"
             android:textSize="@dimen/sp_36"
-            app:layout_constraintTop_toBottomOf="@id/descriptionLabel" />
+            app:layout_constraintTop_toBottomOf="@id/descriptionLabel">
+
+            <requestFocus />
+        </com.alimuzaffar.lib.pin.PinEntryEditText>
+
+        <TextView
+            android:id="@+id/error"
+            style="@style/ValueText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            android:gravity="center"
+            android:text="@string/dialog_mfa_wrong_code"
+            android:textColor="@color/red"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="@id/otpInput"
+            app:layout_constraintTop_toBottomOf="@id/otpInput" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/pasteCodeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_32"
             android:drawablePadding="@dimen/dp_8"
             android:fontFamily="@font/inter"
             android:text="@string/dialog_mfa_paste_code"

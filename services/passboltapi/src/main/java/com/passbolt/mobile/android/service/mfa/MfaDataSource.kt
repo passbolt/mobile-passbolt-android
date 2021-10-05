@@ -1,6 +1,9 @@
-package com.passbolt.mobile.android.core.networking
+package com.passbolt.mobile.android.service.mfa
 
-import java.net.HttpURLConnection
+import com.passbolt.mobile.android.dto.request.HotpRequest
+import com.passbolt.mobile.android.dto.request.TotpRequest
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.YubikeyOtpVerificationDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,31 +27,9 @@ import java.net.HttpURLConnection
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-sealed class NetworkResult<T : Any> {
 
-    class Success<T : Any>(
-        val value: T
-    ) : NetworkResult<T>()
+interface MfaDataSource {
 
-    sealed class Failure<T : Any>(
-        val exception: Exception,
-        val errorCode: Int? = null,
-        val headerMessage: String
-    ) : NetworkResult<T>() {
-
-        val isUnauthorized: Boolean
-            get() = errorCode == HttpURLConnection.HTTP_UNAUTHORIZED
-
-        class ServerError<T : Any>(
-            exception: Exception,
-            errorCode: Int? = null,
-            headerMessage: String,
-            val invalidFields: List<String>? = null
-        ) : Failure<T>(exception, errorCode, headerMessage)
-
-        class NetworkError<T : Any>(
-            exception: Exception,
-            headerMessage: String
-        ) : Failure<T>(exception, null, headerMessage)
-    }
+    suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String): retrofit2.Response<Void>
+    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest): BaseResponse<YubikeyOtpVerificationDto?>
 }

@@ -7,8 +7,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.common.extension.invisible
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -48,6 +54,9 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     private var listener: Listener? = null
     private val presenter: EnterTotpContract.Presenter by scope.inject()
     private val clipboardManager: ClipboardManager? by inject()
+    private val bundledAuthToken by lifecycleAwareLazy {
+        requireArguments().getString(EXTRA_AUTH_KEY).orEmpty()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,15 +90,13 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         with(binding) {
             otherProviderButton.setDebouncingOnClick { presenter.otherProviderClick() }
             closeButton.setDebouncingOnClick { presenter.closeClick() }
-            rememberMeCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                presenter.rememberMeCheckChanged(isChecked)
-            }
             pasteCodeButton.setDebouncingOnClick {
                 presenter.pasteButtonClick(getPasteData())
             }
             otpInput.setOnPinEnteredListener {
-                presenter.otpEntered(it.toString())
+                presenter.otpEntered(it.toString(), bundledAuthToken, rememberMeCheckBox.isChecked)
             }
+            otpInput.addTextChangedListener { presenter.inputTextChange() }
         }
     }
 
@@ -99,6 +106,23 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         } else {
             return null
         }
+    }
+
+    override fun showError() {
+        Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_LONG)
+            .show()
+    }
+
+    override fun clearInput() {
+        binding.otpInput.setText("")
+    }
+
+    override fun showWrongCodeError() {
+        binding.error.visible()
+    }
+
+    override fun hideWrongCodeError() {
+        binding.error.invisible()
     }
 
     override fun pasteOtp(otp: String) {
@@ -122,9 +146,23 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         hideProgressDialog(childFragmentManager)
     }
 
+    override fun notifyVerificationSucceeded(mfaHeader: String) {
+        listener?.totpVerificationSucceeded(mfaHeader)
+    }
+
     interface Listener {
         fun changeProviderToYubikey()
+        fun totpVerificationSucceeded(mfaHeader: String)
+    }
 
-        // TODO notify caller after successful otp backend verification
+    companion object {
+        private const val EXTRA_AUTH_KEY = "EXTRA_AUTH_KEY"
+
+        fun newInstance(token: String) =
+            EnterTotpDialog().apply {
+                arguments = bundleOf(
+                    EXTRA_AUTH_KEY to token
+                )
+            }
     }
 }

@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.paths.SessionFileName
 import com.passbolt.mobile.android.storage.usecase.ACCESS_TOKEN_KEY
+import com.passbolt.mobile.android.storage.usecase.MFA_TOKEN_KEY
 import com.passbolt.mobile.android.storage.usecase.REFRESH_TOKEN_KEY
 
 /**
@@ -39,6 +40,7 @@ class SaveSessionUseCase(
         with(sharedPreferences.edit()) {
             putString(ACCESS_TOKEN_KEY, input.accessToken)
             putString(REFRESH_TOKEN_KEY, input.refreshToken)
+            putString(MFA_TOKEN_KEY, input.mfaToken)
             apply()
         }
     }
@@ -46,6 +48,7 @@ class SaveSessionUseCase(
     class Input(
         val userId: String,
         val refreshToken: String,
-        val accessToken: String
+        val accessToken: String,
+        val mfaToken: String? = null
     )
 }

@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.paths.SessionFileName
 import com.passbolt.mobile.android.storage.usecase.ACCESS_TOKEN_KEY
+import com.passbolt.mobile.android.storage.usecase.MFA_TOKEN_KEY
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.REFRESH_TOKEN_KEY
 
@@ -42,13 +43,15 @@ class GetSessionUseCase(
             val sharedPreferences = encryptedSharedPreferencesFactory.get("$alias.xml")
             return Output(
                 sharedPreferences.getString(ACCESS_TOKEN_KEY, null),
-                sharedPreferences.getString(REFRESH_TOKEN_KEY, null)
+                sharedPreferences.getString(REFRESH_TOKEN_KEY, null),
+                sharedPreferences.getString(MFA_TOKEN_KEY, null)
             )
-        } ?: return Output(null, null)
+        } ?: return Output(null, null, null)
     }
 
     class Output(
         val accessToken: String?,
-        val refreshToken: String?
+        val refreshToken: String?,
+        val mfaToken: String?
     )
 }

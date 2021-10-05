@@ -209,8 +209,8 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         )
     }
 
-    override fun showTotpDialog() {
-        EnterTotpDialog().show(
+    override fun showTotpDialog(jwtToken: String) {
+        EnterTotpDialog.newInstance(jwtToken).show(
             childFragmentManager, EnterTotpDialog::class.java.name
         )
     }
@@ -330,6 +330,10 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun changeProviderToYubikey() {
         // TODO
+    }
+
+    override fun totpVerificationSucceeded(mfaHeader: String) {
+        presenter.totpSucceeded(mfaHeader)
     }
 
     companion object {

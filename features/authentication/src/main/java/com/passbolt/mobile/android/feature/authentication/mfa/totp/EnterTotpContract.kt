@@ -10,13 +10,18 @@ interface EnterTotpContract {
         fun navigateToYubikey()
         fun closeAndNavigateToStartup()
         fun pasteOtp(otp: String)
+        fun notifyVerificationSucceeded(mfaHeader: String)
+        fun showError()
+        fun clearInput()
+        fun showWrongCodeError()
+        fun hideWrongCodeError()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun otherProviderClick()
-        fun rememberMeCheckChanged(isChecked: Boolean)
         fun closeClick()
-        fun otpEntered(otp: String)
+        fun otpEntered(otp: String, authToken: String, rememberMeChecked: Boolean)
         fun pasteButtonClick(pasteData: CharSequence?)
+        fun inputTextChange()
     }
 }

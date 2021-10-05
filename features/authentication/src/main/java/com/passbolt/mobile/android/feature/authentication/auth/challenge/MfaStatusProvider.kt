@@ -26,12 +26,17 @@ import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
  */
 class MfaStatusProvider {
 
-    fun provideMfaStatus(challengeResponseDto: ChallengeResponseDto) =
+    fun provideMfaStatus(challengeResponseDto: ChallengeResponseDto, mfaToken: String?) =
         challengeResponseDto.mfaProviders.let {
-            if (it.isNullOrEmpty()) {
+            if (it.isNullOrEmpty() || mfaToken != null) {
                 MfaStatus.NotRequired
             } else {
                 MfaStatus.Required(it)
             }
         }
+
+    companion object {
+        const val MFA_PROVIDER_TOTP = "totp"
+        const val MFA_PROVIDER_YUBIKEY = "yubikey"
+    }
 }

@@ -38,11 +38,15 @@ class ResponseHandler(
     fun <T : Any> handleException(e: Exception): NetworkResult<T> {
         Timber.d(e)
         return when (e) {
-            is HttpException -> NetworkResult.Failure.ServerError(
-                exception = e,
-                errorCode = e.code(),
-                headerMessage = errorHeaderMapper.getMessage(e.response())
-            )
+            is HttpException -> {
+                val baseResponse = errorHeaderMapper.getBaseResponse(e.response())
+                NetworkResult.Failure.ServerError(
+                    exception = e,
+                    errorCode = e.code(),
+                    headerMessage = errorHeaderMapper.getMessage(baseResponse),
+                    invalidFields = errorHeaderMapper.getValidationFieldsError(baseResponse)
+                )
+            }
             is UnknownHostException -> NetworkResult.Failure.NetworkError(
                 exception = e,
                 headerMessage = errorHeaderMapper.getMessage()

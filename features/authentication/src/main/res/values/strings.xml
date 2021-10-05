@@ -49,4 +49,5 @@
     <string name="dialog_mfa_totp">Two Factor Authentication</string>
     <string name="dialog_mfa_enter_otp">Enter the verification code:</string>
     <string name="dialog_mfa_paste_code">Paste code</string>
+    <string name="dialog_mfa_wrong_code">Wrong code</string>
 </resources>

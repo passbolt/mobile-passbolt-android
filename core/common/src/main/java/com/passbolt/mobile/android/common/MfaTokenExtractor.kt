@@ -1,6 +1,7 @@
-package com.passbolt.mobile.android.core.networking
+package com.passbolt.mobile.android.common
 
-import java.net.HttpURLConnection
+import okhttp3.Cookie
+import retrofit2.Response
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,31 +25,21 @@ import java.net.HttpURLConnection
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-sealed class NetworkResult<T : Any> {
+class MfaTokenExtractor {
 
-    class Success<T : Any>(
-        val value: T
-    ) : NetworkResult<T>()
+    fun get(response: Response<*>): String? =
+        response.headers().values(SET_COOKIE_HEADER)
+            .find { it.contains(MFA_COOKIE) }?.split(';')?.firstOrNull()
 
-    sealed class Failure<T : Any>(
-        val exception: Exception,
-        val errorCode: Int? = null,
-        val headerMessage: String
-    ) : NetworkResult<T>() {
+    fun get(cookies: List<Cookie>): Cookie? =
+        cookies.find { it.name.contains(MFA_COOKIE) }
 
-        val isUnauthorized: Boolean
-            get() = errorCode == HttpURLConnection.HTTP_UNAUTHORIZED
+    fun get(response: okhttp3.Response): String? =
+        response.headers(SET_COOKIE_HEADER)
+            .find { it.contains(MFA_COOKIE) }?.split(';')?.firstOrNull()
 
-        class ServerError<T : Any>(
-            exception: Exception,
-            errorCode: Int? = null,
-            headerMessage: String,
-            val invalidFields: List<String>? = null
-        ) : Failure<T>(exception, errorCode, headerMessage)
-
-        class NetworkError<T : Any>(
-            exception: Exception,
-            headerMessage: String
-        ) : Failure<T>(exception, null, headerMessage)
+    companion object {
+        const val MFA_COOKIE = "passbolt_mfa"
+        private const val SET_COOKIE_HEADER = "Set-Cookie"
     }
 }

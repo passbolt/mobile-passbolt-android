@@ -11,6 +11,9 @@ dependencies {
     implementation libs.fastAdapter.binding
     implementation libs.fastAdapter.core
     implementation libs.fastAdapter.diff
+
+    implementation libs.networking.retrofit
+    implementation libs.networking.okHttp
 }
 
 android {

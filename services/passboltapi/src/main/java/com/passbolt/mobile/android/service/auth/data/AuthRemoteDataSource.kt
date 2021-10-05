@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
 import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
 import com.passbolt.mobile.android.service.auth.AuthApi
 import com.passbolt.mobile.android.service.auth.AuthDataSource
+import retrofit2.Response
 
 /**
  * Passbolt - Open source password manager for teams
@@ -41,7 +42,7 @@ internal class AuthRemoteDataSource(
     override suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto> =
         authApi.getServerPublicRsaKey()
 
-    override suspend fun signIn(signInRequestDto: SignInRequestDto): BaseResponse<SignInResponseDto> =
+    override suspend fun signIn(signInRequestDto: SignInRequestDto): Response<BaseResponse<SignInResponseDto>> =
         authApi.signIn(signInRequestDto)
 
     override suspend fun signOut(signOutRequestDto: SignOutRequestDto): BaseResponse<Unit> =

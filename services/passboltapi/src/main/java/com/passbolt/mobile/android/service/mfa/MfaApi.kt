@@ -1,12 +1,13 @@
-package com.passbolt.mobile.android.service.secrets
+package com.passbolt.mobile.android.service.mfa
 
 import com.passbolt.mobile.android.dto.request.HotpRequest
 import com.passbolt.mobile.android.dto.request.TotpRequest
 import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.TotpVerificationDto
 import com.passbolt.mobile.android.dto.response.YubikeyOtpVerificationDto
+import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.POST
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,10 +34,15 @@ import retrofit2.http.GET
 
 internal interface MfaApi {
 
-    @GET(MFA_VERIFICATION_TOTP)
-    suspend fun verifyTotp(@Body totpRequest: TotpRequest): BaseResponse<TotpVerificationDto?>
+    @POST(MFA_VERIFICATION_TOTP)
+    suspend fun verifyTotp(
+        @Body totpRequest: TotpRequest,
+        // auth header needs to be added manually because this request
+        // requires auth token and is before user is signed in
+        @Header(MFA_AUTH_HEADER) authHeader: String
+    ): Response<Void>
 
-    @GET(MFA_VERIFICATION_YUBIKEY)
+    @POST(MFA_VERIFICATION_YUBIKEY)
     suspend fun verifyYubikeyOtp(@Body hotpRequest: HotpRequest): BaseResponse<YubikeyOtpVerificationDto?>
 
     private companion object {
@@ -44,5 +50,6 @@ internal interface MfaApi {
         private const val MFA_VERIFICATION = "$MFA/verify"
         private const val MFA_VERIFICATION_TOTP = "$MFA_VERIFICATION/totp.json"
         private const val MFA_VERIFICATION_YUBIKEY = "$MFA_VERIFICATION/yubikey.json"
+        private const val MFA_AUTH_HEADER = "Authorization"
     }
 }

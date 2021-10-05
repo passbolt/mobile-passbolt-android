@@ -84,4 +84,8 @@ class PassphrasePresenter(
     override fun fingerprintServerConfirmationClick(fingerprint: String) {
         // not used
     }
+
+    override fun totpSucceeded(mfaHeader: String) {
+        // TODO
+    }
 }

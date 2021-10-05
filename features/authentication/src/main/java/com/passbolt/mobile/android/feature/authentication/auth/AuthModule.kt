@@ -60,7 +60,8 @@ fun Module.authModule() {
         scoped {
             SiginInUseCase(
                 authRepository = get(),
-                signInMapper = get()
+                signInMapper = get(),
+                mfaTokenExtractor = get()
             )
         }
         scoped {
