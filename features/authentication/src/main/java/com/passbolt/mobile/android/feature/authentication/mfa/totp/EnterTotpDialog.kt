@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -88,12 +87,8 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
             pasteCodeButton.setDebouncingOnClick {
                 presenter.pasteButtonClick(getPasteData())
             }
-            // TODO replace view with otp input PAS-340
-            @Suppress("MagicNumber")
-            otpInput.doAfterTextChanged {
-                if (it!!.length == 4) {
-                    presenter.otpEntered(it.toString())
-                }
+            otpInput.setOnPinEnteredListener {
+                presenter.otpEntered(it.toString())
             }
         }
     }

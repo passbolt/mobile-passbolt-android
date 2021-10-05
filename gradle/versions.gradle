@@ -69,7 +69,8 @@ ext {
         ],
         yubikit: [
             android: "2.0.0"
-        ]
+        ],
+        pinentry: "2.0.6"
     ]
 
     libs = [
@@ -162,6 +163,7 @@ ext {
         ],
         yubikit: [
             android: "com.yubico.yubikit:android:${versions.yubikit.android}"
-        ]
+        ],
+        pinentry: "com.alimuzaffar.lib:pinentryedittext:${versions.pinentry}"
     ]
 }

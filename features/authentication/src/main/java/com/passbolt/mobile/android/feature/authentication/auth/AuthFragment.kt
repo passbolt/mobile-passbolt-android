@@ -27,6 +27,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInP
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategy
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
 import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAuthBinding
+import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpDialog
 import com.passbolt.mobile.android.featureflags.ui.FeatureFlagsFetchErrorDialog
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -58,7 +59,8 @@ import javax.crypto.Cipher
  */
 @Suppress("TooManyFunctions")
 class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate), AuthContract.View,
-    FeatureFlagsFetchErrorDialog.Listener, ServerFingerprintChangedDialog.Listener, AccountDoesNotExistDialog.Listener {
+    FeatureFlagsFetchErrorDialog.Listener, ServerFingerprintChangedDialog.Listener, AccountDoesNotExistDialog.Listener,
+    EnterTotpDialog.Listener {
 
     private val strategyFactory: AuthStrategyFactory by inject()
     private lateinit var authStrategy: AuthStrategy
@@ -207,6 +209,12 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         )
     }
 
+    override fun showTotpDialog() {
+        EnterTotpDialog().show(
+            childFragmentManager, EnterTotpDialog::class.java.name
+        )
+    }
+
     override fun confirmationClick(fingerprint: String) {
         presenter.fingerprintServerConfirmationClick(fingerprint)
     }
@@ -318,6 +326,10 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
             .setMessage(errorMessage)
             .setPositiveButton(R.string.got_it) { _, _ -> }
             .show()
+    }
+
+    override fun changeProviderToYubikey() {
+        // TODO
     }
 
     companion object {
