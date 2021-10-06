@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
@@ -45,15 +46,23 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     private lateinit var scanManagerScope: Scope
     private lateinit var scanManager: ScanManager
 
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            presenter.backClick()
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         scanManagerScope = getKoin().getOrCreateScope(SCAN_MANAGER_SCOPE, named(SCAN_MANAGER_SCOPE))
         scanManager = scanManagerScope.get()
         presenter.attach(this)
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backPressedCallback)
         initToolbar()
     }
 
     override fun onDestroyView() {
+        backPressedCallback.isEnabled = false
         scanManager.detach()
         scanManagerScope.close()
         presenter.detach()
@@ -66,8 +75,8 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.scan_qr_exit_confirmation_dialog_title)
             .setMessage(R.string.scan_qr_exit_confirmation_dialog_message)
-            .setNegativeButton(R.string.cancel) { _, _ -> }
-            .setPositiveButton(R.string.yes) { _, _ -> presenter.exitConfirmClick() }
+            .setPositiveButton(R.string.cancel) { _, _ -> }
+            .setNegativeButton(R.string.stop_scanning) { _, _ -> presenter.exitConfirmClick() }
             .show()
     }
 
