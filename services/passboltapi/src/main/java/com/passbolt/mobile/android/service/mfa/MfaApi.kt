@@ -2,8 +2,6 @@ package com.passbolt.mobile.android.service.mfa
 
 import com.passbolt.mobile.android.dto.request.HotpRequest
 import com.passbolt.mobile.android.dto.request.TotpRequest
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.YubikeyOtpVerificationDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -43,7 +41,12 @@ internal interface MfaApi {
     ): Response<Void>
 
     @POST(MFA_VERIFICATION_YUBIKEY)
-    suspend fun verifyYubikeyOtp(@Body hotpRequest: HotpRequest): BaseResponse<YubikeyOtpVerificationDto?>
+    suspend fun verifyYubikeyOtp(
+        @Body hotpRequest: HotpRequest,
+        // auth header needs to be added manually because this request
+        // requires auth token and is before user is signed in
+        @Header(MFA_AUTH_HEADER) authHeader: String
+    ): Response<Void>
 
     private companion object {
         private const val MFA = "mfa"

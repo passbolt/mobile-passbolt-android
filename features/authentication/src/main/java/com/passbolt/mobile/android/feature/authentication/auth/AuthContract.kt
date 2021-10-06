@@ -60,7 +60,8 @@ interface AuthContract {
         fun navigateToAccountList()
         fun showServerFingerprintChanged(newFingerprint: String)
         fun showDecryptionError(message: String?)
-        fun showTotpDialog(token: String)
+        fun showTotpDialog(jwtToken: String)
+        fun showYubikeyDialog(jwtToken: String)
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE

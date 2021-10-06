@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.mfa.youbikey
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyYubikeyUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -9,6 +10,7 @@ import kotlinx.coroutines.launch
 
 class ScanYubikeyPresenter(
     private val signOutUseCase: SignOutUseCase,
+    private val verifyYubikeyUseCase: VerifyYubikeyUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : ScanYubikeyContract.Presenter {
 
@@ -21,21 +23,36 @@ class ScanYubikeyPresenter(
         view?.showScanYubikey()
     }
 
-    override fun yubikeyScanned(otp: String?) {
+    override fun yubikeyScanned(otp: String?, authToken: String, rememberChecked: Boolean) {
         if (!otp.isNullOrBlank()) {
-            // TODO pass oth to verification endpoint
-            // TODO and call dialog listener
+            verifyYubikey(otp, authToken, rememberChecked)
         } else {
             view?.showEmptyScannedOtp()
         }
     }
 
-    override fun yubikeyScanCancelled() {
-        view?.showScanOtpCancelled()
+    private fun verifyYubikey(otp: String, authToken: String, rememberChecked: Boolean) {
+        view?.showProgress()
+        scope.launch {
+            when (val result =
+                verifyYubikeyUseCase.execute(VerifyYubikeyUseCase.Input(otp, authToken, rememberChecked))) {
+                VerifyYubikeyUseCase.Output.Failure -> view?.showError()
+                is VerifyYubikeyUseCase.Output.Success -> yubikeySuccess(result.mfaHeader)
+            }
+            view?.hideProgress()
+        }
     }
 
-    override fun rememberMeCheckChanged(isChecked: Boolean) {
-        // TODO
+    private fun yubikeySuccess(mfaHeader: String?) {
+        mfaHeader?.let {
+            view?.notifyVerificationSucceeded(it)
+        } ?: run {
+            view?.showError()
+        }
+    }
+
+    override fun yubikeyScanCancelled() {
+        view?.showScanOtpCancelled()
     }
 
     override fun otherProviderClick() {

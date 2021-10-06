@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider.Companion.MFA_PROVIDER_TOTP
+import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider.Companion.MFA_PROVIDER_YUBIKEY
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
@@ -217,7 +218,6 @@ class SignInPresenter(
                         verifyChallenge(
                             challengeDecryptResult.challenge,
                             rsaKey,
-                            userId,
                             passphrase,
                             fingerprint,
                             result.mfaToken
@@ -240,7 +240,6 @@ class SignInPresenter(
     private fun verifyChallenge(
         challengeResponseDto: ChallengeResponseDto,
         rsaKey: String,
-        userId: String,
         passphrase: ByteArray,
         fingerprint: String,
         mfaToken: String?
@@ -270,10 +269,12 @@ class SignInPresenter(
     }
 
     private fun mfaRequired(mfaProviders: List<String>, jwtToken: String) {
-        when (mfaProviders.first()) {
+        when (val provider = mfaProviders.first()) {
             MFA_PROVIDER_TOTP -> view?.showTotpDialog(jwtToken)
+            MFA_PROVIDER_YUBIKEY -> view?.showYubikeyDialog(jwtToken)
             else -> {
-                // TODO
+                view?.showGenericError()
+                Timber.e("Unknown provider: $provider")
             }
         }
     }

@@ -36,7 +36,7 @@ class MfaRepository(
         mfaDataSource.verifyTotp(totpRequest, authHeader)
     }
 
-    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest) = callWithHandler(responseHandler) {
-        mfaDataSource.verifyYubikeyOtp(hotpRequest)
+    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String) = callWithHandler(responseHandler) {
+        mfaDataSource.verifyYubikeyOtp(hotpRequest, authHeader)
     }
 }

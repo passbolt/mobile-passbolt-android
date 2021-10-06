@@ -37,7 +37,7 @@ class IsServerFingerprintCorrectUseCase(
 
         val serverFingerprint = sharedPreferences.getString(SERVER_FINGERPRINT_KEY, null)
 
-        return Output(serverFingerprint == input.fingerprint)
+        return Output(serverFingerprint.isNullOrEmpty() || serverFingerprint == input.fingerprint)
     }
 
     class Input(
