@@ -51,6 +51,8 @@ import javax.crypto.Cipher
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+@Suppress("TooManyFunctions")
 class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(FragmentSettingsBinding::inflate),
     SettingsContract.View, EncourageAccessibilityAutofillDialog.Listener, AutofillEnabledDialog.Listener {
 
@@ -67,6 +69,10 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
         presenter.attach(this)
     }
 
