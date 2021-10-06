@@ -2,10 +2,12 @@ package com.passbolt.mobile.android.feature.autofill.resources
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.service.autofill.Dataset
 import android.view.autofill.AutofillManager.EXTRA_AUTHENTICATION_RESULT
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,8 +27,8 @@ import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.autofill.R
-import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityCommunicator
+import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 
@@ -52,6 +54,8 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+// TODO Refactor to use home fragment + strategy pattern - PAS-390
 class AutofillResourcesActivity :
     BindingScopedAuthenticatedActivity<ActivityAutofillResourcesBinding, AutofillResourcesContract.View>(
         ActivityAutofillResourcesBinding::inflate
@@ -83,22 +87,46 @@ class AutofillResourcesActivity :
         presenter.argsReceived(uri)
     }
 
-    override fun displayAvatar(url: String) {
+    override fun displaySearchAvatar(url: String?) {
         val request = ImageRequest.Builder(this)
             .data(url)
             .transformations(CircleCropTransformation())
             .size(30.px, 30.px)
             .placeholder(R.drawable.ic_avatar_placeholder)
-            .target { drawable ->
-                binding.searchTextInput.endIconMode = TextInputLayout.END_ICON_CUSTOM
-                binding.searchTextInput.endIconDrawable = drawable
-                binding.searchTextInput.setEndIconOnClickListener {
-                    presenter.avatarClick()
+            .target(
+                onError = {
+                    setSearchEndIconWithListener(
+                        ContextCompat.getDrawable(this, R.drawable.ic_avatar_placeholder)!!,
+                        presenter::searchAvatarClick
+                    )
+                },
+                onSuccess = {
+                    setSearchEndIconWithListener(it, presenter::searchAvatarClick)
                 }
-            }
-            .error(R.drawable.ic_avatar_placeholder)
+            )
             .build()
         imageLoader.enqueue(request)
+    }
+
+    private fun setSearchEndIconWithListener(icon: Drawable, listener: () -> Unit) {
+        with(binding.searchTextInput) {
+            endIconMode = TextInputLayout.END_ICON_CUSTOM
+            endIconDrawable = icon
+            setEndIconOnClickListener {
+                listener.invoke()
+            }
+        }
+    }
+
+    override fun displaySearchClearIcon() {
+        setSearchEndIconWithListener(
+            ContextCompat.getDrawable(this, R.drawable.ic_close)!!,
+            presenter::searchClearClick
+        )
+    }
+
+    override fun clearSearchInput() {
+        binding.searchEditText.setText("")
     }
 
     override fun startAuthActivity() {

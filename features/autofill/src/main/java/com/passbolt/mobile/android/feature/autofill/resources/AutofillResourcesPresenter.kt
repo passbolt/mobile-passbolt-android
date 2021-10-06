@@ -70,6 +70,9 @@ class AutofillResourcesPresenter(
     private var currentSearchText: String = ""
     private val mode = AutofillMode.ACCESSIBILITY
     private var uri: String? = null
+    private var userAvatarUrl: String? = null
+    private val searchInputEndIconMode
+        get() = if (currentSearchText.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
 
     override fun attach(view: AutofillResourcesContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
@@ -77,9 +80,8 @@ class AutofillResourcesPresenter(
     }
 
     override fun userAuthenticated() {
-        getSelectedAccountDataUseCase.execute(Unit).avatarUrl?.let {
-            view?.displayAvatar(it)
-        }
+        userAvatarUrl = getSelectedAccountDataUseCase.execute(Unit).avatarUrl
+            .also { view?.displaySearchAvatar(it) }
         fetchResources()
     }
 
@@ -87,7 +89,7 @@ class AutofillResourcesPresenter(
         fetchResources()
     }
 
-    override fun avatarClick() {
+    override fun searchAvatarClick() {
         view?.navigateToManageAccount()
     }
 
@@ -244,7 +246,15 @@ class AutofillResourcesPresenter(
 
     override fun searchTextChange(text: String) {
         currentSearchText = text
+        processSearchIconChange()
         filterList()
+    }
+
+    private fun processSearchIconChange() {
+        when (searchInputEndIconMode) {
+            SearchInputEndIconMode.AVATAR -> view?.displaySearchAvatar(userAvatarUrl)
+            SearchInputEndIconMode.CLEAR -> view?.displaySearchClearIcon()
+        }
     }
 
     private fun filterList() {
@@ -256,6 +266,10 @@ class AutofillResourcesPresenter(
         } else {
             view?.showResources(filtered.map { ResourceListUiModel.Data(it) })
         }
+    }
+
+    override fun searchClearClick() {
+        view?.clearSearchInput()
     }
 
     private fun createDataSet(
@@ -274,4 +288,9 @@ class AutofillResourcesPresenter(
                 AutofillValue.forText(password)
             )
             .build()
+
+    enum class SearchInputEndIconMode {
+        AVATAR,
+        CLEAR
+    }
 }
