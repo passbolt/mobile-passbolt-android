@@ -23,4 +23,7 @@ package com.passbolt.mobile.android.dto.request
  * @since v1.0
  */
 
-data class HotpRequest(val hotp: String)
+data class HotpRequest(
+    val hotp: String,
+    val remember: Boolean
+)

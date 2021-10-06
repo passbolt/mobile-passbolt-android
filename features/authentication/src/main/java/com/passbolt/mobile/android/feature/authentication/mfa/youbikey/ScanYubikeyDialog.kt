@@ -8,9 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -48,13 +50,17 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     override val scope by fragmentScope()
     private var listener: Listener? = null
     private val presenter: ScanYubikeyContract.Presenter by scope.inject()
+    private lateinit var binding: DialogScanYubikeyBinding
     private val scanYubikeyResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             val otp = it.data?.getStringExtra(OtpActivity.EXTRA_OTP)
-            presenter.yubikeyScanned(otp)
+            presenter.yubikeyScanned(otp, bundledAuthToken, binding.rememberMeCheckBox.isChecked)
         } else {
             presenter.yubikeyScanCancelled()
         }
+    }
+    private val bundledAuthToken by lifecycleAwareLazy {
+        requireArguments().getString(EXTRA_AUTH_KEY).orEmpty()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,8 +69,8 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DialogScanYubikeyBinding.inflate(inflater)
-        setupListeners(binding)
+        binding = DialogScanYubikeyBinding.inflate(inflater)
+        setupListeners()
         return binding.root
     }
 
@@ -85,14 +91,11 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         super.onDetach()
     }
 
-    private fun setupListeners(binding: DialogScanYubikeyBinding) {
+    private fun setupListeners() {
         with(binding) {
             scanYubikeyButton.setDebouncingOnClick { presenter.scanYubikeyClick() }
             otherProviderButton.setDebouncingOnClick { presenter.otherProviderClick() }
             closeButton.setDebouncingOnClick { presenter.closeClick() }
-            rememberMeCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                presenter.rememberMeCheckChanged(isChecked)
-            }
         }
     }
 
@@ -113,7 +116,7 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     override fun navigateToTotp() {
-        listener?.changeProviderToTotp()
+        listener?.changeProviderToTotp(bundledAuthToken)
     }
 
     override fun closeAndNavigateToStartup() {
@@ -129,9 +132,28 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         hideProgressDialog(childFragmentManager)
     }
 
-    interface Listener {
-        fun changeProviderToTotp()
+    override fun notifyVerificationSucceeded(mfaHeader: String) {
+        listener?.yubikeyVerificationSucceeded(mfaHeader)
+    }
 
-        // TODO notify caller after successful otp backend verification
+    override fun showError() {
+        Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_LONG)
+            .show()
+    }
+
+    interface Listener {
+        fun changeProviderToTotp(jwtToken: String)
+        fun yubikeyVerificationSucceeded(mfaHeader: String)
+    }
+
+    companion object {
+        private const val EXTRA_AUTH_KEY = "EXTRA_AUTH_KEY"
+
+        fun newInstance(token: String) =
+            ScanYubikeyDialog().apply {
+                arguments = bundleOf(
+                    EXTRA_AUTH_KEY to token
+                )
+            }
     }
 }

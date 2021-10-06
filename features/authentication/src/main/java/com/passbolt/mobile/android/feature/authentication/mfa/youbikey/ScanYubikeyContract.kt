@@ -12,14 +12,15 @@ interface ScanYubikeyContract {
         fun closeAndNavigateToStartup()
         fun showProgress()
         fun hideProgress()
+        fun notifyVerificationSucceeded(mfaHeader: String)
+        fun showError()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun scanYubikeyClick()
         fun otherProviderClick()
-        fun yubikeyScanned(otp: String?)
+        fun yubikeyScanned(otp: String?, authToken: String, rememberChecked: Boolean)
         fun yubikeyScanCancelled()
-        fun rememberMeCheckChanged(isChecked: Boolean)
         fun closeClick()
     }
 }

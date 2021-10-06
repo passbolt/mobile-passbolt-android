@@ -28,6 +28,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthSt
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
 import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAuthBinding
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpDialog
+import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyDialog
 import com.passbolt.mobile.android.featureflags.ui.FeatureFlagsFetchErrorDialog
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -60,7 +61,7 @@ import javax.crypto.Cipher
 @Suppress("TooManyFunctions")
 class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate), AuthContract.View,
     FeatureFlagsFetchErrorDialog.Listener, ServerFingerprintChangedDialog.Listener, AccountDoesNotExistDialog.Listener,
-    EnterTotpDialog.Listener {
+    EnterTotpDialog.Listener, ScanYubikeyDialog.Listener {
 
     private val strategyFactory: AuthStrategyFactory by inject()
     private lateinit var authStrategy: AuthStrategy
@@ -215,6 +216,18 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         )
     }
 
+    override fun showYubikeyDialog(jwtToken: String) {
+        ScanYubikeyDialog.newInstance(jwtToken).show(
+            childFragmentManager, EnterTotpDialog::class.java.name
+        )
+    }
+
+    override fun changeProviderToTotp(jwtToken: String) {
+        EnterTotpDialog.newInstance(jwtToken).show(
+            childFragmentManager, EnterTotpDialog::class.java.name
+        )
+    }
+
     override fun confirmationClick(fingerprint: String) {
         presenter.fingerprintServerConfirmationClick(fingerprint)
     }
@@ -329,10 +342,16 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun changeProviderToYubikey() {
-        // TODO
+        ScanYubikeyDialog().show(
+            childFragmentManager, EnterTotpDialog::class.java.name
+        )
     }
 
     override fun totpVerificationSucceeded(mfaHeader: String) {
+        presenter.totpSucceeded(mfaHeader)
+    }
+
+    override fun yubikeyVerificationSucceeded(mfaHeader: String) {
         presenter.totpSucceeded(mfaHeader)
     }
 
