@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AutofillSwitch"
+        parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/selector_autofill_switch</item>
+        <item name="trackTint">@color/selector_autofill_track_switch</item>
+    </style>
+</resources>
