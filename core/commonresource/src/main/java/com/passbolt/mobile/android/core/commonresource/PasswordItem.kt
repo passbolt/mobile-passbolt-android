@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.commonresource
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -59,8 +60,8 @@ class PasswordItem(
     override fun bindView(binding: ItemPasswordBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
+            setupUsername(this)
             title.text = resourceModel.name
-            subtitle.text = resourceModel.username
             more.isVisible = dotsVisible
             loader.isVisible = resourceModel.loaderVisible
             itemPassword.isEnabled = resourceModel.clickable
@@ -72,6 +73,18 @@ class PasswordItem(
                     placeholder(initialsIcons)
                 }
             }
+        }
+    }
+
+    private fun setupUsername(binding: ItemPasswordBinding) = with(binding) {
+        val fontFamily = ResourcesCompat.getFont(binding.root.context, R.font.inter)
+
+        if (resourceModel.username.isBlank()) {
+            subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
+            subtitle.text = binding.root.context.getString(R.string.no_username)
+        } else {
+            subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
+            subtitle.text = resourceModel.username
         }
     }
 
@@ -129,5 +142,6 @@ class PasswordItem(
         private const val LIGHT_RATIO = 0.5f
         private const val DARK_RATIO = 0.88f
         private const val ICON_RADIUS = 4
+        private const val FONT_WEIGHT = 400
     }
 }
