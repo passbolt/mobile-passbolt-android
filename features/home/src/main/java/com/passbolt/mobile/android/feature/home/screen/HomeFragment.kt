@@ -29,8 +29,8 @@ import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenti
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
-import com.passbolt.mobile.android.feature.home.screen.more.PasswordMenuFragment
-import com.passbolt.mobile.android.feature.home.screen.more.PasswordMoreModel
+import com.passbolt.mobile.android.feature.home.screen.more.ResourceMenuFragment
+import com.passbolt.mobile.android.feature.home.screen.more.ResourceMoreModel
 import com.passbolt.mobile.android.feature.resources.ResourcesActivity
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
@@ -59,7 +59,7 @@ import org.koin.android.ext.android.inject
  */
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
-    HomeContract.View, PasswordMenuFragment.Listener {
+    HomeContract.View, ResourceMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
     private val itemAdapter: ItemAdapter<PasswordItem> by inject()
@@ -197,9 +197,9 @@ class HomeFragment :
     }
 
     override fun navigateToMore(resourceModel: ResourceModel) {
-        val model = PasswordMoreModel(resourceModel.name)
-        PasswordMenuFragment.newInstance(model)
-            .show(childFragmentManager, PasswordMenuFragment::class.java.name)
+        val model = ResourceMoreModel(resourceModel.name)
+        ResourceMenuFragment.newInstance(model)
+            .show(childFragmentManager, ResourceMenuFragment::class.java.name)
     }
 
     override fun navigateToDetails(resourceModel: ResourceModel) {
@@ -217,6 +217,10 @@ class HomeFragment :
 
     override fun menuCopyPasswordClick() {
         presenter.menuCopyPasswordClick()
+    }
+
+    override fun menuCopyDescriptionClick() {
+        presenter.menuCopyDescriptionClick()
     }
 
     override fun menuCopyUrlClick() {

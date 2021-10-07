@@ -4,6 +4,6 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class PasswordMoreModel(
+class ResourceMoreModel(
     val title: String
 ) : Parcelable

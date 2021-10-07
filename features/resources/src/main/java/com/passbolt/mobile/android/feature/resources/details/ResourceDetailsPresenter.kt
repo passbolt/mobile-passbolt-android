@@ -177,12 +177,28 @@ class ResourceDetailsPresenter(
         }
     }
 
-    override fun menuCopyClick() {
+    override fun menuCopyPasswordClick() {
         scope.launch {
             val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)
             doAfterFetchAndDecrypt { decryptedSecret ->
                 val password = secretParser.extractPassword(resourceTypeEnum, decryptedSecret)
                 view?.addToClipboard(SECRET_LABEL, password)
+            }
+        }
+    }
+
+    override fun menuCopyDescriptionClick() {
+        scope.launch {
+            when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
+                ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> {
+                    view?.addToClipboard(DESCRIPTION_LABEL, resourceModel.description.orEmpty())
+                }
+                ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> {
+                    doAfterFetchAndDecrypt { decryptedSecret ->
+                        val description = secretParser.extractDescription(resourceTypeEnum, decryptedSecret)
+                        view?.addToClipboard(DESCRIPTION_LABEL, description)
+                    }
+                }
             }
         }
     }
@@ -196,5 +212,6 @@ class ResourceDetailsPresenter(
         private const val WEBSITE_LABEL = "Website"
         private const val USERNAME_LABEL = "Username"
         private const val SECRET_LABEL = "Secret"
+        private const val DESCRIPTION_LABEL = "Description"
     }
 }

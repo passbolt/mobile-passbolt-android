@@ -188,6 +188,24 @@ class HomePresenter(
         }
     }
 
+    override fun menuCopyDescriptionClick() {
+        scope.launch {
+            when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(
+                currentMoreMenuResource!!.resourceTypeId
+            )) {
+                ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> {
+                    view?.addToClipboard(DESCRIPTION_LABEL, currentMoreMenuResource!!.description.orEmpty())
+                }
+                ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> {
+                    doAfterFetchAndDecrypt { decryptedSecret ->
+                        val description = secretParser.extractDescription(resourceTypeEnum, decryptedSecret)
+                        view?.addToClipboard(DESCRIPTION_LABEL, description)
+                    }
+                }
+            }
+        }
+    }
+
     override fun searchAvatarClick() {
         view?.navigateToManageAccount()
     }
@@ -214,6 +232,7 @@ class HomePresenter(
     companion object {
         @VisibleForTesting
         const val SECRET_LABEL = "Secret"
+        const val DESCRIPTION_LABEL = "Description"
 
         private const val USERNAME_LABEL = "Username"
         private const val URL_LABEL = "Url"

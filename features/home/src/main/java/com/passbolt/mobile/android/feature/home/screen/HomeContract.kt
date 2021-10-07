@@ -60,5 +60,6 @@ interface HomeContract {
         fun searchAvatarClick()
         fun userAuthenticated()
         fun searchClearClick()
+        fun menuCopyDescriptionClick()
     }
 }
