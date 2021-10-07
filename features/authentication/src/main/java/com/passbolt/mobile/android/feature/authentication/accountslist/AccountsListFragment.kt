@@ -147,6 +147,10 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
         startActivity(ActivityIntents.setup(requireContext()))
     }
 
+    override fun navigateToStartUp() {
+        startActivity(ActivityIntents.start(requireContext()))
+    }
+
     override fun navigateToSignIn(model: AccountModelUi.AccountModel) {
         findNavController().navigate(
             R.id.authFragment,

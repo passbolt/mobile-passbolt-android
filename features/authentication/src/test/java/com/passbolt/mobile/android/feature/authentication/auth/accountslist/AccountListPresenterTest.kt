@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.stub
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
@@ -67,15 +68,15 @@ class AccountListPresenterTest : KoinTest {
 
     @Test
     fun `test if account list is displayed with add new account at start`() {
-        whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(GetAllAccountsDataUseCase.Output(SAVED_ACCOUNTS))
+        whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(GetAllAccountsDataUseCase.Output(SAVED_ACCOUNT))
 
         presenter.attach(view)
 
         argumentCaptor<List<AccountModelUi>>().apply {
             verify(view).showAccounts(capture())
             // verify list content
-            assertThat(firstValue.size).isEqualTo(SAVED_ACCOUNTS.size + 1)
-            assertThat(firstValue).isEqualTo(accountEntityToUiMapper.map(SAVED_ACCOUNTS))
+            assertThat(firstValue.size).isEqualTo(SAVED_ACCOUNT.size + 1)
+            assertThat(firstValue).isEqualTo(accountEntityToUiMapper.map(SAVED_ACCOUNT))
 
             // verify if add new account button is added
             assertThat(firstValue).contains(AccountModelUi.AddNewAccount)
@@ -85,7 +86,7 @@ class AccountListPresenterTest : KoinTest {
 
     @Test
     fun `test if turing on remove mode updates view correct`() {
-        whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(GetAllAccountsDataUseCase.Output(SAVED_ACCOUNTS))
+        whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(GetAllAccountsDataUseCase.Output(SAVED_ACCOUNT))
 
         presenter.attach(view)
         presenter.removeAnAccountClick()
@@ -102,7 +103,7 @@ class AccountListPresenterTest : KoinTest {
 
     @Test
     fun `test if turing off remove mode updates view correct`() {
-        whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(GetAllAccountsDataUseCase.Output(SAVED_ACCOUNTS))
+        whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(GetAllAccountsDataUseCase.Output(SAVED_ACCOUNT))
 
         presenter.attach(view)
         presenter.doneRemovingAccountsClick()
@@ -119,10 +120,10 @@ class AccountListPresenterTest : KoinTest {
 
     @Test
     fun `test view shows confirm remove account dialog`() {
-        whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(GetAllAccountsDataUseCase.Output(SAVED_ACCOUNTS))
+        whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(GetAllAccountsDataUseCase.Output(SAVED_ACCOUNT))
 
         presenter.attach(view)
-        val accountToRemove = accountEntityToUiMapper.map(SAVED_ACCOUNTS)[0] as AccountModelUi.AccountModel
+        val accountToRemove = accountEntityToUiMapper.map(SAVED_ACCOUNT)[0] as AccountModelUi.AccountModel
         presenter.removeAccountClick(accountToRemove)
 
         verify(view).showAccounts(any())
@@ -141,24 +142,47 @@ class AccountListPresenterTest : KoinTest {
         }
 
         presenter.attach(view)
-        val accountToRemove = accountEntityToUiMapper.map(SAVED_ACCOUNTS)[0]
+        val accountToRemove = accountEntityToUiMapper.map(SAVED_ACCOUNT)[0]
         presenter.confirmRemoveAccountClick(accountToRemove as AccountModelUi.AccountModel)
 
         argumentCaptor<List<AccountModelUi>>().apply {
             verify(view, times(3)).showAccounts(capture())
-            assertThat(thirdValue.size).isEqualTo(0)
+            assertThat(thirdValue.size).isEqualTo(1)
         }
         verify(view).showAccountRemovedSnackbar()
         verify(view).hideRemoveAccounts()
         verify(view).showDoneRemovingAccounts()
+        verify(view, never()).navigateToStartUp()
         verifyNoMoreInteractions(view)
     }
 
+    @Test
+    fun `test view show navigate to startup after last account is removed`() {
+        val mutableAccountList = SAVED_ACCOUNT.toMutableList()
+        whenever(mockGetAllAccountsDataUseCase.execute(Unit)).doReturn(
+            GetAllAccountsDataUseCase.Output(mutableAccountList)
+        )
+        mockRemoveAllAccountsDataUseCase.stub {
+            onBlocking { execute(any()) }.then { mutableAccountList.removeAt(0) }
+        }
+
+        presenter.attach(view)
+        val accountToRemove = accountEntityToUiMapper.map(SAVED_ACCOUNT)[0]
+        presenter.confirmRemoveAccountClick(accountToRemove as AccountModelUi.AccountModel)
+
+        verify(view).navigateToStartUp()
+    }
+
     private companion object {
-        private val SAVED_ACCOUNTS = listOf(
+
+        private val SAVED_ACCOUNT = listOf(
             Account(userId = "1", null, null, null, null, "dev.test", "server_id")
         )
 
+        private val SAVED_ACCOUNTS = listOf(
+            Account(userId = "1", null, null, null, null, "dev.test", "server_id"),
+            Account(userId = "2", null, null, null, null, "dev.test", "server_id")
+        )
     }
 
 }
