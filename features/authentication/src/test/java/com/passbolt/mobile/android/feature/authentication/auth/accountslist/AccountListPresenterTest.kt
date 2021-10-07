@@ -146,11 +146,11 @@ class AccountListPresenterTest : KoinTest {
 
         argumentCaptor<List<AccountModelUi>>().apply {
             verify(view, times(3)).showAccounts(capture())
-            assertThat(thirdValue.size).isEqualTo(1)
-            assertThat(thirdValue[0]).isInstanceOf(AccountModelUi.AddNewAccount::class.java)
+            assertThat(thirdValue.size).isEqualTo(0)
         }
-        verify(view).hideDoneRemovingAccounts()
-        verify(view).showRemoveAccounts()
+        verify(view).showAccountRemovedSnackbar()
+        verify(view).hideRemoveAccounts()
+        verify(view).showDoneRemovingAccounts()
         verifyNoMoreInteractions(view)
     }
 

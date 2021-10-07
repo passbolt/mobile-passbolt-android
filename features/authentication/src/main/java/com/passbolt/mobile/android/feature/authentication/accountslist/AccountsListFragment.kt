@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
@@ -213,6 +215,14 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
 
     override fun hideProgress() {
         hideProgressDialog(childFragmentManager)
+    }
+
+    override fun showAccountRemovedSnackbar() {
+        Snackbar
+            .make(binding.root, R.string.accounts_list_account_removed, Snackbar.LENGTH_SHORT)
+            .setAnchorView(binding.doneRemovingAccountsButton)
+            .setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.background_gray_dark))
+            .show()
     }
 
     companion object {

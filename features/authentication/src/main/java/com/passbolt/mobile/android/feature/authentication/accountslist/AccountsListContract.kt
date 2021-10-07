@@ -41,6 +41,7 @@ interface AccountsListContract {
         fun clearBackgroundActivities()
         fun showProgress()
         fun hideProgress()
+        fun showAccountRemovedSnackbar()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
