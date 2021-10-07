@@ -66,10 +66,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_32"
+                android:layout_marginEnd="@dimen/dp_8"
                 android:text="@string/resource_details_username_header"
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/sp_12"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/usernameIcon"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/name" />
 
@@ -104,10 +105,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_24"
+                android:layout_marginEnd="@dimen/dp_8"
                 android:text="@string/resource_details_password_header"
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/sp_12"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/passwordIcon"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/usernameValue" />
 
@@ -141,11 +143,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_24"
+                android:layout_marginEnd="@dimen/dp_8"
                 android:text="@string/resource_details_url_header"
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/sp_12"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/urlIcon"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/passwordValue" />
 
@@ -155,11 +158,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_8"
+                android:layout_marginEnd="@dimen/dp_8"
                 android:autoLink="web"
                 android:textColor="@color/text_secondary"
                 android:textSize="@dimen/sp_12"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/urlIcon"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/urlHeader"
                 tools:text="airbnb.com/login" />

@@ -65,6 +65,14 @@ class ResourceDetailsFragment :
     private val secretFont by lifecycleAwareLazy {
         ResourcesCompat.getFont(requireContext(), R.font.inconsolata)
     }
+    private val usernameCopyFields
+        get() = listOf(binding.usernameHeader, binding.usernameValue, binding.usernameIcon)
+
+    private val passwordCopyField
+        get() = listOf(binding.passwordHeader, binding.passwordValue)
+
+    private val urlCopyFields
+        get() = listOf(binding.urlHeader, binding.urlIcon)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -85,12 +93,14 @@ class ResourceDetailsFragment :
 
     private fun setListeners() {
         with(binding) {
-            usernameIcon.setDebouncingOnClick { presenter.usernameCopyClick() }
-            urlIcon.setDebouncingOnClick { presenter.urlCopyClick() }
+            usernameCopyFields.forEach { it.setDebouncingOnClick { presenter.usernameCopyClick() } }
+            passwordIcon.setDebouncingOnClick { presenter.secretIconClick() }
+            passwordCopyField.forEach { it.setDebouncingOnClick { presenter.menuCopyPasswordClick() } }
+            urlCopyFields.forEach { it.setDebouncingOnClick { presenter.urlCopyClick() } }
             backArrow.setDebouncingOnClick { presenter.backArrowClick() }
             moreIcon.setDebouncingOnClick { presenter.moreClick() }
-            passwordIcon.setDebouncingOnClick { presenter.secretIconClick() }
             seeDescriptionButton.setDebouncingOnClick { presenter.seeDescriptionButtonClick() }
+            descriptionHeader.setDebouncingOnClick { presenter.menuCopyDescriptionClick() }
         }
     }
 
@@ -116,6 +126,7 @@ class ResourceDetailsFragment :
             urlValue.text = url
             urlValue.visible()
             urlHeader.visible()
+            urlIcon.visible()
         }
     }
 
@@ -182,6 +193,7 @@ class ResourceDetailsFragment :
         with(binding) {
             descriptionValue.apply {
                 typeface = if (useSecretFont) secretFont else regularFont
+                setTextIsSelectable(true)
                 text = description
             }
             seeDescriptionButton.gone()
@@ -192,6 +204,7 @@ class ResourceDetailsFragment :
         with(binding) {
             descriptionValue.apply {
                 typeface = regularFont
+                setTextIsSelectable(false)
                 text = getString(R.string.resource_details_encrypted_description)
             }
             seeDescriptionButton.visible()
