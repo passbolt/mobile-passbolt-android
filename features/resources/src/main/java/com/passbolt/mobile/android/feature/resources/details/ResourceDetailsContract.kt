@@ -46,7 +46,7 @@ interface ResourceDetailsContract {
         fun showPassword(decryptedSecret: String)
         fun clearPasswordInput()
         fun showDescriptionIsEncrypted()
-        fun showDescription(description: String)
+        fun showDescription(description: String, useSecretFont: Boolean)
         fun hidePasswordEyeIcon()
     }
 

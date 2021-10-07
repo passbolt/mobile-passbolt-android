@@ -95,7 +95,7 @@ class ResourceDetailsPresenter(
             if (isDescriptionSecret) {
                 view?.showDescriptionIsEncrypted()
             } else {
-                view?.showDescription(resourceModel.description.orEmpty())
+                view?.showDescription(resourceModel.description.orEmpty(), useSecretFont = false)
             }
         }
     }
@@ -153,7 +153,7 @@ class ResourceDetailsPresenter(
             doAfterFetchAndDecrypt { decryptedSecret ->
                 view?.apply {
                     val description = secretParser.extractDescription(resourceTypeEnum, decryptedSecret)
-                    showDescription(description)
+                    showDescription(description, useSecretFont = true)
                 }
             }
         }

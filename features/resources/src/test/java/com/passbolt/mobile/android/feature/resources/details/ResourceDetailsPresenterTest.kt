@@ -98,7 +98,7 @@ class ResourceDetailsPresenterTest : KoinTest {
 
         presenter.argsReceived(RESOURCE_MODEL)
 
-        verify(view).showDescription(DESCRIPTION)
+        verify(view).showDescription(DESCRIPTION, useSecretFont = false)
     }
 
     @Test

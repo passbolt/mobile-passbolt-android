@@ -81,7 +81,7 @@
                 android:layout_marginTop="@dimen/dp_8"
                 android:layout_marginEnd="@dimen/dp_8"
                 android:textColor="@color/text_secondary"
-                android:textSize="@dimen/sp_12"
+                android:textSize="@dimen/sp_14"
                 app:layout_constraintEnd_toStartOf="@+id/usernameIcon"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/usernameHeader"
@@ -113,14 +113,13 @@
 
             <TextView
                 android:id="@+id/passwordValue"
-                style="@style/ValueText"
+                style="@style/SecretText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_8"
                 android:layout_marginEnd="@dimen/dp_8"
                 android:text="@string/resource_details_hide_password"
                 android:textColor="@color/text_secondary"
-                android:textSize="@dimen/sp_12"
                 app:layout_constraintEnd_toStartOf="@+id/passwordIcon"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/passwordHeader" />
@@ -198,7 +197,7 @@
                 android:layout_marginTop="@dimen/dp_8"
                 android:text="@string/resource_details_encrypted_description"
                 android:textColor="@color/text_secondary"
-                android:textSize="@dimen/sp_12"
+                android:textSize="@dimen/sp_14"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/descriptionHeader" />
@@ -209,12 +208,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_8"
+                android:background="?selectableItemBackground"
+                android:paddingVertical="@dimen/dp_8"
                 android:text="@string/resource_details_see_description"
                 android:textColor="@color/primary"
                 android:textSize="@dimen/sp_12"
-                android:paddingVertical="@dimen/dp_8"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
-                android:background="?selectableItemBackground"
                 app:layout_constraintTop_toBottomOf="@+id/descriptionValue" />
 
             <androidx.constraintlayout.widget.Guideline
