@@ -136,6 +136,10 @@ class AccountsListPresenter(
             view?.showAccountRemovedSnackbar()
             displayAccounts()
             removeModeOn(isOn = true)
+
+            if (accounts.isEmpty()) {
+                view?.navigateToStartUp()
+            }
         }
     }
 }
