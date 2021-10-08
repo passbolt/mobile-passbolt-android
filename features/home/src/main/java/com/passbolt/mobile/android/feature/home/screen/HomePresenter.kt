@@ -56,17 +56,19 @@ class HomePresenter(
     private var currentSearchText: String = ""
     private var allItemsList: List<ResourceModel> = emptyList()
     private var currentMoreMenuResource: ResourceModel? = null
+    private var userAvatarUrl: String? = null
+    private val searchInputEndIconMode
+        get() = if (currentSearchText.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
 
     override fun attach(view: HomeContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
         updateResourceList()
+        userAvatarUrl = getSelectedAccountDataUseCase.execute(Unit).avatarUrl
+            .also { view.displaySearchAvatar(it) }
     }
 
     private fun updateResourceList() {
         fetchResources()
-        getSelectedAccountDataUseCase.execute(Unit).avatarUrl?.let {
-            view?.displayAvatar(it)
-        }
     }
 
     override fun userAuthenticated() {
@@ -78,9 +80,21 @@ class HomePresenter(
         super<BaseAuthenticatedPresenter>.detach()
     }
 
+    override fun searchClearClick() {
+        view?.clearSearchInput()
+    }
+
     override fun searchTextChange(text: String) {
         currentSearchText = text
+        processSearchIconChange()
         filterList()
+    }
+
+    private fun processSearchIconChange() {
+        when (searchInputEndIconMode) {
+            SearchInputEndIconMode.AVATAR -> view?.displaySearchAvatar(userAvatarUrl)
+            SearchInputEndIconMode.CLEAR -> view?.displaySearchClearIcon()
+        }
     }
 
     private fun fetchResources() {
@@ -174,7 +188,7 @@ class HomePresenter(
         }
     }
 
-    override fun avatarClick() {
+    override fun searchAvatarClick() {
         view?.navigateToManageAccount()
     }
 
@@ -190,6 +204,11 @@ class HomePresenter(
                 action(output.decryptedSecret)
             }
         }
+    }
+
+    enum class SearchInputEndIconMode {
+        AVATAR,
+        CLEAR
     }
 
     companion object {

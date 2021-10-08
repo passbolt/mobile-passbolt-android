@@ -39,8 +39,10 @@ interface AutofillResourcesContract {
         fun showFullScreenError()
         fun showEmptyList()
         fun showProgress()
-        fun displayAvatar(url: String)
+        fun displaySearchAvatar(url: String?)
         fun navigateToManageAccount()
+        fun displaySearchClearIcon()
+        fun clearSearchInput()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -49,6 +51,7 @@ interface AutofillResourcesContract {
         fun refreshSwipe()
         fun userAuthenticated()
         fun searchTextChange(text: String)
-        fun avatarClick()
+        fun searchAvatarClick()
+        fun searchClearClick()
     }
 }

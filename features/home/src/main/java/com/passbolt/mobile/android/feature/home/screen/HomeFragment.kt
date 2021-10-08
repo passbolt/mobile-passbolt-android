@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -80,24 +82,42 @@ class HomeFragment :
         presenter.attach(this)
     }
 
-    override fun displayAvatar(url: String) {
+    override fun displaySearchAvatar(url: String?) {
         val request = ImageRequest.Builder(requireContext())
             .data(url)
             .transformations(CircleCropTransformation())
             .size(AVATAR_SIZE, AVATAR_SIZE)
             .placeholder(R.drawable.ic_avatar_placeholder)
-            .target { drawable ->
-                with(binding.searchTextInput) {
-                    endIconMode = TextInputLayout.END_ICON_CUSTOM
-                    endIconDrawable = drawable
-                    setEndIconOnClickListener {
-                        presenter.avatarClick()
-                    }
+            .target(
+                onError = {
+                    setSearchEndIconWithListener(
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_avatar_placeholder)!!,
+                        presenter::searchAvatarClick
+                    )
+                },
+                onSuccess = {
+                    setSearchEndIconWithListener(it, presenter::searchAvatarClick)
                 }
-            }
-            .error(R.drawable.ic_avatar_placeholder)
+            )
             .build()
         imageLoader.enqueue(request)
+    }
+
+    private fun setSearchEndIconWithListener(icon: Drawable, listener: () -> Unit) {
+        with(binding.searchTextInput) {
+            endIconMode = TextInputLayout.END_ICON_CUSTOM
+            endIconDrawable = icon
+            setEndIconOnClickListener {
+                listener.invoke()
+            }
+        }
+    }
+
+    override fun displaySearchClearIcon() {
+        setSearchEndIconWithListener(
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_close)!!,
+            presenter::searchClearClick
+        )
     }
 
     override fun onDestroyView() {
@@ -232,6 +252,10 @@ class HomeFragment :
                 ActivityIntents.AuthConfig.MANAGE_ACCOUNT
             )
         )
+    }
+
+    override fun clearSearchInput() {
+        binding.searchEditText.setText("")
     }
 
     companion object {

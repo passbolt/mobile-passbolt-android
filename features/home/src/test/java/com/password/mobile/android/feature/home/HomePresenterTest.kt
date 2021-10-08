@@ -5,9 +5,9 @@ import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.stub
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
@@ -51,16 +51,6 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `empty user avatar should not be displayed`() = runBlockingTest {
-        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Success(emptyList(), emptyList())
-        )
-        mockAccountData(null)
-        presenter.attach(view)
-        verify(view, never()).displayAvatar(anyOrNull())
-    }
-
-    @Test
     fun `user avatar should be displayed when provided`() = runBlockingTest {
         whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success(emptyList(), emptyList())
@@ -68,7 +58,20 @@ class HomePresenterTest : KoinTest {
         val url = "avatar_url"
         mockAccountData(url)
         presenter.attach(view)
-        verify(view).displayAvatar(eq(url))
+        verify(view).displaySearchAvatar(eq(url))
+    }
+
+    @Test
+    fun `search input end icon should switch correctly based on input`() {
+        val url = "avatar_url"
+        mockAccountData(url)
+
+        presenter.attach(view)
+        presenter.searchTextChange("abc")
+        presenter.searchTextChange("")
+
+        verify(view, times(2)).displaySearchAvatar(url)
+        verify(view).displaySearchClearIcon()
     }
 
     @Test
@@ -84,6 +87,7 @@ class HomePresenterTest : KoinTest {
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
         verify(view).showPasswords(anyOrNull())
+        verify(view).displaySearchAvatar(null)
         verifyNoMoreInteractions(view)
     }
 
@@ -138,6 +142,7 @@ class HomePresenterTest : KoinTest {
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
         verify(view).showEmptyList()
+        verify(view).displaySearchAvatar(null)
         verifyNoMoreInteractions(view)
     }
 
@@ -152,6 +157,7 @@ class HomePresenterTest : KoinTest {
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
         verify(view).showError()
+        verify(view).displaySearchAvatar(null)
         verifyNoMoreInteractions(view)
     }
 
