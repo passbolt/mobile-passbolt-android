@@ -198,8 +198,12 @@ class ResourceDetailsFragment :
         }
     }
 
-    override fun menuCopyClick() {
-        presenter.menuCopyClick()
+    override fun menuCopyPasswordClick() {
+        presenter.menuCopyPasswordClick()
+    }
+
+    override fun menuCopyDescriptionClick() {
+        presenter.menuCopyDescriptionClick()
     }
 
     override fun hidePasswordEyeIcon() {

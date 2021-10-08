@@ -33,11 +33,13 @@ import com.passbolt.mobile.android.feature.home.databinding.ViewPasswordBottomsh
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class PasswordMenuFragment : BottomSheetDialogFragment() {
+
+// TODO reuse menus ResourceMenu / ResourceDetails menu PAS-396
+class ResourceMenuFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: ViewPasswordBottomsheetBinding
     private var listener: Listener? = null
-    private val menuModel: PasswordMoreModel by lifecycleAwareLazy {
+    private val menuModel: ResourceMoreModel by lifecycleAwareLazy {
         requireNotNull(
             requireArguments().getParcelable(EXTRA_RESOURCE_MENU_MODEL)
         )
@@ -72,6 +74,9 @@ class PasswordMenuFragment : BottomSheetDialogFragment() {
             copyPassword.setDebouncingOnClick {
                 listener?.menuCopyPasswordClick()
             }
+            copyDescription.setDebouncingOnClick {
+                listener?.menuCopyDescriptionClick()
+            }
             copyUrl.setDebouncingOnClick {
                 listener?.menuCopyUrlClick()
             }
@@ -90,14 +95,15 @@ class PasswordMenuFragment : BottomSheetDialogFragment() {
     companion object {
         private const val EXTRA_RESOURCE_MENU_MODEL = "RESOURCE_MENU_MODEL"
 
-        fun newInstance(model: PasswordMoreModel) =
-            PasswordMenuFragment().apply {
+        fun newInstance(model: ResourceMoreModel) =
+            ResourceMenuFragment().apply {
                 arguments = bundleOf(EXTRA_RESOURCE_MENU_MODEL to model)
             }
     }
 
     interface Listener {
         fun menuCopyPasswordClick()
+        fun menuCopyDescriptionClick()
         fun menuCopyUrlClick()
         fun menuCopyUsernameClick()
         fun menuLaunchWebsiteClick()

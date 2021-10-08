@@ -35,6 +35,8 @@ import org.koin.androidx.scope.fragmentScope
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+// TODO reuse menus ResourceMenu / ResourceDetails menu PAS-396
 class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetailsMenuContract.View,
     AndroidScopeComponent {
 
@@ -82,7 +84,10 @@ class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetails
     private fun setListeners() {
         with(binding) {
             copyPassword.setDebouncingOnClick {
-                listener?.menuCopyClick()
+                listener?.menuCopyPasswordClick()
+            }
+            copyDescription.setDebouncingOnClick {
+                listener?.menuCopyDescriptionClick()
             }
             close.setDebouncingOnClick {
                 presenter.closeClick()
@@ -108,6 +113,7 @@ class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetails
     }
 
     interface Listener {
-        fun menuCopyClick()
+        fun menuCopyPasswordClick()
+        fun menuCopyDescriptionClick()
     }
 }
