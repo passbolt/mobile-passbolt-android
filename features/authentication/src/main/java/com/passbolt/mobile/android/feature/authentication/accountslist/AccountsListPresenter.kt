@@ -64,12 +64,10 @@ class AccountsListPresenter(
     }
 
     private fun displayAccounts() {
-        scope.launch {
-            accounts = accountModelMapper.map(
-                getAllAccountsDataUseCase.execute(Unit).accounts
-            )
-            view?.showAccounts(accounts)
-        }
+        accounts = accountModelMapper.map(
+            getAllAccountsDataUseCase.execute(Unit).accounts
+        )
+        view?.showAccounts(accounts)
     }
 
     override fun accountItemClick(model: AccountModelUi.AccountModel) {
@@ -135,8 +133,9 @@ class AccountsListPresenter(
                     signOutUseCase.execute(Unit)
                 }
             }
+            view?.showAccountRemovedSnackbar()
+            displayAccounts()
+            removeModeOn(isOn = true)
         }
-        removeModeOn(isOn = false)
-        displayAccounts()
     }
 }

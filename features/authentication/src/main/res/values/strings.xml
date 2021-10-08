@@ -15,6 +15,7 @@
     <string name="accounts_list_remove_account_title">Are you sure?</string>
     <string name="accounts_list_remove_account_message">This will remove your account from this device. Your passwords will not be deleted.</string>
     <string name="accounts_list_manage_accounts">Manage accounts</string>
+    <string name="accounts_list_account_removed" >The account has been removed from this device.</string>
 
     <string name="auth_password_title">Passphrase</string>
     <string name="auth_sign_in">Sign In</string>
