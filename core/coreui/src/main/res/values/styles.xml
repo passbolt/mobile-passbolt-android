@@ -79,6 +79,12 @@
         <item name="android:textSize">@dimen/sp_14</item>
     </style>
 
+    <style name="SecretText">
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:fontFamily">@font/inconsolata</item>
+    </style>
+
     <style name="BodyLight"
         parent="BodyText">
         <item name="android:textColor">@color/text_secondary</item>

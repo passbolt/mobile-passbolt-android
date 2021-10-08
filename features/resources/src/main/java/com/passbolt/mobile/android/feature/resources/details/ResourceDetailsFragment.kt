@@ -59,6 +59,12 @@ class ResourceDetailsFragment :
             requireActivity().intent.getParcelableExtra(ResourcesActivity.RESOURCE_MODEL_KEY)
         )
     }
+    private val regularFont by lifecycleAwareLazy {
+        ResourcesCompat.getFont(requireContext(), R.font.inter)
+    }
+    private val secretFont by lifecycleAwareLazy {
+        ResourcesCompat.getFont(requireContext(), R.font.inconsolata)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -172,16 +178,22 @@ class ResourceDetailsFragment :
         binding.passwordValue.text = ""
     }
 
-    override fun showDescription(description: String) {
+    override fun showDescription(description: String, useSecretFont: Boolean) {
         with(binding) {
-            descriptionValue.text = description
+            descriptionValue.apply {
+                typeface = if (useSecretFont) secretFont else regularFont
+                text = description
+            }
             seeDescriptionButton.gone()
         }
     }
 
     override fun showDescriptionIsEncrypted() {
         with(binding) {
-            descriptionValue.text = getString(R.string.resource_details_encrypted_description)
+            descriptionValue.apply {
+                typeface = regularFont
+                text = getString(R.string.resource_details_encrypted_description)
+            }
             seeDescriptionButton.visible()
         }
     }
