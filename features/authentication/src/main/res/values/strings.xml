@@ -3,6 +3,8 @@
     <string name="cancel">Cancel</string>
     <string name="unknown_error">Unknown error occurred</string>
     <string name="got_it">Got it</string>
+    <string name="cancel_setup">Cancel setup</string>
+    <string name="continue_setup">Continue setup</string>
 
     <string name="accounts_list_title">Welcome back!</string>
     <string name="accounts_list_subtitle">Choose an account to sign in!</string>

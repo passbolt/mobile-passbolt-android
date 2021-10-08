@@ -79,7 +79,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            authStrategy.navigateBack()
+            presenter.backClick(authStrategy.showLeaveConfirmationDialog())
         }
     }
 
@@ -275,8 +275,8 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.auth_exit_dialog_title)
             .setMessage(R.string.auth_exit_dialog_message)
-            .setPositiveButton(R.string.yes) { _, _ -> presenter.leaveConfirmationClick() }
-            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setPositiveButton(R.string.continue_setup) { _, _ -> }
+            .setNegativeButton(R.string.cancel_setup) { _, _ -> presenter.leaveConfirmationClick() }
             .show()
     }
 
