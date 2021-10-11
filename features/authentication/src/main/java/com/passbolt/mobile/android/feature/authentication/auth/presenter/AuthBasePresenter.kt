@@ -123,20 +123,20 @@ abstract class AuthBasePresenter(
         this.authConfig = authConfig
     }
 
-    override fun viewCreated(domainVisible: Boolean) {
-        getAccountData(domainVisible)
+    override fun viewCreated() {
+        getAccountData()
     }
 
-    private fun getAccountData(domainVisible: Boolean) {
+    private fun getAccountData() {
         scope.launch {
             val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
 
-            view?.showName("${accountData.firstName.orEmpty()} ${accountData.lastName.orEmpty()}")
+            view?.apply {
+                showName("${accountData.firstName.orEmpty()} ${accountData.lastName.orEmpty()}")
+                showDomain(accountData.url)
+            }
             accountData.email?.let { view?.showEmail(it) }
             accountData.avatarUrl?.let { view?.showAvatar(it) }
-            if (domainVisible) {
-                view?.showDomain(accountData.url)
-            }
         }
     }
 

@@ -39,9 +39,6 @@ interface AuthStrategy {
     // provides action after authentication is a success
     fun authSuccess()
 
-    // provides domain visibility information
-    fun domainVisible(): Boolean
-
     // provides leaving confirmation domain visibility
     fun showLeaveConfirmationDialog(): Boolean
 
