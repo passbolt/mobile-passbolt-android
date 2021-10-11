@@ -165,7 +165,7 @@ class HomeFragment :
             refreshButton.setDebouncingOnClick {
                 presenter.refreshClick()
             }
-            swiperefresh.setOnRefreshListener {
+            swipeRefresh.setOnRefreshListener {
                 presenter.refreshSwipe()
             }
             searchEditText.doAfterTextChanged {
@@ -185,7 +185,7 @@ class HomeFragment :
     }
 
     override fun hideRefreshProgress() {
-        binding.swiperefresh.isRefreshing = false
+        binding.swipeRefresh.isRefreshing = false
     }
 
     override fun showError() {

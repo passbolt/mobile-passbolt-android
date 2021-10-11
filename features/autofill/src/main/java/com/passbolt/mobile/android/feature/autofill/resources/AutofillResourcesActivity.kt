@@ -139,7 +139,7 @@ class AutofillResourcesActivity :
     }
 
     private fun setListeners() = with(binding) {
-        swiperefresh.setOnRefreshListener {
+        swipeRefresh.setOnRefreshListener {
             presenter.refreshSwipe()
         }
         searchEditText.doAfterTextChanged {
@@ -172,7 +172,7 @@ class AutofillResourcesActivity :
             emptyListContainer.isVisible = state.emptyVisible
             errorContainer.isVisible = state.errorVisible
             progress.isVisible = state.progressVisible
-            binding.swiperefresh.isRefreshing = state.swipeProgressVisible
+            binding.swipeRefresh.isRefreshing = state.swipeProgressVisible
         }
     }
 
@@ -211,7 +211,7 @@ class AutofillResourcesActivity :
     }
 
     override fun showGeneralError() {
-        binding.swiperefresh.isRefreshing = false
+        binding.swipeRefresh.isRefreshing = false
         Snackbar.make(binding.root, R.string.common_failure, Snackbar.LENGTH_LONG)
             .show()
     }
