@@ -48,7 +48,8 @@ fun Module.autofillResourcesModule() {
                 secretInteractor = get(),
                 getSelectedAccountDataUseCase = get(),
                 resourceTypeFactory = get(),
-                secretParser = get()
+                secretParser = get(),
+                getAccountsUseCase = get()
             )
         }
         scoped { (accountUiItemsMapper: ResourceUiItemsMapper) ->
