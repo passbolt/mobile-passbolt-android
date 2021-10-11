@@ -62,17 +62,13 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
-        updateResourceList()
+        runWhileShowingListProgress { fetchResources() }
         userAvatarUrl = getSelectedAccountDataUseCase.execute(Unit).avatarUrl
             .also { view.displaySearchAvatar(it) }
     }
 
-    private fun updateResourceList() {
-        fetchResources()
-    }
-
     override fun userAuthenticated() {
-        updateResourceList()
+        runWhileShowingListProgress { fetchResources() }
     }
 
     override fun detach() {
@@ -97,23 +93,27 @@ class HomePresenter(
         }
     }
 
-    private fun fetchResources() {
+    private suspend fun fetchResources() {
+        when (val result =
+            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                resourcesInteractor.fetchResourcesWithTypes()
+            }) {
+            is ResourceInteractor.Output.Failure -> {
+                view?.showError()
+            }
+            is ResourceInteractor.Output.Success -> {
+                allItemsList = result.resources
+                fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
+                displayResources()
+            }
+        }
+        view?.hideRefreshProgress()
+    }
+
+    private fun runWhileShowingListProgress(action: suspend () -> Unit) {
         scope.launch {
             view?.showProgress()
-            when (val result =
-                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    resourcesInteractor.fetchResourcesWithTypes()
-                }) {
-                is ResourceInteractor.Output.Failure -> {
-                    view?.showError()
-                }
-                is ResourceInteractor.Output.Success -> {
-                    allItemsList = result.resources
-                    fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
-                    displayResources()
-                }
-            }
-            view?.hideRefreshProgress()
+            action()
             view?.hideProgress()
         }
     }
@@ -142,11 +142,13 @@ class HomePresenter(
     }
 
     override fun refreshClick() {
-        fetchResources()
+        runWhileShowingListProgress { fetchResources() }
     }
 
     override fun refreshSwipe() {
-        fetchResources()
+        scope.launch {
+            fetchResources()
+        }
     }
 
     override fun moreClick(resourceModel: ResourceModel) {
