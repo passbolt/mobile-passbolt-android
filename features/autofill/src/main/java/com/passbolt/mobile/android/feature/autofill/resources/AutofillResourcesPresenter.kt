@@ -17,6 +17,7 @@ import com.passbolt.mobile.android.feature.autofill.service.ParsedStructure
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.accounts.GetAccountsUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -58,7 +59,8 @@ class AutofillResourcesPresenter(
     private val secretInteractor: SecretInteractor,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val resourceTypeFactory: ResourceTypeFactory,
-    private val secretParser: SecretParser
+    private val secretParser: SecretParser,
+    private val getAccountsUseCase: GetAccountsUseCase
 ) : BaseAuthenticatedPresenter<AutofillResourcesContract.View>(coroutineLaunchContext),
     AutofillResourcesContract.Presenter {
 
@@ -76,7 +78,11 @@ class AutofillResourcesPresenter(
 
     override fun attach(view: AutofillResourcesContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
-        view.startAuthActivity()
+        if (getAccountsUseCase.execute(Unit).users.isNotEmpty()) {
+            view.navigateToAuth()
+        } else {
+            view.navigateToSetup()
+        }
     }
 
     override fun userAuthenticated() {

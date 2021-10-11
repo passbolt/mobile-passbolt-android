@@ -129,7 +129,7 @@ class AutofillResourcesActivity :
         binding.searchEditText.setText("")
     }
 
-    override fun startAuthActivity() {
+    override fun navigateToAuth() {
         initialAuthenticationResult.launch(
             ActivityIntents.authentication(
                 this,
@@ -231,6 +231,11 @@ class AutofillResourcesActivity :
                 ActivityIntents.AuthConfig.MANAGE_ACCOUNT
             )
         )
+    }
+
+    override fun navigateToSetup() {
+        startActivity(ActivityIntents.start(this))
+        finish()
     }
 
     enum class State(

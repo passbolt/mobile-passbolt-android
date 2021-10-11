@@ -34,7 +34,7 @@ interface AutofillResourcesContract {
         fun navigateBack()
         fun showResources(resources: List<ResourceListUiModel>)
         fun showGeneralError()
-        fun startAuthActivity()
+        fun navigateToAuth()
         fun showSearchEmptyList()
         fun showFullScreenError()
         fun showEmptyList()
@@ -43,6 +43,7 @@ interface AutofillResourcesContract {
         fun navigateToManageAccount()
         fun displaySearchClearIcon()
         fun clearSearchInput()
+        fun navigateToSetup()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
