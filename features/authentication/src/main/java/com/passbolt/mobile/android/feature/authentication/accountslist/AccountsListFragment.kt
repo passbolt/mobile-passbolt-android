@@ -1,7 +1,5 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist
 
-import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
-import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -164,6 +162,19 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
         )
     }
 
+    override fun navigateToNewAccountSignIn(model: AccountModelUi.AccountModel) {
+        findNavController().navigate(
+            R.id.authFragment,
+            AuthFragment.newBundle(ActivityIntents.AuthConfig.STARTUP, model.userId),
+            NavOptions.Builder()
+                .setEnterAnim(R.anim.slide_in_right)
+                .setExitAnim(R.anim.slide_out_left)
+                .setPopEnterAnim(R.anim.slide_in_left)
+                .setPopExitAnim(R.anim.slide_out_right)
+                .build()
+        )
+    }
+
     override fun showAccounts(accounts: List<AccountModelUi>) {
         val uiItems = accounts.map { accountsUiMapper.mapModelToItem(it) }
         FastAdapterDiffUtil.calculateDiff(modelAdapter, uiItems)
@@ -203,14 +214,6 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
 
     override fun finish() {
         requireActivity().finish()
-    }
-
-    override fun clearBackgroundActivities() {
-        startActivity(
-            ActivityIntents.authentication(requireContext(), authConfig).apply {
-                flags = flags or FLAG_ACTIVITY_CLEAR_TOP or FLAG_ACTIVITY_CLEAR_TASK
-            }
-        )
     }
 
     override fun showProgress() {
