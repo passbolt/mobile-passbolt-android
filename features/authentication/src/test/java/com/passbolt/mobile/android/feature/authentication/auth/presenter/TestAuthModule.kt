@@ -109,11 +109,12 @@ internal val mockMfaStatusProvider = mock<MfaStatusProvider>()
 val testAuthModule = module {
     factory<AuthContract.Presenter> { (authConfig: ActivityIntents.AuthConfig) ->
         when (authConfig) {
-            ActivityIntents.AuthConfig.STARTUP -> signInPresenter()
-            ActivityIntents.AuthConfig.SETUP -> signInPresenter()
-            ActivityIntents.AuthConfig.MANAGE_ACCOUNT -> signInPresenter()
-            ActivityIntents.AuthConfig.REFRESH_FULL -> signInPresenter()
-            ActivityIntents.AuthConfig.REFRESH_PASSPHRASE -> passphrasePresenter()
+            is ActivityIntents.AuthConfig.Startup -> signInPresenter()
+            is ActivityIntents.AuthConfig.Setup -> signInPresenter()
+            is ActivityIntents.AuthConfig.ManageAccount -> signInPresenter()
+            is ActivityIntents.AuthConfig.RefreshFull -> signInPresenter()
+            is ActivityIntents.AuthConfig.RefreshPassphrase -> passphrasePresenter()
+            is ActivityIntents.AuthConfig.Mfa -> passphrasePresenter()
         }
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

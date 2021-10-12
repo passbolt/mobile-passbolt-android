@@ -39,11 +39,17 @@ sealed class NetworkResult<T : Any> {
         val isUnauthorized: Boolean
             get() = errorCode == HttpURLConnection.HTTP_UNAUTHORIZED
 
+        val isMfaRequired: Boolean
+            get() = errorCode == HttpURLConnection.HTTP_FORBIDDEN &&
+                    this is ServerError &&
+                    mfaStatus is MfaStatus.Required
+
         class ServerError<T : Any>(
             exception: Exception,
             errorCode: Int? = null,
             headerMessage: String,
-            val invalidFields: List<String>? = null
+            val invalidFields: List<String>? = null,
+            val mfaStatus: MfaStatus = MfaStatus.NotRequired
         ) : Failure<T>(exception, errorCode, headerMessage)
 
         class NetworkError<T : Any>(

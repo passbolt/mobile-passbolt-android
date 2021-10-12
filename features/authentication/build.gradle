@@ -45,6 +45,7 @@ dependencies {
     }
 
     testImplementation libs.di.koinTestJUnit
+    testImplementation libs.kotlin.reflect
 
 }
 

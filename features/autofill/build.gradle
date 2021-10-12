@@ -18,6 +18,7 @@ dependencies {
     implementation project(':dto')
     implementation project(':entity')
     implementation project(':secrets')
+    implementation project(':authentication')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

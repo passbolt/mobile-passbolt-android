@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import retrofit2.Response
 import java.lang.Exception
-
+import com.passbolt.mobile.android.core.mvp.session.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -54,4 +54,21 @@ class ErrorHeaderMapper(
                 null
             }
         }
+
+    fun checkMfaRequired(baseResponse: BaseResponse<*>? = null): MfaStatus {
+        try {
+            val map = baseResponse?.body as Map<String, List<String>>
+            if (map.containsKey(MFA_PROVIDER_KEY)) {
+                val mfaType = MfaProvider.parse(map[MFA_PROVIDER_KEY]?.first())
+                return MfaStatus.Required(mfaType)
+            }
+        } catch (e: Exception) {
+            return MfaStatus.NotRequired
+        }
+        return MfaStatus.NotRequired
+    }
+
+    companion object {
+        private const val MFA_PROVIDER_KEY = "mfa_providers"
+    }
 }

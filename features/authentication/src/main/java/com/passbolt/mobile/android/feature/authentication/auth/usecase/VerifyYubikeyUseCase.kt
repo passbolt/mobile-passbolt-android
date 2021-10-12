@@ -35,7 +35,7 @@ class VerifyYubikeyUseCase(
 
     override suspend fun execute(input: Input): Output =
         when (val result = mfaRepository.verifyYubikeyOtp(
-            HotpRequest(input.totp, input.remember), "Bearer ${input.jwtHeader}"
+            HotpRequest(input.totp, input.remember), input.jwtHeader?.let { "Bearer $it" }
         )
         ) {
             is NetworkResult.Failure -> Output.Failure
@@ -47,7 +47,7 @@ class VerifyYubikeyUseCase(
 
     class Input(
         val totp: String,
-        val jwtHeader: String,
+        val jwtHeader: String?,
         val remember: Boolean
     )
 

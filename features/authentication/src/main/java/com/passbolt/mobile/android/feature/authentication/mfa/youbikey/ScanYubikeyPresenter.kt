@@ -23,7 +23,7 @@ class ScanYubikeyPresenter(
         view?.showScanYubikey()
     }
 
-    override fun yubikeyScanned(otp: String?, authToken: String, rememberChecked: Boolean) {
+    override fun yubikeyScanned(otp: String?, authToken: String?, rememberChecked: Boolean) {
         if (!otp.isNullOrBlank()) {
             verifyYubikey(otp, authToken, rememberChecked)
         } else {
@@ -31,7 +31,7 @@ class ScanYubikeyPresenter(
         }
     }
 
-    private fun verifyYubikey(otp: String, authToken: String, rememberChecked: Boolean) {
+    private fun verifyYubikey(otp: String, authToken: String?, rememberChecked: Boolean) {
         view?.showProgress()
         scope.launch {
             when (val result =

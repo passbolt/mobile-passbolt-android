@@ -32,11 +32,11 @@ class MfaRepository(
     private val responseHandler: ResponseHandler
 ) {
 
-    suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String) = callWithHandler(responseHandler) {
+    suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String?) = callWithHandler(responseHandler) {
         mfaDataSource.verifyTotp(totpRequest, authHeader)
     }
 
-    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String) = callWithHandler(responseHandler) {
+    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String?) = callWithHandler(responseHandler) {
         mfaDataSource.verifyYubikeyOtp(hotpRequest, authHeader)
     }
 }

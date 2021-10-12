@@ -162,14 +162,14 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
     }
 
     override fun navigateToManageAccounts() {
-        startActivity(ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.MANAGE_ACCOUNT))
+        startActivity(ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.ManageAccount))
     }
 
     override fun navigateToSignInWithLogout() {
         startActivity(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.STARTUP
+                ActivityIntents.AuthConfig.Startup
             )
         )
         requireActivity().finish()
@@ -186,7 +186,7 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     override fun navigateToAuthGetPassphrase() {
         authenticationResult.launch(
-            ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.REFRESH_PASSPHRASE)
+            ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.RefreshPassphrase)
         )
     }
 

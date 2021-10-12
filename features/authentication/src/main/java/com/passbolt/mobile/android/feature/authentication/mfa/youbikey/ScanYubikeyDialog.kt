@@ -60,7 +60,7 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         }
     }
     private val bundledAuthToken by lifecycleAwareLazy {
-        requireArguments().getString(EXTRA_AUTH_KEY).orEmpty()
+        requireArguments().getString(EXTRA_AUTH_KEY)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,6 +133,7 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     override fun notifyVerificationSucceeded(mfaHeader: String) {
+        dismiss()
         listener?.yubikeyVerificationSucceeded(mfaHeader)
     }
 
@@ -142,14 +143,14 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     interface Listener {
-        fun changeProviderToTotp(jwtToken: String)
+        fun changeProviderToTotp(jwtToken: String?)
         fun yubikeyVerificationSucceeded(mfaHeader: String)
     }
 
     companion object {
         private const val EXTRA_AUTH_KEY = "EXTRA_AUTH_KEY"
 
-        fun newInstance(token: String) =
+        fun newInstance(token: String? = null) =
             ScanYubikeyDialog().apply {
                 arguments = bundleOf(
                     EXTRA_AUTH_KEY to token

@@ -25,8 +25,8 @@ import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
-import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.screen.more.ResourceMenuFragment
@@ -253,7 +253,7 @@ class HomeFragment :
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.MANAGE_ACCOUNT
+                ActivityIntents.AuthConfig.ManageAccount
             )
         )
     }

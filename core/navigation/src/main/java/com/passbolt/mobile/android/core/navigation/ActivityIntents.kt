@@ -6,6 +6,7 @@ import com.gaelmarhic.quadrant.Authentication
 import com.gaelmarhic.quadrant.Main
 import com.gaelmarhic.quadrant.Setup
 import com.gaelmarhic.quadrant.Startup
+import java.io.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -60,11 +61,18 @@ object ActivityIntents {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
 
-    enum class AuthConfig {
-        STARTUP,
-        SETUP,
-        MANAGE_ACCOUNT,
-        REFRESH_FULL, // refreshes backend session and passphrase
-        REFRESH_PASSPHRASE // refreshes only passphrase
+    sealed class AuthConfig : Serializable {
+        object Startup : AuthConfig()
+        object Setup : AuthConfig()
+        object ManageAccount : AuthConfig()
+
+        // refreshes backend session and passphrase
+        object RefreshFull : AuthConfig()
+
+        // refreshes only passphrase
+        object RefreshPassphrase : AuthConfig()
+        class Mfa(
+            val provider: String
+        ) : AuthConfig()
     }
 }

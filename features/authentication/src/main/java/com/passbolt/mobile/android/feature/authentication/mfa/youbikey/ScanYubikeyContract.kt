@@ -19,7 +19,7 @@ interface ScanYubikeyContract {
     interface Presenter : BaseContract.Presenter<View> {
         fun scanYubikeyClick()
         fun otherProviderClick()
-        fun yubikeyScanned(otp: String?, authToken: String, rememberChecked: Boolean)
+        fun yubikeyScanned(otp: String?, authToken: String?, rememberChecked: Boolean)
         fun yubikeyScanCancelled()
         fun closeClick()
     }

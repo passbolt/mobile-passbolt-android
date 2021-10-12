@@ -12,11 +12,11 @@ class AuthenticationMainPresenter(
     override fun bundleRetrieved(authConfig: ActivityIntents.AuthConfig, userId: String?) {
         val currentAccount = userId ?: getSelectedAccountUseCase.execute(Unit).selectedAccount
 
-        if (authConfig == ActivityIntents.AuthConfig.SETUP && currentAccount != null) {
+        if (authConfig is ActivityIntents.AuthConfig.Setup && currentAccount != null) {
             view?.initNavWithoutAccountList(currentAccount)
         } else {
             view?.initNavWithAccountList()
-            if (authConfig != ActivityIntents.AuthConfig.MANAGE_ACCOUNT && currentAccount != null) {
+            if (authConfig !is ActivityIntents.AuthConfig.ManageAccount && currentAccount != null) {
                 view?.navigateToSignIn(currentAccount)
             }
         }

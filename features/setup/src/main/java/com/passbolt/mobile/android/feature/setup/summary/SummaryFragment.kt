@@ -108,7 +108,7 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.SETUP,
+                ActivityIntents.AuthConfig.Setup,
                 userId
             )
         )

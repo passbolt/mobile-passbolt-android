@@ -8,6 +8,7 @@ dependencies {
     implementation project(':common')
     implementation project(':storage')
     implementation project(':dto')
+    implementation project(':mvp')
 
     api libs.networking.retrofit
     api libs.networking.okHttp

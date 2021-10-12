@@ -29,11 +29,11 @@ internal class MfaRemoteDataSource(
     private val mfaApi: MfaApi
 ) : MfaDataSource {
 
-    override suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String): retrofit2.Response<Void> {
+    override suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String?): retrofit2.Response<Void> {
         return mfaApi.verifyTotp(totpRequest, authHeader)
     }
 
-    override suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String): retrofit2.Response<Void> {
+    override suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String?): retrofit2.Response<Void> {
         return mfaApi.verifyYubikeyOtp(hotpRequest, authHeader)
     }
 }

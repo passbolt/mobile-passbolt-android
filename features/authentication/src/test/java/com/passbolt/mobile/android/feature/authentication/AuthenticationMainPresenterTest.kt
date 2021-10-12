@@ -70,7 +70,7 @@ class AuthenticationMainPresenterTest : KoinTest {
             whenever(mockGetSelectedAccountUseCase.execute(Unit))
                 .doReturn(GetSelectedAccountUseCase.Output(null))
 
-            presenter.bundleRetrieved(ActivityIntents.AuthConfig.SETUP, USER_ID)
+            presenter.bundleRetrieved(ActivityIntents.AuthConfig.Setup, USER_ID)
 
             verify(mockView).initNavWithoutAccountList(USER_ID)
             verifyNoMoreInteractions(mockView)
@@ -89,8 +89,10 @@ class AuthenticationMainPresenterTest : KoinTest {
                 verifyNoMoreInteractions(mockView)
             }
 
-            ActivityIntents.AuthConfig.values()
-                .filter { it != ActivityIntents.AuthConfig.SETUP }
+            ActivityIntents.AuthConfig::class.nestedClasses
+                .filter { it.objectInstance != null }
+                .map { it.objectInstance as ActivityIntents.AuthConfig }
+                .filter { it !is ActivityIntents.AuthConfig.Setup }
                 .forEach { testForConfigurationValue(it) }
         }
 
@@ -108,11 +110,13 @@ class AuthenticationMainPresenterTest : KoinTest {
                 verifyNoMoreInteractions(mockView)
             }
 
-            ActivityIntents.AuthConfig.values()
+            ActivityIntents.AuthConfig::class.nestedClasses
+                .filter { it.objectInstance != null }
+                .map { it.objectInstance as ActivityIntents.AuthConfig }
                 .filter {
                     it !in setOf(
-                        ActivityIntents.AuthConfig.MANAGE_ACCOUNT,
-                        ActivityIntents.AuthConfig.SETUP
+                        ActivityIntents.AuthConfig.ManageAccount,
+                        ActivityIntents.AuthConfig.Setup
                     )
                 }
                 .forEach { testForConfigurationValue(it) }

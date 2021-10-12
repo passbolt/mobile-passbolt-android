@@ -23,6 +23,7 @@ dependencies {
     implementation project(':commonresource')
     implementation project(':autofill')
     implementation project(':secrets')
+    implementation project(':authentication')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

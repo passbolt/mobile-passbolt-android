@@ -84,7 +84,7 @@ class PassboltApplication : Application(), KoinComponent {
                     it.startActivity(
                         ActivityIntents.authentication(
                             it,
-                            ActivityIntents.AuthConfig.REFRESH_FULL
+                            ActivityIntents.AuthConfig.RefreshFull
                         )
                     )
                 }
