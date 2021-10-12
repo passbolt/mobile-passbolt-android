@@ -29,5 +29,6 @@
     <color name="icon_dark">#333333</color>
     <color name="black_60">#99000000</color>
     <color name="black_87">#DE000000</color>
+    <color name="scrollbars">#9F9F9F</color>
 
 </resources>
