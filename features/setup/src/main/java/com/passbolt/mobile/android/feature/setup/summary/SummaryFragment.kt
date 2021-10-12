@@ -88,7 +88,9 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
     }
 
     override fun navigateBack() {
-        findNavController().popBackStack()
+        findNavController().navigate(
+            SummaryFragmentDirections.actionSummaryFragmentToScanQrFragment()
+        )
     }
 
     override fun navigateToStart() {
