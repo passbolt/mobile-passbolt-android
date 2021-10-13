@@ -9,7 +9,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
-import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
+import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceType
 import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
@@ -181,7 +181,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         presenter.argsReceived(RESOURCE_MODEL)
         presenter.secretIconClick()
 
-        verify(view).showAuth(UnauthenticatedReason.PASSPHRASE)
+        verify(view).showAuth(AuthenticationState.Unauthenticated.Reason.Passphrase)
     }
 
     @Test

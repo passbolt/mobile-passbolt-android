@@ -28,6 +28,6 @@ import com.passbolt.mobile.android.dto.request.TotpRequest
 
 interface MfaDataSource {
 
-    suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String): retrofit2.Response<Void>
-    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String): retrofit2.Response<Void>
+    suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String?): retrofit2.Response<Void>
+    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String?): retrofit2.Response<Void>
 }

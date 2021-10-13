@@ -4,10 +4,11 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
-import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.service.resource.ResourceRepository
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.core.mvp.session.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
+import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,10 +46,19 @@ class GetResourcesUseCase(
     sealed class Output : AuthenticatedUseCaseOutput {
 
         override val authenticationState: AuthenticationState
-            get() = if ((this is Failure<*> && this.response.isUnauthorized)) {
-                AuthenticationState.Unauthenticated(UnauthenticatedReason.SESSION)
-            } else {
-                AuthenticationState.Authenticated
+            get() = when {
+                this is Failure<*> && this.response.isUnauthorized -> {
+                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                }
+                this is Failure<*> && this.response.isMfaRequired -> {
+                    val provider = MfaTypeProvider.get(this.response)
+                    AuthenticationState.Unauthenticated(
+                        AuthenticationState.Unauthenticated.Reason.Mfa(MfaProvider.parse(provider?.name?.lowercase()))
+                    )
+                }
+                else -> {
+                    AuthenticationState.Authenticated
+                }
             }
 
         class Success(

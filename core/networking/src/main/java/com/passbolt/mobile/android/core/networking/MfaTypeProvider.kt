@@ -1,7 +1,4 @@
-package com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy
-
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
+package com.passbolt.mobile.android.core.networking
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,17 +22,8 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsL
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountListStrategyFactory {
+object MfaTypeProvider {
 
-    fun get(
-        accountsListFragment: AccountsListFragment,
-        type: ActivityIntents.AuthConfig
-    ) = when (type) {
-        is ActivityIntents.AuthConfig.ManageAccount -> ManageAccountListStrategy(accountsListFragment)
-        is ActivityIntents.AuthConfig.Startup -> AuthAccountListStrategy(accountsListFragment)
-        is ActivityIntents.AuthConfig.Setup -> AuthAccountListStrategy(accountsListFragment)
-        is ActivityIntents.AuthConfig.RefreshFull -> AuthAccountListStrategy(accountsListFragment)
-        is ActivityIntents.AuthConfig.RefreshPassphrase -> AuthAccountListStrategy(accountsListFragment)
-        is ActivityIntents.AuthConfig.Mfa -> AuthAccountListStrategy(accountsListFragment)
-    }
+    fun get(serverError: NetworkResult.Failure<*>) =
+        ((serverError as NetworkResult.Failure.ServerError).mfaStatus as MfaStatus.Required).type
 }

@@ -90,7 +90,8 @@ ext {
             serializationPlugin: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}",
             coroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}",
             io: "org.jetbrains.kotlin:kotlin-util-io:${versions.kotlin}",
-            serializationJson: "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serializationJson}"
+            serializationJson: "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.serializationJson}",
+            reflect: "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}"
         ],
         test: [
             junit: "junit:junit:${versions.test.junit}",

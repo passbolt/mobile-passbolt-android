@@ -10,8 +10,25 @@ sealed class AuthenticationState {
 
     class Unauthenticated(val reason: Reason) : AuthenticationState() {
 
-        enum class Reason {
-            PASSPHRASE, SESSION
+        sealed class Reason {
+
+            object Passphrase : Reason()
+            object Session : Reason()
+            class Mfa(val provider: MfaProvider?) : Reason() {
+                enum class MfaProvider {
+                    YUBIKEY,
+                    TOTP;
+
+                    companion object {
+                        fun parse(provider: String?) =
+                            when (provider) {
+                                "yubikey" -> YUBIKEY
+                                "totp" -> TOTP
+                                else -> null
+                            }
+                    }
+                }
+            }
         }
     }
 }

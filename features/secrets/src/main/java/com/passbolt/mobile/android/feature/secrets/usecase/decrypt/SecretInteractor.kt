@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.secrets.usecase.decrypt
 
 import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
-import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 import retrofit2.HttpException
 import java.net.HttpURLConnection
 
@@ -52,9 +51,9 @@ class SecretInteractor(
             get() = if (this is FetchFailure &&
                 (this.exception as? HttpException)?.code() == HttpURLConnection.HTTP_UNAUTHORIZED
             ) {
-                AuthenticationState.Unauthenticated(UnauthenticatedReason.SESSION)
+                AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
             } else if (this is Unauthorized) {
-                AuthenticationState.Unauthenticated(UnauthenticatedReason.PASSPHRASE)
+                AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Passphrase)
             } else {
                 AuthenticationState.Authenticated
             }

@@ -166,7 +166,7 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.SETUP
+                ActivityIntents.AuthConfig.Setup
             )
         )
     }

@@ -222,7 +222,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         )
     }
 
-    override fun changeProviderToTotp(jwtToken: String) {
+    override fun changeProviderToTotp(jwtToken: String?) {
         EnterTotpDialog.newInstance(jwtToken).show(
             childFragmentManager, EnterTotpDialog::class.java.name
         )

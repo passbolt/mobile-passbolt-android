@@ -58,7 +58,7 @@ import org.mockito.Mockito.verify
 class SignInPresenterTest : KoinTest {
 
     private val presenter: AuthContract.Presenter by inject {
-        parametersOf(ActivityIntents.AuthConfig.REFRESH_FULL)
+        parametersOf(ActivityIntents.AuthConfig.RefreshFull)
     }
     private val mockView = mock<AuthContract.View>()
 
@@ -79,7 +79,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -140,7 +140,7 @@ class SignInPresenterTest : KoinTest {
         }
         whenever(mockMfaStatusProvider.provideMfaStatus(any(), any())).doReturn(MfaStatus.NotRequired)
 
-        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -173,7 +173,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -221,7 +221,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -262,7 +262,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -306,7 +306,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -358,7 +358,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
@@ -398,7 +398,7 @@ class SignInPresenterTest : KoinTest {
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
-        presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_FULL, ACCOUNT)
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 

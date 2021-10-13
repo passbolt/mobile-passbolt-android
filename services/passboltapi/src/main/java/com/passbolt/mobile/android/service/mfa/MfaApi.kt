@@ -37,7 +37,7 @@ internal interface MfaApi {
         @Body totpRequest: TotpRequest,
         // auth header needs to be added manually because this request
         // requires auth token and is before user is signed in
-        @Header(MFA_AUTH_HEADER) authHeader: String
+        @Header(MFA_AUTH_HEADER) authHeader: String?
     ): Response<Void>
 
     @POST(MFA_VERIFICATION_YUBIKEY)
@@ -45,7 +45,7 @@ internal interface MfaApi {
         @Body hotpRequest: HotpRequest,
         // auth header needs to be added manually because this request
         // requires auth token and is before user is signed in
-        @Header(MFA_AUTH_HEADER) authHeader: String
+        @Header(MFA_AUTH_HEADER) authHeader: String?
     ): Response<Void>
 
     private companion object {

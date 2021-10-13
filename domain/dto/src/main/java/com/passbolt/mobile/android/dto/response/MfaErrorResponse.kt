@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy
+package com.passbolt.mobile.android.dto.response
 
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,17 +24,7 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsL
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountListStrategyFactory {
-
-    fun get(
-        accountsListFragment: AccountsListFragment,
-        type: ActivityIntents.AuthConfig
-    ) = when (type) {
-        is ActivityIntents.AuthConfig.ManageAccount -> ManageAccountListStrategy(accountsListFragment)
-        is ActivityIntents.AuthConfig.Startup -> AuthAccountListStrategy(accountsListFragment)
-        is ActivityIntents.AuthConfig.Setup -> AuthAccountListStrategy(accountsListFragment)
-        is ActivityIntents.AuthConfig.RefreshFull -> AuthAccountListStrategy(accountsListFragment)
-        is ActivityIntents.AuthConfig.RefreshPassphrase -> AuthAccountListStrategy(accountsListFragment)
-        is ActivityIntents.AuthConfig.Mfa -> AuthAccountListStrategy(accountsListFragment)
-    }
-}
+class MfaErrorResponse(
+    @SerializedName("providers")
+    var mfaProviders: List<String>?
+)

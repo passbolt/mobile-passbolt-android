@@ -158,7 +158,7 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     companion object {
         private const val EXTRA_AUTH_KEY = "EXTRA_AUTH_KEY"
 
-        fun newInstance(token: String) =
+        fun newInstance(token: String? = null) =
             EnterTotpDialog().apply {
                 arguments = bundleOf(
                     EXTRA_AUTH_KEY to token

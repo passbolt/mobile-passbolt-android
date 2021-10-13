@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.core.commonresource
 
 import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
-import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -37,17 +36,19 @@ class ResourceInteractor(
 
     suspend fun fetchResourcesWithTypes(): Output {
         val resourcesResult = getResourcesUseCase.execute(Unit)
-        val resourceTypesResult = getResourceTypesUseCase.execute(Unit)
 
-        return if (resourcesResult is GetResourcesUseCase.Output.Success &&
-            resourceTypesResult is GetResourceTypesUseCase.Output.Success
-        ) {
-            addLocalResourceTypesUseCase.execute(
-                AddLocalResourceTypesUseCase.Input(resourceTypesResult.resourceTypes)
-            )
-            Output.Success(resourcesResult.resources, resourceTypesResult.resourceTypes)
+        return if (resourcesResult is GetResourcesUseCase.Output.Success) {
+            val resourceTypesResult = getResourceTypesUseCase.execute(Unit)
+            if (resourceTypesResult is GetResourceTypesUseCase.Output.Success) {
+                addLocalResourceTypesUseCase.execute(
+                    AddLocalResourceTypesUseCase.Input(resourceTypesResult.resourceTypes)
+                )
+                Output.Success(resourcesResult.resources, resourceTypesResult.resourceTypes)
+            } else {
+                Output.Failure(resourcesResult.authenticationState + resourceTypesResult.authenticationState)
+            }
         } else {
-            Output.Failure(resourcesResult.authenticationState + resourceTypesResult.authenticationState)
+            Output.Failure(resourcesResult.authenticationState)
         }
     }
 
@@ -55,7 +56,7 @@ class ResourceInteractor(
         return when {
             this is AuthenticationState.Authenticated && other is AuthenticationState.Authenticated ->
                 AuthenticationState.Authenticated
-            else -> AuthenticationState.Unauthenticated(UnauthenticatedReason.SESSION)
+            else -> AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
         }
     }
 

@@ -21,6 +21,7 @@ dependencies {
     implementation project(':commonresource')
     implementation project(':featureflags')
     implementation project(':security')
+    implementation project(':authentication')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

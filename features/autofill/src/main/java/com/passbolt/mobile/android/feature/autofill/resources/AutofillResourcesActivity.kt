@@ -24,8 +24,8 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
-import com.passbolt.mobile.android.core.mvp.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityCommunicator
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
@@ -133,7 +133,7 @@ class AutofillResourcesActivity :
         initialAuthenticationResult.launch(
             ActivityIntents.authentication(
                 this,
-                ActivityIntents.AuthConfig.REFRESH_FULL
+                ActivityIntents.AuthConfig.RefreshFull
             )
         )
     }
@@ -228,7 +228,7 @@ class AutofillResourcesActivity :
         initialAuthenticationResult.launch(
             ActivityIntents.authentication(
                 this,
-                ActivityIntents.AuthConfig.MANAGE_ACCOUNT
+                ActivityIntents.AuthConfig.ManageAccount
             )
         )
     }

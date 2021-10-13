@@ -5,6 +5,7 @@ import timber.log.Timber
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import com.passbolt.mobile.android.core.mvp.session.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 
 /**
  * Passbolt - Open source password manager for teams
@@ -44,7 +45,8 @@ class ResponseHandler(
                     exception = e,
                     errorCode = e.code(),
                     headerMessage = errorHeaderMapper.getMessage(baseResponse),
-                    invalidFields = errorHeaderMapper.getValidationFieldsError(baseResponse)
+                    invalidFields = errorHeaderMapper.getValidationFieldsError(baseResponse),
+                    mfaStatus = errorHeaderMapper.checkMfaRequired(baseResponse)
                 )
             }
             is UnknownHostException -> NetworkResult.Failure.NetworkError(
@@ -65,6 +67,14 @@ class ResponseHandler(
             )
         }
     }
+}
+
+sealed class MfaStatus {
+    class Required(
+        val type: MfaProvider?
+    ) : MfaStatus()
+
+    object NotRequired : MfaStatus()
 }
 
 inline fun <T : Any> callWithHandler(responseHandler: ResponseHandler, apiCall: () -> T) = try {
