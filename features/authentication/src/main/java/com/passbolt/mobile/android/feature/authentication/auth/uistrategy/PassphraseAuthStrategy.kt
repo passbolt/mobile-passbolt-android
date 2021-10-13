@@ -22,7 +22,5 @@ class PassphraseAuthStrategy(override var authFragment: AuthFragment?) : AuthStr
         }
     }
 
-    override fun domainVisible(): Boolean = true
-
     override fun showLeaveConfirmationDialog(): Boolean = true
 }

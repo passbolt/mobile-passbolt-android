@@ -74,7 +74,7 @@ interface AuthContract {
         fun argsRetrieved(authConfig: ActivityIntents.AuthConfig, userId: String)
         fun forgotPasswordClick()
         fun passphraseInputIsEmpty(isEmpty: Boolean)
-        fun viewCreated(domainVisible: Boolean)
+        fun viewCreated()
         fun leaveConfirmationClick()
         fun biometricAuthSuccess(authenticatedCipher: Cipher?)
         fun biometricAuthError(messageResId: Int)

@@ -25,7 +25,5 @@ class SignInAuthStrategy(override var authFragment: AuthFragment?) : AuthStrateg
         finishWithResult(Activity.RESULT_OK)
     }
 
-    override fun domainVisible(): Boolean = false
-
     override fun showLeaveConfirmationDialog(): Boolean = false
 }

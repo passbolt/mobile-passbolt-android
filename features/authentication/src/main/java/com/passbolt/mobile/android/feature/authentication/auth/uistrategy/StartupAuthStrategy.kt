@@ -21,7 +21,5 @@ class StartupAuthStrategy(override var authFragment: AuthFragment?) : AuthStrate
         }
     }
 
-    override fun domainVisible(): Boolean = false
-
     override fun showLeaveConfirmationDialog(): Boolean = false
 }

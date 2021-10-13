@@ -128,7 +128,7 @@ class PassphrasePresenterTest : KoinTest {
 
         presenter.argsRetrieved(ActivityIntents.AuthConfig.REFRESH_PASSPHRASE, ACCOUNT)
         presenter.attach(mockView)
-        presenter.viewCreated(true)
+        presenter.viewCreated()
 
         verify(mockView).showTitle()
         verify(mockView).showName("$MOCK_ACCOUNT_DATA_FIRST_NAME $MOCK_ACCOUNT_DATA_LAST_NAME")

@@ -25,7 +25,5 @@ class SetupAuthStrategy(override var authFragment: AuthFragment?) : AuthStrategy
         finishWithResult(Activity.RESULT_OK)
     }
 
-    override fun domainVisible(): Boolean = false
-
     override fun showLeaveConfirmationDialog(): Boolean = true
 }

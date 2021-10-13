@@ -89,7 +89,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         presenter = get { parametersOf(authConfig) }
         presenter.argsRetrieved(authConfig, userId)
         presenter.attach(this)
-        presenter.viewCreated(authStrategy.domainVisible())
+        presenter.viewCreated()
         setListeners()
     }
 
@@ -250,7 +250,6 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun showDomain(domain: String) {
         with(binding) {
-            domainLabel.visible()
             domainLabel.text = domain
         }
     }
