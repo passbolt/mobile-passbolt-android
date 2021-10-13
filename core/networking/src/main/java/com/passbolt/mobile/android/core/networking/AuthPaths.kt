@@ -30,4 +30,5 @@ object AuthPaths {
     const val SETTINGS = "/settings.json"
     const val MFA_VERIFICATION_TOTP = "/mfa/verify/totp.json"
     const val AVATAR_PATH = "/img/avatar/"
+    const val TRANSFER_PATH = "/mobile/transfers/"
 }

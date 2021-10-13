@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.networking.interceptor
 import com.passbolt.mobile.android.common.MfaTokenExtractor
 import com.passbolt.mobile.android.core.networking.AuthPaths
 import com.passbolt.mobile.android.core.networking.AuthPaths.AVATAR_PATH
+import com.passbolt.mobile.android.core.networking.AuthPaths.TRANSFER_PATH
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -56,7 +57,7 @@ class CookiesInterceptor {
                     newBuilder.addHeader("Cookie", it)
                 }
             } else if (ANONYMOUS_PATHS.none { request.url.encodedPath == it } &&
-                !request.url.encodedPath.contains(AVATAR_PATH)) {
+                !request.url.encodedPath.contains(AVATAR_PATH) && !request.url.encodedPath.contains(TRANSFER_PATH)) {
                 mfaCookie?.let {
                     newBuilder.addHeader("Cookie", it)
                 }

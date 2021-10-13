@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
@@ -81,7 +82,8 @@ class FingerprintPresenterTest : KoinTest {
     @Test
     fun `when biometrics auth is a success and cache has passphrase encourage autofill should show`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
-        whenever(autofillInformationProvider.isPassboltAutofillServiceSet()).thenReturn(false)
+        whenever(autofillInformationProvider.isOverlayEnabled()).thenReturn(false)
+        whenever(autofillInformationProvider.isAccessibilityServiceEnabled(anyOrNull())).thenReturn(false)
         whenever(passphraseMemoryCache.get()).thenReturn(
             PotentialPassphrase.Passphrase("passphrase".toByteArray())
         )
@@ -106,16 +108,47 @@ class FingerprintPresenterTest : KoinTest {
     }
 
     @Test
-    fun `when autofill service is already set up should navigate to autofill enabled directly`() {
+    fun `when accessibility service is not already set up should open autofill setup screen`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
-        whenever(autofillInformationProvider.isPassboltAutofillServiceSet()).thenReturn(true)
+        whenever(autofillInformationProvider.isOverlayEnabled()).thenReturn(false)
+        whenever(autofillInformationProvider.isAccessibilityServiceEnabled(anyOrNull())).thenReturn(true)
         whenever(passphraseMemoryCache.get()).thenReturn(
             PotentialPassphrase.Passphrase("passphrase".toByteArray())
         )
 
         presenter.maybeLaterClick()
 
-        verify(view).showAutofillEnabledDialog()
+        verify(view).showEncourageAutofillDialog()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `when overlay is not already set up should open autofill setup screen`() {
+        whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+        whenever(autofillInformationProvider.isOverlayEnabled()).thenReturn(true)
+        whenever(autofillInformationProvider.isAccessibilityServiceEnabled(anyOrNull())).thenReturn(false)
+        whenever(passphraseMemoryCache.get()).thenReturn(
+            PotentialPassphrase.Passphrase("passphrase".toByteArray())
+        )
+
+        presenter.maybeLaterClick()
+
+        verify(view).showEncourageAutofillDialog()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `when accessibility service and overlay are already set up should navigate to home directly`() {
+        whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+        whenever(autofillInformationProvider.isOverlayEnabled()).thenReturn(true)
+        whenever(autofillInformationProvider.isAccessibilityServiceEnabled(anyOrNull())).thenReturn(true)
+        whenever(passphraseMemoryCache.get()).thenReturn(
+            PotentialPassphrase.Passphrase("passphrase".toByteArray())
+        )
+
+        presenter.maybeLaterClick()
+
+        verify(view).navigateToHome()
         verifyNoMoreInteractions(view)
     }
 }
