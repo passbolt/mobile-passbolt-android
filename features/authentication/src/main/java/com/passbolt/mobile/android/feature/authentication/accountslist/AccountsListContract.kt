@@ -38,11 +38,11 @@ interface AccountsListContract {
         fun navigateToSetup()
         fun finishAffinity()
         fun finish()
-        fun clearBackgroundActivities()
         fun showProgress()
         fun hideProgress()
         fun showAccountRemovedSnackbar()
         fun navigateToStartUp()
+        fun navigateToNewAccountSignIn(model: AccountModelUi.AccountModel)
     }
 
     interface Presenter : BaseContract.Presenter<View> {

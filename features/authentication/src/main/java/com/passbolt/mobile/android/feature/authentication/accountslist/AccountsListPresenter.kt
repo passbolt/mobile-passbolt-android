@@ -76,12 +76,15 @@ class AccountsListPresenter(
             if (currentAccount != null && currentAccount != model.userId) {
                 view?.showProgress()
                 signOutUseCase.execute(Unit)
-                view?.clearBackgroundActivities()
                 view?.hideProgress()
+                saveSelectedAccountUseCase.execute(UserIdInput(model.userId))
+                saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(model.url))
+                view?.navigateToNewAccountSignIn(model)
+            } else {
+                saveSelectedAccountUseCase.execute(UserIdInput(model.userId))
+                saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(model.url))
+                view?.navigateToSignIn(model)
             }
-            saveSelectedAccountUseCase.execute(UserIdInput(model.userId))
-            saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(model.url))
-            view?.navigateToSignIn(model)
         }
     }
 
