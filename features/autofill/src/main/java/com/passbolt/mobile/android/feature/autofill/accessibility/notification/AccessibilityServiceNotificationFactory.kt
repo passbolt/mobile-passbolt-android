@@ -32,7 +32,6 @@ class AccessibilityServiceNotificationFactory(
 
     fun getNotification(context: Context): Notification {
         notificationChannelManager.createNotificationChannel(
-            context,
             CHANNEL_ID,
             context.getString(R.string.autofill_service_channel_name)
         )

@@ -40,5 +40,5 @@ interface AccountListStrategy {
 
     fun headerVisibility(): Int
 
-    fun navigateBack()
+    fun navigateBack(isSelectedAccountAvailable: Boolean)
 }

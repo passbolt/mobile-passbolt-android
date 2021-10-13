@@ -38,7 +38,11 @@ class ManageAccountListStrategy(
 
     override fun toolbarVisibility() = View.VISIBLE
 
-    override fun navigateBack() {
-        activeAccountListFragment.finish()
+    override fun navigateBack(isSelectedAccountAvailable: Boolean) {
+        if (isSelectedAccountAvailable) {
+            activeAccountListFragment.finish()
+        } else {
+            activeAccountListFragment.finishAffinity()
+        }
     }
 }

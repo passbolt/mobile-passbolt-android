@@ -52,6 +52,7 @@ class AccountsListPresenter(
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private var accounts: List<AccountModelUi> = emptyList()
+    private var selectedAccountHasBeenRemoved = false
 
     override fun attach(view: AccountsListContract.View) {
         super.attach(view)
@@ -127,15 +128,16 @@ class AccountsListPresenter(
     }
 
     override fun confirmRemoveAccountClick(model: AccountModelUi.AccountModel) {
+        val accountToRemoveId = model.userId
         scope.launch {
-            val accountToRemoveId = model.userId
-            removeAllAccountDataUseCase.execute(UserIdInput(accountToRemoveId))
-
             getSelectedAccountUseCase.execute(Unit).selectedAccount?.let { selectedAccount ->
-                if (accountToRemoveId != selectedAccount) {
+                if (accountToRemoveId == selectedAccount) {
                     signOutUseCase.execute(Unit)
+                    selectedAccountHasBeenRemoved = true
                 }
             }
+            removeAllAccountDataUseCase.execute(UserIdInput(accountToRemoveId))
+
             view?.showAccountRemovedSnackbar()
             displayAccounts()
             removeModeOn(isOn = true)
@@ -144,5 +146,9 @@ class AccountsListPresenter(
                 view?.navigateToStartUp()
             }
         }
+    }
+
+    override fun backClick() {
+        view?.navigateBack(!selectedAccountHasBeenRemoved)
     }
 }

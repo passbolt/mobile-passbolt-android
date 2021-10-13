@@ -37,7 +37,7 @@ class AuthAccountListStrategy(
 
     override fun headerVisibility() = View.VISIBLE
 
-    override fun navigateBack() {
+    override fun navigateBack(isSelectedAccountAvailable: Boolean) {
         activeAccountListFragment.finishAffinity()
     }
 }

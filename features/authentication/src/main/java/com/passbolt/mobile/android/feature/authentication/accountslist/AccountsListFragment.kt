@@ -72,7 +72,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     private lateinit var uiStrategy: AccountListStrategy
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            uiStrategy.navigateBack()
+            presenter.backClick()
         }
     }
 
@@ -109,7 +109,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
             uiStrategy.getTitleRes()?.let { toolbarTitle = getString(it) }
             visibility = uiStrategy.toolbarVisibility()
             initDefaultToolbar(this)
-            setNavigationOnClickListener { requireActivity().finish() }
+            setNavigationOnClickListener { presenter.backClick() }
         }
     }
 
@@ -230,6 +230,10 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
             .setAnchorView(binding.doneRemovingAccountsButton)
             .setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.background_gray_dark))
             .show()
+    }
+
+    override fun navigateBack(isSelectedAccountAvailable: Boolean) {
+        uiStrategy.navigateBack(isSelectedAccountAvailable)
     }
 
     companion object {
