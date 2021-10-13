@@ -165,7 +165,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     override fun navigateToNewAccountSignIn(model: AccountModelUi.AccountModel) {
         findNavController().navigate(
             R.id.authFragment,
-            AuthFragment.newBundle(ActivityIntents.AuthConfig.STARTUP, model.userId),
+            AuthFragment.newBundle(ActivityIntents.AuthConfig.Startup, model.userId),
             NavOptions.Builder()
                 .setEnterAnim(R.anim.slide_in_right)
                 .setExitAnim(R.anim.slide_out_left)
