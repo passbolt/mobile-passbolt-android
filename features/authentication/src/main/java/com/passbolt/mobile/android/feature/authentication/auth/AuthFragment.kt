@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.hideSoftInput
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.ui.dialog.CoreDialogFactory
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.R
@@ -68,6 +69,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     private lateinit var presenter: AuthContract.Presenter
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
+    private var serverNotReachableDialog: AlertDialog? = null
 
     private val executor: Executor by inject()
     private var featureFlagsFetchErrorDialog: FeatureFlagsFetchErrorDialog? = null
@@ -161,6 +163,8 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun onDestroyView() {
+        serverNotReachableDialog?.dismiss()
+        serverNotReachableDialog = null
         backPressedCallback.isEnabled = false
         featureFlagsFetchErrorDialog = null
         authStrategy.detach()
@@ -352,6 +356,13 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun yubikeyVerificationSucceeded(mfaHeader: String) {
         presenter.totpSucceeded(mfaHeader)
+    }
+
+    override fun showServerNotReachable(serverDomain: String) {
+        if (serverNotReachableDialog == null) {
+            serverNotReachableDialog = CoreDialogFactory.serverNotReachableDialog(requireContext(), serverDomain)
+        }
+        serverNotReachableDialog?.show()
     }
 
     companion object {

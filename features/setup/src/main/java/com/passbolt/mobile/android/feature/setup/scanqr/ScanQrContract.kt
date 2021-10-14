@@ -46,6 +46,7 @@ interface ScanQrContract {
         fun initializeProgress(totalPages: Int)
         fun setProgress(progress: Int)
         fun showNotAPassboltQr()
+        fun showServerNotReachable(serverDomain: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {

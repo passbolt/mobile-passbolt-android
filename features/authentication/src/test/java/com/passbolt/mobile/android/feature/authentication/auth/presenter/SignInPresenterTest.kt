@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.stub
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
@@ -31,6 +32,8 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.Mockito.verify
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 /**
  * Passbolt - Open source password manager for teams
@@ -74,7 +77,11 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
         }
         mockGetServerPublicPgpKeyUseCase.stub {
-            onBlocking { execute(any()) }.thenReturn(GetServerPublicPgpKeyUseCase.Output.Failure)
+            onBlocking { execute(any()) }.thenReturn(
+                GetServerPublicPgpKeyUseCase.Output.Failure(
+                    NetworkResult.Failure.NetworkError(UnknownHostException(), "")
+                )
+            )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
@@ -89,6 +96,34 @@ class SignInPresenterTest : KoinTest {
         verify(mockView).showProgress()
         verify(mockView).hideProgress()
         verify(mockView).showGenericError()
+        verifyNoMoreInteractions(mockView)
+    }
+
+    @Test
+    fun `view should show server not reachable when cannot fetch public keys`() {
+        mockVerifyPassphraseUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
+        }
+        mockGetServerPublicPgpKeyUseCase.stub {
+            onBlocking { execute(any()) }.thenReturn(
+                GetServerPublicPgpKeyUseCase.Output.Failure(
+                    NetworkResult.Failure.ServerError(SocketTimeoutException(), headerMessage = "")
+                )
+            )
+        }
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
+
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
+        presenter.attach(mockView)
+        presenter.signInClick(SAMPLE_PASSPHRASE)
+
+        verify(mockView).showTitle()
+        verify(mockView).hideKeyboard()
+        verify(mockView).showAuthenticationReason(AuthContract.View.RefreshAuthReason.SESSION)
+        verify(mockView).showProgress()
+        verify(mockView).hideProgress()
+        verify(mockView).showServerNotReachable(any())
         verifyNoMoreInteractions(mockView)
     }
 

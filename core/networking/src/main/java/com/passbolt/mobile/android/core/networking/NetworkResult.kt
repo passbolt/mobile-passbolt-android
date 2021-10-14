@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.core.networking
 
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 
 /**
  * Passbolt - Open source password manager for teams
@@ -43,6 +44,9 @@ sealed class NetworkResult<T : Any> {
             get() = errorCode == HttpURLConnection.HTTP_FORBIDDEN &&
                     this is ServerError &&
                     mfaStatus is MfaStatus.Required
+
+        val isServerNotReachable: Boolean
+            get() = exception is SocketTimeoutException
 
         class ServerError<T : Any>(
             exception: Exception,

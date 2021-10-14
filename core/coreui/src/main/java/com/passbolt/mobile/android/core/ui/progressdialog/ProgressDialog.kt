@@ -12,6 +12,8 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.passbolt.mobile.android.core.ui.databinding.DialogProgressBinding
+import com.passbolt.mobile.android.core.ui.dialog.hideDialog
+import com.passbolt.mobile.android.core.ui.dialog.showDialog
 
 /**
  * Passbolt - Open source password manager for teams
@@ -59,28 +61,12 @@ class ProgressDialog : DialogFragment(), LifecycleObserver {
             dismiss()
         }
     }
-
-    companion object {
-        val TAG: String = ProgressDialog::class.java.name
-    }
 }
 
 fun showProgressDialog(fragmentManager: FragmentManager) {
-    with(fragmentManager) {
-        val progressFragment = findFragmentByTag(ProgressDialog.TAG)
-        if (progressFragment?.isAdded != true) {
-            ProgressDialog().show(this, ProgressDialog.TAG)
-            executePendingTransactions()
-        }
-    }
+    showDialog(fragmentManager, ProgressDialog(), ProgressDialog::class.java.name)
 }
 
 fun hideProgressDialog(fragmentManager: FragmentManager) {
-    with(fragmentManager) {
-        val progressFragment = findFragmentByTag(ProgressDialog.TAG)
-        progressFragment?.let {
-            beginTransaction().remove(progressFragment).commit()
-            executePendingTransactions()
-        }
-    }
+    hideDialog(fragmentManager, ProgressDialog::class.java.name)
 }
