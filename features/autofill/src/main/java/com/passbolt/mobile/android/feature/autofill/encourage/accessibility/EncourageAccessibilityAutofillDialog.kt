@@ -65,6 +65,7 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        presenter.dialogCreate()
         return object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
                 dismiss()

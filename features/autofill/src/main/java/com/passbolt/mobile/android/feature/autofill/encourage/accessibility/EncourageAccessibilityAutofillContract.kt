@@ -44,5 +44,6 @@ interface EncourageAccessibilityAutofillContract {
         fun serviceClick()
         fun resume()
         fun backPressed()
+        fun dialogCreate()
     }
 }

@@ -8,6 +8,7 @@ class EncourageAccessibilityAutofillPresenter(
 ) : EncourageAccessibilityAutofillContract.Presenter {
 
     override var view: EncourageAccessibilityAutofillContract.View? = null
+    private var isAutofillAlreadyEnabled = false
 
     override fun resume() {
         view?.setOverlayEnabled(autofillInformationProvider.isOverlayEnabled())
@@ -18,13 +19,18 @@ class EncourageAccessibilityAutofillPresenter(
         )
     }
 
+    override fun dialogCreate() {
+        isAutofillAlreadyEnabled = isSetupSuccessful()
+    }
+
     private fun isSetupSuccessful() =
         autofillInformationProvider.isOverlayEnabled() && autofillInformationProvider.isAccessibilityServiceEnabled(
             AccessibilityService::class.java.name
         )
 
     override fun closeClick() {
-        if (isSetupSuccessful()) {
+        if (isSetupSuccessful() && !isAutofillAlreadyEnabled) {
+            isAutofillAlreadyEnabled = true
             view?.closeWithSuccess()
         } else {
             view?.dismissWithNoAction()
@@ -44,7 +50,7 @@ class EncourageAccessibilityAutofillPresenter(
     }
 
     override fun backPressed() {
-        if (isSetupSuccessful()) {
+        if (isSetupSuccessful() && !isAutofillAlreadyEnabled) {
             view?.closeWithSuccess()
         } else {
             view?.dismissWithNoAction()

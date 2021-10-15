@@ -14,7 +14,8 @@ internal class AuthInterceptor(
         val request = chain.request()
         val newBuilder = request.newBuilder()
         if (ANONYMOUS_PATHS.none { request.url.encodedPath == it } &&
-            !request.url.encodedPath.contains(AuthPaths.AVATAR_PATH)) {
+            !request.url.encodedPath.contains(AuthPaths.AVATAR_PATH) &&
+            !request.url.encodedPath.contains(AuthPaths.TRANSFER_PATH)) {
             addAuthTokens(newBuilder)
         }
         return chain.proceed(newBuilder.build())
