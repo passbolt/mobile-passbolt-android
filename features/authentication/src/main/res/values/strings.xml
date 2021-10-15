@@ -46,7 +46,7 @@
     <string name="dialog_mfa_yubikey_otp">Yubikey OTP</string>
     <string name="dialog_mfa_scan_youbikey">Scan your Yubibey</string>
     <string name="dialog_mfa_other_provider">Try with another provider</string>
-    <string name="dialog_mfa_remember_me">Remember this device for 40 days</string>
+    <string name="dialog_mfa_remember_me">Remember this device for 30 days</string>
     <string name="dialog_mfa_scan_cancelled">Scanning cancelled</string>
     <string name="dialog_mfa_scan_empty_otp">Scanned OTP is empty</string>
     <string name="dialog_mfa_totp">Two Factor Authentication</string>
