@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth
 
 import androidx.biometric.BiometricPrompt
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.feature.authentication.MfaProviderHandler
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
@@ -12,7 +13,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInP
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import org.koin.core.module.Module
@@ -58,7 +59,7 @@ fun Module.authModule() {
             )
         }
         scoped {
-            SiginInUseCase(
+            SignInUseCase(
                 authRepository = get(),
                 signInMapper = get(),
                 mfaTokenExtractor = get()
@@ -111,6 +112,7 @@ fun Module.authModule() {
             MfaStatusProvider()
         }
     }
+    single { MfaProviderHandler() }
 }
 
 private fun ScopeDSL.authPresenter() {
@@ -166,5 +168,6 @@ private fun Scope.signInPresenter() = SignInPresenter(
     saveServerFingerprintUseCase = get(),
     isServerFingerprintCorrectUseCase = get(),
     authReasonMapper = get(),
-    mfaStatusProvider = get()
+    mfaStatusProvider = get(),
+    getSessionUseCase = get()
 )

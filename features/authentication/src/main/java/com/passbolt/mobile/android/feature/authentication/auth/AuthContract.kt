@@ -60,9 +60,10 @@ interface AuthContract {
         fun navigateToAccountList()
         fun showServerFingerprintChanged(newFingerprint: String)
         fun showDecryptionError(message: String?)
-        fun showTotpDialog(jwtToken: String)
-        fun showYubikeyDialog(jwtToken: String)
         fun showServerNotReachable(serverDomain: String)
+        fun showTotpDialog(jwtToken: String, hasYubikeyProvider: Boolean)
+        fun showYubikeyDialog(jwtToken: String, hasTotpProvider: Boolean)
+        fun showUnknownProvider()
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE

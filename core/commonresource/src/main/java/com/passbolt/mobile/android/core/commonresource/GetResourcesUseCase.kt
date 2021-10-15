@@ -7,7 +7,6 @@ import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.service.resource.ResourceRepository
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.core.mvp.session.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 
 /**
@@ -51,9 +50,9 @@ class GetResourcesUseCase(
                     AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
                 }
                 this is Failure<*> && this.response.isMfaRequired -> {
-                    val provider = MfaTypeProvider.get(this.response)
+                    val providers = MfaTypeProvider.get(this.response)
                     AuthenticationState.Unauthenticated(
-                        AuthenticationState.Unauthenticated.Reason.Mfa(MfaProvider.parse(provider?.name?.lowercase()))
+                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
                     )
                 }
                 else -> {

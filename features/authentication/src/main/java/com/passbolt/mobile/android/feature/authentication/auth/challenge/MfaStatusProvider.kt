@@ -26,9 +26,13 @@ import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
  */
 class MfaStatusProvider {
 
-    fun provideMfaStatus(challengeResponseDto: ChallengeResponseDto, mfaToken: String?) =
+    fun provideMfaStatus(
+        challengeResponseDto: ChallengeResponseDto,
+        mfaToken: String?,
+        currentMfaToken: String?
+    ) =
         challengeResponseDto.mfaProviders.let {
-            if (it.isNullOrEmpty() || mfaToken != null) {
+            if (it.isNullOrEmpty() || (mfaToken != null && mfaToken == currentMfaToken)) {
                 MfaStatus.NotRequired
             } else {
                 MfaStatus.Required(it)

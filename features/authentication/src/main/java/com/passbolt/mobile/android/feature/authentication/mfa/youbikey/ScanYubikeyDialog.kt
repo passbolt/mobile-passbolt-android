@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
@@ -62,10 +63,18 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     private val bundledAuthToken by lifecycleAwareLazy {
         requireArguments().getString(EXTRA_AUTH_KEY)
     }
+    private val bundledHasTotpProvider by lifecycleAwareLazy {
+        requireArguments().getBoolean(EXTRA_TOTP_PROVIDER)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.FullscreenDialogTheme)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.onViewCreated(bundledHasTotpProvider)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -89,6 +98,10 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         listener = null
         presenter.detach()
         super.onDetach()
+    }
+
+    override fun showChangeProviderButton(bundledHasTotpProvider: Boolean) {
+        binding.otherProviderButton.isVisible = bundledHasTotpProvider
     }
 
     private fun setupListeners() {
@@ -149,11 +162,16 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
 
     companion object {
         private const val EXTRA_AUTH_KEY = "EXTRA_AUTH_KEY"
+        private const val EXTRA_TOTP_PROVIDER = "EXTRA_TOTP_PROVIDER"
 
-        fun newInstance(token: String? = null) =
+        fun newInstance(
+            token: String? = null,
+            hasTotpProvider: Boolean
+        ) =
             ScanYubikeyDialog().apply {
                 arguments = bundleOf(
-                    EXTRA_AUTH_KEY to token
+                    EXTRA_AUTH_KEY to token,
+                    EXTRA_TOTP_PROVIDER to hasTotpProvider
                 )
             }
     }

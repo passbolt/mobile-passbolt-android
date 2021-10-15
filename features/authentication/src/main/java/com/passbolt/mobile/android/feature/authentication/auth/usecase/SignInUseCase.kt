@@ -30,16 +30,19 @@ import java.net.HttpURLConnection
  * @since v1.0
  */
 
-typealias SignInFailureType = SiginInUseCase.Output.Failure.FailureType
+typealias SignInFailureType = SignInUseCase.Output.Failure.FailureType
 
-class SiginInUseCase(
+class SignInUseCase(
     private val authRepository: AuthRepository,
     private val signInMapper: SignInMapper,
     private val mfaTokenExtractor: MfaTokenExtractor
-) : AsyncUseCase<SiginInUseCase.Input, SiginInUseCase.Output> {
+) : AsyncUseCase<SignInUseCase.Input, SignInUseCase.Output> {
 
-    override suspend fun execute(input: Input): Output =
-        when (val result = authRepository.signIn(signInMapper.mapRequestToDto(input.userId, input.challenge))) {
+    override suspend fun execute(input: Input): Output {
+        return when (val result = authRepository.signIn(
+            signInMapper.mapRequestToDto(input.userId, input.challenge),
+            input.mfaToken
+        )) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(
                 result.headerMessage,
                 Output.Failure.FailureType.OTHER
@@ -53,6 +56,7 @@ class SiginInUseCase(
                 mfaTokenExtractor.get(result.value)
             )
         }
+    }
 
     private fun getFailureType(errorCode: Int?) =
         if (errorCode == HttpURLConnection.HTTP_NOT_FOUND) {
@@ -81,6 +85,7 @@ class SiginInUseCase(
 
     data class Input(
         val userId: String,
-        val challenge: String
+        val challenge: String,
+        val mfaToken: String?
     )
 }

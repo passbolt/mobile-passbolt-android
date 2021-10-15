@@ -17,13 +17,14 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -150,7 +151,7 @@ class SignInPresenterTest : KoinTest {
         }
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }
-                .doReturn(SiginInUseCase.Output.Success("challenge", "mfa"))
+                .doReturn(SignInUseCase.Output.Success("challenge", "mfa"))
         }
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
@@ -173,7 +174,9 @@ class SignInPresenterTest : KoinTest {
                 )
             )
         }
-        whenever(mockMfaStatusProvider.provideMfaStatus(any(), any())).doReturn(MfaStatus.NotRequired)
+        whenever(mockMfaStatusProvider.provideMfaStatus(any(), any(), any())).doReturn(MfaStatus.NotRequired)
+        whenever(mockGetSessionUseCase.execute(anyOrNull()))
+            .doReturn(GetSessionUseCase.Output("access", "refresh", "mfa"))
 
         presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
         presenter.attach(mockView)
@@ -241,7 +244,7 @@ class SignInPresenterTest : KoinTest {
         }
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }
-                .doReturn(SiginInUseCase.Output.Success("challenge", "mfa"))
+                .doReturn(SignInUseCase.Output.Success("challenge", "mfa"))
         }
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
@@ -255,6 +258,8 @@ class SignInPresenterTest : KoinTest {
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
+        whenever(mockGetSessionUseCase.execute(anyOrNull()))
+            .doReturn(GetSessionUseCase.Output("access", "refresh", "mfa"))
 
         presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
         presenter.attach(mockView)
@@ -291,11 +296,13 @@ class SignInPresenterTest : KoinTest {
         }
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                SiginInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.OTHER)
+                SignInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.OTHER)
             )
         }
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
+        whenever(mockGetSessionUseCase.execute(anyOrNull()))
+            .doReturn(GetSessionUseCase.Output("access", "refresh", "mfa"))
 
         presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshFull, ACCOUNT)
         presenter.attach(mockView)
@@ -332,7 +339,7 @@ class SignInPresenterTest : KoinTest {
         }
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                SiginInUseCase.Output.Failure(
+                SignInUseCase.Output.Failure(
                     ERROR_MESSAGE,
                     SignInFailureType.OTHER
                 )
@@ -373,7 +380,7 @@ class SignInPresenterTest : KoinTest {
         }
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }
-                .doReturn(SiginInUseCase.Output.Success("challenge", "mfa"))
+                .doReturn(SignInUseCase.Output.Success("challenge", "mfa"))
         }
         mockChallengeDecryptor.stub {
             onBlocking { decrypt(any(), any(), any(), any()) }.doReturn(
@@ -390,6 +397,8 @@ class SignInPresenterTest : KoinTest {
         mockIsServerFingerprintCorrectUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(IsServerFingerprintCorrectUseCase.Output(true))
         }
+        whenever(mockGetSessionUseCase.execute(anyOrNull()))
+            .doReturn(GetSessionUseCase.Output("access", "refresh", "mfa"))
         whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = false))
 
@@ -426,7 +435,7 @@ class SignInPresenterTest : KoinTest {
 
         mockSignInUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
-                SiginInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.ACCOUNT_DOES_NOT_EXIST)
+                SignInUseCase.Output.Failure(ERROR_MESSAGE, SignInFailureType.ACCOUNT_DOES_NOT_EXIST)
             )
         }
 

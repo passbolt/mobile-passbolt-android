@@ -42,8 +42,11 @@ internal class AuthRemoteDataSource(
     override suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto> =
         authApi.getServerPublicRsaKey()
 
-    override suspend fun signIn(signInRequestDto: SignInRequestDto): Response<BaseResponse<SignInResponseDto>> =
-        authApi.signIn(signInRequestDto)
+    override suspend fun signIn(
+        signInRequestDto: SignInRequestDto,
+        mfaToken: String?
+    ): Response<BaseResponse<SignInResponseDto>> =
+        authApi.signIn(signInRequestDto, mfaToken)
 
     override suspend fun signOut(signOutRequestDto: SignOutRequestDto): BaseResponse<Unit> =
         authApi.signOut(signOutRequestDto)

@@ -28,6 +28,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInP
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategy
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
 import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAuthBinding
+import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyDialog
 import com.passbolt.mobile.android.featureflags.ui.FeatureFlagsFetchErrorDialog
@@ -214,21 +215,27 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         )
     }
 
-    override fun showTotpDialog(jwtToken: String) {
-        EnterTotpDialog.newInstance(jwtToken).show(
+    override fun showTotpDialog(jwtToken: String, hasYubikeyProvider: Boolean) {
+        EnterTotpDialog.newInstance(jwtToken, hasYubikeyProvider).show(
             childFragmentManager, EnterTotpDialog::class.java.name
         )
     }
 
-    override fun showYubikeyDialog(jwtToken: String) {
-        ScanYubikeyDialog.newInstance(jwtToken).show(
+    override fun showYubikeyDialog(jwtToken: String, hasTotpProvider: Boolean) {
+        ScanYubikeyDialog.newInstance(jwtToken, hasTotpProvider).show(
             childFragmentManager, EnterTotpDialog::class.java.name
         )
     }
 
     override fun changeProviderToTotp(jwtToken: String?) {
-        EnterTotpDialog.newInstance(jwtToken).show(
+        EnterTotpDialog.newInstance(jwtToken, true).show(
             childFragmentManager, EnterTotpDialog::class.java.name
+        )
+    }
+
+    override fun showUnknownProvider() {
+        UnknownProviderDialog().show(
+            childFragmentManager, UnknownProviderDialog::class.java.name
         )
     }
 

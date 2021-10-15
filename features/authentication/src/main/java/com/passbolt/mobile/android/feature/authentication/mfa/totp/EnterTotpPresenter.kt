@@ -22,6 +22,10 @@ class EnterTotpPresenter(
         view?.navigateToYubikey()
     }
 
+    override fun onCreate(hasYubikeyProvider: Boolean) {
+        view?.showChangeProviderButton(hasYubikeyProvider)
+    }
+
     override fun closeClick() {
         scope.launch {
             view?.showProgress()

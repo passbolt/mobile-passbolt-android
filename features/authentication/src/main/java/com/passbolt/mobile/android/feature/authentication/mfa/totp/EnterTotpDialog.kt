@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
@@ -57,15 +58,19 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     private val bundledAuthToken by lifecycleAwareLazy {
         requireArguments().getString(EXTRA_AUTH_KEY).orEmpty()
     }
+    private val bundledHasYubikeyProvider by lifecycleAwareLazy {
+        requireArguments().getBoolean(EXTRA_YUBIKEY_PROVIDER)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.FullscreenDialogTheme)
+        presenter.onCreate(bundledHasYubikeyProvider)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DialogEnterTotpBinding.inflate(inflater)
-        setupListeners(binding)
+        setupListeners()
         return binding.root
     }
 
@@ -86,7 +91,11 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         super.onDetach()
     }
 
-    private fun setupListeners(binding: DialogEnterTotpBinding) {
+    override fun showChangeProviderButton(hasYubikeyProvider: Boolean) {
+        binding.otherProviderButton.isVisible = hasYubikeyProvider
+    }
+
+    private fun setupListeners() {
         with(binding) {
             otherProviderButton.setDebouncingOnClick { presenter.otherProviderClick() }
             closeButton.setDebouncingOnClick { presenter.closeClick() }
@@ -157,11 +166,16 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
 
     companion object {
         private const val EXTRA_AUTH_KEY = "EXTRA_AUTH_KEY"
+        private const val EXTRA_YUBIKEY_PROVIDER = "EXTRA_YUBIKEY_PROVIDER"
 
-        fun newInstance(token: String? = null) =
+        fun newInstance(
+            token: String? = null,
+            hasYubikeyProvider: Boolean
+        ) =
             EnterTotpDialog().apply {
                 arguments = bundleOf(
-                    EXTRA_AUTH_KEY to token
+                    EXTRA_AUTH_KEY to token,
+                    EXTRA_YUBIKEY_PROVIDER to hasYubikeyProvider
                 )
             }
     }

@@ -59,7 +59,7 @@ class ErrorHeaderMapper(
         try {
             val map = baseResponse?.body as Map<String, List<String>>
             if (map.containsKey(MFA_PROVIDER_KEY)) {
-                val mfaType = MfaProvider.parse(map[MFA_PROVIDER_KEY]?.first())
+                val mfaType = map[MFA_PROVIDER_KEY]?.map { MfaProvider.parse(it) }
                 return MfaStatus.Required(mfaType)
             }
         } catch (e: Exception) {

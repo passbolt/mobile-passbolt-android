@@ -51,12 +51,7 @@ class CookiesInterceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val request = chain.request()
             val newBuilder = request.newBuilder()
-            if (request.url.encodedPath == AuthPaths.AUTH_SIGN_IN) {
-                // mfa token is saved for 40 days so we add it to login request
-                getSessionUseCase.execute(Unit).mfaToken?.let {
-                    newBuilder.addHeader("Cookie", it)
-                }
-            } else if (ANONYMOUS_PATHS.none { request.url.encodedPath == it } &&
+            if (ANONYMOUS_PATHS.none { request.url.encodedPath == it } &&
                 !request.url.encodedPath.contains(AVATAR_PATH) && !request.url.encodedPath.contains(TRANSFER_PATH)) {
                 mfaCookie?.let {
                     newBuilder.addHeader("Cookie", it)
@@ -74,6 +69,7 @@ class CookiesInterceptor {
             AuthPaths.SETTINGS,
             AuthPaths.AUTH_RSA,
             AuthPaths.MFA_VERIFICATION_TOTP,
+            AuthPaths.MFA_VERIFICATION_YUBIKEY,
             AuthPaths.AUTH_VERIFY
         )
     }

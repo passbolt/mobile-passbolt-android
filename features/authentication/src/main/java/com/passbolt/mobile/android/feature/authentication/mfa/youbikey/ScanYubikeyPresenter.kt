@@ -23,6 +23,10 @@ class ScanYubikeyPresenter(
         view?.showScanYubikey()
     }
 
+    override fun onViewCreated(bundledHasTotpProvider: Boolean) {
+        view?.showChangeProviderButton(bundledHasTotpProvider)
+    }
+
     override fun yubikeyScanned(otp: String?, authToken: String?, rememberChecked: Boolean) {
         if (!otp.isNullOrBlank()) {
             verifyYubikey(otp, authToken, rememberChecked)

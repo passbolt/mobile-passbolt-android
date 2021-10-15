@@ -13,7 +13,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStat
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider.Companion.MFA_PROVIDER_YUBIKEY
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SiginInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCa
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -66,7 +67,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
 class SignInPresenter(
     private val getServerPublicPgpKeyUseCase: GetServerPublicPgpKeyUseCase,
     private val getServerPublicRsaKeyUseCase: GetServerPublicRsaKeyUseCase,
-    private val signInUseCase: SiginInUseCase,
+    private val signInUseCase: SignInUseCase,
     private val challengeProvider: ChallengeProvider,
     private val challengeDecryptor: ChallengeDecryptor,
     private val challengeVerifier: ChallengeVerifier,
@@ -79,6 +80,7 @@ class SignInPresenter(
     private val saveServerFingerprintUseCase: SaveServerFingerprintUseCase,
     private val isServerFingerprintCorrectUseCase: IsServerFingerprintCorrectUseCase,
     private val mfaStatusProvider: MfaStatusProvider,
+    private val getSessionUseCase: GetSessionUseCase,
     removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     biometricCipher: BiometricCipher,
     getPassphraseUseCase: GetPassphraseUseCase,
@@ -202,8 +204,9 @@ class SignInPresenter(
         fingerprint: String,
         accountData: GetAccountDataUseCase.Output
     ) {
-        when (val result = signInUseCase.execute(SiginInUseCase.Input(serverId, challenge))) {
-            is SiginInUseCase.Output.Failure -> {
+        val currentMfaToken = getSessionUseCase.execute(Unit).mfaToken
+        when (val result = signInUseCase.execute(SignInUseCase.Input(serverId, challenge, currentMfaToken))) {
+            is SignInUseCase.Output.Failure -> {
                 view?.hideProgress()
                 when (result.type) {
                     SignInFailureType.ACCOUNT_DOES_NOT_EXIST -> {
@@ -218,7 +221,7 @@ class SignInPresenter(
                     }
                 }
             }
-            is SiginInUseCase.Output.Success -> {
+            is SignInUseCase.Output.Success -> {
                 val challengeDecryptResult = challengeDecryptor.decrypt(
                     serverPublicKey,
                     passphrase,
@@ -232,7 +235,8 @@ class SignInPresenter(
                             rsaKey,
                             passphrase,
                             fingerprint,
-                            result.mfaToken
+                            result.mfaToken,
+                            currentMfaToken
                         )
                     is ChallengeDecryptor.Output.DecryptionError -> {
                         view?.apply {
@@ -254,7 +258,8 @@ class SignInPresenter(
         rsaKey: String,
         passphrase: ByteArray,
         fingerprint: String,
-        mfaToken: String?
+        mfaToken: String?,
+        currentMfaToken: String?
     ) {
         when (val result = challengeVerifier.verify(challengeResponseDto, rsaKey)) {
             ChallengeVerifier.Output.Failure -> showGenericError()
@@ -268,7 +273,11 @@ class SignInPresenter(
                     fingerprint = fingerprint,
                     mfaToken = mfaToken
                 )
-                when (val mfaStatus = mfaStatusProvider.provideMfaStatus(challengeResponseDto, mfaToken)) {
+                when (val mfaStatus = mfaStatusProvider.provideMfaStatus(
+                    challengeResponseDto,
+                    mfaToken,
+                    currentMfaToken
+                )) {
                     MfaStatus.NotRequired -> mfaNotRequired()
                     is MfaStatus.Required -> mfaRequired(mfaStatus.mfaProviders, result.accessToken)
                 }
@@ -282,10 +291,10 @@ class SignInPresenter(
 
     private fun mfaRequired(mfaProviders: List<String>, jwtToken: String) {
         when (val provider = mfaProviders.first()) {
-            MFA_PROVIDER_TOTP -> view?.showTotpDialog(jwtToken)
-            MFA_PROVIDER_YUBIKEY -> view?.showYubikeyDialog(jwtToken)
+            MFA_PROVIDER_TOTP -> view?.showTotpDialog(jwtToken, mfaProviders.contains(MFA_PROVIDER_YUBIKEY))
+            MFA_PROVIDER_YUBIKEY -> view?.showYubikeyDialog(jwtToken, mfaProviders.contains(MFA_PROVIDER_TOTP))
             else -> {
-                view?.showGenericError()
+                view?.showUnknownProvider()
                 Timber.e("Unknown provider: $provider")
             }
         }

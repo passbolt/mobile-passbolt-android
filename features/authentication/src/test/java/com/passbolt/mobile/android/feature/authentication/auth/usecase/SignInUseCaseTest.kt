@@ -9,6 +9,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -45,7 +46,7 @@ import java.net.HttpURLConnection
 @ExperimentalCoroutinesApi
 class SignInUseCaseTest : KoinTest {
 
-    private val signInUseCase: SiginInUseCase by inject()
+    private val signInUseCase: SignInUseCase by inject()
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
@@ -56,12 +57,12 @@ class SignInUseCaseTest : KoinTest {
     @Test
     fun `test account not found should be mapped correct`() = runBlockingTest {
         mockAuthRepository.stub {
-            onBlocking { signIn(any()) }.doReturn(
+            onBlocking { signIn(any(), any()) }.doReturn(
                 NetworkResult.Failure.ServerError(
                     HttpException(
                         Response.error<String>(
                             HttpURLConnection.HTTP_NOT_FOUND,
-                            ResponseBody.create("application/json".toMediaTypeOrNull(), "")
+                            "".toResponseBody("application/json".toMediaTypeOrNull())
                         )
                     ),
                     HttpURLConnection.HTTP_NOT_FOUND,
@@ -70,8 +71,8 @@ class SignInUseCaseTest : KoinTest {
             )
         }
 
-        val response = signInUseCase.execute(SiginInUseCase.Input("test", "test"))
-        assertThat(response).isInstanceOf(SiginInUseCase.Output.Failure::class.java)
-        assertThat((response as SiginInUseCase.Output.Failure).type).isEqualTo(SignInFailureType.ACCOUNT_DOES_NOT_EXIST)
+        val response = signInUseCase.execute(SignInUseCase.Input("test", "test", "mfa"))
+        assertThat(response).isInstanceOf(SignInUseCase.Output.Failure::class.java)
+        assertThat((response as SignInUseCase.Output.Failure).type).isEqualTo(SignInFailureType.ACCOUNT_DOES_NOT_EXIST)
     }
 }

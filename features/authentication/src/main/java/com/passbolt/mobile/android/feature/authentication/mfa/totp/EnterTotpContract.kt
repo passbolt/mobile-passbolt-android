@@ -15,6 +15,7 @@ interface EnterTotpContract {
         fun clearInput()
         fun showWrongCodeError()
         fun hideWrongCodeError()
+        fun showChangeProviderButton(hasYubikeyProvider: Boolean)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -23,5 +24,6 @@ interface EnterTotpContract {
         fun otpEntered(otp: String, authToken: String, rememberMeChecked: Boolean)
         fun pasteButtonClick(pasteData: CharSequence?)
         fun inputTextChange()
+        fun onCreate(hasYubikeyProvider: Boolean)
     }
 }
