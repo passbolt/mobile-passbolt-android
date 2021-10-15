@@ -1,15 +1,13 @@
-# Add Application specific rules here.
+# do not obfuscate code - Open Source
+-dontobfuscate
+
+# keep all the code from the app
+-keep class com.passbolt.mobile.android.** { *; }
 
 # General config
 -keepattributes InnerClasses,Signature,Exceptions,EnclosingMethod,SourceFile,LineNumberTable,*Annotation*
 -renamesourcefileattribute SourceFile
 
--keepclassmembers class * extends java.lang.Enum {
-    <fields>;
-}
-
-# Exceptions
--keepclasseswithmembernames class * extends java.lang.Throwable
-
-# AndroidX Navigation
--keepnames class androidx.navigation.fragment.NavHostFragment
+# Room & SqlCipher
+-keep,includedescriptorclasses class net.sqlcipher.** { *; }
+-keep,includedescriptorclasses interface net.sqlcipher.** { *; }
