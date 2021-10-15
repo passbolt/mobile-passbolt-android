@@ -49,9 +49,14 @@ import org.koin.androidx.scope.fragmentScope
 class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyContract.View {
 
     override val scope by fragmentScope()
-    private var listener: Listener? = null
+    private var listener: ScanYubikeyListener? = null
     private val presenter: ScanYubikeyContract.Presenter by scope.inject()
     private lateinit var binding: DialogScanYubikeyBinding
+    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            presenter.authenticationSucceeded()
+        }
+    }
     private val scanYubikeyResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             val otp = it.data?.getStringExtra(OtpActivity.EXTRA_OTP)
@@ -74,12 +79,12 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupListeners()
         presenter.onViewCreated(bundledHasTotpProvider)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DialogScanYubikeyBinding.inflate(inflater)
-        setupListeners()
         return binding.root
     }
 
@@ -87,9 +92,9 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         super.onAttach(context)
         isCancelable = false
         listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
+            activity is ScanYubikeyListener -> activity as ScanYubikeyListener
+            parentFragment is ScanYubikeyListener -> parentFragment as ScanYubikeyListener
+            else -> error("Parent must implement ${ScanYubikeyListener::class.java.name}")
         }
         presenter.attach(this)
     }
@@ -98,6 +103,15 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         listener = null
         presenter.detach()
         super.onDetach()
+    }
+
+    override fun navigateToLogin() {
+        authenticationResult.launch(
+            ActivityIntents.authentication(
+                requireContext(),
+                ActivityIntents.AuthConfig.RefreshFull
+            )
+        )
     }
 
     override fun showChangeProviderButton(bundledHasTotpProvider: Boolean) {
@@ -150,14 +164,18 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         listener?.yubikeyVerificationSucceeded(mfaHeader)
     }
 
+    override fun notifyLoginSucceeded() {
+        dismiss()
+        listener?.yubikeyVerificationSucceeded()
+    }
+
+    override fun close() {
+        dismiss()
+    }
+
     override fun showError() {
         Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_LONG)
             .show()
-    }
-
-    interface Listener {
-        fun changeProviderToTotp(jwtToken: String?)
-        fun yubikeyVerificationSucceeded(mfaHeader: String)
     }
 
     companion object {
@@ -175,4 +193,9 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
                 )
             }
     }
+}
+
+interface ScanYubikeyListener {
+    fun changeProviderToTotp(jwtToken: String?)
+    fun yubikeyVerificationSucceeded(mfaHeader: String? = null)
 }

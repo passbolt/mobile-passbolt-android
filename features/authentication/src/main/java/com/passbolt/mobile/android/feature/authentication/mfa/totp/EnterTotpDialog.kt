@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
+import android.app.Activity
 import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
@@ -7,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -51,12 +53,17 @@ import org.koin.androidx.scope.fragmentScope
 class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContract.View {
 
     override val scope by fragmentScope()
-    private lateinit var binding: DialogEnterTotpBinding
-    private var listener: Listener? = null
-    private val presenter: EnterTotpContract.Presenter by scope.inject()
+    private var listener: EnterTotpListener? = null
+    val presenter: EnterTotpContract.Presenter by scope.inject()
     private val clipboardManager: ClipboardManager? by inject()
+    private lateinit var binding: DialogEnterTotpBinding
     private val bundledAuthToken by lifecycleAwareLazy {
         requireArguments().getString(EXTRA_AUTH_KEY).orEmpty()
+    }
+    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            presenter.authenticationSucceeded()
+        }
     }
     private val bundledHasYubikeyProvider by lifecycleAwareLazy {
         requireArguments().getBoolean(EXTRA_YUBIKEY_PROVIDER)
@@ -65,12 +72,16 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.FullscreenDialogTheme)
-        presenter.onCreate(bundledHasYubikeyProvider)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DialogEnterTotpBinding.inflate(inflater)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setupListeners()
+        presenter.viewCreated(bundledHasYubikeyProvider)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DialogEnterTotpBinding.inflate(inflater)
         return binding.root
     }
 
@@ -78,9 +89,9 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         super.onAttach(context)
         isCancelable = false
         listener = when {
-            activity is Listener -> activity as Listener
-            parentFragment is Listener -> parentFragment as Listener
-            else -> error("Parent must implement ${Listener::class.java.name}")
+            activity is EnterTotpListener -> activity as EnterTotpListener
+            parentFragment is EnterTotpListener -> parentFragment as EnterTotpListener
+            else -> error("Parent must implement ${EnterTotpListener::class.java.name}")
         }
         presenter.attach(this)
     }
@@ -122,6 +133,15 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
             .show()
     }
 
+    override fun notifyLoginSucceeded() {
+        dismiss()
+        listener?.totpVerificationSucceeded()
+    }
+
+    override fun close() {
+        dismiss()
+    }
+
     override fun clearInput() {
         binding.otpInput.setText("")
     }
@@ -159,9 +179,13 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         listener?.totpVerificationSucceeded(mfaHeader)
     }
 
-    interface Listener {
-        fun changeProviderToYubikey()
-        fun totpVerificationSucceeded(mfaHeader: String)
+    override fun navigateToLogin() {
+        authenticationResult.launch(
+            ActivityIntents.authentication(
+                requireContext(),
+                ActivityIntents.AuthConfig.RefreshFull
+            )
+        )
     }
 
     companion object {
@@ -179,4 +203,9 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
                 )
             }
     }
+}
+
+interface EnterTotpListener {
+    fun changeProviderToYubikey()
+    fun totpVerificationSucceeded(mfaHeader: String? = null)
 }

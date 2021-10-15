@@ -300,25 +300,41 @@ class SignInPresenter(
         }
     }
 
-    override fun totpSucceeded(mfaHeader: String) {
-        loginState?.mfaToken = mfaHeader
-        signInSuccess()
+    override fun totpSucceeded(mfaHeader: String?) {
+        mfaHeader?.let {
+            loginState?.mfaToken = it
+        }
+        signInSuccess(mfaHeader != null)
     }
 
-    private fun signInSuccess() {
-        val currentLoginState = requireNotNull(loginState)
-        saveSessionUseCase.execute(
-            SaveSessionUseCase.Input(
-                userId = userId,
-                accessToken = currentLoginState.accessToken,
-                refreshToken = currentLoginState.refreshToken,
-                mfaToken = loginState?.mfaToken
+    override fun yubikeySucceeded(mfaHeader: String?) {
+        mfaHeader?.let {
+            loginState?.mfaToken = it
+        }
+        signInSuccess(mfaHeader != null)
+    }
+
+    private fun signInSuccess(updateSession: Boolean = false) {
+        if (updateSession) {
+            val currentLoginState = requireNotNull(loginState)
+            saveSessionUseCase.execute(
+                SaveSessionUseCase.Input(
+                    userId = userId,
+                    accessToken = currentLoginState.accessToken,
+                    refreshToken = currentLoginState.refreshToken,
+                    mfaToken = loginState?.mfaToken
+                )
             )
-        )
+            passphraseMemoryCache.set(currentLoginState.passphrase)
+            saveServerFingerprintUseCase.execute(
+                SaveServerFingerprintUseCase.Input(
+                    currentLoginState.fingerprint,
+                    userId
+                )
+            )
+            currentLoginState.passphrase.erase()
+        }
         saveSelectedAccountUseCase.execute(UserIdInput(userId))
-        passphraseMemoryCache.set(currentLoginState.passphrase)
-        saveServerFingerprintUseCase.execute(SaveServerFingerprintUseCase.Input(currentLoginState.fingerprint, userId))
-        currentLoginState.passphrase.erase()
         loginState?.passphrase?.erase()
         loginState = null
         fetchFeatureFlags()

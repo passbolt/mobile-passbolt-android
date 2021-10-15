@@ -83,6 +83,7 @@ interface AuthContract {
         fun biometricAuthClick()
         fun connectToExistingAccountClick()
         fun fingerprintServerConfirmationClick(fingerprint: String)
-        fun totpSucceeded(mfaHeader: String)
+        fun totpSucceeded(mfaHeader: String?)
+        fun yubikeySucceeded(mfaHeader: String?)
     }
 }

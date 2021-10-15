@@ -85,7 +85,11 @@ class PassphrasePresenter(
         // not used
     }
 
-    override fun totpSucceeded(mfaHeader: String) {
-        // TODO
+    override fun totpSucceeded(mfaHeader: String?) {
+        view?.authSuccess()
+    }
+
+    override fun yubikeySucceeded(mfaHeader: String?) {
+        view?.authSuccess()
     }
 }

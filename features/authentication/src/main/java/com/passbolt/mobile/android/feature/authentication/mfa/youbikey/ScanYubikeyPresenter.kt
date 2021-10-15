@@ -37,14 +37,23 @@ class ScanYubikeyPresenter(
 
     private fun verifyYubikey(otp: String, authToken: String?, rememberChecked: Boolean) {
         view?.showProgress()
+
         scope.launch {
             when (val result =
-                verifyYubikeyUseCase.execute(VerifyYubikeyUseCase.Input(otp, authToken, rememberChecked))) {
-                VerifyYubikeyUseCase.Output.Failure -> view?.showError()
+                verifyYubikeyUseCase.execute(VerifyYubikeyUseCase.Input(otp, authToken, rememberChecked))
+            ) {
+                is VerifyYubikeyUseCase.Output.Failure<*> -> view?.showError()
+                is VerifyYubikeyUseCase.Output.NetworkFailure -> view?.showError()
                 is VerifyYubikeyUseCase.Output.Success -> yubikeySuccess(result.mfaHeader)
+                is VerifyYubikeyUseCase.Output.Unauthorized -> view?.navigateToLogin()
             }
             view?.hideProgress()
         }
+    }
+
+    override fun authenticationSucceeded() {
+        view?.close()
+        view?.notifyLoginSucceeded()
     }
 
     private fun yubikeySuccess(mfaHeader: String?) {

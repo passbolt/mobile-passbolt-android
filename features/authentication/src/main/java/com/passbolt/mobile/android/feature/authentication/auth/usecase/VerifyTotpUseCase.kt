@@ -2,9 +2,13 @@ package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
 import com.passbolt.mobile.android.common.MfaTokenExtractor
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
+import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.request.TotpRequest
 import com.passbolt.mobile.android.service.mfa.MfaRepository
+import java.net.HttpURLConnection
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,17 +41,25 @@ class VerifyTotpUseCase(
         when (val result = mfaRepository.verifyTotp(
             TotpRequest(input.totp, input.remember), "Bearer ${input.jwtHeader}"
         )) {
-            is NetworkResult.Failure.NetworkError -> Output.Failure
+            is NetworkResult.Failure.NetworkError -> Output.Failure(result)
             is NetworkResult.Failure.ServerError -> {
                 if (result.invalidFields?.contains(VALID_OTP) == true) {
                     Output.WrongCode
                 } else {
-                    Output.Failure
+                    Output.Failure(result)
                 }
             }
             is NetworkResult.Success -> {
-                val mfaHeader = mfaTokenExtractor.get(result.value)
-                Output.Success(mfaHeader)
+                if (result.value.isSuccessful) {
+                    val mfaHeader = mfaTokenExtractor.get(result.value)
+                    Output.Success(mfaHeader)
+                } else {
+                    if (result.value.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                        Output.Unauthorized
+                    } else {
+                        Output.NetworkFailure(result.value.code())
+                    }
+                }
             }
         }
 
@@ -57,12 +69,33 @@ class VerifyTotpUseCase(
         val remember: Boolean
     )
 
-    sealed class Output {
+    sealed class Output : AuthenticatedUseCaseOutput {
+
+        override val authenticationState: AuthenticationState
+            get() = when {
+                this is Failure<*> && this.response.isUnauthorized ->
+                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                this is Failure<*> && this.response.isMfaRequired -> {
+                    val providers = MfaTypeProvider.get(this.response)
+
+                    AuthenticationState.Unauthenticated(
+                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
+                    )
+                }
+                else -> AuthenticationState.Authenticated
+            }
+
         class Success(
             val mfaHeader: String?
         ) : Output()
 
-        object Failure : Output()
+        class NetworkFailure(
+            val errorCode: Int
+        ) : Output()
+
+        object Unauthorized : Output()
+
+        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
         object WrongCode : Output()
     }
 

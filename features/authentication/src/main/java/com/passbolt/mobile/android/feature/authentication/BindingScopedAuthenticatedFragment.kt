@@ -13,7 +13,9 @@ import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpDial
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyDialog
 import java.lang.IllegalStateException
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState.Unauthenticated.Reason
+import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpListener
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
+import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyListener
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import org.koin.android.ext.android.inject
 
@@ -42,8 +44,8 @@ import org.koin.android.ext.android.inject
 
 abstract class BindingScopedAuthenticatedFragment
 <T : ViewBinding, V : BaseAuthenticatedContract.View>(viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
-    BindingScopedFragment<T>(viewInflater), BaseAuthenticatedContract.View, EnterTotpDialog.Listener,
-    ScanYubikeyDialog.Listener {
+    BindingScopedFragment<T>(viewInflater), BaseAuthenticatedContract.View, EnterTotpListener,
+    ScanYubikeyListener {
 
     abstract val presenter: BaseAuthenticatedContract.Presenter<V>
     private val mfaProviderHandler: MfaProviderHandler by inject()
@@ -101,7 +103,7 @@ abstract class BindingScopedAuthenticatedFragment
         showYubikeyDialog(true)
     }
 
-    override fun totpVerificationSucceeded(mfaHeader: String) {
+    override fun totpVerificationSucceeded(mfaHeader: String?) {
         presenter.authenticationRefreshed()
     }
 
@@ -109,7 +111,7 @@ abstract class BindingScopedAuthenticatedFragment
         showTotpDialog(true)
     }
 
-    override fun yubikeyVerificationSucceeded(mfaHeader: String) {
+    override fun yubikeyVerificationSucceeded(mfaHeader: String?) {
         presenter.authenticationRefreshed()
     }
 }
