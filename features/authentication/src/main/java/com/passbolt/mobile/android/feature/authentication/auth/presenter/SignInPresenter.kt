@@ -145,7 +145,19 @@ class SignInPresenter(
                     )
                 }
             } else {
-                showGenericError()
+                if ((pgpKeyResult as? GetServerPublicPgpKeyUseCase.Output.Failure)
+                        ?.error?.isServerNotReachable == true ||
+                    (rsaKeyResult as? GetServerPublicRsaKeyUseCase.Output.Failure)
+                        ?.error?.isServerNotReachable == true
+                ) {
+                    val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
+                    view?.apply {
+                        hideProgress()
+                        showServerNotReachable(accountData.url)
+                    }
+                } else {
+                    showGenericError()
+                }
             }
         }
     }

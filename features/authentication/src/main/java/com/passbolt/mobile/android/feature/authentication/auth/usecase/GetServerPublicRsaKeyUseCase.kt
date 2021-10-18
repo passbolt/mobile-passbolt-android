@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
 import com.passbolt.mobile.android.service.auth.AuthRepository
 
 /**
@@ -32,13 +34,14 @@ class GetServerPublicRsaKeyUseCase(
 
     override suspend fun execute(input: Unit): Output =
         when (val result = authRepository.getServerPublicRsaKey()) {
-            is NetworkResult.Failure.NetworkError -> Output.Failure
-            is NetworkResult.Failure.ServerError -> Output.Failure
+            is NetworkResult.Failure -> Output.Failure(result)
             is NetworkResult.Success -> Output.Success(result.value.body.keydata)
         }
 
     sealed class Output {
-        class Success(val rsaKey: String) : Output()
-        object Failure : Output()
+
+        data class Success(val rsaKey: String) : Output()
+
+        class Failure(val error: NetworkResult.Failure<BaseResponse<ServerRsaResponseDto>>) : Output()
     }
 }

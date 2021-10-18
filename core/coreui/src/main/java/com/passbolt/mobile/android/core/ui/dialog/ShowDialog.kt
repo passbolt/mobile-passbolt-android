@@ -1,10 +1,7 @@
-package com.passbolt.mobile.android.feature.authentication.auth.usecase
+package com.passbolt.mobile.android.core.ui.dialog
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
-import com.passbolt.mobile.android.service.auth.AuthRepository
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,26 +25,23 @@ import com.passbolt.mobile.android.service.auth.AuthRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetServerPublicPgpKeyUseCase(
-    private val authRepository: AuthRepository
-) : AsyncUseCase<Unit, GetServerPublicPgpKeyUseCase.Output> {
 
-    override suspend fun execute(input: Unit): Output =
-        when (val result = authRepository.getServerPublicPgpKey()) {
-            is NetworkResult.Failure -> Output.Failure(result)
-            is NetworkResult.Success -> Output.Success(
-                result.value.body.keydata,
-                result.value.body.fingerprint
-            )
+fun showDialog(fragmentManager: FragmentManager, dialog: DialogFragment, tag: String) {
+    with(fragmentManager) {
+        val progressFragment = findFragmentByTag(tag)
+        if (progressFragment?.isAdded != true) {
+            dialog.show(this, tag)
+            executePendingTransactions()
         }
+    }
+}
 
-    sealed class Output {
-
-        data class Success(
-            val publicKey: String,
-            val fingerprint: String
-        ) : Output()
-
-        class Failure(val error: NetworkResult.Failure<BaseResponse<ServerPgpResponseDto>>) : Output()
+fun hideDialog(fragmentManager: FragmentManager, tag: String) {
+    with(fragmentManager) {
+        val progressFragment = findFragmentByTag(tag)
+        progressFragment?.let {
+            beginTransaction().remove(progressFragment).commit()
+            executePendingTransactions()
+        }
     }
 }

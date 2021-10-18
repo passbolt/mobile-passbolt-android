@@ -1,10 +1,8 @@
-package com.passbolt.mobile.android.feature.authentication.auth.usecase
+package com.passbolt.mobile.android.core.ui.dialog
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
-import com.passbolt.mobile.android.service.auth.AuthRepository
+import android.content.Context
+import androidx.appcompat.app.AlertDialog
+import com.passbolt.mobile.android.core.ui.R
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,26 +26,13 @@ import com.passbolt.mobile.android.service.auth.AuthRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetServerPublicPgpKeyUseCase(
-    private val authRepository: AuthRepository
-) : AsyncUseCase<Unit, GetServerPublicPgpKeyUseCase.Output> {
 
-    override suspend fun execute(input: Unit): Output =
-        when (val result = authRepository.getServerPublicPgpKey()) {
-            is NetworkResult.Failure -> Output.Failure(result)
-            is NetworkResult.Success -> Output.Success(
-                result.value.body.keydata,
-                result.value.body.fingerprint
-            )
-        }
+object CoreDialogFactory {
 
-    sealed class Output {
-
-        data class Success(
-            val publicKey: String,
-            val fingerprint: String
-        ) : Output()
-
-        class Failure(val error: NetworkResult.Failure<BaseResponse<ServerPgpResponseDto>>) : Output()
-    }
+    fun serverNotReachableDialog(context: Context, domain: String) =
+        AlertDialog.Builder(context)
+            .setTitle(context.getString(R.string.dialog_server_not_reachable_title))
+            .setMessage(context.getString(R.string.dialog_server_not_reachable_message, domain))
+            .setPositiveButton(context.getString(R.string.dialog_server_not_reachable_got_it)) { _, _ -> }
+            .create()
 }

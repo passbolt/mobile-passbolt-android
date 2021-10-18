@@ -64,6 +64,7 @@ class ScanQrPresenter(
     private lateinit var authToken: String
     private lateinit var transferUuid: String
     private lateinit var userId: String
+    private lateinit var serverDomain: String
     private var totalPages: Int by Delegates.notNull()
     private var currentPage = 0
 
@@ -105,6 +106,7 @@ class ScanQrPresenter(
         transferUuid = firstPage.content.transferId
         authToken = firstPage.content.authenticationToken
         totalPages = firstPage.content.totalPages
+        serverDomain = firstPage.content.domain
 
         val userExistsResult = checkAccountExistsUseCase.execute(CheckAccountExistsUseCase.Input(userId))
         if (userExistsResult.exist) {
@@ -163,7 +165,7 @@ class ScanQrPresenter(
 
     private suspend fun updateTransfer(pageNumber: Int, status: Status = Status.IN_PROGRESS) {
         // in case of the first qr code is not a correct one
-        if (!::transferUuid.isInitialized || !::authToken.isInitialized) {
+        if (!::transferUuid.isInitialized || !::authToken.isInitialized || !::serverDomain.isInitialized) {
             view?.navigateToSummary(ResultStatus.Failure(""))
             return
         }
@@ -177,11 +179,15 @@ class ScanQrPresenter(
         )
         when (response) {
             is UpdateTransferUseCase.Output.Failure -> {
-                Timber.e(response.exception, "There was an error during transfer update")
+                Timber.e(response.error.exception, "There was an error during transfer update")
                 if (status == Status.ERROR || status == Status.CANCEL) {
                     // ignoring
                 } else {
-                    view?.showSomethingWentWrong()
+                    if (response.error.isServerNotReachable) {
+                        view?.showServerNotReachable(serverDomain)
+                    } else {
+                        view?.showSomethingWentWrong()
+                    }
                 }
             }
             is UpdateTransferUseCase.Output.Success -> {

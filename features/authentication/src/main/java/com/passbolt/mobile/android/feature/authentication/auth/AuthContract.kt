@@ -62,6 +62,7 @@ interface AuthContract {
         fun showDecryptionError(message: String?)
         fun showTotpDialog(jwtToken: String)
         fun showYubikeyDialog(jwtToken: String)
+        fun showServerNotReachable(serverDomain: String)
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE
