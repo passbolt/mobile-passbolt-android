@@ -18,11 +18,11 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.hideSoftInput
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.dialog.CoreDialogFactory
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.R
-import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment.Companion.ARG_AUTH_CONFIG
 import com.passbolt.mobile.android.feature.authentication.auth.accountdoesnotexist.AccountDoesNotExistDialog
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategy
@@ -77,7 +77,10 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     private val executor: Executor by inject()
     private var featureFlagsFetchErrorDialog: FeatureFlagsFetchErrorDialog? = null
     private val authConfig by lifecycleAwareLazy {
-        requireArguments().getSerializable(ARG_AUTH_CONFIG) as ActivityIntents.AuthConfig
+        requireArguments().getSerializable(EXTRA_AUTH_CONFIG) as ActivityIntents.AuthConfig
+    }
+    private val context by lifecycleAwareLazy {
+        requireArguments().getSerializable(EXTRA_CONTEXT) as AppContext
     }
     private val userId by lifecycleAwareLazy {
         requireNotNull(requireArguments().getString(EXTRA_USER_ID))
@@ -90,7 +93,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        authStrategy = strategyFactory.get(authConfig, this)
+        authStrategy = strategyFactory.get(authConfig, context, this)
         presenter = get { parametersOf(authConfig) }
         presenter.argsRetrieved(authConfig, userId)
         presenter.attach(this)
@@ -376,12 +379,14 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     companion object {
         private const val EXTRA_AUTH_CONFIG = "AUTH_CONFIG"
+        private const val EXTRA_CONTEXT = "CONTEXT"
         private const val EXTRA_USER_ID = "USER_ID"
 
-        fun newBundle(authConfig: ActivityIntents.AuthConfig, currentAccount: String) =
+        fun newBundle(authConfig: ActivityIntents.AuthConfig, context: AppContext, currentAccount: String) =
             bundleOf(
                 EXTRA_AUTH_CONFIG to authConfig,
-                EXTRA_USER_ID to currentAccount
+                EXTRA_USER_ID to currentAccount,
+                EXTRA_CONTEXT to context
             )
     }
 }

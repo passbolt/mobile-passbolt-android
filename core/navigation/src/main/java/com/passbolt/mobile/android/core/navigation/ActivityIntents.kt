@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.navigation
 import android.content.Context
 import android.content.Intent
 import com.gaelmarhic.quadrant.Authentication
+import com.gaelmarhic.quadrant.Autofill
 import com.gaelmarhic.quadrant.Main
 import com.gaelmarhic.quadrant.Setup
 import com.gaelmarhic.quadrant.Startup
@@ -33,6 +34,7 @@ import java.io.Serializable
 object ActivityIntents {
 
     const val EXTRA_AUTH_CONFIG = "AUTH_CONFIG"
+    const val EXTRA_CONTEXT = "CONTEXT"
     const val EXTRA_USER_ID = "EXTRA_USER_ID"
 
     fun setup(context: Context) = Intent().apply {
@@ -52,14 +54,20 @@ object ActivityIntents {
     fun authentication(
         context: Context,
         authConfig: AuthConfig,
+        appContext: AppContext = AppContext.APP,
         userId: String? = null
     ) =
         Intent().apply {
             setClassName(context, Authentication.AUTHENTICATION_MAIN_ACTIVITY)
             putExtra(EXTRA_AUTH_CONFIG, authConfig)
             putExtra(EXTRA_USER_ID, userId)
+            putExtra(EXTRA_CONTEXT, appContext)
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
+
+    fun autofill(context: Context) = Intent().apply {
+        setClassName(context, Autofill.AUTOFILL_RESOURCES_ACTIVITY)
+    }
 
     sealed class AuthConfig : Serializable {
         object Startup : AuthConfig()

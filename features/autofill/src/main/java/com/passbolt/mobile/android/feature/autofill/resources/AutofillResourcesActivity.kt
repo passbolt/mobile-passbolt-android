@@ -25,6 +25,7 @@ import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityCommunicator
@@ -133,7 +134,8 @@ class AutofillResourcesActivity :
         initialAuthenticationResult.launch(
             ActivityIntents.authentication(
                 this,
-                ActivityIntents.AuthConfig.RefreshFull
+                ActivityIntents.AuthConfig.RefreshFull,
+                appContext = AppContext.AUTOFILL
             )
         )
     }
@@ -146,7 +148,7 @@ class AutofillResourcesActivity :
             presenter.searchTextChange(it.toString())
         }
         closeButton.setDebouncingOnClick {
-            finish()
+            presenter.closeClick()
         }
     }
 
@@ -228,13 +230,20 @@ class AutofillResourcesActivity :
         initialAuthenticationResult.launch(
             ActivityIntents.authentication(
                 this,
-                ActivityIntents.AuthConfig.ManageAccount
+                ActivityIntents.AuthConfig.ManageAccount,
+                appContext = AppContext.AUTOFILL
             )
         )
     }
 
     override fun navigateToSetup() {
         startActivity(ActivityIntents.start(this))
+        finish()
+    }
+
+    override fun navigateToHome() {
+        startActivity(ActivityIntents.home(this))
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
     }
 

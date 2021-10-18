@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.uistrategy
 
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 
 /**
@@ -29,6 +30,7 @@ interface AuthStrategy {
     var authFragment: AuthFragment?
     val activeAuthFragment
         get() = requireNotNull(authFragment)
+    val appContext: AppContext
 
     // provides toolbar title
     fun title(): String

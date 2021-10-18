@@ -44,6 +44,7 @@ interface AutofillResourcesContract {
         fun displaySearchClearIcon()
         fun clearSearchInput()
         fun navigateToSetup()
+        fun navigateToHome()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -54,5 +55,6 @@ interface AutofillResourcesContract {
         fun searchTextChange(text: String)
         fun searchAvatarClick()
         fun searchClearClick()
+        fun closeClick()
     }
 }
