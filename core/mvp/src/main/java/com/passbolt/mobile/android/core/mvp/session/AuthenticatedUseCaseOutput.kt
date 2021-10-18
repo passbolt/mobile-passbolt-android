@@ -14,7 +14,7 @@ sealed class AuthenticationState {
 
             object Passphrase : Reason()
             object Session : Reason()
-            class Mfa(val provider: MfaProvider?) : Reason() {
+            class Mfa(val providers: List<MfaProvider?>?) : Reason() {
                 enum class MfaProvider {
                     YUBIKEY,
                     TOTP;

@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUs
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 
 class EnterTotpPresenter(
@@ -22,6 +23,10 @@ class EnterTotpPresenter(
         view?.navigateToYubikey()
     }
 
+    override fun viewCreated(hasYubikeyProvider: Boolean) {
+        view?.showChangeProviderButton(hasYubikeyProvider)
+    }
+
     override fun closeClick() {
         scope.launch {
             view?.showProgress()
@@ -34,13 +39,21 @@ class EnterTotpPresenter(
     override fun otpEntered(otp: String, authToken: String, rememberMeChecked: Boolean) {
         view?.showProgress()
         scope.launch {
-            when (val result = verifyTotpUseCase.execute(VerifyTotpUseCase.Input(otp, authToken, rememberMeChecked))) {
-                VerifyTotpUseCase.Output.Failure -> genericError()
+            when (val result =
+                verifyTotpUseCase.execute(VerifyTotpUseCase.Input(otp, authToken, rememberMeChecked))
+            ) {
+                is VerifyTotpUseCase.Output.Failure<*> -> genericError()
                 is VerifyTotpUseCase.Output.Success -> otpSuccess(result.mfaHeader)
-                VerifyTotpUseCase.Output.WrongCode -> totpError()
+                is VerifyTotpUseCase.Output.WrongCode -> totpError()
+                is VerifyTotpUseCase.Output.Unauthorized -> view?.navigateToLogin()
             }
             view?.hideProgress()
         }
+    }
+
+    override fun authenticationSucceeded() {
+        view?.close()
+        view?.notifyLoginSucceeded()
     }
 
     private fun otpSuccess(mfaHeader: String?) {
@@ -71,6 +84,11 @@ class EnterTotpPresenter(
 
     override fun inputTextChange() {
         view?.hideWrongCodeError()
+    }
+
+    override fun detach() {
+        scope.coroutineContext.cancelChildren()
+        super.detach()
     }
 
     private fun CharSequence?.removeWhiteSpace() = this?.let {

@@ -1,12 +1,6 @@
-package com.passbolt.mobile.android.feature
+package com.passbolt.mobile.android.feature.authentication
 
-import com.passbolt.mobile.android.feature.authentication.accountslist.accountsListModule
-import com.passbolt.mobile.android.feature.authentication.auth.authModule
-import com.passbolt.mobile.android.feature.authentication.authenticationMainModule
-import com.passbolt.mobile.android.feature.authentication.mfa.totp.enterTotpModuleModule
-import com.passbolt.mobile.android.feature.authentication.mfa.unknown.unknownProviderModule
-import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.scanYubikeyModule
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.session.AuthenticationState.Unauthenticated.Reason
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,11 +24,35 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val authenticationModule = module {
-    accountsListModule()
-    authenticationMainModule()
-    authModule()
-    scanYubikeyModule()
-    enterTotpModuleModule()
-    unknownProviderModule()
+class MfaProviderHandler {
+
+    fun run(
+        reason: Reason.Mfa,
+        yubikeyAction: (Boolean) -> Unit,
+        totpAction: (Boolean) -> Unit,
+        unknownProviderAction: () -> Unit
+    ) {
+        val firstProvider = reason.providers?.firstOrNull {
+            it == Reason.Mfa.MfaProvider.YUBIKEY ||
+                    it == Reason.Mfa.MfaProvider.TOTP
+        }
+
+        if (firstProvider != null) {
+            when (reason.providers?.first()) {
+                Reason.Mfa.MfaProvider.YUBIKEY ->
+                    yubikeyAction.invoke(
+                        reason.providers?.contains(
+                            Reason.Mfa.MfaProvider.TOTP
+                        ) ?: false
+                    )
+                Reason.Mfa.MfaProvider.TOTP -> totpAction.invoke(
+                    reason.providers?.contains(
+                        Reason.Mfa.MfaProvider.YUBIKEY
+                    ) ?: false
+                )
+            }
+        } else {
+            unknownProviderAction.invoke()
+        }
+    }
 }

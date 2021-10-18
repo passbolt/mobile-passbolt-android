@@ -1,12 +1,7 @@
-package com.passbolt.mobile.android.feature
+package com.passbolt.mobile.android.feature.authentication.mfa.unknown
 
-import com.passbolt.mobile.android.feature.authentication.accountslist.accountsListModule
-import com.passbolt.mobile.android.feature.authentication.auth.authModule
-import com.passbolt.mobile.android.feature.authentication.authenticationMainModule
-import com.passbolt.mobile.android.feature.authentication.mfa.totp.enterTotpModuleModule
-import com.passbolt.mobile.android.feature.authentication.mfa.unknown.unknownProviderModule
-import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.scanYubikeyModule
-import org.koin.dsl.module
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,11 +25,14 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val authenticationModule = module {
-    accountsListModule()
-    authenticationMainModule()
-    authModule()
-    scanYubikeyModule()
-    enterTotpModuleModule()
-    unknownProviderModule()
+
+fun Module.unknownProviderModule() {
+    scope(named<UnknownProviderDialog>()) {
+        scoped<UnknownProviderContract.Presenter> {
+            UnknownProviderPresenter(
+                signOutUseCase = get(),
+                coroutineLaunchContext = get()
+            )
+        }
+    }
 }

@@ -39,8 +39,8 @@ class AuthRepository(
         authDataSource.getServerPublicRsaKey()
     }
 
-    suspend fun signIn(signInRequestDto: SignInRequestDto) = callWithHandler(responseHandler) {
-        authDataSource.signIn(signInRequestDto)
+    suspend fun signIn(signInRequestDto: SignInRequestDto, mfaToken: String?) = callWithHandler(responseHandler) {
+        authDataSource.signIn(signInRequestDto, mfaToken)
     }
 
     suspend fun signOut(signOutRequestDto: SignOutRequestDto) = callWithHandler(responseHandler) {

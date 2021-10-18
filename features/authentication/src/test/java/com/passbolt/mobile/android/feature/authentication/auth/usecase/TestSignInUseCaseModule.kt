@@ -43,7 +43,7 @@ val testSignInUseCaseModule = module {
     single { MfaTokenExtractor() }
     factory { mockAuthRepository }
     factory {
-        SiginInUseCase(
+        SignInUseCase(
             authRepository = get(),
             signInMapper = get(),
             mfaTokenExtractor = get()

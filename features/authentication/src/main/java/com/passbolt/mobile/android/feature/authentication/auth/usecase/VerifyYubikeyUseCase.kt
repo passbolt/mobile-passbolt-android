@@ -2,9 +2,13 @@ package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
 import com.passbolt.mobile.android.common.MfaTokenExtractor
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
+import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.request.HotpRequest
 import com.passbolt.mobile.android.service.mfa.MfaRepository
+import java.net.HttpURLConnection
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,10 +42,18 @@ class VerifyYubikeyUseCase(
             HotpRequest(input.totp, input.remember), input.jwtHeader?.let { "Bearer $it" }
         )
         ) {
-            is NetworkResult.Failure -> Output.Failure
+            is NetworkResult.Failure -> Output.Failure(result)
             is NetworkResult.Success -> {
-                val mfaHeader = mfaTokenExtractor.get(result.value)
-                Output.Success(mfaHeader)
+                if (result.value.isSuccessful) {
+                    val mfaHeader = mfaTokenExtractor.get(result.value)
+                    Output.Success(mfaHeader)
+                } else {
+                    if (result.value.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                        Output.Unauthorized
+                    } else {
+                        Output.NetworkFailure(result.value.code())
+                    }
+                }
             }
         }
 
@@ -51,15 +63,33 @@ class VerifyYubikeyUseCase(
         val remember: Boolean
     )
 
-    sealed class Output {
+    sealed class Output : AuthenticatedUseCaseOutput {
+
+        override val authenticationState: AuthenticationState
+            get() = when {
+                this is Failure<*> && this.response.isUnauthorized ||
+                        this is NetworkFailure && this.errorCode == HttpURLConnection.HTTP_UNAUTHORIZED ->
+                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                this is Failure<*> && this.response.isMfaRequired -> {
+                    val providers = MfaTypeProvider.get(this.response)
+
+                    AuthenticationState.Unauthenticated(
+                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
+                    )
+                }
+                else -> AuthenticationState.Authenticated
+            }
+
         class Success(
             val mfaHeader: String?
         ) : Output()
 
-        object Failure : Output()
-    }
+        class NetworkFailure(
+            val errorCode: Int
+        ) : Output()
 
-    companion object {
-        private const val VALID_OTP = "isValidOtp"
+        object Unauthorized : Output()
+
+        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }
 }

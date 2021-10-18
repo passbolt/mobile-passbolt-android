@@ -71,7 +71,7 @@ class ResponseHandler(
 
 sealed class MfaStatus {
     class Required(
-        val type: MfaProvider?
+        val providers: List<MfaProvider?>?
     ) : MfaStatus()
 
     object NotRequired : MfaStatus()

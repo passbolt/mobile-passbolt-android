@@ -33,6 +33,7 @@
     <dimen name="dp_88">88dp</dimen>
     <dimen name="dp_96">96dp</dimen>
     <dimen name="dp_144">144dp</dimen>
+    <dimen name="dp_148">148dp</dimen>
 
     <!--images-->
     <dimen name="dp_116">116dp</dimen>

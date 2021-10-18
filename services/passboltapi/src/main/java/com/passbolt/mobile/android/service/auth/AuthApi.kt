@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.dto.response.SignInResponseDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 /**
@@ -45,7 +46,10 @@ internal interface AuthApi {
     suspend fun getServerPublicRsaKey(): BaseResponse<ServerRsaResponseDto>
 
     @POST(AUTH_SIGN_IN)
-    suspend fun signIn(@Body signInRequestDto: SignInRequestDto): Response<BaseResponse<SignInResponseDto>>
+    suspend fun signIn(
+        @Body signInRequestDto: SignInRequestDto,
+        @Header("Cookie") authHeader: String?
+    ): Response<BaseResponse<SignInResponseDto>>
 
     @POST(AUTH_SIGN_OUT)
     suspend fun signOut(@Body signOutRequestDto: SignOutRequestDto): BaseResponse<Unit>

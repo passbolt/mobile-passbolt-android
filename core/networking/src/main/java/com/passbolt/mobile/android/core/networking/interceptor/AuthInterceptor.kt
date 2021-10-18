@@ -33,6 +33,7 @@ internal class AuthInterceptor(
             AuthPaths.AUTH_SIGN_IN,
             AuthPaths.SETTINGS,
             AuthPaths.MFA_VERIFICATION_TOTP,
+            AuthPaths.MFA_VERIFICATION_YUBIKEY,
             AuthPaths.AUTH_RSA,
             AuthPaths.AUTH_VERIFY
         )

@@ -61,4 +61,6 @@ suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runAuthenticatedOperation(
     authenticationRefreshedFlow: StateFlow<Unit?>,
     request: suspend () -> OUTPUT
 ): OUTPUT =
-    AuthenticatedOperationRunner(needAuthenticationRefresh, authenticationRefreshedFlow).runOperation(request)
+    AuthenticatedOperationRunner(needAuthenticationRefresh, authenticationRefreshedFlow).runOperation(
+        request
+    )
