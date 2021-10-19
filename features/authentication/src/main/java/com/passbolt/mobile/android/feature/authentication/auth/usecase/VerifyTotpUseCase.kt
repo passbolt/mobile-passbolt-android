@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.common.MfaTokenExtractor
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
+import com.passbolt.mobile.android.core.networking.ErrorHeaderMapper
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.request.TotpRequest
@@ -34,7 +35,8 @@ import java.net.HttpURLConnection
  */
 class VerifyTotpUseCase(
     private val mfaRepository: MfaRepository,
-    private val mfaTokenExtractor: MfaTokenExtractor
+    private val mfaTokenExtractor: MfaTokenExtractor,
+    private val errorHeaderMapper: ErrorHeaderMapper
 ) : AsyncUseCase<VerifyTotpUseCase.Input, VerifyTotpUseCase.Output> {
 
     override suspend fun execute(input: Input): Output =
@@ -42,22 +44,23 @@ class VerifyTotpUseCase(
             TotpRequest(input.totp, input.remember), "Bearer ${input.jwtHeader}"
         )) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(result)
-            is NetworkResult.Failure.ServerError -> {
-                if (result.invalidFields?.contains(VALID_OTP) == true) {
-                    Output.WrongCode
-                } else {
-                    Output.Failure(result)
-                }
-            }
+            is NetworkResult.Failure.ServerError -> Output.Failure(result)
             is NetworkResult.Success -> {
                 if (result.value.isSuccessful) {
                     val mfaHeader = mfaTokenExtractor.get(result.value)
                     Output.Success(mfaHeader)
                 } else {
-                    if (result.value.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                        Output.Unauthorized
-                    } else {
-                        Output.NetworkFailure(result.value.code())
+                    when {
+                        result.value.code() == HttpURLConnection.HTTP_UNAUTHORIZED -> {
+                            Output.Unauthorized
+                        }
+                        errorHeaderMapper.getValidationFieldsError(result.value.errorBody())?.contains(VALID_OTP)
+                            ?: false -> {
+                            Output.WrongCode
+                        }
+                        else -> {
+                            Output.NetworkFailure(result.value.code())
+                        }
                     }
                 }
             }

@@ -52,7 +52,6 @@ sealed class NetworkResult<T : Any> {
             exception: Exception,
             errorCode: Int? = null,
             headerMessage: String,
-            val invalidFields: List<String>? = null,
             val mfaStatus: MfaStatus = MfaStatus.NotRequired
         ) : Failure<T>(exception, errorCode, headerMessage)
 

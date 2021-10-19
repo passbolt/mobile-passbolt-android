@@ -50,7 +50,8 @@ fun Module.enterTotpModuleModule() {
         scoped {
             VerifyTotpUseCase(
                 mfaRepository = get(),
-                mfaTokenExtractor = get()
+                mfaTokenExtractor = get(),
+                errorHeaderMapper = get()
             )
         }
     }
