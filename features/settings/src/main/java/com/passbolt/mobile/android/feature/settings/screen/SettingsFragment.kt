@@ -223,8 +223,14 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
     }
 
     override fun showConfigureFingerprintFirst() {
-        Snackbar.make(binding.root, R.string.settings_add_first_fingerprint, Snackbar.LENGTH_LONG)
-            .setAction(R.string.settings) { presenter.systemSettingsClick() }
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.settings_add_first_fingerprint_title)
+            .setMessage(R.string.settings_add_first_fingerprint)
+            .setPositiveButton(
+                R.string.settings_add_first_fingerprint_settings
+            ) { _, _ -> presenter.systemSettingsClick() }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setCancelable(false)
             .show()
     }
 
@@ -233,9 +239,9 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
     }
 
     override fun showKeyChangesDetected() {
-        android.app.AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext())
             .setTitle(R.string.fingerprint_biometric_changed_title)
-            .setTitle(R.string.fingerprint_authenticate_again)
+            .setMessage(R.string.fingerprint_authenticate_again)
             .setPositiveButton(R.string.got_it) { _, _ -> presenter.keyChangesInfoConfirmClick() }
             .setCancelable(false)
             .show()

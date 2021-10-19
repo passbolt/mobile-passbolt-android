@@ -18,4 +18,6 @@
     <string name="settings_turn_on_biometric_title">Turn on fingerprint authentication</string>
     <string name="settings_turn_on_biometric_subtitle">Touch the fingerprint sensor</string>
     <string name="settings_add_first_fingerprint">Please add your fingerprint in the system settings first</string>
+    <string name="settings_add_first_fingerprint_title">Configure fingerprint</string>
+    <string name="settings_add_first_fingerprint_settings">Go to setting</string>
 </resources>
