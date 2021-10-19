@@ -314,7 +314,7 @@ class SignInPresenter(
         signInSuccess(mfaHeader != null)
     }
 
-    private fun signInSuccess(updateSession: Boolean = false) {
+    private fun signInSuccess(updateSession: Boolean = true) {
         if (updateSession) {
             val currentLoginState = requireNotNull(loginState)
             saveSessionUseCase.execute(

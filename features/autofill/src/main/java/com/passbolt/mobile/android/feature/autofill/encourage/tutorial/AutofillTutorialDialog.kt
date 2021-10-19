@@ -9,6 +9,7 @@ import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.feature.authentication.auth.accountdoesnotexist.AccountDoesNotExistDialog
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogAutofillTutorialBinding
 import org.koin.android.ext.android.inject
@@ -46,6 +47,7 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
     }
     private val websiteOpener: WebsiteOpener by inject()
     private val settingsNavigator: SettingsNavigator by inject()
+    private var listener: Listener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +64,11 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        listener = when {
+            activity is Listener -> activity as Listener
+            parentFragment is Listener -> parentFragment as Listener
+            else -> error("Parent must implement ${AccountDoesNotExistDialog.Listener::class.java.name}")
+        }
         presenter.attach(this)
     }
 
@@ -80,6 +87,7 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
         huaweiContainer.setDebouncingOnClick { presenter.huaweiClick() }
         otherContainer.setDebouncingOnClick { presenter.otherClick() }
         closeButton.setDebouncingOnClick { presenter.closeClick() }
+        backButton.setDebouncingOnClick { presenter.backClick() }
         goToSettings.setDebouncingOnClick { presenter.goToSettingsClick() }
     }
 
@@ -93,6 +101,14 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
 
     override fun closeDialog() {
         dismiss()
+    }
+
+    override fun closeTutorial() {
+        listener?.closeTutorial()
+    }
+
+    interface Listener {
+        fun closeTutorial()
     }
 
     companion object {
