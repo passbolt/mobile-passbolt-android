@@ -30,6 +30,7 @@ class AutofillTutorialContract {
         fun openWebsite(url: String)
         fun navigateToOverlaySettings()
         fun navigateToServiceSettings()
+        fun closeTutorial()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -40,5 +41,6 @@ class AutofillTutorialContract {
         fun otherClick()
         fun closeClick()
         fun goToSettingsClick()
+        fun backClick()
     }
 }

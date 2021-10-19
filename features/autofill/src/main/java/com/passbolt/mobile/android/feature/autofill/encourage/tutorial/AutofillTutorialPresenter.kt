@@ -55,6 +55,10 @@ class AutofillTutorialPresenter : AutofillTutorialContract.Presenter {
     }
 
     override fun closeClick() {
+        view?.closeTutorial()
+    }
+
+    override fun backClick() {
         view?.closeDialog()
     }
 }

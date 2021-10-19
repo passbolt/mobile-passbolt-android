@@ -42,7 +42,7 @@ import org.koin.androidx.scope.fragmentScope
  * @since v1.0
  */
 class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessibilityAutofillContract.View,
-    AndroidScopeComponent {
+    AndroidScopeComponent, AutofillTutorialDialog.Listener {
 
     override val scope by fragmentScope()
     private var listener: Listener? = null
@@ -145,6 +145,11 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
 
     override fun closeWithSuccess() {
         listener?.setupAutofillSuccess()
+        dismiss()
+    }
+
+    override fun closeTutorial() {
+        listener?.setupAutofillLaterClick()
         dismiss()
     }
 
