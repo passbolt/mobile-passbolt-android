@@ -43,6 +43,7 @@ interface AccountsListContract {
         fun showAccountRemovedSnackbar()
         fun navigateToStartUp()
         fun navigateToNewAccountSignIn(model: AccountModelUi.AccountModel)
+        fun navigateBack(isSelectedAccountAvailable: Boolean)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -52,5 +53,6 @@ interface AccountsListContract {
         fun doneRemovingAccountsClick()
         fun removeAccountClick(model: AccountModelUi.AccountModel)
         fun confirmRemoveAccountClick(model: AccountModelUi.AccountModel)
+        fun backClick()
     }
 }

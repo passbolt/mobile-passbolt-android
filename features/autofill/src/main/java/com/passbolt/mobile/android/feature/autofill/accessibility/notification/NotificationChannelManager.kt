@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.autofill.accessibility.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,7 +29,7 @@ class NotificationChannelManager(
     private val notificationManager: NotificationManager
 ) {
 
-    fun createNotificationChannel(context: Context, channelId: String, name: String) {
+    fun createNotificationChannel(channelId: String, name: String) {
         val serviceChannel = NotificationChannel(
             channelId,
             name,
