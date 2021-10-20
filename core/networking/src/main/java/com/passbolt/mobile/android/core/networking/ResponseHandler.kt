@@ -45,7 +45,6 @@ class ResponseHandler(
                     exception = e,
                     errorCode = e.code(),
                     headerMessage = errorHeaderMapper.getMessage(baseResponse),
-                    invalidFields = errorHeaderMapper.getValidationFieldsError(baseResponse),
                     mfaStatus = errorHeaderMapper.checkMfaRequired(baseResponse)
                 )
             }

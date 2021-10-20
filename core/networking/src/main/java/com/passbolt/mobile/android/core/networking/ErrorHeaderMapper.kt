@@ -6,6 +6,8 @@ import com.passbolt.mobile.android.dto.response.BaseResponse
 import retrofit2.Response
 import java.lang.Exception
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
+import okhttp3.ResponseBody
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -41,10 +43,10 @@ class ErrorHeaderMapper(
     fun getMessage(baseResponse: BaseResponse<*>? = null) =
         baseResponse?.header?.message ?: context.getString(R.string.common_failure)
 
-    fun getValidationFieldsError(baseResponse: BaseResponse<*>? = null): List<String>? =
-        baseResponse?.let {
+    fun getValidationFieldsError(responseBody: ResponseBody?): List<String>? =
+        responseBody?.let {
             return try {
-                val map = baseResponse.body as Map<String, Map<String, String>>
+                val map = gson.fromJson(it.string(), BaseResponse::class.java).body as Map<String, Map<String, String>>
                 val invalidFields = mutableListOf<String>()
                 map.values.forEach {
                     invalidFields.addAll(it.keys)
