@@ -78,7 +78,7 @@ release:
     - echo ${FIREBASE_SERVICE_KEY} | base64 --decode > "$FIREBASE_DIR/service_key.json"
     - >
       ./gradlew --no-daemon --build-cache -PwithGitlabReleaseNotes -PserviceKey="$FIREBASE_DIR/service_key.json"
-      assembleDebug appDistributionUploadDebug
+      assembleQa appDistributionUploadQa
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   artifacts:
