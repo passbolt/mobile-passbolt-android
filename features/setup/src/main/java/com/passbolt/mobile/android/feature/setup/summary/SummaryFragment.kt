@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.summary
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -113,6 +114,17 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
                 ActivityIntents.AuthConfig.Setup,
                 userId
             )
+        )
+    }
+
+    override fun navigateToManageAccounts() {
+        startActivity(
+            ActivityIntents.authentication(
+                requireContext(),
+                ActivityIntents.AuthConfig.ManageAccount
+            ).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            }
         )
     }
 
