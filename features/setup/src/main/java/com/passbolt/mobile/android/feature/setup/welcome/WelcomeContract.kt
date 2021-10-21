@@ -7,10 +7,12 @@ interface WelcomeContract {
     interface View : BaseContract.View {
         fun showAccountCreationInfoDialog()
         fun navigateToTransferDetails()
+        fun hideToolbar()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun noAccountButtonClick()
         fun connectToAccountClick()
+        fun argsRetrieved(isTaskRoot: Boolean)
     }
 }
