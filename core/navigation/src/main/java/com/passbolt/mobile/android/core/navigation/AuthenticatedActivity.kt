@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.core.navigation
 
 import android.app.Activity
-import com.gaelmarhic.quadrant.Setup
 import com.gaelmarhic.quadrant.Startup
 
 /**
@@ -27,10 +26,8 @@ import com.gaelmarhic.quadrant.Startup
  * @since v1.0
  */
 
-fun Activity.isAuthenticatedActivity() =
-    ACTIVITIES_WITHOUT_AUTHENTICATION.none { it == this.javaClass.name }
-
-private val ACTIVITIES_WITHOUT_AUTHENTICATION = listOf(
-    Startup.START_UP_ACTIVITY,
-    Setup.SET_UP_ACTIVITY
-)
+fun Activity.isAuthenticated() = when {
+    this.javaClass.name == Startup.START_UP_ACTIVITY -> false
+    this is PartiallyAuthenticated -> (this as PartiallyAuthenticated).isCurrentFragmentAuthenticated
+    else -> true
+}

@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.core.commonresource.uiModule
 import com.passbolt.mobile.android.core.mvp.mvpModule
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
-import com.passbolt.mobile.android.core.navigation.isAuthenticatedActivity
+import com.passbolt.mobile.android.core.navigation.isAuthenticated
 import com.passbolt.mobile.android.core.networking.networkingModule
 import com.passbolt.mobile.android.core.qrscan.di.barcodeScanModule
 import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
@@ -80,7 +80,7 @@ class PassboltApplication : Application(), KoinComponent {
         registerActivityLifecycleCallbacks(appForegroundListener)
         applicationScope.launch {
             appForegroundListener.appWentForegroundFlow.collect {
-                if (it.isAuthenticatedActivity()) {
+                if (it.isAuthenticated()) {
                     it.startActivity(
                         ActivityIntents.authentication(
                             it,
