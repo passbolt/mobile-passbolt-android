@@ -353,8 +353,11 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
             .show()
     }
 
-    override fun changeProviderToYubikey() {
-        ScanYubikeyDialog().show(
+    override fun changeProviderToYubikey(bearer: String) {
+        ScanYubikeyDialog.newInstance(
+            hasTotpProvider = true,
+            token = bearer
+        ).show(
             childFragmentManager, EnterTotpDialog::class.java.name
         )
     }

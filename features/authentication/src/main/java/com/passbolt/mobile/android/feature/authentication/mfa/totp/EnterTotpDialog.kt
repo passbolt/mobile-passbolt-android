@@ -159,7 +159,7 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     }
 
     override fun navigateToYubikey() {
-        listener?.changeProviderToYubikey()
+        listener?.changeProviderToYubikey(bundledAuthToken)
     }
 
     override fun closeAndNavigateToStartup() {
@@ -206,6 +206,6 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
 }
 
 interface EnterTotpListener {
-    fun changeProviderToYubikey()
+    fun changeProviderToYubikey(bearer: String)
     fun totpVerificationSucceeded(mfaHeader: String? = null)
 }

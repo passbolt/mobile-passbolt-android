@@ -99,7 +99,7 @@ abstract class BindingScopedAuthenticatedFragment
         )
     }
 
-    override fun changeProviderToYubikey() {
+    override fun changeProviderToYubikey(bearer: String) {
         showYubikeyDialog(true)
     }
 
