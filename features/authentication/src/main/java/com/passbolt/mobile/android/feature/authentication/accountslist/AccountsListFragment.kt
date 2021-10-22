@@ -30,6 +30,7 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.item.Acco
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AddNewAccountItem
 import com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy.AccountListStrategy
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAccountsListBinding
 import com.passbolt.mobile.android.ui.AccountModelUi
 import org.koin.android.ext.android.get
@@ -68,6 +69,9 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     private val listDivider: DrawableListDivider by inject()
     private val authConfig by lifecycleAwareLazy {
         requireArguments().getSerializable(ARG_AUTH_CONFIG) as ActivityIntents.AuthConfig
+    }
+    private val context by lifecycleAwareLazy {
+        requireArguments().getSerializable(ARG_CONTEXT) as AppContext
     }
     private lateinit var uiStrategy: AccountListStrategy
     private val backPressedCallback = object : OnBackPressedCallback(true) {
@@ -152,7 +156,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     override fun navigateToSignIn(model: AccountModelUi.AccountModel) {
         findNavController().navigate(
             R.id.authFragment,
-            AuthFragment.newBundle(authConfig, model.userId),
+            AuthFragment.newBundle(authConfig, context, model.userId),
             NavOptions.Builder()
                 .setEnterAnim(R.anim.slide_in_right)
                 .setExitAnim(R.anim.slide_out_left)
@@ -165,7 +169,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     override fun navigateToNewAccountSignIn(model: AccountModelUi.AccountModel) {
         findNavController().navigate(
             R.id.authFragment,
-            AuthFragment.newBundle(ActivityIntents.AuthConfig.Startup, model.userId),
+            AuthFragment.newBundle(ActivityIntents.AuthConfig.Startup, context, model.userId),
             NavOptions.Builder()
                 .setEnterAnim(R.anim.slide_in_right)
                 .setExitAnim(R.anim.slide_out_left)
@@ -238,9 +242,11 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
 
     companion object {
         const val ARG_AUTH_CONFIG = "AUTH_CONFIG"
+        const val ARG_CONTEXT = "CONTEXT"
 
-        fun newBundle(authConfig: ActivityIntents.AuthConfig) = bundleOf(
-            ARG_AUTH_CONFIG to authConfig
+        fun newBundle(authConfig: ActivityIntents.AuthConfig, context: AppContext) = bundleOf(
+            ARG_AUTH_CONFIG to authConfig,
+            ARG_CONTEXT to context
         )
     }
 }

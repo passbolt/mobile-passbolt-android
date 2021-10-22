@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.security.FlagSecureSetter
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
@@ -53,6 +54,10 @@ class AuthenticationMainActivity :
         intent.getSerializableExtra(ActivityIntents.EXTRA_AUTH_CONFIG) as ActivityIntents.AuthConfig
     }
 
+    private val context by lifecycleAwareLazy {
+        intent.getSerializableExtra(ActivityIntents.EXTRA_CONTEXT) as AppContext
+    }
+
     private val userId by lifecycleAwareLazy {
         intent.getStringExtra(ActivityIntents.EXTRA_USER_ID)
     }
@@ -77,7 +82,7 @@ class AuthenticationMainActivity :
     override fun initNavWithAccountList() {
         with(navGraph) {
             setStartDestination(R.id.accountsListFragment)
-            navController.setGraph(this, AccountsListFragment.newBundle(authConfig))
+            navController.setGraph(this, AccountsListFragment.newBundle(authConfig, context))
         }
     }
 
@@ -85,14 +90,14 @@ class AuthenticationMainActivity :
         with(navGraph) {
             remove(requireNotNull(findNode(R.id.accountsListFragment)))
             setStartDestination(R.id.authFragment)
-            navController.setGraph(this, AuthFragment.newBundle(authConfig, currentAccount))
+            navController.setGraph(this, AuthFragment.newBundle(authConfig, context, currentAccount))
         }
     }
 
     override fun navigateToSignIn(currentAccount: String) {
         navController.navigate(
             R.id.authFragment,
-            AuthFragment.newBundle(authConfig, currentAccount),
+            AuthFragment.newBundle(authConfig, context, currentAccount),
             NavOptions.Builder()
                 .setEnterAnim(R.anim.slide_in_right)
                 .setExitAnim(R.anim.slide_out_left)

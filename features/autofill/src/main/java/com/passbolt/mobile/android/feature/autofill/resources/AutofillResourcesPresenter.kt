@@ -92,15 +92,18 @@ class AutofillResourcesPresenter(
     }
 
     override fun refreshSwipe() {
-        fetchResources()
+        fetchResources(withShowingListProgress = false)
     }
 
     override fun searchAvatarClick() {
         view?.navigateToManageAccount()
     }
 
-    private fun fetchResources() {
+    private fun fetchResources(withShowingListProgress: Boolean = true) {
         scope.launch {
+            if (withShowingListProgress) {
+                view?.showProgress()
+            }
             when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                 resourcesInteractor.fetchResourcesWithTypes()
             }) {
@@ -276,6 +279,10 @@ class AutofillResourcesPresenter(
 
     override fun searchClearClick() {
         view?.clearSearchInput()
+    }
+
+    override fun closeClick() {
+        view?.navigateToHome()
     }
 
     private fun createDataSet(

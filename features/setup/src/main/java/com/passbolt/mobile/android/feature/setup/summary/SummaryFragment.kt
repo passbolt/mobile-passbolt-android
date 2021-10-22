@@ -112,7 +112,7 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
             ActivityIntents.authentication(
                 requireContext(),
                 ActivityIntents.AuthConfig.Setup,
-                userId
+                userId = userId
             )
         )
     }
