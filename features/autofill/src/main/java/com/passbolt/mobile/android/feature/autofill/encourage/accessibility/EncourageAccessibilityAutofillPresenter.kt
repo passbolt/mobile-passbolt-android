@@ -1,44 +1,26 @@
 package com.passbolt.mobile.android.feature.autofill.encourage.accessibility
 
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
-import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityService
+import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 
 class EncourageAccessibilityAutofillPresenter(
     private val autofillInformationProvider: AutofillInformationProvider
 ) : EncourageAccessibilityAutofillContract.Presenter {
 
     override var view: EncourageAccessibilityAutofillContract.View? = null
-    private var isAutofillAlreadyEnabled = false
 
     override fun resume() {
-        view?.setOverlayEnabled(autofillInformationProvider.isOverlayEnabled())
+        view?.setOverlayEnabled(autofillInformationProvider.isAccessibilityOverlayEnabled())
         view?.setAccessibilityServiceEnabled(
-            autofillInformationProvider.isAccessibilityServiceEnabled(
-                AccessibilityService::class.java.name
-            )
+            autofillInformationProvider.isAccessibilityServiceEnabled()
         )
     }
-
-    override fun dialogCreate() {
-        isAutofillAlreadyEnabled = isSetupSuccessful()
-    }
-
-    private fun isSetupSuccessful() =
-        autofillInformationProvider.isOverlayEnabled() && autofillInformationProvider.isAccessibilityServiceEnabled(
-            AccessibilityService::class.java.name
-        )
 
     override fun closeClick() {
-        if (isSetupSuccessful() && !isAutofillAlreadyEnabled) {
-            isAutofillAlreadyEnabled = true
-            view?.closeWithSuccess()
-        } else {
-            view?.dismissWithNoAction()
-        }
+        view?.dismissWithNotify()
     }
 
     override fun maybeLaterClick() {
-        view?.dismissWithNoAction()
+        view?.dismissWithNotify()
     }
 
     override fun overlayClick() {
@@ -50,10 +32,13 @@ class EncourageAccessibilityAutofillPresenter(
     }
 
     override fun backPressed() {
-        if (isSetupSuccessful() && !isAutofillAlreadyEnabled) {
-            view?.closeWithSuccess()
-        } else {
+        view?.dismissWithNotify()
+    }
+
+    override fun possibleAutofillChange() {
+        if (autofillInformationProvider.isAccessibilityAutofillSetup()) {
             view?.dismissWithNoAction()
         }
+        view?.notifyPossibleAutofillChange()
     }
 }

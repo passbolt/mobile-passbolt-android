@@ -65,7 +65,6 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        presenter.dialogCreate()
         return object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
                 dismiss()
@@ -138,18 +137,12 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
         )
     }
 
+    override fun dismissWithNotify() {
+        listener?.setupAutofillLaterClick()
+        dismiss()
+    }
+
     override fun dismissWithNoAction() {
-        listener?.setupAutofillLaterClick()
-        dismiss()
-    }
-
-    override fun closeWithSuccess() {
-        listener?.setupAutofillSuccess()
-        dismiss()
-    }
-
-    override fun closeTutorial() {
-        listener?.setupAutofillLaterClick()
         dismiss()
     }
 
@@ -161,9 +154,12 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
             .show()
     }
 
-    override fun dismiss() {
-        listener?.autofillDialogDismissed()
-        super.dismiss()
+    override fun autofillSettingsPossibleChange() {
+        presenter.possibleAutofillChange()
+    }
+
+    override fun notifyPossibleAutofillChange() {
+        listener?.autofillSettingsPossibleChange()
     }
 
     companion object {
@@ -172,7 +168,6 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
 
     interface Listener {
         fun setupAutofillLaterClick()
-        fun setupAutofillSuccess()
-        fun autofillDialogDismissed() {}
+        fun autofillSettingsPossibleChange()
     }
 }

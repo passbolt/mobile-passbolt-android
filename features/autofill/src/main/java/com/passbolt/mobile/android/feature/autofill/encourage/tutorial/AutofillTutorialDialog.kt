@@ -72,6 +72,11 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
         presenter.attach(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        presenter.resume()
+    }
+
     private fun setupView(binding: DialogAutofillTutorialBinding) = with(binding) {
         headerLabel.text = context?.getString(tutorialMode.title)
         descriptionLabel.text = context?.getString(tutorialMode.description)
@@ -99,16 +104,16 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
         settingsNavigator.navigateToAccessibilitySettings(requireActivity())
     }
 
+    override fun notifyAutofillSettingsPossibleChange() {
+        listener?.autofillSettingsPossibleChange()
+    }
+
     override fun closeDialog() {
         dismiss()
     }
 
-    override fun closeTutorial() {
-        listener?.closeTutorial()
-    }
-
     interface Listener {
-        fun closeTutorial()
+        fun autofillSettingsPossibleChange()
     }
 
     companion object {

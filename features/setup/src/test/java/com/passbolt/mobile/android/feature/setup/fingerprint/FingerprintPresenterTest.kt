@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
-import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
@@ -82,8 +81,7 @@ class FingerprintPresenterTest : KoinTest {
     @Test
     fun `when biometrics auth is a success and cache has passphrase encourage autofill should show`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
-        whenever(autofillInformationProvider.isOverlayEnabled()).thenReturn(false)
-        whenever(autofillInformationProvider.isAccessibilityServiceEnabled(anyOrNull())).thenReturn(false)
+        whenever(autofillInformationProvider.isAccessibilityAutofillSetup()).thenReturn(false)
         whenever(passphraseMemoryCache.get()).thenReturn(
             PotentialPassphrase.Passphrase("passphrase".toByteArray())
         )
@@ -110,8 +108,8 @@ class FingerprintPresenterTest : KoinTest {
     @Test
     fun `when accessibility service is not already set up should open autofill setup screen`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
-        whenever(autofillInformationProvider.isOverlayEnabled()).thenReturn(false)
-        whenever(autofillInformationProvider.isAccessibilityServiceEnabled(anyOrNull())).thenReturn(true)
+        whenever(autofillInformationProvider.isAccessibilityOverlayEnabled()).thenReturn(false)
+        whenever(autofillInformationProvider.isAccessibilityServiceEnabled()).thenReturn(true)
         whenever(passphraseMemoryCache.get()).thenReturn(
             PotentialPassphrase.Passphrase("passphrase".toByteArray())
         )
@@ -125,8 +123,8 @@ class FingerprintPresenterTest : KoinTest {
     @Test
     fun `when overlay is not already set up should open autofill setup screen`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
-        whenever(autofillInformationProvider.isOverlayEnabled()).thenReturn(true)
-        whenever(autofillInformationProvider.isAccessibilityServiceEnabled(anyOrNull())).thenReturn(false)
+        whenever(autofillInformationProvider.isAccessibilityOverlayEnabled()).thenReturn(true)
+        whenever(autofillInformationProvider.isAccessibilityServiceEnabled()).thenReturn(false)
         whenever(passphraseMemoryCache.get()).thenReturn(
             PotentialPassphrase.Passphrase("passphrase".toByteArray())
         )
@@ -140,8 +138,7 @@ class FingerprintPresenterTest : KoinTest {
     @Test
     fun `when accessibility service and overlay are already set up should navigate to home directly`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
-        whenever(autofillInformationProvider.isOverlayEnabled()).thenReturn(true)
-        whenever(autofillInformationProvider.isAccessibilityServiceEnabled(anyOrNull())).thenReturn(true)
+        whenever(autofillInformationProvider.isAccessibilityAutofillSetup()).thenReturn(true)
         whenever(passphraseMemoryCache.get()).thenReturn(
             PotentialPassphrase.Passphrase("passphrase".toByteArray())
         )

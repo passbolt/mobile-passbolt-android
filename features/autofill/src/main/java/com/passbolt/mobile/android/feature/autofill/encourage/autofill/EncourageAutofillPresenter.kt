@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.autofill.encourage.autofill
 
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 
 class EncourageAutofillPresenter(
     private val autofillInformationProvider: AutofillInformationProvider
@@ -9,7 +9,7 @@ class EncourageAutofillPresenter(
     override var view: EncourageAutofillContract.View? = null
 
     override fun goToSettingsClick() {
-        if (!autofillInformationProvider.isAutofillSupported()) {
+        if (!autofillInformationProvider.isAutofillServiceSupported()) {
             view?.showAutofillNotSupported()
         } else {
             view?.openAutofillSettings()

@@ -147,8 +147,8 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         // no action - dialog closed
     }
 
-    override fun setupAutofillSuccess() {
-        presenter.autofillSetupSuccessfully()
+    override fun autofillSettingsPossibleChange() {
+        presenter.possibleAutofillChange()
     }
 
     override fun showAutofillEnabledDialog() {
