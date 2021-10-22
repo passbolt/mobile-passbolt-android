@@ -1,9 +1,4 @@
-package com.passbolt.mobile.android.feature.setup
-
-import androidx.navigation.findNavController
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.core.navigation.PartiallyAuthenticated
-import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBinding
+package com.passbolt.mobile.android.core.navigation
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,13 +22,9 @@ import com.passbolt.mobile.android.feature.setup.databinding.ActivitySetupBindin
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SetUpActivity : BindingActivity<ActivitySetupBinding>(ActivitySetupBinding::inflate), PartiallyAuthenticated {
+interface PartiallyAuthenticated {
 
-    override val isCurrentFragmentAuthenticated: Boolean
-        get() = !unauthenticatedFragmentIds.contains(
-            findNavController(binding.fragmentContainer.id).currentDestination?.id
-        )
+    val unauthenticatedFragmentIds: List<Int>
 
-    override val unauthenticatedFragmentIds: List<Int>
-        get() = listOf(R.id.welcomeFragment, R.id.transferDetailsFragment, R.id.scanQrFragment)
+    val isCurrentFragmentAuthenticated: Boolean
 }
