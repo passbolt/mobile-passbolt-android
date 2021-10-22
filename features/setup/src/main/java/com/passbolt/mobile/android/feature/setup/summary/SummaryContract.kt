@@ -38,6 +38,7 @@ interface SummaryContract {
         fun navigateToSignIn(userId: String)
         fun showLeaveConfirmationDialog()
         fun navigateToStart()
+        fun navigateToManageAccounts()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
