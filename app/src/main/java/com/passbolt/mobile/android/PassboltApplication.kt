@@ -72,7 +72,7 @@ class PassboltApplication : Application(), KoinComponent {
         super.onCreate()
         initTimber()
         initKoin()
-        setupCoil()
+        Coil.setImageLoader(imageLoader)
         registerAppForegroundListener()
     }
 
@@ -96,11 +96,6 @@ class PassboltApplication : Application(), KoinComponent {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
-    }
-
-    private fun setupCoil() {
-        // TODO remove in production version - PAS-105
-        Coil.setImageLoader(imageLoader)
     }
 
     private fun initKoin() {

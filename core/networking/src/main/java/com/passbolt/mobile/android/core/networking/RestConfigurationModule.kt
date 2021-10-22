@@ -1,15 +1,12 @@
 package com.passbolt.mobile.android.core.networking
 
-import coil.util.CoilUtils
 import com.passbolt.mobile.android.common.MfaTokenExtractor
 import com.passbolt.mobile.android.core.networking.interceptor.AuthInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.CookiesInterceptor
-import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.time.Duration
@@ -52,8 +49,7 @@ val networkingModule = module {
     single(named(COIL_HTTP_CLIENT)) {
         provideCoilHttpClient(
             loggingInterceptor = get(),
-            changeableBaseUrlInterceptor = get(),
-            cache = get()
+            changeableBaseUrlInterceptor = get()
         )
     }
     single { ChangeableBaseUrlInterceptor(getCurrentApiUrlUseCase = get()) }
@@ -90,7 +86,6 @@ val networkingModule = module {
             context = get()
         )
     }
-    single { CoilUtils.createDefaultCache(androidContext()) }
 }
 
 private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
@@ -102,7 +97,6 @@ private fun provideHttpClient(
     interceptors: List<Interceptor>
 ) =
     OkHttpClient.Builder()
-        .hostnameVerifier { _, _ -> true } // TODO remove in production version - PAS-105
         .addNetworkInterceptor(loggingInterceptor)
         .connectTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
         .writeTimeout(Duration.ofSeconds(TIMEOUT_SECONDS))
@@ -114,14 +108,11 @@ private fun provideHttpClient(
 
 private fun provideCoilHttpClient(
     loggingInterceptor: HttpLoggingInterceptor,
-    changeableBaseUrlInterceptor: ChangeableBaseUrlInterceptor,
-    cache: Cache
+    changeableBaseUrlInterceptor: ChangeableBaseUrlInterceptor
 ) =
     OkHttpClient.Builder()
         .addNetworkInterceptor(loggingInterceptor)
         .addInterceptor(changeableBaseUrlInterceptor)
-        .hostnameVerifier { _, _ -> true } // TODO remove in production version - PAS-105
-        .cache(cache)
         .build()
 
 const val DEFAULT_HTTP_CLIENT = "DEFAULT_HTTP_CLIENT"

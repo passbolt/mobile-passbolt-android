@@ -13,8 +13,6 @@ import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.networking.COIL_HTTP_CLIENT
-import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
-import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -44,11 +42,6 @@ import org.koin.dsl.module
  */
 
 internal val appModule = module {
-    single {
-        ImageLoader.Builder(androidContext())
-            .okHttpClient(okHttpClient = get(named(DEFAULT_HTTP_CLIENT)))
-            .build()
-    }
     factory {
         ContextCompat.getMainExecutor(androidContext())
     }
@@ -61,10 +54,9 @@ internal val appModule = module {
     single { TimeProvider() }
     single { UuidProvider() }
     single {
-        provideImageLoader(
-            okHttpClient = get(named(COIL_HTTP_CLIENT)),
-            androidContext()
-        )
+        ImageLoader.Builder(androidContext())
+            .okHttpClient(okHttpClient = get(named(COIL_HTTP_CLIENT)))
+            .build()
     }
     single { InitialsProvider() }
     single { WebsiteOpener() }
@@ -74,10 +66,4 @@ internal val appModule = module {
     single {
         androidContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
     }
-}
-
-private fun provideImageLoader(okHttpClient: OkHttpClient, context: Context) {
-    ImageLoader.Builder(context)
-        .okHttpClient(okHttpClient)
-        .build()
 }
