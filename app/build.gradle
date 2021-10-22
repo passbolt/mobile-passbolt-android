@@ -80,6 +80,14 @@ easylauncher {
                 ribbonColor: "#DCDCDC"
             )
         }
+        qa {
+            enable true
+            filters = chromeLike(
+                label: "qa:${getVersionCode()}",
+                labelColor: "#000000",
+                ribbonColor: "#057610"
+            )
+        }
     }
 }
 
