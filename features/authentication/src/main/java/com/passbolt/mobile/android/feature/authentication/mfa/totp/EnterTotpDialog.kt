@@ -9,14 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
-import com.passbolt.mobile.android.common.extension.invisible
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
@@ -77,6 +75,8 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupListeners()
+        binding.otpInput.isFocusableInTouchMode = true
+        binding.otpInput.requestFocus()
         presenter.viewCreated(bundledHasYubikeyProvider)
     }
 
@@ -116,7 +116,6 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
             otpInput.setOnPinEnteredListener {
                 presenter.otpEntered(it.toString(), bundledAuthToken, rememberMeCheckBox.isChecked)
             }
-            otpInput.addTextChangedListener { presenter.inputTextChange() }
         }
     }
 
@@ -146,12 +145,18 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         binding.otpInput.setText("")
     }
 
-    override fun showWrongCodeError() {
-        binding.error.visible()
+    override fun setTotpInputRed() {
+        binding.otpInput.setCustomTextColor(ContextCompat.getColor(binding.root.context, R.color.red))
     }
 
-    override fun hideWrongCodeError() {
-        binding.error.invisible()
+    override fun setTotpInputBlack() {
+        binding.otpInput.setCustomTextColor(ContextCompat.getColor(binding.root.context, android.R.color.black))
+    }
+
+    override fun showWrongCodeError() {
+        Snackbar.make(binding.root, R.string.dialog_mfa_wrong_code, Snackbar.LENGTH_LONG).apply {
+            view.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.red))
+        }.show()
     }
 
     override fun pasteOtp(otp: String) {
