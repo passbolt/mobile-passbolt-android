@@ -8,9 +8,16 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/dp_16"
-        android:paddingEnd="@dimen/dp_16">
+        android:layout_height="wrap_content">
+
+        <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white"
+            android:theme="@style/Theme.Passbolt.Toolbar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/Theme.Passbolt.PopupOverlay" />
 
         <ImageView
             android:id="@+id/logoImage"
@@ -21,7 +28,7 @@
             android:src="@drawable/logo_text_icon_light"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/toolbar" />
 
         <ImageView
             android:id="@+id/appsImage"
@@ -56,6 +63,7 @@
             android:layout_marginStart="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_16"
             android:gravity="center|top"
+            android:paddingHorizontal="@dimen/dp_16"
             android:text="@string/welcome_body"
             android:textAppearance="@style/BodyText"
             app:layout_constraintBottom_toTopOf="@id/connectToAccountButton"
@@ -69,6 +77,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_56"
             android:layout_marginBottom="@dimen/dp_24"
+            android:layout_marginHorizontal="@dimen/dp_16"
             android:text="@string/welcome_connect_to_existing_account"
             app:layout_constraintBottom_toTopOf="@id/noAccountButton" />
 

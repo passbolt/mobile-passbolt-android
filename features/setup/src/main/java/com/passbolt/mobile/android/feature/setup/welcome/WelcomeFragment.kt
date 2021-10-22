@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBinding
@@ -41,6 +43,7 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
         super.onViewCreated(view, savedInstanceState)
         setUpListeners()
         presenter.attach(this)
+        presenter.argsRetrieved(requireActivity().isTaskRoot)
     }
 
     override fun onDestroyView() {
@@ -52,6 +55,8 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
         with(binding) {
             noAccountButton.setDebouncingOnClick { presenter.noAccountButtonClick() }
             connectToAccountButton.setDebouncingOnClick { presenter.connectToAccountClick() }
+            initDefaultToolbar(toolbar)
+            toolbar.setNavigationOnClickListener { requireActivity().finish() }
         }
     }
 
@@ -67,5 +72,9 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
         findNavController().navigate(
             WelcomeFragmentDirections.actionWelcomeFragmentToTransferDetailsFragment()
         )
+    }
+
+    override fun hideToolbar() {
+        binding.toolbar.gone()
     }
 }
