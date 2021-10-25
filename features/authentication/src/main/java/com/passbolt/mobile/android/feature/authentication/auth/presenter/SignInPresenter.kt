@@ -315,8 +315,8 @@ class SignInPresenter(
     }
 
     private fun signInSuccess(updateSession: Boolean = true) {
+        val currentLoginState = requireNotNull(loginState)
         if (updateSession) {
-            val currentLoginState = requireNotNull(loginState)
             saveSessionUseCase.execute(
                 SaveSessionUseCase.Input(
                     userId = userId,
@@ -326,14 +326,14 @@ class SignInPresenter(
                 )
             )
             passphraseMemoryCache.set(currentLoginState.passphrase)
-            saveServerFingerprintUseCase.execute(
-                SaveServerFingerprintUseCase.Input(
-                    currentLoginState.fingerprint,
-                    userId
-                )
-            )
             currentLoginState.passphrase.erase()
         }
+        saveServerFingerprintUseCase.execute(
+            SaveServerFingerprintUseCase.Input(
+                userId,
+                currentLoginState.fingerprint
+            )
+        )
         saveSelectedAccountUseCase.execute(UserIdInput(userId))
         loginState?.passphrase?.erase()
         loginState = null

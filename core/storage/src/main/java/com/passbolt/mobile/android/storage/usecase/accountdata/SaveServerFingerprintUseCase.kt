@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.storage.usecase.accountdata
 
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
-import com.passbolt.mobile.android.storage.paths.PrivateKeyFileName
+import com.passbolt.mobile.android.storage.paths.ServerFingerprintFileName
 import com.passbolt.mobile.android.storage.usecase.SERVER_FINGERPRINT_KEY
 
 /**
@@ -32,7 +32,7 @@ class SaveServerFingerprintUseCase(
 ) : UseCase<SaveServerFingerprintUseCase.Input, Unit> {
 
     override fun execute(input: Input) {
-        val fileName = PrivateKeyFileName(input.userId).name
+        val fileName = ServerFingerprintFileName(input.userId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
 
         with(sharedPreferences.edit()) {
