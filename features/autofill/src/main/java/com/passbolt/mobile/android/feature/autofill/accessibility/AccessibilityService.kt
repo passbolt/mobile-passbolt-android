@@ -2,19 +2,23 @@ package com.passbolt.mobile.android.feature.autofill.accessibility
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
+import android.graphics.Point
 import android.os.PowerManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.autofill.accessibility.notification.AccessibilityServiceNotificationFactory
 import com.passbolt.mobile.android.feature.autofill.databinding.ViewAutofillLabelBinding
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesActivity
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesActivity.Companion.URI_KEY
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -56,6 +60,13 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     private val powerManager: PowerManager by inject()
     private var uri: String? = null
     private val accessibilityServiceNotificationFactory: AccessibilityServiceNotificationFactory by inject()
+    private var overlayViewHeight: Int = 0
+    private var anchorNode: AccessibilityNodeInfo? = null
+    private var isOverlayAboveAnchor: Boolean = false
+    private var overlayAnchorObserverRunning = false
+    private var overlayAnchorObserverRunnable: Job? = null
+    private var lastAnchorX = 0
+    private var lastAnchorY = 0
 
     override fun onCreate() {
         super.onCreate()
@@ -193,14 +204,72 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
             overlayDisplayed = true
             val params = accessibilityOperationsProvider.createOverlayParams()
             overlayView?.root?.measure(View.MeasureSpec.makeMeasureSpec(0, 0), View.MeasureSpec.makeMeasureSpec(0, 0))
-            val height = overlayView?.root?.measuredHeight ?: 0
-            val width = overlayView?.root?.measuredWidth ?: 0
+            overlayViewHeight = overlayView?.root?.measuredHeight ?: 0
+
             val anchorPosition = accessibilityOperationsProvider.getOverlayAnchorPosition(
-                event.source, height, width
+                event.source, overlayViewHeight, isOverlayAboveAnchor
             )
+            anchorNode = event.source
+
             params.x = anchorPosition.x
             params.y = anchorPosition.y
             windowManager.addView(overlayView?.root, params)
+            startOverlayAnchorObserver()
+        }
+    }
+
+    private fun startOverlayAnchorObserver() {
+        if (!overlayAnchorObserverRunning) {
+            overlayAnchorObserverRunning = true
+            overlayAnchorObserverRunnable = scope.launch {
+                while (overlayAnchorObserverRunning) {
+                    delay(OBSERVE_POSITION_DELAY)
+                    adjustOverlayForScroll()
+                }
+            }
+        }
+    }
+
+    private fun adjustOverlayForScroll() {
+        if (overlayView == null || anchorNode == null) {
+            hideOverlay()
+            return
+        }
+        val root = rootInActiveWindow
+        val anchorPosition = accessibilityOperationsProvider.getOverlayAnchorPosition(
+            anchorNode, root, windows, overlayViewHeight, false
+        )
+        if (anchorPosition == null) {
+            hideOverlay()
+        } else if (anchorPosition.x == -1 && anchorPosition.y == -1) {
+            if (overlayView?.root?.visibility != View.GONE) {
+                overlayView?.root?.gone()
+            }
+        } else if (anchorPosition.x == -1) {
+            isOverlayAboveAnchor = false
+        } else if (anchorPosition.y == -1) {
+            isOverlayAboveAnchor = true
+        } else if (anchorPosition.x == lastAnchorX && anchorPosition.y == lastAnchorY) {
+            if (overlayView?.root?.visibility != View.VISIBLE) {
+                overlayView?.root?.visibility = View.VISIBLE
+            }
+        } else {
+            updateOverlay(anchorPosition)
+        }
+    }
+
+    private fun updateOverlay(anchorPosition: Point) {
+        val layoutParams = accessibilityOperationsProvider.createOverlayParams()
+        layoutParams.x = anchorPosition.x
+        layoutParams.y = anchorPosition.y
+
+        lastAnchorX = anchorPosition.x
+        lastAnchorY = anchorPosition.y
+
+        windowManager.updateViewLayout(overlayView?.root, layoutParams)
+
+        if (overlayView?.root?.visibility != View.VISIBLE) {
+            overlayView?.root?.visible()
         }
     }
 
@@ -208,6 +277,9 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
         if (overlayDisplayed) {
             windowManager.removeViewImmediate(overlayView?.root)
             overlayDisplayed = false
+            lastAnchorX = 0
+            lastAnchorY = 0
+            isOverlayAboveAnchor = false
         }
     }
 
@@ -219,6 +291,7 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
         private const val PASSBOLT_PACKAGE = "com.passbolt.mobile.android.debug"
         private const val SYSTEM_UI_PACKAGE = "com.android.systemui"
         private const val CLEAR_CREDENTIALS_DELAY = 1000L
+        private const val OBSERVE_POSITION_DELAY = 250L
         private const val NOTIFICATION_ID = 1
     }
 }

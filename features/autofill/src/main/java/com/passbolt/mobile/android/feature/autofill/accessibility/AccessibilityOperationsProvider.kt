@@ -5,10 +5,13 @@ import android.graphics.Point
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.view.Gravity
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.accessibility.AccessibilityNodeInfo.ACTION_SET_TEXT
+import android.view.accessibility.AccessibilityWindowInfo
+import com.passbolt.mobile.android.common.ResourceDimenProvider
 import java.lang.Exception
 
 /**
@@ -33,7 +36,9 @@ import java.lang.Exception
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccessibilityOperationsProvider {
+class AccessibilityOperationsProvider(
+    private val resourceDimenProvider: ResourceDimenProvider
+) {
 
     fun fillNode(node: AccessibilityNodeInfo, value: String) {
         val bundle = Bundle().apply {
@@ -127,14 +132,100 @@ class AccessibilityOperationsProvider {
     fun getOverlayAnchorPosition(
         anchorView: AccessibilityNodeInfo,
         height: Int,
-        width: Int
+        isOverlayAboveAnchor: Boolean
     ): Point {
         val anchorViewRect = Rect()
         anchorView.getBoundsInScreen(anchorViewRect)
-        val anchorViewX = (anchorViewRect.right - width) / 2
-        val anchorViewY = (anchorViewRect.bottom - height) / 2
+        val anchorViewX = anchorViewRect.left
+        var anchorViewY = if (isOverlayAboveAnchor) anchorViewRect.top else anchorViewRect.bottom
+        if (isOverlayAboveAnchor) {
+            anchorViewY -= height
+        }
 
         return Point(anchorViewX, anchorViewY)
+    }
+
+    private fun getInputMethodHeight(windows: List<AccessibilityWindowInfo>?): Int {
+        var inputMethodWindowHeight = 0
+        windows?.forEach {
+            if (it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD) {
+                val windowRect = Rect()
+                it.getBoundsInScreen(windowRect)
+                inputMethodWindowHeight = windowRect.height()
+                return@forEach
+            }
+        }
+        return inputMethodWindowHeight
+    }
+
+    private fun getNodeHeight(node: AccessibilityNodeInfo?): Int {
+        if (node == null) {
+            return -1
+        }
+        val nodeRect = Rect()
+        node.getBoundsInScreen(nodeRect)
+        return nodeRect.height()
+    }
+
+    fun getOverlayAnchorPosition(
+        anchorNode: AccessibilityNodeInfo?,
+        root: AccessibilityNodeInfo,
+        windows: List<AccessibilityWindowInfo>?,
+        overlayViewHeight: Int,
+        isOverlayAboveAnchor: Boolean
+    ): Point? {
+        var point: Point? = null
+        if (anchorNode != null) {
+            anchorNode.refresh()
+            if (!anchorNode.isVisibleToUser) {
+                return Point(-1, -1)
+            }
+            if (!anchorNode.isFocused) {
+                return null
+            }
+            val inputMethodHeight = getInputMethodHeight(windows)
+            point = countOverlayPosition(anchorNode, root, overlayViewHeight, isOverlayAboveAnchor, inputMethodHeight)
+        }
+        return point
+    }
+
+    private fun countOverlayPosition(
+        anchorNode: AccessibilityNodeInfo,
+        root: AccessibilityNodeInfo,
+        overlayViewHeight: Int,
+        isOverlayAboveAnchor: Boolean,
+        inputMethodHeight: Int
+    ): Point? {
+        val minY = 0
+        val rootNodeHeight = getNodeHeight(root)
+        if (rootNodeHeight == -1) {
+            return null
+        }
+        val maxY = rootNodeHeight - resourceDimenProvider.getNavigationBarHeight() -
+                resourceDimenProvider.getStatusBarHeight() - inputMethodHeight
+        val point = getOverlayAnchorPosition(anchorNode, overlayViewHeight, isOverlayAboveAnchor)
+
+        if (point.y < minY) {
+            if (isOverlayAboveAnchor) {
+                point.x = -1
+                point.y = 0
+            } else {
+                point.x = -1
+                point.y = -1
+            }
+        } else if (point.y > (maxY - overlayViewHeight)) {
+            if (isOverlayAboveAnchor) {
+                point.x = -1
+                point.y = -1
+            } else {
+                point.x = 0
+                point.y = -1
+            }
+        } else if (isOverlayAboveAnchor && point.y < (maxY - (overlayViewHeight * 2) - getNodeHeight(anchorNode))) {
+            point.x = -1
+            point.y = 0
+        }
+        return point
     }
 
     fun getPasswordNode(nodes: List<AccessibilityNodeInfo>): AccessibilityNodeInfo? {
@@ -189,7 +280,9 @@ class AccessibilityOperationsProvider {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, PixelFormat.TRANSPARENT
-        )
+        ).apply {
+            gravity = Gravity.TOP or Gravity.START
+        }
 
     fun shouldSkipPackage(eventPackageName: String?): Boolean {
         if (eventPackageName.isNullOrEmpty() ||
