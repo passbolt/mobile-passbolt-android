@@ -63,6 +63,7 @@ release:
   tags:
     - docker
   script:
+    - echo $QA_KEY | base64 -d > "${HOME}/qa.keystore"
     - |
       echo "Initalizing python"
       apt-get --quiet update --yes
@@ -78,7 +79,12 @@ release:
     - echo ${FIREBASE_SERVICE_KEY} | base64 --decode > "$FIREBASE_DIR/service_key.json"
     - >
       ./gradlew --no-daemon --build-cache -PwithGitlabReleaseNotes -PserviceKey="$FIREBASE_DIR/service_key.json"
+      -Pandroid.injected.signing.store.file="${HOME}/qa.keystore"
+      -Pandroid.injected.signing.store.password=$QA_KEYSTORE_PASSWORD
+      -Pandroid.injected.signing.key.alias=$QA_KEY_ALIAS
+      -Pandroid.injected.signing.key.password=$QA_KEY_PASSWORD
       assembleQa appDistributionUploadQa
+
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   artifacts:
