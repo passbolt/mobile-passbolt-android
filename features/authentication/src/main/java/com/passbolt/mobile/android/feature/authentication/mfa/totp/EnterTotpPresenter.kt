@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class EnterTotpPresenter(
@@ -70,7 +71,12 @@ class EnterTotpPresenter(
     }
 
     private fun totpError() {
-        view?.clearInput()
+        scope.launch {
+            view?.setTotpInputRed()
+            delay(CLEAR_INPUT_DELAY)
+            view?.setTotpInputBlack()
+            view?.clearInput()
+        }
         view?.showWrongCodeError()
     }
 
@@ -80,10 +86,6 @@ class EnterTotpPresenter(
                 view?.pasteOtp(it)
             }
         }
-    }
-
-    override fun inputTextChange() {
-        view?.hideWrongCodeError()
     }
 
     override fun detach() {
@@ -97,5 +99,6 @@ class EnterTotpPresenter(
 
     private companion object {
         private const val OTP_LENGTH = 6
+        private const val CLEAR_INPUT_DELAY = 1000L
     }
 }
