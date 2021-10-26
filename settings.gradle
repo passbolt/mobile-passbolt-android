@@ -28,6 +28,7 @@ featureModule "resources"
 featureModule "secrets"
 
 serviceModule "passboltapi"
+serviceModule "linksapi"
 
 domainModule "dto"
 domainModule "ui"

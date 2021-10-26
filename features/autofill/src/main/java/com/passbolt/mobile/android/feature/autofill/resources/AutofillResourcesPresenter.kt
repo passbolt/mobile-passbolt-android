@@ -1,9 +1,5 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
-import android.service.autofill.Dataset
-import android.view.View
-import android.view.autofill.AutofillId
-import android.view.autofill.AutofillValue
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
@@ -12,8 +8,6 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPres
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.feature.autofill.StructureParser
-import com.passbolt.mobile.android.feature.autofill.service.ParsedStructure
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -49,7 +43,6 @@ import kotlinx.coroutines.launch
  */
 class AutofillResourcesPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
-    private val structureParser: StructureParser,
     private val getLocalResourcesUse: GetLocalResourcesUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
@@ -65,13 +58,13 @@ class AutofillResourcesPresenter(
     AutofillResourcesContract.Presenter {
 
     override var view: AutofillResourcesContract.View? = null
-    private lateinit var parsedStructure: Set<ParsedStructure>
+
+    private var uri: String? = null
+
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private var allItemsList: List<ResourceModel> = emptyList()
     private var currentSearchText: String = ""
-    private val mode = AutofillMode.ACCESSIBILITY
-    private var uri: String? = null
     private var userAvatarUrl: String? = null
     private val searchInputEndIconMode
         get() = if (currentSearchText.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
@@ -83,6 +76,10 @@ class AutofillResourcesPresenter(
         } else {
             view.navigateToSetup()
         }
+    }
+
+    override fun argsReceived(uri: String?) {
+        this.uri = uri
     }
 
     override fun userAuthenticated() {
@@ -110,35 +107,6 @@ class AutofillResourcesPresenter(
                 is ResourceInteractor.Output.Failure -> fetchingResourcesFailure()
                 is ResourceInteractor.Output.Success -> fetchingResourcesSuccess(result.resources)
             }
-        }
-    }
-
-    private fun returnAccessibility(password: String, username: String) {
-        view?.returnData(username, password, uri)
-    }
-
-    private fun returnAutofill(password: String, username: String) {
-        val usernameParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_USERNAME, parsedStructure)
-        val passwordParsedAssistStructure = structureParser.extractHint(View.AUTOFILL_HINT_PASSWORD, parsedStructure)
-
-        if (passwordParsedAssistStructure == null || usernameParsedAssistStructure == null) {
-            view?.navigateBack()
-            return
-        }
-
-        val dataSet = createDataSet(
-            usernameParsedAssistStructure.id,
-            passwordParsedAssistStructure.id,
-            username,
-            password
-        )
-        view?.returnData(dataSet)
-    }
-
-    private fun returnDataSet(password: String, username: String) {
-        when (mode) {
-            AutofillMode.ACCESSIBILITY -> returnAccessibility(password, username)
-            AutofillMode.AUTOFILL -> returnAutofill(password, username)
         }
     }
 
@@ -178,6 +146,8 @@ class AutofillResourcesPresenter(
         uri?.let { uri ->
             val domain = domainProvider.getHost(uri)
             val suggested = allItemsList.filter { domainProvider.getHost(it.url) == domain }
+
+            // TODO can there be more suggested items if suggested is not empty and additionally links api is fetched?
             if (suggested.isEmpty()) {
                 fetchLinksApi(uri)
             } else {
@@ -208,7 +178,7 @@ class AutofillResourcesPresenter(
             doAfterFetchAndDecrypt(resourceModel.resourceId, {
                 hideItemLoader(resourceModel.resourceId)
                 val password = secretParser.extractPassword(resourceTypeEnum, it)
-                returnDataSet(password, resourceModel.username)
+                view?.autofillReturn(resourceModel.username, password, uri)
             }) {
                 hideItemLoader(resourceModel.resourceId)
                 view?.showGeneralError()
@@ -231,12 +201,6 @@ class AutofillResourcesPresenter(
             is SecretInteractor.Output.Success -> {
                 action(output.decryptedSecret)
             }
-        }
-    }
-
-    override fun argsReceived(uri: String?) {
-        uri?.let {
-            this.uri = it
         }
     }
 
@@ -284,23 +248,6 @@ class AutofillResourcesPresenter(
     override fun closeClick() {
         view?.navigateToHome()
     }
-
-    private fun createDataSet(
-        usernameId: AutofillId,
-        passwordId: AutofillId,
-        usernameValue: String,
-        password: String
-    ) =
-        Dataset.Builder()
-            .setValue(
-                usernameId,
-                AutofillValue.forText(usernameValue)
-            )
-            .setValue(
-                passwordId,
-                AutofillValue.forText(password)
-            )
-            .build()
 
     enum class SearchInputEndIconMode {
         AVATAR,

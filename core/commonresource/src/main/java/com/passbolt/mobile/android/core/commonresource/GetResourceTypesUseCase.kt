@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
-import com.passbolt.mobile.android.service.resourcetypes.ResourceTypesRepository
+import com.passbolt.mobile.android.passboltapi.resourcetypes.ResourceTypesRepository
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 
 /**

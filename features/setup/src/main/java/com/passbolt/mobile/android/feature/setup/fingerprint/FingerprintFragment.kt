@@ -9,15 +9,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
-import androidx.core.os.bundleOf
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
-import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.DialogMode
-import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.EncourageAccessibilityAutofillDialog
-import com.passbolt.mobile.android.feature.autofill.encourage.autofill.EncourageAutofillDialog
+import com.passbolt.mobile.android.feature.autofill.encourage.autofill.EncourageAutofillServiceDialog
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentFingerprintBinding
 import org.koin.android.ext.android.inject
@@ -48,7 +45,7 @@ import javax.crypto.Cipher
  */
 
 class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(FragmentFingerprintBinding::inflate),
-    FingerprintContract.View, EncourageAccessibilityAutofillDialog.Listener, AutofillEnabledDialog.Listener {
+    FingerprintContract.View, EncourageAutofillServiceDialog.Listener, AutofillEnabledDialog.Listener {
 
     private val presenter: FingerprintContract.Presenter by inject()
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
@@ -102,12 +99,8 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
     }
 
     override fun showEncourageAutofillDialog() {
-        EncourageAccessibilityAutofillDialog().apply {
-            arguments = bundleOf(
-                EncourageAccessibilityAutofillDialog.DIALOG_MODE_KEY to DialogMode.Setup
-            )
-        }.show(
-            childFragmentManager, EncourageAutofillDialog::class.java.name
+        EncourageAutofillServiceDialog().show(
+            childFragmentManager, EncourageAutofillServiceDialog::class.java.name
         )
     }
 
@@ -148,8 +141,8 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         presenter.setupAutofillLaterClick()
     }
 
-    override fun autofillSettingsPossibleChange() {
-        presenter.possibleAutofillChange()
+    override fun autofillSetupSuccessfully() {
+        presenter.autofillSetupSuccess()
     }
 
     override fun goToAppClick() {

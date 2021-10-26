@@ -103,7 +103,9 @@ class FingerprintPresenter(
                         SaveBiometricKeyIvUseCase.Input(authenticatedCipher.iv)
                     )
                 }
-                if (!autofillInformationProvider.isAccessibilityAutofillSetup()) {
+                if (autofillInformationProvider.isAutofillServiceSupported() &&
+                    !autofillInformationProvider.isPassboltAutofillServiceSet()
+                ) {
                     view?.showEncourageAutofillDialog()
                 } else {
                     view?.navigateToHome()
@@ -128,9 +130,7 @@ class FingerprintPresenter(
         view?.navigateToHome()
     }
 
-    override fun possibleAutofillChange() {
-        if (autofillInformationProvider.isAccessibilityAutofillSetup()) {
-            view?.showAutofillEnabledDialog()
-        }
+    override fun autofillSetupSuccess() {
+        handleAutofillSetup()
     }
 }

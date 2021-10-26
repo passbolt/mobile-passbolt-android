@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.secrets.usecase.decrypt
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.service.secrets.SecretsRepository
+import com.passbolt.mobile.android.passboltapi.secrets.SecretsRepository
 
 /**
  * Passbolt - Open source password manager for teams

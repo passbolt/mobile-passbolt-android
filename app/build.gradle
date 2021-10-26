@@ -119,6 +119,7 @@ dependencies {
     implementation project(':secrets')
     implementation project(':commonresource')
     implementation project(':security')
+    implementation project(':linksapi')
 
     debugImplementation libs.quality.leakcanary
 

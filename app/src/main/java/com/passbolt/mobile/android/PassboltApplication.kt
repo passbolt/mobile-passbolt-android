@@ -26,7 +26,8 @@ import com.passbolt.mobile.android.feature.setup.setupModule
 import com.passbolt.mobile.android.feature.startup.di.startUpModule
 import com.passbolt.mobile.android.featureflags.featureFlagsModule
 import com.passbolt.mobile.android.gopenpgp.di.openPgpModule
-import com.passbolt.mobile.android.service.passboltApiModule
+import com.passbolt.mobile.android.passboltapi.passboltApiModule
+import com.passbolt.mobile.android.service.linksApiModule
 import com.passbolt.mobile.android.storage.storageModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -125,7 +126,8 @@ class PassboltApplication : Application(), KoinComponent {
                 secretsModule,
                 commonResourceModule,
                 uiModule,
-                securityModule
+                securityModule,
+                linksApiModule
             )
         }
     }

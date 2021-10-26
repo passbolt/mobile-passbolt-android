@@ -13,10 +13,10 @@ import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AutofillMode
 import com.passbolt.mobile.android.feature.autofill.accessibility.notification.AccessibilityServiceNotificationFactory
 import com.passbolt.mobile.android.feature.autofill.databinding.ViewAutofillLabelBinding
-import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesActivity
-import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesActivity.Companion.URI_KEY
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -192,11 +192,11 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     }
 
     private fun openResourcesActivity() {
-        val intent = Intent(applicationContext, AutofillResourcesActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(URI_KEY, uri)
-        }
-        startActivity(intent)
+        startActivity(
+            ActivityIntents.autofill(applicationContext, AutofillMode.ACCESSIBILITY.name, uri).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+        )
     }
 
     private fun displayOverlay(event: AccessibilityEvent) {

@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.core.networking.ErrorHeaderMapper
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.request.TotpRequest
-import com.passbolt.mobile.android.service.mfa.MfaRepository
+import com.passbolt.mobile.android.passboltapi.mfa.MfaRepository
 import java.net.HttpURLConnection
 
 /**

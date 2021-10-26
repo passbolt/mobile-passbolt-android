@@ -53,6 +53,6 @@ interface FingerprintContract {
         fun goToTheAppClick()
         fun keyChangesInfoConfirmClick()
         fun getPassphraseSucceeded()
-        fun possibleAutofillChange()
+        fun autofillSetupSuccess()
     }
 }

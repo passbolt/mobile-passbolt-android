@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.MfaTokenExtractor
 import com.passbolt.mobile.android.dto.request.SignInRequestDto
 import com.passbolt.mobile.android.mappers.SignInMapper
-import com.passbolt.mobile.android.service.auth.AuthRepository
+import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
 import org.koin.dsl.module
 
 /**

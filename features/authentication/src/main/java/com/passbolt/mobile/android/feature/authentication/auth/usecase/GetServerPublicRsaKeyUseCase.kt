@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
-import com.passbolt.mobile.android.service.auth.AuthRepository
+import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
 
 /**
  * Passbolt - Open source password manager for teams
