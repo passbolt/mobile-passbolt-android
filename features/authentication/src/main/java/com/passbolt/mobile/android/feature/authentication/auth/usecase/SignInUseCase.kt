@@ -51,10 +51,11 @@ class SignInUseCase(
                 result.headerMessage,
                 getFailureType(result.errorCode)
             )
-            is NetworkResult.Success -> Output.Success(
-                requireNotNull(result.value.body()?.body?.challenge),
-                mfaTokenExtractor.get(result.value)
-            )
+            is NetworkResult.Success -> {
+                result.value.body()?.body?.challenge?.let {
+                    Output.Success(it, mfaTokenExtractor.get(result.value))
+                } ?: Output.Failure("", Output.Failure.FailureType.OTHER)
+            }
         }
     }
 

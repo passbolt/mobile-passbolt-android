@@ -31,7 +31,9 @@ fun Module.authenticationMainModule() {
     scope<AuthenticationMainActivity> {
         scoped<AuthenticationMainContract.Presenter> {
             AuthenticationMainPresenter(
-                getSelectedAccountUseCase = get()
+                getSelectedAccountUseCase = get(),
+                getAccountDataUseCase = get(),
+                saveCurrentApiUrlUseCase = get()
             )
         }
         scoped {

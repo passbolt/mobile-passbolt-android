@@ -78,6 +78,7 @@ class AccountsListPresenter(
                 view?.showProgress()
                 signOutUseCase.execute(Unit)
                 view?.hideProgress()
+                // save selected account has to after signing out the user
                 saveSelectedAccountUseCase.execute(UserIdInput(model.userId))
                 saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(model.url))
                 view?.navigateToNewAccountSignIn(model)

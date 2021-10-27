@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
@@ -7,6 +8,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -101,6 +103,17 @@ class AuthenticationMainPresenterTest : KoinTest {
         runBlockingTest {
             whenever(mockGetSelectedAccountUseCase.execute(Unit))
                 .doReturn(GetSelectedAccountUseCase.Output(USER_ID))
+            whenever(mockGetAccountDataUseCase.execute(any()))
+                .doReturn(
+                    GetAccountDataUseCase.Output(
+                        firstName = "firstName",
+                        lastName = "lastName",
+                        email = "email",
+                        avatarUrl = "avatarUrl",
+                        serverId = "serverId",
+                        url = "https://passbolt.com"
+                    )
+                )
 
             val testForConfigurationValue: (config: ActivityIntents.AuthConfig) -> Unit = {
                 reset(mockView)
