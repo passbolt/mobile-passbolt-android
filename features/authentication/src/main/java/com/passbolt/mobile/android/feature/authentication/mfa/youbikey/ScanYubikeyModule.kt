@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.youbikey
 
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyYubikeyUseCase
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -35,16 +34,6 @@ fun Module.scanYubikeyModule() {
                 signOutUseCase = get(),
                 coroutineLaunchContext = get(),
                 verifyYubikeyUseCase = get()
-            )
-        }
-        scoped {
-            SignOutUseCase(
-                passphraseMemoryCache = get(),
-                removeSelectedAccountUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                authRepository = get(),
-                signOutMapper = get(),
-                getSessionUseCase = get()
             )
         }
         scoped {

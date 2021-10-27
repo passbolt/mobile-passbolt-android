@@ -9,7 +9,6 @@ import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AccountUiItemsMapper
 import com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy.AccountListStrategyFactory
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
@@ -71,16 +70,6 @@ fun Module.accountsListModule() {
         }
         scoped {
             AccountListStrategyFactory()
-        }
-        scoped {
-            SignOutUseCase(
-                passphraseMemoryCache = get(),
-                removeSelectedAccountUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                authRepository = get(),
-                getSessionUseCase = get(),
-                signOutMapper = get()
-            )
         }
     }
 }
