@@ -202,6 +202,7 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     private fun displayOverlay(event: AccessibilityEvent) {
         if (!overlayDisplayed) {
             overlayDisplayed = true
+            createOverlayView()
             val params = accessibilityOperationsProvider.createOverlayParams()
             overlayView?.root?.measure(View.MeasureSpec.makeMeasureSpec(0, 0), View.MeasureSpec.makeMeasureSpec(0, 0))
             overlayViewHeight = overlayView?.root?.measuredHeight ?: 0
@@ -276,6 +277,7 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     private fun hideOverlay() {
         if (overlayDisplayed) {
             windowManager.removeViewImmediate(overlayView?.root)
+            overlayView = null
             overlayDisplayed = false
             lastAnchorX = 0
             lastAnchorY = 0
