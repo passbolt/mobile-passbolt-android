@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication
 
 import com.passbolt.mobile.android.feature.authentication.auth.FingerprintParser
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import org.koin.core.module.Module
 
 /**
@@ -34,16 +33,6 @@ fun Module.authenticationMainModule() {
                 getSelectedAccountUseCase = get(),
                 getAccountDataUseCase = get(),
                 saveCurrentApiUrlUseCase = get()
-            )
-        }
-        scoped {
-            SignOutUseCase(
-                passphraseMemoryCache = get(),
-                removeSelectedAccountUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                authRepository = get(),
-                signOutMapper = get(),
-                getSessionUseCase = get()
             )
         }
     }

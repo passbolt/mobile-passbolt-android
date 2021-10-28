@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -35,16 +34,6 @@ fun Module.enterTotpModuleModule() {
                 signOutUseCase = get(),
                 coroutineLaunchContext = get(),
                 verifyTotpUseCase = get()
-            )
-        }
-        scoped {
-            SignOutUseCase(
-                passphraseMemoryCache = get(),
-                removeSelectedAccountUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                authRepository = get(),
-                signOutMapper = get(),
-                getSessionUseCase = get()
             )
         }
         scoped {

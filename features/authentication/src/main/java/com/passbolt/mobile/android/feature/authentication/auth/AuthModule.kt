@@ -96,16 +96,6 @@ fun Module.authModule() {
             BiometricPrompt.PromptInfo.Builder()
         }
         scoped {
-            SignOutUseCase(
-                passphraseMemoryCache = get(),
-                removeSelectedAccountUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                authRepository = get(),
-                signOutMapper = get(),
-                getSessionUseCase = get()
-            )
-        }
-        scoped {
             AuthReasonMapper()
         }
         scoped {
@@ -113,6 +103,16 @@ fun Module.authModule() {
         }
     }
     single { MfaProviderHandler() }
+    single {
+        SignOutUseCase(
+            passphraseMemoryCache = get(),
+            removeSelectedAccountUseCase = get(),
+            getSelectedAccountUseCase = get(),
+            authRepository = get(),
+            signOutMapper = get(),
+            getSessionUseCase = get()
+        )
+    }
 }
 
 private fun ScopeDSL.authPresenter() {
