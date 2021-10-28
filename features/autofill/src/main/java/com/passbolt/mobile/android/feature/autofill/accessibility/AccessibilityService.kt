@@ -1,8 +1,12 @@
 package com.passbolt.mobile.android.feature.autofill.accessibility
 
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.InBoundsTopAnchor
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.ForceBottom
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.OutBoundsHide
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.InBoundsBottomAnchor
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
-import android.graphics.Point
 import android.os.PowerManager
 import android.view.LayoutInflater
 import android.view.View
@@ -67,6 +71,7 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     private var overlayAnchorObserverRunnable: Job? = null
     private var lastAnchorX = 0
     private var lastAnchorY = 0
+    private var lastPosition: OverlayPosition? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -239,32 +244,32 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
         val anchorPosition = accessibilityOperationsProvider.getOverlayAnchorPosition(
             anchorNode, root, windows, overlayViewHeight, false
         )
+        val currentLastPosition = lastPosition
         if (anchorPosition == null) {
             hideOverlay()
-        } else if (anchorPosition.x == -1 && anchorPosition.y == -1) {
+        } else if (anchorPosition is OutBoundsHide) {
             if (overlayView?.root?.visibility != View.GONE) {
                 overlayView?.root?.gone()
             }
-        } else if (anchorPosition.x == -1) {
+        } else if (anchorPosition is InBoundsBottomAnchor || anchorPosition is ForceBottom) {
             isOverlayAboveAnchor = false
-        } else if (anchorPosition.y == -1) {
+        } else if (anchorPosition is InBoundsTopAnchor) {
             isOverlayAboveAnchor = true
-        } else if (anchorPosition.x == lastAnchorX && anchorPosition.y == lastAnchorY) {
+        } else if (currentLastPosition != null && anchorPosition::class == currentLastPosition::class) {
             if (overlayView?.root?.visibility != View.VISIBLE) {
                 overlayView?.root?.visibility = View.VISIBLE
             }
-        } else {
+        } else if (anchorPosition is OverlayPosition.Position) {
             updateOverlay(anchorPosition)
         }
     }
 
-    private fun updateOverlay(anchorPosition: Point) {
+    private fun updateOverlay(anchorPosition: OverlayPosition.Position) {
         val layoutParams = accessibilityOperationsProvider.createOverlayParams()
         layoutParams.x = anchorPosition.x
         layoutParams.y = anchorPosition.y
 
-        lastAnchorX = anchorPosition.x
-        lastAnchorY = anchorPosition.y
+        lastPosition = anchorPosition
 
         windowManager.updateViewLayout(overlayView?.root, layoutParams)
 
