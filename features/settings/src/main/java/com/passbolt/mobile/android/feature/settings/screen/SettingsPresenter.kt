@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.settings.screen
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
@@ -69,7 +69,7 @@ class SettingsPresenter(
     }
 
     private fun handleAutofillVisibility() {
-        if (!autofillInfoProvider.isPassboltAutofillServiceSet()) {
+        if (!autofillInfoProvider.isAccessibilityAutofillSetup()) {
             view?.showAutofillSetting()
         } else {
             view?.hideAutofillSetting()
@@ -116,10 +116,6 @@ class SettingsPresenter(
 
     override fun autofillClick() {
         view?.navigateToAutofill()
-    }
-
-    override fun autofillSetupSuccessfully() {
-        view?.showAutofillEnabledDialog()
     }
 
     override fun fingerprintSettingChanged(isEnabled: Boolean) {
@@ -200,5 +196,11 @@ class SettingsPresenter(
     override fun detach() {
         scope.coroutineContext.cancelChildren()
         super.detach()
+    }
+
+    override fun possibleAutofillChange() {
+        if (autofillInfoProvider.isAccessibilityAutofillSetup()) {
+            view?.showAutofillEnabledDialog()
+        }
     }
 }

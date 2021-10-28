@@ -1,8 +1,9 @@
-package com.passbolt.mobile.android.common.autofill
+package com.passbolt.mobile.android.feature.autofill
 
 import android.content.Context
 import android.provider.Settings
 import android.view.autofill.AutofillManager
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityService
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,16 +32,21 @@ class AutofillInformationProvider(
     private val context: Context
 ) {
 
-    fun isAutofillSupported() = autofillManager.isAutofillSupported
+    fun isAutofillServiceSupported() = autofillManager.isAutofillSupported
 
     fun isPassboltAutofillServiceSet() = autofillManager.hasEnabledAutofillServices()
 
-    fun isOverlayEnabled() = Settings.canDrawOverlays(context)
+    fun isAccessibilityOverlayEnabled() = Settings.canDrawOverlays(context)
 
-    fun isAccessibilityServiceEnabled(servicePath: String): Boolean {
+    fun isAccessibilityServiceEnabled(): Boolean {
         val prefString =
             Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
-        return prefString != null && prefString.contains(context.packageName + "/" + servicePath)
+        return prefString != null && prefString.contains(
+            context.packageName + "/" + AccessibilityService::class.java.name
+        )
     }
+
+    fun isAccessibilityAutofillSetup() =
+        isAccessibilityOverlayEnabled() && isAccessibilityServiceEnabled()
 }

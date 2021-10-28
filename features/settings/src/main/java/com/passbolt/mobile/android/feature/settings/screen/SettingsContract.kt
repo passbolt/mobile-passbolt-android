@@ -59,7 +59,6 @@ interface SettingsContract {
         fun manageAccountsClick()
         fun autofillClick()
         fun fingerprintSettingChanged(isEnabled: Boolean)
-        fun autofillSetupSuccessfully()
         fun disableFingerprintConfirmed()
         fun disableFingerprintCanceled()
         fun autofillEnabledDialogDismissed()
@@ -70,5 +69,6 @@ interface SettingsContract {
         fun biometricAuthCanceled()
         fun keyChangesInfoConfirmClick()
         fun systemSettingsClick()
+        fun possibleAutofillChange()
     }
 }

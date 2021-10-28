@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.settings.screen
 
 import android.view.autofill.AutofillManager
 import androidx.biometric.BiometricPrompt
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 

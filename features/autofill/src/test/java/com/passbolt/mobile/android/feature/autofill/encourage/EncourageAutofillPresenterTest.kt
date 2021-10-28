@@ -32,7 +32,7 @@ class EncourageAutofillPresenterTest : KoinTest {
 
     @Test
     fun `autofill not supported dialog should be shown when needed`() {
-        whenever(mockAutofillInformationProvider.isAutofillSupported()) doReturn false
+        whenever(mockAutofillInformationProvider.isAutofillServiceSupported()) doReturn false
 
         presenter.goToSettingsClick()
 
@@ -42,7 +42,7 @@ class EncourageAutofillPresenterTest : KoinTest {
 
     @Test
     fun `should navigate to autofill settings if autofill is supported`() {
-        whenever(mockAutofillInformationProvider.isAutofillSupported()) doReturn true
+        whenever(mockAutofillInformationProvider.isAutofillServiceSupported()) doReturn true
 
         presenter.goToSettingsClick()
 

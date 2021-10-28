@@ -39,7 +39,9 @@ fun Module.accessibilityAutofillModule() {
     }
     scope(named<AutofillTutorialDialog>()) {
         scoped<AutofillTutorialContract.Presenter> {
-            AutofillTutorialPresenter()
+            AutofillTutorialPresenter(
+                autofillInformationProvider = get()
+            )
         }
     }
 }

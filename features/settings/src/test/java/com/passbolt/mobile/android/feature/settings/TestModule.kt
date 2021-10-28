@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.feature.settings
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract

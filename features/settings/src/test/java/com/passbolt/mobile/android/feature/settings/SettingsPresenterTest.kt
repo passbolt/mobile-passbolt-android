@@ -6,10 +6,9 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.stub
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
@@ -79,39 +78,43 @@ class SettingsPresenterTest : KoinTest {
                 )
             )
         }
-        presenter.attach(view)
-        reset(view)
     }
 
     @Test
     fun `disabling biometric should display confirmation dialog`() {
+        presenter.attach(view)
         presenter.fingerprintSettingChanged(false)
+
         verify(view).showDisableFingerprintConfirmationDialog()
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `enabling biometric should navigate to authentication sign in if fingerprint is configured`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).doReturn(true)
+
+        presenter.attach(view)
         presenter.fingerprintSettingChanged(true)
+
         verify(view).navigateToAuthGetPassphrase()
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `enabling biometric should show info when fingerprint is not configured`() {
         whenever(fingerprintInformationProvider.hasBiometricSetUp()).doReturn(false)
+
+        presenter.attach(view)
         presenter.fingerprintSettingChanged(true)
+
         verify(view).showConfigureFingerprintFirst()
         verify(view).toggleFingerprintOff(true)
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `privacy policy clicked should navigate to privacy policy website`() {
+        presenter.attach(view)
         presenter.privacyPolicyClick()
+
         verify(view).openUrl(URL)
-        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -132,57 +135,66 @@ class SettingsPresenterTest : KoinTest {
 
     @Test
     fun `terms clicked should navigate to terms website`() {
+        presenter.attach(view)
         presenter.termsClick()
+
         verify(view).openUrl(URL)
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `sign out clicked should open confirmation dialog`() {
+        presenter.attach(view)
         presenter.signOutClick()
+
         verify(view).showLogoutDialog()
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `sign out confirmation clicked should navigate to sign in`() {
+        presenter.attach(view)
         presenter.logoutConfirmed()
 
         verify(view).showProgress()
         verify(view).hideProgress()
         verify(view).navigateToSignInWithLogout()
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `manage accounts clicked should navigate to accounts list`() {
+        presenter.attach(view)
         presenter.manageAccountsClick()
+
         verify(view).navigateToManageAccounts()
-        verifyNoMoreInteractions(view)
     }
 
     @Test
-    fun `autofill setup success should display autofill enabled dialog`() {
-        presenter.autofillSetupSuccessfully()
-        verify(view).showAutofillEnabledDialog()
-        verifyNoMoreInteractions(view)
+    fun `autofill should not be visible when fully setup`() {
+        whenever(autofillInformationProvider.isAccessibilityAutofillSetup())
+            .doReturn(true)
+
+        presenter.attach(view)
+
+        verify(view).hideAutofillSetting()
     }
 
     @Test
     fun `disabling fingerprint confirmed should toggle switch off`() {
         whenever(getSelectedAccountUseCase.execute(anyOrNull()))
             .thenReturn(GetSelectedAccountUseCase.Output("id"))
+
+        presenter.attach(view)
         presenter.disableFingerprintConfirmed()
+
         verify(view).toggleFingerprintOff(eq(true))
         verify(removePassphraseUseCase).execute(eq(UserIdInput("id")))
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `disabling fingerprint canceled should toggle switch on`() {
+        presenter.attach(view)
         presenter.disableFingerprintCanceled()
-        verify(view).toggleFingerprintOn(eq(true))
-        verifyNoMoreInteractions(view)
+
+        verify(view, times(2)).toggleFingerprintOn(eq(true))
     }
 
     @Test
@@ -193,6 +205,7 @@ class SettingsPresenterTest : KoinTest {
         )
         whenever(passphraseMemoryCache.get()).thenReturn(PotentialPassphrase.Passphrase(PASSPHRASE))
 
+        presenter.attach(view)
         presenter.fingerprintSettingChanged(isEnabled = true)
 
         verify(view).navigateToAuthGetPassphrase()
@@ -203,7 +216,6 @@ class SettingsPresenterTest : KoinTest {
             verify(savePassphraseUseCase).execute(capture())
             assertThat(firstValue.passphrase).isEqualTo(PASSPHRASE)
         }
-        verifyNoMoreInteractions(view)
     }
 
     private companion object {

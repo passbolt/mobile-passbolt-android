@@ -29,12 +29,13 @@ interface EncourageAccessibilityAutofillContract {
 
     interface View : BaseContract.View {
         fun showAutofillNotSupported()
-        fun closeWithSuccess()
-        fun dismissWithNoAction()
+        fun dismissWithNotify()
         fun setOverlayEnabled(overlayEnabled: Boolean)
         fun navigateToOverlayTutorial()
         fun navigateToServiceTutorial()
         fun setAccessibilityServiceEnabled(accessibilityServiceEnabled: Boolean)
+        fun notifyPossibleAutofillChange()
+        fun dismissWithNoAction()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -44,6 +45,6 @@ interface EncourageAccessibilityAutofillContract {
         fun serviceClick()
         fun resume()
         fun backPressed()
-        fun dialogCreate()
+        fun possibleAutofillChange()
     }
 }

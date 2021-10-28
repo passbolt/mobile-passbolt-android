@@ -2,8 +2,7 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
-import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityService
+import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
@@ -104,9 +103,7 @@ class FingerprintPresenter(
                         SaveBiometricKeyIvUseCase.Input(authenticatedCipher.iv)
                     )
                 }
-                if (!autofillInformationProvider.isOverlayEnabled() ||
-                    !autofillInformationProvider.isAccessibilityServiceEnabled(AccessibilityService::class.java.name)
-                ) {
+                if (!autofillInformationProvider.isAccessibilityAutofillSetup()) {
                     view?.showEncourageAutofillDialog()
                 } else {
                     view?.navigateToHome()
@@ -131,7 +128,9 @@ class FingerprintPresenter(
         view?.navigateToHome()
     }
 
-    override fun autofillDialogSuccess() {
-        view?.showAutofillEnabledDialog()
+    override fun possibleAutofillChange() {
+        if (autofillInformationProvider.isAccessibilityAutofillSetup()) {
+            view?.showAutofillEnabledDialog()
+        }
     }
 }

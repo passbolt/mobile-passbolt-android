@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase

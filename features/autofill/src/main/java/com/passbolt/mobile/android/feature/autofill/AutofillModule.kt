@@ -6,7 +6,6 @@ import android.os.PowerManager
 import android.view.WindowManager
 import android.view.autofill.AutofillManager
 import com.passbolt.mobile.android.common.ResourceDimenProvider
-import com.passbolt.mobile.android.common.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider
 import com.passbolt.mobile.android.feature.autofill.accessibility.notification.AccessibilityServiceNotificationFactory

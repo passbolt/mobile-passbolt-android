@@ -148,8 +148,8 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         presenter.setupAutofillLaterClick()
     }
 
-    override fun setupAutofillSuccess() {
-        presenter.autofillDialogSuccess()
+    override fun autofillSettingsPossibleChange() {
+        presenter.possibleAutofillChange()
     }
 
     override fun goToAppClick() {

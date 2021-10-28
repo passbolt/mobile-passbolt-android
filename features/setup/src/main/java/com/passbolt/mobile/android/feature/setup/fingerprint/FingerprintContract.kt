@@ -50,9 +50,9 @@ interface FingerprintContract {
         fun authenticationError(errorMessage: Int)
         fun setupAutofillLaterClick()
         fun maybeLaterClick()
-        fun autofillDialogSuccess()
         fun goToTheAppClick()
         fun keyChangesInfoConfirmClick()
         fun getPassphraseSucceeded()
+        fun possibleAutofillChange()
     }
 }

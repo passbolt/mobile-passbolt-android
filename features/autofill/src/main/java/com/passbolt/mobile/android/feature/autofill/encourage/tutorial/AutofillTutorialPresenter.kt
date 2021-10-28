@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.feature.autofill.encourage.tutorial
 
+import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,13 +24,26 @@ package com.passbolt.mobile.android.feature.autofill.encourage.tutorial
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AutofillTutorialPresenter : AutofillTutorialContract.Presenter {
+class AutofillTutorialPresenter(
+    private val autofillInformationProvider: AutofillInformationProvider
+) : AutofillTutorialContract.Presenter {
 
     override var view: AutofillTutorialContract.View? = null
     private lateinit var tutorialMode: TutorialMode
 
     override fun argsReceived(tutorialMode: TutorialMode) {
         this.tutorialMode = tutorialMode
+    }
+
+    override fun resume() {
+        val shouldCloseDialog = when (tutorialMode) {
+            TutorialMode.Overlay -> autofillInformationProvider.isAccessibilityOverlayEnabled()
+            TutorialMode.Service -> autofillInformationProvider.isAccessibilityServiceEnabled()
+        }
+        if (shouldCloseDialog) {
+            view?.closeDialog()
+        }
+        view?.notifyAutofillSettingsPossibleChange()
     }
 
     override fun samsungClick() {
@@ -55,7 +70,7 @@ class AutofillTutorialPresenter : AutofillTutorialContract.Presenter {
     }
 
     override fun closeClick() {
-        view?.closeTutorial()
+        view?.closeDialog()
     }
 
     override fun backClick() {
