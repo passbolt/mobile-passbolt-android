@@ -79,6 +79,7 @@
             android:layout_marginBottom="@dimen/dp_8"
             android:src="@drawable/ic_fingerprint_auth"
             android:visibility="gone"
+            android:background="?selectableItemBackgroundBorderless"
             app:layout_constraintBottom_toTopOf="@id/authButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

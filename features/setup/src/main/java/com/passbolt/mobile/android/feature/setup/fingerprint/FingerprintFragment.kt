@@ -14,6 +14,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
+import com.passbolt.mobile.android.feature.autofill.enabled.DialogMode
 import com.passbolt.mobile.android.feature.autofill.encourage.autofill.EncourageAutofillServiceDialog
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentFingerprintBinding
@@ -105,9 +106,8 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
     }
 
     override fun showAutofillEnabledDialog() {
-        AutofillEnabledDialog().show(
-            childFragmentManager, AutofillEnabledDialog::class.java.name
-        )
+        AutofillEnabledDialog.newInstance(DialogMode.Setup)
+            .show(childFragmentManager, AutofillEnabledDialog::class.java.name)
     }
 
     override fun navigateToHome() {
@@ -137,7 +137,7 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
             .show()
     }
 
-    override fun setupAutofillLaterClick() {
+    override fun autofillSetupClosed() {
         presenter.setupAutofillLaterClick()
     }
 

@@ -28,7 +28,6 @@
         android:id="@+id/autofillSetting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:icon="@drawable/ic_autofill"
         app:name="@string/settings_autofill" />
 

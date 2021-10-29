@@ -1,8 +1,6 @@
-package com.passbolt.mobile.android.feature.autofill.encourage.accessibility
+package com.passbolt.mobile.android.feature.settings.screen.autofill
 
-import androidx.annotation.StringRes
-import com.passbolt.mobile.android.feature.autofill.R
-import java.io.Serializable
+import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,21 +24,23 @@ import java.io.Serializable
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-sealed class DialogMode(
-    @StringRes val title: Int,
-    @StringRes val description: Int,
-    val buttonVisible: Boolean
-) : Serializable {
+interface SettingsAutofillContract {
 
-    object Settings : DialogMode(
-        R.string.dialog_encourage_autofill_accessibility_title,
-        R.string.dialog_encourage_autofill_accessibility_description,
-        false
-    )
+    interface View : BaseContract.View {
+        fun setAccessibilitySwitchOn()
+        fun setAccessibilitySwitchOff()
+        fun showAutofillServiceNotSupported()
+        fun setAutofillSwitchOff()
+        fun setAutofillSwitchOn()
+        fun showEncourageAutofillService()
+        fun showEncourageAccessibilityService()
+        fun showAutofillFeatureEnabledSuccess()
+    }
 
-    object Setup : DialogMode(
-        R.string.dialog_encourage_autofill_header,
-        R.string.dialog_encourage_autofill_accessibility_description,
-        true
-    )
+    interface Presenter : BaseContract.Presenter<View> {
+        fun autofillServiceSwitchClick()
+        fun accessibilityServiceSwitchClick()
+        fun viewResumed()
+        fun autofillSetupSuccessfully()
+    }
 }

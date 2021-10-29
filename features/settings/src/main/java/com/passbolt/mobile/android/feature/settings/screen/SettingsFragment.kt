@@ -9,7 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
-import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.extension.gone
@@ -21,8 +21,6 @@ import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.auth.AuthBiometricCallback
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
-import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.DialogMode
-import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.EncourageAccessibilityAutofillDialog
 import com.passbolt.mobile.android.feature.settings.R
 import com.passbolt.mobile.android.feature.settings.databinding.FragmentSettingsBinding
 import org.koin.android.ext.android.inject
@@ -54,7 +52,7 @@ import javax.crypto.Cipher
 
 @Suppress("TooManyFunctions")
 class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(FragmentSettingsBinding::inflate),
-    SettingsContract.View, EncourageAccessibilityAutofillDialog.Listener, AutofillEnabledDialog.Listener {
+    SettingsContract.View, AutofillEnabledDialog.Listener {
 
     private val presenter: SettingsContract.Presenter by inject()
     private val websiteOpener: WebsiteOpener by inject()
@@ -125,12 +123,8 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
     }
 
     override fun navigateToAutofill() {
-        EncourageAccessibilityAutofillDialog().apply {
-            arguments = bundleOf(
-                EncourageAccessibilityAutofillDialog.DIALOG_MODE_KEY to DialogMode.Settings
-            )
-        }.show(
-            childFragmentManager, EncourageAccessibilityAutofillDialog::class.java.name
+        findNavController().navigate(
+            SettingsFragmentDirections.actionSettingsToSettingsAutofillFragment()
         )
     }
 
@@ -141,14 +135,6 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
             .setPositiveButton(R.string.settings_logout_dialog_sign_out) { _, _ -> presenter.logoutConfirmed() }
             .setNegativeButton(R.string.cancel) { _, _ -> }
             .show()
-    }
-
-    override fun setupAutofillLaterClick() {
-        // no action - dialog closed
-    }
-
-    override fun autofillSettingsPossibleChange() {
-        presenter.possibleAutofillChange()
     }
 
     override fun showAutofillEnabledDialog() {
@@ -188,10 +174,6 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         authenticationResult.launch(
             ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.RefreshPassphrase)
         )
-    }
-
-    override fun autofillEnabledDialogDismissed() {
-        presenter.autofillEnabledDialogDismissed()
     }
 
     override fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher) {

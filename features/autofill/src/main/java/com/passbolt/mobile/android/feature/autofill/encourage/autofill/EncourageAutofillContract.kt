@@ -31,7 +31,7 @@ interface EncourageAutofillContract {
         fun openAutofillSettings()
         fun showAutofillNotSupported()
         fun closeWithSuccess()
-        fun dismissWithNoAction()
+        fun close()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

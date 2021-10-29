@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.feature.settings
+package com.passbolt.mobile.android.feature.autofill.enabled
 
-import com.passbolt.mobile.android.feature.settings.screen.autofill.settingsAutofillModule
-import com.passbolt.mobile.android.feature.settings.screen.settingsModule
-import org.koin.dsl.module
+import androidx.annotation.StringRes
+import com.passbolt.mobile.android.feature.autofill.R
+import java.io.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,8 +26,15 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+sealed class DialogMode(
+    @StringRes val buttonTextIdRes: Int
+) : Serializable {
 
-val settingsModule = module {
-    settingsModule()
-    settingsAutofillModule()
+    object Settings : DialogMode(
+        R.string.dialog_autofill_enabled_go_to_app
+    )
+
+    object Setup : DialogMode(
+        R.string.dialog_autofill_enabled_got_it
+    )
 }

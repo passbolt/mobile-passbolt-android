@@ -28,8 +28,8 @@ import androidx.fragment.app.FragmentManager
 
 fun showDialog(fragmentManager: FragmentManager, dialog: DialogFragment, tag: String) {
     with(fragmentManager) {
-        val progressFragment = findFragmentByTag(tag)
-        if (progressFragment?.isAdded != true) {
+        val dialogFragment = findFragmentByTag(tag)
+        if (dialogFragment?.isAdded != true) {
             dialog.show(this, tag)
             executePendingTransactions()
         }
@@ -38,9 +38,9 @@ fun showDialog(fragmentManager: FragmentManager, dialog: DialogFragment, tag: St
 
 fun hideDialog(fragmentManager: FragmentManager, tag: String) {
     with(fragmentManager) {
-        val progressFragment = findFragmentByTag(tag)
-        progressFragment?.let {
-            beginTransaction().remove(progressFragment).commit()
+        val dialogFragment = findFragmentByTag(tag)
+        dialogFragment?.let {
+            beginTransaction().remove(dialogFragment).commit()
             executePendingTransactions()
         }
     }

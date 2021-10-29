@@ -57,18 +57,17 @@ val testModule = module {
     factory<SettingsContract.Presenter> {
         SettingsPresenter(
             checkIfPassphraseExistsUseCase = get(),
-            autofillInfoProvider = get(),
             removePassphraseUseCase = get(),
             getSelectedAccountUseCase = get(),
             savePassphraseUseCase = get(),
             passphraseMemoryCache = get(),
             biometricCipher = get(),
             saveBiometricKeyIvUseCase = get(),
-            fingerprintInformationProvider = get(),
             removeBiometricKeyUseCase = get(),
+            fingerprintInformationProvider = get(),
             getFeatureFlagsUseCase = get(),
-            coroutineLaunchContext = get(),
-            signOutUseCase = get()
+            signOutUseCase = get(),
+            coroutineLaunchContext = get()
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

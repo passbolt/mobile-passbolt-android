@@ -54,11 +54,11 @@
             android:gravity="center"
             android:lineSpacingExtra="@dimen/dp_8"
             android:text="@string/dialog_autofill_enabled_message"
-            app:layout_constraintBottom_toTopOf="@id/goToAppButton"
+            app:layout_constraintBottom_toTopOf="@id/button"
             app:layout_constraintTop_toBottomOf="@id/headerLabel" />
 
         <Button
-            android:id="@+id/goToAppButton"
+            android:id="@+id/button"
             style="@style/PrimaryButton"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_56"

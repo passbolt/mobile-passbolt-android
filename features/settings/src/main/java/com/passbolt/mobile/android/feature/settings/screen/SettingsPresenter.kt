@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.settings.screen
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
-import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
@@ -26,7 +25,6 @@ import javax.crypto.Cipher
 
 class SettingsPresenter(
     private val checkIfPassphraseExistsUseCase: CheckIfPassphraseFileExistsUseCase,
-    private val autofillInfoProvider: AutofillInformationProvider,
     private val removePassphraseUseCase: RemovePassphraseUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val savePassphraseUseCase: SavePassphraseUseCase,
@@ -47,7 +45,6 @@ class SettingsPresenter(
 
     override fun attach(view: SettingsContract.View) {
         super.attach(view)
-        handleAutofillVisibility()
         handleFingerprintSwitchState(view)
         handleFeatureFlagsUrls()
     }
@@ -61,18 +58,6 @@ class SettingsPresenter(
             if (featureFlags.termsAndConditionsUrl.isNullOrBlank()) {
                 view?.hideTermsAndConditionsButton()
             }
-        }
-    }
-
-    override fun autofillEnabledDialogDismissed() {
-        handleAutofillVisibility()
-    }
-
-    private fun handleAutofillVisibility() {
-        if (!autofillInfoProvider.isAccessibilityAutofillSetup()) {
-            view?.showAutofillSetting()
-        } else {
-            view?.hideAutofillSetting()
         }
     }
 
@@ -196,11 +181,5 @@ class SettingsPresenter(
     override fun detach() {
         scope.coroutineContext.cancelChildren()
         super.detach()
-    }
-
-    override fun possibleAutofillChange() {
-        if (autofillInfoProvider.isAccessibilityAutofillSetup()) {
-            view?.showAutofillEnabledDialog()
-        }
     }
 }

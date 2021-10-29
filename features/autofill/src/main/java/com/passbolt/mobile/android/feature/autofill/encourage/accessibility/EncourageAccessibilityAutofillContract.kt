@@ -36,11 +36,11 @@ interface EncourageAccessibilityAutofillContract {
         fun setAccessibilityServiceEnabled(accessibilityServiceEnabled: Boolean)
         fun notifyPossibleAutofillChange()
         fun dismissWithNoAction()
+        fun showAutofillEnabledDialog()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun closeClick()
-        fun maybeLaterClick()
         fun overlayClick()
         fun serviceClick()
         fun resume()

@@ -2,18 +2,19 @@ package com.passbolt.mobile.android.feature.autofill.encourage.accessibility
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogAccessibilityEncourageAutofillBinding
+import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
+import com.passbolt.mobile.android.feature.autofill.enabled.DialogMode
 import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.AutofillTutorialDialog
 import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.TutorialMode
 import org.koin.android.scope.AndroidScopeComponent
@@ -48,9 +49,6 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
     private var listener: Listener? = null
     private val presenter: EncourageAccessibilityAutofillContract.Presenter by scope.inject()
     private lateinit var binding: DialogAccessibilityEncourageAutofillBinding
-    private val dialogMode: DialogMode by lifecycleAwareLazy {
-        requireArguments().getSerializable(DIALOG_MODE_KEY) as DialogMode
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +58,6 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DialogAccessibilityEncourageAutofillBinding.inflate(inflater)
         setupListeners()
-        setupView()
         return binding.root
     }
 
@@ -88,12 +85,6 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
         presenter.attach(this)
     }
 
-    private fun setupView() {
-        binding.headerLabel.text = context?.getString(dialogMode.title)
-        binding.descriptionLabel.text = context?.getString(dialogMode.description)
-        binding.maybeLaterButton.isVisible = dialogMode.buttonVisible
-    }
-
     override fun setOverlayEnabled(overlayEnabled: Boolean) {
         binding.overlaySwitch.isChecked = overlayEnabled
     }
@@ -102,15 +93,14 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
         binding.autofillSwitch.isChecked = accessibilityServiceEnabled
     }
 
-    override fun onDetach() {
+    override fun onDismiss(dialog: DialogInterface) {
         listener = null
         presenter.detach()
-        super.onDetach()
+        super.onDismiss(dialog)
     }
 
     private fun setupListeners() {
         with(binding) {
-            maybeLaterButton.setDebouncingOnClick { presenter.maybeLaterClick() }
             closeButton.setDebouncingOnClick { presenter.closeClick() }
             overlayContainer.setDebouncingOnClick { presenter.overlayClick() }
             serviceContainer.setDebouncingOnClick { presenter.serviceClick() }
@@ -138,7 +128,7 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
     }
 
     override fun dismissWithNotify() {
-        listener?.setupAutofillLaterClick()
+        listener?.setupAccessibilityLaterClick()
         dismiss()
     }
 
@@ -159,15 +149,16 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
     }
 
     override fun notifyPossibleAutofillChange() {
-        listener?.autofillSettingsPossibleChange()
+        listener?.accessibilitySettingsPossibleChange()
     }
 
-    companion object {
-        const val DIALOG_MODE_KEY = "DIALOG_MODE_KEY"
+    override fun showAutofillEnabledDialog() {
+        AutofillEnabledDialog.newInstance(DialogMode.Settings)
+            .show(childFragmentManager, AutofillEnabledDialog::class.java.name)
     }
 
     interface Listener {
-        fun setupAutofillLaterClick()
-        fun autofillSettingsPossibleChange()
+        fun setupAccessibilityLaterClick()
+        fun accessibilitySettingsPossibleChange()
     }
 }
