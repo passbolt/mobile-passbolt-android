@@ -173,12 +173,12 @@ class AccessibilityOperationsProvider(
         windows: List<AccessibilityWindowInfo>?,
         overlayViewHeight: Int,
         isOverlayAboveAnchor: Boolean
-    ): Point? {
-        var point: Point? = null
+    ): OverlayPosition? {
+        var point: OverlayPosition? = null
         if (anchorNode != null) {
             anchorNode.refresh()
             if (!anchorNode.isVisibleToUser) {
-                return Point(-1, -1)
+                return OverlayPosition.OutBoundsHide
             }
             if (!anchorNode.isFocused) {
                 return null
@@ -195,7 +195,7 @@ class AccessibilityOperationsProvider(
         overlayViewHeight: Int,
         isOverlayAboveAnchor: Boolean,
         inputMethodHeight: Int
-    ): Point? {
+    ): OverlayPosition? {
         val minY = 0
         val rootNodeHeight = getNodeHeight(root)
         if (rootNodeHeight == -1) {
@@ -205,27 +205,22 @@ class AccessibilityOperationsProvider(
                 resourceDimenProvider.getStatusBarHeight() - inputMethodHeight
         val point = getOverlayAnchorPosition(anchorNode, overlayViewHeight, isOverlayAboveAnchor)
 
-        if (point.y < minY) {
+        val position = if (point.y < minY) {
             if (isOverlayAboveAnchor) {
-                point.x = -1
-                point.y = 0
+                OverlayPosition.InBoundsBottomAnchor
             } else {
-                point.x = -1
-                point.y = -1
+                OverlayPosition.OutBoundsHide
             }
         } else if (point.y > (maxY - overlayViewHeight)) {
             if (isOverlayAboveAnchor) {
-                point.x = -1
-                point.y = -1
+                OverlayPosition.OutBoundsHide
             } else {
-                point.x = 0
-                point.y = -1
+                OverlayPosition.InBoundsTopAnchor
             }
         } else if (isOverlayAboveAnchor && point.y < (maxY - (overlayViewHeight * 2) - getNodeHeight(anchorNode))) {
-            point.x = -1
-            point.y = 0
-        }
-        return point
+            OverlayPosition.ForceBottom
+        } else OverlayPosition.Position(point.x, point.y)
+        return position
     }
 
     fun getPasswordNode(nodes: List<AccessibilityNodeInfo>): AccessibilityNodeInfo? {
@@ -320,6 +315,14 @@ class AccessibilityOperationsProvider(
         Browser("com.chrome.canary", "url_bar"),
         Browser("com.chrome.dev", "url_bar")
     )
+
+    sealed class OverlayPosition {
+        object InBoundsBottomAnchor : OverlayPosition()
+        object InBoundsTopAnchor : OverlayPosition()
+        object OutBoundsHide : OverlayPosition()
+        object ForceBottom : OverlayPosition()
+        class Position(val x: Int, val y: Int) : OverlayPosition()
+    }
 
     companion object {
         private const val ANDROID_APP_PROTOCOL = "androidapp://"
