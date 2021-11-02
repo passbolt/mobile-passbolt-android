@@ -4,8 +4,11 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
-import com.passbolt.mobile.android.feature.autofill.service.CheckUrlLinksRepository
-import com.passbolt.mobile.android.feature.autofill.service.CheckUrlLinksUseCase
+import com.passbolt.mobile.android.core.navigation.AutofillMode
+import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAccessibilityDataset
+import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDataset
+import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
@@ -37,14 +40,13 @@ fun Module.autofillResourcesModule() {
     scope<AutofillResourcesActivity> {
         scoped<AutofillResourcesContract.Presenter> {
             AutofillResourcesPresenter(
-                structureParser = get(),
                 coroutineLaunchContext = get(),
-                getSelectedAccountUseCase = get(),
                 getLocalResourcesUse = get(),
-                resourcesInteractor = get(),
+                getSelectedAccountUseCase = get(),
                 fetchAndUpdateDatabaseUseCase = get(),
-                resourceSearch = get(),
                 domainProvider = get(),
+                resourcesInteractor = get(),
+                resourceSearch = get(),
                 secretInteractor = get(),
                 getSelectedAccountDataUseCase = get(),
                 resourceTypeFactory = get(),
@@ -55,22 +57,27 @@ fun Module.autofillResourcesModule() {
         scoped { (accountUiItemsMapper: ResourceUiItemsMapper) ->
             ModelAdapter(accountUiItemsMapper::mapModelToItem)
         }
-        scoped {
-            CheckUrlLinksUseCase(
-                checkUrlLinksRepository = get()
-            )
-        }
         scoped { ResourceUiItemsMapper() }
-        scoped {
-            CheckUrlLinksRepository(
-                restServiceProvider = get(),
-                responseHandler = get()
-            )
-        }
         scoped(named<ResourceListUiModel>()) {
             FastAdapter.with(get<ModelAdapter<ResourceListUiModel, GenericItem>> {
                 parametersOf(get<ResourceUiItemsMapper>())
             })
+        }
+        scoped<ReturnAutofillDatasetStrategy>(
+            named(AutofillMode.AUTOFILL)
+        ) { (view: AutofillResourcesContract.View) ->
+            ReturnAutofillDataset(
+                view = view,
+                appContext = androidContext(),
+                assistStructureParser = get(),
+                fillableInputsFinder = get(),
+                remoteViewsFactory = get()
+            )
+        }
+        scoped<ReturnAutofillDatasetStrategy>(
+            named(AutofillMode.ACCESSIBILITY)
+        ) { (view: AutofillResourcesContract.View) ->
+            ReturnAccessibilityDataset(view)
         }
     }
 }

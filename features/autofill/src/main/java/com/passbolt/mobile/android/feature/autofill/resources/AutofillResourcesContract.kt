@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
-import android.service.autofill.Dataset
+import android.app.assist.AssistStructure
+import android.content.Intent
 import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -29,8 +30,6 @@ import com.passbolt.mobile.android.ui.ResourceModel
  */
 interface AutofillResourcesContract {
     interface View : BaseAuthenticatedContract.View {
-        fun returnData(username: String, password: String, uri: String?)
-        fun returnData(dataset: Dataset)
         fun navigateBack()
         fun showResources(resources: List<ResourceListUiModel>)
         fun showGeneralError()
@@ -45,6 +44,10 @@ interface AutofillResourcesContract {
         fun clearSearchInput()
         fun navigateToSetup()
         fun navigateToHome()
+        fun finishAutofill()
+        fun getAutofillStructure(): AssistStructure
+        fun autofillReturn(username: String, password: String, uri: String?)
+        fun setResultAndFinish(result: Int, resultIntent: Intent)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

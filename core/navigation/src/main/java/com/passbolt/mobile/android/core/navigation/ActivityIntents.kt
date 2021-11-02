@@ -35,7 +35,9 @@ object ActivityIntents {
 
     const val EXTRA_AUTH_CONFIG = "AUTH_CONFIG"
     const val EXTRA_CONTEXT = "CONTEXT"
-    const val EXTRA_USER_ID = "EXTRA_USER_ID"
+    const val EXTRA_USER_ID = "USER_ID"
+    const val EXTRA_AUTOFILL_URI = "URI"
+    const val EXTRA_AUTOFILL_MODE_NAME = "AUTOFILL_MODE"
 
     fun setup(context: Context) = Intent().apply {
         setClassName(context, Setup.SET_UP_ACTIVITY)
@@ -65,9 +67,22 @@ object ActivityIntents {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
 
-    fun autofill(context: Context) = Intent().apply {
-        setClassName(context, Autofill.AUTOFILL_RESOURCES_ACTIVITY)
-    }
+    // have to pass the name as there is a bug in android when passing serializable
+    // in an intent that is next set as PendingIntent payload (AutofillService)
+    fun autofill(context: Context, autofillModeName: String, uri: String? = null) =
+        Intent().apply {
+            setClassName(context, Autofill.AUTOFILL_RESOURCES_ACTIVITY)
+            putExtra(EXTRA_AUTOFILL_MODE_NAME, autofillModeName)
+            uri?.let { putExtra(EXTRA_AUTOFILL_URI, uri) }
+        }
+
+    fun autofillReorderToFront(context: Context) =
+        Intent().apply {
+            setClassName(context, Autofill.AUTOFILL_RESOURCES_ACTIVITY)
+            flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
 
     sealed class AuthConfig : Serializable {
         object Startup : AuthConfig()

@@ -1,11 +1,11 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
 import android.app.Activity
+import android.app.assist.AssistStructure
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.service.autofill.Dataset
-import android.view.autofill.AutofillManager.EXTRA_AUTHENTICATION_RESULT
+import android.view.autofill.AutofillManager.EXTRA_ASSIST_STRUCTURE
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -21,16 +21,19 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.navigation.AutofillMode
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.feature.autofill.R
-import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityCommunicator
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
+import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 
 /**
@@ -60,14 +63,22 @@ import org.koin.core.qualifier.named
 class AutofillResourcesActivity :
     BindingScopedAuthenticatedActivity<ActivityAutofillResourcesBinding, AutofillResourcesContract.View>(
         ActivityAutofillResourcesBinding::inflate
-    ),
-    AutofillResourcesContract.View {
+    ), AutofillResourcesContract.View {
 
     override val presenter: AutofillResourcesContract.Presenter by inject()
     private val modelAdapter: ModelAdapter<ResourceListUiModel, GenericItem> by inject()
     private val fastAdapter: FastAdapter<GenericItem> by inject(named<ResourceListUiModel>())
     private val resourceUiItemsMapper: ResourceUiItemsMapper by inject()
     private val imageLoader: ImageLoader by inject()
+    private val bundledAutofillUri by lifecycleAwareLazy {
+        intent.getStringExtra(ActivityIntents.EXTRA_AUTOFILL_URI)
+    }
+    private val bundledAutofillMode by lifecycleAwareLazy {
+        intent.getStringExtra(ActivityIntents.EXTRA_AUTOFILL_MODE_NAME).let {
+            AutofillMode.valueOf(requireNotNull(it))
+        }
+    }
+    private lateinit var returnAutofillDatasetStrategy: ReturnAutofillDatasetStrategy
 
     private val initialAuthenticationResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -80,12 +91,16 @@ class AutofillResourcesActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val uri = intent.extras?.getString(URI_KEY, null)
-
+        returnAutofillDatasetStrategy = scope.get(named(bundledAutofillMode)) { parametersOf(this) }
         initAdapter()
         setListeners()
         presenter.attach(this)
-        presenter.argsReceived(uri)
+        presenter.argsReceived(bundledAutofillUri)
+    }
+
+    override fun onDestroy() {
+        returnAutofillDatasetStrategy.detach()
+        super.onDestroy()
     }
 
     override fun displaySearchAvatar(url: String?) {
@@ -194,22 +209,8 @@ class AutofillResourcesActivity :
         finish()
     }
 
-    override fun returnData(username: String, password: String, uri: String?) {
-        AccessibilityCommunicator.lastCredentials = AccessibilityCommunicator.Credentials(
-            username,
-            password,
-            uri
-        )
+    override fun finishAutofill() {
         finishAffinity()
-    }
-
-    override fun returnData(dataset: Dataset) {
-        val replyIntent = Intent().apply {
-            putExtra(EXTRA_AUTHENTICATION_RESULT, dataset)
-        }
-
-        setResult(Activity.RESULT_OK, replyIntent)
-        finish()
     }
 
     override fun showGeneralError() {
@@ -247,6 +248,18 @@ class AutofillResourcesActivity :
         finish()
     }
 
+    override fun getAutofillStructure() =
+        intent!!.getParcelableExtra<AssistStructure>(EXTRA_ASSIST_STRUCTURE)!!
+
+    override fun autofillReturn(username: String, password: String, uri: String?) {
+        returnAutofillDatasetStrategy.returnDataset(username, password, uri)
+    }
+
+    override fun setResultAndFinish(result: Int, resultIntent: Intent) {
+        setResult(result, resultIntent)
+        finish()
+    }
+
     enum class State(
         val progressVisible: Boolean,
         val errorVisible: Boolean,
@@ -260,9 +273,5 @@ class AutofillResourcesActivity :
         ERROR(false, false, false, false, false, false),
         PROGRESS(true, false, false, false, false, false),
         SUCCESS(false, false, false, true, true, false)
-    }
-
-    companion object {
-        const val URI_KEY = "URI_KEY"
     }
 }

@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.mapper.FeatureFlagsMapper
-import com.passbolt.mobile.android.service.settings.SettingsRepository
+import com.passbolt.mobile.android.passboltapi.settings.SettingsRepository
 
 /**
  * Passbolt - Open source password manager for teams

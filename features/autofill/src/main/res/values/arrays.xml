@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="username_hint_values">
+        <item>mail</item>
+        <item>username</item>
+        <item>mobile</item>
+        <item>number</item>
+        <item>id</item>
+        <item>name</item>
+        <item>account</item>
+    </string-array>
+
+    <string-array name="password_hint_values">
+        <item>password</item>
+        <item>secret</item>
+        <item>passphrase</item>
+    </string-array>
+
+</resources>

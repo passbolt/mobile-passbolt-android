@@ -40,4 +40,7 @@
     <string name="autofill_service_overlay_description"><![CDATA[Autofill usernames & passwords for Android web browsers. Please enable the ‘Draw over other apps’ permission for Passbolt Autofill]]></string>
     <string name="autofill_service_enable_service">Enable Autofill for most apps</string>
     <string name="autofill_service_enable_service_description"><![CDATA[Autofill usernames & passwords for Android apps]]></string>
+
+    <string name="autofill_dropdown_select">Select from Passbolt</string>
+    <string name="autofill_dropdown_fill">Fill with Passbolt</string>
 </resources>

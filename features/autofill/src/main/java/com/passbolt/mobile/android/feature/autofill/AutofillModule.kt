@@ -6,22 +6,21 @@ import android.os.PowerManager
 import android.view.WindowManager
 import android.view.autofill.AutofillManager
 import com.passbolt.mobile.android.common.ResourceDimenProvider
-import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider
 import com.passbolt.mobile.android.feature.autofill.accessibility.notification.AccessibilityServiceNotificationFactory
 import com.passbolt.mobile.android.feature.autofill.accessibility.notification.NotificationChannelManager
+import com.passbolt.mobile.android.feature.autofill.autofill.AutofillHintsFactory
+import com.passbolt.mobile.android.feature.autofill.autofill.FillableInputsFinder
+import com.passbolt.mobile.android.feature.autofill.autofill.RemoteViewsFactory
 import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.accessibilityAutofillModule
 import com.passbolt.mobile.android.feature.autofill.encourage.autofill.encourageAutofillModule
 import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.SettingsNavigator
 import com.passbolt.mobile.android.feature.autofill.resources.DomainProvider
 import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.autofill.resources.autofillResourcesModule
-import com.passbolt.mobile.android.feature.autofill.service.RestServiceProvider
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import retrofit2.converter.gson.GsonConverterFactory
 
 /**
  * Passbolt - Open source password manager for teams
@@ -58,12 +57,7 @@ val autofillModule = module {
             context = androidContext()
         )
     }
-    single {
-        RestServiceProvider(
-            client = get(named(DEFAULT_HTTP_CLIENT)),
-            converterFactory = GsonConverterFactory.create()
-        )
-    }
+
     single {
         AccessibilityOperationsProvider(
             resourceDimenProvider = get()
@@ -101,6 +95,21 @@ val autofillModule = module {
     single {
         ResourceDimenProvider(
             androidApplication().resources
+        )
+    }
+    factory {
+        RemoteViewsFactory(
+            appContext = androidContext()
+        )
+    }
+    factory {
+        FillableInputsFinder(
+            autofillHintsFactory = get()
+        )
+    }
+    factory {
+        AutofillHintsFactory(
+            resources = get()
         )
     }
 }

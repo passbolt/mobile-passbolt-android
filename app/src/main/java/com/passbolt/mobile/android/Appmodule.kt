@@ -66,4 +66,5 @@ internal val appModule = module {
     single {
         androidContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
     }
+    factory { androidContext().resources }
 }

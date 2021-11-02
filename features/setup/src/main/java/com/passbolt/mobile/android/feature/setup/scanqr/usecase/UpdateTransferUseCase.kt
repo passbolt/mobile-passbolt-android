@@ -6,7 +6,7 @@ import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
 import com.passbolt.mobile.android.mappers.UpdateTransferMapper
-import com.passbolt.mobile.android.service.registration.RegistrationRepository
+import com.passbolt.mobile.android.passboltapi.registration.RegistrationRepository
 import com.passbolt.mobile.android.ui.Status
 import com.passbolt.mobile.android.ui.UpdateTransferResponseModel
 import kotlinx.coroutines.withContext

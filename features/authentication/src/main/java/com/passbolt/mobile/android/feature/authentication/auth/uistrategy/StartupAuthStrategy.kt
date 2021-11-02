@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.uistrategy
 
 import android.app.Activity
-import android.content.Intent
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -24,13 +23,10 @@ class StartupAuthStrategy(
         activeAuthFragment.apply {
             requireActivity().setResult(Activity.RESULT_OK)
             val startIntent = when (appContext) {
-                AppContext.APP -> ActivityIntents.home(requireActivity())
-                AppContext.AUTOFILL -> ActivityIntents.autofill(requireActivity()).apply {
-                    flags =
-                        Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or
-                                Intent.FLAG_ACTIVITY_SINGLE_TOP or
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP
-                }
+                AppContext.APP ->
+                    ActivityIntents.home(requireActivity())
+                AppContext.AUTOFILL ->
+                    ActivityIntents.autofillReorderToFront(requireActivity())
             }
             requireActivity().finish()
             startActivity(startIntent)
