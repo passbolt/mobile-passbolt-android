@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.feature.folders
+package com.passbolt.mobile.android.feature.resources.new
 
-import com.passbolt.mobile.android.feature.resources.details.detailsModule
-import com.passbolt.mobile.android.feature.resources.details.more.detailsMenuModule
-import com.passbolt.mobile.android.feature.resources.new.newResourceModule
-import org.koin.dsl.module
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,8 +25,17 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val resourcesModule = module {
-    detailsModule()
-    detailsMenuModule()
-    newResourceModule()
+fun Module.newResourceModule() {
+    scope<NewResourceFragment> {
+        scoped<NewResourceContract.Presenter> {
+            NewResourcePresenter(
+                coroutineLaunchContext = get(),
+                getResourceTypeWithFieldsUseCase = get(),
+                getSelectedAccountUseCase = get()
+            )
+        }
+        scoped {
+            ViewProvider()
+        }
+    }
 }

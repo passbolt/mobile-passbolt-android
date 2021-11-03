@@ -1,9 +1,4 @@
-package com.passbolt.mobile.android.feature.folders
-
-import com.passbolt.mobile.android.feature.resources.details.detailsModule
-import com.passbolt.mobile.android.feature.resources.details.more.detailsMenuModule
-import com.passbolt.mobile.android.feature.resources.new.newResourceModule
-import org.koin.dsl.module
+package com.passbolt.mobile.android.core.ui.textinputfield
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,9 +22,12 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface StatefulInput {
 
-val resourcesModule = module {
-    detailsModule()
-    detailsMenuModule()
-    newResourceModule()
+    fun setState(state: State)
+
+    sealed class State {
+        object Initial : State()
+        class Error(val message: String) : State()
+    }
 }

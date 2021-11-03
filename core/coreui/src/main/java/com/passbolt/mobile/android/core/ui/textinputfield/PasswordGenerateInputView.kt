@@ -3,16 +3,20 @@ package com.passbolt.mobile.android.core.ui.textinputfield
 import android.content.Context
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+import android.text.Spanned
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.use
 import androidx.core.widget.addTextChangedListener
+import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.ui.R
-import com.passbolt.mobile.android.core.ui.databinding.ViewTextInputBinding
+import com.passbolt.mobile.android.core.ui.databinding.ViewPasswordGeneratorInputBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,8 +40,7 @@ import com.passbolt.mobile.android.core.ui.databinding.ViewTextInputBinding
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-open class TextInputView @JvmOverloads constructor(
+open class PasswordGenerateInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
@@ -67,7 +70,7 @@ open class TextInputView @JvmOverloads constructor(
                 ForegroundColorSpan(context.getColor(R.color.red)),
                 length - 1,
                 length,
-                SPAN_EXCLUSIVE_EXCLUSIVE
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
 
@@ -75,12 +78,14 @@ open class TextInputView @JvmOverloads constructor(
         get() = if (!isRequired) SpannableString(title) else requiredTitle
     private var textWatcher: TextWatcher? = null
 
-    protected val binding = ViewTextInputBinding.inflate(LayoutInflater.from(context), this)
+    protected val binding = ViewPasswordGeneratorInputBinding.inflate(LayoutInflater.from(context), this)
 
     init {
         parseAttributes(attrs)
         setInitialState()
         setFocusChangeListener()
+        setPasswordStrength(PasswordStrength.Empty)
+        setPasswordGenerateSize()
     }
 
     override fun onDetachedFromWindow() {
@@ -88,8 +93,16 @@ open class TextInputView @JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
-    fun setDefaultHint(name: String) {
-        hint = String.format(resources.getString(R.string.input_default_hint), name)
+    private fun setPasswordGenerateSize() {
+        binding.passwordGenerate.post {
+            binding.passwordGenerate.layoutParams.height = binding.textLayout.measuredHeight - GENERATE_PASSWORD_PADDING
+        }
+    }
+
+    fun setPasswordStrength(passwordStrength: PasswordStrength) = with(binding) {
+        progressBar.progress = passwordStrength.progress
+        strengthDescription.setText(passwordStrength.text)
+        strengthDescription.setTextColor(ContextCompat.getColor(context, passwordStrength.textColor))
     }
 
     private fun parseAttributes(attrs: AttributeSet?) {
@@ -137,8 +150,23 @@ open class TextInputView @JvmOverloads constructor(
     fun getInputBytes(): ByteArray =
         binding.input.text?.toString()?.toByteArray() ?: byteArrayOf()
 
+    @Suppress("MagicNumber")
+    sealed class PasswordStrength(
+        val progress: Int,
+        @StringRes val text: Int,
+        @ColorRes val textColor: Int = R.color.text_primary
+    ) {
+        object Empty : PasswordStrength(0, R.string.password_strength_empty, R.color.text_tertiary)
+        object VeryWeak : PasswordStrength(1, R.string.password_strength_very_weak)
+        object Weak : PasswordStrength(60, R.string.password_strength_weak)
+        object Fair : PasswordStrength(80, R.string.password_strength_fair)
+        object Strong : PasswordStrength(112, R.string.password_strength_strong)
+        object VeryStrong : PasswordStrength(128, R.string.password_strength_very_strong)
+    }
+
     private companion object {
         private const val DEFAULT_REQUIRED_STATE = false
         private const val REQUIRED_TITLE_FORMAT = "%s *"
+        private val GENERATE_PASSWORD_PADDING = 6.px
     }
 }

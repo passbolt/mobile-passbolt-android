@@ -16,6 +16,16 @@
         android:textSize="@dimen/sp_12"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/titleLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/titleLabel"/>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textLayout"
         style="@style/TextInput"

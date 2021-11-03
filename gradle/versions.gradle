@@ -70,7 +70,8 @@ ext {
         yubikit: [
             android: "2.0.0"
         ],
-        pinentry: "2.0.6"
+        pinentry: "2.0.6",
+        balloon: "1.4.0"
     ]
 
     libs = [
@@ -165,6 +166,7 @@ ext {
         yubikit: [
             android: "com.yubico.yubikit:android:${versions.yubikit.android}"
         ],
-        pinentry: "com.alimuzaffar.lib:pinentryedittext:${versions.pinentry}"
+        pinentry: "com.alimuzaffar.lib:pinentryedittext:${versions.pinentry}",
+        balloon : "com.github.skydoves:balloon:${versions.balloon}"
     ]
 }

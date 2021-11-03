@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.feature.folders
+package com.passbolt.mobile.android.feature.resources.new
 
-import com.passbolt.mobile.android.feature.resources.details.detailsModule
-import com.passbolt.mobile.android.feature.resources.details.more.detailsMenuModule
-import com.passbolt.mobile.android.feature.resources.new.newResourceModule
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,9 +24,19 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface NewResourceContract {
 
-val resourcesModule = module {
-    detailsModule()
-    detailsMenuModule()
-    newResourceModule()
+    interface View : BaseAuthenticatedContract.View {
+        fun addTextInput(name: String)
+        fun addPasswordInput(name: String)
+        fun addSecretInput(name: String)
+        fun addDescriptionInput(name: String)
+        fun showEmptyValueError(tag: String)
+        fun showTooLongError(tag: String)
+    }
+
+    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+        fun viewCreated()
+        fun createClick()
+    }
 }

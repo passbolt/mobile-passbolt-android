@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.feature.folders
+package com.passbolt.mobile.android.database.usecase
 
-import com.passbolt.mobile.android.feature.resources.details.detailsModule
-import com.passbolt.mobile.android.feature.resources.details.more.detailsMenuModule
-import com.passbolt.mobile.android.feature.resources.new.newResourceModule
-import org.koin.dsl.module
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.entity.resource.ResourceField
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsUseCase.Output
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,9 +28,19 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GetResourceTypeWithFieldsUseCase(
+    private val databaseProvider: DatabaseProvider
+) : AsyncUseCase<UserIdInput, Output> {
 
-val resourcesModule = module {
-    detailsModule()
-    detailsMenuModule()
-    newResourceModule()
+    // TODO change id to slug
+    override suspend fun execute(input: UserIdInput): Output {
+        return Output(
+            databaseProvider.get(input.userId).resourceTypesDao()
+                .getResourceTypeWithFields("a28a04cd-6f53-518a-967c-9963bf9cec51").resourceFields
+        )
+    }
+
+    class Output(
+        val fields: List<ResourceField>
+    )
 }

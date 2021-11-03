@@ -12,6 +12,7 @@ dependencies {
     implementation libs.androidx.constraintLayout
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
+    implementation libs.balloon
 }
 
 android {
