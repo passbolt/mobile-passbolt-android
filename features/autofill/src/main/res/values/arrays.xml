@@ -11,9 +11,7 @@
         <item>username</item>
         <item>mobile</item>
         <item>number</item>
-        <item>id</item>
         <item>name</item>
-        <item>account</item>
     </string-array>
 
     <!--

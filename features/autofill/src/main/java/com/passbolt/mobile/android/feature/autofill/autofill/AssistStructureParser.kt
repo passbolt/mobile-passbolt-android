@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.feature.autofill.autofill
 
+import android.annotation.SuppressLint
 import android.app.assist.AssistStructure
-import android.view.View
+import android.view.ViewStructure
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,62 +28,112 @@ import android.view.View
  * @since v1.0
  */
 class AssistStructureParser {
+
     fun parse(assistStructure: AssistStructure): Set<ParsedStructure> {
         val result = mutableSetOf<ParsedStructure>()
-        for (i in 0 until assistStructure.windowNodeCount) {
-            val viewNode = assistStructure.getWindowNodeAt(i).rootViewNode
-            traverseRoot(viewNode, result)
-        }
+        (0 until assistStructure.windowNodeCount)
+            .map { assistStructure.getWindowNodeAt(it).rootViewNode }
+            .forEach { visitNode(it, result) }
         return result
     }
 
-    private fun traverseRoot(
+    private fun visitNode(
         viewNode: AssistStructure.ViewNode,
         result: MutableSet<ParsedStructure>
     ) {
-        parseNode(viewNode)?.let {
-            result.add(it)
-        }
-        val childrenSize = viewNode.childCount
-        for (i in 0 until childrenSize) {
-            traverseRoot(viewNode.getChildAt(i), result)
-        }
+        parseNode(viewNode)?.let { result.add(it) }
+
+        (0 until viewNode.childCount)
+            .map { viewNode.getChildAt(it) }
+            .forEach { visitNode(it, result) }
     }
 
     private fun parseNode(viewNode: AssistStructure.ViewNode): ParsedStructure? {
-        val id = viewNode.autofillId ?: return null
-        val domain = createDomain(viewNode.webDomain)
+        logNodeVisit(viewNode)
+
+        val autofillId = viewNode.autofillId ?: return null
+        val domain = viewNode.webScheme.orEmpty().let { webScheme ->
+            if (webScheme.isEmpty()) {
+                viewNode.webDomain
+            } else {
+                "%s://%s".format(webScheme, viewNode.webDomain)
+            }
+        }
+        val autofillHints = viewNode.autofillHints
         val packageName = viewNode.idPackage
-        val contentDescription = viewNode.contentDescription
-        val autoFillHints = if (viewNode.autofillHints?.isNotEmpty() == true) {
-            viewNode.autofillHints.orEmpty().toMutableList()
+        val inputType = viewNode.inputType
+
+        val heuristicAutofillHints = if (!autofillHints.isNullOrEmpty()) {
+            autofillHints.toList()
         } else {
-            mutableListOf(viewNode.text.toString(), viewNode.hint.toString())
+            gatherHtmlHints(viewNode) + gatherHintHints(viewNode) + gatherContentDescriptionHints(viewNode)
         }
-
-        if (verifyHint(contentDescription, autoFillHints, View.AUTOFILL_HINT_PASSWORD)) {
-            autoFillHints.add(View.AUTOFILL_HINT_PASSWORD)
-        }
-        if (verifyHint(contentDescription, autoFillHints, View.AUTOFILL_HINT_USERNAME)) {
-            autoFillHints.add(View.AUTOFILL_HINT_USERNAME)
-        }
-
-        return ParsedStructure(id, autoFillHints, domain, packageName)
+        return ParsedStructure(autofillId, heuristicAutofillHints, inputType, domain, packageName)
     }
 
-    private fun createDomain(url: String?): String {
-        return if (url.isNullOrEmpty() || url.startsWith("http://")) {
-            ""
-        } else if (!url.startsWith("https://")) {
-            "https://$url"
-        } else url
+    private fun gatherContentDescriptionHints(viewNode: AssistStructure.ViewNode): List<String> {
+        return viewNode.contentDescription.let {
+            if (it != null) {
+                listOf(it.toString())
+            } else {
+                emptyList()
+            }
+        }
     }
 
-    private fun verifyHint(
-        contentDescription: CharSequence?,
-        autoFillHints: MutableList<String>?,
-        autofillHintType: String
-    ) =
-        autoFillHints?.any { it.contains(autofillHintType, ignoreCase = true) } == true ||
-                contentDescription?.contains(autofillHintType, ignoreCase = true) == true
+    private fun gatherHintHints(viewNode: AssistStructure.ViewNode): List<String> {
+        return viewNode.hint.let {
+            if (it != null) {
+                listOf(it)
+            } else {
+                emptyList()
+            }
+        }
+    }
+
+    private fun gatherHtmlHints(viewNode: AssistStructure.ViewNode): List<String> {
+        return if (viewNode.htmlInfo.hasAttribute(HTML_AUTOCOMPLETE_ATTR)) {
+            viewNode.htmlInfo.getAttribute(HTML_AUTOCOMPLETE_ATTR)
+                ?.split(HTML_AUTOCOMPLETE_ATTR_VALUES_DELIMITER)
+                ?.filter { it.isBlank() } ?: emptyList()
+        } else {
+            emptyList()
+        }
+    }
+
+    @SuppressLint("BinaryOperationInTimber")
+    private fun logNodeVisit(viewNode: AssistStructure.ViewNode) {
+        Timber.d(
+            "Visiting view node with id: %d \n" +
+                    "scheme + domain: %s://%s \n" +
+                    "package: %s \n" +
+                    "content description: %s \n" +
+                    "autofill hints %s \n" +
+                    "hint: %s \n" +
+                    "html autocomplete attr: %s \n" +
+                    "important for autofill: %d \n" +
+                    "input type: %d \n",
+            viewNode.id,
+            viewNode.webScheme,
+            viewNode.webDomain,
+            viewNode.idPackage,
+            viewNode.contentDescription,
+            viewNode.autofillHints?.joinToString(separator = ","),
+            viewNode.hint,
+            viewNode.htmlInfo.getAttribute("autocomplete"),
+            viewNode.importantForAutofill,
+            viewNode.inputType
+        )
+    }
+
+    private fun ViewStructure.HtmlInfo?.getAttribute(name: String) =
+        this?.attributes?.firstOrNull { it.first == name }?.second
+
+    private fun ViewStructure.HtmlInfo?.hasAttribute(name: String) =
+        this?.attributes?.any { it.first == name } == true
+
+    private companion object {
+        private const val HTML_AUTOCOMPLETE_ATTR = "autocomplete"
+        private const val HTML_AUTOCOMPLETE_ATTR_VALUES_DELIMITER = " "
+    }
 }

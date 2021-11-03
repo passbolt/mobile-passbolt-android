@@ -44,13 +44,6 @@ class PassboltAutofillService : AutofillService(), KoinComponent {
     private val assistStructureParser: AssistStructureParser by inject()
     private val fillableInputsFinder: FillableInputsFinder by inject()
     private val remoteViewsFactory: RemoteViewsFactory by inject()
-    private val autofillResourcesPendingIntent: PendingIntent
-        get() = PendingIntent.getActivity(
-            applicationContext,
-            AUTOFILL_RESOURCES_REQUEST_CODE,
-            ActivityIntents.autofill(this, AutofillMode.AUTOFILL.name, null),
-            PendingIntent.FLAG_CANCEL_CURRENT
-        )
 
     override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback) {
         Timber.e("Received fill request")
@@ -59,21 +52,24 @@ class PassboltAutofillService : AutofillService(), KoinComponent {
                 request.fillContexts.last().structure
             )
 
-            val autofillableViewIds = arrayOf(
+            val autofillableViews = arrayOf(
                 findAutofillableView(AutofillField.USERNAME, parsedAutofillStructure),
                 findAutofillableView(AutofillField.PASSWORD, parsedAutofillStructure)
             )
+            val uri = autofillableViews
+                .firstOrNull { !it?.domain.isNullOrBlank() }
+                ?.domain
 
             // autofillable views not found
-            if (autofillableViewIds.all { it == null }) {
+            if (autofillableViews.all { it == null }) {
                 Timber.d("Did not find any autofillable views")
                 null
             } else {
                 Timber.d("Showing authentication prompt")
                 FillResponse.Builder()
                     .setAuthentication(
-                        autofillableViewIds.filterNotNull().map { it.id }.toTypedArray(),
-                        autofillResourcesPendingIntent.intentSender,
+                        autofillableViews.filterNotNull().map { it.id }.toTypedArray(),
+                        autofillResourcesPendingIntent(uri).intentSender,
                         remoteViewsFactory.getAutofillSelectDropdown(packageName)
                     )
                     .build()
@@ -94,6 +90,13 @@ class PassboltAutofillService : AutofillService(), KoinComponent {
 
     private fun findAutofillableView(field: AutofillField, autofillStructure: Set<ParsedStructure>) =
         fillableInputsFinder.findStructureForAutofillFields(field, autofillStructure)
+
+    private fun autofillResourcesPendingIntent(uri: String?): PendingIntent = PendingIntent.getActivity(
+        applicationContext,
+        AUTOFILL_RESOURCES_REQUEST_CODE,
+        ActivityIntents.autofill(this, AutofillMode.AUTOFILL.name, uri),
+        PendingIntent.FLAG_CANCEL_CURRENT
+    )
 
     private companion object {
         private const val AUTOFILL_RESOURCES_REQUEST_CODE = 1001
