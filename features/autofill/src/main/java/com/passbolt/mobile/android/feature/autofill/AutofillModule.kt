@@ -109,7 +109,8 @@ val autofillModule = module {
     }
     factory {
         AutofillHintsFactory(
-            resources = get()
+            resources = get(),
+            appContext = androidContext()
         )
     }
 }

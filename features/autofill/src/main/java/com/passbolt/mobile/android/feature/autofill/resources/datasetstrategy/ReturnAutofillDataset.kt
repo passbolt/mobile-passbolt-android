@@ -26,11 +26,11 @@ class ReturnAutofillDataset(
         val structure: AssistStructure = activeView.getAutofillStructure()
         val parsedStructure = assistStructureParser.parse(structure)
 
-        val passwordParsedAssistStructure = fillableInputsFinder.findStructureForAutofillFields(
-            AutofillField.PASSWORD, parsedStructure
-        )
         val usernameParsedAssistStructure = fillableInputsFinder.findStructureForAutofillFields(
             AutofillField.USERNAME, parsedStructure
+        )
+        val passwordParsedAssistStructure = fillableInputsFinder.findStructureForAutofillFields(
+            AutofillField.PASSWORD, parsedStructure
         )
 
         val fillResponse = FillResponse.Builder()
