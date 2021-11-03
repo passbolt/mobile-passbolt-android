@@ -19,10 +19,6 @@ class EncourageAccessibilityAutofillPresenter(
         view?.dismissWithNotify()
     }
 
-    override fun maybeLaterClick() {
-        view?.dismissWithNotify()
-    }
-
     override fun overlayClick() {
         view?.navigateToOverlayTutorial()
     }
@@ -38,6 +34,7 @@ class EncourageAccessibilityAutofillPresenter(
     override fun possibleAutofillChange() {
         if (autofillInformationProvider.isAccessibilityAutofillSetup()) {
             view?.dismissWithNoAction()
+            view?.showAutofillEnabledDialog()
         }
         view?.notifyPossibleAutofillChange()
     }

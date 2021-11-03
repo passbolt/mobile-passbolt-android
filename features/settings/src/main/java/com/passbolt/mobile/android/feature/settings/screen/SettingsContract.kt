@@ -61,7 +61,6 @@ interface SettingsContract {
         fun fingerprintSettingChanged(isEnabled: Boolean)
         fun disableFingerprintConfirmed()
         fun disableFingerprintCanceled()
-        fun autofillEnabledDialogDismissed()
         fun logoutConfirmed()
         fun getPassphraseSucceeded()
         fun biometricAuthError(errorMessage: Int)
@@ -69,6 +68,5 @@ interface SettingsContract {
         fun biometricAuthCanceled()
         fun keyChangesInfoConfirmClick()
         fun systemSettingsClick()
-        fun possibleAutofillChange()
     }
 }

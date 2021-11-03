@@ -113,11 +113,6 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
         )
     }
 
-    override fun dismissWithNoAction() {
-        listener?.setupAutofillLaterClick()
-        dismiss()
-    }
-
     override fun showAutofillNotSupported() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.dialog_encourage_autofill_autofill_not_supported_title)
@@ -128,12 +123,12 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
 
     override fun closeWithSuccess() {
         listener?.autofillSetupSuccessfully()
-        dismiss()
+        super.dismiss()
     }
 
-    override fun dismiss() {
-        listener?.autofillDialogDismissed()
-        super.dismiss()
+    override fun close() {
+        listener?.autofillSetupClosed()
+        dismiss()
     }
 
     private companion object {
@@ -142,8 +137,7 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
     }
 
     interface Listener {
-        fun setupAutofillLaterClick()
+        fun autofillSetupClosed()
         fun autofillSetupSuccessfully()
-        fun autofillDialogDismissed() {}
     }
 }

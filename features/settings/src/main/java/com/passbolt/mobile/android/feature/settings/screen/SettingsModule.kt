@@ -34,7 +34,6 @@ fun Module.settingsModule() {
         scoped<SettingsContract.Presenter> {
             SettingsPresenter(
                 checkIfPassphraseExistsUseCase = get(),
-                autofillInfoProvider = get(),
                 removePassphraseUseCase = get(),
                 getSelectedAccountUseCase = get(),
                 savePassphraseUseCase = get(),
@@ -44,8 +43,8 @@ fun Module.settingsModule() {
                 removeBiometricKeyUseCase = get(),
                 fingerprintInformationProvider = get(),
                 getFeatureFlagsUseCase = get(),
-                coroutineLaunchContext = get(),
-                signOutUseCase = get()
+                signOutUseCase = get(),
+                coroutineLaunchContext = get()
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }

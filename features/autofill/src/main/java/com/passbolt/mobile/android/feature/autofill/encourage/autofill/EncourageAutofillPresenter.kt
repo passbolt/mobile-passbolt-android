@@ -17,11 +17,11 @@ class EncourageAutofillPresenter(
     }
 
     override fun closeClick() {
-        view?.dismissWithNoAction()
+        view?.close()
     }
 
     override fun maybeLaterClick() {
-        view?.dismissWithNoAction()
+        view?.close()
     }
 
     override fun autofillSettingsClosedWithResult() {

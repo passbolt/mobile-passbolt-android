@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_32"
             android:gravity="center"
-            android:text="@string/dialog_encourage_autofill_header"
+            android:text="@string/dialog_encourage_autofill_accessibility_title"
             android:textColor="@color/text_primary"
             app:layout_constraintTop_toBottomOf="@id/closeButton"
             app:layout_constraintVertical_chainStyle="packed" />
@@ -139,20 +139,5 @@
                 app:layout_constraintTop_toTopOf="@+id/enableOverlayHeader" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        <TextView
-            android:id="@+id/maybeLaterButton"
-            style="@style/ButtonSmallText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dp_32"
-            android:background="?selectableItemBackground"
-            android:padding="@dimen/dp_16"
-            android:text="@string/dialog_encourage_autofill_maybe_later"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogAutofillEnabledBinding
 
@@ -35,6 +37,10 @@ import com.passbolt.mobile.android.feature.autofill.databinding.DialogAutofillEn
 class AutofillEnabledDialog : DialogFragment() {
 
     private var listener: Listener? = null
+    private lateinit var binding: DialogAutofillEnabledBinding
+    private val dialogMode: DialogMode by lifecycleAwareLazy {
+        requireArguments().getSerializable(DIALOG_MODE_KEY) as DialogMode
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +48,14 @@ class AutofillEnabledDialog : DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DialogAutofillEnabledBinding.inflate(inflater)
+        binding = DialogAutofillEnabledBinding.inflate(inflater)
+        setupView()
         setupListeners(binding)
         return binding.root
+    }
+
+    private fun setupView() {
+        binding.button.text = getString(dialogMode.buttonTextIdRes)
     }
 
     private fun setupListeners(binding: DialogAutofillEnabledBinding) {
@@ -53,7 +64,7 @@ class AutofillEnabledDialog : DialogFragment() {
                 listener?.goToAppClick()
                 dismiss()
             }
-            goToAppButton.setDebouncingOnClick {
+            button.setDebouncingOnClick {
                 listener?.goToAppClick()
                 dismiss()
             }
@@ -82,5 +93,16 @@ class AutofillEnabledDialog : DialogFragment() {
     interface Listener {
         fun goToAppClick()
         fun autofillEnabledDialogDismissed() {}
+    }
+
+    companion object {
+        private const val DIALOG_MODE_KEY = "DIALOG_MODE_KEY"
+
+        fun newInstance(dialogMode: DialogMode) =
+            AutofillEnabledDialog().apply {
+                arguments = bundleOf(
+                    DIALOG_MODE_KEY to dialogMode
+                )
+            }
     }
 }

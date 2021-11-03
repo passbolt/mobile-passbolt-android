@@ -168,16 +168,6 @@ class SettingsPresenterTest : KoinTest {
     }
 
     @Test
-    fun `autofill should not be visible when fully setup`() {
-        whenever(autofillInformationProvider.isAccessibilityAutofillSetup())
-            .doReturn(true)
-
-        presenter.attach(view)
-
-        verify(view).hideAutofillSetting()
-    }
-
-    @Test
     fun `disabling fingerprint confirmed should toggle switch off`() {
         whenever(getSelectedAccountUseCase.execute(anyOrNull()))
             .thenReturn(GetSelectedAccountUseCase.Output("id"))
