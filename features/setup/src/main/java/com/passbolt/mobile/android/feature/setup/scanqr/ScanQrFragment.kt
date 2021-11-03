@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
+import com.passbolt.mobile.android.core.security.FlagSecureSetter
 import com.passbolt.mobile.android.core.ui.dialog.CoreDialogFactory
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
@@ -47,6 +48,7 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     private lateinit var scanManagerScope: Scope
     private lateinit var scanManager: ScanManager
     private var serverNotReachableDialog: AlertDialog? = null
+    private val flagSecureSetter: FlagSecureSetter by inject()
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -61,6 +63,16 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
         presenter.attach(this)
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backPressedCallback)
         initToolbar()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.viewResumed()
+    }
+
+    override fun onPause() {
+        presenter.viewPaused()
+        super.onPause()
     }
 
     override fun onDestroyView() {
@@ -162,5 +174,13 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
             serverNotReachableDialog = CoreDialogFactory.serverNotReachableDialog(requireContext(), serverDomain)
         }
         serverNotReachableDialog?.show()
+    }
+
+    override fun setFlagSecure() {
+        flagSecureSetter.set(requireActivity())
+    }
+
+    override fun removeFlagSecure() {
+        flagSecureSetter.remove(requireActivity())
     }
 }
