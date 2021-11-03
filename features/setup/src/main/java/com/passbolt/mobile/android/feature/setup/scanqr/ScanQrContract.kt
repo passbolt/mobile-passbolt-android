@@ -47,6 +47,8 @@ interface ScanQrContract {
         fun setProgress(progress: Int)
         fun showNotAPassboltQr()
         fun showServerNotReachable(serverDomain: String)
+        fun setFlagSecure()
+        fun removeFlagSecure()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -54,5 +56,7 @@ interface ScanQrContract {
         fun exitConfirmClick()
         fun infoIconClick()
         fun startCameraError(exc: Exception)
+        fun viewResumed()
+        fun viewPaused()
     }
 }

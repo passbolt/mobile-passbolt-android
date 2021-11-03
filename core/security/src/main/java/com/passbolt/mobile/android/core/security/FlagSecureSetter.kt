@@ -34,4 +34,10 @@ class FlagSecureSetter {
             WindowManager.LayoutParams.FLAG_SECURE
         )
     }
+
+    fun remove(activity: Activity) {
+        activity.window.clearFlags(
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+    }
 }

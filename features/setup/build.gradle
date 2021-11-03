@@ -22,9 +22,8 @@ dependencies {
     implementation project(':autofill')
     implementation project(':authentication')
     implementation project(':database')
-
-    //TODO
     implementation project(':autofill')
+    implementation project(':security')
 
 
     implementation libs.androidx.navigationFragment

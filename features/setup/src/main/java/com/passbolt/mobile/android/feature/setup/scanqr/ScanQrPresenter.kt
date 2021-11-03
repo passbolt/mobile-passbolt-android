@@ -256,4 +256,12 @@ class ScanQrPresenter(
         scope.coroutineContext.cancelChildren()
         super.detach()
     }
+
+    override fun viewResumed() {
+        view?.setFlagSecure()
+    }
+
+    override fun viewPaused() {
+        view?.removeFlagSecure()
+    }
 }
