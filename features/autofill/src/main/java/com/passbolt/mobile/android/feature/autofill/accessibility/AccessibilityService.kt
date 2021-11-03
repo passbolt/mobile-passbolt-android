@@ -1,10 +1,5 @@
 package com.passbolt.mobile.android.feature.autofill.accessibility
 
-import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.InBoundsTopAnchor
-import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.ForceBottom
-import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.OutBoundsHide
-import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.InBoundsBottomAnchor
-import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.os.PowerManager
@@ -19,6 +14,11 @@ import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AutofillMode
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.ForceBottom
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.InBoundsBottomAnchor
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.InBoundsTopAnchor
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.OutBoundsHide
 import com.passbolt.mobile.android.feature.autofill.accessibility.notification.AccessibilityServiceNotificationFactory
 import com.passbolt.mobile.android.feature.autofill.databinding.ViewAutofillLabelBinding
 import kotlinx.coroutines.CoroutineScope
@@ -120,7 +120,7 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
         val root = rootInActiveWindow
         if (AccessibilityCommunicator.lastCredentials == null) {
             Timber.d("Last credentials are null - ignoring event")
-        } else if (event.source == null || event.packageName == PASSBOLT_PACKAGE) {
+        } else if (event.source == null || event.packageName.contains(PASSBOLT_PACKAGE)) {
             Timber.d("Event source is null or package is Passbolt - hiding overlay")
             hideOverlay()
         } else if (root == null || root.packageName != event.packageName) {
@@ -133,7 +133,7 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
 
     private fun viewClicked(event: AccessibilityEvent) {
         val root = rootInActiveWindow
-        if (event.source == null || event.packageName == PASSBOLT_PACKAGE) {
+        if (event.source == null || event.packageName.contains(PASSBOLT_PACKAGE)) {
             Timber.d("Event source is null or package is Passbolt - hiding overlay")
             hideOverlay()
             return
@@ -295,7 +295,7 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
     }
 
     companion object {
-        private const val PASSBOLT_PACKAGE = "com.passbolt.mobile.android.debug"
+        private const val PASSBOLT_PACKAGE = "com.passbolt.mobile.android"
         private const val SYSTEM_UI_PACKAGE = "com.android.systemui"
         private const val CLEAR_CREDENTIALS_DELAY = 1000L
         private const val OBSERVE_POSITION_DELAY = 250L
