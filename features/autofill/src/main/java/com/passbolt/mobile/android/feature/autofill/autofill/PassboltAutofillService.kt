@@ -60,8 +60,8 @@ class PassboltAutofillService : AutofillService(), KoinComponent {
             )
 
             val autofillableViewIds = arrayOf(
-                findAutofillableView(AutofillField.PASSWORD, parsedAutofillStructure),
-                findAutofillableView(AutofillField.USERNAME, parsedAutofillStructure)
+                findAutofillableView(AutofillField.USERNAME, parsedAutofillStructure),
+                findAutofillableView(AutofillField.PASSWORD, parsedAutofillStructure)
             )
 
             // autofillable views not found
