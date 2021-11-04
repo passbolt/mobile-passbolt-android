@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.feature.autofill.autofill
 
+import android.annotation.SuppressLint
+import timber.log.Timber
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,13 +30,29 @@ class FillableInputsFinder(
 ) {
 
     // TODO consider other methods apart from analyzing hints
-    fun findStructureForAutofillFields(field: AutofillField, autofillParsedStructure: Set<ParsedStructure>) =
-        autofillParsedStructure
+    @SuppressLint("BinaryOperationInTimber")
+    fun findStructureForAutofillFields(
+        field: AutofillField,
+        autofillParsedStructure: Set<ParsedStructure>
+    ): ParsedStructure? {
+        val hintValues = autofillHintsFactory.getHintValues(field)
+        return autofillParsedStructure
+            .asSequence()
+            .filter { it.inputType != 0 && !it.autofillHints.isNullOrEmpty() }
             .firstOrNull { parsedStructure ->
-                parsedStructure.hints.any { structureHint ->
-                    autofillHintsFactory.getHintValues(field).any {
-                        structureHint.contains(it, ignoreCase = true)
+                parsedStructure.autofillHints!!.any { structureHint -> // filtered above
+                    hintValues.any {
+                        val result = structureHint.contains(it, ignoreCase = true)
+                        Timber.d(
+                            "Marking input as fillable. \n" +
+                                    "Hint values: %s\n" +
+                                    "Structure hint: %s",
+                            hintValues.joinToString(separator = ","),
+                            structureHint
+                        )
+                        result
                     }
                 }
             }
+    }
 }

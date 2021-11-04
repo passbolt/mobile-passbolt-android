@@ -4,7 +4,8 @@ import android.view.autofill.AutofillId
 
 data class ParsedStructure(
     var id: AutofillId,
-    val hints: List<String>,
-    val domain: String?,
-    val packageName: String?
+    val autofillHints: List<String>? = null,
+    val inputType: Int? = null,
+    val domain: String? = null,
+    val packageName: String? = null
 )
