@@ -48,17 +48,14 @@ class PassboltAutofillService : AutofillService(), KoinComponent {
     override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback) {
         Timber.e("Received fill request")
         runCatching {
-            val parsedAutofillStructure = assistStructureParser.parse(
+            val parsedAutofillStructures = assistStructureParser.parse(
                 request.fillContexts.last().structure
             )
 
             val autofillableViews = arrayOf(
-                findAutofillableView(AutofillField.USERNAME, parsedAutofillStructure),
-                findAutofillableView(AutofillField.PASSWORD, parsedAutofillStructure)
+                findAutofillableView(AutofillField.USERNAME, parsedAutofillStructures.structures),
+                findAutofillableView(AutofillField.PASSWORD, parsedAutofillStructures.structures)
             )
-            val uri = autofillableViews
-                .firstOrNull { !it?.domain.isNullOrBlank() }
-                ?.domain
 
             // autofillable views not found
             if (autofillableViews.all { it == null }) {
@@ -69,7 +66,7 @@ class PassboltAutofillService : AutofillService(), KoinComponent {
                 FillResponse.Builder()
                     .setAuthentication(
                         autofillableViews.filterNotNull().map { it.id }.toTypedArray(),
-                        autofillResourcesPendingIntent(uri).intentSender,
+                        autofillResourcesPendingIntent(parsedAutofillStructures.domain).intentSender,
                         remoteViewsFactory.getAutofillSelectDropdown(packageName)
                     )
                     .build()

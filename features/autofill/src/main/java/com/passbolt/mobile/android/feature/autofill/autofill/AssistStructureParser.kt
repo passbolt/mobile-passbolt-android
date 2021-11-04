@@ -29,46 +29,84 @@ import timber.log.Timber
  */
 class AssistStructureParser {
 
-    fun parse(assistStructure: AssistStructure): Set<ParsedStructure> {
-        val result = mutableSetOf<ParsedStructure>()
+    fun parse(assistStructure: AssistStructure): ParsedStructures {
+        val structuresRef = mutableSetOf<ParsedStructure>()
+
+        // web domain and package id is not present in every view node - store it once found during traversing
+        val domainBuilder = StringBuilder()
+        val packageIdBuilder = StringBuilder()
+
+        // iterate recursively through all nodes
         (0 until assistStructure.windowNodeCount)
             .map { assistStructure.getWindowNodeAt(it).rootViewNode }
-            .forEach { visitNode(it, result) }
-        return result
+            .forEach { visitNode(it, structuresRef, domainBuilder, packageIdBuilder) }
+
+        return ParsedStructures(
+            domainBuilder.toString(),
+            packageIdBuilder.toString(),
+            structuresRef
+        )
     }
 
     private fun visitNode(
         viewNode: AssistStructure.ViewNode,
-        result: MutableSet<ParsedStructure>
+        structuresRef: MutableSet<ParsedStructure>,
+        domainBuilder: StringBuilder,
+        packageIdBuilder: StringBuilder
     ) {
-        parseNode(viewNode)?.let { result.add(it) }
+        parseNode(viewNode, domainBuilder, packageIdBuilder)
+            ?.let { structuresRef.add(it) }
 
         (0 until viewNode.childCount)
             .map { viewNode.getChildAt(it) }
-            .forEach { visitNode(it, result) }
+            .forEach { visitNode(it, structuresRef, domainBuilder, packageIdBuilder) }
     }
 
-    private fun parseNode(viewNode: AssistStructure.ViewNode): ParsedStructure? {
+    private fun parseNode(
+        viewNode: AssistStructure.ViewNode,
+        domainBuilder: StringBuilder,
+        packageIdBuilder: StringBuilder
+    ): ParsedStructure? {
         logNodeVisit(viewNode)
 
         val autofillId = viewNode.autofillId ?: return null
-        val domain = viewNode.webScheme.orEmpty().let { webScheme ->
-            if (webScheme.isEmpty()) {
-                viewNode.webDomain
-            } else {
-                "%s://%s".format(webScheme, viewNode.webDomain)
-            }
-        }
         val autofillHints = viewNode.autofillHints
-        val packageName = viewNode.idPackage
         val inputType = viewNode.inputType
+
+        processDomain(viewNode.webScheme, viewNode.webDomain, domainBuilder)
+        processPackageId(viewNode.idPackage, packageIdBuilder)
 
         val heuristicAutofillHints = if (!autofillHints.isNullOrEmpty()) {
             autofillHints.toList()
         } else {
             gatherHtmlHints(viewNode) + gatherHintHints(viewNode) + gatherContentDescriptionHints(viewNode)
         }
-        return ParsedStructure(autofillId, heuristicAutofillHints, inputType, domain, packageName)
+        return ParsedStructure(autofillId, heuristicAutofillHints, inputType)
+    }
+
+    private fun processPackageId(idPackage: String?, packageIdBuilder: StringBuilder) {
+        if (idPackage != null) {
+            with(packageIdBuilder) {
+                clear()
+                append(idPackage)
+            }
+        }
+    }
+
+    private fun processDomain(webScheme: String?, webDomain: String?, domainBuilder: StringBuilder) {
+        val domain = webScheme.orEmpty().let {
+            if (it.isEmpty()) {
+                webDomain
+            } else {
+                "%s://%s".format(it, webDomain)
+            }
+        }
+        if (domain != null) {
+            with(domainBuilder) {
+                clear()
+                append(domain)
+            }
+        }
     }
 
     private fun gatherContentDescriptionHints(viewNode: AssistStructure.ViewNode): List<String> {
@@ -104,15 +142,15 @@ class AssistStructureParser {
     @SuppressLint("BinaryOperationInTimber")
     private fun logNodeVisit(viewNode: AssistStructure.ViewNode) {
         Timber.d(
-            "Visiting view node with id: %d \n" +
-                    "scheme + domain: %s://%s \n" +
-                    "package: %s \n" +
-                    "content description: %s \n" +
-                    "autofill hints %s \n" +
-                    "hint: %s \n" +
-                    "html autocomplete attr: %s \n" +
-                    "important for autofill: %d \n" +
-                    "input type: %d \n",
+            "Visiting view node with id: %d " +
+                    "scheme + domain: %s://%s " +
+                    "package: %s " +
+                    "content description: %s " +
+                    "autofill hints %s " +
+                    "hint: %s " +
+                    "html autocomplete attr: %s " +
+                    "important for autofill: %d " +
+                    "input type: %d ",
             viewNode.id,
             viewNode.webScheme,
             viewNode.webDomain,
