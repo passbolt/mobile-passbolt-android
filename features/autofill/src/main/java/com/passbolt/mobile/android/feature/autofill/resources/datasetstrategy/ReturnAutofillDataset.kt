@@ -24,13 +24,13 @@ class ReturnAutofillDataset(
 
     override fun returnDataset(username: String, password: String, uri: String?) {
         val structure: AssistStructure = activeView.getAutofillStructure()
-        val parsedStructure = assistStructureParser.parse(structure)
+        val parsedStructures = assistStructureParser.parse(structure)
 
         val usernameParsedAssistStructure = fillableInputsFinder.findStructureForAutofillFields(
-            AutofillField.USERNAME, parsedStructure
+            AutofillField.USERNAME, parsedStructures.structures
         )
         val passwordParsedAssistStructure = fillableInputsFinder.findStructureForAutofillFields(
-            AutofillField.PASSWORD, parsedStructure
+            AutofillField.PASSWORD, parsedStructures.structures
         )
 
         val fillResponse = FillResponse.Builder()
