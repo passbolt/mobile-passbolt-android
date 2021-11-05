@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.common.validation.Rule
 import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.common.validation.StringNotBlank
+import com.passbolt.mobile.android.core.security.PasswordGenerator
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -40,7 +41,9 @@ import kotlinx.coroutines.launch
 class NewResourcePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getResourceTypeWithFieldsUseCase: GetResourceTypeWithFieldsUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val passwordGenerator: PasswordGenerator,
+    private val entropyViewMapper: EntropyViewMapper
 ) : BaseAuthenticatedPresenter<NewResourceContract.View>(coroutineLaunchContext),
     NewResourceContract.Presenter {
 
@@ -98,6 +101,16 @@ class NewResourcePresenter(
                 }
             }
         }
+    }
+
+    override fun passwordGenerateClick(tag: String) {
+        val generatedPassword = passwordGenerator.generate()
+        view?.showPassword(tag, generatedPassword)
+    }
+
+    override fun passwordTextChanged(tag: String, password: String) {
+        val entropy = PasswordGenerator.Entropy.parse(passwordGenerator.getEntropy(password))
+        view?.showPasswordStrength(tag, entropyViewMapper.map(entropy))
     }
 
     private fun getRules(field: ResourceField): List<Rule<String>> {

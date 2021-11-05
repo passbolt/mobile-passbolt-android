@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.resources.new
 
-import com.passbolt.mobile.android.core.security.PasswordGenerator
-import org.koin.core.module.Module
+import com.passbolt.mobile.android.core.security.PasswordGenerator.Entropy
+import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView.PasswordStrength
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,26 +25,16 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class EntropyViewMapper {
 
-fun Module.newResourceModule() {
-    scope<NewResourceFragment> {
-        scoped<NewResourceContract.Presenter> {
-            NewResourcePresenter(
-                coroutineLaunchContext = get(),
-                getResourceTypeWithFieldsUseCase = get(),
-                getSelectedAccountUseCase = get(),
-                passwordGenerator = get(),
-                entropyViewMapper = get()
-            )
+    fun map(entropy: Entropy): PasswordStrength =
+        when (entropy) {
+            Entropy.ZERO -> PasswordStrength.Empty
+            Entropy.VERY_WEAK -> PasswordStrength.VeryWeak
+            Entropy.WEAK -> PasswordStrength.Weak
+            Entropy.FAIR -> PasswordStrength.Fair
+            Entropy.STRONG -> PasswordStrength.Strong
+            Entropy.VERY_STRONG -> PasswordStrength.VeryStrong
+            Entropy.GREATEST_FINITE -> PasswordStrength.VeryStrong
         }
-        scoped {
-            ViewProvider()
-        }
-        scoped {
-            PasswordGenerator()
-        }
-        scoped {
-            EntropyViewMapper()
-        }
-    }
 }

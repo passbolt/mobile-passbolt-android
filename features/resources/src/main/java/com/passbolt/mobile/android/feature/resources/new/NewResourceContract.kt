@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.resources.new
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,10 +34,14 @@ interface NewResourceContract {
         fun addDescriptionInput(name: String)
         fun showEmptyValueError(tag: String)
         fun showTooLongError(tag: String)
+        fun showPassword(tag: String, generatedPassword: String)
+        fun showPasswordStrength(tag: String, strength: PasswordGenerateInputView.PasswordStrength)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun viewCreated()
         fun createClick()
+        fun passwordGenerateClick(tag: String)
+        fun passwordTextChanged(tag: String, password: String)
     }
 }

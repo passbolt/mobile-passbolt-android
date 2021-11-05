@@ -8,7 +8,7 @@
     <string name="password_strength_very_weak">Very weak</string>
     <string name="password_strength_weak">Weak</string>
     <string name="password_strength_fair">Fair</string>
-    <string name="password_strength_strong">String</string>
+    <string name="password_strength_strong">Strong</string>
     <string name="password_strength_very_strong">Very strong</string>
 
     <string name="password_description_encrypted">Description is encrypted</string>

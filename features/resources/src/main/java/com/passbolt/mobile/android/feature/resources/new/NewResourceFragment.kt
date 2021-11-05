@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.resources.new
 import android.os.Bundle
 import android.view.View
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
@@ -59,7 +60,13 @@ class NewResourceFragment : BindingScopedAuthenticatedFragment<FragmentNewResour
 
     override fun addPasswordInput(name: String) {
         val (view, params) = viewProvider.getPasswordWithGeneratorInput(name, requireContext())
+        view.setGenerateClickListener { presenter.passwordGenerateClick(name) }
+        view.setPasswordChangeListener { presenter.passwordTextChanged(name, it) }
         binding.container.addView(view, params)
+    }
+
+    override fun showPasswordStrength(tag: String, strength: PasswordGenerateInputView.PasswordStrength) {
+        (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).setPasswordStrength(strength)
     }
 
     override fun addDescriptionInput(name: String) {
@@ -80,5 +87,12 @@ class NewResourceFragment : BindingScopedAuthenticatedFragment<FragmentNewResour
     override fun showTooLongError(tag: String) {
         (binding.container.findViewWithTag<View>(tag) as StatefulInput)
             .setState(Error(resources.getString(R.string.resource_new_too_long_error)))
+    }
+
+    override fun showPassword(tag: String, generatedPassword: String) {
+        (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).showPassword(
+            generatedPassword,
+            PasswordGenerateInputView.PasswordStrength.VeryStrong
+        )
     }
 }

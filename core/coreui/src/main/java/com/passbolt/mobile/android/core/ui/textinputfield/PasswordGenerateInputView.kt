@@ -14,9 +14,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.use
 import androidx.core.widget.addTextChangedListener
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewPasswordGeneratorInputBinding
+import android.graphics.drawable.LayerDrawable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -103,6 +105,26 @@ open class PasswordGenerateInputView @JvmOverloads constructor(
         progressBar.progress = passwordStrength.progress
         strengthDescription.setText(passwordStrength.text)
         strengthDescription.setTextColor(ContextCompat.getColor(context, passwordStrength.textColor))
+
+        val progressBarDrawable = progressBar.progressDrawable as LayerDrawable
+        val progressDrawable = progressBarDrawable.getDrawable(1)
+        progressDrawable.setTint(ContextCompat.getColor(context, passwordStrength.progressColor))
+    }
+
+    fun showPassword(password: String, passwordStrength: PasswordStrength) {
+        binding.input.setText(password)
+        setPasswordStrength(passwordStrength)
+    }
+
+    fun setGenerateClickListener(action: () -> Unit) {
+        binding.passwordGenerate.setDebouncingOnClick { action.invoke() }
+    }
+
+    fun setPasswordChangeListener(textChange: (String) -> Unit) {
+        textWatcher = binding.input.addTextChangedListener {
+            textChange.invoke(it.toString())
+            setInitialState()
+        }
     }
 
     private fun parseAttributes(attrs: AttributeSet?) {
@@ -118,13 +140,6 @@ open class PasswordGenerateInputView @JvmOverloads constructor(
     override fun setState(state: StatefulInput.State) = when (state) {
         is StatefulInput.State.Initial -> setInitialState()
         is StatefulInput.State.Error -> setErrorState(state.message)
-    }
-
-    fun setIsEmptyListener(textChange: (Boolean) -> Unit) {
-        textWatcher = binding.input.addTextChangedListener {
-            textChange.invoke(it.isNullOrEmpty())
-            setInitialState()
-        }
     }
 
     private fun setFocusChangeListener() {
@@ -154,14 +169,21 @@ open class PasswordGenerateInputView @JvmOverloads constructor(
     sealed class PasswordStrength(
         val progress: Int,
         @StringRes val text: Int,
+        @ColorRes val progressColor: Int,
         @ColorRes val textColor: Int = R.color.text_primary
     ) {
-        object Empty : PasswordStrength(0, R.string.password_strength_empty, R.color.text_tertiary)
-        object VeryWeak : PasswordStrength(1, R.string.password_strength_very_weak)
-        object Weak : PasswordStrength(60, R.string.password_strength_weak)
-        object Fair : PasswordStrength(80, R.string.password_strength_fair)
-        object Strong : PasswordStrength(112, R.string.password_strength_strong)
-        object VeryStrong : PasswordStrength(128, R.string.password_strength_very_strong)
+        object Empty : PasswordStrength(
+            0,
+            R.string.password_strength_empty,
+            android.R.color.transparent,
+            R.color.text_tertiary
+        )
+
+        object VeryWeak : PasswordStrength(20, R.string.password_strength_very_weak, R.color.red)
+        object Weak : PasswordStrength(40, R.string.password_strength_weak, R.color.red)
+        object Fair : PasswordStrength(60, R.string.password_strength_fair, R.color.orange)
+        object Strong : PasswordStrength(80, R.string.password_strength_strong, R.color.orange)
+        object VeryStrong : PasswordStrength(100, R.string.password_strength_very_strong, R.color.green)
     }
 
     private companion object {
