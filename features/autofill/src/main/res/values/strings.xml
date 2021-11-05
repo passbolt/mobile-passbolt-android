@@ -28,7 +28,8 @@
 
     <string name="dialog_autofill_enabled_go_to_app">Go to the app</string>
     <string name="dialog_autofill_enabled_got_it">Got it!</string>
-    <string name="dialog_autofill_enabled_title">Passbolt autofill based on Accessibility service.</string>
+    <string name="dialog_autofill_enabled_title">Passbolt Autofill enabled!</string>
+    <string name="dialog_autofill_accessibility_service_description">Passbolt autofill based on Accessibility service.</string>
     <string name="dialog_autofill_enabled_message">Once you\'ve filled out a form, simply tap on the entry field and the
         Autofill you enabled will suggest filling it from the login credentials you’ve already added to the Passbolt app.</string>
     <string name="autofill_title">Select password</string>

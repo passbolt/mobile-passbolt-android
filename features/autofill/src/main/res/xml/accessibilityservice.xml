@@ -6,5 +6,5 @@
     android:accessibilityFlags="flagReportViewIds"
     android:canRequestEnhancedWebAccessibility="true"
     android:canRetrieveWindowContent="true"
-    android:description="@string/dialog_autofill_enabled_title"
+    android:description="@string/dialog_autofill_accessibility_service_description"
     android:notificationTimeout="500" />
