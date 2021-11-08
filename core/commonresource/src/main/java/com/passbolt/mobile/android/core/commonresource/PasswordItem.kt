@@ -79,7 +79,7 @@ class PasswordItem(
     private fun setupUsername(binding: ItemPasswordBinding) = with(binding) {
         val fontFamily = ResourcesCompat.getFont(binding.root.context, R.font.inter)
 
-        if (resourceModel.username.isBlank()) {
+        if (resourceModel.username.isNullOrBlank()) {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
             subtitle.text = binding.root.context.getString(R.string.no_username)
         } else {

@@ -32,15 +32,21 @@ class GetResourceTypeWithFieldsUseCase(
     private val databaseProvider: DatabaseProvider
 ) : AsyncUseCase<UserIdInput, Output> {
 
-    // TODO change id to slug
     override suspend fun execute(input: UserIdInput): Output {
+        val resourceType = databaseProvider.get(input.userId).resourceTypesDao()
+            .getResourceTypeWithFieldsBySlug(DEFAULT_SLUG)
         return Output(
-            databaseProvider.get(input.userId).resourceTypesDao()
-                .getResourceTypeWithFields("a28a04cd-6f53-518a-967c-9963bf9cec51").resourceFields
+            resourceType.resourceType.resourceTypeId,
+            resourceType.resourceFields
         )
     }
 
     class Output(
+        val resourceTypeId: String,
         val fields: List<ResourceField>
     )
+
+    companion object {
+        private const val DEFAULT_SLUG = "password-and-description"
+    }
 }

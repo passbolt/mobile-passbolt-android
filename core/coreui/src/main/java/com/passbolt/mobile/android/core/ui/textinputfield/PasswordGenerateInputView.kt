@@ -42,7 +42,7 @@ import android.graphics.drawable.LayerDrawable
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-open class PasswordGenerateInputView @JvmOverloads constructor(
+class PasswordGenerateInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
@@ -78,9 +78,10 @@ open class PasswordGenerateInputView @JvmOverloads constructor(
 
     private val uiTitle: Spannable
         get() = if (!isRequired) SpannableString(title) else requiredTitle
+
     private var textWatcher: TextWatcher? = null
 
-    protected val binding = ViewPasswordGeneratorInputBinding.inflate(LayoutInflater.from(context), this)
+    private val binding = ViewPasswordGeneratorInputBinding.inflate(LayoutInflater.from(context), this)
 
     init {
         parseAttributes(attrs)
@@ -96,8 +97,9 @@ open class PasswordGenerateInputView @JvmOverloads constructor(
     }
 
     private fun setPasswordGenerateSize() {
-        binding.passwordGenerate.post {
-            binding.passwordGenerate.layoutParams.height = binding.textLayout.measuredHeight - GENERATE_PASSWORD_PADDING
+        binding.generatePasswordLayout.post {
+            binding.generatePasswordLayout.layoutParams.height =
+                binding.textLayout.measuredHeight - GENERATE_PASSWORD_PADDING
         }
     }
 
@@ -107,7 +109,7 @@ open class PasswordGenerateInputView @JvmOverloads constructor(
         strengthDescription.setTextColor(ContextCompat.getColor(context, passwordStrength.textColor))
 
         val progressBarDrawable = progressBar.progressDrawable as LayerDrawable
-        val progressDrawable = progressBarDrawable.getDrawable(1)
+        val progressDrawable = progressBarDrawable.getDrawable(PROGRESS_LAYER_INDEX)
         progressDrawable.setTint(ContextCompat.getColor(context, passwordStrength.progressColor))
     }
 
@@ -117,7 +119,8 @@ open class PasswordGenerateInputView @JvmOverloads constructor(
     }
 
     fun setGenerateClickListener(action: () -> Unit) {
-        binding.passwordGenerate.setDebouncingOnClick { action.invoke() }
+        binding.generatePasswordLayout
+            .setDebouncingOnClick { action.invoke() }
     }
 
     fun setPasswordChangeListener(textChange: (String) -> Unit) {
@@ -138,13 +141,13 @@ open class PasswordGenerateInputView @JvmOverloads constructor(
     }
 
     override fun setState(state: StatefulInput.State) = when (state) {
-        is StatefulInput.State.Initial -> setInitialState()
+        is StatefulInput.State.Default -> setInitialState()
         is StatefulInput.State.Error -> setErrorState(state.message)
     }
 
     private fun setFocusChangeListener() {
         binding.textLayout.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) setState(StatefulInput.State.Initial)
+            if (hasFocus) setState(StatefulInput.State.Default)
         }
     }
 
@@ -189,6 +192,7 @@ open class PasswordGenerateInputView @JvmOverloads constructor(
     private companion object {
         private const val DEFAULT_REQUIRED_STATE = false
         private const val REQUIRED_TITLE_FORMAT = "%s *"
+        private const val PROGRESS_LAYER_INDEX = 1
         private val GENERATE_PASSWORD_PADDING = 6.px
     }
 }

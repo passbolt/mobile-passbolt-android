@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.passboltapi.resource
 
 import com.passbolt.mobile.android.core.networking.ResponseHandler
 import com.passbolt.mobile.android.core.networking.callWithHandler
+import com.passbolt.mobile.android.dto.request.CreateResourceDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,5 +33,9 @@ class ResourceRepository(
 
     suspend fun getResources() = callWithHandler(responseHandler) {
         resourceDataSource.getResources()
+    }
+
+    suspend fun createResource(createResourceDto: CreateResourceDto) = callWithHandler(responseHandler) {
+        resourceDataSource.createResource(createResourceDto)
     }
 }

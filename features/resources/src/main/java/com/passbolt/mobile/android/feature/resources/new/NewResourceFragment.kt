@@ -1,11 +1,17 @@
 package com.passbolt.mobile.android.feature.resources.new
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
+import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentNewResourceBinding
@@ -53,9 +59,18 @@ class NewResourceFragment : BindingScopedAuthenticatedFragment<FragmentNewResour
         }
     }
 
-    override fun addTextInput(name: String) {
-        val (view, params) = viewProvider.getTextInput(name, requireContext())
+    override fun addTextInput(name: String, isSecret: Boolean) {
+        val (view, params) = viewProvider.getTextInput(name, requireContext(), isSecret)
         binding.container.addView(view, params)
+        addTextChangeListener(view)
+    }
+
+    override fun showProgress() {
+        showProgressDialog(childFragmentManager)
+    }
+
+    override fun hideProgress() {
+        hideProgressDialog(childFragmentManager)
     }
 
     override fun addPasswordInput(name: String) {
@@ -69,14 +84,10 @@ class NewResourceFragment : BindingScopedAuthenticatedFragment<FragmentNewResour
         (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).setPasswordStrength(strength)
     }
 
-    override fun addDescriptionInput(name: String) {
-        val (view, params) = viewProvider.getDescriptionInput(name, requireContext())
+    override fun addDescriptionInput(name: String, isSecret: Boolean) {
+        val (view, params) = viewProvider.getDescriptionInput(name, requireContext(), isSecret)
         binding.container.addView(view, params)
-    }
-
-    override fun addSecretInput(name: String) {
-        val (view, params) = viewProvider.getSecretInput(name, requireContext())
-        binding.container.addView(view, params)
+        addTextChangeListener(view)
     }
 
     override fun showEmptyValueError(tag: String) {
@@ -94,5 +105,22 @@ class NewResourceFragment : BindingScopedAuthenticatedFragment<FragmentNewResour
             generatedPassword,
             PasswordGenerateInputView.PasswordStrength.VeryStrong
         )
+    }
+
+    private fun addTextChangeListener(view: TextInputView) {
+        view.setTextChangeListener {
+            presenter.textChanged(view.tag as String, it)
+        }
+    }
+
+    override fun navigateBackWithSuccess() {
+        requireActivity().setResult(Activity.RESULT_OK)
+        requireActivity().finish()
+    }
+
+    override fun showError() {
+        Snackbar.make(binding.root, R.string.common_failure, Snackbar.LENGTH_SHORT).apply {
+            view.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.red))
+        }.show()
     }
 }

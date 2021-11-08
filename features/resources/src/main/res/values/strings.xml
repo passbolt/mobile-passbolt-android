@@ -13,6 +13,7 @@
     <string name="more_details_copy_password">Copy password</string>
     <string name="more_details_copy_description">Copy description</string>
 
+    <string name="resource_new_password_title">New password</string>
     <string name="resource_new_password">Password</string>
     <string name="resource_new_password_hint">Enter password</string>
     <string name="resource_new_description">Description</string>
@@ -20,4 +21,5 @@
     <string name="resource_new_empty_error">The %s cannot be empty</string>
     <string name="resource_new_too_long_error">The maximum length has been exceeded</string>
     <string name="resource_create_button">Create</string>
+    <string name="resource_create_success">New password was created!</string>
 </resources>

@@ -162,21 +162,28 @@ class HomePresenter(
 
     override fun menuLaunchWebsiteClick() {
         currentMoreMenuResource?.let {
-            if (it.url.isNotEmpty()) {
-                view?.openWebsite(it.url)
+            if (!it.url.isNullOrEmpty()) {
+                view?.openWebsite(it.url!!)
             }
         }
     }
 
     override fun menuCopyUsernameClick() {
         currentMoreMenuResource?.let {
-            view?.addToClipboard(USERNAME_LABEL, it.username)
+            view?.addToClipboard(USERNAME_LABEL, it.username.orEmpty())
         }
     }
 
     override fun menuCopyUrlClick() {
         currentMoreMenuResource?.let {
-            view?.addToClipboard(URL_LABEL, it.url)
+            view?.addToClipboard(URL_LABEL, it.url.orEmpty())
+        }
+    }
+
+    override fun newResourceAdded() {
+        view?.showResourceAddedSnackbar()
+        scope.launch {
+            fetchResources()
         }
     }
 

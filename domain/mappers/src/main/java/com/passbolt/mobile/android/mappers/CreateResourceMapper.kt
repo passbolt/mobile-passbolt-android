@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.passboltapi.resource
+package com.passbolt.mobile.android.mappers
 
-import com.passbolt.mobile.android.dto.request.CreateResourceDto
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.google.gson.Gson
+import com.passbolt.mobile.android.dto.request.SecretsDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,13 +25,10 @@ import com.passbolt.mobile.android.dto.response.ResourceResponseDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class ResourceRemoteDataSource(
-    private val resourceApi: ResourceApi
-) : ResourceDataSource {
+class CreateResourceMapper(
+    private val gson: Gson
+) {
 
-    override suspend fun getResources(): BaseResponse<List<ResourceResponseDto>> =
-        resourceApi.getResources()
-
-    override suspend fun createResource(createResourceDto: CreateResourceDto) =
-        resourceApi.createResource(createResourceDto)
+    fun map(password: String, description: String) =
+        gson.toJson(SecretsDto(password, description))
 }

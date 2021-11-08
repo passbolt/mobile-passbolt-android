@@ -1,8 +1,10 @@
-package com.passbolt.mobile.android.passboltapi.resource
+package com.passbolt.mobile.android.database.usecase
 
-import com.passbolt.mobile.android.dto.request.CreateResourceDto
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,13 +28,17 @@ import com.passbolt.mobile.android.dto.response.ResourceResponseDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class ResourceRemoteDataSource(
-    private val resourceApi: ResourceApi
-) : ResourceDataSource {
+class AddLocalResourceUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val resourceModelMapper: ResourceModelMapper,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : AsyncUseCase<AddLocalResourceUseCase.Input, Unit> {
+    override suspend fun execute(input: Input) {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        databaseProvider.get(userId).resourcesDao().insert(resourceModelMapper.map(input.passwordModel))
+    }
 
-    override suspend fun getResources(): BaseResponse<List<ResourceResponseDto>> =
-        resourceApi.getResources()
-
-    override suspend fun createResource(createResourceDto: CreateResourceDto) =
-        resourceApi.createResource(createResourceDto)
+    class Input(
+        val passwordModel: ResourceModel
+    )
 }

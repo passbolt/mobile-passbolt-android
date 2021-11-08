@@ -29,7 +29,7 @@ class PasswordGenerator {
 
     fun generate(
         alphabets: Set<Set<Char>> = CharacterSets.all,
-        minLength: Int = 18,
+        minLength: Int = DEFAULT_LENGTH,
         targetEntropy: Entropy = Entropy.VERY_STRONG
     ): String {
         require(minLength > 0 && targetEntropy.rawValue > 0)
@@ -37,7 +37,7 @@ class PasswordGenerator {
         val stringBuilder = StringBuilder()
         val entireAlphabet = alphabets.flatten()
 
-        while (stringBuilder.length < minLength || Entropy.parse(
+        while (stringBuilder.length < minLength && Entropy.parse(
                 getEntropy(
                     stringBuilder.toString(),
                     alphabets
@@ -85,5 +85,9 @@ class PasswordGenerator {
                 else -> GREATEST_FINITE
             }
         }
+    }
+
+    companion object {
+        private const val DEFAULT_LENGTH = 18
     }
 }

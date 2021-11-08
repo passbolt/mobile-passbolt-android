@@ -41,6 +41,10 @@ interface ResourcesDao {
     suspend fun insert(resourceEntities: List<Resource>)
 
     @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(resourceEntities: Resource)
+
+    @Transaction
     @Query("DELETE FROM Resource")
     suspend fun deleteAll()
 }

@@ -6,13 +6,37 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_arrow_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/titleLabel"
+        style="@style/Heading3Text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/resource_new_password_title"
+        android:textColor="@color/text_primary"
+        app:layout_constraintBottom_toBottomOf="@+id/backArrow"
+        app:layout_constraintTop_toTopOf="@+id/backArrow"
+        />
+
     <LinearLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
+        android:layout_marginTop="@dimen/dp_16"
         app:layout_constraintBottom_toTopOf="@+id/createButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/backArrow" />
 
     <Button
         android:id="@+id/createButton"

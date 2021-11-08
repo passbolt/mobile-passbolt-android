@@ -107,7 +107,7 @@ class ResourceDetailsFragment : BindingScopedAuthenticatedFragment<FragmentResou
         binding.name.text = title
     }
 
-    override fun displayUsername(username: String) {
+    override fun displayUsername(username: String?) {
         binding.usernameValue.text = username
     }
 

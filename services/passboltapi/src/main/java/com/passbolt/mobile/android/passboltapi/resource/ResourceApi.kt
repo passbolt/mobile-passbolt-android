@@ -1,8 +1,11 @@
 package com.passbolt.mobile.android.passboltapi.resource
 
+import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,7 +35,11 @@ internal interface ResourceApi {
     @GET(GET_RESOURCES)
     suspend fun getResources(): BaseResponse<List<ResourceResponseDto>>
 
+    @POST(CREATE_RESOURCE)
+    suspend fun createResource(@Body createResourceDto: CreateResourceDto): BaseResponse<ResourceResponseDto>
+
     private companion object {
         private const val GET_RESOURCES = "resources.json"
+        private const val CREATE_RESOURCE = "resources.json"
     }
 }

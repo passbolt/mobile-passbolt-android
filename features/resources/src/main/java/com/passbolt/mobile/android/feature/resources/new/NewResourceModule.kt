@@ -34,7 +34,9 @@ fun Module.newResourceModule() {
                 getResourceTypeWithFieldsUseCase = get(),
                 getSelectedAccountUseCase = get(),
                 passwordGenerator = get(),
-                entropyViewMapper = get()
+                entropyViewMapper = get(),
+                createResourceUseCase = get(),
+                addLocalResourceUseCase = get()
             )
         }
         scoped {

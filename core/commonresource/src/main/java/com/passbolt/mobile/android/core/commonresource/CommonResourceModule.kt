@@ -43,4 +43,15 @@ val commonResourceModule = module {
             addLocalResourceTypesUseCase = get()
         )
     }
+    single {
+        CreateResourceUseCase(
+            resourceRepository = get(),
+            openPgp = get(),
+            createResourceMapper = get(),
+            getPrivateKeyUseCase = get(),
+            getSelectedAccountUseCase = get(),
+            resourceModelMapper = get(),
+            passphraseMemoryCache = get()
+        )
+    }
 }

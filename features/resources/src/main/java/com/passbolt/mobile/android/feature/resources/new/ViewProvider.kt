@@ -6,7 +6,6 @@ import android.widget.LinearLayout
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.ui.textinputfield.MultilineInputView
 import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
-import com.passbolt.mobile.android.core.ui.textinputfield.PasswordInputView
 import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
 import com.passbolt.mobile.android.feature.resources.R
 
@@ -34,31 +33,33 @@ import com.passbolt.mobile.android.feature.resources.R
  */
 class ViewProvider {
 
-    fun getTextInput(name: String, context: Context): Pair<TextInputView, ViewGroup.LayoutParams> =
+    fun getTextInput(name: String, context: Context, isSecret: Boolean): Pair<TextInputView, ViewGroup.LayoutParams> =
         Pair(TextInputView(context).apply {
+            if (isSecret) enableSecretInput()
             this.tag = name
             this.title = name
             setDefaultHint(this.title)
         }, getDefaultParams())
 
-    fun getPasswordWithGeneratorInput(name: String, context: Context): Pair<PasswordGenerateInputView, ViewGroup.LayoutParams> =
+    fun getPasswordWithGeneratorInput(
+        name: String,
+        context: Context
+    ): Pair<PasswordGenerateInputView, ViewGroup.LayoutParams> =
         Pair(PasswordGenerateInputView(context).apply {
             this.tag = name
             this.title = context.resources.getString(R.string.resource_new_password)
             this.hint = context.resources.getString(R.string.resource_new_password_hint)
         }, getDefaultParams())
 
-    fun getDescriptionInput(name: String, context: Context): Pair<MultilineInputView, ViewGroup.LayoutParams> =
+    fun getDescriptionInput(
+        name: String,
+        context: Context,
+        isSecret: Boolean
+    ): Pair<MultilineInputView, ViewGroup.LayoutParams> =
         Pair(MultilineInputView(context).apply {
+            if (isSecret) enableSecretInput()
             this.tag = name
             this.title = context.resources.getString(R.string.resource_new_description)
-            setDefaultHint(this.title)
-        }, getDefaultParams())
-
-    fun getSecretInput(name: String, context: Context): Pair<TextInputView, ViewGroup.LayoutParams> =
-        Pair(PasswordInputView(context).apply {
-            this.tag = name
-            this.title = name
             setDefaultHint(this.title)
         }, getDefaultParams())
 

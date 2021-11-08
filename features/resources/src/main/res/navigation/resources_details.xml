@@ -16,10 +16,4 @@
             app:argType="com.passbolt.mobile.android.ui.ResourceModel" />
     </fragment>
 
-    <fragment
-        android:id="@+id/newResource"
-        android:name="com.passbolt.mobile.android.feature.resources.new.NewResourceFragment"
-        android:label="NewResourceFragment"
-        tools:layout="@layout/fragment_new_resource" />
-
 </navigation>

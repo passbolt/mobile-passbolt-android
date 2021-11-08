@@ -9,7 +9,10 @@ import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.common.validation.Rule
 import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.common.validation.StringNotBlank
+import com.passbolt.mobile.android.core.commonresource.CreateResourceUseCase
+import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.core.security.PasswordGenerator
+import com.passbolt.mobile.android.database.usecase.AddLocalResourceUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -43,25 +46,33 @@ class NewResourcePresenter(
     private val getResourceTypeWithFieldsUseCase: GetResourceTypeWithFieldsUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val passwordGenerator: PasswordGenerator,
-    private val entropyViewMapper: EntropyViewMapper
+    private val entropyViewMapper: EntropyViewMapper,
+    private val createResourceUseCase: CreateResourceUseCase,
+    private val addLocalResourceUseCase: AddLocalResourceUseCase
 ) : BaseAuthenticatedPresenter<NewResourceContract.View>(coroutineLaunchContext),
     NewResourceContract.Presenter {
 
     override var view: NewResourceContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private lateinit var fields: List<Pair<ResourceField, String>>
+    private lateinit var fields: List<ResourceValue>
+    private lateinit var resourceTypeId: String
 
     override fun viewCreated() {
+        createFields()
+    }
+
+    private fun createFields() {
         scope.launch {
             val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-            fields = getResourceTypeWithFieldsUseCase.execute(UserIdInput(userId)).fields.map { Pair(it, "") }
+            val resourceType = getResourceTypeWithFieldsUseCase.execute(UserIdInput(userId))
+            resourceTypeId = resourceType.resourceTypeId
+            fields = resourceType.fields.map { ResourceValue(it, "") }
             fields.forEach {
-                when {
-                    it.first.name == PASSWORD_FIELD -> view?.addPasswordInput(it.first.name)
-                    it.first.name == DESCRIPTION_FIELD -> view?.addDescriptionInput(it.first.name)
-                    it.first.isSecret -> view?.addSecretInput(it.first.name)
-                    else -> view?.addTextInput(it.first.name)
+                when (it.field.name) {
+                    PASSWORD_FIELD -> view?.addPasswordInput(it.field.name)
+                    DESCRIPTION_FIELD -> view?.addDescriptionInput(it.field.name, it.field.isSecret)
+                    else -> view?.addTextInput(it.field.name, it.field.isSecret)
                 }
             }
         }
@@ -70,33 +81,63 @@ class NewResourcePresenter(
     override fun createClick() {
         validation {
             fields.forEach { pair ->
-                val rules = getRules(pair.first)
-                of(pair.second) {
+                val rules = getRules(pair.field)
+                of(pair.value) {
                     rules.forEach { rule ->
                         validateRules(rule, pair)
                     }
                 }
                 onValid {
-                    // TODO save resource
+                    createResource()
                 }
             }
         }
     }
 
+    override fun textChanged(tag: String, value: String) {
+        fields.find { it.field.name == tag }?.value = value
+    }
+
+    private fun createResource() {
+        view?.showProgress()
+        scope.launch {
+            when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                createResourceUseCase.execute(createResourceInput())
+            }) {
+                is CreateResourceUseCase.Output.Failure<*> -> view?.showError()
+                is CreateResourceUseCase.Output.Success -> {
+                    addLocalResourceUseCase.execute(AddLocalResourceUseCase.Input(result.resource))
+                    view?.navigateBackWithSuccess()
+                }
+            }
+            view?.hideProgress()
+        }
+    }
+
+    private fun createResourceInput() =
+        CreateResourceUseCase.Input(
+            fields.find { it.field.name == NAME_FIELD }?.value!!,
+            resourceTypeId,
+            fields.find { it.field.name == PASSWORD_FIELD }?.value!!,
+            fields.find { it.field.name == DESCRIPTION_FIELD }?.value.orEmpty(),
+            fields.find { it.field.name == USERNAME_FIELD }?.value,
+            fields.find { it.field.name == URI_FIELD }?.value
+        )
+
     private fun Validation.ValueValidation<String>.validateRules(
         rule: Rule<String>,
-        pair: Pair<ResourceField, String>
+        resourceValue: ResourceValue
     ) {
         withRules(rule) {
             when (rule) {
                 is StringNotBlank -> {
                     onInvalid {
-                        view?.showEmptyValueError(pair.first.name)
+                        view?.showEmptyValueError(resourceValue.field.name)
                     }
                 }
                 is StringMaxLength -> {
                     onInvalid {
-                        view?.showTooLongError(pair.first.name)
+                        view?.showTooLongError(resourceValue.field.name)
                     }
                 }
             }
@@ -109,6 +150,7 @@ class NewResourcePresenter(
     }
 
     override fun passwordTextChanged(tag: String, password: String) {
+        fields.find { it.field.name == PASSWORD_FIELD }?.value = password
         val entropy = PasswordGenerator.Entropy.parse(passwordGenerator.getEntropy(password))
         view?.showPasswordStrength(tag, entropyViewMapper.map(entropy))
     }
@@ -127,5 +169,13 @@ class NewResourcePresenter(
     companion object {
         private const val PASSWORD_FIELD = "password"
         private const val DESCRIPTION_FIELD = "description"
+        private const val USERNAME_FIELD = "username"
+        private const val URI_FIELD = "uri"
+        private const val NAME_FIELD = "name"
     }
+
+    private class ResourceValue(
+        val field: ResourceField,
+        var value: String
+    )
 }

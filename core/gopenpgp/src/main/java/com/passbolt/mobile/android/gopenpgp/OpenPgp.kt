@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.gopenpgp
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpException
+import com.proton.Gopenpgp.crypto.Crypto
 import com.proton.Gopenpgp.crypto.Key
 import com.proton.Gopenpgp.helper.Helper
 import kotlinx.coroutines.Dispatchers
@@ -132,6 +133,22 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
             }
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during decryptMessageArmored")
+            throw gopenPgpExceptionParser.parseGopenPgpException(exception)
+        } finally {
+            Helper.freeOSMemory()
+        }
+    }
+
+    @Throws(OpenPgpException::class)
+    suspend fun generatePublicKey(
+        privateKey: String
+    ): String {
+        return try {
+            withContext(Dispatchers.IO) {
+                Crypto.newKeyFromArmored(privateKey).armoredPublicKey
+            }
+        } catch (exception: Exception) {
+            Timber.e(exception, "There was an error during generatePublicKey")
             throw gopenPgpExceptionParser.parseGopenPgpException(exception)
         } finally {
             Helper.freeOSMemory()

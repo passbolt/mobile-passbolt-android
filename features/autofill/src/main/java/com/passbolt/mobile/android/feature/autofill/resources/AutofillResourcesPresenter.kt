@@ -145,7 +145,11 @@ class AutofillResourcesPresenter(
     private fun getSuggested() =
         uri?.let { uri ->
             val domain = domainProvider.getHost(uri)
-            val suggested = allItemsList.filter { domainProvider.getHost(it.url) == domain }
+            val suggested = allItemsList.filter {
+                it.url?.let {
+                    domainProvider.getHost(it) == domain
+                } ?: false
+            }
 
             // TODO can there be more suggested items if suggested is not empty and additionally links api is fetched?
             if (suggested.isEmpty()) {
@@ -178,7 +182,7 @@ class AutofillResourcesPresenter(
             doAfterFetchAndDecrypt(resourceModel.resourceId, {
                 hideItemLoader(resourceModel.resourceId)
                 val password = secretParser.extractPassword(resourceTypeEnum, it)
-                view?.autofillReturn(resourceModel.username, password, uri)
+                view?.autofillReturn(resourceModel.username.orEmpty(), password, uri)
             }) {
                 hideItemLoader(resourceModel.resourceId)
                 view?.showGeneralError()

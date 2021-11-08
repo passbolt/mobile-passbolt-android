@@ -28,14 +28,17 @@ import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputV
 interface NewResourceContract {
 
     interface View : BaseAuthenticatedContract.View {
-        fun addTextInput(name: String)
+        fun addTextInput(name: String, isSecret: Boolean)
         fun addPasswordInput(name: String)
-        fun addSecretInput(name: String)
-        fun addDescriptionInput(name: String)
+        fun addDescriptionInput(name: String, isSecret: Boolean)
         fun showEmptyValueError(tag: String)
         fun showTooLongError(tag: String)
         fun showPassword(tag: String, generatedPassword: String)
         fun showPasswordStrength(tag: String, strength: PasswordGenerateInputView.PasswordStrength)
+        fun showError()
+        fun showProgress()
+        fun hideProgress()
+        fun navigateBackWithSuccess()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -43,5 +46,6 @@ interface NewResourceContract {
         fun createClick()
         fun passwordGenerateClick(tag: String)
         fun passwordTextChanged(tag: String, password: String)
+        fun textChanged(tag: String, value: String)
     }
 }

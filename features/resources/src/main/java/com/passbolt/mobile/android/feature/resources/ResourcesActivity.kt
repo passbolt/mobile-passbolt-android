@@ -1,6 +1,9 @@
 package com.passbolt.mobile.android.feature.resources
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
 import com.passbolt.mobile.android.core.security.FlagSecureSetter
@@ -32,6 +35,9 @@ import org.koin.android.ext.android.inject
 class ResourcesActivity : BindingActivity<ActivityResourcesBinding>(ActivityResourcesBinding::inflate) {
 
     private val flagSecureSetter: FlagSecureSetter by inject()
+    private val mode by lifecycleAwareLazy {
+        intent.getSerializableExtra(RESOURCE_MODE_EXTRA) as ResourceMode
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,12 +46,26 @@ class ResourcesActivity : BindingActivity<ActivityResourcesBinding>(ActivityReso
 
         val navHostFragment = findNavHostFragment(R.id.fragmentContainer)
         val inflater = navHostFragment.navController.navInflater
-        val graph = inflater.inflate(R.navigation.resources)
+
+        val graph = when (mode) {
+            ResourceMode.NEW -> inflater.inflate(R.navigation.resources_new)
+            ResourceMode.DETAILS -> inflater.inflate(R.navigation.resources_details)
+        }
 
         navHostFragment.navController.setGraph(graph, intent.extras)
     }
 
     companion object {
         const val RESOURCE_MODEL_KEY = "resourceModel"
+        private const val RESOURCE_MODE_EXTRA = "RESOURCE_MODE_EXTRA"
+
+        fun newInstance(mode: ResourceMode, context: Context) = Intent(context, ResourcesActivity::class.java).apply {
+            putExtra(RESOURCE_MODE_EXTRA, mode)
+        }
+    }
+
+    enum class ResourceMode {
+        NEW,
+        DETAILS
     }
 }

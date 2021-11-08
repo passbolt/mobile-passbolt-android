@@ -33,13 +33,12 @@ class Validation {
     @Suppress("SpreadOperator", "DataClassContainsFunctions")
     data class ValueValidation<T>(val value: T, val ruleSets: MutableList<RuleSet<T>> = mutableListOf()) {
         fun withRules(vararg rules: Rule<T>, block: RuleSet<T>.() -> Unit = {}) {
-            val application = RuleSet(null, *rules).apply(block)
+            val application = RuleSet(*rules).apply(block)
             ruleSets.add(application)
         }
     }
 
     class RuleSet<T>(
-        private val preCondition: Rule<T>?,
         private vararg val rules: Rule<T>,
         var onValid: () -> Unit = {},
         var onInvalid: () -> Unit = {}
@@ -53,8 +52,7 @@ class Validation {
         }
 
         internal fun run(value: Any?): Boolean {
-            val shouldValidate = preCondition?.condition?.invoke(value as T) ?: true
-            val valid = !shouldValidate || rules.map { it.condition(value as T) }.all { it }
+            val valid = rules.map { it.condition(value as T) }.all { it }
             if (valid) onValid() else onInvalid()
             return valid
         }

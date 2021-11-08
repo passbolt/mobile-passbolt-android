@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.passboltapi.resource
 
+import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 
@@ -28,4 +29,5 @@ import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 
 interface ResourceDataSource {
     suspend fun getResources(): BaseResponse<List<ResourceResponseDto>>
+    suspend fun createResource(createResourceDto: CreateResourceDto): BaseResponse<ResourceResponseDto>
 }

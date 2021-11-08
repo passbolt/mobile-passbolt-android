@@ -82,7 +82,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         mockResourceTypesDao.stub {
             onBlocking { getResourceTypeWithFields(any()) }.doReturn(
                 ResourceTypeIdWithFields(
-                    ResourceType("id", "simple password"),
+                    ResourceType("id", "simple password", "slug"),
                     listOf(
                         ResourceField(
                             name = "description",
@@ -106,7 +106,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         mockResourceTypesDao.stub {
             onBlocking { getResourceTypeWithFields(any()) }.doReturn(
                 ResourceTypeIdWithFields(
-                    ResourceType("id", "password"),
+                    ResourceType("id", "password", "slug"),
                     listOf(
                         ResourceField(
                             name = "description",

@@ -45,6 +45,7 @@ interface HomeContract {
         fun navigateToManageAccount()
         fun displaySearchClearIcon()
         fun clearSearchInput()
+        fun showResourceAddedSnackbar()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -61,5 +62,6 @@ interface HomeContract {
         fun userAuthenticated()
         fun searchClearClick()
         fun menuCopyDescriptionClick()
+        fun newResourceAdded()
     }
 }
