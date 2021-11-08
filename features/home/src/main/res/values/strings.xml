@@ -14,4 +14,5 @@
     <string name="home_no_passwords">There are no passwords</string>
     <string name="home_decryption_failure">Error during secret decryption</string>
     <string name="home_fetch_failure">Error during downloading the secret</string>
+    <string name="home_create">Create</string>
 </resources>

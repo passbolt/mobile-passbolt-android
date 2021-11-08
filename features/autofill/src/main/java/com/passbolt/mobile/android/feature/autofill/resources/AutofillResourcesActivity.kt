@@ -165,6 +165,9 @@ class AutofillResourcesActivity :
         closeButton.setDebouncingOnClick {
             presenter.closeClick()
         }
+        createButton.setDebouncingOnClick {
+            // TODO
+        }
     }
 
     private fun initAdapter() {

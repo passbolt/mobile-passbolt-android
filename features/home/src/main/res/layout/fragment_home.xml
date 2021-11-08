@@ -62,9 +62,9 @@
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="vertical"
                 android:scrollbarStyle="outsideOverlay"
-                android:scrollbarThumbVertical="@color/scrollbars"/>
+                android:scrollbarThumbVertical="@color/scrollbars"
+                android:scrollbars="vertical" />
 
             <LinearLayout
                 android:id="@+id/errorContainer"
@@ -134,6 +134,18 @@
         </FrameLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/createButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="@dimen/dp_16"
+        android:contentDescription="@string/home_create"
+        android:text="@string/home_create"
+        app:backgroundTint="@color/primary"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+        app:srcCompat="@drawable/ic_plus" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress"
