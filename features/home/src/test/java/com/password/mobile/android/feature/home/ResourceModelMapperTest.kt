@@ -1,6 +1,7 @@
 package com.password.mobile.android.feature.home
 
 import com.passbolt.mobile.android.common.InitialsProvider
+import com.passbolt.mobile.android.dto.response.ResourcePermissionDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import org.junit.Before
@@ -23,7 +24,8 @@ class ResourceModelMapperTest {
             description = "description",
             name = "firstname",
             uri = "uri",
-            username = "username"
+            username = "username",
+            permission = ResourcePermissionDto("abc", 1, null, null, null, null, null, null)
         )
         val result = mapper.map(responseDto)
         assertEquals("f", result.initials)

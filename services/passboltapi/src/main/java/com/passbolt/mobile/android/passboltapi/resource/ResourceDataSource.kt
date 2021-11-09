@@ -28,6 +28,10 @@ import com.passbolt.mobile.android.dto.response.ResourceResponseDto
  */
 
 interface ResourceDataSource {
+
     suspend fun getResources(): BaseResponse<List<ResourceResponseDto>>
+
     suspend fun createResource(createResourceDto: CreateResourceDto): BaseResponse<ResourceResponseDto>
+
+    suspend fun deleteResource(resourceId: String): BaseResponse<String?>
 }

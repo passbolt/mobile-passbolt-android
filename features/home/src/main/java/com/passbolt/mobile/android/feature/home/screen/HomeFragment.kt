@@ -25,14 +25,15 @@ import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
+import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.ui.dialog.hideDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
-import com.passbolt.mobile.android.feature.home.screen.more.ResourceMenuFragment
-import com.passbolt.mobile.android.feature.home.screen.more.ResourceMoreModel
 import com.passbolt.mobile.android.feature.resources.ResourcesActivity
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
 
 /**
@@ -57,9 +58,11 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+@Suppress("TooManyFunctions")
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
-    HomeContract.View, ResourceMenuFragment.Listener {
+    HomeContract.View, ResourceMoreMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
     private val itemAdapter: ItemAdapter<PasswordItem> by inject()
@@ -79,6 +82,14 @@ class HomeFragment :
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
                 presenter.newResourceAdded()
+            }
+        }
+
+    private val resourceDetailsResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == ResourcesActivity.RESULT_RESOURCE_DELETED) {
+                val name = it.data?.getStringExtra(ResourcesActivity.EXTRA_RESOURCE_NAME)
+                presenter.resourceDeleted(name.orEmpty())
             }
         }
 
@@ -211,16 +222,21 @@ class HomeFragment :
         setState(State.PROGRESS)
     }
 
-    override fun navigateToMore(resourceModel: ResourceModel) {
-        val model = ResourceMoreModel(resourceModel.name)
-        ResourceMenuFragment.newInstance(model)
-            .show(childFragmentManager, ResourceMenuFragment::class.java.name)
+    override fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel) {
+        ResourceMoreMenuFragment.newInstance(resourceMoreMenuModel)
+            .show(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
+    }
+
+    override fun hideResourceMoreMenu() {
+        hideDialog(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
     }
 
     override fun navigateToDetails(resourceModel: ResourceModel) {
-        startActivity(ResourcesActivity.newInstance(ResourcesActivity.ResourceMode.DETAILS, requireContext()).apply {
-            putExtra(ResourcesActivity.RESOURCE_MODEL_KEY, resourceModel)
-        })
+        resourceDetailsResult.launch(
+            ResourcesActivity.newInstance(ResourcesActivity.ResourceMode.DETAILS, requireContext()).apply {
+                putExtra(ResourcesActivity.RESOURCE_MODEL_KEY, resourceModel)
+            }
+        )
     }
 
     override fun addToClipboard(label: String, value: String) {
@@ -250,6 +266,10 @@ class HomeFragment :
         presenter.menuLaunchWebsiteClick()
     }
 
+    override fun menuDeleteClick() {
+        presenter.menuDeleteClick()
+    }
+
     override fun openWebsite(url: String) {
         websiteOpener.open(requireContext(), url)
     }
@@ -261,6 +281,18 @@ class HomeFragment :
 
     override fun showFetchFailure() {
         Toast.makeText(requireContext(), R.string.home_fetch_failure, Toast.LENGTH_SHORT)
+            .show()
+    }
+
+    override fun showGeneralError() {
+        Snackbar.make(binding.rootLayout, R.string.common_failure, Snackbar.LENGTH_SHORT)
+            .setAnchorView(binding.createButton)
+            .show()
+    }
+
+    override fun showResourceDeletedSnackbar(name: String) {
+        Snackbar.make(binding.rootLayout, getString(R.string.home_resource_deleted_format, name), Snackbar.LENGTH_LONG)
+            .setAnchorView(binding.createButton)
             .show()
     }
 

@@ -46,7 +46,6 @@ dependencies {
     implementation libs.room.cipher
     kapt libs.room.compiler
     implementation libs.room.sqlite
-
 }
 
 android {

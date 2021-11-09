@@ -35,7 +35,9 @@ fun Module.detailsModule() {
                 getSelectedAccountUseCase = get(),
                 resourceTypeFactory = get(),
                 secretParser = get(),
-                getFeatureFlagsUseCase = get()
+                getFeatureFlagsUseCase = get(),
+                resourceMenuModelMapper = get(),
+                deleteResourceUseCase = get()
             )
         }
     }

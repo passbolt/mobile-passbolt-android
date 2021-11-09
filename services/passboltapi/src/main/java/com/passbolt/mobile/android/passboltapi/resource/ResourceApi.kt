@@ -4,8 +4,11 @@ import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,14 +35,24 @@ import retrofit2.http.POST
 
 internal interface ResourceApi {
 
-    @GET(GET_RESOURCES)
-    suspend fun getResources(): BaseResponse<List<ResourceResponseDto>>
+    @GET(RESOURCES)
+    suspend fun getResources(
+        @Query(QUERY_CONTAIN_PERMISSION) containingPermissions: Int? = 1 // always return index with permissions
+    ): BaseResponse<List<ResourceResponseDto>>
 
-    @POST(CREATE_RESOURCE)
+    @DELETE(RESOURCE_BY_ID)
+    suspend fun deleteResource(
+        @Path(PATH_RESOURCE_ID) resourceId: String
+    ): BaseResponse<String?>
+
+    @POST(RESOURCES)
     suspend fun createResource(@Body createResourceDto: CreateResourceDto): BaseResponse<ResourceResponseDto>
 
     private companion object {
-        private const val GET_RESOURCES = "resources.json"
-        private const val CREATE_RESOURCE = "resources.json"
+        private const val PATH_RESOURCE_ID = "resourceId"
+        private const val PATH_RESOURCES = "resources"
+        private const val QUERY_CONTAIN_PERMISSION = "contain[permission]"
+        private const val RESOURCES = "resources.json"
+        private const val RESOURCE_BY_ID = "$PATH_RESOURCES/{$PATH_RESOURCE_ID}.json"
     }
 }

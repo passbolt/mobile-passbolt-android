@@ -1,20 +1,22 @@
 package com.passbolt.mobile.android.feature.resources.details
 
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
+import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuModel
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,6 +47,8 @@ class ResourceDetailsPresenter(
     private val resourceTypeFactory: ResourceTypeFactory,
     private val secretParser: SecretParser,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
+    private val resourceMenuModelMapper: ResourceMenuModelMapper,
+    private val deleteResourceUseCase: DeleteResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter {
@@ -117,7 +121,7 @@ class ResourceDetailsPresenter(
     }
 
     override fun moreClick() {
-        view?.navigateToMore(ResourceDetailsMenuModel(resourceModel.name))
+        view?.navigateToMore(resourceMenuModelMapper.map(resourceModel))
     }
 
     override fun backArrowClick() {
@@ -203,6 +207,46 @@ class ResourceDetailsPresenter(
         }
     }
 
+    override fun menuCopyUrlClick() {
+        view?.addToClipboard(URL_LABEL, resourceModel.url.orEmpty())
+    }
+
+    override fun menuCopyUsernameClick() {
+        view?.addToClipboard(USERNAME_LABEL, resourceModel.username.orEmpty())
+    }
+
+    override fun menuLaunchWebsiteClick() {
+        if (resourceModel.url.isNullOrEmpty()) {
+            view?.openWebsite(resourceModel.url.orEmpty())
+        }
+    }
+
+    override fun menuDeleteClick() {
+        resourceModel?.let { sadResource ->
+            view?.hideResourceMoreMenu()
+            runWhileShowingListProgress {
+                when (val response = deleteResourceUseCase
+                    .execute(DeleteResourceUseCase.Input(sadResource.resourceId))) {
+                    is DeleteResourceUseCase.Output.Success -> {
+                        view?.closeWithDeleteSuccessResult(sadResource.name)
+                    }
+                    is DeleteResourceUseCase.Output.Failure<*> -> {
+                        Timber.e(response.response.exception)
+                        view?.showGeneralError()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun runWhileShowingListProgress(action: suspend () -> Unit) {
+        scope.launch {
+            view?.showProgress()
+            action()
+            view?.hideProgress()
+        }
+    }
+
     override fun detach() {
         scope.coroutineContext.cancelChildren()
         super<BaseAuthenticatedPresenter>.detach()
@@ -213,5 +257,6 @@ class ResourceDetailsPresenter(
         private const val USERNAME_LABEL = "Username"
         private const val SECRET_LABEL = "Secret"
         private const val DESCRIPTION_LABEL = "Description"
+        private const val URL_LABEL = "Url"
     }
 }

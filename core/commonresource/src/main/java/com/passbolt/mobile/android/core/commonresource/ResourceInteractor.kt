@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.core.commonresource
 
+import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase

@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.resources.details.more
+package com.passbolt.mobile.android.core.commonresource.moremenu
 
 import android.content.Context
 import android.os.Bundle
@@ -8,8 +8,10 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.feature.resources.databinding.ViewPasswordDetailsBottomsheetBinding
+import com.passbolt.mobile.android.commonresource.databinding.ViewPasswordBottomsheetBinding
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
 
@@ -36,26 +38,24 @@ import org.koin.androidx.scope.fragmentScope
  * @since v1.0
  */
 
-// TODO reuse menus ResourceMenu / ResourceDetails menu PAS-396
-class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetailsMenuContract.View,
-    AndroidScopeComponent {
+class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuContract.View, AndroidScopeComponent {
 
     override val scope by fragmentScope()
-    private lateinit var binding: ViewPasswordDetailsBottomsheetBinding
-    private val presenter: ResourceDetailsMenuContract.Presenter by scope.inject()
-    private val resourceMenuModel: ResourceDetailsMenuModel by lifecycleAwareLazy {
+    private val presenter: ResourceMoreMenuContract.Presenter by scope.inject()
+    private lateinit var binding: ViewPasswordBottomsheetBinding
+    private var listener: Listener? = null
+    private val menuModel: ResourceMoreMenuModel by lifecycleAwareLazy {
         requireNotNull(
-            requireArguments().getParcelable(EXTRA_RESOURCE_DETAILS_MENU_MODEL)
+            requireArguments().getParcelable(EXTRA_RESOURCE_MENU_MODEL)
         )
     }
-    private var listener: Listener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = ViewPasswordDetailsBottomsheetBinding.inflate(inflater)
+        binding = ViewPasswordBottomsheetBinding.inflate(inflater)
         return binding.root
     }
 
@@ -63,7 +63,7 @@ class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetails
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
-        presenter.argsRetrieved(resourceMenuModel)
+        presenter.argsRetrieved(menuModel)
     }
 
     override fun onAttach(context: Context) {
@@ -75,12 +75,6 @@ class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetails
         }
     }
 
-    override fun onDestroyView() {
-        scope.close()
-        presenter.detach()
-        super.onDestroyView()
-    }
-
     private fun setListeners() {
         with(binding) {
             copyPassword.setDebouncingOnClick {
@@ -89,31 +83,51 @@ class ResourceDetailsMenuFragment : BottomSheetDialogFragment(), ResourceDetails
             copyDescription.setDebouncingOnClick {
                 listener?.menuCopyDescriptionClick()
             }
+            copyUrl.setDebouncingOnClick {
+                listener?.menuCopyUrlClick()
+            }
+            copyUsername.setDebouncingOnClick {
+                listener?.menuCopyUsernameClick()
+            }
+            launchWebsite.setDebouncingOnClick {
+                listener?.menuLaunchWebsiteClick()
+            }
+            delete.setDebouncingOnClick {
+                listener?.menuDeleteClick()
+            }
             close.setDebouncingOnClick {
-                presenter.closeClick()
+                dismiss()
             }
         }
     }
 
-    override fun close() {
-        dismiss()
+    override fun showTitle(title: String) {
+        binding.title.text = menuModel.title
     }
 
-    override fun showTitle(title: String) {
-        binding.title.text = title
+    override fun showSeparator() {
+        binding.separator.visible()
+    }
+
+    override fun showDeleteButton() {
+        binding.delete.visible()
     }
 
     companion object {
-        private const val EXTRA_RESOURCE_DETAILS_MENU_MODEL = "RESOURCE_DETAILS_MENU_MODEL"
+        private const val EXTRA_RESOURCE_MENU_MODEL = "RESOURCE_MENU_MODEL"
 
-        fun newInstance(model: ResourceDetailsMenuModel) =
-            ResourceDetailsMenuFragment().apply {
-                arguments = bundleOf(EXTRA_RESOURCE_DETAILS_MENU_MODEL to model)
+        fun newInstance(model: ResourceMoreMenuModel) =
+            ResourceMoreMenuFragment().apply {
+                arguments = bundleOf(EXTRA_RESOURCE_MENU_MODEL to model)
             }
     }
 
     interface Listener {
         fun menuCopyPasswordClick()
         fun menuCopyDescriptionClick()
+        fun menuCopyUrlClick()
+        fun menuCopyUsernameClick()
+        fun menuLaunchWebsiteClick()
+        fun menuDeleteClick()
     }
 }

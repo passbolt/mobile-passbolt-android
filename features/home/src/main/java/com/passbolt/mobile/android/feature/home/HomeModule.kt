@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.home
 
 import com.passbolt.mobile.android.feature.home.screen.homeModule
+import com.passbolt.mobile.android.core.commonresource.moremenu.resourceMoreMenuModule
 import org.koin.dsl.module
 
 /**
@@ -27,5 +28,6 @@ import org.koin.dsl.module
  */
 
 val homeModule = module {
+    resourceMoreMenuModule()
     homeModule()
 }

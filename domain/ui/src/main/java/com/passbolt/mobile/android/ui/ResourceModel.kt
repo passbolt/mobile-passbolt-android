@@ -37,6 +37,7 @@ data class ResourceModel(
     val initials: String,
     val url: String?,
     val description: String?,
+    val permission: ResourcePermission,
     var loaderVisible: Boolean = false,
     var clickable: Boolean = true,
     override val searchCriteria: String = "$name$username$url"
