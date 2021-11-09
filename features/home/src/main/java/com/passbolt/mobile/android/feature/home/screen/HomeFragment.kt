@@ -171,6 +171,9 @@ class HomeFragment :
             searchEditText.doAfterTextChanged {
                 presenter.searchTextChange(it.toString())
             }
+            createButton.setOnClickListener {
+                // TODO
+            }
         }
     }
 
