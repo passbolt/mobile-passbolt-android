@@ -47,7 +47,8 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResourceDetailsFragment : BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
+class ResourceDetailsFragment :
+    BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
         FragmentResourceDetailsBinding::inflate
     ), ResourceDetailsContract.View, ResourceDetailsMenuFragment.Listener {
 
@@ -121,12 +122,7 @@ class ResourceDetailsFragment : BindingScopedAuthenticatedFragment<FragmentResou
     }
 
     override fun displayUrl(url: String) {
-        with(binding) {
-            urlValue.text = url
-            urlValue.visible()
-            urlHeader.visible()
-            urlIcon.visible()
-        }
+        binding.urlValue.text = url
     }
 
     override fun displayInitialsIcon(name: String, initials: String) {
