@@ -30,6 +30,6 @@ class ResourceResponseDto(
     val resourceTypeId: String,
     val description: String?,
     val name: String,
-    val uri: String,
-    val username: String
+    val uri: String?,
+    val username: String?
 )

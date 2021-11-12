@@ -3,4 +3,14 @@
     <string name="dialog_server_not_reachable_title">Server was not reachable!</string>
     <string name="dialog_server_not_reachable_message">%s cannot be reached. Please try again</string>
     <string name="dialog_server_not_reachable_got_it">Got it</string>
+
+    <string name="password_strength_empty">Password strength</string>
+    <string name="password_strength_very_weak">Very weak</string>
+    <string name="password_strength_weak">Weak</string>
+    <string name="password_strength_fair">Fair</string>
+    <string name="password_strength_strong">Strong</string>
+    <string name="password_strength_very_strong">Very strong</string>
+
+    <string name="password_description_encrypted">Description is encrypted</string>
+    <string name="input_default_hint">Enter %s</string>
 </resources>

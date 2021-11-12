@@ -44,6 +44,10 @@ interface ResourceTypesDao {
     suspend fun getResourceTypeWithFields(resourceType: String): ResourceTypeIdWithFields
 
     @Transaction
+    @Query("SELECT * FROM ResourceType WHERE slug = :slug")
+    suspend fun getResourceTypeWithFieldsBySlug(slug: String): ResourceTypeIdWithFields
+
+    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertResourceType(resourceType: ResourceType)
 

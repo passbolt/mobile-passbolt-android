@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.passboltapi.resource
 
+import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 
@@ -31,4 +32,7 @@ internal class ResourceRemoteDataSource(
 
     override suspend fun getResources(): BaseResponse<List<ResourceResponseDto>> =
         resourceApi.getResources()
+
+    override suspend fun createResource(createResourceDto: CreateResourceDto) =
+        resourceApi.createResource(createResourceDto)
 }

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android
 
 import com.passbolt.mobile.android.mappers.AccountModelMapper
+import com.passbolt.mobile.android.mappers.CreateResourceMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
 import com.passbolt.mobile.android.mappers.SignInMapper
@@ -44,6 +45,9 @@ val mappersModule = module {
         )
     }
     single { SignOutMapper() }
+    single { CreateResourceMapper(
+        gson = get()
+    ) }
     single {
         ResourceTypesModelMapper(
             gson = get()

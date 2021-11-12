@@ -63,8 +63,8 @@ class ResourceDetailsPresenter(
             displayTitle(resourceModel.name)
             displayUsername(resourceModel.username)
             displayInitialsIcon(resourceModel.name, resourceModel.initials)
-            if (resourceModel.url.isNotEmpty()) {
-                displayUrl(resourceModel.url)
+            if (!resourceModel.url.isNullOrEmpty()) {
+                displayUrl(resourceModel.url!!)
             }
             showPasswordHidden()
             showPasswordHiddenIcon()
@@ -109,11 +109,11 @@ class ResourceDetailsPresenter(
     }
 
     override fun usernameCopyClick() {
-        view?.addToClipboard(USERNAME_LABEL, resourceModel.username)
+        view?.addToClipboard(USERNAME_LABEL, resourceModel.username.orEmpty())
     }
 
     override fun urlCopyClick() {
-        view?.addToClipboard(WEBSITE_LABEL, resourceModel.url)
+        view?.addToClipboard(WEBSITE_LABEL, resourceModel.url.orEmpty())
     }
 
     override fun moreClick() {

@@ -15,4 +15,5 @@
             android:name="resourceModel"
             app:argType="com.passbolt.mobile.android.ui.ResourceModel" />
     </fragment>
+
 </navigation>

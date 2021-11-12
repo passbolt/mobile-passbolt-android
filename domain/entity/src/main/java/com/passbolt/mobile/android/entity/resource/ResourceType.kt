@@ -36,7 +36,8 @@ const val RESOURCE_FIELD_ID = "resourceFieldId"
 data class ResourceType(
     @PrimaryKey
     val resourceTypeId: String,
-    val name: String
+    val name: String,
+    val slug: String
 )
 
 @Entity

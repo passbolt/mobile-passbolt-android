@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.feature.home.screen
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -72,6 +72,13 @@ class HomeFragment :
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
                 presenter.userAuthenticated()
+            }
+        }
+
+    private val newResourceResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                presenter.newResourceAdded()
             }
         }
 
@@ -172,7 +179,12 @@ class HomeFragment :
                 presenter.searchTextChange(it.toString())
             }
             createButton.setOnClickListener {
-                // TODO
+                newResourceResult.launch(
+                    ResourcesActivity.newInstance(
+                        ResourcesActivity.ResourceMode.NEW,
+                        requireContext()
+                    )
+                )
             }
         }
     }
@@ -206,7 +218,7 @@ class HomeFragment :
     }
 
     override fun navigateToDetails(resourceModel: ResourceModel) {
-        startActivity(Intent(requireContext(), ResourcesActivity::class.java).apply {
+        startActivity(ResourcesActivity.newInstance(ResourcesActivity.ResourceMode.DETAILS, requireContext()).apply {
             putExtra(ResourcesActivity.RESOURCE_MODEL_KEY, resourceModel)
         })
     }
@@ -263,6 +275,14 @@ class HomeFragment :
 
     override fun clearSearchInput() {
         binding.searchEditText.setText("")
+    }
+
+    override fun showResourceAddedSnackbar() {
+        Snackbar.make(
+            binding.root,
+            com.passbolt.mobile.android.feature.resources.R.string.resource_create_success,
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     companion object {

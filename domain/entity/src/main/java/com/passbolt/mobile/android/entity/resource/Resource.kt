@@ -33,8 +33,8 @@ data class Resource(
     val resourceId: String,
     val resourceName: String,
     val resourcePermission: Permission,
-    val url: String,
-    val username: String,
+    val url: String?,
+    val username: String?,
     val description: String?,
     val resourceTypeId: String,
     @Embedded val folder: Folder
