@@ -18,6 +18,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settings_to_licensesFragment"
+            app:destination="@id/licensesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -25,5 +32,11 @@
         android:name="com.passbolt.mobile.android.feature.settings.screen.autofill.SettingsAutofillFragment"
         android:label="SettingsAutofillFragment"
         tools:layout="@layout/fragment_settings_autofill" />
+
+    <fragment
+        android:id="@+id/licensesFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.licenses.LicensesFragment"
+        android:label="LicensesFragment"
+        tools:layout="@layout/fragment_licenses" />
 
 </navigation>

@@ -78,7 +78,7 @@ class AccountDoesNotExistDialog : DialogFragment() {
         with(binding) {
             nameLabel.text = bundledName
             emailLabel.text = bundledEmail
-            urlLabel.text = bundledUrl
+            urlsLabel.text = bundledUrl
         }
     }
 

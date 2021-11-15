@@ -71,13 +71,15 @@ ext {
             android: "2.0.0"
         ],
         pinentry: "2.0.6",
-        balloon: "1.4.0"
+        balloon: "1.4.0",
+        licensee: "1.3.0"
     ]
 
     libs = [
         androidGradlePlugin: "com.android.tools.build:gradle:${versions.androidGradlePlugin}",
         gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:${versions.gradleVersionsPlugin}",
         desugarJdkLibs: "com.android.tools:desugar_jdk_libs:${versions.desugarJdkLibs}",
+        licensee: "app.cash.licensee:licensee-gradle-plugin:${versions.licensee}",
         di: [
             koin: "io.insert-koin:koin-core:${versions.koin}",
             koinExt: "io.insert-koin:koin-android-ext:${versions.koin}",
@@ -167,6 +169,6 @@ ext {
             android: "com.yubico.yubikit:android:${versions.yubikit.android}"
         ],
         pinentry: "com.alimuzaffar.lib:pinentryedittext:${versions.pinentry}",
-        balloon : "com.github.skydoves:balloon:${versions.balloon}"
+        balloon: "com.github.skydoves:balloon:${versions.balloon}"
     ]
 }

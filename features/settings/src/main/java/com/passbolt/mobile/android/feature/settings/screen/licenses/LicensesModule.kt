@@ -1,9 +1,11 @@
-package com.passbolt.mobile.android.feature.settings
+package com.passbolt.mobile.android.feature.settings.screen.licenses
 
-import com.passbolt.mobile.android.feature.settings.screen.autofill.settingsAutofillModule
-import com.passbolt.mobile.android.feature.settings.screen.licenses.licensesModule
-import com.passbolt.mobile.android.feature.settings.screen.settingsModule
-import org.koin.dsl.module
+import com.google.gson.GsonBuilder
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.passbolt.mobile.android.feature.settings.screen.licenses.recycler.LicenseItem
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,8 +30,21 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val settingsModule = module {
-    settingsModule()
-    settingsAutofillModule()
-    licensesModule()
+fun Module.licensesModule() {
+    scope<LicensesFragment> {
+        scoped<LicensesContract.Presenter> {
+            LicensesPresenter(
+                gson = get()
+            )
+        }
+        scoped<ItemAdapter<LicenseItem>> {
+            ItemAdapter.items()
+        }
+        scoped(named<LicenseItem>()) {
+            FastAdapter.with(get<ItemAdapter<LicenseItem>>())
+        }
+        scoped {
+            GsonBuilder().create()
+        }
+    }
 }

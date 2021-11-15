@@ -7,6 +7,9 @@ plugins {
     id "com.starter.easylauncher"
 }
 
+apply plugin: "app.cash.licensee"
+apply from: "../gradle/licensee.gradle"
+
 def getVersionCode = { ->
     return Integer.valueOf(System.getenv().get("GITLAB_BUILD_NUMBER") ?: projectVersionCode)
 }

@@ -1,9 +1,7 @@
-package com.passbolt.mobile.android.feature.settings
+package com.passbolt.mobile.android.feature.settings.screen.licenses
 
-import com.passbolt.mobile.android.feature.settings.screen.autofill.settingsAutofillModule
-import com.passbolt.mobile.android.feature.settings.screen.licenses.licensesModule
-import com.passbolt.mobile.android.feature.settings.screen.settingsModule
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.OpenSourceLicensesModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,9 +25,13 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface LicensesContract {
 
-val settingsModule = module {
-    settingsModule()
-    settingsAutofillModule()
-    licensesModule()
+    interface View : BaseContract.View {
+        fun showLicenses(licensesData: OpenSourceLicensesModel)
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun argsRetrieved(licensesJson: String)
+    }
 }

@@ -9,6 +9,7 @@
     <string name="settings_manage_accounts">Manage accounts</string>
     <string name="settings_terms">Terms &amp; Conditions</string>
     <string name="settings_privacy_policy">Privacy policy</string>
+    <string name="settings_licenses">Open Source Licenses</string>
     <string name="settings_title">Settings</string>
     <string name="settings_disable_fingerprint_confirmation_title">Are you sure?</string>
     <string name="settings_disable_fingerprint_confirmation_message">After disabling Fingerprint you will need to login by using your passphrase.</string>
@@ -29,4 +30,9 @@
     <string name="settings_autofill_accessibility_description">Autofill will be based on the Accessibility Service. You will need to approve additional permissions.</string>
     <string name="settings_autofill_autofill_service_not_supported">Autofill service is not supported on your device</string>
     <string name="settings_autofill_screen_title">Autofill settings</string>
+
+    <string name="licenses_artifact">Artifact</string>
+    <string name="licenses_name">Name</string>
+    <string name="licenses_licensees">Licenses</string>
+    <string name="licenses_urls">Urls</string>
 </resources>

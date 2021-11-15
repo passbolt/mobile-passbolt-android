@@ -20,4 +20,6 @@
     <string name="fingerprint_biometric_changed_title">Fingerprint changes detected</string>
     <string name="fingerprint_biometric_changed_message">You have to sign in with passphrase this time and enable fingerprint in Settings again.</string>
     <string name="fingerprint_authenticate_again">Please sign in with passphrase again</string>
+
+    <string name="settings_licenses_title">Licenses</string>
 </resources>
