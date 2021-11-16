@@ -1,0 +1,100 @@
+afterEvaluate { project ->
+    def isAndroid = project.plugins.hasPlugin("com.android.library") ||
+        project.plugins.hasPlugin("com.android.dynamic-feature") ||
+        project.plugins.hasPlugin("com.android.application")
+
+    def isAndroidComponent = project.plugins.hasPlugin("com.android.library") ||
+        project.plugins.hasPlugin("com.android.dynamic-feature")
+
+    setupModule(isAndroid, isAndroidComponent)
+    setupCommonDependencies(isAndroid)
+    setupCommonTasks(isAndroid)
+}
+
+def setupModule(isAndroid, isAndroidComponent) {
+    if (isAndroid) {
+        android {
+            compileSdkVersion projectCompileSdk
+
+            defaultConfig {
+                minSdkVersion projectMinSdk
+                targetSdkVersion projectTargetSdk
+            }
+
+            if (isAndroidComponent) {
+                buildTypes {
+                    release {
+                        minifyEnabled false
+                        consumerProguardFiles 'proguard-rules.pro'
+                    }
+                }
+            }
+
+            compileOptions {
+                coreLibraryDesugaringEnabled true
+                sourceCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
+            }
+
+            kotlinOptions {
+                jvmTarget = JavaVersion.VERSION_1_8.toString()
+            }
+
+            lintOptions {
+                abortOnError true
+                checkReleaseBuilds false
+                checkAllWarnings true
+                warningsAsErrors false
+                disable = ["GoogleAppIndexingWarning", "GradleDependency", "NewerVersionAvailable", "UnusedIds",
+                           "Autofill", "PermissionImpliesUnsupportedChromeOsHardware", "WrongConstant", "RequiredSize",
+                           "Instantiatable", "InvalidPackage"]
+            }
+
+            testOptions {
+                animationsDisabled true
+
+                unitTests.all {
+                    def processors = Runtime.runtime.availableProcessors() - 1
+                    maxParallelForks = Math.max(processors, 1)
+                }
+            }
+        }
+    } else {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+def setupCommonDependencies(isAndroid) {
+    dependencies {
+        implementation libs.kotlin.stdlib
+        implementation libs.kotlin.coroutines
+        implementation libs.timber
+        testImplementation libs.test.junit
+        testImplementation libs.test.mockitoCore
+        testImplementation libs.test.mockitoKotlin
+        testImplementation libs.test.truth
+        testImplementation libs.test.turbine
+        testImplementation libs.test.coroutinesTest
+        testImplementation libs.di.koinTest
+        testImplementation libs.di.koinTestJUnit
+        if (isAndroid) {
+            androidTestImplementation libs.test.androidxJUnit
+            androidTestImplementation libs.test.espressoCore
+            androidTestImplementation libs.test.truth
+        }
+        coreLibraryDesugaring libs.desugarJdkLibs
+    }
+}
+
+def setupCommonTasks(isAndroid) {
+    if (isAndroid) {
+        tasks.register("unitTest") { task ->
+            task.dependsOn(testDebugUnitTest)
+        }
+    } else {
+        tasks.register("unitTest") { task ->
+            task.dependsOn(test)
+        }
+    }
+}

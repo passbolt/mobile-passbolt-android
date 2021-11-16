@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settingsNav"
+    app:startDestination="@id/settings">
+
+    <fragment
+        android:id="@+id/settings"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.SettingsFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/action_settings_to_settingsAutofillFragment"
+            app:destination="@id/settingsAutofillFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsAutofillFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.autofill.SettingsAutofillFragment"
+        android:label="SettingsAutofillFragment"
+        tools:layout="@layout/fragment_settings_autofill" />
+
+</navigation>

@@ -1,0 +1,6 @@
+ext.projectRepositories = [:]
+
+projectRepositories.google = "https://dl.google.com/dl/android/maven2/"
+projectRepositories.mavenCentral = "https://repo.maven.apache.org/maven2/"
+projectRepositories.jitPack = "https://jitpack.io"
+projectRepositories.gradlePlugins = "https://plugins.gradle.org/m2/"

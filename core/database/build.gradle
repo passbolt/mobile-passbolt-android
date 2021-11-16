@@ -1,0 +1,37 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "kotlin-kapt"
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':mvp')
+    implementation project(':entity')
+    implementation project(':storage')
+    implementation project(':mappers')
+    implementation project(':ui')
+    implementation project(':dto')
+
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.security
+    implementation libs.di.koin
+    implementation libs.di.koinExt
+    kapt libs.androidx.lifecycleAnnotationProcessor
+    implementation libs.androidx.processLifecycle
+    implementation libs.room.core
+    implementation libs.room.runtime
+    implementation libs.room.cipher
+    kapt libs.room.compiler
+    implementation libs.room.sqlite
+
+    debugImplementation libs.debugDatabase
+
+    androidTestImplementation libs.di.koinTest
+    androidTestImplementation libs.di.koinTestJUnit
+    androidTestImplementation libs.test.coroutinesTest
+    androidTestImplementation libs.test.androidTestsRunner
+    androidTestImplementation libs.test.androidTestRules
+    androidTestImplementation libs.test.androidTest
+}

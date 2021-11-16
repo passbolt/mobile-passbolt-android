@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/primary" />
+            <size
+                android:width="@dimen/dp_24"
+                android:height="@dimen/dp_24" />
+        </shape>
+    </item>
+
+    <item
+        android:bottom="@dimen/dp_4"
+        android:drawable="@drawable/ic_autofill"
+        android:left="@dimen/dp_4"
+        android:right="@dimen/dp_4"
+        android:top="@dimen/dp_4" />
+
+</layer-list>

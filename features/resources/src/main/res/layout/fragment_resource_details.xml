@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_arrow_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/moreIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/backArrow">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="@dimen/dp_60"
+                android:layout_marginTop="@dimen/dp_16"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/name"
+                style="@style/Heading1Text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="@dimen/dp_8"
+                android:gravity="center"
+                android:textColor="@color/text_primary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/icon"
+                tools:text="DD" />
+
+            <TextView
+                android:id="@+id/usernameHeader"
+                style="@style/Heading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_32"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:text="@string/resource_details_username_header"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/sp_12"
+                app:layout_constraintEnd_toStartOf="@id/usernameIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/name" />
+
+            <TextView
+                android:id="@+id/usernameValue"
+                style="@style/ValueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_8"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/sp_14"
+                app:layout_constraintEnd_toStartOf="@+id/usernameIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/usernameHeader"
+                tools:text="piotr@passbolt.com" />
+
+            <ImageView
+                android:id="@+id/usernameIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_12"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_copy"
+                app:layout_constraintBottom_toBottomOf="@+id/usernameValue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/usernameHeader" />
+
+            <TextView
+                android:id="@+id/passwordHeader"
+                style="@style/Heading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:text="@string/resource_details_password_header"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/sp_12"
+                app:layout_constraintEnd_toStartOf="@id/passwordIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/usernameValue" />
+
+            <TextView
+                android:id="@+id/passwordValue"
+                style="@style/SecretText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_8"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:text="@string/resource_details_hide_password"
+                android:textColor="@color/text_secondary"
+                app:layout_constraintEnd_toStartOf="@+id/passwordIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/passwordHeader" />
+
+            <ImageView
+                android:id="@+id/passwordIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_12"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_eye_visible"
+                app:layout_constraintBottom_toBottomOf="@+id/passwordValue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/passwordHeader" />
+
+            <TextView
+                android:id="@+id/urlHeader"
+                style="@style/Heading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:text="@string/resource_details_url_header"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/sp_12"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/urlIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/passwordValue" />
+
+            <TextView
+                android:id="@+id/urlValue"
+                style="@style/ValueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_8"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:autoLink="web"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/sp_12"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/urlIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/urlHeader"
+                tools:text="airbnb.com/login" />
+
+            <ImageView
+                android:id="@+id/urlIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_12"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_copy"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/urlValue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/urlHeader" />
+
+            <TextView
+                android:id="@+id/descriptionHeader"
+                style="@style/Heading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:text="@string/resource_details_description_header"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/sp_12"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/urlValue" />
+
+            <TextView
+                android:id="@+id/descriptionValue"
+                style="@style/ValueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_8"
+                android:text="@string/resource_details_encrypted_description"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/sp_14"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/descriptionHeader" />
+
+            <TextView
+                android:id="@+id/seeDescriptionButton"
+                style="@style/ValueText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_8"
+                android:background="?selectableItemBackground"
+                android:paddingVertical="@dimen/dp_8"
+                android:text="@string/resource_details_see_description"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/sp_12"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/descriptionValue" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="@dimen/dp_16" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

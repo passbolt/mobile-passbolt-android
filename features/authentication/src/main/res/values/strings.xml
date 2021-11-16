@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cancel">Cancel</string>
+    <string name="unknown_error">Unknown error occurred</string>
+    <string name="got_it">Got it</string>
+    <string name="cancel_setup">Cancel setup</string>
+    <string name="continue_setup">Continue setup</string>
+
+    <string name="accounts_list_title">Welcome back!</string>
+    <string name="accounts_list_subtitle">Choose an account to sign in!</string>
+    <string name="accounts_list_remove">Remove an account from this device</string>
+    <string name="accounts_list_remove_account">Remove</string>
+    <string name="accounts_list_removing_done">Done</string>
+    <string name="accounts_list_add_new_account">Add new account</string>
+    <string name="accounts_list_remove_account_title">Are you sure?</string>
+    <string name="accounts_list_remove_account_message">This will remove your account from this device. Your passwords will not be deleted.</string>
+    <string name="accounts_list_manage_accounts">Manage accounts</string>
+    <string name="accounts_list_account_removed" >The account has been removed from this device.</string>
+
+    <string name="auth_password_title">Passphrase</string>
+    <string name="auth_sign_in">Sign In</string>
+    <string name="auth_incorrect_passphrase">Incorrect passphrase or decryption error. Please try again.</string>
+    <string name="auth_forgot_password_button">I forgot my passphrase</string>
+    <string name="auth_forgot_password_title">Did you forgot your passphrase?</string>
+    <string name="auth_forgot_password_message">Unfortunately you cannot access your data if you do not remember your passphrase. Please contact your administrator to unlock your account.</string>
+    <string name="auth_enter_passphrase">Enter your passphrase</string>
+    <string name="auth_exit_dialog_title">Are you sure?</string>
+    <string name="auth_exit_dialog_message">If you leave, you may need to set up your account again.</string>
+    <string name="auth_biometric_title">Confirm Using Your Fingerprint</string>
+    <string name="auth_biometric_subtitle" />
+    <string name="auth_reason_session_expired">Please authenticate to refresh session</string>
+    <string name="auth_reason_passphrase_expired">Please authenticate passphrase access</string>
+    <string name="auth_server_fingerprint_changed_title">Sorry, the server key has changed.</string>
+    <string name="auth_server_fingerprint_changed_message">For security reasons please check with your administrator that this is a change that they initiated. The new fingerprint:</string>
+    <string name="auth_server_fingerprint_changed_button">Accept new key</string>
+    <string name="auth_server_fingerprint_changed_checkbox">Yes, I checked and it is all fine.</string>
+    <string name="auth_decryption_error_title">Decryption error</string>
+    <string name="auth_decryption_error_description">There was a decryption error. Please try again.\n</string>
+    <string name="auth_decryption_error_cause">Open PGP error is:\n%s</string>
+
+    <string name="dialog_account_does_not_exist_title">The account doesn’t exist</string>
+    <string name="dialog_account_does_not_exist_subtitle">The account has been deleted</string>
+    <string name="dialog_account_does_not_exist_connect_account">Connect to an existing account</string>
+
+    <string name="dialog_mfa_mfa">Multi Factor Authentication</string>
+    <string name="dialog_mfa_yubikey_otp">YubiKey OTP</string>
+    <string name="dialog_mfa_scan_youbikey">Scan your YubiKey</string>
+    <string name="dialog_mfa_other_provider">Try with another provider</string>
+    <string name="dialog_mfa_remember_me">Remember this device for 30 days</string>
+    <string name="dialog_mfa_scan_cancelled">Scanning cancelled</string>
+    <string name="dialog_mfa_scan_empty_otp">Scanned OTP is empty</string>
+    <string name="dialog_mfa_totp">Two Factor Authentication</string>
+    <string name="dialog_mfa_enter_otp">Enter the verification code:</string>
+    <string name="dialog_mfa_paste_code">Paste code</string>
+    <string name="dialog_mfa_wrong_code">Wrong code</string>
+    <string name="dialog_mfa_unknown_provider_header">Your MFA provider is not supported</string>
+    <string name="dialog_mfa_unknown_provider_description">Please setup another provider using the web app.
+    Contact your administrator for more information.</string>
+</resources>

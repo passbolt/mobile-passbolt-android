@@ -1,0 +1,21 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+dependencies {
+    implementation project(':common')
+
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.constraintLayout
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

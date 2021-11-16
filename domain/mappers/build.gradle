@@ -1,0 +1,16 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "kotlin-kapt"
+}
+
+dependencies {
+    implementation project(':ui')
+    implementation project(':dto')
+    implementation project(':entity')
+    implementation project(':common')
+    implementation project(':storage')
+
+    implementation libs.di.koin
+    implementation libs.gson
+}

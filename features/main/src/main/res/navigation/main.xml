@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main.xml"
+    app:startDestination="@id/homeNav">
+
+    <include app:graph="@navigation/home" />
+
+    <fragment
+        android:id="@+id/foldersNav"
+        android:name="com.passbolt.mobile.android.feature.folders.screen.FoldersFragment"
+        android:label="FoldersFragment"
+        tools:layout="@layout/fragment_folders" />
+
+    <include app:graph="@navigation/settings" />
+</navigation>

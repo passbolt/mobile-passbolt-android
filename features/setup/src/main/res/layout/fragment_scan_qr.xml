@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_gray_dark">
+
+    <com.passbolt.mobile.android.core.ui.toolbar.progresstoolbar.ProgressToolbar
+        android:id="@+id/progressToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="@dimen/dp_16"
+        android:theme="@style/Theme.Passbolt.Toolbar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/Theme.Passbolt.PopupOverlay" />
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/cameraPreview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressToolbar" />
+
+    <TextView
+        android:id="@+id/tooltip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_64"
+        android:background="@drawable/qr_scan_tooltip_background"
+        android:elevation="@dimen/dp_8"
+        android:padding="@dimen/dp_8"
+        android:textColor="@color/text_primary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Aim the camera at the QR code" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/titleLabel"
+            style="@style/Heading3Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_16"
+            android:gravity="center"
+            android:text="@string/dialog_autofill_header"
+            android:textColor="@color/text_primary"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/closeButton"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_close"
+            app:layout_constraintBottom_toBottomOf="@+id/titleLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/titleLabel" />
+
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:layout_marginStart="@dimen/dp_16"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="@+id/titleLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/titleLabel"
+            app:tint="@color/black_87" />
+
+        <TextView
+            android:id="@+id/headerLabel"
+            style="@style/Heading1Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_32"
+            android:gravity="center"
+            android:text="@string/dialog_encourage_autofill_header"
+            android:textColor="@color/text_primary"
+            app:layout_constraintTop_toBottomOf="@id/closeButton"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/descriptionLabel"
+            style="@style/BodyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_24"
+            android:gravity="center"
+            android:text="@string/dialog_encourage_autofill_accessibility_description"
+            android:textColor="@color/text_primary"
+            app:layout_constraintTop_toBottomOf="@id/headerLabel"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <LinearLayout
+            android:id="@+id/samsungContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            android:background="?selectableItemBackground"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/dp_16"
+            app:layout_constraintTop_toBottomOf="@id/descriptionLabel">
+
+            <TextView
+                android:id="@+id/samsungLabel"
+                style="@style/Heading4Text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginVertical="@dimen/dp_16"
+                android:layout_weight="1"
+                android:text="@string/dialog_encourage_autofill_accessibility_samsung"
+                android:textColor="@color/text_primary" />
+
+            <ImageView
+                android:id="@+id/samsungIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_open_link" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/xiaomiContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/dp_16"
+            app:layout_constraintTop_toBottomOf="@id/samsungContainer">
+
+            <TextView
+                android:id="@+id/xiaomiLabel"
+                style="@style/Heading4Text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginVertical="@dimen/dp_16"
+                android:layout_weight="1"
+                android:text="@string/dialog_encourage_autofill_accessibility_xiaomi"
+                android:textColor="@color/text_primary" />
+
+            <ImageView
+                android:id="@+id/xiaomiIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_open_link" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/huaweiContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/dp_16"
+            app:layout_constraintTop_toBottomOf="@id/xiaomiContainer">
+
+            <TextView
+                android:id="@+id/huaweiLabel"
+                style="@style/Heading4Text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginVertical="@dimen/dp_16"
+                android:layout_weight="1"
+                android:text="@string/dialog_encourage_autofill_accessibility_huawei"
+                android:textColor="@color/text_primary" />
+
+            <ImageView
+                android:id="@+id/huaweiIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_open_link" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/otherContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/dp_16"
+            app:layout_constraintTop_toBottomOf="@id/huaweiContainer">
+
+            <TextView
+                android:id="@+id/otherLabel"
+                style="@style/Heading4Text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginVertical="@dimen/dp_16"
+                android:layout_weight="1"
+                android:text="@string/dialog_encourage_autofill_accessibility_other"
+                android:textColor="@color/text_primary" />
+
+            <ImageView
+                android:id="@+id/otherIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_open_link" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/goToSettings"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginHorizontal="@dimen/dp_24"
+            android:layout_marginBottom="@dimen/dp_24"
+            android:text="@string/dialog_encourage_autofill_go_to_settings"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

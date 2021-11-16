@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemAccount"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_64"
+    android:animateLayoutChanges="true">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        android:layout_marginStart="@dimen/dp_12"
+        android:src="@drawable/ic_avatar_placeholder"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/currentAccountIcon"
+        android:layout_width="@dimen/dp_9"
+        android:layout_height="@dimen/dp_9"
+        android:paddingTop="@dimen/dp_1"
+        android:paddingEnd="@dimen/dp_1"
+        android:src="@drawable/view_green_dot"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/icon"
+        app:layout_constraintTop_toTopOf="@+id/icon"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/Heading4Text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginEnd="@dimen/dp_8"
+        android:textColor="@color/text_primary"
+        app:layout_constraintBottom_toTopOf="@id/email"
+        app:layout_constraintEnd_toStartOf="@id/trashImage"
+        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintTop_toTopOf="@+id/icon"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        tools:text="Passbolt" />
+
+    <TextView
+        android:id="@+id/email"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_8"
+        android:textColor="@color/text_primary"
+        android:textFontWeight="400"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintBottom_toBottomOf="@id/icon"
+        app:layout_constraintEnd_toStartOf="@id/trashImage"
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@id/title"
+
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        tools:text="passbolt@email.com" />
+
+    <ImageView
+        android:id="@+id/trashImage"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        android:layout_marginHorizontal="@dimen/dp_8"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="@dimen/dp_8"
+        android:src="@drawable/ic_trash"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

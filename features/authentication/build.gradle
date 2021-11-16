@@ -1,0 +1,56 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+apply plugin: "androidx.navigation.safeargs"
+
+dependencies {
+    implementation project(':mvp')
+    implementation project(':coreui')
+    implementation project(':storage')
+    implementation project(':common')
+    implementation project(':mappers')
+    implementation project(':entity')
+    implementation project(":passboltapi")
+    implementation project(":dto")
+    implementation project(':gopenpgp')
+    implementation project(':navigation')
+    implementation project(':featureflags')
+    implementation project(':database')
+    implementation project(path: ':ui')
+    implementation project(':security')
+
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+    implementation libs.androidx.fragment
+    implementation libs.androidx.activity
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.biometric
+    implementation libs.fastAdapter.core
+    implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.utils
+    implementation libs.fastAdapter.diff
+    implementation libs.di.koin
+    implementation libs.di.koinExt
+    implementation libs.coil.core
+    implementation libs.coil.base
+    implementation libs.gson
+    implementation libs.fusionauthJwt
+    implementation libs.yubikit.android
+    implementation (libs.pinentry) {
+        exclude group: 'androidx.appcompat', module: 'appcompat'
+    }
+
+    testImplementation libs.di.koinTestJUnit
+    testImplementation libs.kotlin.reflect
+
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

@@ -1,0 +1,125 @@
+image: openjdk:11.0.7
+
+variables:
+  ANDROID_VERSION: "29"
+  ANDROID_BUILD_TOOLS_VERSION: "29.0.2"
+  ANDROID_SDK_TOOLS_VERSION: "6604631"
+
+before_script:
+  - apt-get --quiet update --yes
+  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+
+  # setup android home path for moving the downloaded sdk into it
+  - export ANDROID_HOME="${PWD}/android-home"
+  - install -d $ANDROID_HOME
+
+  # download and extract android sdk tools
+  - wget --quiet --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip
+  - pushd $ANDROID_HOME
+  - unzip cmdline-tools.zip
+  - rm cmdline-tools.zip
+  - popd
+  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/bin
+
+  # accept licenses and setup android sdk
+  - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
+  - sdkmanager --sdk_root=${ANDROID_HOME} --update
+  - sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
+  - sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_VERSION}"
+
+# jobs need to be defined in a single stage in order to be executed in parallel
+# conditions if a job is started for a particular commit/push are defined under 'rules' sections
+stages:
+  - build
+
+verification:
+  stage: build
+  tags:
+    - docker
+  script:
+    - ./gradlew --no-daemon --build-cache detekt ktlint lintDebug unitTest jacocoProjectReport
+  after_script:
+    # jacoco report is printed to the console in order to capture it later
+    # using following regex: Total.*?([0-9]{1,3})% and display in the Gitlab UI
+    # https://docs.gitlab.com/ee/ci/pipelines/settings.html#test-coverage-parsing
+    - echo "Jacoco console report"
+    - cat build/reports/jacoco/jacocoProjectReport/html/index.html
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "schedule"'
+  artifacts:
+    when: always
+    expire_in: 72 hrs
+    paths:
+      - "**/reports/ktlint-report.xml"
+      - "**/reports/detekt-report.xml"
+      - "**/lint-results-*.html"
+      - "**/lint-results-*.xml"
+      - build/reports/jacoco/jacocoProjectReport/**
+    reports:
+      junit: "**/test-results/**/TEST-*.xml"
+
+release:
+  stage: build
+  tags:
+    - docker
+  script:
+    - echo $QA_KEY | base64 -d > "${HOME}/qa.keystore"
+    - |
+      echo "Initalizing python"
+      apt-get --quiet update --yes
+      apt-get --quiet install --yes software-properties-common > /dev/null
+      apt-add-repository --yes ppa:deadsnakes/ppa > /dev/null
+      apt-get --quiet install --yes python3.7 > /dev/null
+      apt-get --quiet install --yes python3-pip > /dev/null
+      python3 -m pip install -r gradle/requirements.txt
+
+    - export GITLAB_BUILD_NUMBER="$(python3 gradle/gitlabBuildNumber.py "RELEASE_BUILD_NUMBER" ${CI_API_V4_URL} ${CI_PROJECT_ID} ${GITLAB_ACCESS_TOKEN})"
+    - export FIREBASE_DIR="$HOME/.config/firebase"
+    - install -d $FIREBASE_DIR
+    - echo ${FIREBASE_SERVICE_KEY} | base64 --decode > "$FIREBASE_DIR/service_key.json"
+    - >
+      ./gradlew --no-daemon --build-cache -PwithGitlabReleaseNotes -PserviceKey="$FIREBASE_DIR/service_key.json"
+      -Pandroid.injected.signing.store.file="${HOME}/qa.keystore"
+      -Pandroid.injected.signing.store.password=$QA_KEYSTORE_PASSWORD
+      -Pandroid.injected.signing.key.alias=$QA_KEY_ALIAS
+      -Pandroid.injected.signing.key.password=$QA_KEY_PASSWORD
+      assembleQa appDistributionUploadQa
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_COMMIT_BRANCH == "release"'
+  artifacts:
+    expire_in: 72 hrs
+    paths:
+      - "**/build/outputs/apk/**/*.apk"
+
+build-production:
+  stage: build
+  tags:
+    - docker
+  script:
+    - echo $PROD_KEYSTORE | base64 -d > "${HOME}/production.keystore"
+    - |
+      echo "Initalizing python"
+      apt-get --quiet update --yes
+      apt-get --quiet install --yes software-properties-common > /dev/null
+      apt-add-repository --yes ppa:deadsnakes/ppa > /dev/null
+      apt-get --quiet install --yes python3.7 > /dev/null
+      apt-get --quiet install --yes python3-pip > /dev/null
+      python3 -m pip install -r gradle/requirements.txt
+
+    - >
+      ./gradlew --no-daemon
+      -Pandroid.injected.signing.store.file="${HOME}/production.keystore"
+      -Pandroid.injected.signing.store.password=$PROD_KEYSTORE_PASSWORD
+      -Pandroid.injected.signing.key.alias=$PROD_KEY_ALIAS
+      -Pandroid.injected.signing.key.password=$PROD_KEY_PASSWORD
+      clean bundleRelease
+
+  rules:
+    - if: '$PROD_KEYSTORE != null'
+    - if: '$CI_COMMIT_BRANCH == "master"'
+  artifacts:
+    expire_in: 72 hrs
+    paths:
+      - "**/build/outputs/bundle/release/*.aab"

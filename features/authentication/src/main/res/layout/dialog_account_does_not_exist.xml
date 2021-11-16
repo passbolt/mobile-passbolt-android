@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/closeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_16"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_close"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/errorImage"
+            android:layout_width="@dimen/dp_144"
+            android:layout_height="@dimen/dp_144"
+            android:layout_marginTop="@dimen/dp_56"
+            android:src="@drawable/ic_failed"
+            app:layout_constraintBottom_toTopOf="@id/titleLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/closeButton" />
+
+        <TextView
+            android:id="@+id/titleLabel"
+            style="@style/Heading1Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_32"
+            android:gravity="center"
+            android:text="@string/dialog_account_does_not_exist_title"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/subtitleLabel"
+            app:layout_constraintTop_toBottomOf="@id/errorImage" />
+
+        <TextView
+            android:id="@+id/subtitleLabel"
+            style="@style/BodyLight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_32"
+            android:gravity="center"
+            android:text="@string/dialog_account_does_not_exist_subtitle"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/accountDataLayout"
+            app:layout_constraintTop_toBottomOf="@id/titleLabel" />
+
+        <LinearLayout
+            android:id="@+id/accountDataLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_32"
+            android:background="@drawable/grey_border_rounded"
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/dp_16"
+            app:layout_constraintTop_toBottomOf="@id/subtitleLabel">
+
+            <TextView
+                android:id="@+id/nameLabel"
+                style="@style/Heading2Text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold"
+                tools:text="John Doe" />
+
+            <TextView
+                android:id="@+id/emailLabel"
+                style="@style/BodyLight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:gravity="center"
+                tools:text="john.doe@passbolt.com" />
+
+            <TextView
+                android:id="@+id/urlLabel"
+                style="@style/BodyLight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_8"
+                android:gravity="center"
+                tools:text="https://passbolt.com/johndoeorg" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/connectToAccountButton"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:layout_marginBottom="@dimen/dp_24"
+            android:text="@string/dialog_account_does_not_exist_connect_account"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
