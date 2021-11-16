@@ -1,0 +1,64 @@
+<resources>
+    <style name="Theme.Passbolt"
+        parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="materialButtonStyle">@style/PrimaryButton</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+
+    <style name="Theme.Passbolt.AppBarOverlay"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Passbolt.PopupOverlay"
+        parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Theme.Passbolt.Toolbar"
+        parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_primary</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:titleTextAppearance">@style/Heading1Text</item>
+    </style>
+
+    <style name="AlertDialogTheme"
+        parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="materialAlertDialogBodyTextStyle">@style/DialogTextAppearance</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/DialogTitleAppearance</item>
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+        <item name="dialogCornerRadius">@dimen/dp_4</item>
+    </style>
+
+    <style name="DialogTextAppearance"
+        parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:textColor">@color/black_60</item>
+    </style>
+
+    <style name="DialogTitleAppearance"
+        parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textColor">@color/black_87</item>
+    </style>
+
+    <style name="AppBottomSheetDialogTheme"
+        parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+
+    <style name="AppModalStyle"
+        parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_bottomsheet_dialog</item>
+    </style>
+</resources>

@@ -1,0 +1,51 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "kotlin-kapt"
+}
+
+dependencies {
+    implementation project(':mvp')
+    implementation project(':coreui')
+    implementation project(':common')
+    implementation project(':navigation')
+    implementation project(':database')
+    implementation project(':storage')
+    implementation project(':commonresource')
+    implementation project(':networking')
+    implementation project(':ui')
+    implementation project(':mappers')
+    implementation project(':dto')
+    implementation project(':entity')
+    implementation project(':secrets')
+    implementation project(':authentication')
+
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+    implementation libs.androidx.fragment
+    implementation libs.androidx.activity
+    implementation libs.material
+    implementation libs.androidx.constraintLayout
+    implementation libs.androidx.swiperefresh
+
+    implementation libs.coil.core
+    implementation libs.coil.base
+
+    implementation libs.di.koin
+    implementation libs.di.koinExt
+
+    implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.core
+    implementation libs.fastAdapter.diff
+
+    api libs.networking.retrofit
+    api libs.networking.okHttp
+    api libs.networking.okHttpLoggingInterceptor
+    implementation libs.networking.retrofitGsonConverter
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

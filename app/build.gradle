@@ -1,0 +1,124 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "kotlin-parcelize"
+    id "kotlin-kapt"
+    id "com.google.firebase.appdistribution"
+    id "com.starter.easylauncher"
+}
+
+def getVersionCode = { ->
+    return Integer.valueOf(System.getenv().get("GITLAB_BUILD_NUMBER") ?: projectVersionCode)
+}
+
+android {
+    defaultConfig {
+        applicationId "com.passbolt.mobile.android"
+        versionCode getVersionCode()
+        versionName projectVersionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+            minifyEnabled false
+            firebaseAppDistribution {
+                appId "1:660923335137:android:08eec6c125f36ba9b092a0"
+                serviceCredentialsFile findProperty("serviceKey") ?: ""
+                groups "qa"
+            }
+            testCoverageEnabled = true
+        }
+        qa {
+            initWith debug
+            matchingFallbacks = ['release']
+
+            applicationIdSuffix ".qa"
+            debuggable true
+            zipAlignEnabled true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            firebaseAppDistribution {
+                appId "1:660923335137:android:c7e452d7912a9e3ab092a0"
+                serviceCredentialsFile findProperty("serviceKey") ?: ""
+                groups "qa"
+            }
+            testCoverageEnabled = true
+        }
+        release {
+            debuggable false
+            zipAlignEnabled true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+easylauncher {
+    buildTypes {
+        debug {
+            enable true
+            filters = chromeLike(
+                label: "debug:${getVersionCode()}",
+                labelColor: "#000000",
+                ribbonColor: "#DCDCDC"
+            )
+        }
+        qa {
+            enable true
+            filters = chromeLike(
+                label: "qa:${getVersionCode()}",
+                labelColor: "#000000",
+                ribbonColor: "#057610"
+            )
+        }
+    }
+}
+
+kapt {
+    correctErrorTypes true
+}
+
+dependencies {
+    implementation project(':mvp')
+    implementation project(':startup')
+    implementation project(':setup')
+    implementation project(':passboltapi')
+    implementation project(':ui')
+    implementation project(':common')
+    implementation project(':storage')
+    implementation project(':navigation')
+    implementation project(':mappers')
+    implementation project(':qrscan')
+    implementation project(':gopenpgp')
+    implementation project(':autofill')
+    implementation project(':authentication')
+    implementation project(':main')
+    implementation project(':home')
+    implementation project(':settings')
+    implementation project(':folders')
+    implementation project(':resources')
+    implementation project(':featureflags')
+    implementation project(':database')
+    implementation project(':secrets')
+    implementation project(':commonresource')
+    implementation project(':security')
+    implementation project(':linksapi')
+
+    debugImplementation libs.quality.leakcanary
+
+    implementation libs.androidx.processLifecycle
+    implementation libs.coil.core
+    implementation libs.coil.base
+    implementation libs.di.koin
+    implementation libs.di.koinExt
+
+    implementation libs.gson
+}

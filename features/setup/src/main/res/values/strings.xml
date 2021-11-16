@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cancel_setup">Cancel setup</string>
+    <string name="continue_setup">Continue setup</string>
+
+    <string name="welcome_title">Welcome!</string>
+    <string name="welcome_body">You need an existing account to get started. Sign in with your existing account on the desktop browser extension to connect it with the mobile device.</string>
+    <string name="welcome_connect_to_existing_account">Connect to an existing account</string>
+    <string name="welcome_no_account">I don’t have an account</string>
+    <string name="welcome_create_account_dialog_title">How to create an account?</string>
+    <string name="welcome_create_account_dialog_message">It is currently not possible to create an account using the mobile app. First you will need create an account using your desktop browser extension.</string>
+
+    <string name="transfer_details_header">Scan QR codes to transfer your account details</string>
+    <string name="transfer_details_scan_button">Scan QR codes</string>
+    <string name="transfer_details_title">Transfer account details</string>
+    <string-array name="transfer_details_steps_array">
+        <item>Sign in using the browser extension</item>
+        <item>Go to the &lt;b>Profile&lt;/b> page</item>
+        <item>Go to the &lt;b>Mobile&lt;/b> section</item>
+        <item>Scan the qr codes sequence</item>
+    </string-array>
+    <string name="transfer_details_camera_access_dialog_title">Camera access required</string>
+    <string name="transfer_details_camera_required_dialog_title">Camera required</string>
+    <string name="transfer_details_camera_required_dialog_message">Sorry, you need a device with a camera to continue, as the key transfer is done using QR codes.</string>
+    <string name="transfer_details_camera_access_dialog_message">Please provide permissions to the Passbolt application to access the camera in your settings.</string>
+
+    <string name="scan_qr_exit_confirmation_dialog_title">Are you sure?</string>
+    <string name="scan_qr_exit_confirmation_dialog_message">If you leave, you will need to scan QR codes again.</string>
+    <string name="scan_qr_exit_information_dialog_message">You will see a sequence of QR codes. We will scan these codes until the progress bar is full. then you will be able to login!</string>
+    <string name="scan_qr_exit_information_dialog_title">Scanning QR codes</string>
+    <string name="scan_qr_keep_going">Scanning QR codes</string>
+    <string name="scan_qr_aim_at_qr_code">Aim the camera at the QR Code</string>
+    <string name="scan_qr_not_a_passbolt_qr">It’s not the Passbolt QR. Try again!</string>
+    <string name="scan_qr_multiple_codes_in_range">Multiple QR Codes in range - please aim at one</string>
+    <string name="scan_qr_scanning_error">Error during scanning</string>
+    <string name="scan_qr_camera_error">Camera error</string>
+
+    <string name="scan_qr_summary_success_title">Your information has been transferred!</string>
+    <string name="scan_qr_summary_already_linked_title">Account  is already linked to the device</string>
+    <string name="scan_qr_summary_failure_title">Something went wrong!</string>
+
+    <string name="fingerprint_setup_use_fingerprint_button">Use Fingerprint</string>
+    <string name="fingerprint_setup_maybe_later_button">Maybe later</string>
+    <string name="fingerprint_setup_configure_title">Configure Fingerprint</string>
+    <string name="fingerprint_setup_configure_description">Unlock your secrets in a second.</string>
+    <string name="fingerprint_setup_use_title">Use Fingerprint instead of passphrase</string>
+    <string name="fingerprint_setup_use_description">Unlock your secrets in a second.</string>
+    <string name="fingerprint_setup_biometric_title">Confirm Using Your Fingerprint</string>
+    <string name="fingerprint_setup_biometric_subtitle">Touch the fingerprint sensor</string>
+</resources>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/welcomeFragment">
+
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="com.passbolt.mobile.android.feature.setup.welcome.WelcomeFragment"
+        android:label="WelcomeFragment"
+        tools:layout="@layout/fragment_welcome">
+        <action
+            android:id="@+id/action_welcomeFragment_to_transferDetailsFragment"
+            app:destination="@id/transferDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/transferDetailsFragment"
+        android:name="com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsFragment"
+        android:label="TransferDetails"
+        tools:layout="@layout/fragment_transfer_details">
+        <action
+            android:id="@+id/action_transferDetailsFragment_to_scanQrFragment"
+            app:destination="@id/scanQrFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/scanQrFragment"
+        android:name="com.passbolt.mobile.android.feature.setup.scanqr.ScanQrFragment"
+        android:label="ScanQrFragment"
+        tools:layout="@layout/fragment_scan_qr">
+        <action
+            android:id="@+id/action_scanQrFragment_to_summaryFragment"
+            app:destination="@id/summaryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/summaryFragment"
+        android:name="com.passbolt.mobile.android.feature.setup.summary.SummaryFragment"
+        android:label="SummaryFragment"
+        tools:layout="@layout/fragment_summary">
+        <argument
+            android:name="status"
+            app:argType="com.passbolt.mobile.android.feature.setup.summary.ResultStatus"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_summaryFragment_to_fingerprintFragment"
+            app:destination="@id/fingerprintFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_summaryFragment_to_scanQrFragment"
+            app:destination="@id/scanQrFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/fingerprintFragment"
+        android:name="com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintFragment"
+        android:label="FingerprintFragment"
+        tools:layout="@layout/fragment_fingerprint" />
+</navigation>

@@ -1,0 +1,42 @@
+buildscript {
+    apply from: "gradle/versions.gradle"
+    apply from: "gradle/repositories.gradle"
+
+    repositories {
+        maven { url projectRepositories.google }
+        maven { url projectRepositories.mavenCentral }
+        maven { url projectRepositories.jitPack }
+        maven { url projectRepositories.gradlePlugins }
+    }
+    dependencies {
+        classpath libs.androidGradlePlugin
+        classpath libs.kotlin.gradlePlugin
+        classpath libs.kotlin.serializationPlugin
+        classpath libs.gradleVersionsPlugin
+        classpath libs.quadrant
+        classpath libs.androidx.navigation_safe_args
+        classpath libs.appDistribution
+        classpath libs.easylauncher
+    }
+}
+
+allprojects {
+    repositories {
+        maven { url projectRepositories.google }
+        maven { url projectRepositories.mavenCentral }
+        maven { url projectRepositories.jitPack }
+        flatDir { dirs "${rootProject.projectDir}/core/gopenpgp/libs" }
+    }
+}
+
+subprojects {
+    if (file("./build.gradle").exists()) {
+        apply from: "${rootDir}/gradle/ktlint.gradle"
+        apply from: "${rootDir}/gradle/detekt.gradle"
+        apply from: "${rootDir}/gradle/jacocoModule.gradle"
+        apply from: "${rootDir}/gradle/moduleSetup.gradle"
+    }
+}
+
+apply from: "gradle/jacocoProject.gradle"
+apply from: "gradle/dependencyUpdates.gradle"

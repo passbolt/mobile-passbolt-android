@@ -1,0 +1,57 @@
+rootProject.name = "Passbolt"
+
+projectModule "app"
+
+coreModule "mvp"
+coreModule "networking"
+coreModule "gopenpgp"
+coreModule "coreui"
+coreModule "storage"
+coreModule "common"
+coreModule "navigation"
+coreModule "common"
+coreModule "qrscan"
+coreModule "featureflags"
+coreModule "database"
+coreModule "commonresource"
+coreModule "security"
+
+featureModule "startup"
+featureModule "setup"
+featureModule "autofill"
+featureModule "authentication"
+featureModule "main"
+featureModule "home"
+featureModule "settings"
+featureModule "folders"
+featureModule "resources"
+featureModule "secrets"
+
+serviceModule "passboltapi"
+serviceModule "linksapi"
+
+domainModule "dto"
+domainModule "ui"
+domainModule "mappers"
+domainModule "entity"
+
+def featureModule(String name) {
+    projectModule(name, "features/")
+}
+
+def coreModule(String name) {
+    projectModule(name, "core/")
+}
+
+def serviceModule(String name) {
+    projectModule(name, "services/")
+}
+
+def domainModule(String name) {
+    projectModule(name, "domain/")
+}
+
+def projectModule(String name, String directory = "") {
+    include ":$name"
+    project(":$name").projectDir = file(directory + name)
+}

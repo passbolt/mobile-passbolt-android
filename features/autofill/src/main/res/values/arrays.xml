@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+        arrays can be inconsistent when in other languages
+        index / size is not used in code
+    -->
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
+        <item>mail</item>
+        <item>username</item>
+        <item>mobile</item>
+        <item>number</item>
+        <item>name</item>
+    </string-array>
+
+    <!--
+      arrays can be inconsistent when in other languages
+      index / size is not used in code
+    -->
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
+        <item>password</item>
+        <item>secret</item>
+        <item>passphrase</item>
+    </string-array>
+
+</resources>

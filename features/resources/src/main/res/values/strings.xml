@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="resource_details_username_header">Username</string>
+    <string name="resource_details_password_header">Password</string>
+    <string name="resource_details_url_header">Website URL</string>
+    <string name="resource_details_description_header">Description</string>
+    <string name="resource_details_hide_password">••••••••••••••••••</string>
+    <string name="resource_details_encrypted_description">Description is encrypted</string>
+    <string name="resource_details_see_description">See description</string>
+    <string name="resource_details_decryption_failure">Error during secret decryption</string>
+    <string name="resource_details_fetch_failure">Error during downloading the secret</string>
+
+    <string name="more_details_copy_password">Copy password</string>
+    <string name="more_details_copy_description">Copy description</string>
+</resources>
