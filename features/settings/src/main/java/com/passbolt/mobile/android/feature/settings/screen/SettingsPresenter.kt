@@ -178,6 +178,10 @@ class SettingsPresenter(
         view?.navigateToAuthGetPassphrase()
     }
 
+    override fun licensesClick() {
+        view?.navigateToLicenses()
+    }
+
     override fun detach() {
         scope.coroutineContext.cancelChildren()
         super.detach()

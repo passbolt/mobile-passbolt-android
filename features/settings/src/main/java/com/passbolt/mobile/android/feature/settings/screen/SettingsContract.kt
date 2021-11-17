@@ -50,6 +50,7 @@ interface SettingsContract {
         fun hideTermsAndConditionsButton()
         fun showProgress()
         fun hideProgress()
+        fun navigateToLicenses()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -68,5 +69,6 @@ interface SettingsContract {
         fun biometricAuthCanceled()
         fun keyChangesInfoConfirmClick()
         fun systemSettingsClick()
+        fun licensesClick()
     }
 }

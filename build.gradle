@@ -17,6 +17,7 @@ buildscript {
         classpath libs.androidx.navigation_safe_args
         classpath libs.appDistribution
         classpath libs.easylauncher
+        classpath libs.licensee
     }
 }
 

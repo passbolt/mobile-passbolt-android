@@ -91,7 +91,7 @@
                 tools:text="john.doe@passbolt.com" />
 
             <TextView
-                android:id="@+id/urlLabel"
+                android:id="@+id/urlsLabel"
                 style="@style/BodyLight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

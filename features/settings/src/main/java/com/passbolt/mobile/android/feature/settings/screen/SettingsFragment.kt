@@ -96,6 +96,9 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
             privacySetting.setDebouncingOnClick {
                 presenter.privacyPolicyClick()
             }
+            licensesSetting.setDebouncingOnClick {
+                presenter.licensesClick()
+            }
             signOutSetting.setDebouncingOnClick {
                 presenter.signOutClick()
             }
@@ -125,6 +128,12 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
     override fun navigateToAutofill() {
         findNavController().navigate(
             SettingsFragmentDirections.actionSettingsToSettingsAutofillFragment()
+        )
+    }
+
+    override fun navigateToLicenses() {
+        findNavController().navigate(
+            SettingsFragmentDirections.actionSettingsToLicensesFragment()
         )
     }
 
