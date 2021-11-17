@@ -1,5 +1,9 @@
 package com.passbolt.mobile.android.core.commonresource
 
+import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
 import org.koin.dsl.module
 
 /**
@@ -52,6 +56,21 @@ val commonResourceModule = module {
             getSelectedAccountUseCase = get(),
             resourceModelMapper = get(),
             passphraseMemoryCache = get()
+        )
+    }
+
+    factory {
+        SearchableMatcher()
+    }
+    factory {
+        ResourceTypeFactory(
+            databaseProvider = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    factory {
+        DeleteResourceUseCase(
+            resourceRepository = get()
         )
     }
 }

@@ -56,12 +56,17 @@ class ResourcesActivity : BindingActivity<ActivityResourcesBinding>(ActivityReso
     }
 
     companion object {
+        const val RESULT_RESOURCE_DELETED = 8000
+        const val EXTRA_RESOURCE_NAME = "EXTRA_RESOURCE_NAME"
         const val RESOURCE_MODEL_KEY = "resourceModel"
         private const val RESOURCE_MODE_EXTRA = "RESOURCE_MODE_EXTRA"
 
         fun newInstance(mode: ResourceMode, context: Context) = Intent(context, ResourcesActivity::class.java).apply {
             putExtra(RESOURCE_MODE_EXTRA, mode)
         }
+
+        fun resourceDeletedResultIntent(resourceName: String) = Intent()
+            .putExtra(EXTRA_RESOURCE_NAME, resourceName)
     }
 
     enum class ResourceMode {

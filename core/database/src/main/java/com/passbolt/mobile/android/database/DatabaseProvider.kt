@@ -47,7 +47,9 @@ class DatabaseProvider(
         val newInstance = Room.databaseBuilder(
             context,
             ResourceDatabase::class.java, "${currentUser}_$RESOURCE_DATABASE_NAME"
-        ).openHelperFactory(factory)
+        )
+            .addMigrations(MIGRATION_1_2)
+            .openHelperFactory(factory)
             .build()
 
         instance[currentUser] = newInstance

@@ -1,12 +1,12 @@
-package com.passbolt.mobile.android.core.commonresource
+package com.passbolt.mobile.android.core.commonresource.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
+import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 import com.passbolt.mobile.android.passboltapi.resourcetypes.ResourceTypesRepository
-import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 
 /**
  * Passbolt - Open source password manager for teams

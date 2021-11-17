@@ -9,7 +9,9 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
+import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
+import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceType
 import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
@@ -17,6 +19,8 @@ import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInterac
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourcePermission
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -199,6 +203,39 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view).hidePasswordEyeIcon()
     }
 
+    @Test
+    fun `delete resource should delete and close details`() = runBlockingTest {
+        whenever(mockDeleteResourceUseCase.execute(any()))
+            .thenReturn(DeleteResourceUseCase.Output.Success)
+
+        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.moreClick()
+        presenter.menuDeleteClick()
+
+        verify(view).hideResourceMoreMenu()
+        verify(view).closeWithDeleteSuccessResult(RESOURCE_MODEL.name)
+    }
+
+    @Test
+    fun `delete resource should show error when there is deletion error`() = runBlockingTest {
+        whenever(mockDeleteResourceUseCase.execute(any()))
+            .thenReturn(
+                DeleteResourceUseCase.Output.Failure<String>(
+                    NetworkResult.Failure.NetworkError(
+                        RuntimeException(),
+                        ""
+                    )
+                )
+            )
+
+        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.moreClick()
+        presenter.menuDeleteClick()
+
+        verify(view).hideResourceMoreMenu()
+        verify(view).showGeneralError()
+    }
+
     private companion object {
         private const val NAME = "name"
         private const val USERNAME = "username"
@@ -215,7 +252,8 @@ class ResourceDetailsPresenterTest : KoinTest {
             null,
             INITIALS,
             URL,
-            DESCRIPTION
+            DESCRIPTION,
+            ResourcePermission.READ
         )
         private val DECRYPTED_SECRET = "decrypted".toByteArray()
     }

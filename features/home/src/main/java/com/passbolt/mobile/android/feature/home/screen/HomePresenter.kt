@@ -4,18 +4,21 @@ import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
+import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
+import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -47,7 +50,9 @@ class HomePresenter(
     private val secretInteractor: SecretInteractor,
     private val resourceMatcher: SearchableMatcher,
     private val resourceTypeFactory: ResourceTypeFactory,
-    private val secretParser: SecretParser
+    private val secretParser: SecretParser,
+    private val resourceMenuModelMapper: ResourceMenuModelMapper,
+    private val deleteResourceUseCase: DeleteResourceUseCase
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
@@ -153,7 +158,7 @@ class HomePresenter(
 
     override fun moreClick(resourceModel: ResourceModel) {
         currentMoreMenuResource = resourceModel
-        view?.navigateToMore(resourceModel)
+        view?.navigateToMore(resourceMenuModelMapper.map(resourceModel))
     }
 
     override fun itemClick(resourceModel: ResourceModel) {
@@ -231,6 +236,31 @@ class HomePresenter(
                 action(output.decryptedSecret)
             }
         }
+    }
+
+    override fun menuDeleteClick() {
+        currentMoreMenuResource?.let { sadResource ->
+            view?.hideResourceMoreMenu()
+            runWhileShowingListProgress {
+                when (val response = deleteResourceUseCase
+                    .execute(DeleteResourceUseCase.Input(sadResource.resourceId))) {
+                    is DeleteResourceUseCase.Output.Success -> {
+                        resourceDeleted(sadResource.name)
+                    }
+                    is DeleteResourceUseCase.Output.Failure<*> -> {
+                        Timber.e(response.response.exception)
+                        view?.showGeneralError()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun resourceDeleted(resourceName: String) {
+        runWhileShowingListProgress {
+            fetchResources()
+        }
+        view?.showResourceDeletedSnackbar(resourceName)
     }
 
     enum class SearchInputEndIconMode {

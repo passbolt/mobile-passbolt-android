@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,7 +30,7 @@ interface HomeContract {
 
     interface View : BaseAuthenticatedContract.View {
         fun showPasswords(list: List<ResourceModel>)
-        fun navigateToMore(resourceModel: ResourceModel)
+        fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel)
         fun navigateToDetails(resourceModel: ResourceModel)
         fun hideProgress()
         fun showProgress()
@@ -46,6 +47,9 @@ interface HomeContract {
         fun displaySearchClearIcon()
         fun clearSearchInput()
         fun showResourceAddedSnackbar()
+        fun hideResourceMoreMenu()
+        fun showResourceDeletedSnackbar(name: String)
+        fun showGeneralError()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -63,5 +67,7 @@ interface HomeContract {
         fun searchClearClick()
         fun menuCopyDescriptionClick()
         fun newResourceAdded()
+        fun menuDeleteClick()
+        fun resourceDeleted(resourceName: String)
     }
 }

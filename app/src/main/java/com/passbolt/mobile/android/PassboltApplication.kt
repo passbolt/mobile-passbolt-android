@@ -4,7 +4,6 @@ import android.app.Application
 import coil.Coil
 import coil.ImageLoader
 import com.passbolt.mobile.android.core.commonresource.commonResourceModule
-import com.passbolt.mobile.android.core.commonresource.uiModule
 import com.passbolt.mobile.android.core.mvp.mvpModule
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
@@ -125,7 +124,6 @@ class PassboltApplication : Application(), KoinComponent {
                 databaseModule,
                 secretsModule,
                 commonResourceModule,
-                uiModule,
                 securityModule,
                 linksApiModule
             )

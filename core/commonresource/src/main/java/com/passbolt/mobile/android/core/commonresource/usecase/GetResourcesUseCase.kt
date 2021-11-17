@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.commonresource
+package com.passbolt.mobile.android.core.commonresource.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult

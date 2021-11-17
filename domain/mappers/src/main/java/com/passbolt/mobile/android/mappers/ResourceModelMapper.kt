@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.entity.resource.Folder
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourcePermission
 
 /**
  * Passbolt - Open source password manager for teams
@@ -42,15 +43,16 @@ class ResourceModelMapper(
             icon = null,
             initials = initialsProvider.get(resource.name),
             url = resource.uri,
-            description = resource.description
+            description = resource.description,
+            permission = mapDtoPermissionToUiModel(resource.permission.type)
         )
 
     fun map(resourceModel: ResourceModel): Resource =
         Resource(
             resourceId = resourceModel.resourceId,
             resourceName = resourceModel.name,
-            description = "",
-            resourcePermission = Permission.READ,
+            description = resourceModel.description,
+            resourcePermission = resourceModel.permission.toEntityModel(),
             url = resourceModel.url,
             username = resourceModel.username,
             resourceTypeId = resourceModel.resourceTypeId,
@@ -66,6 +68,27 @@ class ResourceModelMapper(
             icon = null,
             initials = initialsProvider.get(resourceEntity.resourceName),
             url = resourceEntity.url,
-            description = resourceEntity.description
+            description = resourceEntity.description,
+            permission = resourceEntity.resourcePermission.toUiModel()
         )
+
+    private fun ResourcePermission.toEntityModel() = when (this) {
+        ResourcePermission.READ -> Permission.READ
+        ResourcePermission.UPDATE -> Permission.WRITE
+        ResourcePermission.OWNER -> Permission.OWNER
+    }
+
+    @Suppress("MagicNumber")
+    private fun mapDtoPermissionToUiModel(type: Int) = when (type) {
+        1 -> ResourcePermission.READ
+        7 -> ResourcePermission.UPDATE
+        15 -> ResourcePermission.OWNER
+        else -> throw IllegalArgumentException("Unsupported DTO permission value: $this")
+    }
+
+    private fun Permission.toUiModel() = when (this) {
+        Permission.READ -> ResourcePermission.READ
+        Permission.WRITE -> ResourcePermission.UPDATE
+        Permission.OWNER -> ResourcePermission.OWNER
+    }
 }

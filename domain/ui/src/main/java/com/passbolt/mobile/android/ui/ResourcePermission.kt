@@ -1,6 +1,4 @@
-package com.passbolt.mobile.android.feature.resources.details.more
-
-import org.koin.core.module.Module
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,11 +22,8 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-fun Module.detailsMenuModule() {
-    scope<ResourceDetailsMenuFragment> {
-        scoped<ResourceDetailsMenuContract.Presenter> {
-            ResourceDetailsMenuPresenter()
-        }
-    }
+enum class ResourcePermission {
+    READ,
+    UPDATE,
+    OWNER
 }

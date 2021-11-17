@@ -10,19 +10,22 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
+import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
+import com.passbolt.mobile.android.core.ui.dialog.hideDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.ResourcesActivity
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
-import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuFragment
-import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuModel
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
 
 /**
@@ -47,9 +50,10 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResourceDetailsFragment : BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
+class ResourceDetailsFragment :
+    BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
         FragmentResourceDetailsBinding::inflate
-    ), ResourceDetailsContract.View, ResourceDetailsMenuFragment.Listener {
+    ), ResourceDetailsContract.View, ResourceMoreMenuFragment.Listener {
 
     override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
@@ -72,6 +76,7 @@ class ResourceDetailsFragment : BindingScopedAuthenticatedFragment<FragmentResou
 
     private val urlCopyFields
         get() = listOf(binding.urlHeader, binding.urlIcon)
+    private val websiteOpener: WebsiteOpener by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -115,9 +120,9 @@ class ResourceDetailsFragment : BindingScopedAuthenticatedFragment<FragmentResou
         requireActivity().finish()
     }
 
-    override fun navigateToMore(model: ResourceDetailsMenuModel) {
-        ResourceDetailsMenuFragment.newInstance(model)
-            .show(childFragmentManager, ResourceDetailsMenuFragment::class.java.name)
+    override fun navigateToMore(menuModel: ResourceMoreMenuModel) {
+        ResourceMoreMenuFragment.newInstance(menuModel)
+            .show(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
     }
 
     override fun displayUrl(url: String) {
@@ -218,8 +223,47 @@ class ResourceDetailsFragment : BindingScopedAuthenticatedFragment<FragmentResou
         presenter.menuCopyDescriptionClick()
     }
 
+    override fun menuCopyUrlClick() {
+        presenter.menuCopyUrlClick()
+    }
+
+    override fun menuCopyUsernameClick() {
+        presenter.menuCopyUsernameClick()
+    }
+
+    override fun menuLaunchWebsiteClick() {
+        presenter.menuLaunchWebsiteClick()
+    }
+
+    override fun menuDeleteClick() {
+        presenter.menuDeleteClick()
+    }
+
+    override fun openWebsite(url: String) {
+        websiteOpener.open(requireContext(), url)
+    }
+
     override fun hidePasswordEyeIcon() {
         binding.passwordIcon.gone()
+    }
+
+    override fun closeWithDeleteSuccessResult(name: String) {
+        with(requireActivity()) {
+            setResult(
+                ResourcesActivity.RESULT_RESOURCE_DELETED,
+                ResourcesActivity.resourceDeletedResultIntent(name)
+            )
+            finish()
+        }
+    }
+
+    override fun hideResourceMoreMenu() {
+        hideDialog(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
+    }
+
+    override fun showGeneralError() {
+        Snackbar.make(requireView(), R.string.common_failure, Snackbar.LENGTH_SHORT)
+            .show()
     }
 
     companion object {

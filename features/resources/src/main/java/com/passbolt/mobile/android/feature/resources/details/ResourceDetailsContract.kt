@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.resources.details
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.resources.details.more.ResourceDetailsMenuModel
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,7 +34,7 @@ interface ResourceDetailsContract {
         fun addToClipboard(label: String, value: String)
         fun displayUrl(url: String)
         fun displayInitialsIcon(name: String, initials: String)
-        fun navigateToMore(model: ResourceDetailsMenuModel)
+        fun navigateToMore(menuModel: ResourceMoreMenuModel)
         fun navigateBack()
         fun showProgress()
         fun showPasswordVisibleIcon()
@@ -48,6 +48,10 @@ interface ResourceDetailsContract {
         fun showDescriptionIsEncrypted()
         fun showDescription(description: String, useSecretFont: Boolean)
         fun hidePasswordEyeIcon()
+        fun openWebsite(url: String)
+        fun hideResourceMoreMenu()
+        fun showGeneralError()
+        fun closeWithDeleteSuccessResult(name: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -61,5 +65,9 @@ interface ResourceDetailsContract {
         fun menuCopyPasswordClick()
         fun seeDescriptionButtonClick()
         fun menuCopyDescriptionClick()
+        fun menuCopyUrlClick()
+        fun menuCopyUsernameClick()
+        fun menuLaunchWebsiteClick()
+        fun menuDeleteClick()
     }
 }

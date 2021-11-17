@@ -29,7 +29,7 @@ ext {
         ],
         quality: [
             ktlint: "0.36.0",
-            detekt: "1.17.1",
+            detekt: "1.18.1",
             leakcanary: "2.3"
         ],
         androidx: [

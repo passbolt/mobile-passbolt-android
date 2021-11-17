@@ -2,9 +2,12 @@ package com.passbolt.mobile.android.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.passbolt.mobile.android.database.dao.ResourceTypesDao
 import com.passbolt.mobile.android.database.dao.ResourcesDao
 import com.passbolt.mobile.android.entity.resource.Folder
+import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceType
@@ -40,10 +43,20 @@ import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRe
         ResourceType::class,
         ResourceField::class,
         ResourceTypesAndFieldsCrossRef::class],
-    version = 1
+    version = 2
 )
-
 abstract class ResourceDatabase : RoomDatabase() {
     abstract fun resourcesDao(): ResourcesDao
     abstract fun resourceTypesDao(): ResourceTypesDao
+}
+
+// TODO add migration tests https://developer.android.com/training/data-storage/room/migrating-db-versions#manual
+// TODO update after migration 2 merge
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            "ALTER TABLE Resource ADD COLUMN resourcePermission TEXT NOT NULL " +
+                    "DEFAULT '${Permission.READ}'"
+        )
+    }
 }

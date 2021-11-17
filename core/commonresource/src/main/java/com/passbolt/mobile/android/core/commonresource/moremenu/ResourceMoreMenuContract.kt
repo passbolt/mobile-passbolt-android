@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.core.commonresource
+package com.passbolt.mobile.android.core.commonresource.moremenu
 
-import com.passbolt.mobile.android.common.search.SearchableMatcher
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,14 +25,15 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val uiModule = module {
-    factory {
-        SearchableMatcher()
+interface ResourceMoreMenuContract {
+
+    interface View : BaseContract.View {
+        fun showTitle(title: String)
+        fun showSeparator()
+        fun showDeleteButton()
     }
-    factory {
-        ResourceTypeFactory(
-            databaseProvider = get(),
-            getSelectedAccountUseCase = get()
-        )
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun argsRetrieved(menuModel: com.passbolt.mobile.android.ui.ResourceMoreMenuModel)
     }
 }

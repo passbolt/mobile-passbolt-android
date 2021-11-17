@@ -5,11 +5,11 @@ plugins {
 }
 
 dependencies {
-    implementation project(':ui')
     implementation project(':dto')
     implementation project(':entity')
     implementation project(':common')
     implementation project(':storage')
+    implementation project(path: ':ui')
 
     implementation libs.di.koin
     implementation libs.gson

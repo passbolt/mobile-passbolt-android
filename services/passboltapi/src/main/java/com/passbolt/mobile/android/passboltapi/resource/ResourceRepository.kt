@@ -38,4 +38,8 @@ class ResourceRepository(
     suspend fun createResource(createResourceDto: CreateResourceDto) = callWithHandler(responseHandler) {
         resourceDataSource.createResource(createResourceDto)
     }
+
+    suspend fun deleteResource(resourceId: String) = callWithHandler(responseHandler) {
+        resourceDataSource.deleteResource(resourceId)
+    }
 }

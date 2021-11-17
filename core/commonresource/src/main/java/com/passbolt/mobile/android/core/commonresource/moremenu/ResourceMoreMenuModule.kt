@@ -1,6 +1,6 @@
-package com.passbolt.mobile.android.feature.resources.details.more
+package com.passbolt.mobile.android.core.commonresource.moremenu
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +25,10 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface ResourceDetailsMenuContract {
-
-    interface View : BaseContract.View {
-        fun close()
-        fun showTitle(title: String)
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun closeClick()
-        fun argsRetrieved(menuModel: ResourceDetailsMenuModel)
+fun Module.resourceMoreMenuModule() {
+    scope<ResourceMoreMenuFragment> {
+        scoped<ResourceMoreMenuContract.Presenter> {
+            ResourceMoreMenuPresenter()
+        }
     }
 }

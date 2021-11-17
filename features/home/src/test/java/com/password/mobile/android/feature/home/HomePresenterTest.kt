@@ -13,13 +13,16 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
+import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
+import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -186,7 +189,8 @@ class HomePresenterTest : KoinTest {
             "",
             "initials",
             "",
-            ""
+            "",
+            ResourcePermission.READ
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -206,16 +210,19 @@ class HomePresenterTest : KoinTest {
             icon = null,
             initials = "T",
             url = "",
-            description = "desc"
+            description = "desc",
+            permission = ResourcePermission.READ
         )
         whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         mockAccountData(null)
+
         presenter.attach(view)
         reset(view)
         presenter.moreClick(model)
-        verify(view).navigateToMore(model)
+
+        verify(view).navigateToMore(any())
         verifyNoMoreInteractions(view)
     }
 
@@ -287,6 +294,51 @@ class HomePresenterTest : KoinTest {
         verify(view).addToClipboard(HomePresenter.SECRET_LABEL, String(DECRYPTED_SECRET))
     }
 
+    @Test
+    fun `delete resource should delete and show snackbar`() = runBlockingTest {
+        mockAccountData(null)
+        whenever(mockDeleteResourceUseCase.execute(any()))
+            .thenReturn(DeleteResourceUseCase.Output.Success)
+        mockSecretInteractor.stub {
+            onBlocking { fetchAndDecrypt(ID) }.doReturn(
+                SecretInteractor.Output.Success(DECRYPTED_SECRET)
+            )
+        }
+
+        presenter.attach(view)
+        presenter.moreClick(RESOURCE_MODEL)
+        presenter.menuDeleteClick()
+
+        verify(view).hideResourceMoreMenu()
+        verify(view).showResourceDeletedSnackbar(RESOURCE_MODEL.name)
+    }
+
+    @Test
+    fun `delete resource should show error when there is deletion error`() = runBlockingTest {
+        mockAccountData(null)
+        whenever(mockDeleteResourceUseCase.execute(any()))
+            .thenReturn(
+                DeleteResourceUseCase.Output.Failure<String>(
+                    NetworkResult.Failure.NetworkError(
+                        RuntimeException(),
+                        ""
+                    )
+                )
+            )
+        mockSecretInteractor.stub {
+            onBlocking { fetchAndDecrypt(ID) }.doReturn(
+                SecretInteractor.Output.Success(DECRYPTED_SECRET)
+            )
+        }
+
+        presenter.attach(view)
+        presenter.moreClick(RESOURCE_MODEL)
+        presenter.menuDeleteClick()
+
+        verify(view).hideResourceMoreMenu()
+        verify(view).showGeneralError()
+    }
+
     private fun mockResourcesList() = listOf(
         ResourceModel(
             resourceId = "id1",
@@ -297,6 +349,7 @@ class HomePresenterTest : KoinTest {
             icon = "",
             initials = "",
             description = "desc",
+            permission = ResourcePermission.READ
         ), ResourceModel(
             resourceId = "id2",
             resourceTypeId = "resTypeId",
@@ -305,7 +358,8 @@ class HomePresenterTest : KoinTest {
             username = "",
             icon = "",
             initials = "",
-            description = "desc"
+            description = "desc",
+            permission = ResourcePermission.READ
         )
     )
 
@@ -340,7 +394,8 @@ class HomePresenterTest : KoinTest {
             null,
             INITIALS,
             URL,
-            DESCRIPTION
+            DESCRIPTION,
+            ResourcePermission.READ
         )
         private val DECRYPTED_SECRET = "secret".toByteArray()
     }
