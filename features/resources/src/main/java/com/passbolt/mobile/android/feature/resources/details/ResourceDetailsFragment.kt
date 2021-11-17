@@ -126,12 +126,7 @@ class ResourceDetailsFragment :
     }
 
     override fun displayUrl(url: String) {
-        with(binding) {
-            urlValue.text = url
-            urlValue.visible()
-            urlHeader.visible()
-            urlIcon.visible()
-        }
+        binding.urlValue.text = url
     }
 
     override fun displayInitialsIcon(name: String, initials: String) {
