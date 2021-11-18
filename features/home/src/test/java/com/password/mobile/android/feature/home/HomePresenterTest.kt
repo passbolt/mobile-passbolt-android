@@ -213,6 +213,7 @@ class HomePresenterTest : KoinTest {
             description = "desc",
             permission = ResourcePermission.READ
         )
+        val menuModel = resourceMenuModelMapper.map(model)
         whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
@@ -221,7 +222,8 @@ class HomePresenterTest : KoinTest {
         presenter.attach(view)
         reset(view)
         presenter.moreClick(model)
-        verify(view).navigateToMore(model)
+
+        verify(view).navigateToMore(menuModel)
         verifyNoMoreInteractions(view)
     }
 

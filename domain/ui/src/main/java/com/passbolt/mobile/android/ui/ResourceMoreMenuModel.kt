@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class ResourceMoreMenuModel(
+data class ResourceMoreMenuModel(
     val title: String,
     val canDelete: Boolean
 ) : Parcelable
