@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import com.amulyakhare.textdrawable.TextDrawable
@@ -17,12 +18,12 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
-import com.passbolt.mobile.android.core.ui.dialog.hideDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resources.R
-import com.passbolt.mobile.android.feature.resources.ResourcesActivity
+import com.passbolt.mobile.android.feature.resources.ResourceActivity
+import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -59,7 +60,7 @@ class ResourceDetailsFragment :
     private val clipboardManager: ClipboardManager? by inject()
     private val bundledResourceModel: ResourceModel by lifecycleAwareLazy {
         requireNotNull(
-            requireActivity().intent.getParcelableExtra(ResourcesActivity.RESOURCE_MODEL_KEY)
+            requireActivity().intent.getParcelableExtra(ResourceActivity.EXTRA_RESOURCE_MODEL)
         )
     }
     private val regularFont by lifecycleAwareLazy {
@@ -79,11 +80,19 @@ class ResourceDetailsFragment :
 
     private val websiteOpener: WebsiteOpener by inject()
 
+    private val resourceDetailsResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == ResourceActivity.RESULT_RESOURCE_EDITED) {
+                val name = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_NAME)
+                presenter.resourceEdited(name.orEmpty())
+            }
+        }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
-        presenter.argsReceived(bundledResourceModel)
+        presenter.argsReceived(bundledResourceModel.resourceId)
     }
 
     override fun onStop() {
@@ -240,6 +249,10 @@ class ResourceDetailsFragment :
         presenter.menuDeleteClick()
     }
 
+    override fun menuEditClick() {
+        presenter.menuEditClick()
+    }
+
     override fun openWebsite(url: String) {
         websiteOpener.open(requireContext(), url)
     }
@@ -251,19 +264,34 @@ class ResourceDetailsFragment :
     override fun closeWithDeleteSuccessResult(name: String) {
         with(requireActivity()) {
             setResult(
-                ResourcesActivity.RESULT_RESOURCE_DELETED,
-                ResourcesActivity.resourceDeletedResultIntent(name)
+                ResourceActivity.RESULT_RESOURCE_DELETED,
+                ResourceActivity.resourceNameResultIntent(name)
             )
             finish()
         }
     }
 
-    override fun hideResourceMoreMenu() {
-        hideDialog(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
-    }
-
     override fun showGeneralError() {
         Snackbar.make(requireView(), R.string.common_failure, Snackbar.LENGTH_SHORT)
+            .show()
+    }
+
+    override fun navigateToEditResource(resourceModel: ResourceModel) {
+        resourceDetailsResult.launch(
+            ResourceActivity.newInstance(
+                requireContext(),
+                ResourceMode.EDIT,
+                resourceModel
+            )
+        )
+    }
+
+    override fun showResourceEditedSnackbar(resourceName: String) {
+        Snackbar.make(
+            requireView(),
+            getString(R.string.resource_details_resource_edited_format, resourceName),
+            Snackbar.LENGTH_LONG
+        )
             .show()
     }
 

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.passbolt.mobile.android.entity.resource.Resource
 
 /**
@@ -37,12 +38,20 @@ interface ResourcesDao {
     suspend fun getAll(): List<Resource>
 
     @Transaction
+    @Query("SELECT * FROM Resource WHERE resourceId == :resourceId")
+    suspend fun get(resourceId: String): Resource
+
+    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(resourceEntities: List<Resource>)
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(resourceEntities: Resource)
+
+    @Transaction
+    @Update
+    suspend fun update(resourceEntities: Resource)
 
     @Transaction
     @Query("DELETE FROM Resource")

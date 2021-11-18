@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.passboltapi.auth.AuthApi
 import com.passbolt.mobile.android.passboltapi.auth.AuthDataSource
 import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
 import com.passbolt.mobile.android.passboltapi.auth.data.AuthRemoteDataSource
+import com.passbolt.mobile.android.passboltapi.mfa.MfaApi
 import com.passbolt.mobile.android.passboltapi.mfa.MfaDataSource
 import com.passbolt.mobile.android.passboltapi.mfa.MfaRemoteDataSource
 import com.passbolt.mobile.android.passboltapi.mfa.MfaRepository
@@ -22,7 +23,6 @@ import com.passbolt.mobile.android.passboltapi.resourcetypes.ResourceTypesApi
 import com.passbolt.mobile.android.passboltapi.resourcetypes.ResourceTypesDataSource
 import com.passbolt.mobile.android.passboltapi.resourcetypes.ResourceTypesRemoteDataSource
 import com.passbolt.mobile.android.passboltapi.resourcetypes.ResourceTypesRepository
-import com.passbolt.mobile.android.passboltapi.mfa.MfaApi
 import com.passbolt.mobile.android.passboltapi.secrets.SecretsApi
 import com.passbolt.mobile.android.passboltapi.secrets.SecretsDataSource
 import com.passbolt.mobile.android.passboltapi.secrets.SecretsRemoteDataSource
@@ -31,6 +31,10 @@ import com.passbolt.mobile.android.passboltapi.settings.SettingsApi
 import com.passbolt.mobile.android.passboltapi.settings.SettingsDataSource
 import com.passbolt.mobile.android.passboltapi.settings.SettingsRemoteDataSource
 import com.passbolt.mobile.android.passboltapi.settings.SettingsRepository
+import com.passbolt.mobile.android.passboltapi.users.UsersApi
+import com.passbolt.mobile.android.passboltapi.users.UsersDataSource
+import com.passbolt.mobile.android.passboltapi.users.UsersRemoteDataSource
+import com.passbolt.mobile.android.passboltapi.users.UsersRepository
 import okhttp3.OkHttpClient
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -68,6 +72,7 @@ val passboltApiModule = module {
     single { getSecretsApi(get()) }
     single { getResourceTypesApi(get()) }
     single { getMfaApi(get()) }
+    single { getUsersApi(get()) }
 
     single<RegistrationDataSource> {
         RegistrationRemoteDataSource(
@@ -144,6 +149,17 @@ val passboltApiModule = module {
             mfaApi = get()
         )
     }
+    single {
+        UsersRepository(
+            usersDataSource = get(),
+            responseHandler = get()
+        )
+    }
+    single<UsersDataSource> {
+        UsersRemoteDataSource(
+            usersApi = get()
+        )
+    }
 }
 
 private fun provideRestService(okHttpClient: OkHttpClient): RestService {
@@ -173,3 +189,6 @@ private fun getResourceTypesApi(restService: RestService): ResourceTypesApi =
 
 private fun getMfaApi(restService: RestService): MfaApi =
     restService.service(MfaApi::class.java)
+
+private fun getUsersApi(restService: RestService) =
+    restService.service(UsersApi::class.java)

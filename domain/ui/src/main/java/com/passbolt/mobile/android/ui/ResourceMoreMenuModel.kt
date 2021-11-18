@@ -6,5 +6,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class ResourceMoreMenuModel(
     val title: String,
-    val canDelete: Boolean
+    val canDelete: Boolean,
+    val canEdit: Boolean
 ) : Parcelable

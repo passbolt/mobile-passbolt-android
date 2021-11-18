@@ -37,7 +37,8 @@ fun Module.detailsModule() {
                 secretParser = get(),
                 getFeatureFlagsUseCase = get(),
                 resourceMenuModelMapper = get(),
-                deleteResourceUseCase = get()
+                deleteResourceUseCase = get(),
+                getLocalResourceUseCase = get()
             )
         }
     }

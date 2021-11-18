@@ -25,12 +25,9 @@ dependencies {
     implementation libs.material
     implementation libs.coil.core
     implementation libs.coil.base
-
     implementation libs.textDrawable
-
     implementation libs.fastAdapter.binding
     implementation libs.fastAdapter.core
-
     implementation libs.di.koin
     implementation libs.di.koinExt
     implementation libs.room.core
@@ -38,6 +35,7 @@ dependencies {
     implementation libs.room.cipher
     kapt libs.room.compiler
     implementation libs.room.sqlite
+    implementation libs.gson
 }
 
 android {

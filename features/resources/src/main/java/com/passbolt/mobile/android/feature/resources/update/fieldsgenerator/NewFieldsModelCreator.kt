@@ -1,7 +1,7 @@
-package com.passbolt.mobile.android.feature.resources.new
+package com.passbolt.mobile.android.feature.resources.update.fieldsgenerator
 
-import com.passbolt.mobile.android.core.security.PasswordGenerator.Entropy
-import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView.PasswordStrength
+import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsBySlugUseCase
+import com.passbolt.mobile.android.feature.resources.update.ResourceValue
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,16 +25,16 @@ import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputV
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class EntropyViewMapper {
+class NewFieldsModelCreator(
+    private val getResourceTypeWithFieldsBySlugUseCase: GetResourceTypeWithFieldsBySlugUseCase
+) {
 
-    fun map(entropy: Entropy): PasswordStrength =
-        when (entropy) {
-            Entropy.ZERO -> PasswordStrength.Empty
-            Entropy.VERY_WEAK -> PasswordStrength.VeryWeak
-            Entropy.WEAK -> PasswordStrength.Weak
-            Entropy.FAIR -> PasswordStrength.Fair
-            Entropy.STRONG -> PasswordStrength.Strong
-            Entropy.VERY_STRONG -> PasswordStrength.VeryStrong
-            Entropy.GREATEST_FINITE -> PasswordStrength.VeryStrong
-        }
+    suspend fun create(): List<ResourceValue> {
+        val defaultCreateResourceType = getResourceTypeWithFieldsBySlugUseCase.execute(
+            GetResourceTypeWithFieldsBySlugUseCase.Input()
+        )
+        return defaultCreateResourceType
+            .fields
+            .map { ResourceValue(it, null) }
+    }
 }

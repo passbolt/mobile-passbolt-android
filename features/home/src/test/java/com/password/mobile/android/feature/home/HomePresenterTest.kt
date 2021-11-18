@@ -310,7 +310,6 @@ class HomePresenterTest : KoinTest {
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
 
-        verify(view).hideResourceMoreMenu()
         verify(view).showResourceDeletedSnackbar(RESOURCE_MODEL.name)
     }
 
@@ -336,7 +335,6 @@ class HomePresenterTest : KoinTest {
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
 
-        verify(view).hideResourceMoreMenu()
         verify(view).showGeneralError()
     }
 

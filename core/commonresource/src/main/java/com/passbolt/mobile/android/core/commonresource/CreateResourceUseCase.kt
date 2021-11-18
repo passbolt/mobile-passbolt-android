@@ -1,22 +1,22 @@
 package com.passbolt.mobile.android.core.commonresource
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
-import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
+import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.request.EncryptedSecret
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.mappers.CreateResourceMapper
+import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -63,7 +63,8 @@ class CreateResourceUseCase(
                 resourceTypeId = input.resourceTypeId,
                 secrets = createSecret(input.password, input.description, passphrase),
                 username = input.username,
-                uri = input.uri
+                uri = input.uri,
+                description = input.description
             )
         )) {
             is NetworkResult.Failure -> Output.Failure(response)
@@ -73,7 +74,7 @@ class CreateResourceUseCase(
 
     private suspend fun createSecret(
         password: String,
-        description: String,
+        description: String?,
         passphrase: ByteArray
     ): List<EncryptedSecret> {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
@@ -82,7 +83,7 @@ class CreateResourceUseCase(
         val secret = createResourceMapper.map(password, description)
         val encryptedSecret = openPgp.encryptSignMessageArmored(publicKey, privateKey, passphrase, secret)
         // from API documentation: An array of secrets in object format - exactly one secret must be provided.
-        return listOf(EncryptedSecret(encryptedSecret))
+        return listOf(EncryptedSecret(userId, encryptedSecret))
     }
 
     sealed class Output : AuthenticatedUseCaseOutput {
@@ -116,10 +117,10 @@ class CreateResourceUseCase(
     }
 
     class Input(
-        val name: String,
         val resourceTypeId: String,
+        val name: String,
         val password: String,
-        val description: String,
+        val description: String?,
         val username: String?,
         val uri: String?
     )

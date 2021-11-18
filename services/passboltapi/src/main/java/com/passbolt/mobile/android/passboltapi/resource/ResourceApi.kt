@@ -7,6 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -46,7 +47,15 @@ internal interface ResourceApi {
     ): BaseResponse<String?>
 
     @POST(RESOURCES)
-    suspend fun createResource(@Body createResourceDto: CreateResourceDto): BaseResponse<ResourceResponseDto>
+    suspend fun createResource(
+        @Body createResourceDto: CreateResourceDto
+    ): BaseResponse<ResourceResponseDto>
+
+    @PUT(RESOURCE_BY_ID)
+    suspend fun updateResource(
+        @Path(PATH_RESOURCE_ID) resourceId: String,
+        @Body createResourceDto: CreateResourceDto
+    ): BaseResponse<ResourceResponseDto>
 
     private companion object {
         private const val PATH_RESOURCE_ID = "resourceId"

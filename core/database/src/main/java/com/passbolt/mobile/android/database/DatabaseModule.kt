@@ -3,11 +3,14 @@ package com.passbolt.mobile.android.database
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalResourceUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsUseCase
+import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsByIdUseCase
+import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
 import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
+import com.passbolt.mobile.android.database.usecase.UpdateLocalResourceUseCase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
@@ -72,8 +75,15 @@ val databaseModule = module {
         )
     }
     single {
-        GetResourceTypeWithFieldsUseCase(
-            databaseProvider = get()
+        GetResourceTypeWithFieldsByIdUseCase(
+            databaseProvider = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        GetResourceTypeWithFieldsBySlugUseCase(
+            databaseProvider = get(),
+            getSelectedAccountUseCase = get()
         )
     }
     single {
@@ -85,6 +95,20 @@ val databaseModule = module {
         AddLocalResourceTypesUseCase(
             databaseProvider = get(),
             resourceTypesModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        UpdateLocalResourceUseCase(
+            databaseProvider = get(),
+            resourceModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        GetLocalResourceUseCase(
+            databaseProvider = get(),
+            resourceModelMapper = get(),
             getSelectedAccountUseCase = get()
         )
     }

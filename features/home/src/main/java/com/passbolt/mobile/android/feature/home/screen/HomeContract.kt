@@ -47,9 +47,10 @@ interface HomeContract {
         fun displaySearchClearIcon()
         fun clearSearchInput()
         fun showResourceAddedSnackbar()
-        fun hideResourceMoreMenu()
         fun showResourceDeletedSnackbar(name: String)
         fun showGeneralError()
+        fun navigateToEdit(resourceModel: ResourceModel)
+        fun showResourceEditedSnackbar(resourceName: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -66,8 +67,10 @@ interface HomeContract {
         fun userAuthenticated()
         fun searchClearClick()
         fun menuCopyDescriptionClick()
-        fun newResourceAdded()
+        fun newResourceCreated()
         fun menuDeleteClick()
         fun resourceDeleted(resourceName: String)
+        fun menuEditClick()
+        fun resourceEdited(resourceName: String)
     }
 }

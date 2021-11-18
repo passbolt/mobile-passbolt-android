@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.ResourceDatabase
 import com.passbolt.mobile.android.database.dao.ResourceTypesDao
+import com.passbolt.mobile.android.database.usecase.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.resources.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
@@ -56,6 +57,7 @@ val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 val resourceMenuModelMapper = ResourceMenuModelMapper()
 val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
+val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 
 val testResourceDetailsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
@@ -69,7 +71,8 @@ val testResourceDetailsModule = module {
             resourceTypeFactory = mockResourceTypeFactory,
             getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
             resourceMenuModelMapper = resourceMenuModelMapper,
-            deleteResourceUseCase = mockDeleteResourceUseCase
+            deleteResourceUseCase = mockDeleteResourceUseCase,
+            getLocalResourceUseCase = mockGetLocalResourceUseCase
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.core.ui.textinputfield
 
 import android.content.Context
+import android.graphics.drawable.LayerDrawable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
@@ -18,7 +19,6 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewPasswordGeneratorInputBinding
-import android.graphics.drawable.LayerDrawable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -164,9 +164,6 @@ class PasswordGenerateInputView @JvmOverloads constructor(
             textLayout.error = ""
         }
     }
-
-    fun getInputBytes(): ByteArray =
-        binding.input.text?.toString()?.toByteArray() ?: byteArrayOf()
 
     @Suppress("MagicNumber")
     sealed class PasswordStrength(

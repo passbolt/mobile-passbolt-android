@@ -1,10 +1,7 @@
-package com.passbolt.mobile.android.database.usecase
+package com.passbolt.mobile.android.feature.resources.update
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.entity.resource.ResourceField
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsUseCase.Output
+import com.passbolt.mobile.android.core.security.PasswordGenerator.Entropy
+import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView.PasswordStrength
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,25 +25,16 @@ import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsUse
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetResourceTypeWithFieldsUseCase(
-    private val databaseProvider: DatabaseProvider
-) : AsyncUseCase<UserIdInput, Output> {
+class EntropyViewMapper {
 
-    override suspend fun execute(input: UserIdInput): Output {
-        val resourceType = databaseProvider.get(input.userId).resourceTypesDao()
-            .getResourceTypeWithFieldsBySlug(DEFAULT_SLUG)
-        return Output(
-            resourceType.resourceType.resourceTypeId,
-            resourceType.resourceFields
-        )
-    }
-
-    class Output(
-        val resourceTypeId: String,
-        val fields: List<ResourceField>
-    )
-
-    companion object {
-        private const val DEFAULT_SLUG = "password-and-description"
-    }
+    fun map(entropy: Entropy): PasswordStrength =
+        when (entropy) {
+            Entropy.ZERO -> PasswordStrength.Empty
+            Entropy.VERY_WEAK -> PasswordStrength.VeryWeak
+            Entropy.WEAK -> PasswordStrength.Weak
+            Entropy.FAIR -> PasswordStrength.Fair
+            Entropy.STRONG -> PasswordStrength.Strong
+            Entropy.VERY_STRONG -> PasswordStrength.VeryStrong
+            Entropy.GREATEST_FINITE -> PasswordStrength.VeryStrong
+        }
 }

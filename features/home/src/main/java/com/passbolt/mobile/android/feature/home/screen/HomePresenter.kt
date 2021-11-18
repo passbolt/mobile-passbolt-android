@@ -185,13 +185,6 @@ class HomePresenter(
         }
     }
 
-    override fun newResourceAdded() {
-        view?.showResourceAddedSnackbar()
-        scope.launch {
-            fetchResources()
-        }
-    }
-
     override fun menuCopyPasswordClick() {
         scope.launch {
             val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(currentMoreMenuResource!!.resourceTypeId)
@@ -240,7 +233,6 @@ class HomePresenter(
 
     override fun menuDeleteClick() {
         currentMoreMenuResource?.let { sadResource ->
-            view?.hideResourceMoreMenu()
             runWhileShowingListProgress {
                 when (val response = deleteResourceUseCase
                     .execute(DeleteResourceUseCase.Input(sadResource.resourceId))) {
@@ -261,6 +253,24 @@ class HomePresenter(
             fetchResources()
         }
         view?.showResourceDeletedSnackbar(resourceName)
+    }
+
+    override fun resourceEdited(resourceName: String) {
+        runWhileShowingListProgress {
+            fetchResources()
+        }
+        view?.showResourceEditedSnackbar(resourceName)
+    }
+
+    override fun newResourceCreated() {
+        runWhileShowingListProgress {
+            fetchResources()
+        }
+        view?.showResourceAddedSnackbar()
+    }
+
+    override fun menuEditClick() {
+        view?.navigateToEdit(requireNotNull(currentMoreMenuResource))
     }
 
     enum class SearchInputEndIconMode {

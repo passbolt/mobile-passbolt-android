@@ -41,7 +41,7 @@ interface ResourceTypesDao {
 
     @Transaction
     @Query("SELECT * FROM ResourceType WHERE resourceTypeId = :resourceType")
-    suspend fun getResourceTypeWithFields(resourceType: String): ResourceTypeIdWithFields
+    suspend fun getResourceTypeWithFieldsById(resourceType: String): ResourceTypeIdWithFields
 
     @Transaction
     @Query("SELECT * FROM ResourceType WHERE slug = :slug")

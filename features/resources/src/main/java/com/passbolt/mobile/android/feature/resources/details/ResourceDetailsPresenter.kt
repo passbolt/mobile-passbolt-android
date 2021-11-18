@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPres
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.usecase.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
@@ -49,6 +50,7 @@ class ResourceDetailsPresenter(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
     private val deleteResourceUseCase: DeleteResourceUseCase,
+    private val getLocalResourceUseCase: GetLocalResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter {
@@ -61,28 +63,30 @@ class ResourceDetailsPresenter(
 
     // TODO consider resource types - for now only description can be both encrypted and unencrypted
     // TODO for future draw and set encrypted properties dynamically based on database input
-    override fun argsReceived(resourceModel: ResourceModel) {
-        this.resourceModel = resourceModel
-        view?.apply {
-            displayTitle(resourceModel.name)
-            displayUsername(resourceModel.username.orEmpty())
-            displayInitialsIcon(resourceModel.name, resourceModel.initials)
-            if (!resourceModel.url.isNullOrEmpty()) {
-                displayUrl(resourceModel.url!!)
+
+    // TODO consider fetching from API to reflect also changes done via web?
+    override fun argsReceived(resourceId: String) {
+        scope.launch {
+            resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
+            view?.apply {
+                displayTitle(resourceModel.name)
+                displayUsername(resourceModel.username.orEmpty())
+                displayInitialsIcon(resourceModel.name, resourceModel.initials)
+                if (!resourceModel.url.isNullOrEmpty()) {
+                    displayUrl(resourceModel.url!!)
+                }
+                showPasswordHidden()
+                showPasswordHiddenIcon()
+                handleDescriptionField(resourceModel)
+                handleFeatureFlags()
             }
-            showPasswordHidden()
-            showPasswordHiddenIcon()
-            handleDescriptionField(resourceModel)
-            handleFeatureFlags()
         }
     }
 
-    private fun handleFeatureFlags() {
-        scope.launch {
-            val isPasswordEyeIconVisible = getFeatureFlagsUseCase.execute(Unit).featureFlags.isPreviewPasswordAvailable
-            if (!isPasswordEyeIconVisible) {
-                view?.hidePasswordEyeIcon()
-            }
+    private suspend fun handleFeatureFlags() {
+        val isPasswordEyeIconVisible = getFeatureFlagsUseCase.execute(Unit).featureFlags.isPreviewPasswordAvailable
+        if (!isPasswordEyeIconVisible) {
+            view?.hidePasswordEyeIcon()
         }
     }
 
@@ -92,7 +96,7 @@ class ResourceDetailsPresenter(
             val resourceWithFields = databaseProvider
                 .get(userId)
                 .resourceTypesDao()
-                .getResourceTypeWithFields(resourceModel.resourceTypeId)
+                .getResourceTypeWithFieldsById(resourceModel.resourceTypeId)
             val isDescriptionSecret = resourceWithFields.resourceFields
                 .find { it.name == "description" }
                 ?.isSecret ?: false
@@ -222,21 +226,27 @@ class ResourceDetailsPresenter(
     }
 
     override fun menuDeleteClick() {
-        resourceModel?.let { sadResource ->
-            view?.hideResourceMoreMenu()
-            runWhileShowingListProgress {
-                when (val response = deleteResourceUseCase
-                    .execute(DeleteResourceUseCase.Input(sadResource.resourceId))) {
-                    is DeleteResourceUseCase.Output.Success -> {
-                        view?.closeWithDeleteSuccessResult(sadResource.name)
-                    }
-                    is DeleteResourceUseCase.Output.Failure<*> -> {
-                        Timber.e(response.response.exception)
-                        view?.showGeneralError()
-                    }
+        runWhileShowingListProgress {
+            when (val response = deleteResourceUseCase
+                .execute(DeleteResourceUseCase.Input(resourceModel.resourceId))) {
+                is DeleteResourceUseCase.Output.Success -> {
+                    view?.closeWithDeleteSuccessResult(resourceModel.name)
+                }
+                is DeleteResourceUseCase.Output.Failure<*> -> {
+                    Timber.e(response.response.exception)
+                    view?.showGeneralError()
                 }
             }
         }
+    }
+
+    override fun menuEditClick() {
+        view?.navigateToEditResource(resourceModel)
+    }
+
+    override fun resourceEdited(resourceName: String) {
+        argsReceived(resourceModel.resourceId)
+        view?.showResourceEditedSnackbar(resourceName)
     }
 
     private fun runWhileShowingListProgress(action: suspend () -> Unit) {

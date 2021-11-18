@@ -63,6 +63,10 @@ open class TextInputView @JvmOverloads constructor(
             binding.titleLabel.text = uiTitle
         }
 
+    var text: String
+        get() = binding.input.text?.toString().orEmpty()
+        set(value) = binding.input.run { setText(value) }
+
     private val requiredTitle: Spannable
         get() = SpannableString(REQUIRED_TITLE_FORMAT.format(title)).apply {
             setSpan( // the asterisk at the end is red
@@ -75,6 +79,7 @@ open class TextInputView @JvmOverloads constructor(
 
     private val uiTitle: Spannable
         get() = if (!isRequired) SpannableString(title) else requiredTitle
+
     private var textWatcher: TextWatcher? = null
 
     protected val binding = ViewTextInputBinding.inflate(LayoutInflater.from(context), this)

@@ -36,6 +36,9 @@ internal class ResourceRemoteDataSource(
     override suspend fun createResource(createResourceDto: CreateResourceDto) =
         resourceApi.createResource(createResourceDto)
 
-    override suspend fun deleteResource(resourceId: String): BaseResponse<String?> =
+    override suspend fun deleteResource(resourceId: String) =
         resourceApi.deleteResource(resourceId)
+
+    override suspend fun updateResource(resourceId: String, createResourceDto: CreateResourceDto) =
+        resourceApi.updateResource(resourceId, createResourceDto)
 }

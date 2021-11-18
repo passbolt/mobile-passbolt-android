@@ -15,7 +15,7 @@
     <string name="transfer_details_title">Transfer account details</string>
     <string-array name="transfer_details_steps_array">
         <item>Sign in using the browser extension</item>
-        <item>Go to the &lt;b>Profile&lt;/b> page</item>
+        <item>Go to the &lt;b>com.passbolt.mobile.android.dto.response.Profile&lt;/b> page</item>
         <item>Go to the &lt;b>Mobile&lt;/b> section</item>
         <item>Scan the qr codes sequence</item>
     </string-array>

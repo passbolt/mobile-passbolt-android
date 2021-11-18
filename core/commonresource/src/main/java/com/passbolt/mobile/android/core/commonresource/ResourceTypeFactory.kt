@@ -34,7 +34,7 @@ class ResourceTypeFactory(
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         val resourceFields = databaseProvider.get(selectedAccount)
             .resourceTypesDao()
-            .getResourceTypeWithFields(resourceTypeId)
+            .getResourceTypeWithFieldsById(resourceTypeId)
             .resourceFields
 
         val secretFields = resourceFields.filter { it.isSecret }.map { it.name }
@@ -56,7 +56,6 @@ class ResourceTypeFactory(
     }
 
     private companion object {
-        private const val FIELD_PASSWORD = "password"
         private const val FIELD_SECRET = "secret"
         private val SECRET_WITH_DESCRIPTION_SECRET_FIELDS = listOf("password", "description")
     }
