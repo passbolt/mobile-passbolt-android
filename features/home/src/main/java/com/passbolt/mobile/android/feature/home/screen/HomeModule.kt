@@ -40,9 +40,9 @@ fun Module.homeModule() {
                 secretInteractor = get(),
                 resourceMatcher = SearchableMatcher(),
                 resourceTypeFactory = get(),
-                secretParser = get(),
                 resourceMenuModelMapper = get(),
-                deleteResourceUseCase = get()
+                deleteResourceUseCase = get(),
+                secretParser = get()
             )
         }
         scoped<ItemAdapter<PasswordItem>> {

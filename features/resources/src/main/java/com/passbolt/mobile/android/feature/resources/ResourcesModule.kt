@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.folders
+package com.passbolt.mobile.android.feature.resources
 
 import com.passbolt.mobile.android.feature.resources.details.detailsModule
 import com.passbolt.mobile.android.feature.resources.new.newResourceModule

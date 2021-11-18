@@ -30,7 +30,7 @@ interface ResourceDetailsContract {
 
     interface View : BaseAuthenticatedContract.View {
         fun displayTitle(title: String)
-        fun displayUsername(username: String?)
+        fun displayUsername(username: String)
         fun addToClipboard(label: String, value: String)
         fun displayUrl(url: String)
         fun displayInitialsIcon(name: String, initials: String)

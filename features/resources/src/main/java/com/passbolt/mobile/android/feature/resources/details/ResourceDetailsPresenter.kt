@@ -65,7 +65,7 @@ class ResourceDetailsPresenter(
         this.resourceModel = resourceModel
         view?.apply {
             displayTitle(resourceModel.name)
-            displayUsername(resourceModel.username)
+            displayUsername(resourceModel.username.orEmpty())
             displayInitialsIcon(resourceModel.name, resourceModel.initials)
             if (!resourceModel.url.isNullOrEmpty()) {
                 displayUrl(resourceModel.url!!)

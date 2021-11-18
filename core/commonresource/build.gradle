@@ -23,7 +23,6 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.androidx.constraintLayout
     implementation libs.material
-
     implementation libs.coil.core
     implementation libs.coil.base
 

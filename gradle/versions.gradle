@@ -168,7 +168,7 @@ ext {
         yubikit: [
             android: "com.yubico.yubikit:android:${versions.yubikit.android}"
         ],
-        pinentry: "com.alimuzaffar.lib:pinentryedittext:${versions.pinentry}",
-        balloon: "com.github.skydoves:balloon:${versions.balloon}"
+        balloon: "com.github.skydoves:balloon:${versions.balloon}",
+        pinentry: "com.alimuzaffar.lib:pinentryedittext:${versions.pinentry}"
     ]
 }

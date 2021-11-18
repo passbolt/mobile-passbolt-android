@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.home
 
-import com.passbolt.mobile.android.feature.home.screen.homeModule
 import com.passbolt.mobile.android.core.commonresource.moremenu.resourceMoreMenuModule
+import com.passbolt.mobile.android.feature.home.screen.homeModule
 import org.koin.dsl.module
 
 /**

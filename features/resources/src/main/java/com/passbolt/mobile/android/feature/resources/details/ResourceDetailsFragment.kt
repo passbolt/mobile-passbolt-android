@@ -76,6 +76,7 @@ class ResourceDetailsFragment :
 
     private val urlCopyFields
         get() = listOf(binding.urlHeader, binding.urlIcon)
+
     private val websiteOpener: WebsiteOpener by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -112,7 +113,7 @@ class ResourceDetailsFragment :
         binding.name.text = title
     }
 
-    override fun displayUsername(username: String?) {
+    override fun displayUsername(username: String) {
         binding.usernameValue.text = username
     }
 
@@ -126,7 +127,12 @@ class ResourceDetailsFragment :
     }
 
     override fun displayUrl(url: String) {
-        binding.urlValue.text = url
+        with(binding) {
+            urlValue.text = url
+            urlValue.visible()
+            urlHeader.visible()
+            urlIcon.visible()
+        }
     }
 
     override fun displayInitialsIcon(name: String, initials: String) {

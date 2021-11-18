@@ -221,8 +221,7 @@ class HomePresenterTest : KoinTest {
         presenter.attach(view)
         reset(view)
         presenter.moreClick(model)
-
-        verify(view).navigateToMore(any())
+        verify(view).navigateToMore(model)
         verifyNoMoreInteractions(view)
     }
 

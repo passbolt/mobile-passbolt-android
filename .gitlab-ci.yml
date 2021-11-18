@@ -87,7 +87,39 @@ release:
 
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_COMMIT_BRANCH == "release"'
   artifacts:
     expire_in: 72 hrs
     paths:
       - "**/build/outputs/apk/**/*.apk"
+
+build-production:
+  stage: build
+  tags:
+    - docker
+  script:
+    - echo $PROD_KEYSTORE | base64 -d > "${HOME}/production.keystore"
+    - |
+      echo "Initalizing python"
+      apt-get --quiet update --yes
+      apt-get --quiet install --yes software-properties-common > /dev/null
+      apt-add-repository --yes ppa:deadsnakes/ppa > /dev/null
+      apt-get --quiet install --yes python3.7 > /dev/null
+      apt-get --quiet install --yes python3-pip > /dev/null
+      python3 -m pip install -r gradle/requirements.txt
+
+    - >
+      ./gradlew --no-daemon
+      -Pandroid.injected.signing.store.file="${HOME}/production.keystore"
+      -Pandroid.injected.signing.store.password=$PROD_KEYSTORE_PASSWORD
+      -Pandroid.injected.signing.key.alias=$PROD_KEY_ALIAS
+      -Pandroid.injected.signing.key.password=$PROD_KEY_PASSWORD
+      clean bundleRelease
+
+  rules:
+    - if: '$PROD_KEYSTORE != null'
+    - if: '$CI_COMMIT_BRANCH == "master"'
+  artifacts:
+    expire_in: 72 hrs
+    paths:
+      - "**/build/outputs/bundle/release/*.aab"

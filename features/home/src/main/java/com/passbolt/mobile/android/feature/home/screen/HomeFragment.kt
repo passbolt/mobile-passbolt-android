@@ -291,7 +291,11 @@ class HomeFragment :
     }
 
     override fun showResourceDeletedSnackbar(name: String) {
-        Snackbar.make(binding.rootLayout, getString(R.string.home_resource_deleted_format, name), Snackbar.LENGTH_LONG)
+        Snackbar.make(
+            binding.rootLayout,
+            getString(R.string.home_resource_deleted_format, name),
+            Snackbar.LENGTH_LONG
+        )
             .setAnchorView(binding.createButton)
             .show()
     }
@@ -314,7 +318,9 @@ class HomeFragment :
             binding.root,
             com.passbolt.mobile.android.feature.resources.R.string.resource_create_success,
             Snackbar.LENGTH_SHORT
-        ).show()
+        )
+            .setAnchorView(binding.createButton)
+            .show()
     }
 
     companion object {

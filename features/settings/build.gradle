@@ -8,7 +8,6 @@ apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     implementation project(':mvp')
-    implementation project(':ui')
     implementation project(':navigation')
     implementation project(':coreui')
     implementation project(':common')
