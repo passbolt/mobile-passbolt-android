@@ -48,7 +48,7 @@ class DatabaseProvider(
             context,
             ResourceDatabase::class.java, "${currentUser}_$RESOURCE_DATABASE_NAME"
         )
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(ResourceDatabase.MIGRATION_1_2)
             .openHelperFactory(factory)
             .build()
 

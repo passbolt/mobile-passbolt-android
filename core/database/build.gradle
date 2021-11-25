@@ -34,4 +34,29 @@ dependencies {
     androidTestImplementation libs.test.androidTestsRunner
     androidTestImplementation libs.test.androidTestRules
     androidTestImplementation libs.test.androidTest
+    androidTestImplementation libs.room.testing
+}
+
+android {
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation":
+                                  "$projectDir/schemas".toString()]
+            }
+        }
+    }
+
+    useLibrary("android.test.runner")
+    useLibrary("android.test.base")
+    useLibrary("android.test.mock")
+
+    sourceSets {
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
+    packagingOptions {
+        exclude "META-INF/AL2.0"
+        exclude "META-INF/LGPL2.1"
+    }
 }
