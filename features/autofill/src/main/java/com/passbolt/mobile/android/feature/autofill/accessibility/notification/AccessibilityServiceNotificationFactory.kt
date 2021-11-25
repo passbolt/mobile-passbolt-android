@@ -38,7 +38,7 @@ class AccessibilityServiceNotificationFactory(
         return Notification.Builder(context, CHANNEL_ID)
             .setContentTitle(context.getString(R.string.autofill_service_title))
             .setContentText(context.getString(R.string.autofill_service_content))
-            .setSmallIcon(R.drawable.ic_autofill)
+            .setSmallIcon(R.drawable.ic_key)
             .build()
     }
 
