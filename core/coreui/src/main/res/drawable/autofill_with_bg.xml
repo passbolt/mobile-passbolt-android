@@ -13,7 +13,7 @@
 
     <item
         android:bottom="@dimen/dp_4"
-        android:drawable="@drawable/ic_autofill"
+        android:drawable="@drawable/ic_key"
         android:left="@dimen/dp_4"
         android:right="@dimen/dp_4"
         android:top="@dimen/dp_4" />
