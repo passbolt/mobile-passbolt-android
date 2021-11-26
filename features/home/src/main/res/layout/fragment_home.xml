@@ -144,6 +144,7 @@
         android:layout_margin="@dimen/dp_16"
         android:contentDescription="@string/home_create"
         android:text="@string/home_create"
+        app:tint="@color/white"
         app:backgroundTint="@color/primary"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
         app:srcCompat="@drawable/ic_plus" />
