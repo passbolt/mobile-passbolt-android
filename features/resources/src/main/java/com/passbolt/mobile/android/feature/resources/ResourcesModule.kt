@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.resources
 
 import com.passbolt.mobile.android.feature.resources.details.detailsModule
-import com.passbolt.mobile.android.feature.resources.new.newResourceModule
+import com.passbolt.mobile.android.feature.resources.update.updateResourceModule
 import org.koin.dsl.module
 
 /**
@@ -29,5 +29,5 @@ import org.koin.dsl.module
 
 val resourcesModule = module {
     detailsModule()
-    newResourceModule()
+    updateResourceModule()
 }

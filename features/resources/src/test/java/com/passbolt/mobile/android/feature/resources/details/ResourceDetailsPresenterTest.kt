@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.database.usecase.GetLocalResourceUseCase
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceType
 import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
@@ -65,12 +66,16 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Before
     fun setup() {
+        mockGetLocalResourceUseCase.stub {
+            onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_MODEL.resourceId)) }
+                .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL))
+        }
         presenter.attach(view)
     }
 
     @Test
     fun `constant password details should be shown correct`() {
-        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.argsReceived(RESOURCE_MODEL.resourceId)
 
         verify(view).displayTitle(NAME)
         verify(view).displayUsername(USERNAME)
@@ -84,7 +89,7 @@ class ResourceDetailsPresenterTest : KoinTest {
     @Test
     fun `password details description encryption state should be shown correct for simple password`() {
         mockResourceTypesDao.stub {
-            onBlocking { getResourceTypeWithFields(any()) }.doReturn(
+            onBlocking { getResourceTypeWithFieldsById(any()) }.doReturn(
                 ResourceTypeIdWithFields(
                     ResourceType("id", "simple password", "slug"),
                     listOf(
@@ -100,7 +105,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             )
         }
 
-        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.argsReceived(RESOURCE_MODEL.resourceId)
 
         verify(view).showDescription(DESCRIPTION, useSecretFont = false)
     }
@@ -108,7 +113,7 @@ class ResourceDetailsPresenterTest : KoinTest {
     @Test
     fun `password details description encryption state should be shown correct for default password`() {
         mockResourceTypesDao.stub {
-            onBlocking { getResourceTypeWithFields(any()) }.doReturn(
+            onBlocking { getResourceTypeWithFieldsById(any()) }.doReturn(
                 ResourceTypeIdWithFields(
                     ResourceType("id", "password", "slug"),
                     listOf(
@@ -124,7 +129,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             )
         }
 
-        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.argsReceived(RESOURCE_MODEL.resourceId)
 
         verify(view).showDescriptionIsEncrypted()
     }
@@ -142,7 +147,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         whenever(mockSecretParser.extractPassword(any(), any()))
             .doReturn(String(DECRYPTED_SECRET))
 
-        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.argsReceived(RESOURCE_MODEL.resourceId)
         presenter.secretIconClick()
         presenter.secretIconClick()
 
@@ -158,7 +163,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.DecryptFailure(RuntimeException()))
         }
 
-        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.argsReceived(RESOURCE_MODEL.resourceId)
         presenter.secretIconClick()
 
         verify(view).showDecryptionFailure()
@@ -170,7 +175,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.FetchFailure(RuntimeException()))
         }
 
-        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.argsReceived(RESOURCE_MODEL.resourceId)
         presenter.secretIconClick()
 
         verify(view).showFetchFailure()
@@ -182,7 +187,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.Unauthorized)
         }
 
-        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.argsReceived(RESOURCE_MODEL.resourceId)
         presenter.secretIconClick()
 
         verify(view).showAuth(AuthenticationState.Unauthenticated.Reason.Passphrase)
@@ -198,7 +203,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             )
         }
 
-        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.argsReceived(RESOURCE_MODEL.resourceId)
 
         verify(view).hidePasswordEyeIcon()
     }
@@ -208,11 +213,10 @@ class ResourceDetailsPresenterTest : KoinTest {
         whenever(mockDeleteResourceUseCase.execute(any()))
             .thenReturn(DeleteResourceUseCase.Output.Success)
 
-        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.argsReceived(RESOURCE_MODEL.resourceId)
         presenter.moreClick()
         presenter.menuDeleteClick()
 
-        verify(view).hideResourceMoreMenu()
         verify(view).closeWithDeleteSuccessResult(RESOURCE_MODEL.name)
     }
 
@@ -228,11 +232,10 @@ class ResourceDetailsPresenterTest : KoinTest {
                 )
             )
 
-        presenter.argsReceived(RESOURCE_MODEL)
+        presenter.argsReceived(RESOURCE_MODEL.resourceId)
         presenter.moreClick()
         presenter.menuDeleteClick()
 
-        verify(view).hideResourceMoreMenu()
         verify(view).showGeneralError()
     }
 

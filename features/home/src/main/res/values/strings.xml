@@ -8,4 +8,5 @@
     <string name="home_fetch_failure">Error during downloading the secret</string>
     <string name="home_create">Create</string>
     <string name="home_resource_deleted_format">%s password was deleted.</string>
+    <string name="home_resource_edited_format">%s password was successfully edited.</string>
 </resources>

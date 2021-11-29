@@ -8,8 +8,8 @@
 
     <fragment
         android:id="@+id/newResource"
-        android:name="com.passbolt.mobile.android.feature.resources.new.NewResourceFragment"
+        android:name="com.passbolt.mobile.android.feature.resources.update.UpdateResourceFragment"
         android:label="NewResourceFragment"
-        tools:layout="@layout/fragment_new_resource" />
+        tools:layout="@layout/fragment_update_resource" />
 
 </navigation>

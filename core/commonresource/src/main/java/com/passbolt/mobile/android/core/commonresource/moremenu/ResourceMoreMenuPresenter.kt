@@ -7,10 +7,20 @@ class ResourceMoreMenuPresenter : ResourceMoreMenuContract.Presenter {
 
     override fun argsRetrieved(menuModel: ResourceMoreMenuModel) {
         view?.showTitle(menuModel.title)
+        processEditAndDeleteButtons(menuModel)
+    }
+
+    private fun processEditAndDeleteButtons(menuModel: ResourceMoreMenuModel) {
+        if (menuModel.canDelete || menuModel.canEdit) {
+            view?.showSeparator()
+        }
 
         if (menuModel.canDelete) {
-            view?.showSeparator()
             view?.showDeleteButton()
+        }
+
+        if (menuModel.canEdit) {
+            view?.showEditButton()
         }
     }
 }

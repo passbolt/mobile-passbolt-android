@@ -73,4 +73,22 @@ val commonResourceModule = module {
             resourceRepository = get()
         )
     }
+    single {
+        UpdateResourceUseCase(
+            resourceRepository = get(),
+            openPgp = get(),
+            getPrivateKeyUseCase = get(),
+            getSelectedAccountUseCase = get(),
+            resourceModelMapper = get(),
+            passphraseMemoryCache = get(),
+            updateResourceMapper = get(),
+            resourceTypeFactory = get()
+        )
+    }
+    single {
+        UpdateResourceMapper(
+            gson = get(),
+            resourceTypeFactory = get()
+        )
+    }
 }

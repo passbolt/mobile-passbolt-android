@@ -9,7 +9,8 @@ class ResourceMenuModelMapper {
     fun map(resourceModel: ResourceModel) =
         ResourceMoreMenuModel(
             title = resourceModel.name,
-            canDelete = resourceModel.permission in WRITE_PERMISSIONS
+            canDelete = resourceModel.permission in WRITE_PERMISSIONS,
+            canEdit = resourceModel.permission in WRITE_PERMISSIONS
         )
 
     private companion object {

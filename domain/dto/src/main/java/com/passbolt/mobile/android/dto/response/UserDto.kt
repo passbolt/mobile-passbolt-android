@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.feature.resources.new
+package com.passbolt.mobile.android.dto.response
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,27 +24,14 @@ import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputV
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface NewResourceContract {
+data class UserDto(
+    val id: String,
+    @SerializedName("gpgkey")
+    val gpgKey: GpgKeyDto
+)
 
-    interface View : BaseAuthenticatedContract.View {
-        fun addTextInput(name: String, isSecret: Boolean)
-        fun addPasswordInput(name: String)
-        fun addDescriptionInput(name: String, isSecret: Boolean)
-        fun showEmptyValueError(tag: String)
-        fun showTooLongError(tag: String)
-        fun showPassword(tag: String, generatedPassword: String)
-        fun showPasswordStrength(tag: String, strength: PasswordGenerateInputView.PasswordStrength)
-        fun showError()
-        fun showProgress()
-        fun hideProgress()
-        fun navigateBackWithSuccess()
-    }
-
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun viewCreated()
-        fun createClick()
-        fun passwordGenerateClick(tag: String)
-        fun passwordTextChanged(tag: String, password: String)
-        fun textChanged(tag: String, value: String)
-    }
-}
+data class GpgKeyDto(
+    @SerializedName("armored_key")
+    val armoredKey: String,
+    val fingerprint: String
+)

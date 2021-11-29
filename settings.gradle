@@ -15,6 +15,7 @@ coreModule "featureflags"
 coreModule "database"
 coreModule "commonresource"
 coreModule "security"
+coreModule "users"
 
 featureModule "startup"
 featureModule "setup"

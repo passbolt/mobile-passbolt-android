@@ -49,13 +49,14 @@ interface ResourceDetailsContract {
         fun showDescription(description: String, useSecretFont: Boolean)
         fun hidePasswordEyeIcon()
         fun openWebsite(url: String)
-        fun hideResourceMoreMenu()
         fun showGeneralError()
         fun closeWithDeleteSuccessResult(name: String)
+        fun navigateToEditResource(resourceModel: ResourceModel)
+        fun showResourceEditedSnackbar(resourceName: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsReceived(resourceModel: ResourceModel)
+        fun argsReceived(resourceId: String)
         fun usernameCopyClick()
         fun urlCopyClick()
         fun moreClick()
@@ -69,5 +70,7 @@ interface ResourceDetailsContract {
         fun menuCopyUsernameClick()
         fun menuLaunchWebsiteClick()
         fun menuDeleteClick()
+        fun menuEditClick()
+        fun resourceEdited(resourceName: String)
     }
 }

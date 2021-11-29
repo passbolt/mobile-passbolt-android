@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <ImageView
@@ -23,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/resource_new_password_title"
+        tools:text="@string/resource_new_password_title"
         android:textColor="@color/text_primary"
         app:layout_constraintBottom_toBottomOf="@+id/backArrow"
         app:layout_constraintTop_toTopOf="@+id/backArrow"
@@ -35,17 +36,17 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         android:layout_marginTop="@dimen/dp_16"
-        app:layout_constraintBottom_toTopOf="@+id/createButton"
+        app:layout_constraintBottom_toTopOf="@+id/updateButton"
         app:layout_constraintTop_toBottomOf="@+id/backArrow" />
 
     <Button
-        android:id="@+id/createButton"
+        android:id="@+id/updateButton"
         style="@style/PrimaryButton"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_56"
         android:layout_marginHorizontal="@dimen/dp_16"
         android:layout_marginBottom="@dimen/dp_24"
         android:backgroundTint="@color/button_selector"
-        android:text="@string/resource_create_button"
+        tools:text="@string/resource_create_button"
         app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

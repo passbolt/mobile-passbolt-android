@@ -1,6 +1,8 @@
-package com.passbolt.mobile.android.feature.resources.new
+package com.passbolt.mobile.android.feature.resources.update
 
 import com.passbolt.mobile.android.core.security.PasswordGenerator
+import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.EditFieldsModelCreator
+import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.NewFieldsModelCreator
 import org.koin.core.module.Module
 
 /**
@@ -26,17 +28,23 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.newResourceModule() {
-    scope<NewResourceFragment> {
-        scoped<NewResourceContract.Presenter> {
-            NewResourcePresenter(
+fun Module.updateResourceModule() {
+    scope<UpdateResourceFragment> {
+        scoped<UpdateResourceContract.Presenter> {
+            UpdateResourcePresenter(
                 coroutineLaunchContext = get(),
-                getResourceTypeWithFieldsUseCase = get(),
-                getSelectedAccountUseCase = get(),
                 passwordGenerator = get(),
                 entropyViewMapper = get(),
                 createResourceUseCase = get(),
-                addLocalResourceUseCase = get()
+                addLocalResourceUseCase = get(),
+                updateLocalResourceUseCase = get(),
+                updateResourceUseCase = get(),
+                fetchUsersUseCase = get(),
+                getResourceTypeWithFieldsBySlugUseCase = get(),
+                resourceTypeFactory = get(),
+                editFieldsModelCreator = get(),
+                newFieldsModelCreator = get(),
+                secretInteractor = get()
             )
         }
         scoped {
@@ -48,5 +56,17 @@ fun Module.newResourceModule() {
         scoped {
             EntropyViewMapper()
         }
+    }
+    factory {
+        NewFieldsModelCreator(
+            getResourceTypeWithFieldsBySlugUseCase = get()
+        )
+    }
+    factory {
+        EditFieldsModelCreator(
+            getResourceTypeWithFieldsByIdUseCase = get(),
+            secretParser = get(),
+            resourceTypeEnumFactory = get()
+        )
     }
 }

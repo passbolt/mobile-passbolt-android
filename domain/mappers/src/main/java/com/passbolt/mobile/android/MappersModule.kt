@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
 import com.passbolt.mobile.android.mappers.SignInMapper
 import com.passbolt.mobile.android.mappers.SignOutMapper
 import com.passbolt.mobile.android.mappers.UpdateTransferMapper
+import com.passbolt.mobile.android.mappers.UsersMapper
 import org.koin.dsl.module
 
 /**
@@ -57,4 +58,5 @@ val mappersModule = module {
         )
     }
     single { ResourceMenuModelMapper() }
+    single { UsersMapper() }
 }

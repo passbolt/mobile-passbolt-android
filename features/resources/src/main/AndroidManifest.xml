@@ -5,7 +5,7 @@
 
     <application>
         <activity
-            android:name="com.passbolt.mobile.android.feature.resources.ResourcesActivity"
+            android:name="com.passbolt.mobile.android.feature.resources.ResourceActivity"
             android:screenOrientation="portrait" />
     </application>
 </manifest>

@@ -29,6 +29,6 @@ class CreateResourceMapper(
     private val gson: Gson
 ) {
 
-    fun map(password: String, description: String) =
-        gson.toJson(SecretsDto(password, description))
+    fun map(password: String, description: String?): String =
+        gson.toJson(SecretsDto(password, description.orEmpty()))
 }

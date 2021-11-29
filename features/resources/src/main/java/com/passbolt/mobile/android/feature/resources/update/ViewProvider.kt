@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.resources.new
+package com.passbolt.mobile.android.feature.resources.update
 
 import android.content.Context
 import android.view.ViewGroup
@@ -36,7 +36,6 @@ class ViewProvider {
     fun getTextInput(name: String, context: Context, isSecret: Boolean): Pair<TextInputView, ViewGroup.LayoutParams> =
         Pair(TextInputView(context).apply {
             if (isSecret) enableSecretInput()
-            this.tag = name
             this.title = name
             setDefaultHint(this.title)
         }, getDefaultParams())
@@ -46,7 +45,6 @@ class ViewProvider {
         context: Context
     ): Pair<PasswordGenerateInputView, ViewGroup.LayoutParams> =
         Pair(PasswordGenerateInputView(context).apply {
-            this.tag = name
             this.title = context.resources.getString(R.string.resource_new_password)
             this.hint = context.resources.getString(R.string.resource_new_password_hint)
         }, getDefaultParams())
@@ -58,7 +56,6 @@ class ViewProvider {
     ): Pair<MultilineInputView, ViewGroup.LayoutParams> =
         Pair(MultilineInputView(context).apply {
             if (isSecret) enableSecretInput()
-            this.tag = name
             this.title = context.resources.getString(R.string.resource_new_description)
             setDefaultHint(this.title)
         }, getDefaultParams())

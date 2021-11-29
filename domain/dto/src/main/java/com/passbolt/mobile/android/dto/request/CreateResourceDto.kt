@@ -30,10 +30,13 @@ data class CreateResourceDto(
     val resourceTypeId: String,
     val secrets: List<EncryptedSecret>,
     val username: String?,
-    val uri: String?
+    val uri: String?,
+    val description: String?
 )
 
 data class EncryptedSecret(
+    @SerializedName("user_id")
+    val userId: String,
     val data: String
 )
 

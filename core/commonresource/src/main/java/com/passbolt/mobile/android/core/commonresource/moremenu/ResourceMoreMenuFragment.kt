@@ -79,21 +79,31 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
         with(binding) {
             copyPassword.setDebouncingOnClick {
                 listener?.menuCopyPasswordClick()
+                dismiss()
             }
             copyDescription.setDebouncingOnClick {
                 listener?.menuCopyDescriptionClick()
+                dismiss()
             }
             copyUrl.setDebouncingOnClick {
                 listener?.menuCopyUrlClick()
+                dismiss()
             }
             copyUsername.setDebouncingOnClick {
                 listener?.menuCopyUsernameClick()
+                dismiss()
             }
             launchWebsite.setDebouncingOnClick {
                 listener?.menuLaunchWebsiteClick()
+                dismiss()
             }
             delete.setDebouncingOnClick {
                 listener?.menuDeleteClick()
+                dismiss()
+            }
+            edit.setDebouncingOnClick {
+                listener?.menuEditClick()
+                dismiss()
             }
             close.setDebouncingOnClick {
                 dismiss()
@@ -113,6 +123,10 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
         binding.delete.visible()
     }
 
+    override fun showEditButton() {
+        binding.edit.visible()
+    }
+
     companion object {
         private const val EXTRA_RESOURCE_MENU_MODEL = "RESOURCE_MENU_MODEL"
 
@@ -129,5 +143,6 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
         fun menuCopyUsernameClick()
         fun menuLaunchWebsiteClick()
         fun menuDeleteClick()
+        fun menuEditClick()
     }
 }

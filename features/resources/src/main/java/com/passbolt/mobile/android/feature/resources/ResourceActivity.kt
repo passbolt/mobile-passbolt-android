@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
 import com.passbolt.mobile.android.core.security.FlagSecureSetter
 import com.passbolt.mobile.android.feature.resources.databinding.ActivityResourcesBinding
+import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 
 /**
@@ -32,11 +33,11 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResourcesActivity : BindingActivity<ActivityResourcesBinding>(ActivityResourcesBinding::inflate) {
+class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResourcesBinding::inflate) {
 
     private val flagSecureSetter: FlagSecureSetter by inject()
     private val mode by lifecycleAwareLazy {
-        intent.getSerializableExtra(RESOURCE_MODE_EXTRA) as ResourceMode
+        intent.getSerializableExtra(EXTRA_RESOURCE_MODE) as ResourceMode
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +50,7 @@ class ResourcesActivity : BindingActivity<ActivityResourcesBinding>(ActivityReso
 
         val graph = when (mode) {
             ResourceMode.NEW -> inflater.inflate(R.navigation.resources_new)
+            ResourceMode.EDIT -> inflater.inflate(R.navigation.resources_new)
             ResourceMode.DETAILS -> inflater.inflate(R.navigation.resources_details)
         }
 
@@ -57,20 +59,19 @@ class ResourcesActivity : BindingActivity<ActivityResourcesBinding>(ActivityReso
 
     companion object {
         const val RESULT_RESOURCE_DELETED = 8000
-        const val EXTRA_RESOURCE_NAME = "EXTRA_RESOURCE_NAME"
-        const val RESOURCE_MODEL_KEY = "resourceModel"
-        private const val RESOURCE_MODE_EXTRA = "RESOURCE_MODE_EXTRA"
+        const val RESULT_RESOURCE_EDITED = 8001
+        const val RESULT_RESOURCE_CREATED = 8002
+        const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
+        const val EXTRA_RESOURCE_MODEL = "RESOURCE_MODEL"
+        const val EXTRA_RESOURCE_MODE = "RESOURCE_MODE"
 
-        fun newInstance(mode: ResourceMode, context: Context) = Intent(context, ResourcesActivity::class.java).apply {
-            putExtra(RESOURCE_MODE_EXTRA, mode)
-        }
+        fun newInstance(context: Context, mode: ResourceMode, existingResource: ResourceModel? = null) =
+            Intent(context, ResourceActivity::class.java).apply {
+                putExtra(EXTRA_RESOURCE_MODE, mode)
+                putExtra(EXTRA_RESOURCE_MODEL, existingResource)
+            }
 
-        fun resourceDeletedResultIntent(resourceName: String) = Intent()
+        fun resourceNameResultIntent(resourceName: String) = Intent()
             .putExtra(EXTRA_RESOURCE_NAME, resourceName)
-    }
-
-    enum class ResourceMode {
-        NEW,
-        DETAILS
     }
 }

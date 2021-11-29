@@ -69,10 +69,6 @@ class MultilineInputView @JvmOverloads constructor(
         endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
     }
 
-    fun clearText() {
-        binding.textLayout.editText?.setText("")
-    }
-
     private fun showIconTooltip() {
         binding.icon.showAlignLeft(createBalloon(context) {
             setArrowOrientation(ArrowOrientation.RIGHT)

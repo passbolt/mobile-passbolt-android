@@ -27,11 +27,11 @@ import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.ui.dialog.hideDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
-import com.passbolt.mobile.android.feature.resources.ResourcesActivity
+import com.passbolt.mobile.android.feature.resources.ResourceActivity
+import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
@@ -78,18 +78,18 @@ class HomeFragment :
             }
         }
 
-    private val newResourceResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                presenter.newResourceAdded()
-            }
-        }
-
     private val resourceDetailsResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == ResourcesActivity.RESULT_RESOURCE_DELETED) {
-                val name = it.data?.getStringExtra(ResourcesActivity.EXTRA_RESOURCE_NAME)
+            if (it.resultCode == ResourceActivity.RESULT_RESOURCE_DELETED) {
+                val name = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_NAME)
                 presenter.resourceDeleted(name.orEmpty())
+            }
+            if (it.resultCode == ResourceActivity.RESULT_RESOURCE_EDITED) {
+                val name = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_NAME)
+                presenter.resourceEdited(name.orEmpty())
+            }
+            if (it.resultCode == ResourceActivity.RESULT_RESOURCE_CREATED) {
+                presenter.newResourceCreated()
             }
         }
 
@@ -189,11 +189,11 @@ class HomeFragment :
             searchEditText.doAfterTextChanged {
                 presenter.searchTextChange(it.toString())
             }
-            createButton.setOnClickListener {
-                newResourceResult.launch(
-                    ResourcesActivity.newInstance(
-                        ResourcesActivity.ResourceMode.NEW,
-                        requireContext()
+            updateButton.setOnClickListener {
+                resourceDetailsResult.launch(
+                    ResourceActivity.newInstance(
+                        requireContext(),
+                        ResourceMode.NEW
                     )
                 )
             }
@@ -227,15 +227,9 @@ class HomeFragment :
             .show(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
     }
 
-    override fun hideResourceMoreMenu() {
-        hideDialog(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
-    }
-
     override fun navigateToDetails(resourceModel: ResourceModel) {
         resourceDetailsResult.launch(
-            ResourcesActivity.newInstance(ResourcesActivity.ResourceMode.DETAILS, requireContext()).apply {
-                putExtra(ResourcesActivity.RESOURCE_MODEL_KEY, resourceModel)
-            }
+            ResourceActivity.newInstance(requireContext(), ResourceMode.DETAILS, resourceModel)
         )
     }
 
@@ -286,7 +280,7 @@ class HomeFragment :
 
     override fun showGeneralError() {
         Snackbar.make(binding.rootLayout, R.string.common_failure, Snackbar.LENGTH_SHORT)
-            .setAnchorView(binding.createButton)
+            .setAnchorView(binding.updateButton)
             .show()
     }
 
@@ -296,7 +290,17 @@ class HomeFragment :
             getString(R.string.home_resource_deleted_format, name),
             Snackbar.LENGTH_LONG
         )
-            .setAnchorView(binding.createButton)
+            .setAnchorView(binding.updateButton)
+            .show()
+    }
+
+    override fun showResourceEditedSnackbar(resourceName: String) {
+        Snackbar.make(
+            binding.rootLayout,
+            getString(R.string.home_resource_edited_format, resourceName),
+            Snackbar.LENGTH_LONG
+        )
+            .setAnchorView(binding.updateButton)
             .show()
     }
 
@@ -319,8 +323,22 @@ class HomeFragment :
             com.passbolt.mobile.android.feature.resources.R.string.resource_create_success,
             Snackbar.LENGTH_SHORT
         )
-            .setAnchorView(binding.createButton)
+            .setAnchorView(binding.updateButton)
             .show()
+    }
+
+    override fun menuEditClick() {
+        presenter.menuEditClick()
+    }
+
+    override fun navigateToEdit(resourceModel: ResourceModel) {
+        resourceDetailsResult.launch(
+            ResourceActivity.newInstance(
+                requireContext(),
+                ResourceMode.EDIT,
+                resourceModel
+            )
+        )
     }
 
     companion object {
