@@ -41,22 +41,20 @@ class ViewProvider {
         }, getDefaultParams())
 
     fun getPasswordWithGeneratorInput(
-        name: String,
         context: Context
     ): Pair<PasswordGenerateInputView, ViewGroup.LayoutParams> =
         Pair(PasswordGenerateInputView(context).apply {
-            this.title = context.resources.getString(R.string.resource_new_password)
-            this.hint = context.resources.getString(R.string.resource_new_password_hint)
+            this.title = context.resources.getString(R.string.resource_update_password)
+            this.hint = context.resources.getString(R.string.resource_update_password_hint)
         }, getDefaultParams())
 
     fun getDescriptionInput(
-        name: String,
         context: Context,
         isSecret: Boolean
     ): Pair<MultilineInputView, ViewGroup.LayoutParams> =
         Pair(MultilineInputView(context).apply {
-            if (isSecret) enableSecretInput()
-            this.title = context.resources.getString(R.string.resource_new_description)
+            updateLockIconVisibility(isSecret)
+            this.title = context.resources.getString(R.string.resource_update_description)
             setDefaultHint(this.title)
         }, getDefaultParams())
 

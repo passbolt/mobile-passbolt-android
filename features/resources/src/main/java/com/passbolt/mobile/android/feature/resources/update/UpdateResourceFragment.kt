@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
@@ -64,16 +65,29 @@ class UpdateResourceFragment :
     }
 
     private fun setListeners() {
-        binding.updateButton.setDebouncingOnClick {
-            presenter.updateClick()
+        with(binding) {
+            updateButton.setDebouncingOnClick {
+                presenter.updateClick()
+            }
+            initDefaultToolbar(toolbar)
+            toolbar.setNavigationOnClickListener {
+                requireActivity().finish()
+            }
         }
     }
 
-    override fun addTextInput(name: String, isSecret: Boolean, uiTag: String, initialValue: String?) {
+    override fun addTextInput(
+        name: String,
+        isSecret: Boolean,
+        uiTag: String,
+        isRequired: Boolean,
+        initialValue: String?
+    ) {
         val (textInputView, params) = viewProvider.getTextInput(name, requireContext(), isSecret)
         with(textInputView) {
             tag = uiTag
             text = initialValue.orEmpty()
+            this.isRequired = isRequired
             setTextChangeListener { presenter.textChanged(tag as String, it) }
         }
         binding.container.addView(textInputView, params)
@@ -90,15 +104,17 @@ class UpdateResourceFragment :
     override fun addPasswordInput(
         name: String,
         uiTag: String,
+        isRequired: Boolean,
         initialPassword: String?,
         initialPasswordStrength: PasswordGenerateInputView.PasswordStrength
     ) {
-        val (view, params) = viewProvider.getPasswordWithGeneratorInput(name, requireContext())
+        val (view, params) = viewProvider.getPasswordWithGeneratorInput(requireContext())
         view.apply {
             tag = uiTag
+            this.isRequired = isRequired
             showPassword(initialPassword.orEmpty(), initialPasswordStrength)
-            setGenerateClickListener { presenter.passwordGenerateClick(name) }
-            setPasswordChangeListener { presenter.passwordTextChanged(name, it) }
+            setGenerateClickListener { presenter.passwordGenerateClick(uiTag) }
+            setPasswordChangeListener { presenter.passwordTextChanged(uiTag, it) }
         }
         binding.container.addView(view, params)
     }
@@ -107,11 +123,18 @@ class UpdateResourceFragment :
         (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).setPasswordStrength(strength)
     }
 
-    override fun addDescriptionInput(name: String, isSecret: Boolean, uiTag: String, initialValue: String?) {
-        val (view, params) = viewProvider.getDescriptionInput(name, requireContext(), isSecret)
+    override fun addDescriptionInput(
+        name: String,
+        isSecret: Boolean,
+        uiTag: String,
+        isRequired: Boolean,
+        initialValue: String?
+    ) {
+        val (view, params) = viewProvider.getDescriptionInput(requireContext(), isSecret)
         with(view) {
             tag = uiTag
             text = initialValue.orEmpty()
+            this.isRequired = isRequired
             setTextChangeListener { presenter.textChanged(tag as String, it) }
         }
         binding.container.addView(view, params)
@@ -119,12 +142,12 @@ class UpdateResourceFragment :
 
     override fun showEmptyValueError(tag: String) {
         (binding.container.findViewWithTag<View>(tag) as StatefulInput)
-            .setState(Error(String.format(resources.getString(R.string.resource_new_empty_error), tag)))
+            .setState(Error(String.format(resources.getString(R.string.resource_update_empty_error), tag)))
     }
 
     override fun showTooLongError(tag: String) {
         (binding.container.findViewWithTag<View>(tag) as StatefulInput)
-            .setState(Error(resources.getString(R.string.resource_new_too_long_error)))
+            .setState(Error(resources.getString(R.string.resource_update_too_long_error)))
     }
 
     override fun showPassword(
@@ -163,18 +186,18 @@ class UpdateResourceFragment :
     }
 
     override fun showCreateButton() {
-        binding.updateButton.text = getString(R.string.resource_create_button)
+        binding.updateButton.text = getString(R.string.resource_update_create_button)
     }
 
     override fun showEditButton() {
-        binding.updateButton.text = getString(R.string.resource_edit_button)
+        binding.updateButton.text = getString(R.string.resource_update_edit_button)
     }
 
     override fun showCreateTitle() {
-        binding.titleLabel.text = getString(R.string.resource_new_password_title)
+        binding.toolbar.toolbarTitle = getString(R.string.resource_update_password_title)
     }
 
     override fun showEditTitle() {
-        binding.titleLabel.text = getString(R.string.resource_edit_password_title)
+        binding.toolbar.toolbarTitle = getString(R.string.resource_update_edit_password_title)
     }
 }

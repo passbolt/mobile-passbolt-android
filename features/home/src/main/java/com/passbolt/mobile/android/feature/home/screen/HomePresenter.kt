@@ -99,6 +99,7 @@ class HomePresenter(
     }
 
     private suspend fun fetchResources() {
+        view?.hideUpdateButton()
         when (val result =
             runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                 resourcesInteractor.fetchResourcesWithTypes()
@@ -110,6 +111,7 @@ class HomePresenter(
                 allItemsList = result.resources
                 fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
                 displayResources()
+                view?.showAddButton()
             }
         }
         view?.hideRefreshProgress()

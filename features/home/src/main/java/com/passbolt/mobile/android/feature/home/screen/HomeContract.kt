@@ -51,6 +51,8 @@ interface HomeContract {
         fun showGeneralError()
         fun navigateToEdit(resourceModel: ResourceModel)
         fun showResourceEditedSnackbar(resourceName: String)
+        fun hideUpdateButton()
+        fun showAddButton()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

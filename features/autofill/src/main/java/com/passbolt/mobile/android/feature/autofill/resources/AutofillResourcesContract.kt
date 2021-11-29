@@ -48,6 +48,9 @@ interface AutofillResourcesContract {
         fun getAutofillStructure(): AssistStructure
         fun autofillReturn(username: String, password: String, uri: String?)
         fun setResultAndFinish(result: Int, resultIntent: Intent)
+        fun showUpdateButton()
+        fun hideUpdateButton()
+        fun showResourceAddedSnackbar()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -59,5 +62,6 @@ interface AutofillResourcesContract {
         fun searchAvatarClick()
         fun searchClearClick()
         fun closeClick()
+        fun newResourceCreated()
     }
 }

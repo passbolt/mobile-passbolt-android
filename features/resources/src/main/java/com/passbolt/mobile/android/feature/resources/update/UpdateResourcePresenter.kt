@@ -19,6 +19,13 @@ import com.passbolt.mobile.android.database.usecase.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.EditFieldsModelCreator
+import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.FieldNamesMapper
+import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.FieldNamesMapper.Companion.DESCRIPTION_FIELD
+import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.FieldNamesMapper.Companion.NAME_FIELD
+import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.FieldNamesMapper.Companion.PASSWORD_FIELD
+import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.FieldNamesMapper.Companion.SECRET_FIELD
+import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.FieldNamesMapper.Companion.URI_FIELD
+import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.FieldNamesMapper.Companion.USERNAME_FIELD
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.NewFieldsModelCreator
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.ResourceUpdateType
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
@@ -65,7 +72,8 @@ class UpdateResourcePresenter(
     private val resourceTypeFactory: ResourceTypeFactory,
     private val editFieldsModelCreator: EditFieldsModelCreator,
     private val newFieldsModelCreator: NewFieldsModelCreator,
-    private val secretInteractor: SecretInteractor
+    private val secretInteractor: SecretInteractor,
+    private val fieldNamesMapper: FieldNamesMapper
 ) : BaseAuthenticatedPresenter<UpdateResourceContract.View>(coroutineLaunchContext),
     UpdateResourceContract.Presenter, KoinComponent {
 
@@ -84,7 +92,7 @@ class UpdateResourcePresenter(
 
         setupUi()
 
-        scope.launch {
+        runWhileShowingProgress {
             when (resourceUpdateType) {
                 ResourceUpdateType.CREATE -> createInputFields()
                 ResourceUpdateType.EDIT -> {
@@ -136,10 +144,30 @@ class UpdateResourcePresenter(
         fields.forEach {
             when (it.field.name) {
                 in listOf(PASSWORD_FIELD, SECRET_FIELD) -> handlePasswordInput(it)
-                DESCRIPTION_FIELD -> view?.addDescriptionInput(it.field.name, it.field.isSecret, it.uiTag, it.value)
-                else -> view?.addTextInput(it.field.name, it.field.isSecret, it.uiTag, it.value)
+                DESCRIPTION_FIELD -> handleDescriptionField(it)
+                else -> handleTextInput(it)
             }
         }
+    }
+
+    private fun handleTextInput(it: ResourceValue) {
+        view?.addTextInput(
+            fieldNamesMapper.mapFieldNameToUiName(it.field.name),
+            it.field.isSecret,
+            it.uiTag,
+            it.field.isRequired,
+            it.value
+        )
+    }
+
+    private fun handleDescriptionField(it: ResourceValue) {
+        view?.addDescriptionInput(
+            fieldNamesMapper.mapFieldNameToUiName(it.field.name),
+            it.field.isSecret,
+            it.uiTag,
+            it.field.isRequired,
+            it.value
+        )
     }
 
     private suspend fun doAfterFetchAndDecrypt(
@@ -166,8 +194,9 @@ class UpdateResourcePresenter(
             } ?: 0.0
         )
         view?.addPasswordInput(
-            it.field.name,
+            fieldNamesMapper.mapFieldNameToUiName(it.field.name),
             it.uiTag,
+            it.field.isRequired,
             it.value,
             entropyViewMapper.map(initialValueEntropy)
         )
@@ -336,13 +365,6 @@ class UpdateResourcePresenter(
 
     // TODO add support for fully dynamic request model
     companion object {
-        const val PASSWORD_FIELD = "password"
-        const val SECRET_FIELD = "secret"
-        const val DESCRIPTION_FIELD = "description"
-        const val USERNAME_FIELD = "username"
-        const val URI_FIELD = "uri"
-        const val NAME_FIELD = "name"
-
         private val DEFAULT_ENTROPY = PasswordGenerator.Entropy.VERY_STRONG
     }
 }

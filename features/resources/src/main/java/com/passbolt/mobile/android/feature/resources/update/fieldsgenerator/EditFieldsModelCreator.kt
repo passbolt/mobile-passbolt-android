@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.feature.resources.update.fieldsgenerator
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.feature.resources.update.ResourceValue
-import com.passbolt.mobile.android.feature.resources.update.UpdateResourcePresenter
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.ui.ResourceModel
 
@@ -48,25 +47,24 @@ class EditFieldsModelCreator(
 
         return editedResourceType.fields.map { field ->
             val initialValue = when (field.name) {
-                in listOf(UpdateResourcePresenter.PASSWORD_FIELD, UpdateResourcePresenter.SECRET_FIELD) -> {
+                in listOf(FieldNamesMapper.PASSWORD_FIELD, FieldNamesMapper.SECRET_FIELD) -> {
                     secretParser.extractPassword(resourceTypeEnum, secret)
                 }
-                UpdateResourcePresenter.DESCRIPTION_FIELD -> {
+                FieldNamesMapper.DESCRIPTION_FIELD -> {
                     when (resourceTypeEnum) {
                         ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> {
                             existingResource.description
                         }
                         ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> {
-
                             secretParser.extractDescription(resourceTypeEnum, secret)
                         }
                     }
                 }
                 else -> {
                     when (field.name) {
-                        UpdateResourcePresenter.NAME_FIELD -> existingResource.name
-                        UpdateResourcePresenter.USERNAME_FIELD -> existingResource.username
-                        UpdateResourcePresenter.URI_FIELD -> existingResource.url
+                        FieldNamesMapper.NAME_FIELD -> existingResource.name
+                        FieldNamesMapper.USERNAME_FIELD -> existingResource.username
+                        FieldNamesMapper.URI_FIELD -> existingResource.url
                         else -> ""
                     }
                 }

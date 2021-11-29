@@ -14,15 +14,20 @@
     <string name="more_details_copy_password">Copy password</string>
     <string name="more_details_copy_description">Copy description</string>
 
-    <string name="resource_new_password_title">New password</string>
-    <string name="resource_new_password">Password</string>
-    <string name="resource_new_password_hint">Enter password</string>
-    <string name="resource_new_description">Description</string>
-    <string name="resource_new_description_hint">Enter description</string>
-    <string name="resource_new_empty_error">The %s cannot be empty</string>
-    <string name="resource_new_too_long_error">The maximum length has been exceeded</string>
-    <string name="resource_create_button">Create</string>
-    <string name="resource_create_success">New password was created!</string>
-    <string name="resource_edit_button">Save</string>
-    <string name="resource_edit_password_title">Edit password</string>
+    <string name="resource_update_password_title">New password</string>
+    <string name="resource_update_password">Password</string>
+    <string name="resource_update_password_hint">Enter password</string>
+    <string name="resource_update_description">Description</string>
+    <string name="resource_update_description_hint">Enter description</string>
+    <string name="resource_update_empty_error">The %s cannot be empty</string>
+    <string name="resource_update_too_long_error">The maximum length has been exceeded</string>
+    <string name="resource_update_create_button">Create</string>
+    <string name="resource_update_create_success">New password was created!</string>
+    <string name="resource_update_edit_button">Save</string>
+    <string name="resource_update_edit_password_title">Edit password</string>
+    <string name="resource_update_field_password">Password</string>
+    <string name="resource_update_field_name">Name</string>
+    <string name="resource_update_field_uri">URL</string>
+    <string name="resource_update_field_username">Username</string>
+    <string name="resource_update_field_description">Description</string>
 </resources>
