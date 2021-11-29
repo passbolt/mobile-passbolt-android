@@ -20,6 +20,10 @@ If you are certain this is a new Android bug please use the following format:
   -- Android OS: NAME AND VERSION
   -- Phone: NAME AND VERSION
   -- Passbolt API: NAME AND VERSION
+  -- For an autofill issue:
+        -- Device language: SYSTEM LANGUAGE,
+        -- Autofill: AUTOFILL USED (Autofill Service/Accessibility Service)
+        -- Autofill context: AUTOFILL IN APP or AUTOFILL IN BROWSER (please add the app name or web url)
   -- etc.: OTHER RELEVANT PLATFORM INFO
 
 ### What you did
