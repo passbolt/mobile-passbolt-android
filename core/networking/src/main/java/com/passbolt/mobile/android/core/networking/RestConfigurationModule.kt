@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import timber.log.Timber
 import java.time.Duration
 
 /**
@@ -89,7 +90,14 @@ val networkingModule = module {
 }
 
 private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
-    return HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+    return HttpLoggingInterceptor(logger = provideHttpLogger())
+        .apply { level = HttpLoggingInterceptor.Level.BODY }
+}
+
+private fun provideHttpLogger(): HttpLoggingInterceptor.Logger = object : HttpLoggingInterceptor.Logger {
+    override fun log(message: String) {
+        Timber.d(message)
+    }
 }
 
 private fun provideHttpClient(
