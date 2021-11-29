@@ -61,6 +61,49 @@
                 tools:text="DD" />
 
             <TextView
+                android:id="@+id/urlHeader"
+                style="@style/Heading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:text="@string/resource_details_url_header"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/sp_12"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/urlIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/name" />
+
+            <TextView
+                android:id="@+id/urlValue"
+                style="@style/ValueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_8"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:autoLink="web"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/sp_12"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@id/urlIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/urlHeader"
+                tools:text="airbnb.com/login" />
+
+            <ImageView
+                android:id="@+id/urlIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_12"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_copy"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/urlValue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/urlHeader" />
+
+            <TextView
                 android:id="@+id/usernameHeader"
                 style="@style/Heading"
                 android:layout_width="0dp"
@@ -72,7 +115,7 @@
                 android:textSize="@dimen/sp_12"
                 app:layout_constraintEnd_toStartOf="@id/usernameIcon"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/name" />
+                app:layout_constraintTop_toBottomOf="@+id/urlValue" />
 
             <TextView
                 android:id="@+id/usernameValue"
@@ -138,49 +181,6 @@
                 app:layout_constraintTop_toTopOf="@+id/passwordHeader" />
 
             <TextView
-                android:id="@+id/urlHeader"
-                style="@style/Heading"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_24"
-                android:layout_marginEnd="@dimen/dp_8"
-                android:text="@string/resource_details_url_header"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/sp_12"
-                android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@id/urlIcon"
-                app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/passwordValue" />
-
-            <TextView
-                android:id="@+id/urlValue"
-                style="@style/ValueText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_8"
-                android:layout_marginEnd="@dimen/dp_8"
-                android:autoLink="web"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/sp_12"
-                android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@id/urlIcon"
-                app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/urlHeader"
-                tools:text="airbnb.com/login" />
-
-            <ImageView
-                android:id="@+id/urlIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/dp_12"
-                android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_copy"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/urlValue"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/urlHeader" />
-
-            <TextView
                 android:id="@+id/descriptionHeader"
                 style="@style/Heading"
                 android:layout_width="0dp"
@@ -191,7 +191,7 @@
                 android:textSize="@dimen/sp_12"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/urlValue" />
+                app:layout_constraintTop_toBottomOf="@+id/passwordValue" />
 
             <TextView
                 android:id="@+id/descriptionValue"
