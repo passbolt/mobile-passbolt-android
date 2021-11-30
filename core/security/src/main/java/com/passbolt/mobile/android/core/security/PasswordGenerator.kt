@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.core.security
 
-import java.lang.StringBuilder
 import kotlin.math.ln
 
 /**
@@ -37,18 +36,23 @@ class PasswordGenerator {
         val stringBuilder = StringBuilder()
         val entireAlphabet = alphabets.flatten()
 
-        while (stringBuilder.length < minLength && Entropy.parse(
-                getEntropy(
-                    stringBuilder.toString(),
-                    alphabets
-                )
-            ).rawValue < targetEntropy.rawValue
-        ) {
+        while (!arePasswordCriteriaMet(stringBuilder, minLength, alphabets, targetEntropy)) {
             stringBuilder.append(entireAlphabet.random())
         }
-
         return stringBuilder.toString()
     }
+
+    private fun arePasswordCriteriaMet(
+        stringBuilder: StringBuilder,
+        minLength: Int,
+        alphabets: Set<Set<Char>>,
+        targetEntropy: Entropy
+    ) = stringBuilder.length >= minLength && Entropy.parse(
+        getEntropy(
+            stringBuilder.toString(),
+            alphabets
+        )
+    ).rawValue >= targetEntropy.rawValue
 
     fun getEntropy(password: String, alphabets: Set<Set<Char>> = CharacterSets.all): Double {
         if (password.isEmpty() || alphabets.isEmpty()) {
