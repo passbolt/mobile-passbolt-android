@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.core.security.PasswordGenerator
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.EditFieldsModelCreator
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.FieldNamesMapper
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.NewFieldsModelCreator
+import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.ResourceFieldsComparator
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 
@@ -62,14 +63,19 @@ fun Module.updateResourceModule() {
     }
     factory {
         NewFieldsModelCreator(
-            getResourceTypeWithFieldsBySlugUseCase = get()
+            getResourceTypeWithFieldsBySlugUseCase = get(),
+            resourceFieldsComparator = get()
         )
+    }
+    factory {
+        ResourceFieldsComparator()
     }
     factory {
         EditFieldsModelCreator(
             getResourceTypeWithFieldsByIdUseCase = get(),
             secretParser = get(),
-            resourceTypeEnumFactory = get()
+            resourceTypeEnumFactory = get(),
+            resourceFieldsComparator = get()
         )
     }
     factory {
