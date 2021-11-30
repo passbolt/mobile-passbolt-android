@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.feature.resources.update
 
 import com.passbolt.mobile.android.core.security.PasswordGenerator
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.EditFieldsModelCreator
+import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.FieldNamesMapper
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.NewFieldsModelCreator
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 
 /**
@@ -44,7 +46,8 @@ fun Module.updateResourceModule() {
                 resourceTypeFactory = get(),
                 editFieldsModelCreator = get(),
                 newFieldsModelCreator = get(),
-                secretInteractor = get()
+                secretInteractor = get(),
+                fieldNamesMapper = get()
             )
         }
         scoped {
@@ -68,5 +71,8 @@ fun Module.updateResourceModule() {
             secretParser = get(),
             resourceTypeEnumFactory = get()
         )
+    }
+    factory {
+        FieldNamesMapper(androidContext())
     }
 }

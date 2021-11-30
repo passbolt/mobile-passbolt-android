@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.stub
 import com.nhaarman.mockitokotlin2.times
@@ -86,8 +87,10 @@ class HomePresenterTest : KoinTest {
         presenter.attach(view)
 
         verify(view).showProgress()
+        verify(view).hideUpdateButton()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
+        verify(view).showAddButton()
         verify(view).showPasswords(anyOrNull())
         verify(view).displaySearchAvatar(null)
         verifyNoMoreInteractions(view)
@@ -105,8 +108,10 @@ class HomePresenterTest : KoinTest {
         reset(view)
         presenter.refreshSwipe()
 
+        verify(view).hideUpdateButton()
         verify(view).hideRefreshProgress()
         verify(view).showPasswords(anyOrNull())
+        verify(view).showAddButton()
         verifyNoMoreInteractions(view)
     }
 
@@ -123,8 +128,10 @@ class HomePresenterTest : KoinTest {
         reset(view)
         presenter.refreshSwipe()
 
+        verify(view).hideUpdateButton()
         verify(view).hideRefreshProgress()
         verify(view).showSearchEmptyList()
+        verify(view).showAddButton()
         verifyNoMoreInteractions(view)
     }
 
@@ -139,7 +146,9 @@ class HomePresenterTest : KoinTest {
         verify(view).showProgress()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
+        verify(view).hideUpdateButton()
         verify(view).showEmptyList()
+        verify(view).showAddButton()
         verify(view).displaySearchAvatar(null)
         verifyNoMoreInteractions(view)
     }
@@ -152,15 +161,17 @@ class HomePresenterTest : KoinTest {
         mockAccountData(null)
         presenter.attach(view)
         verify(view).showProgress()
+        verify(view).hideUpdateButton()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
         verify(view).showError()
         verify(view).displaySearchAvatar(null)
+        verify(view, never()).showAddButton()
         verifyNoMoreInteractions(view)
     }
 
     @Test
-    fun `refresh clicked should fetch resources`() = runBlockingTest {
+    fun `error during refresh clicked should show correct ui`() = runBlockingTest {
         whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
@@ -170,9 +181,11 @@ class HomePresenterTest : KoinTest {
         presenter.refreshClick()
 
         verify(view).showProgress()
+        verify(view).hideUpdateButton()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
         verify(view).showError()
+        verify(view, never()).showAddButton()
         verifyNoMoreInteractions(view)
     }
 

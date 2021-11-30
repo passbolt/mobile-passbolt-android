@@ -32,6 +32,8 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
+import com.passbolt.mobile.android.feature.resources.ResourceActivity
+import com.passbolt.mobile.android.feature.resources.ResourceMode
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
@@ -86,6 +88,13 @@ class AutofillResourcesActivity :
                 presenter.userAuthenticated()
             } else {
                 finish()
+            }
+        }
+
+    private val resourceDetailsResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == ResourceActivity.RESULT_RESOURCE_CREATED) {
+                presenter.newResourceCreated()
             }
         }
 
@@ -166,7 +175,12 @@ class AutofillResourcesActivity :
             presenter.closeClick()
         }
         createButton.setDebouncingOnClick {
-            // TODO
+            resourceDetailsResult.launch(
+                ResourceActivity.newInstance(
+                    this@AutofillResourcesActivity,
+                    ResourceMode.NEW
+                )
+            )
         }
     }
 
@@ -219,6 +233,17 @@ class AutofillResourcesActivity :
     override fun showGeneralError() {
         binding.swipeRefresh.isRefreshing = false
         Snackbar.make(binding.root, R.string.common_failure, Snackbar.LENGTH_LONG)
+            .setAnchorView(binding.createButton)
+            .show()
+    }
+
+    override fun showResourceAddedSnackbar() {
+        Snackbar.make(
+            binding.root,
+            R.string.resource_update_create_success,
+            Snackbar.LENGTH_SHORT
+        )
+            .setAnchorView(binding.createButton)
             .show()
     }
 
@@ -261,6 +286,14 @@ class AutofillResourcesActivity :
     override fun setResultAndFinish(result: Int, resultIntent: Intent) {
         setResult(result, resultIntent)
         finish()
+    }
+
+    override fun hideUpdateButton() {
+        binding.createButton.hide()
+    }
+
+    override fun showUpdateButton() {
+        binding.createButton.show()
     }
 
     enum class State(

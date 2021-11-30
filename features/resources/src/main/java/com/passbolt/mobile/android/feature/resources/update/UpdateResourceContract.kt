@@ -30,14 +30,30 @@ import com.passbolt.mobile.android.ui.ResourceModel
 interface UpdateResourceContract {
 
     interface View : BaseAuthenticatedContract.View {
-        fun addTextInput(name: String, isSecret: Boolean, uiTag: String, initialValue: String? = null)
+        fun addTextInput(
+            name: String,
+            isSecret: Boolean,
+            uiTag: String,
+            isRequired: Boolean,
+            initialValue: String? = null
+        )
+
         fun addPasswordInput(
             name: String,
             uiTag: String,
+            isRequired: Boolean,
             initialPassword: String? = null,
             initialPasswordStrength: PasswordGenerateInputView.PasswordStrength
         )
-        fun addDescriptionInput(name: String, isSecret: Boolean, uiTag: String, initialValue: String? = null)
+
+        fun addDescriptionInput(
+            name: String,
+            isSecret: Boolean,
+            uiTag: String,
+            isRequired: Boolean,
+            initialValue: String? = null
+        )
+
         fun showEmptyValueError(tag: String)
         fun showTooLongError(tag: String)
         fun showPassword(tag: String, password: String?, passwordStrength: PasswordGenerateInputView.PasswordStrength)

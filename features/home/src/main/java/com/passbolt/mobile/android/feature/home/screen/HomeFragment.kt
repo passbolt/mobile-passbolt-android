@@ -320,7 +320,7 @@ class HomeFragment :
     override fun showResourceAddedSnackbar() {
         Snackbar.make(
             binding.root,
-            com.passbolt.mobile.android.feature.resources.R.string.resource_create_success,
+            R.string.resource_update_create_success,
             Snackbar.LENGTH_SHORT
         )
             .setAnchorView(binding.updateButton)
@@ -339,6 +339,14 @@ class HomeFragment :
                 resourceModel
             )
         )
+    }
+
+    override fun hideUpdateButton() {
+        binding.updateButton.hide()
+    }
+
+    override fun showAddButton() {
+        binding.updateButton.show()
     }
 
     companion object {

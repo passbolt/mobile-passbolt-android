@@ -98,6 +98,7 @@ class AutofillResourcesPresenter(
 
     private fun fetchResources(withShowingListProgress: Boolean = true) {
         scope.launch {
+            view?.hideUpdateButton()
             if (withShowingListProgress) {
                 view?.showProgress()
             }
@@ -118,6 +119,7 @@ class AutofillResourcesPresenter(
         } else {
             showItems()
         }
+        view?.showUpdateButton()
     }
 
     private suspend fun fetchingResourcesFailure() {
@@ -251,6 +253,11 @@ class AutofillResourcesPresenter(
 
     override fun closeClick() {
         view?.navigateToHome()
+    }
+
+    override fun newResourceCreated() {
+        fetchResources(withShowingListProgress = true)
+        view?.showResourceAddedSnackbar()
     }
 
     enum class SearchInputEndIconMode {

@@ -4,7 +4,6 @@ import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.Gravity
-import com.google.android.material.textfield.TextInputLayout
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.px
@@ -57,16 +56,12 @@ class MultilineInputView @JvmOverloads constructor(
         }
     }
 
-    override fun enableSecretInput() = with(binding.textLayout) {
-        editText?.apply {
-            isSingleLine = true
-            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE or
-                    InputType.TYPE_TEXT_VARIATION_PASSWORD
-            minLines = MIN_LINES
-            isSaveEnabled = false
-            gravity = Gravity.TOP
+    fun updateLockIconVisibility(isSecret: Boolean) {
+        if (isSecret) {
+            binding.icon.setImageResource(R.drawable.ic_lock)
+        } else {
+            binding.icon.setImageResource(R.drawable.ic_lock_open)
         }
-        endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
     }
 
     private fun showIconTooltip() {
