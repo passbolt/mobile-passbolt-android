@@ -31,7 +31,8 @@ import com.passbolt.mobile.android.ui.ResourceModel
 class EditFieldsModelCreator(
     private val getResourceTypeWithFieldsByIdUseCase: GetResourceTypeWithFieldsByIdUseCase,
     private val secretParser: SecretParser,
-    private val resourceTypeEnumFactory: ResourceTypeFactory
+    private val resourceTypeEnumFactory: ResourceTypeFactory,
+    private val resourceFieldsComparator: ResourceFieldsComparator
 ) {
 
     suspend fun create(
@@ -45,31 +46,34 @@ class EditFieldsModelCreator(
 
         val resourceTypeEnum = resourceTypeEnumFactory.getResourceTypeEnum(existingResource.resourceTypeId)
 
-        return editedResourceType.fields.map { field ->
-            val initialValue = when (field.name) {
-                in listOf(FieldNamesMapper.PASSWORD_FIELD, FieldNamesMapper.SECRET_FIELD) -> {
-                    secretParser.extractPassword(resourceTypeEnum, secret)
-                }
-                FieldNamesMapper.DESCRIPTION_FIELD -> {
-                    when (resourceTypeEnum) {
-                        ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> {
-                            existingResource.description
+        return editedResourceType
+            .fields
+            .sortedWith(resourceFieldsComparator)
+            .map { field ->
+                val initialValue = when (field.name) {
+                    in listOf(FieldNamesMapper.PASSWORD_FIELD, FieldNamesMapper.SECRET_FIELD) -> {
+                        secretParser.extractPassword(resourceTypeEnum, secret)
+                    }
+                    FieldNamesMapper.DESCRIPTION_FIELD -> {
+                        when (resourceTypeEnum) {
+                            ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> {
+                                existingResource.description
+                            }
+                            ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> {
+                                secretParser.extractDescription(resourceTypeEnum, secret)
+                            }
                         }
-                        ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> {
-                            secretParser.extractDescription(resourceTypeEnum, secret)
+                    }
+                    else -> {
+                        when (field.name) {
+                            FieldNamesMapper.NAME_FIELD -> existingResource.name
+                            FieldNamesMapper.USERNAME_FIELD -> existingResource.username
+                            FieldNamesMapper.URI_FIELD -> existingResource.url
+                            else -> ""
                         }
                     }
                 }
-                else -> {
-                    when (field.name) {
-                        FieldNamesMapper.NAME_FIELD -> existingResource.name
-                        FieldNamesMapper.USERNAME_FIELD -> existingResource.username
-                        FieldNamesMapper.URI_FIELD -> existingResource.url
-                        else -> ""
-                    }
-                }
+                ResourceValue(field, initialValue)
             }
-            ResourceValue(field, initialValue)
-        }
     }
 }

@@ -26,7 +26,8 @@ import com.passbolt.mobile.android.feature.resources.update.ResourceValue
  * @since v1.0
  */
 class NewFieldsModelCreator(
-    private val getResourceTypeWithFieldsBySlugUseCase: GetResourceTypeWithFieldsBySlugUseCase
+    private val getResourceTypeWithFieldsBySlugUseCase: GetResourceTypeWithFieldsBySlugUseCase,
+    private val resourceFieldsComparator: ResourceFieldsComparator
 ) {
 
     suspend fun create(): List<ResourceValue> {
@@ -35,6 +36,7 @@ class NewFieldsModelCreator(
         )
         return defaultCreateResourceType
             .fields
+            .sortedWith(resourceFieldsComparator)
             .map { ResourceValue(it, null) }
     }
 }
