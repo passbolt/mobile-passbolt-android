@@ -61,7 +61,7 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     }
 
     override fun showAccountCreationInfoDialog() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme)
             .setTitle(R.string.welcome_create_account_dialog_title)
             .setMessage(R.string.welcome_create_account_dialog_message)
             .setPositiveButton(R.string.got_it) { _, _ -> }

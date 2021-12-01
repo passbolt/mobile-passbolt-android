@@ -17,7 +17,6 @@
             android:background="@color/white"
             android:theme="@style/Theme.Passbolt.Toolbar"
             app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/Theme.Passbolt.PopupOverlay"
             app:toolbarTitle="@string/transfer_details_title" />
 
         <TextView

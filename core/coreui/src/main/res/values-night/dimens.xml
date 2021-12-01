@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--specific views - for dark theme overrides-->
+    <dimen name="nav_elevation">0dp</dimen>
+</resources>
