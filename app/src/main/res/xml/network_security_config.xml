@@ -1,8 +1,13 @@
-<network-security-config>
-    <debug-overrides>
+<network-security-config
+    xmlns:tools="http://schemas.android.com/tools">
+    <base-config>
         <trust-anchors>
-            <certificates src="system"/>
-            <certificates src="user"/>
+            <certificates src="system" />
+            <!--user installed certificates should be allowed in production-->
+            <!--(backend url is determined at runtime - many backends have self signed certs-->
+            <certificates
+                src="user"
+                tools:ignore="AcceptsUserCertificates" />
         </trust-anchors>
-    </debug-overrides>
+    </base-config>
 </network-security-config>
