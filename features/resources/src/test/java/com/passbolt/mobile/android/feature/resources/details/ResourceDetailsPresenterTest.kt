@@ -209,14 +209,16 @@ class ResourceDetailsPresenterTest : KoinTest {
     }
 
     @Test
-    fun `delete resource should delete and close details`() = runBlockingTest {
+    fun `delete resource should show confirmation dialog, delete and close details`() = runBlockingTest {
         whenever(mockDeleteResourceUseCase.execute(any()))
             .thenReturn(DeleteResourceUseCase.Output.Success)
 
         presenter.argsReceived(RESOURCE_MODEL.resourceId)
         presenter.moreClick()
         presenter.menuDeleteClick()
+        presenter.deleteResourceConfirmed()
 
+        verify(view).showDeleteConfirmationDialog()
         verify(view).closeWithDeleteSuccessResult(RESOURCE_MODEL.name)
     }
 
@@ -235,7 +237,9 @@ class ResourceDetailsPresenterTest : KoinTest {
         presenter.argsReceived(RESOURCE_MODEL.resourceId)
         presenter.moreClick()
         presenter.menuDeleteClick()
+        presenter.deleteResourceConfirmed()
 
+        verify(view).showDeleteConfirmationDialog()
         verify(view).showGeneralError()
     }
 

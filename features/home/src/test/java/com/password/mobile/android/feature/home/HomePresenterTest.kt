@@ -309,7 +309,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `delete resource should delete and show snackbar`() = runBlockingTest {
+    fun `delete resource should show confirmation dialog, delete and show snackbar`() = runBlockingTest {
         mockAccountData(null)
         whenever(mockDeleteResourceUseCase.execute(any()))
             .thenReturn(DeleteResourceUseCase.Output.Success)
@@ -322,7 +322,9 @@ class HomePresenterTest : KoinTest {
         presenter.attach(view)
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
+        presenter.deleteResourceConfirmed()
 
+        verify(view).showDeleteConfirmationDialog()
         verify(view).showResourceDeletedSnackbar(RESOURCE_MODEL.name)
     }
 
@@ -347,7 +349,9 @@ class HomePresenterTest : KoinTest {
         presenter.attach(view)
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
+        presenter.deleteResourceConfirmed()
 
+        verify(view).showDeleteConfirmationDialog()
         verify(view).showGeneralError()
     }
 
