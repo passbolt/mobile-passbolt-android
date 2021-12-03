@@ -234,6 +234,10 @@ class HomePresenter(
     }
 
     override fun menuDeleteClick() {
+        view?.showDeleteConfirmationDialog()
+    }
+
+    override fun deleteResourceConfirmed() {
         currentMoreMenuResource?.let { sadResource ->
             runWhileShowingListProgress {
                 when (val response = deleteResourceUseCase

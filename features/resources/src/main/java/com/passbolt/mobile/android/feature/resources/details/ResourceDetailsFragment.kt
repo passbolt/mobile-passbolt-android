@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import com.amulyakhare.textdrawable.TextDrawable
@@ -292,6 +293,16 @@ class ResourceDetailsFragment :
             getString(R.string.resource_details_resource_edited_format, resourceName),
             Snackbar.LENGTH_LONG
         )
+            .show()
+    }
+
+    override fun showDeleteConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.are_you_sure)
+            .setMessage(R.string.resource_will_be_deleted)
+            .setPositiveButton(R.string.delete) { _, _ -> presenter.deleteResourceConfirmed() }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setCancelable(false)
             .show()
     }
 

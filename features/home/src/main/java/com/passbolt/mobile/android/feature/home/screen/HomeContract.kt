@@ -53,6 +53,7 @@ interface HomeContract {
         fun showResourceEditedSnackbar(resourceName: String)
         fun hideUpdateButton()
         fun showAddButton()
+        fun showDeleteConfirmationDialog()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -74,5 +75,6 @@ interface HomeContract {
         fun resourceDeleted(resourceName: String)
         fun menuEditClick()
         fun resourceEdited(resourceName: String)
+        fun deleteResourceConfirmed()
     }
 }

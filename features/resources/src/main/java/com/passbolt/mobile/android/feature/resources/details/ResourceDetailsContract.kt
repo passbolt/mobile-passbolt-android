@@ -53,6 +53,7 @@ interface ResourceDetailsContract {
         fun closeWithDeleteSuccessResult(name: String)
         fun navigateToEditResource(resourceModel: ResourceModel)
         fun showResourceEditedSnackbar(resourceName: String)
+        fun showDeleteConfirmationDialog()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -72,5 +73,6 @@ interface ResourceDetailsContract {
         fun menuDeleteClick()
         fun menuEditClick()
         fun resourceEdited(resourceName: String)
+        fun deleteResourceConfirmed()
     }
 }

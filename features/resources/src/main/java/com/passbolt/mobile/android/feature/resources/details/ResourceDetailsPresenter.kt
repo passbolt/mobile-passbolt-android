@@ -226,6 +226,10 @@ class ResourceDetailsPresenter(
     }
 
     override fun menuDeleteClick() {
+        view?.showDeleteConfirmationDialog()
+    }
+
+    override fun deleteResourceConfirmed() {
         runWhileShowingListProgress {
             when (val response = deleteResourceUseCase
                 .execute(DeleteResourceUseCase.Input(resourceModel.resourceId))) {
