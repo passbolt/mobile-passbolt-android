@@ -7,12 +7,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.viewbinding.ViewBinding
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyDialog
 import java.lang.IllegalStateException
-import com.passbolt.mobile.android.core.mvp.session.AuthenticationState.Unauthenticated.Reason
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpListener
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyListener
@@ -63,7 +63,7 @@ abstract class BindingScopedAuthenticatedFragment
         } else {
             val authType = when (reason) {
                 Reason.Passphrase -> ActivityIntents.AuthConfig.RefreshPassphrase
-                Reason.Session -> ActivityIntents.AuthConfig.RefreshFull
+                Reason.Session -> ActivityIntents.AuthConfig.SignIn
                 else -> {
                     throw IllegalStateException("Wrong reason")
                 }

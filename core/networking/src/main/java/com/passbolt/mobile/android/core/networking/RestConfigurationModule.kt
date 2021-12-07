@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.core.networking
 
-import com.passbolt.mobile.android.common.MfaTokenExtractor
+import com.passbolt.mobile.android.common.CookieExtractor
 import com.passbolt.mobile.android.core.networking.interceptor.AuthInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.CookiesInterceptor
@@ -61,15 +61,13 @@ val networkingModule = module {
     }
     single {
         CookiesInterceptor.ReceivedCookiesInterceptor(
-            mfaTokenExtractor = get()
+            cookieExtractor = get()
         )
     }
     single {
-        CookiesInterceptor.AddCookiesInterceptor(
-            getSessionUseCase = get()
-        )
+        CookiesInterceptor.AddCookiesInterceptor()
     }
-    single { MfaTokenExtractor() }
+    single { CookieExtractor() }
     single {
         RetrofitRestService(
             client = get(),

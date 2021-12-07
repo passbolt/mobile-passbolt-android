@@ -158,7 +158,7 @@ class AutofillResourcesActivity :
         initialAuthenticationResult.launch(
             ActivityIntents.authentication(
                 this,
-                ActivityIntents.AuthConfig.RefreshFull,
+                ActivityIntents.AuthConfig.SignIn,
                 appContext = AppContext.AUTOFILL
             )
         )

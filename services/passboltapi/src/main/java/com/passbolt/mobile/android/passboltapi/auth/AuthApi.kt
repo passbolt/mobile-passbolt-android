@@ -1,12 +1,15 @@
 package com.passbolt.mobile.android.passboltapi.auth
 
+import com.passbolt.mobile.android.core.networking.AuthPaths.AUTH_JWT_REFRESH
 import com.passbolt.mobile.android.core.networking.AuthPaths.AUTH_RSA
 import com.passbolt.mobile.android.core.networking.AuthPaths.AUTH_SIGN_IN
 import com.passbolt.mobile.android.core.networking.AuthPaths.AUTH_SIGN_OUT
 import com.passbolt.mobile.android.core.networking.AuthPaths.AUTH_VERIFY
+import com.passbolt.mobile.android.dto.request.RefreshSessionRequest
 import com.passbolt.mobile.android.dto.request.SignInRequestDto
 import com.passbolt.mobile.android.dto.request.SignOutRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.RefreshSessionResponse
 import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
 import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
 import com.passbolt.mobile.android.dto.response.SignInResponseDto
@@ -52,5 +55,12 @@ internal interface AuthApi {
     ): Response<BaseResponse<SignInResponseDto>>
 
     @POST(AUTH_SIGN_OUT)
-    suspend fun signOut(@Body signOutRequestDto: SignOutRequestDto): BaseResponse<Unit>
+    suspend fun signOut(
+        @Body signOutRequestDto: SignOutRequestDto
+    ): BaseResponse<Unit>
+
+    @POST(AUTH_JWT_REFRESH)
+    suspend fun refreshSession(
+        @Body refreshSessionRequest: RefreshSessionRequest
+    ): Response<BaseResponse<RefreshSessionResponse>>
 }

@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.passboltapi.auth
 
 import com.passbolt.mobile.android.core.networking.ResponseHandler
 import com.passbolt.mobile.android.core.networking.callWithHandler
+import com.passbolt.mobile.android.dto.request.RefreshSessionRequest
 import com.passbolt.mobile.android.dto.request.SignInRequestDto
 import com.passbolt.mobile.android.dto.request.SignOutRequestDto
 
@@ -46,4 +47,7 @@ class AuthRepository(
     suspend fun signOut(signOutRequestDto: SignOutRequestDto) = callWithHandler(responseHandler) {
         authDataSource.signOut(signOutRequestDto)
     }
+
+    suspend fun refreshSession(refreshSessionRequest: RefreshSessionRequest) =
+        authDataSource.refreshSession(refreshSessionRequest)
 }

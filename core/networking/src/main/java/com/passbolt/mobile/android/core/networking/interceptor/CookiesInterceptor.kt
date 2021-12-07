@@ -1,10 +1,9 @@
 package com.passbolt.mobile.android.core.networking.interceptor
 
-import com.passbolt.mobile.android.common.MfaTokenExtractor
+import com.passbolt.mobile.android.common.CookieExtractor
 import com.passbolt.mobile.android.core.networking.AuthPaths
 import com.passbolt.mobile.android.core.networking.AuthPaths.AVATAR_PATH
 import com.passbolt.mobile.android.core.networking.AuthPaths.TRANSFER_PATH
-import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -33,11 +32,11 @@ import okhttp3.Response
 class CookiesInterceptor {
 
     class ReceivedCookiesInterceptor(
-        private val mfaTokenExtractor: MfaTokenExtractor
+        private val cookieExtractor: CookieExtractor
     ) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val originalResponse: Response = chain.proceed(chain.request())
-            val cookie = mfaTokenExtractor.get(originalResponse)
+            val cookie = cookieExtractor.get(originalResponse, CookieExtractor.MFA_COOKIE)
             if (cookie != null) {
                 mfaCookie = cookie
             }
@@ -45,16 +44,14 @@ class CookiesInterceptor {
         }
     }
 
-    class AddCookiesInterceptor(
-        private val getSessionUseCase: GetSessionUseCase
-    ) : Interceptor {
+    class AddCookiesInterceptor : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val request = chain.request()
             val newBuilder = request.newBuilder()
             if (ANONYMOUS_PATHS.none { request.url.encodedPath == it } &&
                 !request.url.encodedPath.contains(AVATAR_PATH) && !request.url.encodedPath.contains(TRANSFER_PATH)) {
                 mfaCookie?.let {
-                    newBuilder.addHeader("Cookie", it)
+                    newBuilder.addHeader(COOKIE_HEADER, it)
                 }
             }
             return chain.proceed(newBuilder.build())
@@ -62,6 +59,8 @@ class CookiesInterceptor {
     }
 
     companion object {
+        private const val COOKIE_HEADER = "Cookie"
+
         private var mfaCookie: String? = null
 
         private val ANONYMOUS_PATHS = setOf(

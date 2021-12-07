@@ -5,6 +5,7 @@
     <string name="got_it">Got it</string>
     <string name="cancel_setup">Cancel setup</string>
     <string name="continue_setup">Continue setup</string>
+    <string name="session_expired">Session expired, please sign in again</string>
 
     <string name="accounts_list_title">Welcome back!</string>
     <string name="accounts_list_subtitle">Choose an account to sign in!</string>
@@ -15,7 +16,7 @@
     <string name="accounts_list_remove_account_title">Are you sure?</string>
     <string name="accounts_list_remove_account_message">This will remove your account from this device. Your passwords will not be deleted.</string>
     <string name="accounts_list_manage_accounts">Manage accounts</string>
-    <string name="accounts_list_account_removed" >The account has been removed from this device.</string>
+    <string name="accounts_list_account_removed">The account has been removed from this device.</string>
 
     <string name="auth_password_title">Passphrase</string>
     <string name="auth_sign_in">Sign In</string>

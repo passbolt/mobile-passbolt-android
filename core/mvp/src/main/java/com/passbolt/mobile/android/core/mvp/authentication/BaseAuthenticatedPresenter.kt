@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.core.mvp.authentication
 
 import androidx.annotation.CallSuper
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren

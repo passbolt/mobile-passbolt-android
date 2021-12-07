@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication
 
 import com.passbolt.mobile.android.feature.authentication.auth.FingerprintParser
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import org.koin.core.module.Module
 
 /**
@@ -38,5 +39,15 @@ fun Module.authenticationMainModule() {
     }
     single {
         FingerprintParser()
+    }
+    factory {
+        RefreshSessionUseCase(
+            authRepository = get(),
+            getSelectedAccountUseCase = get(),
+            getSessionUseCase = get(),
+            saveSessionUseCase = get(),
+            cookieExtractor = get(),
+            getAccountDataUseCase = get()
+        )
     }
 }

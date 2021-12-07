@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import retrofit2.Response
 import java.lang.Exception
-import com.passbolt.mobile.android.core.mvp.session.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 import okhttp3.ResponseBody
 
 /**

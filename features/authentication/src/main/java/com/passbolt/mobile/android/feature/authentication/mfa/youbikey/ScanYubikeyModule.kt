@@ -33,13 +33,14 @@ fun Module.scanYubikeyModule() {
             ScanYubikeyPresenter(
                 signOutUseCase = get(),
                 coroutineLaunchContext = get(),
-                verifyYubikeyUseCase = get()
+                verifyYubikeyUseCase = get(),
+                refreshSessionUseCase = get()
             )
         }
         scoped {
             VerifyYubikeyUseCase(
                 mfaRepository = get(),
-                mfaTokenExtractor = get()
+                cookieExtractor = get()
             )
         }
     }

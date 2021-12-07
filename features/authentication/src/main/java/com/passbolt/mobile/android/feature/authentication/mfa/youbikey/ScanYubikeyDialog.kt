@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -106,12 +107,17 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     override fun navigateToLogin() {
+        dismiss()
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.RefreshFull
+                ActivityIntents.AuthConfig.SignIn
             )
         )
+    }
+
+    override fun showSessionExpired() {
+        Toast.makeText(requireContext(), R.string.session_expired, Toast.LENGTH_SHORT).show()
     }
 
     override fun showChangeProviderButton(bundledHasTotpProvider: Boolean) {

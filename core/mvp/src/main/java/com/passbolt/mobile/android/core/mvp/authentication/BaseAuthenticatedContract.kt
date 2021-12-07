@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.core.mvp.authentication
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
 
 /**
  * Passbolt - Open source password manager for teams

@@ -16,6 +16,7 @@ interface EnterTotpContract {
         fun showWrongCodeError()
         fun showChangeProviderButton(hasYubikeyProvider: Boolean)
         fun navigateToLogin()
+        fun showSessionExpired()
         fun close()
         fun notifyLoginSucceeded()
         fun setTotpInputRed()

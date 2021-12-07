@@ -33,13 +33,14 @@ fun Module.enterTotpModuleModule() {
             EnterTotpPresenter(
                 signOutUseCase = get(),
                 coroutineLaunchContext = get(),
-                verifyTotpUseCase = get()
+                verifyTotpUseCase = get(),
+                refreshSessionUseCase = get()
             )
         }
         scoped {
             VerifyTotpUseCase(
                 mfaRepository = get(),
-                mfaTokenExtractor = get(),
+                cookieExtractor = get(),
                 errorHeaderMapper = get()
             )
         }

@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
-import com.passbolt.mobile.android.common.MfaTokenExtractor
+import com.passbolt.mobile.android.common.CookieExtractor
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
-import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.request.HotpRequest
@@ -34,7 +34,7 @@ import java.net.HttpURLConnection
  */
 class VerifyYubikeyUseCase(
     private val mfaRepository: MfaRepository,
-    private val mfaTokenExtractor: MfaTokenExtractor
+    private val cookieExtractor: CookieExtractor
 ) : AsyncUseCase<VerifyYubikeyUseCase.Input, VerifyYubikeyUseCase.Output> {
 
     override suspend fun execute(input: Input): Output =
@@ -45,7 +45,7 @@ class VerifyYubikeyUseCase(
             is NetworkResult.Failure -> Output.Failure(result)
             is NetworkResult.Success -> {
                 if (result.value.isSuccessful) {
-                    val mfaHeader = mfaTokenExtractor.get(result.value)
+                    val mfaHeader = cookieExtractor.get(result.value, CookieExtractor.MFA_COOKIE)
                     Output.Success(mfaHeader)
                 } else {
                     if (result.value.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {

@@ -1,10 +1,16 @@
-package com.passbolt.mobile.android.core.mvp.session
+package com.passbolt.mobile.android.feature.authentication.session
 
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.take
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
 /**
@@ -32,7 +38,9 @@ import timber.log.Timber
 class AuthenticatedOperationRunner(
     private val needAuthenticationRefreshedFlow: MutableStateFlow<UnauthenticatedReason?>,
     private val authenticationRefreshedFlow: StateFlow<Unit?>
-) {
+) : KoinComponent {
+
+    private val refreshSessionUseCase: RefreshSessionUseCase by inject()
 
     suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runOperation(
         request: suspend () -> OUTPUT
@@ -40,19 +48,44 @@ class AuthenticatedOperationRunner(
         val response = request.invoke()
         val authenticationState = response.authenticationState
         return if (authenticationState is AuthenticationState.Unauthenticated) {
-            Timber.d("Authenticated operation runner $this waits for auth refresh")
-            needAuthenticationRefreshedFlow.tryEmit(authenticationState.reason)
-            authenticationRefreshedFlow
-                .drop(1) // drop initial value
-                .take(1) // wait for first session refreshed item
-                .collect {
-                    Timber.d("Authenticated operation runner $this got refreshed auth")
-                }
+            Timber.d(
+                "%s\n%s",
+                "Authenticated operation runner $this waits for auth refresh",
+                "Trying to refresh session in background"
+            )
+            when (val reason = authenticationState.reason) {
+                is AuthenticationState.Unauthenticated.Reason.Session -> backgroundRefreshSessionSession(reason)
+                is AuthenticationState.Unauthenticated.Reason.Mfa -> authenticateUsingUi(reason)
+                is AuthenticationState.Unauthenticated.Reason.Passphrase -> authenticateUsingUi(reason)
+            }
+
             Timber.d("Authenticated operation runner $this restarts initial operation")
             request.invoke()
         } else {
             response
         }
+    }
+
+    private suspend fun backgroundRefreshSessionSession(reason: UnauthenticatedReason) {
+        when (refreshSessionUseCase.execute(Unit)) {
+            is RefreshSessionUseCase.Output.Success -> {
+                Timber.d("Background session refresh succeeded")
+            }
+            is RefreshSessionUseCase.Output.Failure -> {
+                Timber.d("Background session refresh did not succeed - launching sign in")
+                authenticateUsingUi(reason)
+            }
+        }
+    }
+
+    private suspend fun authenticateUsingUi(reason: UnauthenticatedReason) {
+        needAuthenticationRefreshedFlow.tryEmit(reason)
+        authenticationRefreshedFlow
+            .drop(1) // drop initial value
+            .take(1) // wait for first session refreshed item
+            .collect {
+                Timber.d("Authenticated operation runner $this got refreshed auth")
+            }
     }
 }
 

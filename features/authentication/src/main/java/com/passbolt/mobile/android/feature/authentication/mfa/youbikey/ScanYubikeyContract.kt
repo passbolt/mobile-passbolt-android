@@ -18,6 +18,7 @@ interface ScanYubikeyContract {
         fun close()
         fun navigateToLogin()
         fun notifyLoginSucceeded()
+        fun showSessionExpired()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

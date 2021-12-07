@@ -7,7 +7,7 @@ class AuthReasonMapper {
 
     fun map(authConfig: ActivityIntents.AuthConfig) = when (authConfig) {
         is ActivityIntents.AuthConfig.RefreshPassphrase -> AuthContract.View.RefreshAuthReason.PASSPHRASE
-        is ActivityIntents.AuthConfig.RefreshFull -> AuthContract.View.RefreshAuthReason.SESSION
+        is ActivityIntents.AuthConfig.SignIn -> AuthContract.View.RefreshAuthReason.SESSION
         else -> {
             null /* reason is shown only for session and passphrase refresh*/
         }

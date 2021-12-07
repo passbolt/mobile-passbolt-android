@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
-import com.passbolt.mobile.android.common.MfaTokenExtractor
+import com.passbolt.mobile.android.common.CookieExtractor
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
-import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.ErrorHeaderMapper
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
@@ -35,7 +35,7 @@ import java.net.HttpURLConnection
  */
 class VerifyTotpUseCase(
     private val mfaRepository: MfaRepository,
-    private val mfaTokenExtractor: MfaTokenExtractor,
+    private val cookieExtractor: CookieExtractor,
     private val errorHeaderMapper: ErrorHeaderMapper
 ) : AsyncUseCase<VerifyTotpUseCase.Input, VerifyTotpUseCase.Output> {
 
@@ -47,7 +47,7 @@ class VerifyTotpUseCase(
             is NetworkResult.Failure.ServerError -> Output.Failure(result)
             is NetworkResult.Success -> {
                 if (result.value.isSuccessful) {
-                    val mfaHeader = mfaTokenExtractor.get(result.value)
+                    val mfaHeader = cookieExtractor.get(result.value, CookieExtractor.MFA_COOKIE)
                     Output.Success(mfaHeader)
                 } else {
                     when {

@@ -13,8 +13,8 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStat
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider.Companion.MFA_PROVIDER_YUBIKEY
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
@@ -64,7 +64,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
  */
 
 @Suppress("LongParameterList") // TODO extract interactors
-class SignInPresenter(
+open class SignInPresenter(
     private val getServerPublicPgpKeyUseCase: GetServerPublicPgpKeyUseCase,
     private val getServerPublicRsaKeyUseCase: GetServerPublicRsaKeyUseCase,
     private val signInUseCase: SignInUseCase,
@@ -125,7 +125,7 @@ class SignInPresenter(
         }
     }
 
-    private fun performSignIn(passphrase: ByteArray) {
+    protected open fun performSignIn(passphrase: ByteArray) {
         view?.showProgress()
         scope.launch {
             val pgpKey = async { getServerPublicPgpKeyUseCase.execute(Unit) }
@@ -298,6 +298,7 @@ class SignInPresenter(
                 Timber.e("Unknown provider: $provider")
             }
         }
+        view?.hideProgress()
     }
 
     override fun totpSucceeded(mfaHeader: String?) {
