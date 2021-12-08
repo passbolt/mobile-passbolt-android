@@ -15,7 +15,8 @@
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_arrow_left"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/icon_tint" />
 
     <ImageView
         android:id="@+id/moreIcon"
@@ -26,7 +27,8 @@
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_more"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/icon_tint" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -101,7 +103,8 @@
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/urlValue"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/urlHeader" />
+                app:layout_constraintTop_toTopOf="@+id/urlHeader"
+                app:tint="@color/icon_tint" />
 
             <TextView
                 android:id="@+id/usernameHeader"
@@ -140,7 +143,8 @@
                 android:src="@drawable/ic_copy"
                 app:layout_constraintBottom_toBottomOf="@+id/usernameValue"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/usernameHeader" />
+                app:layout_constraintTop_toTopOf="@+id/usernameHeader"
+                app:tint="@color/icon_tint" />
 
             <TextView
                 android:id="@+id/passwordHeader"
@@ -176,6 +180,7 @@
                 android:layout_marginEnd="@dimen/dp_12"
                 android:background="?selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_eye_visible"
+                app:tint="@color/icon_tint"
                 app:layout_constraintBottom_toBottomOf="@+id/passwordValue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/passwordHeader" />
@@ -189,6 +194,7 @@
                 android:text="@string/resource_details_description_header"
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/sp_12"
+                app:drawableTint="@color/icon_tint"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/passwordValue" />

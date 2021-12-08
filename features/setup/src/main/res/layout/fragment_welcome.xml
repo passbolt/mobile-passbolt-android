@@ -14,10 +14,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/white"
             android:theme="@style/Theme.Passbolt.Toolbar"
-            app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/Theme.Passbolt.PopupOverlay" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/logoImage"
@@ -25,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_48"
             android:contentDescription="@null"
-            android:src="@drawable/logo_text_icon_light"
+            android:src="@drawable/logo_text_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/toolbar" />

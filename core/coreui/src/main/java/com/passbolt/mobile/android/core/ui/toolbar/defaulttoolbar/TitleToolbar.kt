@@ -33,7 +33,7 @@ import com.passbolt.mobile.android.core.ui.R
 class TitleToolbar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyle: Int = 0
+    defStyle: Int = R.style.Theme_Passbolt_Toolbar
 ) : Toolbar(context, attrs, defStyle) {
 
     var toolbarTitle: String = ""
@@ -55,6 +55,7 @@ class TitleToolbar @JvmOverloads constructor(
     }
 
     init {
+        setBackgroundColor(context.getColor(R.color.background))
         parseAttributes(attrs)
     }
 

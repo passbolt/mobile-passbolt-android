@@ -40,4 +40,7 @@
     <dimen name="dp_116">116dp</dimen>
     <dimen name="dp_160">160dp</dimen>
     <dimen name="dp_200">200dp</dimen>
+
+    <!--specific views - for dark theme overrides-->
+    <dimen name="nav_elevation">8dp</dimen>
 </resources>
