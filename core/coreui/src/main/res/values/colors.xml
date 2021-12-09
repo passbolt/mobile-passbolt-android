@@ -26,7 +26,6 @@
     <!--other-->
     <color name="background">@color/white</color>
     <color name="background_gray_dark">#333333</color>
-    <color name="elevated_item">#FFFFFF</color>
     <color name="divider">#DDDDDD</color>
     <color name="input_box_stroke">#DDDDDD</color>
     <color name="input_box_interior">#FFFFFF</color>

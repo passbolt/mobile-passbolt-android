@@ -8,6 +8,5 @@
     <color name="background">@color/black</color>
     <color name="input_box_interior">#333333</color>
     <color name="input_box_stroke">@color/input_box_interior</color>
-    <color name="elevated_item">#282828</color>
     <color name="icon_tint">#FFFFFF</color>
 </resources>
