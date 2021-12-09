@@ -12,7 +12,6 @@
         <item name="android:windowLightStatusBar">@bool/is_light_status_bar</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
-        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
         <item name="textInputStyle">@style/TextInput</item>
     </style>
 
@@ -33,9 +32,8 @@
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
         <item name="dialogCornerRadius">@dimen/dp_4</item>
-        <item name="android:backgroundDimAmount">0.8</item>
+        <item name="android:backgroundDimAmount">0.6</item>
         <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:background">@color/elevated_item</item>
     </style>
 
     <style name="DialogTextAppearance"
@@ -50,15 +48,5 @@
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:textSize">@dimen/sp_16</item>
         <item name="android:textColor">@color/text_primary</item>
-    </style>
-
-    <style name="AppBottomSheetDialogTheme"
-        parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/AppModalStyle</item>
-    </style>
-
-    <style name="AppModalStyle"
-        parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/rounded_bottomsheet_dialog</item>
     </style>
 </resources>
