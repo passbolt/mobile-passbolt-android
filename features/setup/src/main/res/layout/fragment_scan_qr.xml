@@ -14,8 +14,7 @@
         android:background="@color/white"
         android:padding="@dimen/dp_16"
         android:theme="@style/Theme.Passbolt.Toolbar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/Theme.Passbolt.PopupOverlay" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.camera.view.PreviewView
         android:id="@+id/cameraPreview"

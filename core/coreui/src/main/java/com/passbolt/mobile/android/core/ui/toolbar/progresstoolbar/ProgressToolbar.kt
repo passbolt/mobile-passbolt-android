@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -15,8 +14,8 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.updatePadding
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.extension.selectableBackgroundBorderlessResourceId
+import com.passbolt.mobile.android.core.ui.R
 
 /**
  * Passbolt - Open source password manager for teams
@@ -52,6 +51,7 @@ class ProgressToolbar @JvmOverloads constructor(
     private val progressBarHorizontalPadding by lazy { resources.getDimension(R.dimen.dp_16).toInt() }
 
     init {
+        setBackgroundColor(ContextCompat.getColor(context, R.color.background))
         setNavigationIcon(R.drawable.ic_back)
         layoutTransition = LayoutTransition()
         rootLayout = createRootLayout()
@@ -73,7 +73,7 @@ class ProgressToolbar @JvmOverloads constructor(
         ProgressBar(context, null, android.R.style.Widget_ProgressBar_Horizontal).apply {
             layoutParams = LinearLayout.LayoutParams(
                 0,
-                WRAP_CONTENT,
+                resources.getDimension(R.dimen.dp_8).toInt(),
                 1f
             )
             updatePadding(left = progressBarHorizontalPadding, right = progressBarHorizontalPadding)

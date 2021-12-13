@@ -6,8 +6,8 @@
         android:color="?attr/colorPrimary"
         android:state_hovered="true" />
     <item
-        android:color="@color/divider"
+        android:color="@color/input_box_stroke"
         android:state_enabled="false" />
     <item
-        android:color="@color/divider" />
+        android:color="@color/input_box_stroke" />
 </selector>
