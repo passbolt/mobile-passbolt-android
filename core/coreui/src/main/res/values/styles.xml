@@ -4,6 +4,7 @@
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="errorTextAppearance">@style/TextInputErrorTextAppearance</item>
         <item name="boxStrokeColor">@drawable/input_text_selector</item>
+        <item name="boxBackgroundColor">@color/input_box_interior</item>
     </style>
 
     <style name="TextInputErrorTextAppearance"

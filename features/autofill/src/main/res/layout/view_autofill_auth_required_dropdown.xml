@@ -21,5 +21,5 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_8"
         android:text="@string/autofill_select_password"
-        android:textColor="@color/black_87" />
+        android:textColor="@color/text_primary" />
 </LinearLayout>

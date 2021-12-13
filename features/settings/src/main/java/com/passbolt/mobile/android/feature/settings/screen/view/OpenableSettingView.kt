@@ -1,8 +1,9 @@
 package com.passbolt.mobile.android.feature.settings.screen.view
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
-import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageView
 import com.passbolt.mobile.android.feature.settings.R
 
 /**
@@ -34,8 +35,9 @@ class OpenableSettingView @JvmOverloads constructor(
 ) : SettingView(context, attrs, defStyle) {
 
     init {
-        ImageView(context).apply {
+        AppCompatImageView(context).apply {
             setImageResource(R.drawable.ic_arrow_right)
+            imageTintList = ColorStateList.valueOf(context.getColor(R.color.icon_tint))
             binding.root.addView(this)
         }
     }

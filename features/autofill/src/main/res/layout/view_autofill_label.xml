@@ -39,7 +39,7 @@
             android:layout_marginTop="@dimen/dp_16"
             android:paddingBottom="@dimen/dp_8"
             android:text="@string/autofill_select_password"
-            android:textColor="@color/black_87"
+            android:textColor="@color/text_primary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/logo" />

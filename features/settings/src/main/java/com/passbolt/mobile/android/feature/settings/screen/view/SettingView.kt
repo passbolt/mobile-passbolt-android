@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.settings.screen.view
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -42,7 +43,10 @@ open class SettingView @JvmOverloads constructor(
     private var icon: Drawable? = null
         set(value) {
             field = value
-            binding.iconImage.setImageDrawable(value)
+            with(binding.iconImage) {
+                setImageDrawable(value)
+                imageTintList = ColorStateList.valueOf(context.getColor(R.color.icon_tint))
+            }
         }
 
     private var name: String = ""
