@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -185,12 +186,17 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     }
 
     override fun navigateToLogin() {
+        dismiss()
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.RefreshFull
+                ActivityIntents.AuthConfig.SignIn
             )
         )
+    }
+
+    override fun showSessionExpired() {
+        Toast.makeText(requireContext(), R.string.session_expired, Toast.LENGTH_SHORT).show()
     }
 
     companion object {

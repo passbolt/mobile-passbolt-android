@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.secrets.usecase.decrypt
 
-import com.passbolt.mobile.android.core.mvp.session.AuthenticatedUseCaseOutput
-import com.passbolt.mobile.android.core.mvp.session.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import retrofit2.HttpException
 import java.net.HttpURLConnection
 

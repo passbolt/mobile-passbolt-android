@@ -24,11 +24,11 @@ import com.google.gson.annotations.SerializedName
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SignInResponseDto(
+data class SignInResponseDto(
     val challenge: String
 )
 
-class ChallengeResponseDto(
+data class ChallengeResponseDto(
     val version: String,
     val domain: String,
     @SerializedName("verify_token")

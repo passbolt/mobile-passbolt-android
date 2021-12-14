@@ -90,10 +90,14 @@ object ActivityIntents {
         object ManageAccount : AuthConfig()
 
         // refreshes backend session and passphrase
-        object RefreshFull : AuthConfig()
+        object SignIn : AuthConfig()
 
         // refreshes only passphrase
         object RefreshPassphrase : AuthConfig()
+
+        // tries to refresh background session and if fails fallbacks to SignIn
+        object RefreshSession : AuthConfig()
+
         class Mfa(
             val provider: String
         ) : AuthConfig()

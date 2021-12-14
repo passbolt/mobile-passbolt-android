@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.AuthReasonMapper
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.PassphrasePresenter
+import com.passbolt.mobile.android.feature.authentication.auth.presenter.RefreshSessionPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
@@ -62,7 +63,7 @@ fun Module.authModule() {
             SignInUseCase(
                 authRepository = get(),
                 signInMapper = get(),
-                mfaTokenExtractor = get()
+                cookieExtractor = get()
             )
         }
         scoped {
@@ -121,9 +122,10 @@ private fun ScopeDSL.authPresenter() {
             is ActivityIntents.AuthConfig.Startup -> signInPresenter()
             is ActivityIntents.AuthConfig.Setup -> signInPresenter()
             is ActivityIntents.AuthConfig.ManageAccount -> signInPresenter()
-            is ActivityIntents.AuthConfig.RefreshFull -> signInPresenter()
+            is ActivityIntents.AuthConfig.SignIn -> signInPresenter()
             is ActivityIntents.AuthConfig.RefreshPassphrase -> passphrasePresenter()
             is ActivityIntents.AuthConfig.Mfa -> passphrasePresenter()
+            is ActivityIntents.AuthConfig.RefreshSession -> refreshSessionPresenter()
         }
     }
 }
@@ -144,6 +146,36 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
 )
 
 private fun Scope.signInPresenter() = SignInPresenter(
+    getServerPublicPgpKeyUseCase = get(),
+    getServerPublicRsaKeyUseCase = get(),
+    signInUseCase = get(),
+    coroutineLaunchContext = get(),
+    challengeProvider = get(),
+    challengeDecryptor = get(),
+    challengeVerifier = get(),
+    getAccountDataUseCase = get(),
+    saveSessionUseCase = get(),
+    saveSelectedAccountUseCase = get(),
+    checkIfPassphraseFileExistsUseCase = get(),
+    passphraseMemoryCache = get(),
+    removeSelectedAccountPassphraseUseCase = get(),
+    fingerprintInfoProvider = get(),
+    featureFlagsInteractor = get(),
+    signOutUseCase = get(),
+    getPrivateKeyUseCase = get(),
+    verifyPassphraseUseCase = get(),
+    biometricCipher = get(),
+    getPassphraseUseCase = get(),
+    removeBiometricKeyUseCase = get(),
+    saveServerFingerprintUseCase = get(),
+    isServerFingerprintCorrectUseCase = get(),
+    authReasonMapper = get(),
+    mfaStatusProvider = get(),
+    getSessionUseCase = get()
+)
+
+private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
+    refreshSessionUseCase = get(),
     getServerPublicPgpKeyUseCase = get(),
     getServerPublicRsaKeyUseCase = get(),
     signInUseCase = get(),

@@ -34,8 +34,9 @@ class AccountListStrategyFactory {
         is ActivityIntents.AuthConfig.ManageAccount -> ManageAccountListStrategy(accountsListFragment)
         is ActivityIntents.AuthConfig.Startup -> AuthAccountListStrategy(accountsListFragment)
         is ActivityIntents.AuthConfig.Setup -> AuthAccountListStrategy(accountsListFragment)
-        is ActivityIntents.AuthConfig.RefreshFull -> AuthAccountListStrategy(accountsListFragment)
+        is ActivityIntents.AuthConfig.SignIn -> AuthAccountListStrategy(accountsListFragment)
         is ActivityIntents.AuthConfig.RefreshPassphrase -> AuthAccountListStrategy(accountsListFragment)
         is ActivityIntents.AuthConfig.Mfa -> AuthAccountListStrategy(accountsListFragment)
+        is ActivityIntents.AuthConfig.RefreshSession -> AuthAccountListStrategy(accountsListFragment)
     }
 }

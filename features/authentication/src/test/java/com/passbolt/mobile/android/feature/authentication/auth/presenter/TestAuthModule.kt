@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
@@ -107,16 +108,18 @@ internal val mockRemoveBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
 internal val authReasonMapper = AuthReasonMapper()
 internal val mockMfaStatusProvider = mock<MfaStatusProvider>()
 internal val mockGetSessionUseCase = mock<GetSessionUseCase>()
+internal val mockRefreshSessionUseCase = mock<RefreshSessionUseCase>()
 
 val testAuthModule = module {
     factory<AuthContract.Presenter> { (authConfig: ActivityIntents.AuthConfig) ->
         when (authConfig) {
-            ActivityIntents.AuthConfig.Startup -> signInPresenter()
-            ActivityIntents.AuthConfig.Setup -> signInPresenter()
-            ActivityIntents.AuthConfig.ManageAccount -> signInPresenter()
-            ActivityIntents.AuthConfig.RefreshFull -> signInPresenter()
-            ActivityIntents.AuthConfig.RefreshPassphrase -> passphrasePresenter()
+            is ActivityIntents.AuthConfig.Startup -> signInPresenter()
+            is ActivityIntents.AuthConfig.Setup -> signInPresenter()
+            is ActivityIntents.AuthConfig.ManageAccount -> signInPresenter()
+            is ActivityIntents.AuthConfig.SignIn -> signInPresenter()
+            is ActivityIntents.AuthConfig.RefreshPassphrase -> passphrasePresenter()
             is ActivityIntents.AuthConfig.Mfa -> passphrasePresenter()
+            is ActivityIntents.AuthConfig.RefreshSession -> refreshSessionPresenter()
         }
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
@@ -164,4 +167,34 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
     getPassphraseUseCase = mockGetPassphraseUseCase,
     removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
     authReasonMapper = authReasonMapper
+)
+
+private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
+    getServerPublicPgpKeyUseCase = mockGetServerPublicPgpKeyUseCase,
+    getServerPublicRsaKeyUseCase = mockGetServerPublicRsaKeyUseCase,
+    signInUseCase = mockSignInUseCase,
+    coroutineLaunchContext = get(),
+    challengeProvider = mockChallengeProvider,
+    challengeDecryptor = mockChallengeDecryptor,
+    challengeVerifier = mockChallengeVerifier,
+    getAccountDataUseCase = mockGetAccountDataUseCase,
+    saveSessionUseCase = mock(),
+    saveSelectedAccountUseCase = mock(),
+    checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
+    removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
+    fingerprintInfoProvider = mockFingerprintInformationProvider,
+    passphraseMemoryCache = mockPassphraseMemoryCache,
+    featureFlagsInteractor = mockFeatureFlagsInteractor,
+    signOutUseCase = mockSignOutUseCase,
+    getPrivateKeyUseCase = mockPrivateKeyUseCase,
+    verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+    biometricCipher = mockBiometricCipher,
+    getPassphraseUseCase = mockGetPassphraseUseCase,
+    removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
+    isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
+    saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
+    authReasonMapper = authReasonMapper,
+    mfaStatusProvider = mockMfaStatusProvider,
+    getSessionUseCase = mockGetSessionUseCase,
+    refreshSessionUseCase = mockRefreshSessionUseCase
 )

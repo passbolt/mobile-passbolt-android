@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.mvp.session
+package com.passbolt.mobile.android.core.mvp.authentication
 
 interface AuthenticatedUseCaseOutput {
     val authenticationState: AuthenticationState

@@ -1,11 +1,12 @@
 package com.passbolt.mobile.android.passboltapi.auth.data
 
+import com.passbolt.mobile.android.dto.request.RefreshSessionRequest
 import com.passbolt.mobile.android.dto.request.SignInRequestDto
 import com.passbolt.mobile.android.dto.request.SignOutRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.SignInResponseDto
 import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
 import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
+import com.passbolt.mobile.android.dto.response.SignInResponseDto
 import com.passbolt.mobile.android.passboltapi.auth.AuthApi
 import com.passbolt.mobile.android.passboltapi.auth.AuthDataSource
 import retrofit2.Response
@@ -50,4 +51,7 @@ internal class AuthRemoteDataSource(
 
     override suspend fun signOut(signOutRequestDto: SignOutRequestDto): BaseResponse<Unit> =
         authApi.signOut(signOutRequestDto)
+
+    override suspend fun refreshSession(refreshSessionRequest: RefreshSessionRequest) =
+        authApi.refreshSession(refreshSessionRequest)
 }

@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.usecase
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.common.MfaTokenExtractor
+import com.passbolt.mobile.android.common.CookieExtractor
 import com.passbolt.mobile.android.dto.request.SignInRequestDto
 import com.passbolt.mobile.android.mappers.SignInMapper
 import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
@@ -40,13 +40,13 @@ val testSignInUseCaseModule = module {
             on { mapRequestToDto(any(), any()) }.doReturn(SignInRequestDto("userId", "challenge"))
         }
     }
-    single { MfaTokenExtractor() }
+    single { CookieExtractor() }
     factory { mockAuthRepository }
     factory {
         SignInUseCase(
             authRepository = get(),
             signInMapper = get(),
-            mfaTokenExtractor = get()
+            cookieExtractor = get()
         )
     }
 }

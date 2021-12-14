@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -12,6 +13,7 @@ import kotlinx.coroutines.launch
 class EnterTotpPresenter(
     private val signOutUseCase: SignOutUseCase,
     private val verifyTotpUseCase: VerifyTotpUseCase,
+    private val refreshSessionUseCase: RefreshSessionUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : EnterTotpContract.Presenter {
 
@@ -46,11 +48,23 @@ class EnterTotpPresenter(
                 is VerifyTotpUseCase.Output.Failure<*> -> genericError()
                 is VerifyTotpUseCase.Output.Success -> otpSuccess(result.mfaHeader)
                 is VerifyTotpUseCase.Output.WrongCode -> totpError()
-                is VerifyTotpUseCase.Output.Unauthorized -> view?.navigateToLogin()
+                is VerifyTotpUseCase.Output.Unauthorized -> {
+                    if (backgroundSessionRefreshSucceeded()) {
+                        otpEntered(otp, authToken, rememberMeChecked)
+                    } else {
+                        view?.run {
+                            showSessionExpired()
+                            navigateToLogin()
+                        }
+                    }
+                }
             }
             view?.hideProgress()
         }
     }
+
+    private suspend fun backgroundSessionRefreshSucceeded() =
+        refreshSessionUseCase.execute(Unit) is RefreshSessionUseCase.Output.Success
 
     override fun authenticationSucceeded() {
         view?.close()

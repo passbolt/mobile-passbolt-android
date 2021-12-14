@@ -52,7 +52,9 @@ class ChallengeDecryptor(
             cipherText = challenge
         )
         passphraseCopy.erase()
-        Output.DecryptedChallenge(gson.fromJson(String(decryptedChallenge), ChallengeResponseDto::class.java))
+        Output.DecryptedChallenge(gson.fromJson(String(decryptedChallenge), ChallengeResponseDto::class.java)).also {
+            Timber.e(it.toString())
+        }
     } catch (exception: OpenPgpException) {
         Timber.e(exception)
         Output.DecryptionError(exception.message)

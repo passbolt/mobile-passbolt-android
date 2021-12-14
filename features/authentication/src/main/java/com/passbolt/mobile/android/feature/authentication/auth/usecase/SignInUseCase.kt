@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
-import com.passbolt.mobile.android.common.MfaTokenExtractor
+import com.passbolt.mobile.android.common.CookieExtractor
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.mappers.SignInMapper
@@ -35,7 +35,7 @@ typealias SignInFailureType = SignInUseCase.Output.Failure.FailureType
 class SignInUseCase(
     private val authRepository: AuthRepository,
     private val signInMapper: SignInMapper,
-    private val mfaTokenExtractor: MfaTokenExtractor
+    private val cookieExtractor: CookieExtractor
 ) : AsyncUseCase<SignInUseCase.Input, SignInUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
@@ -53,7 +53,7 @@ class SignInUseCase(
             )
             is NetworkResult.Success -> {
                 result.value.body()?.body?.challenge?.let {
-                    Output.Success(it, mfaTokenExtractor.get(result.value))
+                    Output.Success(it, cookieExtractor.get(result.value, CookieExtractor.MFA_COOKIE))
                 } ?: Output.Failure("", Output.Failure.FailureType.OTHER)
             }
         }

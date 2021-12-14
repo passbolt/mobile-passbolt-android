@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.youbikey
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyYubikeyUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 class ScanYubikeyPresenter(
     private val signOutUseCase: SignOutUseCase,
     private val verifyYubikeyUseCase: VerifyYubikeyUseCase,
+    private val refreshSessionUseCase: RefreshSessionUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : ScanYubikeyContract.Presenter {
 
@@ -45,11 +47,23 @@ class ScanYubikeyPresenter(
                 is VerifyYubikeyUseCase.Output.Failure<*> -> view?.showError()
                 is VerifyYubikeyUseCase.Output.NetworkFailure -> view?.showError()
                 is VerifyYubikeyUseCase.Output.Success -> yubikeySuccess(result.mfaHeader)
-                is VerifyYubikeyUseCase.Output.Unauthorized -> view?.navigateToLogin()
+                is VerifyYubikeyUseCase.Output.Unauthorized -> {
+                    if (backgroundSessionRefreshSucceeded()) {
+                        verifyYubikey(otp, authToken, rememberChecked)
+                    } else {
+                        view?.run {
+                            showEmptyScannedOtp()
+                            navigateToLogin()
+                        }
+                    }
+                }
             }
             view?.hideProgress()
         }
     }
+
+    private suspend fun backgroundSessionRefreshSucceeded() =
+        refreshSessionUseCase.execute(Unit) is RefreshSessionUseCase.Output.Success
 
     override fun authenticationSucceeded() {
         view?.close()

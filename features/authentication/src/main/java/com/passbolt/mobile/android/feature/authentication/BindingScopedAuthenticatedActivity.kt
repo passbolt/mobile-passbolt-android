@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.viewbinding.ViewBinding
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.core.mvp.session.AuthenticationState.Unauthenticated.Reason
-import com.passbolt.mobile.android.core.mvp.session.UnauthenticatedReason
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
@@ -66,7 +66,7 @@ abstract class BindingScopedAuthenticatedActivity<T : ViewBinding,
         } else {
             val authType = when (reason) {
                 Reason.Passphrase -> ActivityIntents.AuthConfig.RefreshPassphrase
-                Reason.Session -> ActivityIntents.AuthConfig.RefreshFull
+                Reason.Session -> ActivityIntents.AuthConfig.SignIn
                 else -> {
                     throw IllegalStateException("Wrong reason")
                 }

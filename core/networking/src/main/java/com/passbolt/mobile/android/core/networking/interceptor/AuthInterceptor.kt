@@ -35,7 +35,8 @@ internal class AuthInterceptor(
             AuthPaths.MFA_VERIFICATION_TOTP,
             AuthPaths.MFA_VERIFICATION_YUBIKEY,
             AuthPaths.AUTH_RSA,
-            AuthPaths.AUTH_VERIFY
+            AuthPaths.AUTH_VERIFY,
+            AuthPaths.AUTH_JWT_REFRESH
         )
         private const val AUTH_HEADER = "Authorization"
     }
