@@ -14,7 +14,6 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/white"
             android:theme="@style/Theme.Passbolt.Toolbar"
             app:layout_constraintTop_toTopOf="parent"
             app:toolbarTitle="@string/transfer_details_title" />
