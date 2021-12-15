@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
@@ -90,7 +91,8 @@ open class SignInPresenter(
     fingerprintInfoProvider: FingerprintInformationProvider,
     checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext,
-    authReasonMapper: AuthReasonMapper
+    authReasonMapper: AuthReasonMapper,
+    rootDetector: RootDetector
 ) : AuthBasePresenter(
     getAccountDataUseCase,
     checkIfPassphraseFileExistsUseCase,
@@ -103,6 +105,7 @@ open class SignInPresenter(
     passphraseMemoryCache,
     removeBiometricKeyUseCase,
     authReasonMapper,
+    rootDetector,
     coroutineLaunchContext
 ) {
 

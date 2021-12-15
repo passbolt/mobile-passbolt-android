@@ -5,6 +5,7 @@ import androidx.annotation.CallSuper
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
@@ -61,6 +62,7 @@ abstract class AuthBasePresenter(
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
     private val authReasonMapper: AuthReasonMapper,
+    private val rootDetector: RootDetector,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthContract.Presenter {
 
@@ -79,13 +81,21 @@ abstract class AuthBasePresenter(
         super.attach(view)
         view.showTitle()
         authReason?.let { view.showAuthenticationReason(it) }
-        handleBiometry(view)
+        if (rootDetector.isDeviceRooted()) {
+            view.showDeviceRootedDialog()
+        } else {
+            handleBiometry()
+        }
     }
 
-    private fun handleBiometry(view: AuthContract.View) {
+    override fun onRootedDeviceAcknowledged() {
+        handleBiometry()
+    }
+
+    private fun handleBiometry() {
         if (checkIfPassphraseFileExistsUseCase.execute(UserIdInput(userId)).passphraseFileExists) {
             if (fingerprintInfoProvider.hasBiometricSetUp()) {
-                with(view) {
+                view?.apply {
                     setBiometricAuthButtonVisible()
                     tryShowingBiometricPrompt()
                 }

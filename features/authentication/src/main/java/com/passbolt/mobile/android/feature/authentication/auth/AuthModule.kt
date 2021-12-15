@@ -142,7 +142,8 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
     biometricCipher = get(),
     getPassphraseUseCase = get(),
     removeBiometricKeyUseCase = get(),
-    authReasonMapper = get()
+    authReasonMapper = get(),
+    rootDetector = get()
 )
 
 private fun Scope.signInPresenter() = SignInPresenter(
@@ -171,7 +172,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     isServerFingerprintCorrectUseCase = get(),
     authReasonMapper = get(),
     mfaStatusProvider = get(),
-    getSessionUseCase = get()
+    getSessionUseCase = get(),
+    rootDetector = get()
 )
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
@@ -201,5 +203,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     isServerFingerprintCorrectUseCase = get(),
     authReasonMapper = get(),
     mfaStatusProvider = get(),
-    getSessionUseCase = get()
+    getSessionUseCase = get(),
+    rootDetector = get()
 )

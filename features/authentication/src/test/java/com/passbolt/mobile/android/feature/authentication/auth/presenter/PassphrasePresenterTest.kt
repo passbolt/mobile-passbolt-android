@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -57,6 +58,11 @@ class PassphrasePresenterTest : KoinTest {
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
         modules(testAuthModule)
+    }
+
+    @Before
+    fun setup() {
+        whenever(mockRootDetector.isDeviceRooted()).doReturn(false)
     }
 
     @After
@@ -177,5 +183,18 @@ class PassphrasePresenterTest : KoinTest {
 
         verify(mockView).setBiometricAuthButtonGone()
         verify(mockView).showFingerprintChangedError()
+    }
+
+    @Test
+    fun `view should show root warning when detected`() {
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = true))
+        whenever(mockFingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+        whenever(mockRootDetector.isDeviceRooted()).doReturn(true)
+
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshPassphrase, ACCOUNT)
+        presenter.attach(mockView)
+
+        verify(mockView).showDeviceRootedDialog()
     }
 }

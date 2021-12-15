@@ -1,12 +1,19 @@
 package com.passbolt.mobile.android.feature.setup.welcome
 
-class WelcomePresenter : WelcomeContract.Presenter {
+import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+
+class WelcomePresenter(
+    private val rootDetector: RootDetector
+) : WelcomeContract.Presenter {
 
     override var view: WelcomeContract.View? = null
 
     override fun argsRetrieved(isTaskRoot: Boolean) {
         if (isTaskRoot) {
             view?.hideToolbar()
+        }
+        if (rootDetector.isDeviceRooted()) {
+            view?.showDeviceRootedDialog()
         }
     }
 

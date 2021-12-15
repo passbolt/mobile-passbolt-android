@@ -31,7 +31,9 @@ import org.koin.core.qualifier.named
 fun Module.welcomeModule() {
     scope(named<WelcomeFragment>()) {
         scoped<WelcomeContract.Presenter> {
-            WelcomePresenter()
+            WelcomePresenter(
+                rootDetector = get()
+            )
         }
     }
 }

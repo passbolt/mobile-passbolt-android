@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.feature.setup.welcome
+package com.passbolt.mobile.android.core.security.rootdetection
 
-import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
-import org.koin.dsl.module
+import android.content.Context
+import androidx.appcompat.app.AlertDialog
+import com.passbolt.mobile.android.core.security.R
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,11 +27,10 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val mockRootDetector = mock<RootDetector>()
-
-val welcomeModule = module {
-    factory<WelcomeContract.Presenter> {
-        WelcomePresenter(mockRootDetector)
-    }
-}
-
+fun rootWarningAlertDialog(context: Context, onApprove: () -> Unit = {}): AlertDialog =
+    AlertDialog.Builder(context)
+        .setTitle(R.string.root_warning_title)
+        .setMessage(R.string.root_warning_message)
+        .setPositiveButton(R.string.root_warning_ackowledge) { _, _ -> onApprove() }
+        .setCancelable(false)
+        .create()

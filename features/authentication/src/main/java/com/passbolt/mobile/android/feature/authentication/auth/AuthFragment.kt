@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.core.extension.hideSoftInput
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.security.rootdetection.rootWarningAlertDialog
 import com.passbolt.mobile.android.core.ui.dialog.CoreDialogFactory
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -28,9 +29,9 @@ import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInP
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategy
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
 import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAuthBinding
-import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpListener
+import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyListener
 import com.passbolt.mobile.android.featureflags.ui.FeatureFlagsFetchErrorDialog
@@ -378,6 +379,11 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
             serverNotReachableDialog = CoreDialogFactory.serverNotReachableDialog(requireContext(), serverDomain)
         }
         serverNotReachableDialog?.show()
+    }
+
+    override fun showDeviceRootedDialog() {
+        rootWarningAlertDialog(requireContext()) { presenter.onRootedDeviceAcknowledged() }
+            .show()
     }
 
     companion object {

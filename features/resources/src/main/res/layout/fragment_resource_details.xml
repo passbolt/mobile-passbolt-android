@@ -32,7 +32,10 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:padding="@dimen/dp_8"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backArrow">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -180,10 +183,10 @@
                 android:layout_marginEnd="@dimen/dp_12"
                 android:background="?selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_eye_visible"
-                app:tint="@color/icon_tint"
                 app:layout_constraintBottom_toBottomOf="@+id/passwordValue"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/passwordHeader" />
+                app:layout_constraintTop_toTopOf="@+id/passwordHeader"
+                app:tint="@color/icon_tint" />
 
             <TextView
                 android:id="@+id/descriptionHeader"

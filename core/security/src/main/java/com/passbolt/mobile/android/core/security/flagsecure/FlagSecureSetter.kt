@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.feature.setup.welcome
+package com.passbolt.mobile.android.core.security.flagsecure
 
-import com.nhaarman.mockitokotlin2.mock
-import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
-import org.koin.dsl.module
+import android.app.Activity
+import android.view.WindowManager
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,11 +26,18 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-internal val mockRootDetector = mock<RootDetector>()
+class FlagSecureSetter {
 
-val welcomeModule = module {
-    factory<WelcomeContract.Presenter> {
-        WelcomePresenter(mockRootDetector)
+    fun set(activity: Activity) {
+        activity.window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+    }
+
+    fun remove(activity: Activity) {
+        activity.window.clearFlags(
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
     }
 }
-

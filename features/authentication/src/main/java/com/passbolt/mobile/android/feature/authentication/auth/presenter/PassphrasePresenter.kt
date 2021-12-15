@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
@@ -51,7 +52,8 @@ class PassphrasePresenter(
     biometricCipher: BiometricCipher,
     getPassphraseUseCase: GetPassphraseUseCase,
     removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
-    authReasonMapper: AuthReasonMapper
+    authReasonMapper: AuthReasonMapper,
+    rootDetector: RootDetector
 ) : AuthBasePresenter(
     getAccountDataUseCase,
     checkIfPassphraseFileExistsUseCase,
@@ -64,6 +66,7 @@ class PassphrasePresenter(
     passphraseMemoryCache,
     removeBiometricKeyUseCase,
     authReasonMapper,
+    rootDetector,
     coroutineLaunchContext
 ) {
 
