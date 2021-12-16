@@ -19,6 +19,7 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.DebounceClickEventHook
 import com.passbolt.mobile.android.common.extension.asBinding
+import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.commonresource.R
 import com.passbolt.mobile.android.commonresource.databinding.ItemPasswordBinding
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -139,9 +140,9 @@ class PasswordItem(
     }
 
     companion object {
-        private const val LIGHT_RATIO = 0.5f
-        private const val DARK_RATIO = 0.88f
-        private const val ICON_RADIUS = 4
+        private const val LIGHT_RATIO = 0.8f
+        private const val DARK_RATIO = 0.95f
         private const val FONT_WEIGHT = 400
+        private val ICON_RADIUS = 4.px
     }
 }
