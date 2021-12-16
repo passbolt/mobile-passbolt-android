@@ -35,7 +35,7 @@
             android:layout_marginTop="@dimen/dp_64"
             android:contentDescription="@null"
             android:scaleType="fitCenter"
-            android:src="@drawable/welcome_apps_list"
+            android:src="@drawable/apps_list"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/logoImage" />

@@ -5,7 +5,7 @@
     android:id="@+id/errorContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background"
     android:gravity="center"
     android:orientation="vertical"
     app:layout_constraintBottom_toBottomOf="parent"
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_32"
-        android:src="@drawable/empty_state" />
+        android:src="@drawable/apps_list" />
 
     <Button
         android:id="@+id/refreshButton"
