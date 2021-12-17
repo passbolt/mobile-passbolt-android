@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.security.rootdetection.rootWarningAlertDialog
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBinding
 import org.koin.android.ext.android.inject
@@ -76,5 +77,10 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
 
     override fun hideToolbar() {
         binding.toolbar.gone()
+    }
+
+    override fun showDeviceRootedDialog() {
+        rootWarningAlertDialog(requireContext())
+            .show()
     }
 }

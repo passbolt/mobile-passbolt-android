@@ -17,8 +17,6 @@ dependencies {
     kapt libs.androidx.lifecycleAnnotationProcessor
     implementation libs.androidx.processLifecycle
 
-    debugImplementation libs.debugDatabase
-
     androidTestImplementation libs.di.koinTest
     androidTestImplementation libs.di.koinTestJUnit
     androidTestImplementation libs.test.coroutinesTest

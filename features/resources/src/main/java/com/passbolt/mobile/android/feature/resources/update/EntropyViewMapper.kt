@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.resources.update
 
-import com.passbolt.mobile.android.core.security.PasswordGenerator.Entropy
+import com.passbolt.mobile.android.core.security.passwordgenerator.PasswordGenerator.Entropy
 import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView.PasswordStrength
 
 /**

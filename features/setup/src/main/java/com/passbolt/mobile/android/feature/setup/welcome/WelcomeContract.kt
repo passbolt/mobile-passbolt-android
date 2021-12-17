@@ -8,6 +8,7 @@ interface WelcomeContract {
         fun showAccountCreationInfoDialog()
         fun navigateToTransferDetails()
         fun hideToolbar()
+        fun showDeviceRootedDialog()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

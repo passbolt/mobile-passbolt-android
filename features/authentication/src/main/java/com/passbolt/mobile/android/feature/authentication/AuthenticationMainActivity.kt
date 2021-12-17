@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.security.FlagSecureSetter
+import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 import com.passbolt.mobile.android.feature.authentication.databinding.ActivityAuthenticationMainBinding

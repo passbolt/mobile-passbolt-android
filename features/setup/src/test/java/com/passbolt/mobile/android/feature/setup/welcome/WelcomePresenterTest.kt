@@ -1,12 +1,12 @@
 package com.passbolt.mobile.android.feature.setup.welcome
 
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
+import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.feature.setup.di.testModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -48,24 +48,31 @@ class WelcomePresenterTest : KoinTest {
         modules(testModule, welcomeModule)
     }
 
-    @Before
-    fun setUp() {
-        presenter.attach(view)
-    }
-
     @Test
     fun `click no account button should display account creation info dialog`() {
-        reset(view)
+        presenter.attach(view)
         presenter.noAccountButtonClick()
+
         verify(view).showAccountCreationInfoDialog()
         verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `click connect to account should navigate to transfer details`() {
-        reset(view)
+        presenter.attach(view)
         presenter.connectToAccountClick()
+
         verify(view).navigateToTransferDetails()
         verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `view should show root warning when detected`() {
+        whenever(mockRootDetector.isDeviceRooted()).doReturn(true)
+
+        presenter.attach(view)
+        presenter.argsRetrieved(isTaskRoot = true)
+
+        verify(view).showDeviceRootedDialog()
     }
 }

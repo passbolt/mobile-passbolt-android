@@ -64,6 +64,7 @@ interface AuthContract {
         fun showTotpDialog(jwtToken: String, hasYubikeyProvider: Boolean)
         fun showYubikeyDialog(jwtToken: String, hasTotpProvider: Boolean)
         fun showUnknownProvider()
+        fun showDeviceRootedDialog()
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE
@@ -85,5 +86,6 @@ interface AuthContract {
         fun fingerprintServerConfirmationClick(fingerprint: String)
         fun totpSucceeded(mfaHeader: String?)
         fun yubikeySucceeded(mfaHeader: String?)
+        fun onRootedDeviceAcknowledged()
     }
 }

@@ -26,8 +26,6 @@ dependencies {
     kapt libs.room.compiler
     implementation libs.room.sqlite
 
-    debugImplementation libs.debugDatabase
-
     androidTestImplementation libs.di.koinTest
     androidTestImplementation libs.di.koinTestJUnit
     androidTestImplementation libs.test.coroutinesTest

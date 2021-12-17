@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.security
+package com.passbolt.mobile.android.core.security.passwordgenerator
 
 /**
  * Passbolt - Open source password manager for teams

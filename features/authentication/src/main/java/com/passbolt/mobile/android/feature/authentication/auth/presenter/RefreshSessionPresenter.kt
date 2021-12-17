@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
@@ -79,7 +80,8 @@ class RefreshSessionPresenter(
     fingerprintInfoProvider: FingerprintInformationProvider,
     checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext,
-    authReasonMapper: AuthReasonMapper
+    authReasonMapper: AuthReasonMapper,
+    rootDetector: RootDetector
 ) : SignInPresenter(
     getServerPublicPgpKeyUseCase,
     getServerPublicRsaKeyUseCase,
@@ -106,7 +108,8 @@ class RefreshSessionPresenter(
     fingerprintInfoProvider,
     checkIfPassphraseFileExistsUseCase,
     coroutineLaunchContext,
-    authReasonMapper
+    authReasonMapper,
+    rootDetector
 ) {
 
     override fun performSignIn(passphrase: ByteArray) {

@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.resources.update
 
-import com.passbolt.mobile.android.core.security.PasswordGenerator
+import com.passbolt.mobile.android.core.security.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.EditFieldsModelCreator
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.FieldNamesMapper
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.NewFieldsModelCreator

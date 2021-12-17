@@ -11,7 +11,7 @@ import com.passbolt.mobile.android.core.commonresource.UpdateResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.core.security.PasswordGenerator
+import com.passbolt.mobile.android.core.security.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.core.users.FetchUsersUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceUseCase
 import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsBySlugUseCase

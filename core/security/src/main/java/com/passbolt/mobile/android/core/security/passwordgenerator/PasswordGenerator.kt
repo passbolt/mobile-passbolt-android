@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.security
+package com.passbolt.mobile.android.core.security.passwordgenerator
 
 import kotlin.math.ln
 
