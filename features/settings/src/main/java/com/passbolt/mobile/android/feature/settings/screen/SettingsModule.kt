@@ -44,7 +44,11 @@ fun Module.settingsModule() {
                 fingerprintInformationProvider = get(),
                 getFeatureFlagsUseCase = get(),
                 signOutUseCase = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
+                saveGlobalPreferencesUseCase = get(),
+                getGlobalPreferencesUseCase = get(),
+                fileLoggingTree = get(),
+                logFilesManager = get()
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }

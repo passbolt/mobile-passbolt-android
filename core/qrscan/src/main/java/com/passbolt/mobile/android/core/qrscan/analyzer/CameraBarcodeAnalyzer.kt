@@ -8,6 +8,7 @@ import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -62,6 +63,7 @@ class CameraBarcodeAnalyzer(
                     )
                 }
                 .addOnFailureListener { exception ->
+                    Timber.e(exception, "Exception during analyzing QR code")
                     _resultFlow.tryEmit(BarcodeScanResult.Failure(exception))
                 }
                 .addOnCompleteListener { imageProxy.close() }

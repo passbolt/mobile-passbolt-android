@@ -9,8 +9,8 @@ class WelcomePresenter(
     override var view: WelcomeContract.View? = null
 
     override fun argsRetrieved(isTaskRoot: Boolean) {
-        if (isTaskRoot) {
-            view?.hideToolbar()
+        if (!isTaskRoot) {
+            view?.initBackNavigation()
         }
         if (rootDetector.isDeviceRooted()) {
             view?.showDeviceRootedDialog()
@@ -23,5 +23,9 @@ class WelcomePresenter(
 
     override fun connectToAccountClick() {
         view?.navigateToTransferDetails()
+    }
+
+    override fun helpClick() {
+        view?.showHelpMenu()
     }
 }

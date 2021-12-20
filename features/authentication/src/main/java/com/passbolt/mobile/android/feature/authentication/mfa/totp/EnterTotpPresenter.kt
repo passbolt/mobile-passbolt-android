@@ -9,6 +9,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class EnterTotpPresenter(
     private val signOutUseCase: SignOutUseCase,
@@ -40,6 +41,7 @@ class EnterTotpPresenter(
     }
 
     override fun otpEntered(otp: String, authToken: String, rememberMeChecked: Boolean) {
+        Timber.d("Verifying TOTP")
         view?.showProgress()
         scope.launch {
             when (val result =

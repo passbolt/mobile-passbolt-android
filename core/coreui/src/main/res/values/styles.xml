@@ -105,7 +105,7 @@
         <item name="android:clickable">true</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingStart">@dimen/dp_16</item>
-        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColor">@color/menu_item_selector</item>
     </style>
 
     <style name="FullscreenDialogTheme"
@@ -113,5 +113,11 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <style name="PrimarySwitch"
+        parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/selector_primary_switch</item>
+        <item name="trackTint">@color/selector_primary_track_switch</item>
     </style>
 </resources>

@@ -89,7 +89,7 @@ val networkingModule = module {
 
 private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
     return HttpLoggingInterceptor(logger = provideHttpLogger())
-        .apply { level = HttpLoggingInterceptor.Level.BODY }
+        .apply { level = HttpLoggingInterceptor.Level.BASIC }
 }
 
 private fun provideHttpLogger(): HttpLoggingInterceptor.Logger = object : HttpLoggingInterceptor.Logger {

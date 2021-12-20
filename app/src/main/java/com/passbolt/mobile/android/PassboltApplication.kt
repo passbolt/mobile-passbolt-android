@@ -4,6 +4,9 @@ import android.app.Application
 import coil.Coil
 import coil.ImageLoader
 import com.passbolt.mobile.android.core.commonresource.commonResourceModule
+import com.passbolt.mobile.android.core.logger.FileLoggingTree
+import com.passbolt.mobile.android.core.logger.LogFilesManager
+import com.passbolt.mobile.android.core.logger.loggerModule
 import com.passbolt.mobile.android.core.mvp.mvpModule
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
@@ -29,6 +32,7 @@ import com.passbolt.mobile.android.gopenpgp.di.openPgpModule
 import com.passbolt.mobile.android.passboltapi.passboltApiModule
 import com.passbolt.mobile.android.service.linksApiModule
 import com.passbolt.mobile.android.storage.storageModule
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -68,11 +72,14 @@ class PassboltApplication : Application(), KoinComponent {
     private val imageLoader: ImageLoader by inject()
     private val appForegroundListener: AppForegroundListener by inject()
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private val fileLoggingTree: FileLoggingTree by inject()
+    private val logFilesManager: LogFilesManager by inject()
+    private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase by inject()
 
     override fun onCreate() {
         super.onCreate()
-        initTimber()
         initKoin()
+        initTimber()
         Coil.setImageLoader(imageLoader)
         registerAppForegroundListener()
     }
@@ -96,6 +103,12 @@ class PassboltApplication : Application(), KoinComponent {
     private fun initTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+        }
+        val logFilePath = logFilesManager.initializeLogFile()
+        logFilesManager.clearIrrelevantLogFiles(logFilePath)
+        fileLoggingTree.initialize(logFilePath)
+        if (getGlobalPreferencesUseCase.execute(Unit).areDebugLogsEnabled) {
+            Timber.plant(fileLoggingTree)
         }
     }
 
@@ -127,7 +140,8 @@ class PassboltApplication : Application(), KoinComponent {
                 commonResourceModule,
                 securityModule,
                 linksApiModule,
-                usersModule
+                usersModule,
+                loggerModule
             )
         }
     }

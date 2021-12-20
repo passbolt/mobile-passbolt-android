@@ -3,9 +3,10 @@ package com.passbolt.mobile.android.feature.settings
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
-import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.core.logger.LogFilesManager
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
+import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
 import com.passbolt.mobile.android.feature.settings.screen.SettingsPresenter
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
@@ -17,6 +18,8 @@ import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKey
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
@@ -39,6 +42,9 @@ internal val saveBiometricKayIvUseCase = mock<SaveBiometricKeyIvUseCase>()
 internal val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
 internal val removeBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
 internal val getFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
+internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
+internal val mockSaveGlobalPreferencesUseCase = mock<SaveGlobalPreferencesUseCase>()
+internal val mockLogFilesManager = mock<LogFilesManager>()
 
 @ExperimentalCoroutinesApi
 val testModule = module {
@@ -67,7 +73,11 @@ val testModule = module {
             fingerprintInformationProvider = get(),
             getFeatureFlagsUseCase = get(),
             signOutUseCase = get(),
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            saveGlobalPreferencesUseCase = mockSaveGlobalPreferencesUseCase,
+            getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+            fileLoggingTree = mock(),
+            logFilesManager = mockLogFilesManager
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

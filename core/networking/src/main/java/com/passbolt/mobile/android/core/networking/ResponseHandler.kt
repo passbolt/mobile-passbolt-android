@@ -1,11 +1,11 @@
 package com.passbolt.mobile.android.core.networking
 
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 import retrofit2.HttpException
 import timber.log.Timber
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,9 +36,8 @@ class ResponseHandler(
     fun <T : Any> handleSuccess(data: T): NetworkResult<T> =
         NetworkResult.Success(data)
 
-    fun <T : Any> handleException(e: Exception): NetworkResult<T> {
-        Timber.d(e)
-        return when (e) {
+    fun <T : Any> handleException(e: Exception): NetworkResult<T> =
+        when (e) {
             is HttpException -> {
                 val baseResponse = errorHeaderMapper.getBaseResponse(e.response())
                 NetworkResult.Failure.ServerError(
@@ -65,7 +64,6 @@ class ResponseHandler(
                 headerMessage = errorHeaderMapper.getMessage()
             )
         }
-    }
 }
 
 sealed class MfaStatus {
@@ -79,5 +77,6 @@ sealed class MfaStatus {
 inline fun <T : Any> callWithHandler(responseHandler: ResponseHandler, apiCall: () -> T) = try {
     responseHandler.handleSuccess(apiCall())
 } catch (e: Exception) {
+    Timber.e(e)
     responseHandler.handleException(e)
 }

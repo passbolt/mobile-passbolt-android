@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.core.logger.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
@@ -42,7 +43,7 @@ import org.koin.core.scope.Scope
  */
 
 class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScanQrBinding::inflate),
-    ScanQrContract.View {
+    ScanQrContract.View, HelpMenuFragment.Listener {
 
     private val presenter: ScanQrContract.Presenter by inject()
     private lateinit var scanManagerScope: Scope
@@ -182,5 +183,20 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
 
     override fun removeFlagSecure() {
         flagSecureSetter.remove(requireActivity())
+    }
+
+    override fun showHelpMenu() {
+        HelpMenuFragment.newInstance(showQrCodesHelp = true)
+            .show(childFragmentManager, HelpMenuFragment::class.java.name)
+    }
+
+    override fun menuShowLogsClick() {
+        findNavController().navigate(
+            ScanQrFragmentDirections.actionScanQrFragmentToLogsFragment()
+        )
+    }
+
+    override fun menuWhyScanQrCodesClick() {
+        showInformationDialog()
     }
 }

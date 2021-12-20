@@ -51,6 +51,11 @@ interface SettingsContract {
         fun showProgress()
         fun hideProgress()
         fun navigateToLicenses()
+        fun navigateToLogs()
+        fun setEnableLogsSwitchOn()
+        fun setEnableLogsSwitchOff()
+        fun enableAccessLogs()
+        fun disableAccessLogs()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -70,5 +75,7 @@ interface SettingsContract {
         fun keyChangesInfoConfirmClick()
         fun systemSettingsClick()
         fun licensesClick()
+        fun logsClick()
+        fun enableDebugLogsChanged(areLogsEnabled: Boolean)
     }
 }

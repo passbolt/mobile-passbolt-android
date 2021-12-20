@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class ScanYubikeyPresenter(
     private val signOutUseCase: SignOutUseCase,
@@ -38,8 +39,8 @@ class ScanYubikeyPresenter(
     }
 
     private fun verifyYubikey(otp: String, authToken: String?, rememberChecked: Boolean) {
+        Timber.d("Verifying Yubikey")
         view?.showProgress()
-
         scope.launch {
             when (val result =
                 verifyYubikeyUseCase.execute(VerifyYubikeyUseCase.Input(otp, authToken, rememberChecked))

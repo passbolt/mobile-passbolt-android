@@ -37,8 +37,6 @@ class GetPrivateKeyUseCase(
     override fun execute(input: UserIdInput): Output {
         val name = PrivateKeyFileName(input.userId).name
         return try {
-            Timber.d("Getting private key. Filename: $name")
-
             val encryptedFile = encryptedFileFactory.get(name)
             encryptedFile.openFileInput().use {
                 val bytes = it.readBytes()
@@ -46,7 +44,7 @@ class GetPrivateKeyUseCase(
             }
         } catch (exception: IOException) {
             Timber.e(exception)
-            throw IllegalStateException("Unable to restore private key: $name")
+            throw IllegalStateException("Unable to restore private key.")
         }
     }
 

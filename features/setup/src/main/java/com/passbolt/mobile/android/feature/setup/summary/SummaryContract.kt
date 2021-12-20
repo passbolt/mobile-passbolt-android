@@ -39,6 +39,8 @@ interface SummaryContract {
         fun showLeaveConfirmationDialog()
         fun navigateToStart()
         fun navigateToManageAccounts()
+        fun showHelpButton()
+        fun showHelpMenu()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -47,5 +49,6 @@ interface SummaryContract {
         fun authenticationSucceeded()
         fun backClick()
         fun leaveConfirmationClick()
+        fun helpClick()
     }
 }

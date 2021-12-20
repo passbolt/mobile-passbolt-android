@@ -49,6 +49,7 @@ interface ScanQrContract {
         fun showServerNotReachable(serverDomain: String)
         fun setFlagSecure()
         fun removeFlagSecure()
+        fun showHelpMenu()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

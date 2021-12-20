@@ -249,7 +249,7 @@ class ScanQrPresenter(
     }
 
     override fun infoIconClick() {
-        view?.showInformationDialog()
+        view?.showHelpMenu()
     }
 
     override fun detach() {

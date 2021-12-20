@@ -7,6 +7,7 @@ import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.logger.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.security.rootdetection.rootWarningAlertDialog
 import com.passbolt.mobile.android.feature.setup.R
@@ -36,7 +37,7 @@ import org.koin.android.ext.android.inject
  * @since v1.0
  */
 class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWelcomeBinding::inflate),
-    WelcomeContract.View {
+    WelcomeContract.View, HelpMenuFragment.Listener {
 
     private val presenter: WelcomeContract.Presenter by inject()
 
@@ -56,9 +57,15 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
         with(binding) {
             noAccountButton.setDebouncingOnClick { presenter.noAccountButtonClick() }
             connectToAccountButton.setDebouncingOnClick { presenter.connectToAccountClick() }
-            initDefaultToolbar(toolbar)
             toolbar.setNavigationOnClickListener { requireActivity().finish() }
+            helpButton.setDebouncingOnClick {
+                presenter.helpClick()
+            }
         }
+    }
+
+    override fun initBackNavigation() {
+        initDefaultToolbar(binding.toolbar)
     }
 
     override fun showAccountCreationInfoDialog() {
@@ -82,5 +89,16 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     override fun showDeviceRootedDialog() {
         rootWarningAlertDialog(requireContext())
             .show()
+    }
+
+    override fun showHelpMenu() {
+        HelpMenuFragment.newInstance()
+            .show(childFragmentManager, HelpMenuFragment::class.java.name)
+    }
+
+    override fun menuShowLogsClick() {
+        findNavController().navigate(
+            WelcomeFragmentDirections.actionWelcomeFragmentToLogsFragment()
+        )
     }
 }

@@ -9,11 +9,14 @@ interface WelcomeContract {
         fun navigateToTransferDetails()
         fun hideToolbar()
         fun showDeviceRootedDialog()
+        fun showHelpMenu()
+        fun initBackNavigation()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun noAccountButtonClick()
         fun connectToAccountClick()
         fun argsRetrieved(isTaskRoot: Boolean)
+        fun helpClick()
     }
 }

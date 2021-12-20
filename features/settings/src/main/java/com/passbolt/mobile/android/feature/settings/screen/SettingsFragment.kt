@@ -63,6 +63,9 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
     }
     private val biometricPromptBuilder: BiometricPrompt.PromptInfo.Builder by inject()
     private val executor: Executor by inject()
+    private var logSettingChanged: ((Boolean) -> Unit)? = {
+        presenter.enableDebugLogsChanged(it)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -75,6 +78,8 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
     }
 
     override fun onDestroyView() {
+        logSettingChanged = null
+        binding.enableLogsSetting.onChanged = null
         presenter.detach()
         super.onDestroyView()
     }
@@ -99,9 +104,13 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
             licensesSetting.setDebouncingOnClick {
                 presenter.licensesClick()
             }
+            logsSetting.setDebouncingOnClick {
+                presenter.logsClick()
+            }
             signOutSetting.setDebouncingOnClick {
                 presenter.signOutClick()
             }
+            enableLogsSetting.onChanged = logSettingChanged
         }
     }
 
@@ -252,5 +261,33 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     override fun hideProgress() {
         hideProgressDialog(childFragmentManager)
+    }
+
+    override fun navigateToLogs() {
+        findNavController().navigate(
+            SettingsFragmentDirections.actionSettingsToLogsFragment()
+        )
+    }
+
+    override fun setEnableLogsSwitchOn() {
+        binding.enableLogsSetting.turnOn(silently = true)
+    }
+
+    override fun setEnableLogsSwitchOff() {
+        binding.enableLogsSetting.turnOff(silently = true)
+    }
+
+    override fun enableAccessLogs() {
+        with(binding.logsSetting) {
+            isEnabled = true
+            setDebouncingOnClick { presenter.logsClick() }
+        }
+    }
+
+    override fun disableAccessLogs() {
+        with(binding.logsSetting) {
+            isEnabled = false
+            setDebouncingOnClick { /* ignore */ }
+        }
     }
 }

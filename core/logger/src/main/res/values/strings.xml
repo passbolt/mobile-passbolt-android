@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="logger_help">Help</string>
+    <string name="logger_access_logs">Access the logs</string>
+    <string name="logger_visit_help_website">Visit help site</string>
+    <string name="logger_why_scan_codes">Why scanning QR codes?</string>
+    <string name="logger_enable_debug_logs">Enable debug logs</string>
+
+    <string name="logs_share_title">Share logs</string>
+    <string name="logs_share_email_title">Passbolt logs</string>
+    <string name="logs_share_email">contact@passbolt.com</string>
+</resources>

@@ -17,6 +17,7 @@ import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -78,6 +79,9 @@ class SettingsPresenterTest : KoinTest {
                 )
             )
         }
+        whenever(mockGetGlobalPreferencesUseCase.execute(Unit)).thenReturn(
+            GetGlobalPreferencesUseCase.Output(areDebugLogsEnabled = false)
+        )
     }
 
     @Test

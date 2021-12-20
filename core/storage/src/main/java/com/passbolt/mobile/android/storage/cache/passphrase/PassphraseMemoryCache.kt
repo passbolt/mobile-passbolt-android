@@ -72,7 +72,7 @@ class PassphraseMemoryCache(
             lifecycleOwner.lifecycle.addObserver(this@PassphraseMemoryCache)
         }
         timerScope.launch {
-            timerFlow.collect { Timber.d("Timer $it/${TIMER_REPEAT_TIMES - 1} interval passed") }
+            timerFlow.collect()
             clear()
         }
     }
@@ -87,7 +87,7 @@ class PassphraseMemoryCache(
         }
         timerScope.coroutineContext.cancelChildren()
         lifecycleObserverScope.coroutineContext.cancelChildren()
-        Timber.d("Cleared")
+        Timber.d("Passphrase cache cleared")
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

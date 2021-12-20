@@ -134,13 +134,17 @@ open class SignInPresenter(
             val pgpKey = async { getServerPublicPgpKeyUseCase.execute(Unit) }
             val rsaKey = async { getServerPublicRsaKeyUseCase.execute(Unit) }
 
+            Timber.d("Getting server pgp and rsa keys")
             val pgpKeyResult = pgpKey.await()
             val rsaKeyResult = rsaKey.await()
+
             if (pgpKeyResult is PgpSuccess && rsaKeyResult is RsaSuccess) {
+                Timber.d("Getting server pgp and rsa keys succeeded")
                 val input = IsServerFingerprintCorrectUseCase.Input(userId, pgpKeyResult.fingerprint)
                 if (!isServerFingerprintCorrectUseCase.execute(input).isCorrect) {
                     view?.hideProgress()
                     view?.showServerFingerprintChanged(pgpKeyResult.fingerprint)
+                    Timber.d("Server key fingerprint has changed")
                 } else {
                     signIn(
                         passphrase.copyOf(),
@@ -173,7 +177,6 @@ open class SignInPresenter(
         rsaKey: String,
         fingerprint: String
     ) {
-        // TODO verify passphrase use case? Use stored url; PAS-214
         val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
         val challenge = challengeProvider.get(
             version = CHALLENGE_VERSION,
@@ -183,17 +186,22 @@ open class SignInPresenter(
             userId
         )
         when (challenge) {
-            is ChallengeProvider.Output.Success -> sendSignInRequest(
-                userId,
-                challenge.challenge,
-                serverPublicKey,
-                passphrase,
-                rsaKey,
-                requireNotNull(accountData.serverId),
-                fingerprint,
-                accountData
-            )
-            ChallengeProvider.Output.WrongPassphrase -> showWrongPassphrase()
+            is ChallengeProvider.Output.Success -> {
+                Timber.d("Prepared sign in challenge")
+                sendSignInRequest(
+                    userId,
+                    challenge.challenge,
+                    serverPublicKey,
+                    passphrase,
+                    rsaKey,
+                    requireNotNull(accountData.serverId),
+                    fingerprint,
+                    accountData
+                )
+            }
+            ChallengeProvider.Output.WrongPassphrase -> {
+                showWrongPassphrase()
+            }
         }
     }
 
@@ -210,6 +218,7 @@ open class SignInPresenter(
         val currentMfaToken = getSessionUseCase.execute(Unit).mfaToken
         when (val result = signInUseCase.execute(SignInUseCase.Input(serverId, challenge, currentMfaToken))) {
             is SignInUseCase.Output.Failure -> {
+                Timber.e("Failure during sign in: ${result.message}")
                 view?.hideProgress()
                 when (result.type) {
                     SignInFailureType.ACCOUNT_DOES_NOT_EXIST -> {
@@ -225,6 +234,7 @@ open class SignInPresenter(
                 }
             }
             is SignInUseCase.Output.Success -> {
+                Timber.d("Sign in success. Decrypting challenge.")
                 val challengeDecryptResult = challengeDecryptor.decrypt(
                     serverPublicKey,
                     passphrase,
@@ -232,7 +242,8 @@ open class SignInPresenter(
                     result.challenge
                 )
                 when (challengeDecryptResult) {
-                    is ChallengeDecryptor.Output.DecryptedChallenge ->
+                    is ChallengeDecryptor.Output.DecryptedChallenge -> {
+                        Timber.d("Challenge decrypted successfully")
                         verifyChallenge(
                             challengeDecryptResult.challenge,
                             rsaKey,
@@ -241,8 +252,10 @@ open class SignInPresenter(
                             result.mfaToken,
                             currentMfaToken
                         )
+                    }
                     is ChallengeDecryptor.Output.DecryptionError -> {
                         view?.apply {
+                            Timber.e("Challenge decryption error: ${challengeDecryptResult.message}")
                             hideProgress()
                             showDecryptionError(challengeDecryptResult.message)
                         }
@@ -264,11 +277,22 @@ open class SignInPresenter(
         mfaToken: String?,
         currentMfaToken: String?
     ) {
+        Timber.d("Verifying challenge")
         when (val result = challengeVerifier.verify(challengeResponseDto, rsaKey)) {
-            ChallengeVerifier.Output.Failure -> showGenericError()
-            ChallengeVerifier.Output.InvalidSignature -> showGenericError()
-            ChallengeVerifier.Output.TokenExpired -> showGenericError()
+            ChallengeVerifier.Output.Failure -> {
+                Timber.e("Challenge verification error")
+                showGenericError()
+            }
+            ChallengeVerifier.Output.InvalidSignature -> {
+                Timber.e("Challenge verification error: invalid signature")
+                showGenericError()
+            }
+            ChallengeVerifier.Output.TokenExpired -> {
+                Timber.e("Challenge verification error: token expired")
+                showGenericError()
+            }
             is ChallengeVerifier.Output.Verified -> {
+                Timber.d("Challenge verified with success")
                 loginState = LoginState(
                     accessToken = result.accessToken,
                     refreshToken = result.refreshToken,
@@ -276,13 +300,20 @@ open class SignInPresenter(
                     fingerprint = fingerprint,
                     mfaToken = mfaToken
                 )
+                Timber.d("Checking MFA status")
                 when (val mfaStatus = mfaStatusProvider.provideMfaStatus(
                     challengeResponseDto,
                     mfaToken,
                     currentMfaToken
                 )) {
-                    MfaStatus.NotRequired -> mfaNotRequired()
-                    is MfaStatus.Required -> mfaRequired(mfaStatus.mfaProviders, result.accessToken)
+                    MfaStatus.NotRequired -> {
+                        Timber.d("MFA not required")
+                        mfaNotRequired()
+                    }
+                    is MfaStatus.Required -> {
+                        Timber.d("MFA required")
+                        mfaRequired(mfaStatus.mfaProviders, result.accessToken)
+                    }
                 }
             }
         }
@@ -305,6 +336,7 @@ open class SignInPresenter(
     }
 
     override fun totpSucceeded(mfaHeader: String?) {
+        Timber.d("TOTP succeeded")
         mfaHeader?.let {
             loginState?.mfaToken = it
         }
@@ -312,6 +344,7 @@ open class SignInPresenter(
     }
 
     override fun yubikeySucceeded(mfaHeader: String?) {
+        Timber.d("Yubikey succeeded")
         mfaHeader?.let {
             loginState?.mfaToken = it
         }
@@ -319,6 +352,7 @@ open class SignInPresenter(
     }
 
     private fun signInSuccess(updateSession: Boolean = true) {
+        Timber.d("Authentication success")
         val currentLoginState = requireNotNull(loginState)
         if (updateSession) {
             saveSessionUseCase.execute(
@@ -345,9 +379,11 @@ open class SignInPresenter(
     }
 
     private fun fetchFeatureFlags() {
+        Timber.d("Fetching feature flags")
         scope.launch {
             when (featureFlagsInteractor.fetchAndSaveFeatureFlags()) {
                 is FeatureFlagsInteractor.Output.Success -> {
+                    Timber.d("Feature flags fetched")
                     view?.apply {
                         hideProgress()
                         clearPassphraseInput()
