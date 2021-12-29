@@ -1,0 +1,24 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+dependencies {
+    implementation project(':mvp')
+    implementation project(':coreui')
+    implementation project(':common')
+    implementation project(':storage')
+
+    implementation libs.di.koin
+    implementation libs.di.koinExt
+    implementation libs.material
+    implementation libs.androidx.core
+    implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.core
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

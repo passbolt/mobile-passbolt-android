@@ -52,7 +52,7 @@
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/autofillServiceSwitch"
-            style="@style/AutofillSwitch"
+            style="@style/PrimarySwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="false"
@@ -80,7 +80,7 @@
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/accessibilityServiceSwitch"
-            style="@style/AutofillSwitch"
+            style="@style/PrimarySwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="false"

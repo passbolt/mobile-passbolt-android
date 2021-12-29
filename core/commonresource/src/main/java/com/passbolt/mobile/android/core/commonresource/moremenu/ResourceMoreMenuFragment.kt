@@ -75,6 +75,11 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
         }
     }
 
+    override fun onDetach() {
+        listener = null
+        super.onDetach()
+    }
+
     private fun setListeners() {
         with(binding) {
             copyPassword.setDebouncingOnClick {

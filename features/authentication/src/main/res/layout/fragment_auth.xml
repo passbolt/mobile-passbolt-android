@@ -16,7 +16,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            tools:toolbarTitle="Sign in" />
+            tools:toolbarTitle="Sign in">
+
+            <ImageView
+                android:id="@+id/helpButton"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_gravity="end"
+                android:src="@drawable/ic_help"
+                android:layout_marginEnd="@dimen/dp_16" />
+        </com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar>
 
         <ImageView
             android:id="@+id/avatarImage"
@@ -77,9 +86,9 @@
             android:layout_height="@dimen/dp_56"
             android:layout_marginTop="@dimen/dp_8"
             android:layout_marginBottom="@dimen/dp_8"
+            android:background="?selectableItemBackgroundBorderless"
             android:src="@drawable/ic_fingerprint_auth"
             android:visibility="gone"
-            android:background="?selectableItemBackgroundBorderless"
             app:layout_constraintBottom_toTopOf="@id/authButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

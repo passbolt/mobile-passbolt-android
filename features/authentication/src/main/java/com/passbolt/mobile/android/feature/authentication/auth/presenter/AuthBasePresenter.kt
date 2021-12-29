@@ -214,4 +214,8 @@ abstract class AuthBasePresenter(
     override fun connectToExistingAccountClick() {
         view?.navigateToAccountList()
     }
+
+    override fun helpClick() {
+        view?.showHelpMenu()
+    }
 }

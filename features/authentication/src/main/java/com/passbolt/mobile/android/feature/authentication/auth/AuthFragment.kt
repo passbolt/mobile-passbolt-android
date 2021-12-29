@@ -16,6 +16,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.hideSoftInput
+import com.passbolt.mobile.android.core.logger.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -66,7 +67,7 @@ import javax.crypto.Cipher
 @Suppress("TooManyFunctions")
 class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate), AuthContract.View,
     FeatureFlagsFetchErrorDialog.Listener, ServerFingerprintChangedDialog.Listener, AccountDoesNotExistDialog.Listener,
-    EnterTotpListener, ScanYubikeyListener {
+    EnterTotpListener, ScanYubikeyListener, HelpMenuFragment.Listener {
 
     private val strategyFactory: AuthStrategyFactory by inject()
     private lateinit var authStrategy: AuthStrategy
@@ -119,6 +120,9 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
             with(toolbar) {
                 setNavigationIcon(R.drawable.ic_back)
                 setNavigationOnClickListener { presenter.backClick(authStrategy.showLeaveConfirmationDialog()) }
+            }
+            helpButton.setDebouncingOnClick {
+                presenter.helpClick()
             }
         }
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backPressedCallback)
@@ -384,6 +388,17 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     override fun showDeviceRootedDialog() {
         rootWarningAlertDialog(requireContext()) { presenter.onRootedDeviceAcknowledged() }
             .show()
+    }
+
+    override fun showHelpMenu() {
+        HelpMenuFragment.newInstance()
+            .show(childFragmentManager, HelpMenuFragment::class.java.name)
+    }
+
+    override fun menuShowLogsClick() {
+        findNavController().navigate(
+            AuthFragmentDirections.actionAuthFragmentToLogsFragment()
+        )
     }
 
     companion object {

@@ -5,7 +5,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.stub
@@ -90,10 +89,10 @@ class ScanQrPresenterTest : KoinTest {
     }
 
     @Test
-    fun `click information dialog should display proper dialog`() {
+    fun `click information dialog should display help menu`() {
         reset(view)
         presenter.infoIconClick()
-        verify(view).showInformationDialog()
+        verify(view).showHelpMenu()
         verifyNoMoreInteractions(view)
     }
 

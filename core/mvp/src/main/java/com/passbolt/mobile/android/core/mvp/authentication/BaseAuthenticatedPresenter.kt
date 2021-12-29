@@ -55,7 +55,7 @@ abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
     }
 
     private fun listenForRefreshSessionEvents() {
-        Timber.d("[Session] Listening for new session evetns")
+        Timber.d("[Session] Listening for new session events")
         needSessionRefreshFlow = MutableStateFlow(null)
         scope.launch {
             needSessionRefreshFlow

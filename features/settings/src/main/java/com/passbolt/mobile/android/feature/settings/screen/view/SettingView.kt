@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.content.res.use
+import androidx.core.view.children
 import com.passbolt.mobile.android.feature.settings.R
 import com.passbolt.mobile.android.feature.settings.databinding.ViewSettingBinding
 
@@ -65,6 +66,13 @@ open class SettingView @JvmOverloads constructor(
                 icon = it.getDrawable(R.styleable.SettingView_icon)
                 name = it.getString(R.styleable.SettingView_name).orEmpty()
             }
+        }
+    }
+
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        binding.root.children.forEach {
+            it.isEnabled = enabled
         }
     }
 }

@@ -16,6 +16,7 @@ coreModule "database"
 coreModule "commonresource"
 coreModule "security"
 coreModule "users"
+coreModule "logger"
 
 featureModule "startup"
 featureModule "setup"

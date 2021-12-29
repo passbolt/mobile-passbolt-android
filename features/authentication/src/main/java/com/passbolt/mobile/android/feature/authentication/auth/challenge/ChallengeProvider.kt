@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.dto.request.ChallengeDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -63,6 +64,7 @@ class ChallengeProvider(
             passphraseCopy.erase()
             Output.Success(encryptedChallenge)
         } catch (e: Exception) {
+            Timber.e(e, "Error during challenge preparation")
             Output.WrongPassphrase
         }
     }

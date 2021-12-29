@@ -5,10 +5,12 @@
     <string name="settings_disable">Disable</string>
     <string name="settings_sign_out">Sign out</string>
     <string name="settings_fingerprint">Fingerprint</string>
+    <string name="settings_enable_logs">Enable debug logs</string>
     <string name="settings_autofill">Autofill</string>
     <string name="settings_manage_accounts">Manage accounts</string>
     <string name="settings_terms">Terms &amp; Conditions</string>
     <string name="settings_privacy_policy">Privacy policy</string>
+    <string name="settings_logs">Access the logs</string>
     <string name="settings_licenses">Open Source Licenses</string>
     <string name="settings_title">Settings</string>
     <string name="settings_disable_fingerprint_confirmation_title">Are you sure?</string>

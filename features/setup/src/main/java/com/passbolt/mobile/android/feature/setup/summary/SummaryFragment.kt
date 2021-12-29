@@ -9,6 +9,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.core.logger.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.R
@@ -39,7 +42,7 @@ import org.koin.android.ext.android.inject
  */
 class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
     FragmentSummaryBinding::inflate
-), SummaryContract.View {
+), SummaryContract.View, HelpMenuFragment.Listener {
 
     private val presenter: SummaryContract.Presenter by inject()
     private val args: SummaryFragmentArgs by navArgs()
@@ -69,7 +72,10 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
     }
 
     private fun setListeners() {
-        binding.resultView.setButtonAction { presenter.buttonClick() }
+        with(binding) {
+            resultView.setButtonAction { presenter.buttonClick() }
+            helpButton.setDebouncingOnClick { presenter.helpClick() }
+        }
     }
 
     override fun setTitle(title: Int) {
@@ -128,9 +134,24 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
         )
     }
 
+    override fun showHelpButton() {
+        binding.helpButton.visible()
+    }
+
     override fun navigateToFingerprintSetup() {
         findNavController().navigate(
             SummaryFragmentDirections.actionSummaryFragmentToFingerprintFragment()
+        )
+    }
+
+    override fun showHelpMenu() {
+        HelpMenuFragment.newInstance()
+            .show(childFragmentManager, HelpMenuFragment::class.java.name)
+    }
+
+    override fun menuShowLogsClick() {
+        findNavController().navigate(
+            SummaryFragmentDirections.actionSummaryFragmentToLogsFragment()
         )
     }
 }

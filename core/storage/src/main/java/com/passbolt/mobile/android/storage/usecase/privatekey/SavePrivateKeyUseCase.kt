@@ -34,7 +34,7 @@ class SavePrivateKeyUseCase(
 
     override fun execute(input: Input): Output {
         val name = PrivateKeyFileName(input.userId).name
-        Timber.d("Saving private key. Filename: $name")
+        Timber.d("Saving private key.")
 
         val encryptedFile = encryptedFileFactory.get(name)
         return try {

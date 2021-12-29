@@ -18,6 +18,7 @@ dependencies {
     implementation project(':mappers')
     implementation project(':featureflags')
     implementation project(path: ':ui')
+    implementation project(':logger')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.feature.settings.screen
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.core.logger.FileLoggingTree
+import com.passbolt.mobile.android.core.logger.LogFilesManager
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
@@ -15,6 +17,8 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -35,6 +39,10 @@ class SettingsPresenter(
     private val fingerprintInformationProvider: FingerprintInformationProvider,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val signOutUseCase: SignOutUseCase,
+    private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
+    private val saveGlobalPreferencesUseCase: SaveGlobalPreferencesUseCase,
+    private val fileLoggingTree: FileLoggingTree,
+    private val logFilesManager: LogFilesManager,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : SettingsContract.Presenter {
 
@@ -47,6 +55,7 @@ class SettingsPresenter(
         super.attach(view)
         handleFingerprintSwitchState(view)
         handleFeatureFlagsUrls()
+        logSettingChanged(getGlobalPreferencesUseCase.execute(Unit).areDebugLogsEnabled)
     }
 
     private fun handleFeatureFlagsUrls() {
@@ -182,8 +191,35 @@ class SettingsPresenter(
         view?.navigateToLicenses()
     }
 
+    override fun logsClick() {
+        view?.navigateToLogs()
+    }
+
     override fun detach() {
         scope.coroutineContext.cancelChildren()
         super.detach()
+    }
+
+    override fun enableDebugLogsChanged(areLogsEnabled: Boolean) {
+        logSettingChanged(areLogsEnabled)
+    }
+
+    private fun logSettingChanged(areLogsEnabled: Boolean) {
+        saveGlobalPreferencesUseCase.execute(SaveGlobalPreferencesUseCase.Input(areLogsEnabled))
+        if (areLogsEnabled) {
+            view?.apply {
+                setEnableLogsSwitchOn()
+                enableAccessLogs()
+                Timber.plant(fileLoggingTree)
+            }
+        } else {
+            view?.apply {
+                setEnableLogsSwitchOff()
+                disableAccessLogs()
+                if (Timber.forest().contains(fileLoggingTree)) {
+                    Timber.uproot(fileLoggingTree)
+                }
+            }
+        }
     }
 }

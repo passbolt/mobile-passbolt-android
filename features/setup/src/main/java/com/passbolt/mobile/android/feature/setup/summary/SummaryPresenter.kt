@@ -42,13 +42,14 @@ class SummaryPresenter(
     }
 
     private fun setupView(status: ResultStatus) {
-        view?.let {
-            it.setTitle(status.title)
-            it.setButtonLabel(status.buttonText)
+        view?.apply {
+            setTitle(status.title)
+            setButtonLabel(status.buttonText)
             if (status is ResultStatus.Failure) {
-                it.setDescription(status.message)
+                setDescription(status.message)
+                view?.showHelpButton()
             }
-            it.setIcon(status.icon)
+            setIcon(status.icon)
         }
     }
 
@@ -79,5 +80,9 @@ class SummaryPresenter(
 
     override fun leaveConfirmationClick() {
         view?.navigateToStart()
+    }
+
+    override fun helpClick() {
+        view?.showHelpMenu()
     }
 }
