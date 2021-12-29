@@ -1,10 +1,10 @@
-package com.passbolt.mobile.android.feature.settings.screen.view
+package com.passbolt.mobile.android.core.ui.menu
 
 import android.content.Context
 import android.content.res.ColorStateList
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
-import com.passbolt.mobile.android.feature.settings.R
+import com.passbolt.mobile.android.core.ui.R
 
 /**
  * Passbolt - Open source password manager for teams

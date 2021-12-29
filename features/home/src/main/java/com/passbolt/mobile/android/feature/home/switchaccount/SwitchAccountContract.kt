@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.feature.home
+package com.passbolt.mobile.android.feature.home.switchaccount
 
-import com.passbolt.mobile.android.feature.home.screen.homeModule
-import com.passbolt.mobile.android.feature.home.switchaccount.switchAccountModule
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,7 +26,21 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val homeModule = module {
-    homeModule()
-    switchAccountModule()
+interface SwitchAccountContract {
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun seeDetailsClick()
+        fun signOutClick()
+        fun logoutConfirmed()
+        fun switchAccountClick(account: SwitchAccountUiModel.AccountItem)
+    }
+
+    interface View : BaseContract.View {
+        fun showAccountsList(accountsList: List<SwitchAccountUiModel>)
+        fun showLogoutDialog()
+        fun showProgress()
+        fun hideProgress()
+        fun navigateToStartup()
+        fun navigateToSignInForAccount(userId: String)
+    }
 }

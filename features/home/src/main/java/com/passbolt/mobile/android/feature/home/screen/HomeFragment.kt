@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
+import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -63,7 +64,7 @@ import org.koin.android.ext.android.inject
 @Suppress("TooManyFunctions")
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
-    HomeContract.View, ResourceMoreMenuFragment.Listener {
+    HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
     private val itemAdapter: ItemAdapter<PasswordItem> by inject()
@@ -305,13 +306,9 @@ class HomeFragment :
             .show()
     }
 
-    override fun navigateToManageAccount() {
-        authenticationResult.launch(
-            ActivityIntents.authentication(
-                requireContext(),
-                ActivityIntents.AuthConfig.ManageAccount
-            )
-        )
+    override fun navigateToSwitchAccount() {
+        SwitchAccountBottomSheetFragment()
+            .show(childFragmentManager, SwitchAccountBottomSheetFragment::class.java.name)
     }
 
     override fun clearSearchInput() {
@@ -358,6 +355,19 @@ class HomeFragment :
             .setNegativeButton(R.string.cancel) { _, _ -> }
             .setCancelable(false)
             .show()
+    }
+
+    override fun switchAccountManageAccountClick() {
+        presenter.switchAccountManageAccountClick()
+    }
+
+    override fun navigateToManageAccounts() {
+        authenticationResult.launch(
+            ActivityIntents.authentication(
+                requireContext(),
+                ActivityIntents.AuthConfig.ManageAccount
+            )
+        )
     }
 
     companion object {

@@ -45,7 +45,7 @@
                 android:layout_gravity="bottom"
                 android:layout_marginHorizontal="@dimen/dp_16"
                 android:layout_marginVertical="@dimen/dp_24"
-                android:backgroundTint="@color/button_selector"
+                android:backgroundTint="@color/primary_button_selector"
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="@string/resource_update_create_button" />
         </LinearLayout>

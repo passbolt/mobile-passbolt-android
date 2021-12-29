@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.feature.home
+package com.passbolt.mobile.android.feature.home.switchaccount.recycler
 
-import com.passbolt.mobile.android.feature.home.screen.homeModule
-import com.passbolt.mobile.android.feature.home.switchaccount.switchAccountModule
-import org.koin.dsl.module
+import com.mikepenz.fastadapter.GenericItem
+import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,8 +25,12 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class SwitchAccountUiItemsMapper {
 
-val homeModule = module {
-    homeModule()
-    switchAccountModule()
+    fun mapModelToItem(model: SwitchAccountUiModel): GenericItem =
+        when (model) {
+            is SwitchAccountUiModel.AccountItem -> SwitchAccountItem(model)
+            is SwitchAccountUiModel.HeaderItem -> SwitchAccountHeaderItem(model)
+            is SwitchAccountUiModel.ManageAccountsItem -> SwitchAccountManageAccountItem()
+        }
 }

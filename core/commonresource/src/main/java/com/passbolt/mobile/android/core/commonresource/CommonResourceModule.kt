@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.core.commonresource
 
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.commonresource.moremenu.resourceMoreMenuModule
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
@@ -29,6 +30,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 val commonResourceModule = module {
+    resourceMoreMenuModule()
     single {
         GetResourcesUseCase(
             resourceRepository = get(),

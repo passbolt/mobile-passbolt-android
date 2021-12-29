@@ -99,7 +99,7 @@
             android:layout_height="@dimen/dp_56"
             android:layout_gravity="center"
             android:layout_marginHorizontal="@dimen/dp_16"
-            android:backgroundTint="@color/button_selector"
+            android:backgroundTint="@color/primary_button_selector"
             android:text="@string/accounts_list_removing_done"
             android:visibility="gone" />
 

@@ -43,7 +43,7 @@ interface HomeContract {
         fun openWebsite(url: String)
         fun showDecryptionFailure()
         fun showFetchFailure()
-        fun navigateToManageAccount()
+        fun navigateToSwitchAccount()
         fun displaySearchClearIcon()
         fun clearSearchInput()
         fun showResourceAddedSnackbar()
@@ -54,6 +54,7 @@ interface HomeContract {
         fun hideUpdateButton()
         fun showAddButton()
         fun showDeleteConfirmationDialog()
+        fun navigateToManageAccounts()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -76,5 +77,6 @@ interface HomeContract {
         fun menuEditClick()
         fun resourceEdited(resourceName: String)
         fun deleteResourceConfirmed()
+        fun switchAccountManageAccountClick()
     }
 }

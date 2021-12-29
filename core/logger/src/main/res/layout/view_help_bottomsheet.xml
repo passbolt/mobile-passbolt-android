@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@drawable/rounded_bottomsheet_dialog"
+    android:background="@drawable/rounded_bottom_sheet_dialog"
     android:paddingBottom="@dimen/dp_24"
     tools:ignore="missingConstraints">
 
