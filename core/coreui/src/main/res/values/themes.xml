@@ -13,6 +13,7 @@
         <item name="android:textColor">@color/text_primary</item>
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
         <item name="textInputStyle">@style/TextInput</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
     </style>
 
     <style name="Theme.Passbolt.Toolbar"
@@ -48,5 +49,16 @@
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:textSize">@dimen/sp_16</item>
         <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+
+    <style name="BottomSheetDialogTheme"
+        parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+
+    <style name="AppModalStyle"
+        parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_bottom_sheet_dialog</item>
     </style>
 </resources>

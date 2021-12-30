@@ -12,6 +12,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.dialogs.signOutAlertDialog
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
@@ -147,11 +148,7 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
     }
 
     override fun showLogoutDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.settings_logout_dialog_title)
-            .setMessage(R.string.settings_logout_dialog_message)
-            .setPositiveButton(R.string.settings_logout_dialog_sign_out) { _, _ -> presenter.logoutConfirmed() }
-            .setNegativeButton(R.string.cancel) { _, _ -> }
+        signOutAlertDialog(requireContext()) { presenter.logoutConfirmed() }
             .show()
     }
 

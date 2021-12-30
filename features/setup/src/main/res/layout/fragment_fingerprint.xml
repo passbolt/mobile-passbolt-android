@@ -62,7 +62,7 @@
             android:layout_height="@dimen/dp_56"
             android:layout_marginHorizontal="@dimen/dp_16"
             android:layout_marginBottom="@dimen/dp_24"
-            android:backgroundTint="@color/button_selector"
+            android:backgroundTint="@color/primary_button_selector"
             android:text="@string/fingerprint_setup_use_fingerprint_button" />
 
         <TextView

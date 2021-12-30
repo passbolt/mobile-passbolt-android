@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.feature.home
+package com.passbolt.mobile.android.common.dialogs
 
-import com.passbolt.mobile.android.feature.home.screen.homeModule
-import com.passbolt.mobile.android.feature.home.switchaccount.switchAccountModule
-import org.koin.dsl.module
+import android.content.Context
+import androidx.appcompat.app.AlertDialog
+import com.passbolt.mobile.android.common.R
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,7 +27,10 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val homeModule = module {
-    homeModule()
-    switchAccountModule()
-}
+fun signOutAlertDialog(context: Context, confirmAction: () -> Unit): AlertDialog =
+    AlertDialog.Builder(context)
+        .setTitle(R.string.logout_dialog_title)
+        .setMessage(R.string.logout_dialog_message)
+        .setPositiveButton(R.string.logout_dialog_sign_out) { _, _ -> confirmAction() }
+        .setNegativeButton(R.string.cancel) { _, _ -> }
+        .create()

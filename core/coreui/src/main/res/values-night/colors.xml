@@ -9,4 +9,5 @@
     <color name="input_box_interior">#333333</color>
     <color name="input_box_stroke">@color/input_box_interior</color>
     <color name="icon_tint">#FFFFFF</color>
+    <color name="elevated_background">#282828</color>
 </resources>

@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.settings.screen.view
+package com.passbolt.mobile.android.core.ui.menu
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.content.res.use
 import androidx.core.view.children
-import com.passbolt.mobile.android.feature.settings.R
-import com.passbolt.mobile.android.feature.settings.databinding.ViewSettingBinding
+import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.ui.databinding.ViewSettingBinding
 
 /**
  * Passbolt - Open source password manager for teams

@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.settings.screen.view
+package com.passbolt.mobile.android.core.ui.menu
 
 import android.content.Context
 import android.util.AttributeSet

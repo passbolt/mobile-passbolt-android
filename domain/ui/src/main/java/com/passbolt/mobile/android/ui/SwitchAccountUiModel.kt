@@ -1,8 +1,4 @@
-package com.passbolt.mobile.android.feature.home
-
-import com.passbolt.mobile.android.feature.home.screen.homeModule
-import com.passbolt.mobile.android.feature.home.switchaccount.switchAccountModule
-import org.koin.dsl.module
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,8 +22,20 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+sealed class SwitchAccountUiModel {
 
-val homeModule = module {
-    homeModule()
-    switchAccountModule()
+    data class HeaderItem(
+        val label: String,
+        val email: String,
+        val avatarUrl: String?
+    ) : SwitchAccountUiModel()
+
+    data class AccountItem(
+        val userId: String,
+        val label: String,
+        val email: String,
+        val avatarUrl: String?
+    ) : SwitchAccountUiModel()
+
+    object ManageAccountsItem : SwitchAccountUiModel()
 }

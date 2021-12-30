@@ -9,4 +9,9 @@
     <string name="home_create">Create</string>
     <string name="home_resource_deleted_format">%s password was deleted.</string>
     <string name="home_resource_edited_format">%s password was successfully edited.</string>
+
+    <string name="switch_account_see_details">See details</string>
+    <string name="switch_account_sign_out">Sign out</string>
+    <string name="switch_account_manage_accounts">Manage accounts</string>
+    <string name="switch_account_title">Switch account</string>
 </resources>

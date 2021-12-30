@@ -216,7 +216,7 @@ class HomePresenter(
     }
 
     override fun searchAvatarClick() {
-        view?.navigateToManageAccount()
+        view?.navigateToSwitchAccount()
     }
 
     private suspend fun doAfterFetchAndDecrypt(action: (ByteArray) -> Unit) {
@@ -277,6 +277,10 @@ class HomePresenter(
 
     override fun menuEditClick() {
         view?.navigateToEdit(requireNotNull(currentMoreMenuResource))
+    }
+
+    override fun switchAccountManageAccountClick() {
+        view?.navigateToManageAccounts()
     }
 
     enum class SearchInputEndIconMode {
