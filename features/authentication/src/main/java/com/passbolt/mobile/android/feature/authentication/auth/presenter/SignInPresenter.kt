@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUse
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
+import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
@@ -223,7 +224,10 @@ open class SignInPresenter(
                 when (result.type) {
                     SignInFailureType.ACCOUNT_DOES_NOT_EXIST -> {
                         view?.showAccountDoesNotExistDialog(
-                            "${accountData.firstName} ${accountData.lastName}",
+                            accountData.label ?: AccountModelMapper.defaultLabel(
+                                accountData.firstName,
+                                accountData.lastName
+                            ),
                             accountData.email,
                             accountData.url
                         )

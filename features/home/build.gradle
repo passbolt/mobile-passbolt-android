@@ -24,6 +24,7 @@ dependencies {
     implementation project(':autofill')
     implementation project(':secrets')
     implementation project(':authentication')
+    implementation project(':entity')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

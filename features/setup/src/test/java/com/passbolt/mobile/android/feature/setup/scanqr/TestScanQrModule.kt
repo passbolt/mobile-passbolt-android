@@ -10,7 +10,6 @@ import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUs
 import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveCurrentApiUrlUseCase
@@ -76,9 +75,8 @@ val testScanQrModule = module {
     factory<ScanQrContract.Presenter> {
         ScanQrPresenter(
             coroutineLaunchContext = get(),
-            qrParser = qrParser,
             updateTransferUseCase = get(),
-            saveAccountDataUseCase = get(),
+            qrParser = qrParser,
             uuidProvider = get(),
             savePrivateKeyUseCase = get(),
             updateAccountDataUseCase = get(),

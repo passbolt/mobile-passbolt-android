@@ -1,4 +1,4 @@
-package com.password.mobile.android.feature.home
+package com.password.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.dto.response.ResourcePermissionDto

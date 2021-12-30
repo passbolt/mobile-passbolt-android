@@ -1,4 +1,4 @@
-package com.password.mobile.android.feature.home
+package com.password.mobile.android.feature.home.screen
 
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.InitialsProvider
@@ -16,6 +16,7 @@ import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.password.mobile.android.feature.home.TestCoroutineLaunchContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 

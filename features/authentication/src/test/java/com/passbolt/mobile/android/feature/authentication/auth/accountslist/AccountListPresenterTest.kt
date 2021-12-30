@@ -176,12 +176,12 @@ class AccountListPresenterTest : KoinTest {
     private companion object {
 
         private val SAVED_ACCOUNT = listOf(
-            Account(userId = "1", null, null, null, null, "dev.test", "server_id")
+            Account(userId = "1", null, null, null, null, "dev.test", "server_id", "label")
         )
 
         private val SAVED_ACCOUNTS = listOf(
-            Account(userId = "1", null, null, null, null, "dev.test", "server_id"),
-            Account(userId = "2", null, null, null, null, "dev.test", "server_id")
+            Account(userId = "1", null, null, null, null, "dev.test", "server_id", "label"),
+            Account(userId = "2", null, null, null, null, "dev.test", "server_id", "label")
         )
     }
 

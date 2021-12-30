@@ -137,7 +137,7 @@ class PassphrasePresenterTest : KoinTest {
         presenter.viewCreated()
 
         verify(mockView).showTitle()
-        verify(mockView).showName("$MOCK_ACCOUNT_DATA_FIRST_NAME $MOCK_ACCOUNT_DATA_LAST_NAME")
+        verify(mockView).showLabel(MOCK_LABEL)
         verify(mockView).showEmail(MOCK_ACCOUNT_DATA_EMAIL)
         verify(mockView).showAvatar(MOCK_ACCOUNT_DATA_AVATAR_URL)
         verify(mockView).showDomain(MOCK_ACCOUNT_DATA_URL)

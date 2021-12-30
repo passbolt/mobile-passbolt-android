@@ -116,6 +116,7 @@ dependencies {
     implementation project(':linksapi')
     implementation project(':users')
     implementation project(':logger')
+    implementation project(':accountdetails')
 
     debugImplementation libs.quality.leakcanary
 

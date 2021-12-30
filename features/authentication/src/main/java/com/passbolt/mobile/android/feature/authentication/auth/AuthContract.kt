@@ -37,7 +37,7 @@ interface AuthContract {
         fun showGenericError()
         fun showProgress()
         fun hideProgress()
-        fun showName(name: String)
+        fun showLabel(name: String)
         fun showEmail(email: String)
         fun showAvatar(url: String)
         fun showDomain(domain: String)

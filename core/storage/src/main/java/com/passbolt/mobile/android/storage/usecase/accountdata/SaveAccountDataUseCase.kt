@@ -49,7 +49,7 @@ class SaveAccountDataUseCase(
         }
     }
 
-    class Input(
+    data class Input(
         val userId: String,
         val url: String,
         val firstname: String? = null,

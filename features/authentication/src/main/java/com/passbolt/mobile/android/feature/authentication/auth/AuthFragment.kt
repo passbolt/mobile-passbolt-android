@@ -261,7 +261,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         hideProgressDialog(childFragmentManager)
     }
 
-    override fun showName(name: String) {
+    override fun showLabel(name: String) {
         binding.nameLabel.text = name
     }
 

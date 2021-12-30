@@ -10,9 +10,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.koin.test.KoinTestRule
 import org.koin.core.logger.Level
 import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
 import org.koin.test.inject
 
 /**
@@ -63,6 +63,7 @@ class AccountModelMapperTest : KoinTest {
                 avatarUrl = "avatarUrl1",
                 url = "url1",
                 serverId = "serverId1",
+                label = "label"
             ),
             Account(
                 userId = "id2",
@@ -71,7 +72,8 @@ class AccountModelMapperTest : KoinTest {
                 email = "email2",
                 avatarUrl = "avatarUrl2",
                 url = "url2",
-                serverId = "serverId2"
+                serverId = "serverId2",
+                label = "label"
             )
         )
         val result = mapper.map(accountsList)
@@ -79,17 +81,17 @@ class AccountModelMapperTest : KoinTest {
             AccountModelUi.AccountModel(
                 userId = "id1",
                 email = "email1",
-                title = "firstName1 lastName1",
+                title = "label",
                 isFirstItem = true,
                 isTrashIconVisible = false,
                 avatar = "avatarUrl1",
                 url = "url1",
-                isCurrentUser = true
+                isCurrentUser = true,
             ),
             AccountModelUi.AccountModel(
                 userId = "id2",
                 email = "email2",
-                title = "firstName2 lastName2",
+                title = "label",
                 isFirstItem = false,
                 isTrashIconVisible = false,
                 avatar = "avatarUrl2",

@@ -38,7 +38,7 @@ class AccountModelMapper(
     private fun map(account: Account, isFirstItem: Boolean) =
         AccountModelUi.AccountModel(
             userId = account.userId,
-            title = "${account.firstName} ${account.lastName}",
+            title = account.label ?: defaultLabel(account.firstName, account.lastName),
             email = account.email,
             avatar = account.avatarUrl,
             isFirstItem = isFirstItem,
@@ -48,4 +48,13 @@ class AccountModelMapper(
 
     private fun isCurrentUser(account: Account) =
         account.userId == selectedAccountUseCase.execute(Unit).selectedAccount
+
+    companion object {
+
+        fun defaultLabel(firstName: String?, lastName: String?): String {
+            val builder = StringBuilder(firstName.orEmpty())
+            lastName?.let { builder.append(" %s".format(it)) }
+            return builder.toString()
+        }
+    }
 }

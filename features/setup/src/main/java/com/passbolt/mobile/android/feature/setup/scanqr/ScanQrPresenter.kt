@@ -7,7 +7,6 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
-import com.passbolt.mobile.android.storage.usecase.accountdata.SaveAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
@@ -47,7 +46,6 @@ class ScanQrPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val updateTransferUseCase: UpdateTransferUseCase,
     private val qrParser: ScanQrParser,
-    private val saveAccountDataUseCase: SaveAccountDataUseCase,
     private val uuidProvider: UuidProvider,
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
     private val updateAccountDataUseCase: UpdateAccountDataUseCase,
@@ -226,8 +224,8 @@ class ScanQrPresenter(
     private fun saveAccountDetails(serverId: String, url: String) {
         userId = uuidProvider.get()
         saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(url))
-        saveAccountDataUseCase.execute(
-            SaveAccountDataUseCase.Input(
+        updateAccountDataUseCase.execute(
+            UpdateAccountDataUseCase.Input(
                 userId = userId,
                 url = url,
                 serverId = serverId
