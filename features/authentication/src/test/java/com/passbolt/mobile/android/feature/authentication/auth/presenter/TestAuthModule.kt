@@ -66,6 +66,7 @@ internal const val MOCK_ACCOUNT_DATA_LAST_NAME = "last"
 internal const val MOCK_ACCOUNT_DATA_EMAIL = "email"
 internal const val MOCK_ACCOUNT_DATA_AVATAR_URL = "avatar"
 internal const val MOCK_ACCOUNT_DATA_SERVER_ID = "aaa-bbb-ccc"
+internal const val MOCK_LABEL = "label"
 
 internal val mockGetAccountDataUseCase = mock<GetAccountDataUseCase> {
     on { execute(UserIdInput(ACCOUNT)) }.doReturn(
@@ -75,7 +76,8 @@ internal val mockGetAccountDataUseCase = mock<GetAccountDataUseCase> {
             MOCK_ACCOUNT_DATA_EMAIL,
             MOCK_ACCOUNT_DATA_AVATAR_URL,
             MOCK_ACCOUNT_DATA_URL,
-            MOCK_ACCOUNT_DATA_SERVER_ID
+            MOCK_ACCOUNT_DATA_SERVER_ID,
+            MOCK_LABEL
         )
     )
 }

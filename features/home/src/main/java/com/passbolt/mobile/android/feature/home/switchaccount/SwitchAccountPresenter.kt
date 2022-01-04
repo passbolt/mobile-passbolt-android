@@ -56,15 +56,21 @@ class SwitchAccountPresenter(
         super.detach()
     }
 
+    override fun viewResumed() {
+        view?.showAccountsList(
+            prepareAccountList()
+        )
+    }
+
     private fun prepareAccountList(): List<SwitchAccountUiModel> =
         switchAccountModelMapper
             .map(getAllAccountsDataUseCase.execute(Unit).accounts)
 
     override fun signOutClick() {
-        view?.showLogoutDialog()
+        view?.showSignOutDialog()
     }
 
-    override fun logoutConfirmed() {
+    override fun signOutConfirmed() {
         scope.launch {
             view?.showProgress()
             signOutUseCase.execute(Unit)
@@ -78,6 +84,6 @@ class SwitchAccountPresenter(
     }
 
     override fun seeDetailsClick() {
-        // TODO
+        view?.navigateToAccountDetails()
     }
 }

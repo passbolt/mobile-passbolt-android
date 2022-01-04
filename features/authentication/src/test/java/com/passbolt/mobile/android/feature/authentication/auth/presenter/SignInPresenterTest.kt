@@ -17,8 +17,8 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
@@ -449,7 +449,7 @@ class SignInPresenterTest : KoinTest {
         verify(mockView).showProgress()
         verify(mockView).hideProgress()
         verify(mockView).showAccountDoesNotExistDialog(
-            "$MOCK_ACCOUNT_DATA_FIRST_NAME $MOCK_ACCOUNT_DATA_LAST_NAME",
+            MOCK_LABEL,
             MOCK_ACCOUNT_DATA_EMAIL,
             MOCK_ACCOUNT_DATA_URL
         )

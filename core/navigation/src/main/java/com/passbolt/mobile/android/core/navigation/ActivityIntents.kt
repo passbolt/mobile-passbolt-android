@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.navigation
 
 import android.content.Context
 import android.content.Intent
+import com.gaelmarhic.quadrant.Accountdetails
 import com.gaelmarhic.quadrant.Authentication
 import com.gaelmarhic.quadrant.Autofill
 import com.gaelmarhic.quadrant.Main
@@ -82,6 +83,11 @@ object ActivityIntents {
             flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or
                     Intent.FLAG_ACTIVITY_SINGLE_TOP or
                     Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+
+    fun accountDetails(context: Context) =
+        Intent().apply {
+            setClassName(context, Accountdetails.ACCOUNT_DETAILS_ACTIVITY)
         }
 
     sealed class AuthConfig : Serializable {

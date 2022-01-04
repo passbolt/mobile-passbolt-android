@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.storage.usecase.EMAIL_KEY
 import com.passbolt.mobile.android.storage.usecase.SERVER_ID_KEY
 import com.passbolt.mobile.android.storage.usecase.URL_KEY
 import com.passbolt.mobile.android.storage.usecase.USER_FIRST_NAME_KEY
+import com.passbolt.mobile.android.storage.usecase.USER_LABEL_KEY
 import com.passbolt.mobile.android.storage.usecase.USER_LAST_NAME_KEY
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 
@@ -45,12 +46,13 @@ class GetSelectedAccountDataUseCase(
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
 
         return Output(
-            sharedPreferences.getString(USER_FIRST_NAME_KEY, null),
-            sharedPreferences.getString(USER_LAST_NAME_KEY, null),
-            sharedPreferences.getString(EMAIL_KEY, null),
-            sharedPreferences.getString(AVATAR_URL_KEY, null),
-            sharedPreferences.getString(URL_KEY, "").orEmpty(),
-            sharedPreferences.getString(SERVER_ID_KEY, "")
+            firstName = sharedPreferences.getString(USER_FIRST_NAME_KEY, null),
+            lastName = sharedPreferences.getString(USER_LAST_NAME_KEY, null),
+            email = sharedPreferences.getString(EMAIL_KEY, null),
+            avatarUrl = sharedPreferences.getString(AVATAR_URL_KEY, null),
+            url = sharedPreferences.getString(URL_KEY, "").orEmpty(),
+            serverId = sharedPreferences.getString(SERVER_ID_KEY, ""),
+            label = sharedPreferences.getString(USER_LABEL_KEY, null)
         )
     }
 
@@ -60,6 +62,7 @@ class GetSelectedAccountDataUseCase(
         val email: String?,
         val avatarUrl: String?,
         val url: String,
-        val serverId: String?
+        val serverId: String?,
+        val label: String?
     )
 }

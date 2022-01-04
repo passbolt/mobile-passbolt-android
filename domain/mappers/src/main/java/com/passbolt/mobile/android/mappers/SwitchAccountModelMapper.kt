@@ -41,14 +41,14 @@ class SwitchAccountModelMapper(
             .map {
                 if (isCurrentUser(it)) {
                     SwitchAccountUiModel.HeaderItem(
-                        label = "${it.firstName} ${it.lastName}",
+                        label = it.label ?: AccountModelMapper.defaultLabel(it.firstName, it.lastName),
                         email = it.email.orEmpty(),
                         avatarUrl = it.avatarUrl
                     )
                 } else {
                     SwitchAccountUiModel.AccountItem(
                         userId = it.userId,
-                        label = "${it.firstName} ${it.lastName}",
+                        label = it.label ?: AccountModelMapper.defaultLabel(it.firstName, it.lastName),
                         email = it.email.orEmpty(),
                         avatarUrl = it.avatarUrl
                     )

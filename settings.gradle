@@ -28,6 +28,7 @@ featureModule "settings"
 featureModule "folders"
 featureModule "resources"
 featureModule "secrets"
+featureModule "accountdetails"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"

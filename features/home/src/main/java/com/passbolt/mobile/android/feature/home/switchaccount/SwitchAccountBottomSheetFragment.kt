@@ -10,6 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
+import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.dialogs.signOutAlertDialog
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
@@ -22,6 +23,7 @@ import com.passbolt.mobile.android.feature.home.switchaccount.recycler.HeaderSee
 import com.passbolt.mobile.android.feature.home.switchaccount.recycler.HeaderSignOutClick
 import com.passbolt.mobile.android.feature.home.switchaccount.recycler.ManageAccountsClick
 import com.passbolt.mobile.android.feature.home.switchaccount.recycler.SwitchAccountClick
+import com.passbolt.mobile.android.feature.home.switchaccount.recycler.SwitchAccountUiItemsMapper
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
@@ -38,6 +40,7 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
     private val fastAdapter: FastAdapter<GenericItem> by inject(named<SwitchAccountUiModel>())
     private val listDivider: DrawableListDivider by inject()
     private var listener: Listener? = null
+    private val switchAccountUiModelMapper: SwitchAccountUiItemsMapper by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,6 +64,11 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
             parentFragment is ResourceMoreMenuFragment.Listener -> parentFragment as Listener
             else -> error("Parent must implement ${Listener::class.java.name}")
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.viewResumed()
     }
 
     override fun onDetach() {
@@ -95,11 +103,15 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
     }
 
     override fun showAccountsList(accountsList: List<SwitchAccountUiModel>) {
-        modelAdapter.set(accountsList)
+        FastAdapterDiffUtil.calculateDiff(
+            modelAdapter,
+            accountsList.map { switchAccountUiModelMapper.mapModelToItem(it) }
+        )
+        fastAdapter.notifyAdapterDataSetChanged()
     }
 
-    override fun showLogoutDialog() {
-        signOutAlertDialog(requireContext()) { presenter.logoutConfirmed() }
+    override fun showSignOutDialog() {
+        signOutAlertDialog(requireContext()) { presenter.signOutConfirmed() }
             .show()
     }
 
@@ -132,6 +144,10 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
 
     override fun hideProgress() {
         hideProgressDialog(childFragmentManager)
+    }
+
+    override fun navigateToAccountDetails() {
+        startActivity(ActivityIntents.accountDetails(requireContext()))
     }
 
     interface Listener {

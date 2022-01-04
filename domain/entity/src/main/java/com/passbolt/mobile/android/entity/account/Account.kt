@@ -29,5 +29,6 @@ class Account(
     val email: String?,
     val avatarUrl: String?,
     val url: String,
-    val serverId: String?
+    val serverId: String?,
+    val label: String?
 )

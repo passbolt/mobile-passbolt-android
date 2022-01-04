@@ -31,16 +31,18 @@ interface SwitchAccountContract {
     interface Presenter : BaseContract.Presenter<View> {
         fun seeDetailsClick()
         fun signOutClick()
-        fun logoutConfirmed()
+        fun signOutConfirmed()
         fun switchAccountClick(account: SwitchAccountUiModel.AccountItem)
+        fun viewResumed()
     }
 
     interface View : BaseContract.View {
         fun showAccountsList(accountsList: List<SwitchAccountUiModel>)
-        fun showLogoutDialog()
+        fun showSignOutDialog()
         fun showProgress()
         fun hideProgress()
         fun navigateToStartup()
         fun navigateToSignInForAccount(userId: String)
+        fun navigateToAccountDetails()
     }
 }

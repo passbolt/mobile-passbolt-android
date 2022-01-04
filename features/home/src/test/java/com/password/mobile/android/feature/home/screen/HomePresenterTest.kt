@@ -1,4 +1,4 @@
-package com.password.mobile.android.feature.home
+package com.password.mobile.android.feature.home.screen
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
@@ -388,7 +388,8 @@ class HomePresenterTest : KoinTest {
                 email = "",
                 avatarUrl = avatarUrl,
                 url = "",
-                serverId = ""
+                serverId = "",
+                label = "label"
             )
         )
     }

@@ -43,7 +43,8 @@ class GetAllAccountsDataUseCase(
                 email = accountData.email,
                 avatarUrl = accountData.avatarUrl,
                 url = accountData.url,
-                serverId = accountData.serverId
+                serverId = accountData.serverId,
+                label = accountData.label
             )
         }
 

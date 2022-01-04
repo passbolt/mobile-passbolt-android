@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
+import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
@@ -142,7 +143,12 @@ abstract class AuthBasePresenter(
             val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
 
             view?.apply {
-                showName("${accountData.firstName.orEmpty()} ${accountData.lastName.orEmpty()}")
+                showLabel(
+                    accountData.label ?: AccountModelMapper.defaultLabel(
+                        accountData.firstName,
+                        accountData.lastName
+                    )
+                )
                 showDomain(accountData.url)
             }
             accountData.email?.let { view?.showEmail(it) }

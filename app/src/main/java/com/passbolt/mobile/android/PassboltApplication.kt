@@ -17,6 +17,7 @@ import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
 import com.passbolt.mobile.android.core.security.securityModule
 import com.passbolt.mobile.android.core.users.usersModule
 import com.passbolt.mobile.android.database.databaseModule
+import com.passbolt.mobile.android.feature.accountdetails.accountDetailsModule
 import com.passbolt.mobile.android.feature.authenticationModule
 import com.passbolt.mobile.android.feature.autofill.autofillModule
 import com.passbolt.mobile.android.feature.folders.foldersModule
@@ -141,7 +142,8 @@ class PassboltApplication : Application(), KoinComponent {
                 securityModule,
                 linksApiModule,
                 usersModule,
-                loggerModule
+                loggerModule,
+                accountDetailsModule
             )
         }
     }
