@@ -2,22 +2,19 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import androidx.annotation.CallSuper
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -48,22 +45,18 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 
-@Suppress("LongParameterList") // TODO extract interactors
 // base presenter for auth view
 // handles account details display, forgot password dialog, biometry
 abstract class AuthBasePresenter(
     private val getAccountDataUseCase: GetAccountDataUseCase,
-    private val checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
-    private val fingerprintInfoProvider: FingerprintInformationProvider,
-    private val removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
     private val verifyPassphraseUseCase: VerifyPassphraseUseCase,
     private val biometricCipher: BiometricCipher,
     private val getPassphraseUseCase: GetPassphraseUseCase,
     private val passphraseMemoryCache: PassphraseMemoryCache,
-    private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
     private val authReasonMapper: AuthReasonMapper,
     private val rootDetector: RootDetector,
+    private val biometryInteractor: BiometryInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthContract.Presenter {
 
@@ -94,14 +87,10 @@ abstract class AuthBasePresenter(
     }
 
     private fun handleBiometry() {
-        if (checkIfPassphraseFileExistsUseCase.execute(UserIdInput(userId)).passphraseFileExists) {
-            if (fingerprintInfoProvider.hasBiometricSetUp()) {
-                view?.apply {
-                    setBiometricAuthButtonVisible()
-                    tryShowingBiometricPrompt()
-                }
-            } else {
-                removeSelectedAccountPassphraseUseCase.execute(Unit)
+        biometryInteractor.onBiometryReady(userId) {
+            view?.apply {
+                setBiometricAuthButtonVisible()
+                tryShowingBiometricPrompt()
             }
         }
     }
@@ -118,13 +107,14 @@ abstract class AuthBasePresenter(
         try {
             view?.showBiometricPrompt(authReason, biometricCipher.getBiometricDecryptCipher(userId))
         } catch (exception: KeyPermanentlyInvalidatedException) {
-            Timber.e(exception)
-            removeSelectedAccountPassphraseUseCase.execute(Unit)
-            removeBiometricKeyUseCase.execute(Unit)
-            view?.setBiometricAuthButtonGone()
-            view?.showFingerprintChangedError()
+            Timber.e(exception, "Biometric key has been invalidated")
+            biometryInteractor.disableBiometry()
+            view?.apply {
+                setBiometricAuthButtonGone()
+                showFingerprintChangedError()
+            }
         } catch (exception: Exception) {
-            Timber.e(exception)
+            Timber.e(exception, "Exception during getting biometric cipher")
             view?.showGenericError()
         }
     }
@@ -140,19 +130,19 @@ abstract class AuthBasePresenter(
 
     private fun getAccountData() {
         scope.launch {
-            val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
-
-            view?.apply {
-                showLabel(
-                    accountData.label ?: AccountModelMapper.defaultLabel(
-                        accountData.firstName,
-                        accountData.lastName
+            getAccountDataUseCase.execute(UserIdInput(userId)).let { accountData ->
+                view?.apply {
+                    showLabel(
+                        accountData.label ?: AccountModelMapper.defaultLabel(
+                            accountData.firstName,
+                            accountData.lastName
+                        )
                     )
-                )
-                showDomain(accountData.url)
+                    showDomain(accountData.url)
+                }
+                accountData.email?.let { view?.showEmail(it) }
+                accountData.avatarUrl?.let { view?.showAvatar(it) }
             }
-            accountData.email?.let { view?.showEmail(it) }
-            accountData.avatarUrl?.let { view?.showAvatar(it) }
         }
     }
 

@@ -1,46 +1,32 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
-import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider.Companion.MFA_PROVIDER_TOTP
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider.Companion.MFA_PROVIDER_YUBIKEY
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.ChallengeVerificationErrorType
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
-import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.SaveServerFingerprintUseCase
-import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.crypto.Cipher
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase.Output.Success as PgpSuccess
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase.Output.Success as RsaSuccess
 
 /**
  * Passbolt - Open source password manager for teams
@@ -64,49 +50,36 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-@Suppress("LongParameterList") // TODO extract interactors
+// presenter for sign in view used for performing full sign in
 open class SignInPresenter(
-    private val getServerPublicPgpKeyUseCase: GetServerPublicPgpKeyUseCase,
-    private val getServerPublicRsaKeyUseCase: GetServerPublicRsaKeyUseCase,
-    private val signInUseCase: SignInUseCase,
-    private val challengeProvider: ChallengeProvider,
-    private val challengeDecryptor: ChallengeDecryptor,
-    private val challengeVerifier: ChallengeVerifier,
     private val saveSessionUseCase: SaveSessionUseCase,
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
-    private val getAccountDataUseCase: GetAccountDataUseCase,
     private val passphraseMemoryCache: PassphraseMemoryCache,
-    private val featureFlagsInteractor: FeatureFlagsInteractor,
     private val signOutUseCase: SignOutUseCase,
     private val saveServerFingerprintUseCase: SaveServerFingerprintUseCase,
-    private val isServerFingerprintCorrectUseCase: IsServerFingerprintCorrectUseCase,
     private val mfaStatusProvider: MfaStatusProvider,
-    private val getSessionUseCase: GetSessionUseCase,
-    removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
+    private val featureFlagsInteractor: FeatureFlagsInteractor,
+    private val getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysInteractor,
+    private val signInVerifyInteractor: SignInVerifyInteractor,
+    biometryInteractor: BiometryInteractor,
+    getAccountDataUseCase: GetAccountDataUseCase,
     biometricCipher: BiometricCipher,
     getPassphraseUseCase: GetPassphraseUseCase,
-    removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
     getPrivateKeyUseCase: GetPrivateKeyUseCase,
     verifyPassphraseUseCase: VerifyPassphraseUseCase,
-    fingerprintInfoProvider: FingerprintInformationProvider,
-    checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext,
     authReasonMapper: AuthReasonMapper,
     rootDetector: RootDetector
 ) : AuthBasePresenter(
     getAccountDataUseCase,
-    checkIfPassphraseFileExistsUseCase,
-    fingerprintInfoProvider,
-    removeSelectedAccountPassphraseUseCase,
     getPrivateKeyUseCase,
     verifyPassphraseUseCase,
     biometricCipher,
     getPassphraseUseCase,
     passphraseMemoryCache,
-    removeBiometricKeyUseCase,
     authReasonMapper,
     rootDetector,
+    biometryInteractor,
     coroutineLaunchContext
 ) {
 
@@ -132,42 +105,23 @@ open class SignInPresenter(
     protected open fun performSignIn(passphrase: ByteArray) {
         view?.showProgress()
         scope.launch {
-            val pgpKey = async { getServerPublicPgpKeyUseCase.execute(Unit) }
-            val rsaKey = async { getServerPublicRsaKeyUseCase.execute(Unit) }
-
-            Timber.d("Getting server pgp and rsa keys")
-            val pgpKeyResult = pgpKey.await()
-            val rsaKeyResult = rsaKey.await()
-
-            if (pgpKeyResult is PgpSuccess && rsaKeyResult is RsaSuccess) {
-                Timber.d("Getting server pgp and rsa keys succeeded")
-                val input = IsServerFingerprintCorrectUseCase.Input(userId, pgpKeyResult.fingerprint)
-                if (!isServerFingerprintCorrectUseCase.execute(input).isCorrect) {
+            getAndVerifyServerKeysInteractor.getAndVerifyServerKeys(userId,
+                onError = {
                     view?.hideProgress()
-                    view?.showServerFingerprintChanged(pgpKeyResult.fingerprint)
-                    Timber.d("Server key fingerprint has changed")
-                } else {
-                    signIn(
-                        passphrase.copyOf(),
-                        pgpKeyResult.publicKey,
-                        rsaKeyResult.rsaKey,
-                        pgpKeyResult.fingerprint
-                    )
-                }
-            } else {
-                if ((pgpKeyResult as? GetServerPublicPgpKeyUseCase.Output.Failure)
-                        ?.error?.isServerNotReachable == true ||
-                    (rsaKeyResult as? GetServerPublicRsaKeyUseCase.Output.Failure)
-                        ?.error?.isServerNotReachable == true
-                ) {
-                    val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
-                    view?.apply {
-                        hideProgress()
-                        showServerNotReachable(accountData.url)
+                    when (it) {
+                        is GetAndVerifyServerKeysInteractor.Error.Generic -> {
+                            view?.showGenericError()
+                        }
+                        is GetAndVerifyServerKeysInteractor.Error.IncorrectServerFingerprint -> {
+                            view?.showServerFingerprintChanged(it.fingerprint)
+                        }
+                        is GetAndVerifyServerKeysInteractor.Error.ServerNotReachable -> {
+                            view?.showServerNotReachable(it.serverUrl)
+                        }
                     }
-                } else {
-                    showGenericError()
                 }
+            ) {
+                signIn(passphrase.copyOf(), it.pgpKey, it.rsaKey, it.pgpKeyFingerprint)
             }
         }
     }
@@ -178,92 +132,56 @@ open class SignInPresenter(
         rsaKey: String,
         fingerprint: String
     ) {
-        val accountData = getAccountDataUseCase.execute(UserIdInput(userId))
-        val challenge = challengeProvider.get(
-            version = CHALLENGE_VERSION,
-            domain = accountData.url,
-            serverPublicKey = serverPublicKey,
-            passphrase = passphrase,
-            userId
-        )
-        when (challenge) {
-            is ChallengeProvider.Output.Success -> {
-                Timber.d("Prepared sign in challenge")
-                sendSignInRequest(
-                    userId,
-                    challenge.challenge,
-                    serverPublicKey,
-                    passphrase,
-                    rsaKey,
-                    requireNotNull(accountData.serverId),
-                    fingerprint,
-                    accountData
-                )
-            }
-            ChallengeProvider.Output.WrongPassphrase -> {
-                showWrongPassphrase()
-            }
-        }
-    }
-
-    private suspend fun sendSignInRequest(
-        userId: String,
-        challenge: String,
-        serverPublicKey: String,
-        passphrase: ByteArray,
-        rsaKey: String,
-        serverId: String,
-        fingerprint: String,
-        accountData: GetAccountDataUseCase.Output
-    ) {
-        val currentMfaToken = getSessionUseCase.execute(Unit).mfaToken
-        when (val result = signInUseCase.execute(SignInUseCase.Input(serverId, challenge, currentMfaToken))) {
-            is SignInUseCase.Output.Failure -> {
-                Timber.e("Failure during sign in: ${result.message}")
+        signInVerifyInteractor.signInVerify(serverPublicKey, passphrase, userId, rsaKey,
+            onError = {
                 view?.hideProgress()
-                when (result.type) {
-                    SignInFailureType.ACCOUNT_DOES_NOT_EXIST -> {
+                when (it) {
+                    is SignInVerifyInteractor.Error.AccountDoesNotExist -> {
                         view?.showAccountDoesNotExistDialog(
-                            accountData.label ?: AccountModelMapper.defaultLabel(
-                                accountData.firstName,
-                                accountData.lastName
-                            ),
-                            accountData.email,
-                            accountData.url
+                            it.label,
+                            it.email,
+                            it.serverUrl
                         )
                     }
-                    SignInFailureType.OTHER -> {
-                        view?.showError(result.message)
+                    is SignInVerifyInteractor.Error.ChallengeDecryptionError -> {
+                        view?.showDecryptionError(it.message)
+                    }
+                    is SignInVerifyInteractor.Error.ChallengeVerificationError -> {
+                        when (it.type) {
+                            ChallengeVerificationErrorType.TOKEN_EXPIRED -> view?.showChallengeTokenInvalid()
+                            ChallengeVerificationErrorType.INVALID_SIGNATURE -> view?.showChallengeInvalidSignature()
+                            ChallengeVerificationErrorType.FAILURE -> view?.showChallengeVerificationFailure()
+                        }
+                        view?.showGenericError()
+                    }
+                    is SignInVerifyInteractor.Error.IncorrectPassphrase -> {
+                        view?.showWrongPassphrase()
+                    }
+                    is SignInVerifyInteractor.Error.SignInFailure -> {
+                        view?.showError(it.message)
                     }
                 }
-            }
-            is SignInUseCase.Output.Success -> {
-                Timber.d("Sign in success. Decrypting challenge.")
-                val challengeDecryptResult = challengeDecryptor.decrypt(
-                    serverPublicKey,
-                    passphrase,
-                    userId,
-                    result.challenge
-                )
-                when (challengeDecryptResult) {
-                    is ChallengeDecryptor.Output.DecryptedChallenge -> {
-                        Timber.d("Challenge decrypted successfully")
-                        verifyChallenge(
-                            challengeDecryptResult.challenge,
-                            rsaKey,
-                            passphrase,
-                            fingerprint,
-                            result.mfaToken,
-                            currentMfaToken
-                        )
-                    }
-                    is ChallengeDecryptor.Output.DecryptionError -> {
-                        view?.apply {
-                            Timber.e("Challenge decryption error: ${challengeDecryptResult.message}")
-                            hideProgress()
-                            showDecryptionError(challengeDecryptResult.message)
-                        }
-                    }
+            }) {
+            loginState = LoginState(
+                accessToken = it.accessToken,
+                refreshToken = it.refreshToken,
+                passphrase = passphrase,
+                fingerprint = fingerprint,
+                mfaToken = it.mfaToken
+            )
+            Timber.d("Checking MFA status")
+            when (val mfaStatus = mfaStatusProvider.provideMfaStatus(
+                it.challengeResponseDto,
+                it.mfaToken,
+                it.currentMfaToken
+            )) {
+                MfaStatus.NotRequired -> {
+                    Timber.d("MFA not required")
+                    mfaNotRequired()
+                }
+                is MfaStatus.Required -> {
+                    Timber.d("MFA required")
+                    mfaRequired(mfaStatus.mfaProviders, it.accessToken)
                 }
             }
         }
@@ -271,56 +189,6 @@ open class SignInPresenter(
 
     override fun fingerprintServerConfirmationClick(fingerprint: String) {
         saveServerFingerprintUseCase.execute(SaveServerFingerprintUseCase.Input(userId, fingerprint))
-    }
-
-    private fun verifyChallenge(
-        challengeResponseDto: ChallengeResponseDto,
-        rsaKey: String,
-        passphrase: ByteArray,
-        fingerprint: String,
-        mfaToken: String?,
-        currentMfaToken: String?
-    ) {
-        Timber.d("Verifying challenge")
-        when (val result = challengeVerifier.verify(challengeResponseDto, rsaKey)) {
-            ChallengeVerifier.Output.Failure -> {
-                Timber.e("Challenge verification error")
-                showGenericError()
-            }
-            ChallengeVerifier.Output.InvalidSignature -> {
-                Timber.e("Challenge verification error: invalid signature")
-                showGenericError()
-            }
-            ChallengeVerifier.Output.TokenExpired -> {
-                Timber.e("Challenge verification error: token expired")
-                showGenericError()
-            }
-            is ChallengeVerifier.Output.Verified -> {
-                Timber.d("Challenge verified with success")
-                loginState = LoginState(
-                    accessToken = result.accessToken,
-                    refreshToken = result.refreshToken,
-                    passphrase = passphrase,
-                    fingerprint = fingerprint,
-                    mfaToken = mfaToken
-                )
-                Timber.d("Checking MFA status")
-                when (val mfaStatus = mfaStatusProvider.provideMfaStatus(
-                    challengeResponseDto,
-                    mfaToken,
-                    currentMfaToken
-                )) {
-                    MfaStatus.NotRequired -> {
-                        Timber.d("MFA not required")
-                        mfaNotRequired()
-                    }
-                    is MfaStatus.Required -> {
-                        Timber.d("MFA required")
-                        mfaRequired(mfaStatus.mfaProviders, result.accessToken)
-                    }
-                }
-            }
-        }
     }
 
     private fun mfaNotRequired() {
@@ -401,20 +269,6 @@ open class SignInPresenter(
         }
     }
 
-    private fun showGenericError() {
-        view?.apply {
-            hideProgress()
-            showGenericError()
-        }
-    }
-
-    private fun showWrongPassphrase() {
-        view?.apply {
-            hideProgress()
-            showWrongPassphrase()
-        }
-    }
-
     fun signOutClick() {
         view?.apply {
             closeFeatureFlagsFetchErrorDialog()
@@ -443,8 +297,4 @@ open class SignInPresenter(
         val fingerprint: String,
         var mfaToken: String? = null
     )
-
-    private companion object {
-        private const val CHALLENGE_VERSION = "1.0.0"
-    }
 }

@@ -8,7 +8,6 @@ import com.passbolt.mobile.android.feature.authentication.openPgp
 import com.passbolt.mobile.android.feature.authentication.challengeTestModule
 import com.passbolt.mobile.android.feature.authentication.timeProvider
 import com.passbolt.mobile.android.feature.authentication.uuidProvider
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -44,7 +43,7 @@ class ChallengeProviderTest : KoinTest {
         whenever(getPrivateKeyUseCase.execute(any())).thenReturn(GetPrivateKeyUseCase.Output(privateKey))
 
         val result = challengeProvider.get(
-            version, domain, publicKey, "pass".toByteArray(), "userId"
+            domain, publicKey, "pass".toByteArray(), "userId"
         )
         assertTrue(result is ChallengeProvider.Output.Success)
         assertEquals(challenge, result.challenge)

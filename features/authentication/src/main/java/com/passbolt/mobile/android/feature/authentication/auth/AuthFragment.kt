@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
@@ -168,11 +169,6 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingeprintCipherCrypto))
     }
 
-    override fun showAuthenticationError(errorMessage: Int) {
-        Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG)
-            .show()
-    }
-
     override fun onDestroyView() {
         serverNotReachableDialog?.dismiss()
         serverNotReachableDialog = null
@@ -195,17 +191,35 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         authStrategy.authSuccess()
     }
 
+    override fun showAuthenticationError(@StringRes errorMessage: Int) {
+        showLongSnackbar(getString(errorMessage))
+    }
+
     override fun showWrongPassphrase() {
-        Snackbar.make(binding.root, R.string.auth_incorrect_passphrase, Snackbar.LENGTH_LONG)
-            .show()
+        showLongSnackbar(getString(R.string.auth_incorrect_passphrase))
     }
 
     override fun showGenericError() {
-        Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_LONG)
-            .show()
+        showLongSnackbar(getString(R.string.auth_error_invalid_signature))
+    }
+
+    override fun showChallengeInvalidSignature() {
+        showLongSnackbar(getString(R.string.auth_error_invalid_signature))
+    }
+
+    override fun showChallengeTokenInvalid() {
+        showLongSnackbar(getString(R.string.auth_error_token_expired))
+    }
+
+    override fun showChallengeVerificationFailure() {
+        showLongSnackbar(getString(R.string.auth_error_challenge_verification_failure))
     }
 
     override fun showError(message: String) {
+        showLongSnackbar(message)
+    }
+
+    private fun showLongSnackbar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
             .show()
     }
@@ -335,8 +349,8 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         featureFlagsFetchErrorDialog?.dismiss()
     }
 
-    override fun showAccountDoesNotExistDialog(name: String, email: String?, url: String) {
-        AccountDoesNotExistDialog.newInstance(name, email, url)
+    override fun showAccountDoesNotExistDialog(label: String, email: String?, url: String) {
+        AccountDoesNotExistDialog.newInstance(label, email, url)
             .show(childFragmentManager, AccountDoesNotExistDialog::class.java.name)
     }
 

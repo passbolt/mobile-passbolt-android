@@ -145,7 +145,7 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         mockChallengeProvider.stub {
-            onBlocking { get(any(), any(), any(), any(), any()) }.doReturn(
+            onBlocking { get(any(), any(), any(), any()) }.doReturn(
                 ChallengeProvider.Output.Success("challenge")
             )
         }
@@ -204,7 +204,7 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         mockChallengeProvider.stub {
-            onBlocking { get(any(), any(), any(), any(), any()) }.doReturn(
+            onBlocking { get(any(), any(), any(), any()) }.doReturn(
                 ChallengeProvider.Output.WrongPassphrase
             )
         }
@@ -221,7 +221,7 @@ class SignInPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should show decryption error if challange cannot be decrypter`() {
+    fun `view should show decryption error if challenge cannot be decrypted`() {
         val errorMessage = "error message"
         mockVerifyPassphraseUseCase.stub {
             onBlocking { execute(any()) }.doReturn(VerifyPassphraseUseCase.Output(true))
@@ -238,7 +238,7 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         mockChallengeProvider.stub {
-            onBlocking { get(any(), any(), any(), any(), any()) }.doReturn(
+            onBlocking { get(any(), any(), any(), any()) }.doReturn(
                 ChallengeProvider.Output.Success("challenge")
             )
         }
@@ -290,7 +290,7 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(IsServerFingerprintCorrectUseCase.Output(true))
         }
         mockChallengeProvider.stub {
-            onBlocking { get(any(), any(), any(), any(), any()) }.doReturn(
+            onBlocking { get(any(), any(), any(), any()) }.doReturn(
                 ChallengeProvider.Output.Success("challenge")
             )
         }
@@ -333,7 +333,7 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(IsServerFingerprintCorrectUseCase.Output(false))
         }
         mockChallengeProvider.stub {
-            onBlocking { get(any(), any(), any(), any(), any()) }.doReturn(
+            onBlocking { get(any(), any(), any(), any()) }.doReturn(
                 ChallengeProvider.Output.Success("challenge")
             )
         }
@@ -374,7 +374,7 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         mockChallengeProvider.stub {
-            onBlocking { get(any(), any(), any(), any(), any()) }.doReturn(
+            onBlocking { get(any(), any(), any(), any()) }.doReturn(
                 ChallengeProvider.Output.Success("challenge")
             )
         }
@@ -428,7 +428,7 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
         mockChallengeProvider.stub {
-            onBlocking { get(any(), any(), any(), any(), any()) }.doReturn(
+            onBlocking { get(any(), any(), any(), any()) }.doReturn(
                 ChallengeProvider.Output.Success("challenge")
             )
         }
