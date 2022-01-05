@@ -4,9 +4,9 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.usecase.GetLocalResourceUseCase
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
@@ -72,9 +72,7 @@ class ResourceDetailsPresenter(
                 displayTitle(resourceModel.name)
                 displayUsername(resourceModel.username.orEmpty())
                 displayInitialsIcon(resourceModel.name, resourceModel.initials)
-                if (!resourceModel.url.isNullOrEmpty()) {
-                    displayUrl(resourceModel.url!!)
-                }
+                displayUrl(resourceModel.url.orEmpty())
                 showPasswordHidden()
                 showPasswordHiddenIcon()
                 handleDescriptionField(resourceModel)
