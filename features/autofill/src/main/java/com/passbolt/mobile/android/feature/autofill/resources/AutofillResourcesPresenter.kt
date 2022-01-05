@@ -6,8 +6,8 @@ import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -96,7 +96,7 @@ class AutofillResourcesPresenter(
         view?.navigateToManageAccount()
     }
 
-    private fun fetchResources(withShowingListProgress: Boolean = true) {
+    private fun fetchResources(withShowingListProgress: Boolean = true, doAfterFetch: (() -> Unit)? = null) {
         scope.launch {
             view?.hideUpdateButton()
             if (withShowingListProgress) {
@@ -106,7 +106,10 @@ class AutofillResourcesPresenter(
                 resourcesInteractor.fetchResourcesWithTypes()
             }) {
                 is ResourceInteractor.Output.Failure -> fetchingResourcesFailure()
-                is ResourceInteractor.Output.Success -> fetchingResourcesSuccess(result.resources)
+                is ResourceInteractor.Output.Success -> {
+                    fetchingResourcesSuccess(result.resources)
+                    doAfterFetch?.invoke()
+                }
             }
         }
     }
@@ -255,9 +258,17 @@ class AutofillResourcesPresenter(
         view?.navigateToHome()
     }
 
-    override fun newResourceCreated() {
-        fetchResources(withShowingListProgress = true)
+    override fun newResourceCreated(newResourceId: String?) {
         view?.showResourceAddedSnackbar()
+        view?.showProgress()
+        fetchResources(withShowingListProgress = true) {
+            newResourceId?.let { newResourceId ->
+                allItemsList.indexOfFirst { it.resourceId == newResourceId }.let { index ->
+                    view?.scrollResourcesToPosition(index)
+                    itemClick(allItemsList[index])
+                }
+            }
+        }
     }
 
     enum class SearchInputEndIconMode {

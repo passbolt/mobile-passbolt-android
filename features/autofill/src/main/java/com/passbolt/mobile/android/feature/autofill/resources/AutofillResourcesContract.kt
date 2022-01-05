@@ -51,6 +51,7 @@ interface AutofillResourcesContract {
         fun showUpdateButton()
         fun hideUpdateButton()
         fun showResourceAddedSnackbar()
+        fun scrollResourcesToPosition(index: Int)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -62,6 +63,6 @@ interface AutofillResourcesContract {
         fun searchAvatarClick()
         fun searchClearClick()
         fun closeClick()
-        fun newResourceCreated()
+        fun newResourceCreated(newResourceId: String?)
     }
 }

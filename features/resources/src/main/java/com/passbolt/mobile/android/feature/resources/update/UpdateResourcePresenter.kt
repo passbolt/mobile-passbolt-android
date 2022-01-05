@@ -10,13 +10,13 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.UpdateResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.core.security.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.core.users.FetchUsersUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceUseCase
 import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.database.usecase.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.entity.resource.ResourceField
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.EditFieldsModelCreator
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.FieldNamesMapper
@@ -245,7 +245,7 @@ class UpdateResourcePresenter(
         }) {
             is CreateResourceUseCase.Output.Success -> {
                 addLocalResourceUseCase.execute(AddLocalResourceUseCase.Input(result.resource))
-                view?.closeWithCreateSuccessResult(result.resource.name)
+                view?.closeWithCreateSuccessResult(result.resource.name, result.resource.resourceId)
             }
             is CreateResourceUseCase.Output.Failure<*> -> view?.showError()
             is CreateResourceUseCase.Output.PasswordExpired -> {
