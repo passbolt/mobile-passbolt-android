@@ -12,10 +12,13 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
@@ -115,6 +118,32 @@ internal val mockRefreshSessionUseCase = mock<RefreshSessionUseCase>()
 internal val mockRootDetector = mock<RootDetector>()
 
 val testAuthModule = module {
+    factory {
+        GetAndVerifyServerKeysInteractor(
+            getServerPublicPgpKeyUseCase = mockGetServerPublicPgpKeyUseCase,
+            getServerPublicRsaKeyUseCase = mockGetServerPublicRsaKeyUseCase,
+            getAccountDataUseCase = mockGetAccountDataUseCase,
+            isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase
+        )
+    }
+    factory {
+        SignInVerifyInteractor(
+            getAccountDataUseCase = mockGetAccountDataUseCase,
+            challengeProvider = mockChallengeProvider,
+            getSessionUseCase = mockGetSessionUseCase,
+            signInUseCase = mockSignInUseCase,
+            challengeDecryptor = mockChallengeDecryptor,
+            challengeVerifier = mockChallengeVerifier
+        )
+    }
+    factory {
+        BiometryInteractor(
+            checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
+            removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
+            removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
+            fingerprintInfoProvider = mockFingerprintInformationProvider
+        )
+    }
     factory<AuthContract.Presenter> { (authConfig: ActivityIntents.AuthConfig) ->
         when (authConfig) {
             is ActivityIntents.AuthConfig.Startup -> signInPresenter()
@@ -130,78 +159,57 @@ val testAuthModule = module {
 }
 
 private fun Scope.signInPresenter() = SignInPresenter(
-    getServerPublicPgpKeyUseCase = mockGetServerPublicPgpKeyUseCase,
-    getServerPublicRsaKeyUseCase = mockGetServerPublicRsaKeyUseCase,
-    signInUseCase = mockSignInUseCase,
-    coroutineLaunchContext = get(),
-    challengeProvider = mockChallengeProvider,
-    challengeDecryptor = mockChallengeDecryptor,
-    challengeVerifier = mockChallengeVerifier,
-    getAccountDataUseCase = mockGetAccountDataUseCase,
     saveSessionUseCase = mock(),
     saveSelectedAccountUseCase = mock(),
-    checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
-    removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
-    fingerprintInfoProvider = mockFingerprintInformationProvider,
     passphraseMemoryCache = mockPassphraseMemoryCache,
-    featureFlagsInteractor = mockFeatureFlagsInteractor,
     signOutUseCase = mockSignOutUseCase,
-    getPrivateKeyUseCase = mockPrivateKeyUseCase,
-    verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+    saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
+    mfaStatusProvider = mockMfaStatusProvider,
+    featureFlagsInteractor = mockFeatureFlagsInteractor,
+    getAndVerifyServerKeysInteractor = get(),
+    signInVerifyInteractor = get(),
+    getAccountDataUseCase = mockGetAccountDataUseCase,
     biometricCipher = mockBiometricCipher,
     getPassphraseUseCase = mockGetPassphraseUseCase,
-    removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
-    isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
-    saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
+    getPrivateKeyUseCase = mockPrivateKeyUseCase,
+    verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+    coroutineLaunchContext = get(),
     authReasonMapper = authReasonMapper,
-    mfaStatusProvider = mockMfaStatusProvider,
-    getSessionUseCase = mockGetSessionUseCase,
-    rootDetector = mockRootDetector
+    rootDetector = mockRootDetector,
+    biometryInteractor = get()
 )
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(
     passphraseMemoryCache = mockPassphraseMemoryCache,
     getPrivateKeyUseCase = mockPrivateKeyUseCase,
     verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
-    fingerprintInfoProvider = mockFingerprintInformationProvider,
-    removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
-    checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
     getAccountDataUseCase = mockGetAccountDataUseCase,
     coroutineLaunchContext = get(),
     biometricCipher = mockBiometricCipher,
     getPassphraseUseCase = mockGetPassphraseUseCase,
-    removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
     authReasonMapper = authReasonMapper,
-    rootDetector = mockRootDetector
+    rootDetector = mockRootDetector,
+    biometryInteractor = get()
 )
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
-    getServerPublicPgpKeyUseCase = mockGetServerPublicPgpKeyUseCase,
-    getServerPublicRsaKeyUseCase = mockGetServerPublicRsaKeyUseCase,
-    signInUseCase = mockSignInUseCase,
-    coroutineLaunchContext = get(),
-    challengeProvider = mockChallengeProvider,
-    challengeDecryptor = mockChallengeDecryptor,
-    challengeVerifier = mockChallengeVerifier,
-    getAccountDataUseCase = mockGetAccountDataUseCase,
+    refreshSessionUseCase = mockRefreshSessionUseCase,
     saveSessionUseCase = mock(),
     saveSelectedAccountUseCase = mock(),
-    checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
-    removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
-    fingerprintInfoProvider = mockFingerprintInformationProvider,
+    getAccountDataUseCase = mockGetAccountDataUseCase,
     passphraseMemoryCache = mockPassphraseMemoryCache,
     featureFlagsInteractor = mockFeatureFlagsInteractor,
     signOutUseCase = mockSignOutUseCase,
-    getPrivateKeyUseCase = mockPrivateKeyUseCase,
-    verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+    saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
+    mfaStatusProvider = mockMfaStatusProvider,
     biometricCipher = mockBiometricCipher,
     getPassphraseUseCase = mockGetPassphraseUseCase,
-    removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
-    isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
-    saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
+    getPrivateKeyUseCase = mockPrivateKeyUseCase,
+    verifyPassphraseUseCase = mockVerifyPassphraseUseCase,
+    coroutineLaunchContext = get(),
     authReasonMapper = authReasonMapper,
-    mfaStatusProvider = mockMfaStatusProvider,
-    getSessionUseCase = mockGetSessionUseCase,
-    refreshSessionUseCase = mockRefreshSessionUseCase,
-    rootDetector = mockRootDetector
+    rootDetector = mockRootDetector,
+    getAndVerifyServerKeysInteractor = get(),
+    signInVerifyInteractor = get(),
+    biometryInteractor = get()
 )

@@ -12,9 +12,12 @@ import com.passbolt.mobile.android.feature.authentication.auth.presenter.Passphr
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.RefreshSessionPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import org.koin.core.module.Module
@@ -102,6 +105,32 @@ fun Module.authModule() {
         scoped {
             MfaStatusProvider()
         }
+        scoped {
+            GetAndVerifyServerKeysInteractor(
+                getServerPublicPgpKeyUseCase = get(),
+                getServerPublicRsaKeyUseCase = get(),
+                getAccountDataUseCase = get(),
+                isServerFingerprintCorrectUseCase = get()
+            )
+        }
+        scoped {
+            SignInVerifyInteractor(
+                getAccountDataUseCase = get(),
+                challengeProvider = get(),
+                getSessionUseCase = get(),
+                signInUseCase = get(),
+                challengeDecryptor = get(),
+                challengeVerifier = get()
+            )
+        }
+        scoped {
+            BiometryInteractor(
+                checkIfPassphraseFileExistsUseCase = get(),
+                removeBiometricKeyUseCase = get(),
+                removeSelectedAccountPassphraseUseCase = get(),
+                fingerprintInfoProvider = get()
+            )
+        }
     }
     single { MfaProviderHandler() }
     single {
@@ -134,75 +163,54 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
     passphraseMemoryCache = get(),
     getPrivateKeyUseCase = get(),
     verifyPassphraseUseCase = get(),
-    fingerprintInfoProvider = get(),
-    removeSelectedAccountPassphraseUseCase = get(),
-    checkIfPassphraseFileExistsUseCase = get(),
     getAccountDataUseCase = get(),
     coroutineLaunchContext = get(),
     biometricCipher = get(),
     getPassphraseUseCase = get(),
-    removeBiometricKeyUseCase = get(),
     authReasonMapper = get(),
-    rootDetector = get()
+    rootDetector = get(),
+    biometryInteractor = get()
 )
 
 private fun Scope.signInPresenter() = SignInPresenter(
-    getServerPublicPgpKeyUseCase = get(),
-    getServerPublicRsaKeyUseCase = get(),
-    signInUseCase = get(),
-    coroutineLaunchContext = get(),
-    challengeProvider = get(),
-    challengeDecryptor = get(),
-    challengeVerifier = get(),
-    getAccountDataUseCase = get(),
     saveSessionUseCase = get(),
     saveSelectedAccountUseCase = get(),
-    checkIfPassphraseFileExistsUseCase = get(),
     passphraseMemoryCache = get(),
-    removeSelectedAccountPassphraseUseCase = get(),
-    fingerprintInfoProvider = get(),
-    featureFlagsInteractor = get(),
     signOutUseCase = get(),
-    getPrivateKeyUseCase = get(),
-    verifyPassphraseUseCase = get(),
+    saveServerFingerprintUseCase = get(),
+    mfaStatusProvider = get(),
+    featureFlagsInteractor = get(),
+    getAndVerifyServerKeysInteractor = get(),
+    signInVerifyInteractor = get(),
+    getAccountDataUseCase = get(),
     biometricCipher = get(),
     getPassphraseUseCase = get(),
-    removeBiometricKeyUseCase = get(),
-    saveServerFingerprintUseCase = get(),
-    isServerFingerprintCorrectUseCase = get(),
+    getPrivateKeyUseCase = get(),
+    verifyPassphraseUseCase = get(),
+    coroutineLaunchContext = get(),
     authReasonMapper = get(),
-    mfaStatusProvider = get(),
-    getSessionUseCase = get(),
-    rootDetector = get()
+    rootDetector = get(),
+    biometryInteractor = get()
 )
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     refreshSessionUseCase = get(),
-    getServerPublicPgpKeyUseCase = get(),
-    getServerPublicRsaKeyUseCase = get(),
-    signInUseCase = get(),
-    coroutineLaunchContext = get(),
-    challengeProvider = get(),
-    challengeDecryptor = get(),
-    challengeVerifier = get(),
-    getAccountDataUseCase = get(),
     saveSessionUseCase = get(),
     saveSelectedAccountUseCase = get(),
-    checkIfPassphraseFileExistsUseCase = get(),
+    getAccountDataUseCase = get(),
     passphraseMemoryCache = get(),
-    removeSelectedAccountPassphraseUseCase = get(),
-    fingerprintInfoProvider = get(),
     featureFlagsInteractor = get(),
     signOutUseCase = get(),
-    getPrivateKeyUseCase = get(),
-    verifyPassphraseUseCase = get(),
+    saveServerFingerprintUseCase = get(),
+    mfaStatusProvider = get(),
     biometricCipher = get(),
     getPassphraseUseCase = get(),
-    removeBiometricKeyUseCase = get(),
-    saveServerFingerprintUseCase = get(),
-    isServerFingerprintCorrectUseCase = get(),
+    getPrivateKeyUseCase = get(),
+    verifyPassphraseUseCase = get(),
+    coroutineLaunchContext = get(),
     authReasonMapper = get(),
-    mfaStatusProvider = get(),
-    getSessionUseCase = get(),
-    rootDetector = get()
+    rootDetector = get(),
+    getAndVerifyServerKeysInteractor = get(),
+    signInVerifyInteractor = get(),
+    biometryInteractor = get()
 )

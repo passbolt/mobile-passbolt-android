@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth
 
+import androidx.annotation.StringRes
 import com.passbolt.mobile.android.core.mvp.BaseContract
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import javax.crypto.Cipher
@@ -51,12 +52,12 @@ interface AuthContract {
         fun showBiometricPrompt(authReason: RefreshAuthReason?, fingeprintCipherCrypto: Cipher)
         fun setBiometricAuthButtonVisible()
         fun setBiometricAuthButtonGone()
-        fun showAuthenticationError(errorMessage: Int)
+        fun showAuthenticationError(@StringRes errorMessage: Int)
         fun clearPassphraseInput()
         fun showFeatureFlagsErrorDialog()
         fun closeFeatureFlagsFetchErrorDialog()
         fun showAuthenticationReason(reason: RefreshAuthReason)
-        fun showAccountDoesNotExistDialog(name: String, email: String?, url: String)
+        fun showAccountDoesNotExistDialog(label: String, email: String?, url: String)
         fun navigateToAccountList()
         fun showServerFingerprintChanged(newFingerprint: String)
         fun showDecryptionError(message: String?)
@@ -66,6 +67,9 @@ interface AuthContract {
         fun showUnknownProvider()
         fun showDeviceRootedDialog()
         fun showHelpMenu()
+        fun showChallengeInvalidSignature()
+        fun showChallengeTokenInvalid()
+        fun showChallengeVerificationFailure()
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE

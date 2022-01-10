@@ -1,31 +1,22 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.SaveServerFingerprintUseCase
-import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
 import kotlinx.coroutines.launch
 
@@ -51,16 +42,9 @@ import kotlinx.coroutines.launch
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-@Suppress("LongParameterList") // TODO extract interactors
+// presenter for sign in view used for refreshing the session using dedicated endpoint
 class RefreshSessionPresenter(
     private val refreshSessionUseCase: RefreshSessionUseCase,
-    getServerPublicPgpKeyUseCase: GetServerPublicPgpKeyUseCase,
-    getServerPublicRsaKeyUseCase: GetServerPublicRsaKeyUseCase,
-    signInUseCase: SignInUseCase,
-    challengeProvider: ChallengeProvider,
-    challengeDecryptor: ChallengeDecryptor,
-    challengeVerifier: ChallengeVerifier,
     saveSessionUseCase: SaveSessionUseCase,
     saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     getAccountDataUseCase: GetAccountDataUseCase,
@@ -68,55 +52,50 @@ class RefreshSessionPresenter(
     featureFlagsInteractor: FeatureFlagsInteractor,
     signOutUseCase: SignOutUseCase,
     saveServerFingerprintUseCase: SaveServerFingerprintUseCase,
-    isServerFingerprintCorrectUseCase: IsServerFingerprintCorrectUseCase,
     mfaStatusProvider: MfaStatusProvider,
-    getSessionUseCase: GetSessionUseCase,
-    removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
     biometricCipher: BiometricCipher,
     getPassphraseUseCase: GetPassphraseUseCase,
-    removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
     getPrivateKeyUseCase: GetPrivateKeyUseCase,
     verifyPassphraseUseCase: VerifyPassphraseUseCase,
-    fingerprintInfoProvider: FingerprintInformationProvider,
-    checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext,
     authReasonMapper: AuthReasonMapper,
-    rootDetector: RootDetector
+    rootDetector: RootDetector,
+    getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysInteractor,
+    signInVerifyInteractor: SignInVerifyInteractor,
+    biometryInteractor: BiometryInteractor
 ) : SignInPresenter(
-    getServerPublicPgpKeyUseCase,
-    getServerPublicRsaKeyUseCase,
-    signInUseCase,
-    challengeProvider,
-    challengeDecryptor,
-    challengeVerifier,
     saveSessionUseCase,
     saveSelectedAccountUseCase,
-    getAccountDataUseCase,
     passphraseMemoryCache,
-    featureFlagsInteractor,
     signOutUseCase,
     saveServerFingerprintUseCase,
-    isServerFingerprintCorrectUseCase,
     mfaStatusProvider,
-    getSessionUseCase,
-    removeSelectedAccountPassphraseUseCase,
+    featureFlagsInteractor,
+    getAndVerifyServerKeysInteractor,
+    signInVerifyInteractor,
+    biometryInteractor,
+    getAccountDataUseCase,
     biometricCipher,
     getPassphraseUseCase,
-    removeBiometricKeyUseCase,
     getPrivateKeyUseCase,
     verifyPassphraseUseCase,
-    fingerprintInfoProvider,
-    checkIfPassphraseFileExistsUseCase,
     coroutineLaunchContext,
     authReasonMapper,
     rootDetector
 ) {
 
     override fun performSignIn(passphrase: ByteArray) {
+        view?.showProgress()
         scope.launch {
-            when (refreshSessionUseCase.execute(Unit)) {
-                is RefreshSessionUseCase.Output.Success -> view?.authSuccess()
-                is RefreshSessionUseCase.Output.Failure -> super.performSignIn(passphrase)
+            val refreshSessionResult = refreshSessionUseCase.execute(Unit)
+            view?.hideProgress()
+            when (refreshSessionResult) {
+                is RefreshSessionUseCase.Output.Success -> {
+                    view?.authSuccess()
+                }
+                is RefreshSessionUseCase.Output.Failure -> {
+                    super.performSignIn(passphrase)
+                }
             }
         }
     }

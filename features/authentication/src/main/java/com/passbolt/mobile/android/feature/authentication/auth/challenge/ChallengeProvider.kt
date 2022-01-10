@@ -41,7 +41,6 @@ class ChallengeProvider(
 ) {
 
     suspend fun get(
-        version: String,
         domain: String,
         serverPublicKey: String,
         passphrase: ByteArray,
@@ -51,7 +50,7 @@ class ChallengeProvider(
         val privateKey = requireNotNull(privateKeyUseCase.execute(UserIdInput(userId)).privateKey)
         val tokenExpiry = getVerifyTokenExpiry()
 
-        val challengeJson = ChallengeDto(version, domain, uuidProvider.get(), tokenExpiry)
+        val challengeJson = ChallengeDto(CHALLENGE_VERSION, domain, uuidProvider.get(), tokenExpiry)
             .run { gson.toJson(this) }
 
         return try {
@@ -82,5 +81,6 @@ class ChallengeProvider(
 
     companion object {
         private const val TOKEN_VALIDATION_TIME = 120
+        private const val CHALLENGE_VERSION = "1.0.0"
     }
 }

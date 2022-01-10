@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.common
 
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
-import androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
 import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
 
 /**
@@ -33,7 +32,4 @@ class FingerprintInformationProvider(
 
     fun hasBiometricSetUp(): Boolean =
         biometricManager.canAuthenticate(BIOMETRIC_STRONG) == BIOMETRIC_SUCCESS
-
-    fun hasBiometricHardware(): Boolean =
-        biometricManager.canAuthenticate(BIOMETRIC_STRONG) != BIOMETRIC_ERROR_NO_HARDWARE
 }

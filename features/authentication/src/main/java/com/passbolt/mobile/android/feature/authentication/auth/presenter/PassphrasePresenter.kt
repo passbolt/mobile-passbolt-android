@@ -1,17 +1,14 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import javax.crypto.Cipher
 
@@ -37,36 +34,29 @@ import javax.crypto.Cipher
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Suppress("LongParameterList") // TODO extract interactors
 // presenter for sign in view used for just obtaining the passphrase in the cache without performing API sign in
 // handles storing passphrase in cache after sign in button clicked
 class PassphrasePresenter(
     private val passphraseMemoryCache: PassphraseMemoryCache,
     getPrivateKeyUseCase: GetPrivateKeyUseCase,
     verifyPassphraseUseCase: VerifyPassphraseUseCase,
-    fingerprintInfoProvider: FingerprintInformationProvider,
-    removeSelectedAccountPassphraseUseCase: RemoveSelectedAccountPassphraseUseCase,
-    checkIfPassphraseFileExistsUseCase: CheckIfPassphraseFileExistsUseCase,
     getAccountDataUseCase: GetAccountDataUseCase,
     coroutineLaunchContext: CoroutineLaunchContext,
     biometricCipher: BiometricCipher,
     getPassphraseUseCase: GetPassphraseUseCase,
-    removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
     authReasonMapper: AuthReasonMapper,
-    rootDetector: RootDetector
+    rootDetector: RootDetector,
+    biometryInteractor: BiometryInteractor
 ) : AuthBasePresenter(
     getAccountDataUseCase,
-    checkIfPassphraseFileExistsUseCase,
-    fingerprintInfoProvider,
-    removeSelectedAccountPassphraseUseCase,
     getPrivateKeyUseCase,
     verifyPassphraseUseCase,
     biometricCipher,
     getPassphraseUseCase,
     passphraseMemoryCache,
-    removeBiometricKeyUseCase,
     authReasonMapper,
     rootDetector,
+    biometryInteractor,
     coroutineLaunchContext
 ) {
 
