@@ -1,0 +1,12 @@
+Download passbolt’s mobile app to take your passwords with you, wherever you go. All the features of the web application that you love, packed into a password manager app on your mobile device. Secure encryption, form autofill, biometric and multiple-factor authentication - everything you need to safely generate, store and use your credentials on-the-go. 
+
+What’s so special about passbolt mobile?
+Fully Open source and based on proven security standards 📖.
+Biometric authentication 🖐️ - Log in and unlock passwords with fingerprint or face ID
+2FA secure login 🔐 - Use your Yubikey with NFC to securely sign in
+Generate strong, unique and cryptographically secure passwords 🎲.
+Auto-fill 📝 - Automatically fill in credentials with ease on your mobile device
+
+Based in Luxembourg, passbolt is secure by default. The open-source password manager’s security model follows strict end-to-end encryption principles. For the mobile app, one of the ways this takes shape is the fact that private keys are transferred from browser to app off the wire, through multiple QR codes. 
+
+The app, like the passbolt project, is always evolving - striving to be better and offer users the best experience with the features they need most. Join the passbolt community 🌐 to see what others are saying in the forum[https://community.passbolt.com/], or take a look at the passbolt roadmap[https://passbolt.com/roadmap].

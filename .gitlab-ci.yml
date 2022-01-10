@@ -93,7 +93,7 @@ release:
     paths:
       - "**/build/outputs/apk/**/*.apk"
 
-build-production:
+build-and-publish-production:
   stage: build
   tags:
     - docker
@@ -114,10 +114,9 @@ build-production:
       -Pandroid.injected.signing.store.password=$PROD_KEYSTORE_PASSWORD
       -Pandroid.injected.signing.key.alias=$PROD_KEY_ALIAS
       -Pandroid.injected.signing.key.password=$PROD_KEY_PASSWORD
-      clean bundleRelease
+      clean bundleRelease publishReleaseBundle
 
   rules:
-    - if: '$PROD_KEYSTORE != null'
     - if: '$CI_COMMIT_BRANCH == "master"'
   artifacts:
     expire_in: 72 hrs
