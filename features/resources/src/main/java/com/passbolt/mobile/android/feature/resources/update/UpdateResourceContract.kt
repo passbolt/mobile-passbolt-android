@@ -65,7 +65,7 @@ interface UpdateResourceContract {
         fun showEditButton()
         fun showCreateTitle()
         fun showEditTitle()
-        fun closeWithCreateSuccessResult(name: String)
+        fun closeWithCreateSuccessResult(name: String, id: String)
         fun closeWithEditSuccessResult(name: String)
     }
 

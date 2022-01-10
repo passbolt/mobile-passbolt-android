@@ -94,7 +94,8 @@ class AutofillResourcesActivity :
     private val resourceDetailsResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == ResourceActivity.RESULT_RESOURCE_CREATED) {
-                presenter.newResourceCreated()
+                val newResourceId = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_ID)
+                presenter.newResourceCreated(newResourceId)
             }
         }
 
@@ -294,6 +295,10 @@ class AutofillResourcesActivity :
 
     override fun showUpdateButton() {
         binding.createButton.show()
+    }
+
+    override fun scrollResourcesToPosition(index: Int) {
+        binding.recyclerView.scrollToPosition(index)
     }
 
     enum class State(

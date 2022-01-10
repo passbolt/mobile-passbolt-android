@@ -46,5 +46,5 @@
     <string name="autofill_dropdown_select">Select from Passbolt</string>
     <string name="autofill_dropdown_fill">Fill with Passbolt</string>
 
-    <string name="autofill_resources_create">Create</string>
+    <string name="autofill_resources_create">Create&amp;fill</string>
 </resources>

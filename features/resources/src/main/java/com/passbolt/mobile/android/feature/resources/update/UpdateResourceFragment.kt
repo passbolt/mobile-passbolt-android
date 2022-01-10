@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resources.update
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -161,20 +162,23 @@ class UpdateResourceFragment :
         )
     }
 
-    override fun closeWithCreateSuccessResult(name: String) {
-        closeWithOperationSuccess(ResourceActivity.RESULT_RESOURCE_CREATED, name)
+    override fun closeWithCreateSuccessResult(name: String, id: String) {
+        closeWithOperationSuccess(
+            ResourceActivity.RESULT_RESOURCE_CREATED,
+            ResourceActivity.resourceNameAndIdIntent(name, id)
+        )
     }
 
     override fun closeWithEditSuccessResult(name: String) {
-        closeWithOperationSuccess(ResourceActivity.RESULT_RESOURCE_EDITED, name)
+        closeWithOperationSuccess(
+            ResourceActivity.RESULT_RESOURCE_EDITED,
+            ResourceActivity.resourceNameResultIntent(name)
+        )
     }
 
-    private fun closeWithOperationSuccess(operation: Int, name: String) {
+    private fun closeWithOperationSuccess(operation: Int, result: Intent) {
         with(requireActivity()) {
-            setResult(
-                operation,
-                ResourceActivity.resourceNameResultIntent(name)
-            )
+            setResult(operation, result)
             finish()
         }
     }

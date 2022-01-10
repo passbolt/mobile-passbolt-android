@@ -61,9 +61,11 @@ class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResou
         const val RESULT_RESOURCE_DELETED = 8000
         const val RESULT_RESOURCE_EDITED = 8001
         const val RESULT_RESOURCE_CREATED = 8002
-        const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
         const val EXTRA_RESOURCE_MODEL = "RESOURCE_MODEL"
         const val EXTRA_RESOURCE_MODE = "RESOURCE_MODE"
+
+        const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
+        const val EXTRA_RESOURCE_ID = "RESOURCE_ID"
 
         fun newInstance(context: Context, mode: ResourceMode, existingResource: ResourceModel? = null) =
             Intent(context, ResourceActivity::class.java).apply {
@@ -71,7 +73,15 @@ class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResou
                 putExtra(EXTRA_RESOURCE_MODEL, existingResource)
             }
 
-        fun resourceNameResultIntent(resourceName: String) = Intent()
-            .putExtra(EXTRA_RESOURCE_NAME, resourceName)
+        fun resourceNameResultIntent(resourceName: String) =
+            Intent().apply {
+                putExtra(EXTRA_RESOURCE_NAME, resourceName)
+            }
+
+        fun resourceNameAndIdIntent(resourceName: String, resourceId: String) =
+            Intent().apply {
+                putExtra(EXTRA_RESOURCE_NAME, resourceName)
+                putExtra(EXTRA_RESOURCE_ID, resourceId)
+            }
     }
 }
