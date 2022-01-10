@@ -1,1 +1,4 @@
-Enjoy your Android passbolt application with dark mode 🖤
+- access debug logs feature
+- switch account from home search
+- account details page
+- security audit report fixes
