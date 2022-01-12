@@ -210,7 +210,9 @@ class SettingsPresenter(
             view?.apply {
                 setEnableLogsSwitchOn()
                 enableAccessLogs()
-                Timber.plant(fileLoggingTree)
+                if (!Timber.forest().contains(fileLoggingTree)) {
+                    Timber.plant(fileLoggingTree)
+                }
             }
         } else {
             view?.apply {

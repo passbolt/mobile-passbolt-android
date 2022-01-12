@@ -108,7 +108,9 @@ class PassboltApplication : Application(), KoinComponent {
         val logFilePath = logFilesManager.initializeLogFile()
         logFilesManager.clearIrrelevantLogFiles(logFilePath)
         fileLoggingTree.initialize(logFilePath)
-        if (getGlobalPreferencesUseCase.execute(Unit).areDebugLogsEnabled) {
+        if (getGlobalPreferencesUseCase.execute(Unit).areDebugLogsEnabled &&
+            !Timber.forest().contains(fileLoggingTree)
+        ) {
             Timber.plant(fileLoggingTree)
         }
     }
