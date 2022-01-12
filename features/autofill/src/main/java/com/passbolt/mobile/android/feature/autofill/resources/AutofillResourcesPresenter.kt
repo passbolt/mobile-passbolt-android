@@ -147,7 +147,7 @@ class AutofillResourcesPresenter(
         view?.showResources(itemsList)
     }
 
-    private fun getSuggested() =
+    private fun getSuggested() = if (!uri.isNullOrBlank()) {
         uri?.let { uri ->
             val domain = domainProvider.getHost(uri)
             val suggested = allItemsList.filter {
@@ -156,13 +156,11 @@ class AutofillResourcesPresenter(
                 } ?: false
             }
 
-            // TODO can there be more suggested items if suggested is not empty and additionally links api is fetched?
-            if (suggested.isEmpty()) {
-                fetchLinksApi(uri)
-            } else {
-                suggested
-            }
+            suggested
         }
+    } else {
+        null
+    }
 
     private suspend fun updateLocalDatabase() {
         fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
@@ -211,19 +209,6 @@ class AutofillResourcesPresenter(
                 action(output.decryptedSecret)
             }
         }
-    }
-
-    private fun fetchLinksApi(domain: String): List<ResourceModel>? {
-        return null
-        // TODO
-        /* return when (val links = checkUrlLinksUseCase.execute(CheckUrlLinksUseCase.Input(domain))) {
-             CheckUrlLinksUseCase.Output.Failure -> {
-                 null
-             }
-             is CheckUrlLinksUseCase.Output.Success -> {
-                 null
-             }
-         }*/
     }
 
     override fun searchTextChange(text: String) {
