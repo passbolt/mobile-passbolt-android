@@ -8,7 +8,6 @@ import com.passbolt.mobile.android.core.networking.NetworkResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Rule
 import org.junit.Test
