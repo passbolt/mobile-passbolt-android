@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.feature.settings
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
-import com.passbolt.mobile.android.core.logger.LogFilesManager
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
@@ -44,7 +44,7 @@ internal val removeBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
 internal val getFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
 internal val mockSaveGlobalPreferencesUseCase = mock<SaveGlobalPreferencesUseCase>()
-internal val mockLogFilesManager = mock<LogFilesManager>()
+internal val mockBiometryInteractor = mock<BiometryInteractor>()
 
 @ExperimentalCoroutinesApi
 val testModule = module {
@@ -73,11 +73,11 @@ val testModule = module {
             fingerprintInformationProvider = get(),
             getFeatureFlagsUseCase = get(),
             signOutUseCase = get(),
-            coroutineLaunchContext = get(),
-            saveGlobalPreferencesUseCase = mockSaveGlobalPreferencesUseCase,
             getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+            saveGlobalPreferencesUseCase = mockSaveGlobalPreferencesUseCase,
             fileLoggingTree = mock(),
-            logFilesManager = mockLogFilesManager
+            coroutineLaunchContext = get(),
+            biometryInteractor = mockBiometryInteractor
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

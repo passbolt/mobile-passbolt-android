@@ -123,14 +123,6 @@ fun Module.authModule() {
                 challengeVerifier = get()
             )
         }
-        scoped {
-            BiometryInteractor(
-                checkIfPassphraseFileExistsUseCase = get(),
-                removeBiometricKeyUseCase = get(),
-                removeSelectedAccountPassphraseUseCase = get(),
-                fingerprintInfoProvider = get()
-            )
-        }
     }
     single { MfaProviderHandler() }
     single {
@@ -141,6 +133,14 @@ fun Module.authModule() {
             authRepository = get(),
             signOutMapper = get(),
             getSessionUseCase = get()
+        )
+    }
+    single {
+        BiometryInteractor(
+            checkIfPassphraseFileExistsUseCase = get(),
+            removeBiometricKeyUseCase = get(),
+            removeAllAccountsPassphrasesUseCase = get(),
+            fingerprintInfoProvider = get()
         )
     }
 }

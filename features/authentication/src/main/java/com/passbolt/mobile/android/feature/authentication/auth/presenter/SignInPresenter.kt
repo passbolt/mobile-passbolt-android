@@ -148,7 +148,7 @@ open class SignInPresenter(
                     }
                     is SignInVerifyInteractor.Error.ChallengeVerificationError -> {
                         when (it.type) {
-                            ChallengeVerificationErrorType.TOKEN_EXPIRED -> view?.showChallengeTokenInvalid()
+                            ChallengeVerificationErrorType.TOKEN_EXPIRED -> view?.showChallengeTokenExpired()
                             ChallengeVerificationErrorType.INVALID_SIGNATURE -> view?.showChallengeInvalidSignature()
                             ChallengeVerificationErrorType.FAILURE -> view?.showChallengeVerificationFailure()
                         }

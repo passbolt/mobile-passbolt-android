@@ -43,9 +43,9 @@ fun Module.passphraseModule() {
         RemovePassphraseUseCase(androidContext())
     }
     factory {
-        RemoveSelectedAccountPassphraseUseCase(
+        RemoveAllAccountsPassphrasesUseCase(
             androidContext(),
-            getSelectedAccountUseCase = get()
+            getAllAccountsDataUseCase = get()
         )
     }
     single {

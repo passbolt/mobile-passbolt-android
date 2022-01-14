@@ -44,11 +44,11 @@ fun Module.settingsModule() {
                 fingerprintInformationProvider = get(),
                 getFeatureFlagsUseCase = get(),
                 signOutUseCase = get(),
-                coroutineLaunchContext = get(),
-                saveGlobalPreferencesUseCase = get(),
                 getGlobalPreferencesUseCase = get(),
+                saveGlobalPreferencesUseCase = get(),
                 fileLoggingTree = get(),
-                logFilesManager = get()
+                coroutineLaunchContext = get(),
+                biometryInteractor = get()
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }

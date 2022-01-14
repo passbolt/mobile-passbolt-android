@@ -32,7 +32,7 @@ import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricK
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveSelectedAccountPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveAllAccountsPassphrasesUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import org.koin.core.scope.Scope
@@ -92,7 +92,7 @@ internal val mockVerifyPassphraseUseCase = mock<VerifyPassphraseUseCase>()
 internal val mockCheckIfPassphraseExistsUseCase = mock<CheckIfPassphraseFileExistsUseCase>()
 
 internal val mockGetServerPublicPgpKeyUseCase = mock<GetServerPublicPgpKeyUseCase>()
-internal val mockRemoveSelectedAccountPassphraseUseCase = mock<RemoveSelectedAccountPassphraseUseCase>()
+internal val mockRemoveAllAccountsPassphraseUseCase = mock<RemoveAllAccountsPassphrasesUseCase>()
 internal val mockGetServerPublicRsaKeyUseCase = mock<GetServerPublicRsaKeyUseCase>()
 internal val mockChallengeProvider = mock<ChallengeProvider>()
 internal val mockSignInUseCase = mock<SignInUseCase>()
@@ -140,7 +140,7 @@ val testAuthModule = module {
         BiometryInteractor(
             checkIfPassphraseFileExistsUseCase = mockCheckIfPassphraseExistsUseCase,
             removeBiometricKeyUseCase = mockRemoveBiometricKeyUseCase,
-            removeSelectedAccountPassphraseUseCase = mockRemoveSelectedAccountPassphraseUseCase,
+            removeAllAccountsPassphrasesUseCase = mockRemoveAllAccountsPassphraseUseCase,
             fingerprintInfoProvider = mockFingerprintInformationProvider
         )
     }
