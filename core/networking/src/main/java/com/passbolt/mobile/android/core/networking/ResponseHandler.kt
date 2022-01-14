@@ -1,8 +1,11 @@
 package com.passbolt.mobile.android.core.networking
 
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
+import com.passbolt.mobile.android.dto.response.BaseResponse
 import retrofit2.HttpException
+import retrofit2.Response
 import timber.log.Timber
+import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -39,12 +42,12 @@ class ResponseHandler(
     fun <T : Any> handleException(e: Exception): NetworkResult<T> =
         when (e) {
             is HttpException -> {
-                val baseResponse = errorHeaderMapper.getBaseResponse(e.response())
+                val baseResponse = parseErrorResponseBody(e.response())
                 NetworkResult.Failure.ServerError(
                     exception = e,
                     errorCode = e.code(),
-                    headerMessage = errorHeaderMapper.getMessage(baseResponse),
-                    mfaStatus = errorHeaderMapper.checkMfaRequired(baseResponse)
+                    headerMessage = getHeaderMessage(baseResponse),
+                    mfaStatus = checkIfMfaRequired(baseResponse)
                 )
             }
             is UnknownHostException -> NetworkResult.Failure.NetworkError(
@@ -64,6 +67,15 @@ class ResponseHandler(
                 headerMessage = errorHeaderMapper.getMessage()
             )
         }
+
+    fun checkIfMfaRequired(response: BaseResponse<*>?) =
+        errorHeaderMapper.checkMfaRequired(response)
+
+    fun getHeaderMessage(response: BaseResponse<*>?) =
+        errorHeaderMapper.getMessage(response)
+
+    fun parseErrorResponseBody(response: Response<*>?) =
+        errorHeaderMapper.getBaseResponse(response)
 }
 
 sealed class MfaStatus {
@@ -79,4 +91,29 @@ inline fun <T : Any> callWithHandler(responseHandler: ResponseHandler, apiCall: 
 } catch (e: Exception) {
     Timber.e(e)
     responseHandler.handleException(e)
+}
+
+inline fun <T : Any> callWithLibraryResponseHandler(
+    responseHandler: ResponseHandler,
+    apiCall: () -> Response<T>
+): NetworkResult<Response<T>> {
+    val response = apiCall()
+    return if (response.isSuccessful) {
+        responseHandler.handleSuccess(response)
+    } else {
+        try {
+            val errorResponse = requireNotNull(responseHandler.parseErrorResponseBody(response))
+            NetworkResult.Failure.ServerError(
+                exception = IOException("There was an error during API invocation"),
+                errorCode = errorResponse.header.code,
+                headerMessage = responseHandler.getHeaderMessage(errorResponse),
+                mfaStatus = responseHandler.checkIfMfaRequired(errorResponse)
+            )
+        } catch (exception: Exception) {
+            NetworkResult.Failure.ServerError(
+                exception = exception,
+                headerMessage = "There was an exception during sign in: ${exception.message}"
+            )
+        }
+    }
 }
