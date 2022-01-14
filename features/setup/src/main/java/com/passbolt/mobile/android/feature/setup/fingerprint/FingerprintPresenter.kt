@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
@@ -42,7 +43,8 @@ class FingerprintPresenter(
     private val savePassphraseUseCase: SavePassphraseUseCase,
     private val biometricCipher: BiometricCipher,
     private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase,
-    private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase
+    private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
+    private val biometryInteractor: BiometryInteractor
 ) : FingerprintContract.Presenter, KoinComponent {
 
     override var view: FingerprintContract.View? = null
@@ -68,7 +70,7 @@ class FingerprintPresenter(
             view?.showBiometricPrompt(biometricCipher.getBiometricEncryptCipher())
         } catch (exception: KeyPermanentlyInvalidatedException) {
             Timber.e(exception)
-            removeBiometricKeyUseCase.execute(Unit)
+            biometryInteractor.disableBiometry()
             view?.showKeyChangesDetected()
         } catch (exception: Exception) {
             Timber.e(exception)

@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
@@ -47,6 +48,7 @@ internal val biometricCipher = mock<BiometricCipher> {
 }
 internal val saveBiometricKayIvUseCase = mock<SaveBiometricKeyIvUseCase>()
 internal val removeBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
+internal val mockBiometryInteractor = mock<BiometryInteractor>()
 
 
 val fingerprintModule = module {
@@ -58,7 +60,8 @@ val fingerprintModule = module {
             savePassphraseUseCase = savePassphraseUseCase,
             biometricCipher = biometricCipher,
             saveBiometricKeyIvUseCase = saveBiometricKayIvUseCase,
-            removeBiometricKeyUseCase = removeBiometricKeyUseCase
+            removeBiometricKeyUseCase = removeBiometricKeyUseCase,
+            biometryInteractor = mockBiometryInteractor
         )
     }
     factory { fingerprintInformationProvider }

@@ -200,14 +200,14 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showGenericError() {
-        showLongSnackbar(getString(R.string.auth_error_invalid_signature))
+        showLongSnackbar(getString(R.string.common_failure))
     }
 
     override fun showChallengeInvalidSignature() {
         showLongSnackbar(getString(R.string.auth_error_invalid_signature))
     }
 
-    override fun showChallengeTokenInvalid() {
+    override fun showChallengeTokenExpired() {
         showLongSnackbar(getString(R.string.auth_error_token_expired))
     }
 

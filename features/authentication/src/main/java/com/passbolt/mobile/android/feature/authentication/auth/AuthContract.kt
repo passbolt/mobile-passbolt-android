@@ -68,7 +68,7 @@ interface AuthContract {
         fun showDeviceRootedDialog()
         fun showHelpMenu()
         fun showChallengeInvalidSignature()
-        fun showChallengeTokenInvalid()
+        fun showChallengeTokenExpired()
         fun showChallengeVerificationFailure()
 
         enum class RefreshAuthReason {

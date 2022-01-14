@@ -4,7 +4,7 @@ import android.content.Context
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
 import com.passbolt.mobile.android.storage.paths.PassphraseFileName
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
 import timber.log.Timber
 import java.io.File
 
@@ -30,20 +30,26 @@ import java.io.File
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RemoveSelectedAccountPassphraseUseCase(
+class RemoveAllAccountsPassphrasesUseCase(
     private val appContext: Context,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+    private val getAllAccountsDataUseCase: GetAllAccountsDataUseCase
 ) : UseCase<Unit, Unit> {
 
     override fun execute(input: Unit) {
-        val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        val passphraseFile = File(
-            EncryptedFileBaseDirectory(appContext).baseDirectory,
-            PassphraseFileName(requireNotNull(userId)).name
-        )
-        if (passphraseFile.exists()) {
-            val deleted = passphraseFile.delete()
-            Timber.e("Deleted passphrase file: $deleted")
-        }
+        getAllAccountsDataUseCase.execute(Unit)
+            .accounts
+            .map { PassphraseFileName(requireNotNull(it.userId)) }
+            .map { passphraseFileName ->
+                File(
+                    EncryptedFileBaseDirectory(appContext).baseDirectory,
+                    passphraseFileName.name
+                )
+            }
+            .forEach { passphraseFile ->
+                if (passphraseFile.exists()) {
+                    Timber.d("Passphrase file ${passphraseFile.name} scheduled deletion")
+                    passphraseFile.delete()
+                }
+            }
     }
 }

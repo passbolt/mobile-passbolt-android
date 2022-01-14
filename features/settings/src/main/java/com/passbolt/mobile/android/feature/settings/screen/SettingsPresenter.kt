@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.feature.settings.screen
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.logger.FileLoggingTree
-import com.passbolt.mobile.android.core.logger.LogFilesManager
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
@@ -42,7 +42,7 @@ class SettingsPresenter(
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
     private val saveGlobalPreferencesUseCase: SaveGlobalPreferencesUseCase,
     private val fileLoggingTree: FileLoggingTree,
-    private val logFilesManager: LogFilesManager,
+    private val biometryInteractor: BiometryInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : SettingsContract.Presenter {
 
@@ -152,7 +152,7 @@ class SettingsPresenter(
             view?.showBiometricPrompt(biometricCipher.getBiometricEncryptCipher())
         } catch (exception: KeyPermanentlyInvalidatedException) {
             Timber.e(exception)
-            removeBiometricKeyUseCase.execute(Unit)
+            biometryInteractor.disableBiometry()
             view?.showKeyChangesDetected()
         } catch (exception: Exception) {
             Timber.e(exception)

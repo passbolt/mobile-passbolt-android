@@ -39,7 +39,8 @@ fun Module.fingerprintModule() {
                 savePassphraseUseCase = get(),
                 biometricCipher = get(),
                 saveBiometricKeyIvUseCase = get(),
-                removeBiometricKeyUseCase = get()
+                removeBiometricKeyUseCase = get(),
+                biometryInteractor = get()
             )
         }
         scoped { BiometricPrompt.PromptInfo.Builder() }
