@@ -1,0 +1,24 @@
+# Passbolt 1.3.0-4 Android app release notes
+
+## Added
+- Session is being refreshed now when the app is resumed or the session expires instead of a new sign in
+- Dark theme support to Autofill dropdown
+- Possibility to turn on log recording and to access and share them
+- Account switch drawer when clicking search avatar
+- Account details screen with a possibility to change label
+
+## Improved
+- Create resource from Autofill context - now it's "Create and fill"
+
+## Fixed
+- Resource list icons are now lighter and have correct corner radius
+- Always display URL field on resource details (even if empty)
+- When having at least 2 accounts with biometry enabled and adding a new fingerprint to the device - the biometry is deactivated on all accounts instead of only on current one
+
+## Security
+- Added explicit *hasFragileUserData* flag to the Manifest with a default value of false to ensure all data is deleted when the app is uninstalled
+- Added rootbeer library to show root detection warning
+
+## Maintenance
+- Added publishing to Play Store straight from CI
+- Refactored Authentication Presenters to reduce constructor dependencies count
