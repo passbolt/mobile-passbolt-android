@@ -13,13 +13,17 @@ internal class AuthInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val newBuilder = request.newBuilder()
-        if (ANONYMOUS_PATHS.none { request.url.encodedPath == it } &&
+        if (!isAnonymous(request.url.encodedPath) &&
             !request.url.encodedPath.contains(AuthPaths.AVATAR_PATH) &&
-            !request.url.encodedPath.contains(AuthPaths.TRANSFER_PATH)) {
+            !request.url.encodedPath.contains(AuthPaths.TRANSFER_PATH)
+        ) {
             addAuthTokens(newBuilder)
         }
         return chain.proceed(newBuilder.build())
     }
+
+    private fun isAnonymous(encodedPath: String) =
+        ANONYMOUS_PATHS.any { encodedPath.contains(it) }
 
     private fun addAuthTokens(builder: Request.Builder) {
         val accessToken = getSessionUseCase.execute(Unit).accessToken
