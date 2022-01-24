@@ -8,7 +8,6 @@ import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUse
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
@@ -46,7 +45,6 @@ class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val resourcesInteractor: ResourceInteractor,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
-    private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
     private val secretInteractor: SecretInteractor,
     private val resourceMatcher: SearchableMatcher,
     private val resourceTypeFactory: ResourceTypeFactory,
@@ -109,7 +107,6 @@ class HomePresenter(
             }
             is ResourceInteractor.Output.Success -> {
                 allItemsList = result.resources
-                fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
                 displayResources()
                 view?.showAddButton()
             }

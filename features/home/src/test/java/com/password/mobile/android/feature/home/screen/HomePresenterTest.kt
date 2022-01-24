@@ -56,7 +56,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `user avatar should be displayed when provided`() = runBlockingTest {
         whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Success(emptyList(), emptyList())
+            ResourceInteractor.Output.Success(emptyList())
         )
         val url = "avatar_url"
         mockAccountData(url)
@@ -81,7 +81,7 @@ class HomePresenterTest : KoinTest {
     fun `all fetched resources should be displayed when empty search text`() = runBlockingTest {
         val mockedList = mockResourcesList()
         whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Success(mockedList, emptyList())
+            ResourceInteractor.Output.Success(mockedList)
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -100,7 +100,7 @@ class HomePresenterTest : KoinTest {
     fun `refresh swiped should reload data with filter applied when search text entered`() = runBlockingTest {
         val mockedList = mockResourcesList()
         whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Success(mockedList, emptyList())
+            ResourceInteractor.Output.Success(mockedList)
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -119,7 +119,7 @@ class HomePresenterTest : KoinTest {
     fun `empty view should be displayed when search is empty`() = runBlockingTest {
         val mockedList = mockResourcesList()
         whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Success(mockedList, emptyList())
+            ResourceInteractor.Output.Success(mockedList)
         )
         mockAccountData(null)
 
@@ -138,7 +138,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `empty view should be displayed when there are no resources`() = runBlockingTest {
         whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Success(emptyList(), emptyList())
+            ResourceInteractor.Output.Success(emptyList())
         )
         mockAccountData(null)
         presenter.attach(view)
