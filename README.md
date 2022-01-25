@@ -47,6 +47,23 @@ The passbolt team will take the following actions:
 - Prominently feature the problem in the release announcement.
 - Provide credits in the release announcement to the reporter if they so desire.
 
+# How to build locally
+
+## With Android Studio (recommended)
+1. Launch [Android Studio](https://developer.android.com/studio) and open the cloned project
+2. Wait until project configuration finishes (couple of minutes) and click `Sync with Gradle files` icon (top right toolbar - elephant with blue arrow) 
+3. Open the `Build Variants` tab (bottom left vertical pane) and under the `:app` module select `Active Build Variant` as `debug`
+4. Prepare a device for launch
+   1. [create and launch Android emulator](https://developer.android.com/studio/run/managing-avds) **or**
+   2. [set up and launch on a real device](https://developer.android.com/studio/run/device)
+5. Hit the `Run` arrow (green play icon in the top center)
+
+## Without Android Studio
+1. Download [Android build tools](https://developer.android.com/studio#downloads) - scroll to `Command line tools only`
+2. Open terminal and navigate to cloned project root directory
+3. Use [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) to build the project from terminal `./gradlew assembleDebug` (during first build the Wrapper will also download and setup Gradle if not present) - the built application will be available at `{project-dir}/app/build/outputs/apk/debug`
+4. To install on a connected device (see above section 4.1 or 4.2) execute `./gradlew installDebug`
+
 # Credits
 
 https://www.passbolt.com/credits
