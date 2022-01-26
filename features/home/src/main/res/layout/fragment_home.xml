@@ -120,7 +120,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginHorizontal="@dimen/dp_72"
                     android:gravity="center_horizontal"
-                    android:text="@string/home_no_passwords"
+                    android:text="@string/no_passwords"
                     android:textColor="@color/text_primary" />
 
                 <ImageView
