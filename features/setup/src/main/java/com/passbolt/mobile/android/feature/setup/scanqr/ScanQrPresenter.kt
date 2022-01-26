@@ -111,7 +111,7 @@ class ScanQrPresenter(
             currentPage = totalPages - 1
             updateTransferAlreadyLinked(currentPage, requireNotNull(userExistsResult.userId))
         } else if (!httpsVerifier.isHttps(firstPage.content.domain)) {
-            parserFailure(Throwable("Domain should start with https"))
+            view?.navigateToSummary(ResultStatus.HttpNotSupported())
         } else {
             if (currentPage > 0) {
                 parserFailure(Throwable("Other qr code scanning has been already started"))

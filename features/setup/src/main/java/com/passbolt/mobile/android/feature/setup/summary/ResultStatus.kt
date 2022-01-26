@@ -48,6 +48,12 @@ sealed class ResultStatus(
         R.string.try_again
     )
 
+    class HttpNotSupported : ResultStatus(
+        R.drawable.ic_failed,
+        R.string.scan_qr_summary_http_not_supported_title,
+        R.string.try_again
+    )
+
     class AlreadyLinked(
         val userId: String
     ) : ResultStatus(
