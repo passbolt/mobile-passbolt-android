@@ -37,6 +37,7 @@
 
     <string name="scan_qr_summary_success_title">Your information has been transferred!</string>
     <string name="scan_qr_summary_already_linked_title">Account  is already linked to the device</string>
+    <string name="scan_qr_summary_http_not_supported_title">Insecure HTTP connection is not supported</string>
     <string name="scan_qr_summary_failure_title">Something went wrong!</string>
 
     <string name="fingerprint_setup_use_fingerprint_button">Use Fingerprint</string>
