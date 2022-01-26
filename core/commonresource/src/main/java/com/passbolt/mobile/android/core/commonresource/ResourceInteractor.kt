@@ -1,11 +1,12 @@
 package com.passbolt.mobile.android.core.commonresource
 
+import com.passbolt.mobile.android.core.commonresource.usecase.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
+import com.passbolt.mobile.android.core.commonresource.validation.ResourceValidationRunner
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
-import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -33,7 +34,9 @@ import com.passbolt.mobile.android.ui.ResourceModel
 class ResourceInteractor(
     private val getResourceTypesUseCase: GetResourceTypesUseCase,
     private val getResourcesUseCase: GetResourcesUseCase,
-    private val addLocalResourceTypesUseCase: AddLocalResourceTypesUseCase
+    private val addLocalResourceTypesUseCase: AddLocalResourceTypesUseCase,
+    private val resourceValidationRunner: ResourceValidationRunner,
+    private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase
 ) {
 
     suspend fun fetchResourcesWithTypes(): Output {
@@ -45,7 +48,13 @@ class ResourceInteractor(
                 addLocalResourceTypesUseCase.execute(
                     AddLocalResourceTypesUseCase.Input(resourceTypesResult.resourceTypes)
                 )
-                Output.Success(resourcesResult.resources, resourceTypesResult.resourceTypes)
+                val validatedResources = resourcesResult.resources
+                    .filter { resourceValidationRunner.isValid(it) }
+                fetchAndUpdateDatabaseUseCase.execute(
+                    FetchAndUpdateDatabaseUseCase.Input(validatedResources)
+                )
+
+                Output.Success(validatedResources)
             } else {
                 Output.Failure(resourcesResult.authenticationState + resourceTypesResult.authenticationState)
             }
@@ -65,8 +74,7 @@ class ResourceInteractor(
     sealed class Output : AuthenticatedUseCaseOutput {
 
         class Success(
-            val resources: List<ResourceModel>,
-            val resourceTypes: List<ResourceTypeDto>
+            val resources: List<ResourceModel>
         ) : Output() {
             override val authenticationState: AuthenticationState
                 get() = AuthenticationState.Authenticated

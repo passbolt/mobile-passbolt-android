@@ -7,7 +7,7 @@ import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.autofill.resources.FetchAndUpdateDatabaseUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
@@ -51,11 +51,10 @@ val testHomeModule = module {
             coroutineLaunchContext = get(),
             resourcesInteractor = get(),
             getSelectedAccountDataUseCase = get(),
-            fetchAndUpdateDatabaseUseCase = get(),
             secretInteractor = mockSecretInteractor,
             resourceMatcher = get(),
-            secretParser = get(),
             resourceTypeFactory = get(),
+            secretParser = get(),
             resourceMenuModelMapper = get(),
             deleteResourceUseCase = mockDeleteResourceUseCase
         )

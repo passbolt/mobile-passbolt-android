@@ -45,7 +45,6 @@ class AutofillResourcesPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getLocalResourcesUse: GetLocalResourcesUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
     private val domainProvider: DomainProvider,
     private val resourcesInteractor: ResourceInteractor,
     private val resourceSearch: SearchableMatcher,
@@ -116,7 +115,6 @@ class AutofillResourcesPresenter(
 
     private suspend fun fetchingResourcesSuccess(list: List<ResourceModel>) {
         allItemsList = list
-        updateLocalDatabase()
         if (list.isEmpty()) {
             view?.showEmptyList()
         } else {
@@ -160,10 +158,6 @@ class AutofillResourcesPresenter(
         }
     } else {
         null
-    }
-
-    private suspend fun updateLocalDatabase() {
-        fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
     }
 
     private fun showItemLoader(resourceId: String) {

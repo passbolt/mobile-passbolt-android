@@ -1,9 +1,5 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.core.commonresource.validation
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import org.koin.core.module.Module
 
 /**
@@ -29,26 +25,11 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                coroutineLaunchContext = get(),
-                resourcesInteractor = get(),
-                getSelectedAccountDataUseCase = get(),
-                secretInteractor = get(),
-                resourceMatcher = SearchableMatcher(),
-                resourceTypeFactory = get(),
-                secretParser = get(),
-                resourceMenuModelMapper = get(),
-                deleteResourceUseCase = get()
-            )
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
+fun Module.resourceValidationModule() {
+    factory<List<ResourceValidation>> { listOf(ResourceUuidValidation()) }
+    factory {
+        ResourceValidationRunner(
+            validations = get()
+        )
     }
 }
