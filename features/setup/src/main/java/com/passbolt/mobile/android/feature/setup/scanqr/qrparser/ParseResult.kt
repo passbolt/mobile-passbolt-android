@@ -61,6 +61,8 @@ sealed class ParseResult {
 
     class Failure(val exception: Throwable? = null) : ParseResult()
 
+    class ScanFailure(val exception: Throwable? = null) : ParseResult()
+
     class UserResolvableError(val errorType: ErrorType) : ParseResult() {
 
         enum class ErrorType {

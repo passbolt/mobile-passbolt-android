@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
@@ -136,8 +137,13 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
         binding.tooltip.text = getString(R.string.scan_qr_camera_error)
     }
 
-    override fun showBarcodeScanError() {
-        binding.tooltip.text = getString(R.string.scan_qr_scanning_error)
+    override fun showBarcodeScanError(message: String?) {
+        val messageBuilder = StringBuilder(getString(R.string.scan_qr_scanning_error)).apply {
+            if (!message.isNullOrBlank()) {
+                append("(%s)".format(message))
+            }
+        }
+        binding.tooltip.text = messageBuilder.toString()
     }
 
     override fun showMultipleCodesInRange() {
@@ -152,8 +158,14 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
         binding.tooltip.text = getString(R.string.scan_qr_keep_going)
     }
 
-    override fun showSomethingWentWrong() {
-        binding.tooltip.text = getString(R.string.common_failure)
+    override fun showUpdateTransferError(headerMessage: String) {
+        val messageBuilder = StringBuilder(getString(R.string.scan_qr_update_transfer_error)).apply {
+            if (headerMessage.isNotBlank()) {
+                append("(%s)".format(headerMessage))
+            }
+        }
+        Toast.makeText(requireContext(), messageBuilder.toString(), Toast.LENGTH_LONG)
+            .show()
     }
 
     override fun showNotAPassboltQr() {

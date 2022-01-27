@@ -58,7 +58,7 @@ class QrMapperTest : KoinTest {
     fun `mapper should return failure when scan failure encountered`() {
         val scanResult = BarcodeScanResult.Failure(Exception())
         val mapped = qrMapper.apply(scanResult)
-        assertThat(mapped).isInstanceOf(ParseResult.Failure::class.java)
+        assertThat(mapped).isInstanceOf(ParseResult.ScanFailure::class.java)
     }
 
     @Test

@@ -133,7 +133,7 @@ class QrParserTest : KoinTest {
         launch {
             scanQrParser.parseResultFlow.test {
                 assertNoBarcodesInRange(expectItem())
-                assertFailWithException(expectItem())
+                assertFailWithScanException(expectItem())
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -142,9 +142,9 @@ class QrParserTest : KoinTest {
         scanningJob.cancel()
     }
 
-    private fun assertFailWithException(item: ParseResult) {
-        assertThat(item).isInstanceOf(ParseResult.Failure::class.java)
-        val exception = (item as ParseResult.Failure).exception
+    private fun assertFailWithScanException(item: ParseResult) {
+        assertThat(item).isInstanceOf(ParseResult.ScanFailure::class.java)
+        val exception = (item as ParseResult.ScanFailure).exception
         assertThat(exception).isEqualTo(TEST_EXCEPTION)
     }
 
