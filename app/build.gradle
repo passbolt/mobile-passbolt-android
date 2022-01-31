@@ -10,7 +10,6 @@ plugins {
     id "com.github.triplet.play"
 }
 
-apply plugin: "app.cash.licensee"
 apply from: "../gradle/licensee.gradle"
 
 def getVersionCode = { ->
