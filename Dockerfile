@@ -1,4 +1,4 @@
-FROM openjdk:11.0.7
+FROM openjdk:11.0.13
 
 ENV SDK_URL="https://dl.google.com/android/repository/commandlinetools-linux-6604631_latest.zip" \
     ANDROID_HOME="/usr/local/android-sdk" \
