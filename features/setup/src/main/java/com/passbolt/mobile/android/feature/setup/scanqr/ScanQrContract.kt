@@ -38,11 +38,11 @@ interface ScanQrContract {
         fun showStartCameraError()
         fun scanResultChannel(): StateFlow<BarcodeScanResult>
         fun navigateToSummary(status: ResultStatus)
-        fun showBarcodeScanError()
+        fun showBarcodeScanError(message: String?)
         fun showMultipleCodesInRange()
         fun showCenterCameraOnBarcode()
         fun showKeepGoing()
-        fun showSomethingWentWrong()
+        fun showUpdateTransferError(headerMessage: String)
         fun initializeProgress(totalPages: Int)
         fun setProgress(progress: Int)
         fun showNotAPassboltQr()

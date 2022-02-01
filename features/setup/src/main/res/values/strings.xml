@@ -34,6 +34,7 @@
     <string name="scan_qr_multiple_codes_in_range">Multiple QR Codes in range - please aim at one</string>
     <string name="scan_qr_scanning_error">Error during scanning</string>
     <string name="scan_qr_camera_error">Camera error</string>
+    <string name="scan_qr_update_transfer_error">There was an error during transfer update</string>
 
     <string name="scan_qr_summary_success_title">Your information has been transferred!</string>
     <string name="scan_qr_summary_already_linked_title">Account  is already linked to the device</string>
