@@ -37,7 +37,7 @@ verification:
   tags:
     - docker
   script:
-    - ./gradlew --no-daemon --build-cache detekt ktlint lintDebug unitTest jacocoProjectReport licenseeRelease
+    - ./gradlew --no-daemon --build-cache detekt ktlint lintDebug unitTest jacocoProjectReport licenseeRelease dependencyUpdates
   after_script:
     # jacoco report is printed to the console in order to capture it later
     # using following regex: Total.*?([0-9]{1,3})% and display in the Gitlab UI
@@ -53,8 +53,9 @@ verification:
       - "**/reports/ktlint-report.xml"
       - "**/reports/detekt-report.xml"
       - "**/lint-results-*.html"
-      - "**/lint-results-*.xml"
-      - build/reports/jacoco/jacocoProjectReport/**
+      - "**/test-results/**/TEST-*.xml"
+      - build/reports/jacoco/jacocoProjectReport/html/
+      - build/dependencyUpdates/dependecyUpdates.txt
     reports:
       junit: "**/test-results/**/TEST-*.xml"
 

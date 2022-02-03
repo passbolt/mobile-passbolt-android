@@ -27,7 +27,8 @@ import com.google.gson.annotations.SerializedName
 data class UserDto(
     val id: String,
     @SerializedName("gpgkey")
-    val gpgKey: GpgKeyDto
+    val gpgKey: GpgKeyDto,
+    val profile: UserProfileResponseDto?
 )
 
 data class GpgKeyDto(

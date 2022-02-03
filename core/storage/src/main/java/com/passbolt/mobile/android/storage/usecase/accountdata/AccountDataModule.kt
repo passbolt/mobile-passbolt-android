@@ -52,11 +52,6 @@ fun Module.accountDataModule() {
         )
     }
     single {
-        SaveAccountDataUseCase(
-            encryptedSharedPreferencesFactory = get()
-        )
-    }
-    single {
         UpdateAccountDataUseCase(
             encryptedSharedPreferencesFactory = get()
         )

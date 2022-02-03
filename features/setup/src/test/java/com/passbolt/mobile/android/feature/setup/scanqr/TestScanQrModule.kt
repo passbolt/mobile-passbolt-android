@@ -8,10 +8,9 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMa
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
 import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.SaveAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveCurrentApiUrlUseCase
 import org.koin.dsl.module
 
@@ -39,7 +38,6 @@ import org.koin.dsl.module
  */
 
 internal val updateTransferUseCase = mock<UpdateTransferUseCase>()
-internal val saveAccountDataUseCase = mock<SaveAccountDataUseCase>()
 internal val uuidProvider = mock<UuidProvider>()
 internal val savePrivateKeyUseCase = mock<SavePrivateKeyUseCase>()
 internal val updateAccountDataUseCase = mock<UpdateAccountDataUseCase>()
@@ -52,7 +50,6 @@ internal val saveCurrentApiUrlUseCase = mock<SaveCurrentApiUrlUseCase>()
 val testScanQrModule = module {
     factory { httpsVerifier }
     factory { updateTransferUseCase }
-    factory { saveAccountDataUseCase }
     factory { saveCurrentApiUrlUseCase }
     factory { uuidProvider }
     factory { savePrivateKeyUseCase }

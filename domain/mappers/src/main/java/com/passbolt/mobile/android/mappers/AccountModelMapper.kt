@@ -27,7 +27,7 @@ import com.passbolt.mobile.android.ui.AccountModelUi
  * @since v1.0
  */
 class AccountModelMapper(
-    val selectedAccountUseCase: GetSelectedAccountUseCase
+    private val selectedAccountUseCase: GetSelectedAccountUseCase
 ) {
 
     fun map(accounts: List<Account>): List<AccountModelUi> =

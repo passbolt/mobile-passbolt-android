@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -213,6 +214,14 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun showChallengeVerificationFailure() {
         showLongSnackbar(getString(R.string.auth_error_challenge_verification_failure))
+    }
+
+    override fun showFailedToFetchUserProfile(message: String?) {
+        val errorMessage = StringBuilder(getString(R.string.auth_error_profile_fetch_failure))
+        if (!message.isNullOrBlank()) {
+            errorMessage.append("(%s)".format(message))
+        }
+        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
     }
 
     override fun showError(message: String) {

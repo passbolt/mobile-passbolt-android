@@ -1,4 +1,7 @@
-package com.passbolt.mobile.android.passboltapi.users
+package com.passbolt.mobile.android.mappers
+
+import com.passbolt.mobile.android.dto.response.UserProfileResponseDto
+import com.passbolt.mobile.android.ui.UserProfile
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,13 +25,13 @@ package com.passbolt.mobile.android.passboltapi.users
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class UsersRemoteDataSource(
-    private val usersApi: UsersApi
-) : UsersDataSource {
+class UserProfileMapper {
 
-    override suspend fun getUsers(hasAccessTo: List<String>?) =
-        usersApi.getUsers(hasAccessTo).body
-
-    override suspend fun getMyProfile() =
-        usersApi.getMyProfile().body
+    fun mapToUi(profileResponseDto: UserProfileResponseDto?) = profileResponseDto?.let {
+        UserProfile(
+            firstName = profileResponseDto.firstName,
+            lastName = profileResponseDto.lastName,
+            avatarUrl = profileResponseDto.avatar?.url?.medium
+        )
+    }
 }

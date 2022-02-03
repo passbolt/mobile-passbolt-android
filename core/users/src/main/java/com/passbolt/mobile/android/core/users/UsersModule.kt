@@ -32,4 +32,17 @@ val usersModule = module {
             usersMapper = get()
         )
     }
+    single {
+        FetchUserProfileUseCase(
+            usersRepository = get(),
+            userProfileMapper = get()
+        )
+    }
+    single {
+        UserProfileInteractor(
+            fetchUserProfileUseCase = get(),
+            updateAccountDataUseCase = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
 }

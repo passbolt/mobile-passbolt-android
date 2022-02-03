@@ -1,14 +1,21 @@
 apply plugin: "com.github.ben-manes.versions"
 
-dependencyUpdates.resolutionStrategy {
-    componentSelection { rules ->
-        rules.all { ComponentSelection selection ->
-            boolean rejected = ["alpha", "beta", "rc", "cr", "m", "preview"].any { qualifier ->
-                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-            }
-            if (rejected) {
-                selection.reject("Release candidate")
+tasks.named("dependencyUpdates").configure{
+    resolutionStrategy {
+        componentSelection { rules ->
+            rules.all { ComponentSelection selection ->
+                boolean rejected = ["alpha", "beta", "rc", "cr", "m", "preview"].any { qualifier ->
+                    selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+                }
+                if (rejected) {
+                    selection.reject("Release candidate")
+                }
             }
         }
     }
+    outputFormatter = "plain"
+    checkForGradleUpdate = true
+    revision = "release"
+    gradleReleaseChannel="current"
+    reportfileName = "dependecyUpdates"
 }

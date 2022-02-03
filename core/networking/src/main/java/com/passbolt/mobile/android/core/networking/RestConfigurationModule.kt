@@ -48,9 +48,11 @@ val networkingModule = module {
         )
     }
     single(named(COIL_HTTP_CLIENT)) {
-        provideCoilHttpClient(
+        provideHttpClient(
             loggingInterceptor = get(),
-            changeableBaseUrlInterceptor = get()
+            interceptors = listOf(
+                get<ChangeableBaseUrlInterceptor>()
+            )
         )
     }
     single { ChangeableBaseUrlInterceptor(getCurrentApiUrlUseCase = get()) }
@@ -100,7 +102,7 @@ private fun provideHttpLogger(): HttpLoggingInterceptor.Logger = object : HttpLo
 
 private fun provideHttpClient(
     loggingInterceptor: HttpLoggingInterceptor,
-    interceptors: List<Interceptor>
+    interceptors: List<Interceptor> = emptyList()
 ) =
     OkHttpClient.Builder()
         .addNetworkInterceptor(loggingInterceptor)
@@ -110,15 +112,6 @@ private fun provideHttpClient(
         .apply {
             interceptors.forEach { addInterceptor(it) }
         }
-        .build()
-
-private fun provideCoilHttpClient(
-    loggingInterceptor: HttpLoggingInterceptor,
-    changeableBaseUrlInterceptor: ChangeableBaseUrlInterceptor
-) =
-    OkHttpClient.Builder()
-        .addNetworkInterceptor(loggingInterceptor)
-        .addInterceptor(changeableBaseUrlInterceptor)
         .build()
 
 const val DEFAULT_HTTP_CLIENT = "DEFAULT_HTTP_CLIENT"
