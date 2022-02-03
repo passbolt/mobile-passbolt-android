@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.passboltapi.users
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,13 +22,8 @@ package com.passbolt.mobile.android.passboltapi.users
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class UsersRemoteDataSource(
-    private val usersApi: UsersApi
-) : UsersDataSource {
-
-    override suspend fun getUsers(hasAccessTo: List<String>?) =
-        usersApi.getUsers(hasAccessTo).body
-
-    override suspend fun getMyProfile() =
-        usersApi.getMyProfile().body
-}
+data class UserProfile(
+    val firstName: String?,
+    val lastName: String?,
+    val avatarUrl: String?
+)

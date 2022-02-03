@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.core.users.UserProfileInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider.Companion.MFA_PROVIDER_TOTP
@@ -61,6 +62,7 @@ open class SignInPresenter(
     private val featureFlagsInteractor: FeatureFlagsInteractor,
     private val getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysInteractor,
     private val signInVerifyInteractor: SignInVerifyInteractor,
+    private val userProfileInteractor: UserProfileInteractor,
     biometryInteractor: BiometryInteractor,
     getAccountDataUseCase: GetAccountDataUseCase,
     biometricCipher: BiometricCipher,
@@ -256,16 +258,30 @@ open class SignInPresenter(
             when (featureFlagsInteractor.fetchAndSaveFeatureFlags()) {
                 is FeatureFlagsInteractor.Output.Success -> {
                     Timber.d("Feature flags fetched")
-                    view?.apply {
-                        hideProgress()
-                        clearPassphraseInput()
-                        authSuccess()
-                    }
+                    fetchUserAvatar()
                 }
                 is FeatureFlagsInteractor.Output.Failure -> {
                     view?.showFeatureFlagsErrorDialog()
                 }
             }
+        }
+    }
+
+    private suspend fun fetchUserAvatar() {
+        Timber.d("Fetching user profile")
+        when (val result = userProfileInteractor.fetchAndUpdateUserProfile()) {
+            is UserProfileInteractor.Output.Failure -> {
+                Timber.e("Failed to update user profile: ${result.message}")
+                view?.showFailedToFetchUserProfile(result.message)
+            }
+            is UserProfileInteractor.Output.Success -> {
+                Timber.d("User profile updated successfully")
+            }
+        }
+        view?.apply {
+            hideProgress()
+            clearPassphraseInput()
+            authSuccess()
         }
     }
 

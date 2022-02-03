@@ -33,21 +33,5 @@ data class UpdateTransferResponseDto(
 data class UserResponseDto(
     @SerializedName("username")
     val email: String?,
-    val profile: ProfileResponseDto?
-)
-
-data class ProfileResponseDto(
-    @SerializedName("first_name")
-    val firstName: String?,
-    @SerializedName("last_name")
-    val lastName: String?,
-    val avatar: AvatarResponseDto?
-)
-
-data class AvatarResponseDto(
-    val url: UrlAvatarResponseDto?
-)
-
-data class UrlAvatarResponseDto(
-    val medium: String
+    val profile: UserProfileResponseDto?
 )

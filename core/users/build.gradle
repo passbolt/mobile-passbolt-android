@@ -11,6 +11,7 @@ dependencies {
     implementation project(':passboltapi')
     implementation project(':mvp')
     implementation project(':mappers')
+    implementation project(':storage')
 
     implementation libs.di.koin
     implementation libs.di.koinExt

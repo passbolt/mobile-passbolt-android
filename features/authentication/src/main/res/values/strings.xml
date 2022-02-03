@@ -41,6 +41,7 @@
     <string name="auth_error_invalid_signature">Challenge verification error (invalid signature)</string>
     <string name="auth_error_token_expired">Challenge verification error (token expired)</string>
     <string name="auth_error_challenge_verification_failure">Challenge verification failure</string>
+    <string name="auth_error_profile_fetch_failure">There was an error during profile update</string>
 
     <string name="dialog_account_does_not_exist_title">The account doesn’t exist</string>
     <string name="dialog_account_does_not_exist_subtitle">The account has been deleted</string>

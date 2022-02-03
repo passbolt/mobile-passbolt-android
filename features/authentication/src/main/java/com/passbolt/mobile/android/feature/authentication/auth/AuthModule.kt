@@ -182,6 +182,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     featureFlagsInteractor = get(),
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
+    userProfileInteractor = get(),
+    biometryInteractor = get(),
     getAccountDataUseCase = get(),
     biometricCipher = get(),
     getPassphraseUseCase = get(),
@@ -189,8 +191,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
     verifyPassphraseUseCase = get(),
     coroutineLaunchContext = get(),
     authReasonMapper = get(),
-    rootDetector = get(),
-    biometryInteractor = get()
+    rootDetector = get()
 )
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
@@ -212,5 +213,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     rootDetector = get(),
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
-    biometryInteractor = get()
+    biometryInteractor = get(),
+    userProfileInteractor = get()
 )

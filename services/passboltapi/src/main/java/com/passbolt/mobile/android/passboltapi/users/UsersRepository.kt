@@ -33,4 +33,8 @@ class UsersRepository(
     suspend fun getUsers(hasAccessTo: List<String>? = null) = callWithHandler(responseHandler) {
         usersDataSource.getUsers(hasAccessTo)
     }
+
+    suspend fun getMyProfile() = callWithHandler(responseHandler) {
+        usersDataSource.getMyProfile()
+    }
 }

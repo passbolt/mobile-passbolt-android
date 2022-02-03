@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.core.users.UserProfileInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysInteractor
@@ -62,7 +63,8 @@ class RefreshSessionPresenter(
     rootDetector: RootDetector,
     getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysInteractor,
     signInVerifyInteractor: SignInVerifyInteractor,
-    biometryInteractor: BiometryInteractor
+    biometryInteractor: BiometryInteractor,
+    userProfileInteractor: UserProfileInteractor
 ) : SignInPresenter(
     saveSessionUseCase,
     saveSelectedAccountUseCase,
@@ -73,6 +75,7 @@ class RefreshSessionPresenter(
     featureFlagsInteractor,
     getAndVerifyServerKeysInteractor,
     signInVerifyInteractor,
+    userProfileInteractor,
     biometryInteractor,
     getAccountDataUseCase,
     biometricCipher,
