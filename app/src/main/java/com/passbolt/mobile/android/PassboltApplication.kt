@@ -67,7 +67,16 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
+/**
+ * The main entry point for the Passbolt Android application.
+ * Contains code for initialization of the main components.
+ *
+ * @property imageLoader an image loading service
+ * @property appForegroundListener listener detecting when the app goes foreground
+ * @property applicationScope coroutine scope for the application class
+ * @property fileLoggingTree a logger instance that stores logs in a file
+ * @property getGlobalPreferencesUseCase a use case for reading global application preferences
+ */
 class PassboltApplication : Application(), KoinComponent {
 
     private val imageLoader: ImageLoader by inject()
@@ -77,6 +86,9 @@ class PassboltApplication : Application(), KoinComponent {
     private val logFilesManager: LogFilesManager by inject()
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase by inject()
 
+    /**
+     * Creates the application class and initializes all components.
+     */
     override fun onCreate() {
         super.onCreate()
         initKoin()
@@ -85,6 +97,10 @@ class PassboltApplication : Application(), KoinComponent {
         registerAppForegroundListener()
     }
 
+    /**
+     * Registers a listener detecting when application goes foreground.
+     * Listening is done using the application coroutine scope.
+     */
     private fun registerAppForegroundListener() {
         registerActivityLifecycleCallbacks(appForegroundListener)
         applicationScope.launch {
@@ -101,6 +117,12 @@ class PassboltApplication : Application(), KoinComponent {
         }
     }
 
+    /**
+     * Initializes the logging library.
+     * Apart from default logger in DEBUG mode the application also uses a logger instance
+     * capable of writing logs into files. This additional logger is used only if enabled in
+     * the global preferences.
+     */
     private fun initTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
@@ -115,6 +137,9 @@ class PassboltApplication : Application(), KoinComponent {
         }
     }
 
+    /**
+     * Initializes the dependency injection framework.
+     */
     private fun initKoin() {
         startKoin {
             androidContext(this@PassboltApplication)

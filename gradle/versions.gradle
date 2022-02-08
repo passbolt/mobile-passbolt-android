@@ -74,7 +74,8 @@ ext {
         balloon: "1.4.0",
         licensee: "1.3.0",
         rootbeer: "0.1.0",
-        playStorePublisher: "3.7.0"
+        playStorePublisher: "3.7.0",
+        dokka: "1.6.10"
     ]
 
     libs = [
@@ -82,6 +83,7 @@ ext {
         gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:${versions.gradleVersionsPlugin}",
         desugarJdkLibs: "com.android.tools:desugar_jdk_libs:${versions.desugarJdkLibs}",
         licensee: "app.cash.licensee:licensee-gradle-plugin:${versions.licensee}",
+        dokka: "org.jetbrains.dokka:dokka-gradle-plugin:${versions.dokka}",
         di: [
             koin: "io.insert-koin:koin-core:${versions.koin}",
             koinExt: "io.insert-koin:koin-android-ext:${versions.koin}",

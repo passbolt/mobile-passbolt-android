@@ -1,0 +1,12 @@
+apply plugin: "org.jetbrains.dokka"
+
+tasks.named("dokkaHtmlPartial").configure {
+    suppressInheritedMembers = true
+    dokkaSourceSets {
+        configureEach {
+            includeNonPublic.set(true)
+            skipEmptyPackages.set(true)
+            jdkVersion.set(11)
+        }
+    }
+}

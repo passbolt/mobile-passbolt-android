@@ -1,3 +1,5 @@
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
+
 buildscript {
     apply from: "gradle/versions.gradle"
     apply from: "gradle/repositories.gradle"
@@ -19,8 +21,11 @@ buildscript {
         classpath libs.easylauncher
         classpath libs.licensee
         classpath libs.playStorePublisher
+        classpath libs.dokka
     }
 }
+
+apply plugin: "org.jetbrains.dokka"
 
 allprojects {
     repositories {
@@ -37,8 +42,13 @@ subprojects {
         apply from: "${rootDir}/gradle/detekt.gradle"
         apply from: "${rootDir}/gradle/jacocoModule.gradle"
         apply from: "${rootDir}/gradle/moduleSetup.gradle"
+        apply from: "${rootDir}/gradle/dokka.gradle"
     }
 }
 
 apply from: "gradle/jacocoProject.gradle"
 apply from: "gradle/dependencyUpdates.gradle"
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
