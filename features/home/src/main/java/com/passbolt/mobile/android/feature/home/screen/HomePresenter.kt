@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInterac
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.ui.HomeFilter
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -41,6 +42,7 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Suppress("TooManyFunctions")
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val resourcesInteractor: ResourceInteractor,
@@ -62,6 +64,7 @@ class HomePresenter(
     private var userAvatarUrl: String? = null
     private val searchInputEndIconMode
         get() = if (currentSearchText.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
+    private var activeFilter = HomeFilter.ALL
 
     override fun attach(view: HomeContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
@@ -283,6 +286,30 @@ class HomePresenter(
     enum class SearchInputEndIconMode {
         AVATAR,
         CLEAR
+    }
+
+    override fun filtersClick() {
+        view?.showFiltersMenu(activeFilter)
+    }
+
+    override fun allItemsClick() {
+        activeFilter = HomeFilter.ALL
+    }
+
+    override fun favouritesClick() {
+        activeFilter = HomeFilter.FAVOURITES
+    }
+
+    override fun recentlyModifiedClick() {
+        activeFilter = HomeFilter.RECENTLY_MODIFIED
+    }
+
+    override fun sharedWithMeClick() {
+        activeFilter = HomeFilter.SHARED_WITH_ME
+    }
+
+    override fun ownedByMeClick() {
+        activeFilter = HomeFilter.OWNED_BY_ME
     }
 
     companion object {

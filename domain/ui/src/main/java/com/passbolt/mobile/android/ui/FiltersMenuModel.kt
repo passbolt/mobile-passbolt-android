@@ -1,7 +1,7 @@
-package com.passbolt.mobile.android.core.extension
+package com.passbolt.mobile.android.ui
 
-import android.content.Context
-import android.util.TypedValue
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,12 +26,7 @@ import android.util.TypedValue
  * @since v1.0
  */
 
-fun Context.selectableBackgroundBorderlessResourceId() =
-    TypedValue().apply {
-        theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, this, true)
-    }.resourceId
-
-fun Context.selectableBackgroundResourceId() =
-    TypedValue().apply {
-        theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
-    }.resourceId
+@Parcelize
+data class FiltersMenuModel(
+    val activeFilter: HomeFilter
+) : Parcelable

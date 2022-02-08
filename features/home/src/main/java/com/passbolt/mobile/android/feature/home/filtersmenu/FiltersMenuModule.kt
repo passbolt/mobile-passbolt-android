@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.core.extension
+package com.passbolt.mobile.android.feature.home.filtersmenu
 
-import android.content.Context
-import android.util.TypedValue
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,12 +25,10 @@ import android.util.TypedValue
  * @since v1.0
  */
 
-fun Context.selectableBackgroundBorderlessResourceId() =
-    TypedValue().apply {
-        theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, this, true)
-    }.resourceId
-
-fun Context.selectableBackgroundResourceId() =
-    TypedValue().apply {
-        theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
-    }.resourceId
+fun Module.filtersMenuModule() {
+    scope<FiltersMenuFragment> {
+        scoped<FiltersMenuContract.Presenter> {
+            FiltersMenuPresenter()
+        }
+    }
+}
