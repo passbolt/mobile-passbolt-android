@@ -31,9 +31,12 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
+import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
+import com.passbolt.mobile.android.ui.FiltersMenuModel
+import com.passbolt.mobile.android.ui.HomeFilter
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
@@ -64,7 +67,8 @@ import org.koin.android.ext.android.inject
 @Suppress("TooManyFunctions")
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
-    HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener {
+    HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener,
+    FiltersMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
     private val itemAdapter: ItemAdapter<PasswordItem> by inject()
@@ -198,6 +202,9 @@ class HomeFragment :
                         ResourceMode.NEW
                     )
                 )
+            }
+            searchTextInput.setStartIconOnClickListener {
+                presenter.filtersClick()
             }
         }
     }
@@ -368,6 +375,31 @@ class HomeFragment :
                 ActivityIntents.AuthConfig.ManageAccount
             )
         )
+    }
+
+    override fun showFiltersMenu(activeFilter: HomeFilter) {
+        FiltersMenuFragment.newInstance(FiltersMenuModel(activeFilter))
+            .show(childFragmentManager, FiltersMenuFragment::class.java.name)
+    }
+
+    override fun menuAllItemsClick() {
+        presenter.allItemsClick()
+    }
+
+    override fun menuFavouritesClick() {
+        presenter.favouritesClick()
+    }
+
+    override fun menuRecentlyModifiedClick() {
+        presenter.recentlyModifiedClick()
+    }
+
+    override fun menuSharedWithMeClick() {
+        presenter.sharedWithMeClick()
+    }
+
+    override fun menuOwnedByMeClick() {
+        presenter.ownedByMeClick()
     }
 
     companion object {

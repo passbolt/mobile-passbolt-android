@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.home
 
+import com.passbolt.mobile.android.feature.home.filtersmenu.filtersMenuModule
 import com.passbolt.mobile.android.feature.home.screen.homeModule
 import com.passbolt.mobile.android.feature.home.switchaccount.switchAccountModule
 import org.koin.dsl.module
@@ -30,4 +31,5 @@ import org.koin.dsl.module
 val homeModule = module {
     homeModule()
     switchAccountModule()
+    filtersMenuModule()
 }

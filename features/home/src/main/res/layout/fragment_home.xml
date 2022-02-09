@@ -30,7 +30,9 @@
                 app:endIconTint="@android:color/transparent"
                 app:endIconTintMode="screen"
                 app:hintEnabled="false"
-                app:startIconDrawable="@drawable/ic_search">
+                app:startIconDrawable="@drawable/ic_filter"
+                app:startIconTint="@android:color/transparent"
+                app:startIconTintMode="screen">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/searchEditText"
@@ -143,10 +145,10 @@
         android:layout_margin="@dimen/dp_16"
         android:contentDescription="@string/home_create"
         android:text="@string/home_create"
-        app:tint="@color/white"
         app:backgroundTint="@color/primary"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-        app:srcCompat="@drawable/ic_plus" />
+        app:srcCompat="@drawable/ic_plus"
+        app:tint="@color/white" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress"

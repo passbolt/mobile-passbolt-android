@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.ui.HomeFilter
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 
@@ -55,6 +56,7 @@ interface HomeContract {
         fun showAddButton()
         fun showDeleteConfirmationDialog()
         fun navigateToManageAccounts()
+        fun showFiltersMenu(activeFilter: HomeFilter)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -78,5 +80,11 @@ interface HomeContract {
         fun resourceEdited(resourceName: String)
         fun deleteResourceConfirmed()
         fun switchAccountManageAccountClick()
+        fun filtersClick()
+        fun allItemsClick()
+        fun favouritesClick()
+        fun recentlyModifiedClick()
+        fun sharedWithMeClick()
+        fun ownedByMeClick()
     }
 }
