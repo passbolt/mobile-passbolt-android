@@ -45,6 +45,7 @@ import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRe
     version = 2
 )
 abstract class ResourceDatabase : RoomDatabase() {
+
     abstract fun resourcesDao(): ResourcesDao
     abstract fun resourceTypesDao(): ResourceTypesDao
 

@@ -8,6 +8,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -36,9 +38,9 @@ import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBotto
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.ui.FiltersMenuModel
-import com.passbolt.mobile.android.ui.HomeFilter
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import org.koin.android.ext.android.inject
 
 /**
@@ -377,8 +379,8 @@ class HomeFragment :
         )
     }
 
-    override fun showFiltersMenu(activeFilter: HomeFilter) {
-        FiltersMenuFragment.newInstance(FiltersMenuModel(activeFilter))
+    override fun showFiltersMenu(activeDisplayView: ResourcesDisplayView) {
+        FiltersMenuFragment.newInstance(FiltersMenuModel(activeDisplayView))
             .show(childFragmentManager, FiltersMenuFragment::class.java.name)
     }
 
@@ -400,6 +402,38 @@ class HomeFragment :
 
     override fun menuOwnedByMeClick() {
         presenter.ownedByMeClick()
+    }
+
+    override fun showHomeScreenTitle(view: ResourcesDisplayView) {
+        when (view) {
+            ResourcesDisplayView.ALL -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_all_items,
+                R.drawable.ic_list
+            )
+            ResourcesDisplayView.FAVOURITES -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_favourites,
+                R.drawable.ic_star
+            )
+            ResourcesDisplayView.RECENTLY_MODIFIED -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_recently_modified,
+                R.drawable.ic_clock
+            )
+            ResourcesDisplayView.SHARED_WITH_ME -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_shared_with_me,
+                R.drawable.ic_share
+            )
+            ResourcesDisplayView.OWNED_BY_ME -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_owned_by_me,
+                R.drawable.ic_person
+            )
+        }
+    }
+
+    private fun showScreenTitleWithStartIcon(@StringRes titleRes: Int, @DrawableRes iconRes: Int) {
+        with(binding.screenTitleLabel) {
+            text = getString(titleRes)
+            setCompoundDrawablesWithIntrinsicBounds(iconRes, 0, 0, 0)
+        }
     }
 
     companion object {

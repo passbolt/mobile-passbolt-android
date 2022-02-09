@@ -41,7 +41,8 @@ fun Module.homeModule() {
                 resourceTypeFactory = get(),
                 secretParser = get(),
                 resourceMenuModelMapper = get(),
-                deleteResourceUseCase = get()
+                deleteResourceUseCase = get(),
+                getLocalResourcesUseCase = get()
             )
         }
         scoped<ItemAdapter<PasswordItem>> {

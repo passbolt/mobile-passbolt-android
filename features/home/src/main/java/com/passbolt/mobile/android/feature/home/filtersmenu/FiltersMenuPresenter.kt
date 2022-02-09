@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.home.filtersmenu
 
 import com.passbolt.mobile.android.ui.FiltersMenuModel
-import com.passbolt.mobile.android.ui.HomeFilter
+import com.passbolt.mobile.android.ui.ResourcesDisplayView
 
 class FiltersMenuPresenter : FiltersMenuContract.Presenter {
 
@@ -10,12 +10,12 @@ class FiltersMenuPresenter : FiltersMenuContract.Presenter {
     override fun argsRetrieved(menuModel: FiltersMenuModel) {
         view?.apply {
             unselectAll()
-            when (menuModel.activeFilter) {
-                HomeFilter.ALL -> selectAllItemsItem()
-                HomeFilter.FAVOURITES -> selectFavouritesItem()
-                HomeFilter.RECENTLY_MODIFIED -> selectRecentlyModifiedItem()
-                HomeFilter.SHARED_WITH_ME -> selectSharedWithMeItem()
-                HomeFilter.OWNED_BY_ME -> selectOwnedByMeItem()
+            when (menuModel.activeDisplayView) {
+                ResourcesDisplayView.ALL -> selectAllItemsItem()
+                ResourcesDisplayView.FAVOURITES -> selectFavouritesItem()
+                ResourcesDisplayView.RECENTLY_MODIFIED -> selectRecentlyModifiedItem()
+                ResourcesDisplayView.SHARED_WITH_ME -> selectSharedWithMeItem()
+                ResourcesDisplayView.OWNED_BY_ME -> selectOwnedByMeItem()
             }
         }
     }

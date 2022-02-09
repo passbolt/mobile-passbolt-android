@@ -71,7 +71,9 @@ val databaseModule = module {
     single {
         GetLocalResourcesUseCase(
             databaseProvider = get(),
-            resourceModelMapper = get()
+            resourceModelMapper = get(),
+            getSelectedAccountUseCase = get(),
+            resourceDisplayViewMapper = get()
         )
     }
     single {

@@ -33,6 +33,7 @@ class AddLocalResourceUseCase(
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
 ) : AsyncUseCase<AddLocalResourceUseCase.Input, Unit> {
+
     override suspend fun execute(input: Input) {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         databaseProvider.get(userId).resourcesDao().insert(resourceModelMapper.map(input.passwordModel))

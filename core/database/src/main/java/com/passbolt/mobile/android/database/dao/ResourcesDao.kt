@@ -34,22 +34,24 @@ import com.passbolt.mobile.android.entity.resource.Resource
 interface ResourcesDao {
 
     @Transaction
+    @Query("SELECT * FROM Resource ORDER BY resourceName COLLATE NOCASE ASC")
+    suspend fun getAllOrderedByName(): List<Resource>
+
+    // TODO separate task; after adding modified date field
+    @Transaction
     @Query("SELECT * FROM Resource")
-    suspend fun getAll(): List<Resource>
+    suspend fun getAllOrderedByModifiedDate(): List<Resource>
 
     @Transaction
     @Query("SELECT * FROM Resource WHERE resourceId == :resourceId")
     suspend fun get(resourceId: String): Resource
 
-    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(resourceEntities: List<Resource>)
 
-    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(resourceEntities: Resource)
 
-    @Transaction
     @Update
     suspend fun update(resourceEntities: Resource)
 
