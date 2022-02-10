@@ -314,6 +314,7 @@ class HomePresenter(
     override fun favouritesClick() {
         activeFilter = ResourcesDisplayView.FAVOURITES
         view?.showHomeScreenTitle(activeFilter)
+        scope.launch { showResourcesFromDatabase() }
     }
 
     override fun recentlyModifiedClick() {

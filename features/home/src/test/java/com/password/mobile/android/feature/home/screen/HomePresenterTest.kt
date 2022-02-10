@@ -222,7 +222,8 @@ class HomePresenterTest : KoinTest {
             "initials",
             "",
             "",
-            ResourcePermission.READ
+            ResourcePermission.READ,
+            false
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -243,7 +244,8 @@ class HomePresenterTest : KoinTest {
             initials = "T",
             url = "",
             description = "desc",
-            permission = ResourcePermission.READ
+            permission = ResourcePermission.READ,
+            false
         )
         val menuModel = resourceMenuModelMapper.map(model)
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
@@ -384,7 +386,8 @@ class HomePresenterTest : KoinTest {
             icon = "",
             initials = "",
             description = "desc",
-            permission = ResourcePermission.READ
+            permission = ResourcePermission.READ,
+            isFavourite = false
         ), ResourceModel(
             resourceId = "id2",
             resourceTypeId = "resTypeId",
@@ -394,7 +397,8 @@ class HomePresenterTest : KoinTest {
             icon = "",
             initials = "",
             description = "desc",
-            permission = ResourcePermission.READ
+            permission = ResourcePermission.READ,
+            isFavourite = false
         )
     )
 
@@ -431,7 +435,8 @@ class HomePresenterTest : KoinTest {
             INITIALS,
             URL,
             DESCRIPTION,
-            ResourcePermission.READ
+            ResourcePermission.READ,
+            false
         )
         private val DECRYPTED_SECRET = "secret".toByteArray()
     }

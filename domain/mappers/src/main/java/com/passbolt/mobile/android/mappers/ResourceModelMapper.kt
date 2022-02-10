@@ -44,7 +44,8 @@ class ResourceModelMapper(
             initials = initialsProvider.get(resource.name),
             url = resource.uri,
             description = resource.description,
-            permission = mapDtoPermissionToUiModel(resource.permission.type)
+            permission = mapDtoPermissionToUiModel(resource.permission.type),
+            isFavourite = resource.favorite != null
         )
 
     fun map(resourceModel: ResourceModel): Resource =
@@ -56,7 +57,8 @@ class ResourceModelMapper(
             url = resourceModel.url,
             username = resourceModel.username,
             resourceTypeId = resourceModel.resourceTypeId,
-            folder = Folder(name = "name", permission = Permission.READ, parentId = 0)
+            folder = Folder(name = "name", permission = Permission.READ, parentId = 0),
+            isFavourite = resourceModel.isFavourite
         )
 
     fun map(resourceEntity: Resource): ResourceModel =
@@ -69,7 +71,8 @@ class ResourceModelMapper(
             initials = initialsProvider.get(resourceEntity.resourceName),
             url = resourceEntity.url,
             description = resourceEntity.description,
-            permission = resourceEntity.resourcePermission.toUiModel()
+            permission = resourceEntity.resourcePermission.toUiModel(),
+            isFavourite = resourceEntity.isFavourite
         )
 
     private fun ResourcePermission.toEntityModel() = when (this) {

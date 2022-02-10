@@ -260,7 +260,8 @@ class ResourceDetailsPresenterTest : KoinTest {
             INITIALS,
             URL,
             DESCRIPTION,
-            ResourcePermission.READ
+            ResourcePermission.READ,
+            false
         )
         private val DECRYPTED_SECRET = "decrypted".toByteArray()
     }

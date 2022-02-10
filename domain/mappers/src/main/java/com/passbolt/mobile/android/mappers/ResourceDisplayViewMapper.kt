@@ -17,6 +17,7 @@ class ResourceDisplayViewMapper {
         when (resourcesFilter) {
             ResourcesDisplayView.ALL -> ResourceDatabaseView.ByNameAscending
             ResourcesDisplayView.RECENTLY_MODIFIED -> ResourceDatabaseView.ByModifiedDateDescending
+            ResourcesDisplayView.FAVOURITES -> ResourceDatabaseView.IsFavourite
             else -> throw NotImplementedError()
         }
 }
