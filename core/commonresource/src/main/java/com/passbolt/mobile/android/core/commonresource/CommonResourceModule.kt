@@ -3,9 +3,9 @@ package com.passbolt.mobile.android.core.commonresource
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.moremenu.resourceMoreMenuModule
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
-import com.passbolt.mobile.android.core.commonresource.usecase.FetchAndUpdateDatabaseUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourcesDatabaseUseCase
 import com.passbolt.mobile.android.core.commonresource.validation.resourceValidationModule
 import org.koin.dsl.module
 
@@ -51,7 +51,7 @@ val commonResourceModule = module {
             getResourcesUseCase = get(),
             addLocalResourceTypesUseCase = get(),
             resourceValidationRunner = get(),
-            fetchAndUpdateDatabaseUseCase = get()
+            rebuildAndGetResourcesDatabaseUseCase = get()
         )
     }
     single {
@@ -99,7 +99,7 @@ val commonResourceModule = module {
         )
     }
     single {
-        FetchAndUpdateDatabaseUseCase(
+        RebuildResourcesDatabaseUseCase(
             getSelectedAccountUseCase = get(),
             removeLocalResourcesUseCase = get(),
             addLocalResourcesUseCase = get()

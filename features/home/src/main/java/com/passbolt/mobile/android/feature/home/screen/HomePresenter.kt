@@ -7,13 +7,14 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.ui.HomeFilter
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -42,6 +43,13 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+/**
+ * Presenter responsible for managing the home resource list. The general flow is to fetch resources and resource types
+ * from the backend on start and update the database. Then when applying different views (all, favourite,
+ * shared with me, etc.) the reload is done from the database only. To refresh from backend again users can do the
+ * swipe to refresh gesture.
+ */
 @Suppress("TooManyFunctions")
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
@@ -52,7 +60,8 @@ class HomePresenter(
     private val resourceTypeFactory: ResourceTypeFactory,
     private val secretParser: SecretParser,
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
-    private val deleteResourceUseCase: DeleteResourceUseCase
+    private val deleteResourceUseCase: DeleteResourceUseCase,
+    private val getLocalResourcesUseCase: GetLocalResourcesUseCase
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
@@ -64,13 +73,14 @@ class HomePresenter(
     private var userAvatarUrl: String? = null
     private val searchInputEndIconMode
         get() = if (currentSearchText.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
-    private var activeFilter = HomeFilter.ALL
+    private var activeFilter = ResourcesDisplayView.ALL
 
     override fun attach(view: HomeContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
         runWhileShowingListProgress { fetchResources() }
         userAvatarUrl = getSelectedAccountDataUseCase.execute(Unit).avatarUrl
             .also { view.displaySearchAvatar(it) }
+        view.showHomeScreenTitle(activeFilter)
     }
 
     override fun userAuthenticated() {
@@ -101,20 +111,23 @@ class HomePresenter(
 
     private suspend fun fetchResources() {
         view?.hideUpdateButton()
-        when (val result =
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                resourcesInteractor.fetchResourcesWithTypes()
-            }) {
+        when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+            resourcesInteractor.updateResourcesWithTypes()
+        }) {
             is ResourceInteractor.Output.Failure -> {
                 view?.showError()
             }
             is ResourceInteractor.Output.Success -> {
-                allItemsList = result.resources
-                displayResources()
+                showResourcesFromDatabase()
                 view?.showAddButton()
             }
         }
         view?.hideRefreshProgress()
+    }
+
+    private suspend fun showResourcesFromDatabase() {
+        allItemsList = getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(activeFilter)).resources
+        displayResources()
     }
 
     private fun runWhileShowingListProgress(action: suspend () -> Unit) {
@@ -293,23 +306,29 @@ class HomePresenter(
     }
 
     override fun allItemsClick() {
-        activeFilter = HomeFilter.ALL
+        activeFilter = ResourcesDisplayView.ALL
+        view?.showHomeScreenTitle(activeFilter)
+        scope.launch { showResourcesFromDatabase() }
     }
 
     override fun favouritesClick() {
-        activeFilter = HomeFilter.FAVOURITES
+        activeFilter = ResourcesDisplayView.FAVOURITES
+        view?.showHomeScreenTitle(activeFilter)
     }
 
     override fun recentlyModifiedClick() {
-        activeFilter = HomeFilter.RECENTLY_MODIFIED
+        activeFilter = ResourcesDisplayView.RECENTLY_MODIFIED
+        view?.showHomeScreenTitle(activeFilter)
     }
 
     override fun sharedWithMeClick() {
-        activeFilter = HomeFilter.SHARED_WITH_ME
+        activeFilter = ResourcesDisplayView.SHARED_WITH_ME
+        view?.showHomeScreenTitle(activeFilter)
     }
 
     override fun ownedByMeClick() {
-        activeFilter = HomeFilter.OWNED_BY_ME
+        activeFilter = ResourcesDisplayView.OWNED_BY_ME
+        view?.showHomeScreenTitle(activeFilter)
     }
 
     companion object {

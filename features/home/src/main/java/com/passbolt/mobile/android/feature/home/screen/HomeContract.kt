@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.ui.HomeFilter
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourcesDisplayView
 
 /**
  * Passbolt - Open source password manager for teams
@@ -56,7 +56,8 @@ interface HomeContract {
         fun showAddButton()
         fun showDeleteConfirmationDialog()
         fun navigateToManageAccounts()
-        fun showFiltersMenu(activeFilter: HomeFilter)
+        fun showFiltersMenu(activeDisplayView: ResourcesDisplayView)
+        fun showHomeScreenTitle(view: ResourcesDisplayView)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

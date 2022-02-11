@@ -22,7 +22,7 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-enum class HomeFilter {
+enum class ResourcesDisplayView {
     ALL,
     FAVOURITES,
     RECENTLY_MODIFIED,

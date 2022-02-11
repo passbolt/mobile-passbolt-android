@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,7 +10,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_88"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -18,33 +19,52 @@
             android:background="@color/background"
             app:layout_scrollFlags="scroll|enterAlways">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/searchTextInput"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginHorizontal="@dimen/dp_16"
-                android:layout_marginBottom="@dimen/dp_16"
-                android:enabled="false"
-                app:endIconDrawable="@drawable/ic_avatar_placeholder"
-                app:endIconTint="@android:color/transparent"
-                app:endIconTintMode="screen"
-                app:hintEnabled="false"
-                app:startIconDrawable="@drawable/ic_filter"
-                app:startIconTint="@android:color/transparent"
-                app:startIconTintMode="screen">
+                android:orientation="vertical">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/searchEditText"
+                <TextView
+                    android:id="@+id/screenTitleLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:drawablePadding="@dimen/dp_4"
+                    android:paddingVertical="@dimen/dp_16"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical"
+                    tools:drawableStart="@drawable/ic_list"
+                    tools:text="All items" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/searchTextInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/search_hint"
-                    android:imeOptions="actionSearch"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:textColor="@color/text_secondary" />
+                    android:layout_gravity="bottom"
+                    android:layout_marginHorizontal="@dimen/dp_16"
+                    android:layout_marginBottom="@dimen/dp_16"
+                    android:enabled="false"
+                    app:endIconDrawable="@drawable/ic_avatar_placeholder"
+                    app:endIconTint="@android:color/transparent"
+                    app:endIconTintMode="screen"
+                    app:hintEnabled="false"
+                    app:startIconDrawable="@drawable/ic_filter"
+                    app:startIconTint="@android:color/transparent"
+                    app:startIconTintMode="screen">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/searchEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/search_hint"
+                        android:imeOptions="actionSearch"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textColor="@color/text_secondary" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
