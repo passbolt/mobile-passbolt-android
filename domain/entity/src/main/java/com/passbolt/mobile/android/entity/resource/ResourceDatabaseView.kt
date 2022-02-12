@@ -14,4 +14,9 @@ sealed class ResourceDatabaseView {
      * Ordering by the recently modified field from most recent one
      */
     object ByModifiedDateDescending : ResourceDatabaseView()
+
+    /**
+     * Filters the resources to favourite ones
+     */
+    object IsFavourite : ResourceDatabaseView()
 }

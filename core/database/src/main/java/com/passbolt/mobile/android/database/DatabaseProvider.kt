@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.database
 
 import android.content.Context
 import androidx.room.Room
+import com.passbolt.mobile.android.database.migrations.Migration1to2
+import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SupportFactory
@@ -48,7 +50,7 @@ class DatabaseProvider(
             context,
             ResourceDatabase::class.java, "${currentUser}_$RESOURCE_DATABASE_NAME"
         )
-            .addMigrations(ResourceDatabase.MIGRATION_1_2)
+            .addMigrations(Migration1to2, Migration2to3)
             .openHelperFactory(factory)
             .build()
 
@@ -59,7 +61,7 @@ class DatabaseProvider(
     private fun hashString(input: String, algorithm: String = "SHA-256"): String {
         return MessageDigest.getInstance(algorithm)
             .digest(input.toByteArray())
-            .fold("", { str, it -> str + "%02x".format(it) })
+            .fold("") { str, it -> str + "%02x".format(it) }
     }
 
     companion object {

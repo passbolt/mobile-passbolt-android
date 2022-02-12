@@ -47,6 +47,7 @@ class GetLocalResourcesUseCase(
                 when (resourceDisplayViewMapper.map(input.resourcesFilter)) {
                     is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate()
                     is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName()
+                    is ResourceDatabaseView.IsFavourite -> it.getFavourites()
                 }
             }
 

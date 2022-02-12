@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.entity.resource
+package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,16 +26,13 @@ import androidx.room.PrimaryKey
  * @since v1.0
  */
 
-@Entity
-data class Resource(
-    @PrimaryKey
-    val resourceId: String,
-    val resourceName: String,
-    val resourcePermission: Permission,
-    val url: String?,
-    val username: String?,
-    val description: String?,
-    val resourceTypeId: String,
-    val isFavourite: Boolean,
-    @Embedded val folder: Folder
-)
+@Suppress("MagicNumber")
+object Migration2to3 : Migration(2, 3) {
+
+    private const val ADD_RESOURCE_IS_FAVOURITE_COLUMN =
+        "ALTER TABLE Resource ADD COLUMN isFavourite INTEGER NOT NULL DEFAULT 0"
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(ADD_RESOURCE_IS_FAVOURITE_COLUMN)
+    }
+}
