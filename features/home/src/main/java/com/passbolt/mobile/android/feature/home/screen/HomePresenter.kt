@@ -320,6 +320,7 @@ class HomePresenter(
     override fun recentlyModifiedClick() {
         activeFilter = ResourcesDisplayView.RECENTLY_MODIFIED
         view?.showHomeScreenTitle(activeFilter)
+        scope.launch { showResourcesFromDatabase() }
     }
 
     override fun sharedWithMeClick() {

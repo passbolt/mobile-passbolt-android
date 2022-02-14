@@ -41,9 +41,8 @@ interface ResourcesDao {
     @Query("SELECT * FROM Resource WHERE isFavourite==1 ORDER BY resourceName COLLATE NOCASE ASC")
     suspend fun getFavourites(): List<Resource>
 
-    // TODO separate task; after adding modified date field
     @Transaction
-    @Query("SELECT * FROM Resource")
+    @Query("SELECT * FROM Resource ORDER BY modified DESC")
     suspend fun getAllOrderedByModifiedDate(): List<Resource>
 
     @Transaction

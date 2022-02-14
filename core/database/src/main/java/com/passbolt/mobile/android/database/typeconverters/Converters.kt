@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.entity.resource
+package com.passbolt.mobile.android.database.typeconverters
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import java.time.Instant
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 /**
@@ -28,17 +28,29 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 
-@Entity
-data class Resource(
-    @PrimaryKey
-    val resourceId: String,
-    val resourceName: String,
-    val resourcePermission: Permission,
-    val url: String?,
-    val username: String?,
-    val description: String?,
-    val resourceTypeId: String,
-    val isFavourite: Boolean,
-    val modified: ZonedDateTime,
-    @Embedded val folder: Folder
-)
+/**
+ * This class helps Room to convert between Date and Long type - as Room does not have
+ * built-in support for Date type.
+ */
+class Converters {
+
+    /**
+     * Converts Unix timestamp in milliseconds to zoned date time
+     *
+     * @param timestampMillis Unix timestamp in millis
+     * @return Zoned date time instance
+     */
+    @TypeConverter
+    fun dateFromTimestamp(timestampMillis: Long?): ZonedDateTime? =
+        timestampMillis?.let { ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneOffset.UTC) }
+
+    /**
+     * Converts Date to Unix timestamp in milliseconds
+     *
+     * @param date Zoned date time instance
+     * @return Unix timestamp in millis
+     */
+    @TypeConverter
+    fun dateToTimestamp(date: ZonedDateTime?): Long? =
+        date?.toInstant()?.toEpochMilli()
+}

@@ -29,6 +29,7 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -261,7 +262,8 @@ class ResourceDetailsPresenterTest : KoinTest {
             URL,
             DESCRIPTION,
             ResourcePermission.READ,
-            false
+            false,
+            ZonedDateTime.now()
         )
         private val DECRYPTED_SECRET = "decrypted".toByteArray()
     }

@@ -6,6 +6,7 @@ import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
+import com.passbolt.mobile.android.database.migrations.Migration3to4
 import org.junit.Rule
 import org.junit.Test
 
@@ -70,6 +71,23 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate3To4() {
+        helper.createDatabase(TEST_DB, 3).apply {
+            execSQL("INSERT INTO Resource VALUES('id1','name','READ','url','username','desc','typeId', '1','1','folderName','READ','1')")
+            close()
+        }
+
+        helper.runMigrationsAndValidate(TEST_DB, 4, true, Migration3to4)
+            .apply {
+                execSQL(
+                    "INSERT INTO Resource VALUES('id2','name','READ','url','username','desc','typeId', '1'," +
+                            "1644909225833, '1','folderName','READ','1')"
+                )
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -80,14 +98,14 @@ class DatabaseMigrationsTest {
             ResourceDatabase::class.java,
             TEST_DB
         )
-            .addMigrations(*ALL_MIGRATIONS).build().apply {
+            .addMigrations(Migration1to2, Migration2to3, Migration3to4)
+            .build().apply {
                 openHelper.writableDatabase
                 close()
             }
     }
 
     private companion object {
-        private val ALL_MIGRATIONS = arrayOf(Migration1to2, Migration2to3)
         private const val TEST_DB = "migration-test"
     }
 }

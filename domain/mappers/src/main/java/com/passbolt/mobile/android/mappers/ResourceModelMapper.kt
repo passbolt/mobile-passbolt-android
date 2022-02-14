@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,7 +46,8 @@ class ResourceModelMapper(
             url = resource.uri,
             description = resource.description,
             permission = mapDtoPermissionToUiModel(resource.permission.type),
-            isFavourite = resource.favorite != null
+            isFavourite = resource.favorite != null,
+            modified = ZonedDateTime.parse(resource.modified)
         )
 
     fun map(resourceModel: ResourceModel): Resource =
@@ -58,7 +60,8 @@ class ResourceModelMapper(
             username = resourceModel.username,
             resourceTypeId = resourceModel.resourceTypeId,
             folder = Folder(name = "name", permission = Permission.READ, parentId = 0),
-            isFavourite = resourceModel.isFavourite
+            isFavourite = resourceModel.isFavourite,
+            modified = resourceModel.modified
         )
 
     fun map(resourceEntity: Resource): ResourceModel =
@@ -72,7 +75,8 @@ class ResourceModelMapper(
             url = resourceEntity.url,
             description = resourceEntity.description,
             permission = resourceEntity.resourcePermission.toUiModel(),
-            isFavourite = resourceEntity.isFavourite
+            isFavourite = resourceEntity.isFavourite,
+            modified = resourceEntity.modified
         )
 
     private fun ResourcePermission.toEntityModel() = when (this) {

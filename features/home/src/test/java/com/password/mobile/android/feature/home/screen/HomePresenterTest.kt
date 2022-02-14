@@ -35,6 +35,7 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
 class HomePresenterTest : KoinTest {
@@ -223,7 +224,8 @@ class HomePresenterTest : KoinTest {
             "",
             "",
             ResourcePermission.READ,
-            false
+            false,
+            ZonedDateTime.now()
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -245,7 +247,8 @@ class HomePresenterTest : KoinTest {
             url = "",
             description = "desc",
             permission = ResourcePermission.READ,
-            false
+            isFavourite = false,
+            modified = ZonedDateTime.now()
         )
         val menuModel = resourceMenuModelMapper.map(model)
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
@@ -387,7 +390,8 @@ class HomePresenterTest : KoinTest {
             initials = "",
             description = "desc",
             permission = ResourcePermission.READ,
-            isFavourite = false
+            isFavourite = false,
+            modified = ZonedDateTime.now()
         ), ResourceModel(
             resourceId = "id2",
             resourceTypeId = "resTypeId",
@@ -398,7 +402,8 @@ class HomePresenterTest : KoinTest {
             initials = "",
             description = "desc",
             permission = ResourcePermission.READ,
-            isFavourite = false
+            isFavourite = false,
+            modified = ZonedDateTime.now()
         )
     )
 
@@ -436,7 +441,8 @@ class HomePresenterTest : KoinTest {
             URL,
             DESCRIPTION,
             ResourcePermission.READ,
-            false
+            false,
+            ZonedDateTime.now()
         )
         private val DECRYPTED_SECRET = "secret".toByteArray()
     }

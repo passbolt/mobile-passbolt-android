@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.ui
 import android.os.Parcelable
 import com.passbolt.mobile.android.common.search.Searchable
 import kotlinx.parcelize.Parcelize
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,6 +40,7 @@ data class ResourceModel(
     val description: String?,
     val permission: ResourcePermission,
     val isFavourite: Boolean,
+    val modified: ZonedDateTime,
     var loaderVisible: Boolean = false,
     var clickable: Boolean = true,
     override val searchCriteria: String = "$name$username$url"
