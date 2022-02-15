@@ -1,9 +1,9 @@
-package com.passbolt.mobile.android.core.qrscan.di
+package com.passbolt.mobile.android.core.qrscan
 
-import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
 import org.koin.dsl.module
 

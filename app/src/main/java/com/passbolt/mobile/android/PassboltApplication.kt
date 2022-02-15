@@ -12,7 +12,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.navigation.isAuthenticated
 import com.passbolt.mobile.android.core.networking.networkingModule
-import com.passbolt.mobile.android.core.qrscan.di.barcodeScanModule
+import com.passbolt.mobile.android.core.qrscan.barcodeScanModule
 import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
 import com.passbolt.mobile.android.core.security.securityModule
 import com.passbolt.mobile.android.core.users.usersModule
