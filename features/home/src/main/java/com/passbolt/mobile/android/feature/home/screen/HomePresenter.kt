@@ -326,11 +326,13 @@ class HomePresenter(
     override fun sharedWithMeClick() {
         activeFilter = ResourcesDisplayView.SHARED_WITH_ME
         view?.showHomeScreenTitle(activeFilter)
+        scope.launch { showResourcesFromDatabase() }
     }
 
     override fun ownedByMeClick() {
         activeFilter = ResourcesDisplayView.OWNED_BY_ME
         view?.showHomeScreenTitle(activeFilter)
+        scope.launch { showResourcesFromDatabase() }
     }
 
     companion object {

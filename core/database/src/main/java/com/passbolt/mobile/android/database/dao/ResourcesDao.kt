@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
 
 /**
@@ -44,6 +45,10 @@ interface ResourcesDao {
     @Transaction
     @Query("SELECT * FROM Resource ORDER BY modified DESC")
     suspend fun getAllOrderedByModifiedDate(): List<Resource>
+
+    @Transaction
+    @Query("SELECT * FROM Resource WHERE resourcePermission IN (:permissions)")
+    suspend fun getWithPermissions(permissions: Set<Permission>): List<Resource>
 
     @Transaction
     @Query("SELECT * FROM Resource WHERE resourceId == :resourceId")
