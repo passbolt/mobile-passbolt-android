@@ -20,6 +20,7 @@ dependencies {
     implementation project(':secrets')
     implementation project(':authentication')
     implementation project(':resources')
+    implementation project(':localization')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

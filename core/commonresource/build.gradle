@@ -18,6 +18,7 @@ dependencies {
     implementation project(':passboltapi')
     implementation project(':database')
     implementation project(':gopenpgp')
+    implementation project(':localization')
 
     implementation libs.androidx.core
     implementation libs.androidx.appcompat

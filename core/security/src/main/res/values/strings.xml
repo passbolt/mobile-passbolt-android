@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="root_warning_title">Device may be rooted</string>
-    <string name="root_warning_message">We suspect your device may be rooted. Please be aware that it lowers overall device security and can be maliciously used to acquire your passwords.</string>
-    <string name="root_warning_ackowledge">I understand</string>
-</resources>

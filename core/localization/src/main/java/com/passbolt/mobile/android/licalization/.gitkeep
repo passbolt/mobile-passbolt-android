@@ -1,0 +1,2 @@
+// this is for git to add the package into the repository
+// the package has to be added for detekt to not complain about module structure
