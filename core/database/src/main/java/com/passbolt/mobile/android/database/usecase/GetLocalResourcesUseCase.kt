@@ -44,10 +44,11 @@ class GetLocalResourcesUseCase(
             .get(userId)
             .resourcesDao()
             .let {
-                when (resourceDisplayViewMapper.map(input.resourcesFilter)) {
+                when (val viewType = resourceDisplayViewMapper.map(input.resourcesFilter)) {
                     is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate()
                     is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName()
                     is ResourceDatabaseView.IsFavourite -> it.getFavourites()
+                    is ResourceDatabaseView.HasPermissions -> it.getWithPermissions(viewType.permissions)
                 }
             }
 

@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.mappers
 
+import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
 
@@ -18,6 +19,9 @@ class ResourceDisplayViewMapper {
             ResourcesDisplayView.ALL -> ResourceDatabaseView.ByNameAscending
             ResourcesDisplayView.RECENTLY_MODIFIED -> ResourceDatabaseView.ByModifiedDateDescending
             ResourcesDisplayView.FAVOURITES -> ResourceDatabaseView.IsFavourite
-            else -> throw NotImplementedError()
+            ResourcesDisplayView.OWNED_BY_ME -> ResourceDatabaseView.HasPermissions(setOf(Permission.OWNER))
+            ResourcesDisplayView.SHARED_WITH_ME -> ResourceDatabaseView.HasPermissions(
+                setOf(Permission.READ, Permission.WRITE)
+            )
         }
 }
