@@ -2,8 +2,10 @@ package com.passbolt.mobile.android.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.passbolt.mobile.android.database.dao.ResourceTypesDao
 import com.passbolt.mobile.android.database.dao.ResourcesDao
+import com.passbolt.mobile.android.database.typeconverters.Converters
 import com.passbolt.mobile.android.entity.resource.Folder
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceField
@@ -40,8 +42,9 @@ import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRe
         ResourceType::class,
         ResourceField::class,
         ResourceTypesAndFieldsCrossRef::class],
-    version = 3
+    version = 4
 )
+@TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {
 
     abstract fun resourcesDao(): ResourcesDao

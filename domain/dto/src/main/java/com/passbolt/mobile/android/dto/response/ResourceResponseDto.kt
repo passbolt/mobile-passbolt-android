@@ -34,7 +34,8 @@ class ResourceResponseDto(
     val uri: String?,
     val username: String?,
     val permission: ResourcePermissionDto,
-    val favorite: JSONObject?
+    val favorite: JSONObject?,
+    val modified: String
 )
 
 data class ResourcePermissionDto(

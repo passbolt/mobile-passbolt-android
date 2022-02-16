@@ -7,6 +7,8 @@ import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.ui.ResourcePermission
 import org.junit.Before
 import org.junit.Test
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 
 class ResourceModelMapperTest {
@@ -27,7 +29,8 @@ class ResourceModelMapperTest {
             uri = "uri",
             username = "username",
             permission = ResourcePermissionDto("abc", 1, null, null, null, null, null, null),
-            favorite = null
+            favorite = null,
+            modified = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
         )
         val result = mapper.map(responseDto)
         assertEquals("f", result.initials)

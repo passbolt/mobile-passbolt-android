@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.entity.resource
+package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import java.time.ZonedDateTime
 
 /**
@@ -28,17 +27,14 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 
-@Entity
-data class Resource(
-    @PrimaryKey
-    val resourceId: String,
-    val resourceName: String,
-    val resourcePermission: Permission,
-    val url: String?,
-    val username: String?,
-    val description: String?,
-    val resourceTypeId: String,
-    val isFavourite: Boolean,
-    val modified: ZonedDateTime,
-    @Embedded val folder: Folder
-)
+@Suppress("MagicNumber")
+object Migration3to4 : Migration(3, 4) {
+
+    private val ADD_RESOURCE_MODIFIED_COLUMN =
+        "ALTER TABLE Resource ADD COLUMN modified INTEGER NOT NULL DEFAULT " +
+                "'${ZonedDateTime.now().toInstant().toEpochMilli()}'"
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(ADD_RESOURCE_MODIFIED_COLUMN)
+    }
+}
