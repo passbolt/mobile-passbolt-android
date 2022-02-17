@@ -118,7 +118,6 @@ dependencies {
     implementation project(':main')
     implementation project(':home')
     implementation project(':settings')
-    implementation project(':folders')
     implementation project(':resources')
     implementation project(':featureflags')
     implementation project(':database')
@@ -129,6 +128,7 @@ dependencies {
     implementation project(':users')
     implementation project(':logger')
     implementation project(':accountdetails')
+    implementation project(':localization')
 
     debugImplementation libs.quality.leakcanary
 

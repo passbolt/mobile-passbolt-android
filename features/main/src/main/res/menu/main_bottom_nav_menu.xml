@@ -8,12 +8,6 @@
         android:title="@string/main_menu_home" />
 
     <item
-        android:id="@id/foldersNav"
-        android:icon="@drawable/ic_folder"
-        android:title="@string/main_menu_folders"
-        android:visible="false" />
-
-    <item
         android:id="@id/settingsNav"
         android:icon="@drawable/ic_settings"
         android:title="@string/main_menu_settings" />

@@ -25,7 +25,7 @@ dependencies {
     implementation project(':autofill')
     implementation project(':security')
     implementation project(':logger')
-
+    implementation project(':localization')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

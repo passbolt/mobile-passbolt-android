@@ -13,8 +13,8 @@ dependencies {
     implementation project(':coreui')
     implementation project(':home')
     implementation project(':settings')
-    implementation project(':folders')
     implementation project(':common')
+    implementation project(':localization')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
