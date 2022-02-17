@@ -52,7 +52,7 @@ ext {
             okHttp: "4.7.2"
         ],
         timber: "4.7.1",
-        mlkit: "16.1.1",
+        mlkit: "17.0.2",
         gson: "2.8.6",
         appDistribution: "2.1.1",
         coil: "1.2.1",
