@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.accountslist
 
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListContract
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListPresenter

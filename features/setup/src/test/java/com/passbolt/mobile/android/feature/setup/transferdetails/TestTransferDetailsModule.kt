@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.transferdetails
 
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import org.koin.dsl.module
 
 /**

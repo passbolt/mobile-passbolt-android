@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.mappers
 
 import com.google.gson.GsonBuilder
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import org.koin.dsl.module
 

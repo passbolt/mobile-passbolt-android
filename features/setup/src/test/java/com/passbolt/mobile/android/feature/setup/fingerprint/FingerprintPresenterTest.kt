@@ -1,9 +1,5 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.feature.setup.di.testModule
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,6 +10,10 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 
 /**
  * Passbolt - Open source password manager for teams

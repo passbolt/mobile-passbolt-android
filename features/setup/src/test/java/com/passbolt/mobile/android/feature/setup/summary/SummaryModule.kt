@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.summary
 
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
