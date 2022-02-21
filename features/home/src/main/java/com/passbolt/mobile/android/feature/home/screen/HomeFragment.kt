@@ -171,7 +171,6 @@ class HomeFragment :
     private fun setState(state: State) {
         with(binding) {
             recyclerView.isVisible = state.listVisible
-            searchTextInput.isEnabled = state.searchEnabled
             emptyListContainer.isVisible = state.emptyVisible
             errorContainer.isVisible = state.errorVisible
             progress.isVisible = state.progressVisible
@@ -444,13 +443,12 @@ class HomeFragment :
         val progressVisible: Boolean,
         val errorVisible: Boolean,
         val emptyVisible: Boolean,
-        val listVisible: Boolean,
-        val searchEnabled: Boolean
+        val listVisible: Boolean
     ) {
-        EMPTY(false, false, true, false, false),
-        SEARCH_EMPTY(false, false, true, false, true),
-        ERROR(false, true, false, false, false),
-        PROGRESS(true, false, false, false, false),
-        SUCCESS(false, false, false, true, true)
+        EMPTY(false, false, true, false),
+        SEARCH_EMPTY(false, false, true, false),
+        ERROR(false, true, false, false),
+        PROGRESS(true, false, false, false),
+        SUCCESS(false, false, false, true)
     }
 }
