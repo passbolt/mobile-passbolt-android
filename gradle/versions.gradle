@@ -16,8 +16,8 @@ ext {
         quadrant: "1.5",
         test: [
             junit: "4.13",
-            mockitoCore: "3.3.3",
-            mockitoKotlin: "2.2.0",
+            mockitoCore: "4.3.1",
+            mockitoKotlin: "4.0.0",
             truth: "1.0.1",
             androidxJUnit: "1.1.1",
             espresso: "3.2.0",
@@ -103,7 +103,7 @@ ext {
         test: [
             junit: "junit:junit:${versions.test.junit}",
             mockitoCore: "org.mockito:mockito-core:${versions.test.mockitoCore}",
-            mockitoKotlin: "com.nhaarman.mockitokotlin2:mockito-kotlin:${versions.test.mockitoKotlin}",
+            mockitoKotlin: "org.mockito.kotlin:mockito-kotlin:${versions.test.mockitoKotlin}",
             truth: "com.google.truth:truth:${versions.test.truth}",
             androidxJUnit: "androidx.test.ext:junit:${versions.test.androidxJUnit}",
             espressoCore: "androidx.test.espresso:espresso-core:${versions.test.espresso}",

@@ -1,8 +1,8 @@
 package com.password.mobile.android.feature.home.switchaccount
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.comparator.SwitchAccountUiModelComparator
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.entity.account.Account

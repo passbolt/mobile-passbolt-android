@@ -1,4 +1,4 @@
-image: openjdk:11.0.7
+image: openjdk:16-bullseye
 
 variables:
   ANDROID_VERSION: "29"

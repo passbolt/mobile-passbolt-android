@@ -1,9 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.challenge
 
 import com.google.common.truth.Truth.assertThat
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.feature.authentication.challengeTestModule
 import com.passbolt.mobile.android.feature.authentication.getPrivateKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.openPgp
@@ -16,6 +13,9 @@ import org.junit.Test
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
@@ -60,7 +60,6 @@ class ChallengeDecryptorTest : KoinTest {
         whenever(getPrivateKeyUseCase.execute(any())).thenReturn(GetPrivateKeyUseCase.Output(privateKey))
         whenever(openPgp.decryptVerifyMessageArmored(any(), any(), any(), any()))
             .thenThrow(OpenPgpException(exceptionMessage))
-
 
 
         val result = challengeDecryptor.decrypt(

@@ -1,6 +1,6 @@
 package com.password.mobile.android.feature.home.screen
 
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor

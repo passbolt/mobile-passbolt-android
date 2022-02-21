@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.welcome
 
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import org.koin.dsl.module
 

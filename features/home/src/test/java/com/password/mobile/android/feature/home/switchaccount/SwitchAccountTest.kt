@@ -1,7 +1,7 @@
 package com.password.mobile.android.feature.home.switchaccount
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountContract
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest

@@ -1,7 +1,5 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
@@ -11,6 +9,8 @@ import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricK
 import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import org.koin.dsl.module
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import javax.crypto.Cipher
 
 /**
