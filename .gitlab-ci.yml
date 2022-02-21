@@ -70,7 +70,7 @@ release-internal-testing:
       apt-get --quiet update --yes
       apt-get --quiet install --yes software-properties-common > /dev/null
       apt-add-repository --yes ppa:deadsnakes/ppa > /dev/null
-      apt-get --quiet install --yes python3.7 > /dev/null
+      apt-get --quiet install --yes python3.9 > /dev/null
       apt-get --quiet install --yes python3-pip > /dev/null
       python3 -m pip install -r gradle/requirements.txt
 
@@ -105,7 +105,7 @@ release-production:
       apt-get --quiet update --yes
       apt-get --quiet install --yes software-properties-common > /dev/null
       apt-add-repository --yes ppa:deadsnakes/ppa > /dev/null
-      apt-get --quiet install --yes python3.7 > /dev/null
+      apt-get --quiet install --yes python3.9 > /dev/null
       apt-get --quiet install --yes python3-pip > /dev/null
       python3 -m pip install -r gradle/requirements.txt
 
