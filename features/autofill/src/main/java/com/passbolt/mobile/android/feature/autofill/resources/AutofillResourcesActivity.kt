@@ -203,7 +203,6 @@ class AutofillResourcesActivity :
     private fun setState(state: State) {
         with(binding) {
             recyclerView.isVisible = state.listVisible
-            searchTextInput.isEnabled = state.searchEnabled
             emptyListContainer.isVisible = state.emptyVisible
             errorContainer.isVisible = state.errorVisible
             progress.isVisible = state.progressVisible
@@ -306,13 +305,12 @@ class AutofillResourcesActivity :
         val errorVisible: Boolean,
         val emptyVisible: Boolean,
         val listVisible: Boolean,
-        val searchEnabled: Boolean,
         val swipeProgressVisible: Boolean
     ) {
-        EMPTY(false, false, true, false, false, false),
-        SEARCH_EMPTY(false, false, true, false, true, false),
-        ERROR(false, false, false, false, false, false),
-        PROGRESS(true, false, false, false, false, false),
-        SUCCESS(false, false, false, true, true, false)
+        EMPTY(false, false, true, false, false),
+        SEARCH_EMPTY(false, false, true, false, false),
+        ERROR(false, false, false, false, false),
+        PROGRESS(true, false, false, false, false),
+        SUCCESS(false, false, false, true, false)
     }
 }

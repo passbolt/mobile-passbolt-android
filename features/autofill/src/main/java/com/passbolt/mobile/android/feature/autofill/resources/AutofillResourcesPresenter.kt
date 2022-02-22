@@ -98,7 +98,7 @@ class AutofillResourcesPresenter(
             if (withShowingListProgress) {
                 view?.showProgress()
             }
-            when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+            when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                 resourcesInteractor.updateResourcesWithTypes()
             }) {
                 is ResourceInteractor.Output.Failure -> fetchingResourcesFailure()

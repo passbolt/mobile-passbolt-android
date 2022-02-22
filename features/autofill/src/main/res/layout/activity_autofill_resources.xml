@@ -52,7 +52,6 @@
                     android:layout_marginHorizontal="@dimen/dp_16"
                     android:layout_marginTop="@dimen/dp_16"
                     android:layout_marginBottom="@dimen/dp_16"
-                    android:enabled="false"
                     android:paddingBottom="@dimen/dp_16"
                     app:endIconDrawable="@drawable/ic_avatar_placeholder"
                     app:endIconTint="@android:color/transparent"
