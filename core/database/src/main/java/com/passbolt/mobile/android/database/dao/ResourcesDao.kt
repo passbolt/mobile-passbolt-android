@@ -39,7 +39,7 @@ interface ResourcesDao {
     suspend fun getAllOrderedByName(): List<Resource>
 
     @Transaction
-    @Query("SELECT * FROM Resource WHERE isFavourite==1 ORDER BY resourceName COLLATE NOCASE ASC")
+    @Query("SELECT * FROM Resource WHERE isFavourite==1 ORDER BY modified DESC")
     suspend fun getFavourites(): List<Resource>
 
     @Transaction
@@ -47,7 +47,7 @@ interface ResourcesDao {
     suspend fun getAllOrderedByModifiedDate(): List<Resource>
 
     @Transaction
-    @Query("SELECT * FROM Resource WHERE resourcePermission IN (:permissions)")
+    @Query("SELECT * FROM Resource WHERE resourcePermission IN (:permissions) ORDER BY modified DESC")
     suspend fun getWithPermissions(permissions: Set<Permission>): List<Resource>
 
     @Transaction
