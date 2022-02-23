@@ -1,13 +1,5 @@
 package com.passbolt.mobile.android.feature.resources.details
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
-import org.mockito.kotlin.whenever
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
@@ -29,6 +21,14 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 
 /**
@@ -199,7 +199,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         mockGetFeatureFlagsUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetFeatureFlagsUseCase.Output(
-                    FeatureFlagsModel(null, null, isPreviewPasswordAvailable = false)
+                    FeatureFlagsModel(null, null, isPreviewPasswordAvailable = false, areFoldersAvailable = false)
                 )
             )
         }

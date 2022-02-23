@@ -1,12 +1,5 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.stub
-import org.mockito.kotlin.verifyNoMoreInteractions
-import org.mockito.kotlin.whenever
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.users.UserProfileInteractor
@@ -34,6 +27,13 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -173,7 +173,7 @@ class SignInPresenterTest : KoinTest {
         mockFeatureFlagsInteractor.stub {
             onBlocking { fetchAndSaveFeatureFlags() }.doReturn(
                 FeatureFlagsInteractor.Output.Success(
-                    FeatureFlagsModel(null, null, true)
+                    FeatureFlagsModel(null, null, isPreviewPasswordAvailable = true, areFoldersAvailable = false)
                 )
             )
         }

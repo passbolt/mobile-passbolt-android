@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.featureflags.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.featureflags.Constants.FOLDERS_KEY
 import com.passbolt.mobile.android.featureflags.Constants.PREVIEW_PASSWORD_KEY
 import com.passbolt.mobile.android.featureflags.Constants.PRIVACY_POLICY_KEY
 import com.passbolt.mobile.android.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
@@ -43,7 +44,8 @@ class GetFeatureFlagsUseCase(
             val privacyPolicyUrl = it.getString(PRIVACY_POLICY_KEY, null)
             val termsUrl = it.getString(TERMS_AND_CONDITIONS_KEY, null)
             val previewPasswordAvailable = it.getBoolean(PREVIEW_PASSWORD_KEY, Defaults.IS_PREVIEW_PASSWORD_AVAILABLE)
-            return Output(FeatureFlagsModel(privacyPolicyUrl, termsUrl, previewPasswordAvailable))
+            val areFoldersAvailable = it.getBoolean(FOLDERS_KEY, Defaults.ARE_FOLDERS_AVAILABLE)
+            return Output(FeatureFlagsModel(privacyPolicyUrl, termsUrl, previewPasswordAvailable, areFoldersAvailable))
         }
     }
 

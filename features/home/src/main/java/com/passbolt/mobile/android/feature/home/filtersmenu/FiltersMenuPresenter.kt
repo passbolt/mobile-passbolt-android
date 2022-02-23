@@ -1,13 +1,32 @@
 package com.passbolt.mobile.android.feature.home.filtersmenu
 
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 
-class FiltersMenuPresenter : FiltersMenuContract.Presenter {
+class FiltersMenuPresenter(
+    private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
+    coroutineLaunchContext: CoroutineLaunchContext
+) : FiltersMenuContract.Presenter {
 
     override var view: FiltersMenuContract.View? = null
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+
+    override fun creatingView() {
+        processAdditionalItemsVisibility()
+    }
 
     override fun argsRetrieved(menuModel: FiltersMenuModel) {
+        selectCurrentlyActiveDisplayView(menuModel)
+    }
+
+    private fun selectCurrentlyActiveDisplayView(menuModel: FiltersMenuModel) {
         view?.apply {
             unselectAll()
             when (menuModel.activeDisplayView) {
@@ -18,5 +37,21 @@ class FiltersMenuPresenter : FiltersMenuContract.Presenter {
                 ResourcesDisplayView.OWNED_BY_ME -> selectOwnedByMeItem()
             }
         }
+    }
+
+    private fun processAdditionalItemsVisibility() {
+        scope.launch {
+            if (getFeatureFlagsUseCase.execute(Unit).featureFlags.areFoldersAvailable) {
+                view?.apply {
+                    addBottomSeparator()
+                    addFoldersMenuItem()
+                }
+            }
+        }
+    }
+
+    override fun detach() {
+        scope.coroutineContext.cancelChildren()
+        super.detach()
     }
 }
