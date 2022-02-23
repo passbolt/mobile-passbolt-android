@@ -35,6 +35,9 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+// TODO consider updating to support multiple async launches as now there would be a use case for that:
+// TODO fetching resources and folders on start in parallel
 abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedContract.Presenter<T> {

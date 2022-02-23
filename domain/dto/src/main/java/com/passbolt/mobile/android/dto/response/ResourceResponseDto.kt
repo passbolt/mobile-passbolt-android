@@ -25,28 +25,23 @@ import org.json.JSONObject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResourceResponseDto(
+/**
+ * Model of resource used to parse backend response.
+ * @param resourceTypeId id of the type of the resource (secret, secret with description and more in future)
+ * @param resourceFolderId id of the resource folder or null if in root
+ * @param favorite if resource is in favourites it contains a favourite object else null
+ */
+data class ResourceResponseDto(
     val id: String,
     @SerializedName("resource_type_id")
     val resourceTypeId: String,
+    @SerializedName("folder_parent_id")
+    val resourceFolderId: String?,
     val description: String?,
     val name: String,
     val uri: String?,
     val username: String?,
-    val permission: ResourcePermissionDto,
+    val permission: PermissionDto,
     val favorite: JSONObject?,
     val modified: String
-)
-
-data class ResourcePermissionDto(
-    val id: String,
-    val type: Int,
-    val aco: String?,
-    @SerializedName("aco_foreign_key")
-    val acoForeignKey: String?,
-    val aro: String?,
-    @SerializedName("aro_foreign_key")
-    val aroForeignKey: String?,
-    val created: String?,
-    val modified: String?
 )

@@ -1,7 +1,7 @@
 package com.password.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.common.InitialsProvider
-import com.passbolt.mobile.android.dto.response.ResourcePermissionDto
+import com.passbolt.mobile.android.dto.response.PermissionDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.ui.ResourcePermission
@@ -28,9 +28,10 @@ class ResourceModelMapperTest {
             name = "firstname",
             uri = "uri",
             username = "username",
-            permission = ResourcePermissionDto("abc", 1, null, null, null, null, null, null),
+            permission = PermissionDto("abc", 1, null, null, null, null, null, null),
             favorite = null,
-            modified = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            modified = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+            resourceFolderId = null
         )
         val result = mapper.map(responseDto)
         assertEquals("f", result.initials)

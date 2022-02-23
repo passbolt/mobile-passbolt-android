@@ -27,6 +27,7 @@ dependencies {
     implementation project(':entity')
     implementation project(':localization')
     implementation project(':featureflags')
+    implementation project(':commonfolders')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

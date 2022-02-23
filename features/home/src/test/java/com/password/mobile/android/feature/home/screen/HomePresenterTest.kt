@@ -1,5 +1,6 @@
 package com.password.mobile.android.feature.home.screen
 
+import com.passbolt.mobile.android.core.commonfolders.usecase.FetchUserFoldersUseCase
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
@@ -54,6 +55,9 @@ class HomePresenterTest : KoinTest {
         whenever(getSelectedAccountUseCase.execute(anyOrNull())).thenReturn(
             GetSelectedAccountUseCase.Output("id")
         )
+        mockFetchUserFoldersUseCase.stub {
+            onBlocking { execute(Unit) } doReturn FetchUserFoldersUseCase.Output.Success
+        }
     }
 
     @Test

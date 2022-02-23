@@ -1,10 +1,7 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.core.commonfolders
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.commonresource.PasswordItem
-import org.koin.core.module.Module
+import com.passbolt.mobile.android.core.commonfolders.usecase.FetchUserFoldersUseCase
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,28 +26,10 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                coroutineLaunchContext = get(),
-                resourcesInteractor = get(),
-                getSelectedAccountDataUseCase = get(),
-                secretInteractor = get(),
-                resourceMatcher = SearchableMatcher(),
-                resourceTypeFactory = get(),
-                secretParser = get(),
-                resourceMenuModelMapper = get(),
-                deleteResourceUseCase = get(),
-                getLocalResourcesUseCase = get(),
-                fetchUserFoldersUseCase = get()
-            )
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
+val commonFoldersModule = module {
+    single {
+        FetchUserFoldersUseCase(
+            foldersRepository = get()
+        )
     }
 }

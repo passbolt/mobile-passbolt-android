@@ -7,6 +7,10 @@ import com.passbolt.mobile.android.passboltapi.auth.AuthApi
 import com.passbolt.mobile.android.passboltapi.auth.AuthDataSource
 import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
 import com.passbolt.mobile.android.passboltapi.auth.data.AuthRemoteDataSource
+import com.passbolt.mobile.android.passboltapi.folders.FoldersApi
+import com.passbolt.mobile.android.passboltapi.folders.FoldersDataSource
+import com.passbolt.mobile.android.passboltapi.folders.FoldersRemoteDataSource
+import com.passbolt.mobile.android.passboltapi.folders.FoldersRepository
 import com.passbolt.mobile.android.passboltapi.mfa.MfaApi
 import com.passbolt.mobile.android.passboltapi.mfa.MfaDataSource
 import com.passbolt.mobile.android.passboltapi.mfa.MfaRemoteDataSource
@@ -73,6 +77,7 @@ val passboltApiModule = module {
     single { getResourceTypesApi(get()) }
     single { getMfaApi(get()) }
     single { getUsersApi(get()) }
+    single { getFoldersApi(get()) }
 
     single<RegistrationDataSource> {
         RegistrationRemoteDataSource(
@@ -160,6 +165,17 @@ val passboltApiModule = module {
             usersApi = get()
         )
     }
+    single<FoldersDataSource> {
+        FoldersRemoteDataSource(
+            foldersApi = get()
+        )
+    }
+    single {
+        FoldersRepository(
+            foldersDataSource = get(),
+            responseHandler = get()
+        )
+    }
 }
 
 private fun provideRestService(okHttpClient: OkHttpClient): RestService {
@@ -192,3 +208,6 @@ private fun getMfaApi(restService: RestService): MfaApi =
 
 private fun getUsersApi(restService: RestService) =
     restService.service(UsersApi::class.java)
+
+private fun getFoldersApi(restService: RestService) =
+    restService.service(FoldersApi::class.java)

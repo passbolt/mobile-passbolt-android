@@ -34,7 +34,6 @@ class ChallengeProviderTest : KoinTest {
         val publicKey = "public_key"
         val privateKey = "private_key"
         val domain = "domain"
-        val version = "1.0"
 
         whenever(openPgp.encryptSignMessageArmored(eq(publicKey), eq(privateKey), any(), any()))
             .thenReturn(challenge)

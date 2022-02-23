@@ -35,6 +35,14 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+/**
+ * Runs operation which requires authentication (backed or local passphrase). If operation has unauthenticated status
+ * it is communicated to the caller (@see BaseAuthenticatedContract) and awaiting on authentication refresh starts. After receiving authentication
+ * refreshed event the initial operation is automatically restarted.
+ *
+ * @param needAuthenticationRefreshedFlow Flow which sends event when authentication needs to be refreshed
+ * @param authenticationRefreshedFlow Flow which collects event when authentication was refresshed
+ */
 class AuthenticatedOperationRunner(
     private val needAuthenticationRefreshedFlow: MutableStateFlow<UnauthenticatedReason?>,
     private val authenticationRefreshedFlow: StateFlow<Unit?>
@@ -89,6 +97,10 @@ class AuthenticatedOperationRunner(
     }
 }
 
+/**
+ * Runs an operation which requires authentication using AuthenticatedOperationRunner
+ * @see AuthenticatedOperationRunner
+ */
 suspend fun <OUTPUT : AuthenticatedUseCaseOutput> runAuthenticatedOperation(
     needAuthenticationRefresh: MutableStateFlow<UnauthenticatedReason?>,
     authenticationRefreshedFlow: StateFlow<Unit?>,

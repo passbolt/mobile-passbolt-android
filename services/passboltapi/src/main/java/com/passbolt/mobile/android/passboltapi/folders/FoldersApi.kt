@@ -1,10 +1,9 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.passboltapi.folders
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.commonresource.PasswordItem
-import org.koin.core.module.Module
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.FolderResponseDto
+import retrofit2.http.GET
+import retrofit2.http.Query
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,28 +28,17 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                coroutineLaunchContext = get(),
-                resourcesInteractor = get(),
-                getSelectedAccountDataUseCase = get(),
-                secretInteractor = get(),
-                resourceMatcher = SearchableMatcher(),
-                resourceTypeFactory = get(),
-                secretParser = get(),
-                resourceMenuModelMapper = get(),
-                deleteResourceUseCase = get(),
-                getLocalResourcesUseCase = get(),
-                fetchUserFoldersUseCase = get()
-            )
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
+internal interface FoldersApi {
+
+    @GET(FOLDERS)
+    suspend fun getFolders(
+        // always return index with current user permission
+        @Query(QUERY_CONTAIN_PERMISSION) containingPermission: Int? = 1
+    ): BaseResponse<List<FolderResponseDto>>
+
+    private companion object {
+        private const val FOLDERS = "folders.json"
+
+        private const val QUERY_CONTAIN_PERMISSION = "contain[permission]"
     }
 }

@@ -1,10 +1,7 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.passboltapi.folders
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.commonresource.PasswordItem
-import org.koin.core.module.Module
+import com.passbolt.mobile.android.core.networking.ResponseHandler
+import com.passbolt.mobile.android.core.networking.callWithHandler
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,29 +25,12 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class FoldersRepository(
+    private val foldersDataSource: FoldersDataSource,
+    private val responseHandler: ResponseHandler
+) {
 
-fun Module.homeModule() {
-    scope<HomeFragment> {
-        scoped<HomeContract.Presenter> {
-            HomePresenter(
-                coroutineLaunchContext = get(),
-                resourcesInteractor = get(),
-                getSelectedAccountDataUseCase = get(),
-                secretInteractor = get(),
-                resourceMatcher = SearchableMatcher(),
-                resourceTypeFactory = get(),
-                secretParser = get(),
-                resourceMenuModelMapper = get(),
-                deleteResourceUseCase = get(),
-                getLocalResourcesUseCase = get(),
-                fetchUserFoldersUseCase = get()
-            )
-        }
-        scoped<ItemAdapter<PasswordItem>> {
-            ItemAdapter.items()
-        }
-        scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
-        }
+    suspend fun getFolders() = callWithHandler(responseHandler) {
+        foldersDataSource.getFolders()
     }
 }
