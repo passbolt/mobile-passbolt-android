@@ -252,9 +252,11 @@ class ResourceDetailsPresenterTest : KoinTest {
         private const val ID = "id"
         private const val DESCRIPTION = "desc"
         private const val RESOURCE_TYPE_ID = "resTypeId"
+        private const val FOLDER_ID_ID = "folderId"
         private val RESOURCE_MODEL = ResourceModel(
             ID,
             RESOURCE_TYPE_ID,
+            FOLDER_ID_ID,
             NAME,
             USERNAME,
             null,

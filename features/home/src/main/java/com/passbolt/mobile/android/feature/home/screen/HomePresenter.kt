@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.commonfolders.usecase.FetchUserFoldersUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
@@ -63,7 +63,7 @@ class HomePresenter(
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
     private val deleteResourceUseCase: DeleteResourceUseCase,
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
-    private val fetchUserFoldersUseCase: FetchUserFoldersUseCase
+    private val foldersInteractor: FoldersInteractor
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
@@ -117,15 +117,16 @@ class HomePresenter(
     private suspend fun fetchAllResourceData() {
         view?.hideUpdateButton()
         when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            fetchUserFoldersUseCase.execute(Unit)
+            foldersInteractor.fetchAndSaveFolders()
         }) {
-            is FetchUserFoldersUseCase.Output.Failure -> {
+            // TODO Add better error handling than just general message
+            is FoldersInteractor.Output.Failure -> {
                 view?.apply {
                     hideRefreshProgress()
                     showError()
                 }
             }
-            is FetchUserFoldersUseCase.Output.Success -> fetchResources()
+            is FoldersInteractor.Output.Success -> fetchResources()
         }
     }
 

@@ -32,6 +32,7 @@ import java.time.ZonedDateTime
 data class ResourceModel(
     val resourceId: String,
     val resourceTypeId: String,
+    val folderId: String?,
     val name: String,
     val username: String?,
     val icon: String?,

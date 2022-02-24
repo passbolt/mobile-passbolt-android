@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
+import com.passbolt.mobile.android.database.migrations.Migration4to5
 import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SupportFactory
@@ -51,7 +52,7 @@ class DatabaseProvider(
             context,
             ResourceDatabase::class.java, "${currentUser}_$RESOURCE_DATABASE_NAME"
         )
-            .addMigrations(Migration1to2, Migration2to3, Migration3to4)
+            .addMigrations(Migration1to2, Migration2to3, Migration3to4, Migration4to5)
             .openHelperFactory(factory)
             .build()
 

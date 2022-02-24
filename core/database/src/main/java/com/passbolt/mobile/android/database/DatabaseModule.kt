@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.database
 
+import com.passbolt.mobile.android.database.usecase.AddLocalFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
@@ -111,6 +112,13 @@ val databaseModule = module {
         GetLocalResourceUseCase(
             databaseProvider = get(),
             resourceModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        AddLocalFoldersUseCase(
+            databaseProvider = get(),
+            folderModelMapper = get(),
             getSelectedAccountUseCase = get()
         )
     }

@@ -1,17 +1,10 @@
-package com.passbolt.mobile.android.database
+package com.passbolt.mobile.android.database.usecase
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import com.passbolt.mobile.android.database.dao.FoldersDao
-import com.passbolt.mobile.android.database.dao.ResourceTypesDao
-import com.passbolt.mobile.android.database.dao.ResourcesDao
-import com.passbolt.mobile.android.database.typeconverters.Converters
-import com.passbolt.mobile.android.entity.resource.Folder
-import com.passbolt.mobile.android.entity.resource.Resource
-import com.passbolt.mobile.android.entity.resource.ResourceField
-import com.passbolt.mobile.android.entity.resource.ResourceType
-import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRef
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.FolderModelMapper
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.FolderModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,22 +28,24 @@ import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRe
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class AddLocalFoldersUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val folderModelMapper: FolderModelMapper,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : AsyncUseCase<AddLocalFoldersUseCase.Input, Unit> {
 
-@Database(
-    entities = [
-        Resource::class,
-        Folder::class,
-        ResourceType::class,
-        ResourceField::class,
-        ResourceTypesAndFieldsCrossRef::class],
-    version = 5
-)
-@TypeConverters(Converters::class)
-abstract class ResourceDatabase : RoomDatabase() {
+    override suspend fun execute(input: Input) {
+        val currentAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        databaseProvider
+            .get(currentAccount)
+            .foldersDao()
+            .insert(
+                input.folders
+                    .map { folderModelMapper.map(it) }
+            )
+    }
 
-    abstract fun resourcesDao(): ResourcesDao
-
-    abstract fun resourceTypesDao(): ResourceTypesDao
-
-    abstract fun foldersDao(): FoldersDao
+    class Input(
+        val folders: List<FolderModel>
+    )
 }

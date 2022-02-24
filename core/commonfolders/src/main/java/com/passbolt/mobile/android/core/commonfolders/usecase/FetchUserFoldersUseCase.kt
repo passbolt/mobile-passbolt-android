@@ -5,7 +5,9 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.passboltapi.folders.FoldersRepository
+import com.passbolt.mobile.android.ui.FolderModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,14 +32,18 @@ import com.passbolt.mobile.android.passboltapi.folders.FoldersRepository
  * @since v1.0
  */
 class FetchUserFoldersUseCase(
-    private val foldersRepository: FoldersRepository
+    private val foldersRepository: FoldersRepository,
+    private val folderModelMapper: FolderModelMapper
 ) : AsyncUseCase<Unit, FetchUserFoldersUseCase.Output> {
 
     override suspend fun execute(input: Unit): Output =
         when (val result = foldersRepository.getFolders()) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(result)
             is NetworkResult.Failure.ServerError -> Output.Failure(result)
-            is NetworkResult.Success -> Output.Success
+            is NetworkResult.Success -> Output.Success(
+                result.value
+                    .map { folderModelMapper.map(it) }
+            )
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
@@ -58,7 +64,7 @@ class FetchUserFoldersUseCase(
                 }
             }
 
-        object Success : Output()
+        class Success(val folders: List<FolderModel>) : Output()
 
         data class Failure(val result: NetworkResult.Failure<*>) : Output()
     }

@@ -61,7 +61,7 @@ class ResourceUuidValidationTest {
 
     private companion object {
         private val dummyResourceModel = ResourceModel(
-            "", "", "",
+            "", "","folderid", "",
             "", "", "", "",
             "", ResourcePermission.OWNER, false, ZonedDateTime.now()
         )

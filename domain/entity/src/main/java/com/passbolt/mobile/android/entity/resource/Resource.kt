@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.entity.resource
 
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.ZonedDateTime
@@ -32,6 +31,7 @@ import java.time.ZonedDateTime
 data class Resource(
     @PrimaryKey
     val resourceId: String,
+    val folderId: String?,
     val resourceName: String,
     val resourcePermission: Permission,
     val url: String?,
@@ -39,6 +39,5 @@ data class Resource(
     val description: String?,
     val resourceTypeId: String,
     val isFavourite: Boolean,
-    val modified: ZonedDateTime,
-    @Embedded val folder: Folder
+    val modified: ZonedDateTime
 )

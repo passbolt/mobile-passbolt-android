@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
-import com.passbolt.mobile.android.entity.resource.Folder
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -39,13 +38,14 @@ class ResourceModelMapper(
         ResourceModel(
             resourceId = resource.id,
             resourceTypeId = resource.resourceTypeId,
+            folderId = resource.resourceFolderId,
             name = resource.name,
             username = resource.username,
             icon = null,
             initials = initialsProvider.get(resource.name),
             url = resource.uri,
             description = resource.description,
-            permission = mapDtoPermissionToUiModel(resource.permission.type),
+            permission = mapDtoPermissionTypeToUiModel(resource.permission.type),
             isFavourite = resource.favorite != null,
             modified = ZonedDateTime.parse(resource.modified)
         )
@@ -53,13 +53,13 @@ class ResourceModelMapper(
     fun map(resourceModel: ResourceModel): Resource =
         Resource(
             resourceId = resourceModel.resourceId,
+            folderId = resourceModel.folderId,
             resourceName = resourceModel.name,
             description = resourceModel.description,
             resourcePermission = resourceModel.permission.toEntityModel(),
             url = resourceModel.url,
             username = resourceModel.username,
             resourceTypeId = resourceModel.resourceTypeId,
-            folder = Folder(name = "name", permission = Permission.READ, parentId = 0),
             isFavourite = resourceModel.isFavourite,
             modified = resourceModel.modified
         )
@@ -68,6 +68,7 @@ class ResourceModelMapper(
         ResourceModel(
             resourceId = resourceEntity.resourceId,
             resourceTypeId = resourceEntity.resourceTypeId,
+            folderId = resourceEntity.folderId,
             name = resourceEntity.resourceName,
             username = resourceEntity.username,
             icon = null,
@@ -83,19 +84,5 @@ class ResourceModelMapper(
         ResourcePermission.READ -> Permission.READ
         ResourcePermission.UPDATE -> Permission.WRITE
         ResourcePermission.OWNER -> Permission.OWNER
-    }
-
-    @Suppress("MagicNumber")
-    private fun mapDtoPermissionToUiModel(type: Int) = when (type) {
-        1 -> ResourcePermission.READ
-        7 -> ResourcePermission.UPDATE
-        15 -> ResourcePermission.OWNER
-        else -> throw IllegalArgumentException("Unsupported DTO permission value: $this")
-    }
-
-    private fun Permission.toUiModel() = when (this) {
-        Permission.READ -> ResourcePermission.READ
-        Permission.WRITE -> ResourcePermission.UPDATE
-        Permission.OWNER -> ResourcePermission.OWNER
     }
 }

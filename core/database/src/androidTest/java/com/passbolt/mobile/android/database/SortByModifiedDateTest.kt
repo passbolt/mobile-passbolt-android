@@ -5,7 +5,6 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.database.dao.ResourcesDao
-import com.passbolt.mobile.android.entity.resource.Folder
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -87,29 +86,24 @@ class SortByModifiedDateTest {
 
     private companion object {
         private val RESOURCE_1 = Resource(
-            "1", "", Permission.READ, null, null, null, "1", false,
-            ZonedDateTime.now(),
-            Folder(1, "", Permission.READ, null)
+            "1", "folderid", "", Permission.READ, null, null, null, "1", false,
+            ZonedDateTime.now()
         )
         private val RESOURCE_2 = Resource(
-            "2", "", Permission.READ, null, null, null, "1", false,
-            ZonedDateTime.now().plusDays(1),
-            Folder(1, "", Permission.READ, null)
+            "2", "folderid", "", Permission.READ, null, null, null, "1", false,
+            ZonedDateTime.now().plusDays(1)
         )
         private val RESOURCE_3 = Resource(
-            "3", "", Permission.READ, null, null, null, "1", false,
-            ZonedDateTime.now().plusDays(2),
-            Folder(1, "", Permission.READ, null)
+            "3", "folderid", "", Permission.READ, null, null, null, "1", false,
+            ZonedDateTime.now().plusDays(2)
         )
         private val RESOURCE_1_ZONE_MINUS = Resource(
-            "4", "", Permission.READ, null, null, null, "1", false,
-            LocalDateTime.now().atZone(ZoneOffset.of("-08:00")),
-            Folder(1, "", Permission.READ, null)
+            "4", "folderid", "", Permission.READ, null, null, null, "1", false,
+            LocalDateTime.now().atZone(ZoneOffset.of("-08:00"))
         )
         private val RESOURCE_1_ZONE_PLUS = Resource(
-            "5", "", Permission.READ, null, null, null, "1", false,
-            LocalDateTime.now().atZone(ZoneOffset.of("+08:00")),
-            Folder(1, "", Permission.READ, null)
+            "5", "folderid", "", Permission.READ, null, null, null, "1", false,
+            LocalDateTime.now().atZone(ZoneOffset.of("+08:00"))
         )
     }
 }
