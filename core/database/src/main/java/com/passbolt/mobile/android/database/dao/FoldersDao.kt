@@ -1,17 +1,12 @@
-package com.passbolt.mobile.android.database
+package com.passbolt.mobile.android.database.dao
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import com.passbolt.mobile.android.database.dao.FoldersDao
-import com.passbolt.mobile.android.database.dao.ResourceTypesDao
-import com.passbolt.mobile.android.database.dao.ResourcesDao
-import com.passbolt.mobile.android.database.typeconverters.Converters
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
 import com.passbolt.mobile.android.entity.resource.Folder
-import com.passbolt.mobile.android.entity.resource.Resource
-import com.passbolt.mobile.android.entity.resource.ResourceField
-import com.passbolt.mobile.android.entity.resource.ResourceType
-import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRef
+import com.passbolt.mobile.android.entity.resource.FolderWithResources
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,22 +30,13 @@ import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRe
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Dao
+interface FoldersDao {
 
-@Database(
-    entities = [
-        Resource::class,
-        Folder::class,
-        ResourceType::class,
-        ResourceField::class,
-        ResourceTypesAndFieldsCrossRef::class],
-    version = 5
-)
-@TypeConverters(Converters::class)
-abstract class ResourceDatabase : RoomDatabase() {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(folderEntities: List<Folder>)
 
-    abstract fun resourcesDao(): ResourcesDao
-
-    abstract fun resourceTypesDao(): ResourceTypesDao
-
-    abstract fun foldersDao(): FoldersDao
+    @Transaction
+    @Query("SELECT * FROM Folder")
+    fun getFoldersWithResources(): List<FolderWithResources>
 }

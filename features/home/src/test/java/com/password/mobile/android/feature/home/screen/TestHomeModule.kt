@@ -2,7 +2,7 @@ package com.password.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.commonfolders.usecase.FetchUserFoldersUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
@@ -32,7 +32,7 @@ internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val resourceMenuModelMapper = ResourceMenuModelMapper()
 internal val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
-internal val mockFetchUserFoldersUseCase = mock<FetchUserFoldersUseCase>()
+internal val mockFoldersInteractor = mock<FoldersInteractor>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -62,7 +62,7 @@ val testHomeModule = module {
             resourceMenuModelMapper = get(),
             deleteResourceUseCase = mockDeleteResourceUseCase,
             getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
-            fetchUserFoldersUseCase = mockFetchUserFoldersUseCase
+            foldersInteractor = mockFoldersInteractor
         )
     }
 }

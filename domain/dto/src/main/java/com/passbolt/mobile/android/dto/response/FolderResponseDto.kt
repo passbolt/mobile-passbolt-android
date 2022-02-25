@@ -25,11 +25,11 @@ import com.google.gson.annotations.SerializedName
  * @since v1.0
  */
 data class FolderResponseDto(
-    val id: String?,
+    val id: String,
     @SerializedName("folder_parent_id")
     val folderParentId: String?,
     val modified: String?,
     val name: String?,
-    val permission: PermissionDto?,
+    val permission: PermissionDto,
     val personal: Boolean?
 )

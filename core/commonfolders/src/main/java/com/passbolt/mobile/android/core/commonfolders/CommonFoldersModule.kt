@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.core.commonfolders
 
 import com.passbolt.mobile.android.core.commonfolders.usecase.FetchUserFoldersUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
 import org.koin.dsl.module
 
 /**
@@ -29,7 +30,14 @@ import org.koin.dsl.module
 val commonFoldersModule = module {
     single {
         FetchUserFoldersUseCase(
-            foldersRepository = get()
+            foldersRepository = get(),
+            folderModelMapper = get()
+        )
+    }
+    single {
+        FoldersInteractor(
+            fetchUserFoldersUseCase = get(),
+            addLocalFoldersUseCase = get()
         )
     }
 }

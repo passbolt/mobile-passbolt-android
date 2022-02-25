@@ -1,6 +1,6 @@
 package com.password.mobile.android.feature.home.screen
 
-import com.passbolt.mobile.android.core.commonfolders.usecase.FetchUserFoldersUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
@@ -55,8 +55,8 @@ class HomePresenterTest : KoinTest {
         whenever(getSelectedAccountUseCase.execute(anyOrNull())).thenReturn(
             GetSelectedAccountUseCase.Output("id")
         )
-        mockFetchUserFoldersUseCase.stub {
-            onBlocking { execute(Unit) } doReturn FetchUserFoldersUseCase.Output.Success
+        mockFoldersInteractor.stub {
+            onBlocking { fetchAndSaveFolders() } doReturn FoldersInteractor.Output.Success
         }
     }
 
@@ -221,6 +221,7 @@ class HomePresenterTest : KoinTest {
         val model = ResourceModel(
             "id",
             "resTypeId",
+            "folderId",
             "title",
             "subtitle",
             "",
@@ -244,6 +245,7 @@ class HomePresenterTest : KoinTest {
         val model = ResourceModel(
             resourceId = "id",
             resourceTypeId = "resTypeId",
+            folderId = "folderId",
             name = "title",
             username = "subtitle",
             icon = null,
@@ -387,6 +389,7 @@ class HomePresenterTest : KoinTest {
         ResourceModel(
             resourceId = "id1",
             resourceTypeId = "resTypeId",
+            folderId = "folderId",
             name = "first name",
             url = "",
             username = "",
@@ -399,6 +402,7 @@ class HomePresenterTest : KoinTest {
         ), ResourceModel(
             resourceId = "id2",
             resourceTypeId = "resTypeId",
+            folderId = "folderId",
             name = "second name",
             url = "",
             username = "",
@@ -433,11 +437,13 @@ class HomePresenterTest : KoinTest {
         private const val URL = "https://www.passbolt.com"
         private const val ID = "id"
         private const val RESOURCE_TYPE_ID = "resTypeId"
+        private const val FOLDER_ID = "folderId"
         private const val DESCRIPTION = "desc"
 
         private val RESOURCE_MODEL = ResourceModel(
             ID,
             RESOURCE_TYPE_ID,
+            FOLDER_ID,
             NAME,
             USERNAME,
             null,

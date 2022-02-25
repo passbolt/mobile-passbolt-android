@@ -1,17 +1,8 @@
-package com.passbolt.mobile.android.database
+package com.passbolt.mobile.android.ui
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import com.passbolt.mobile.android.database.dao.FoldersDao
-import com.passbolt.mobile.android.database.dao.ResourceTypesDao
-import com.passbolt.mobile.android.database.dao.ResourcesDao
-import com.passbolt.mobile.android.database.typeconverters.Converters
-import com.passbolt.mobile.android.entity.resource.Folder
-import com.passbolt.mobile.android.entity.resource.Resource
-import com.passbolt.mobile.android.entity.resource.ResourceField
-import com.passbolt.mobile.android.entity.resource.ResourceType
-import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRef
+import android.os.Parcelable
+import com.passbolt.mobile.android.common.search.Searchable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,21 +27,12 @@ import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRe
  * @since v1.0
  */
 
-@Database(
-    entities = [
-        Resource::class,
-        Folder::class,
-        ResourceType::class,
-        ResourceField::class,
-        ResourceTypesAndFieldsCrossRef::class],
-    version = 5
-)
-@TypeConverters(Converters::class)
-abstract class ResourceDatabase : RoomDatabase() {
-
-    abstract fun resourcesDao(): ResourcesDao
-
-    abstract fun resourceTypesDao(): ResourceTypesDao
-
-    abstract fun foldersDao(): FoldersDao
-}
+@Parcelize
+data class FolderModel(
+    val folderId: String,
+    val parentFolderId: String?,
+    val name: String,
+    val isShared: Boolean,
+    val permission: ResourcePermission,
+    override val searchCriteria: String = name
+) : Parcelable, Searchable

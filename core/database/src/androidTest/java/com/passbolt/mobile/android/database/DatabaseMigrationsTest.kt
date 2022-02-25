@@ -7,6 +7,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
+import com.passbolt.mobile.android.database.migrations.Migration4to5
 import org.junit.Rule
 import org.junit.Test
 
@@ -88,6 +89,26 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate4To5() {
+        helper.createDatabase(TEST_DB, 4).apply {
+            execSQL(
+                "INSERT INTO Resource VALUES('id1','name','READ','url','username','desc','typeId', '1'," +
+                        "1644909225833, '1','folderName','READ','1')"
+            )
+            close()
+        }
+
+        helper.runMigrationsAndValidate(TEST_DB, 5, true, Migration4to5)
+            .apply {
+                execSQL(
+                    "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
+                            "'typeId', '1',1644909225833)"
+                )
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -98,7 +119,7 @@ class DatabaseMigrationsTest {
             ResourceDatabase::class.java,
             TEST_DB
         )
-            .addMigrations(Migration1to2, Migration2to3, Migration3to4)
+            .addMigrations(Migration1to2, Migration2to3, Migration3to4, Migration4to5)
             .build().apply {
                 openHelper.writableDatabase
                 close()

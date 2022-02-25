@@ -29,20 +29,30 @@ import androidx.room.Relation
  */
 @Entity
 data class Folder(
-    @PrimaryKey(autoGenerate = true)
-    val folderId: Int = 0,
+    @PrimaryKey
+    val folderId: String,
     val name: String,
     val permission: Permission,
-    val parentId: Int?
+    val parentId: String?,
+    val isShared: Boolean
 )
 
-class FolderWithParentFolder(
-    @Embedded
-    val folder: Folder,
+// TODO Check if recursive query can be made to build the folders tree using Room
+// class FolderWithParentFolder(
+//    @Embedded
+//    val folder: Folder,
+//    @Relation(
+//        parentColumn = "id",
+//        entityColumn = "parentId"
+//    )
+//    val parentFolder: Folder
+// )
 
+data class FolderWithResources(
+    @Embedded val folder: Folder,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "parentId"
+        parentColumn = "folderId",
+        entityColumn = "resourceId"
     )
-    val parentFolder: Folder
+    val resources: List<Resource>
 )
