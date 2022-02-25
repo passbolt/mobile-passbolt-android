@@ -26,5 +26,6 @@ package com.passbolt.mobile.android.featureflags
 data class FeatureFlagsModel(
     val privacyPolicyUrl: String?,
     val termsAndConditionsUrl: String?,
-    val isPreviewPasswordAvailable: Boolean
+    val isPreviewPasswordAvailable: Boolean,
+    val areFoldersAvailable: Boolean
 )

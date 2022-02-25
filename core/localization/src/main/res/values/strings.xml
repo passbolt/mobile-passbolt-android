@@ -203,9 +203,9 @@
     <string name="filters_menu_recently_modified">Recently modified</string>
     <string name="filters_menu_shared_with_me">Shared with me</string>
     <string name="filters_menu_owned_by_me">Owned by me</string>
+    <string name="filters_menu_folders">Folders</string>
 
     <string name="main_menu_home">Home</string>
-    <string name="main_menu_folders">Folders</string>
     <string name="main_menu_settings">Settings</string>
 
     <string name="resource_details_username_header">Username</string>

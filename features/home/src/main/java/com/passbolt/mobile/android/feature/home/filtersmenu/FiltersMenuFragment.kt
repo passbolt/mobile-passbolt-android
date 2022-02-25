@@ -1,11 +1,19 @@
 package com.passbolt.mobile.android.feature.home.filtersmenu
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.annotation.IdRes
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.updatePadding
+import androidx.core.widget.TextViewCompat
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
@@ -15,6 +23,7 @@ import com.passbolt.mobile.android.feature.home.databinding.FiletrsBottomsheetBi
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import kotlin.math.ceil
 
 /**
  * Passbolt - Open source password manager for teams
@@ -57,6 +66,7 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         savedInstanceState: Bundle?
     ): View {
         binding = FiletrsBottomsheetBinding.inflate(inflater)
+        presenter.creatingView()
         return binding.root
     }
 
@@ -79,6 +89,11 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
     override fun onDetach() {
         listener = null
         super.onDetach()
+    }
+
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
     }
 
     private fun setListeners() {
@@ -107,15 +122,6 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
                 dismiss()
             }
         }
-    }
-
-    companion object {
-        private const val EXTRA_FILTERS_MENU_MODEL = "FILTERS_MENU_MODEL"
-
-        fun newInstance(model: FiltersMenuModel) =
-            FiltersMenuFragment().apply {
-                arguments = bundleOf(EXTRA_FILTERS_MENU_MODEL to model)
-            }
     }
 
     override fun unselectAll() {
@@ -154,11 +160,79 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         view.setBackgroundColor(requireContext().getColor(R.color.primary))
     }
 
+    override fun addBottomSeparator() {
+        val dp16 = resources.getDimension(R.dimen.dp_16).toInt()
+        val separator = View(requireContext()).apply {
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                resources.getDimension(R.dimen.dp_1).toInt()
+            ).apply {
+                setMargins(dp16, 0, dp16, 0)
+            }
+            id = View.generateViewId()
+            setBackgroundColor(requireContext().getColor(R.color.divider))
+            tag = TAG_SEPARATOR
+        }
+        binding.root.addView(separator)
+        constrainTopToBottomInRoot(separator.id, R.id.ownedByMe)
+    }
+
+    override fun addFoldersMenuItem() {
+        val dp16 = resources.getDimension(R.dimen.dp_16)
+        val foldersLabel = TextView(requireContext(), null, 0, R.style.PasswordMenuItem).apply {
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                resources.getDimension(R.dimen.dp_48).toInt()
+            )
+            id = View.generateViewId()
+            text = getString(R.string.filters_menu_folders)
+            TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                this,
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_folder),
+                null,
+                null,
+                null
+            )
+            TextViewCompat.setCompoundDrawableTintList(
+                this,
+                ColorStateList.valueOf(requireContext().getColor(R.color.icon_tint))
+            )
+            compoundDrawablePadding = dp16.toInt()
+            updatePadding(left = ceil(dp16).toInt())
+        }
+        binding.root.addView(foldersLabel)
+        constrainTopToBottomInRoot(foldersLabel.id, binding.root.findViewWithTag<View>(TAG_SEPARATOR).id)
+    }
+
+    private fun constrainTopToBottomInRoot(@IdRes what: Int, @IdRes toWhat: Int) {
+        ConstraintSet().apply {
+            clone(binding.root)
+            connect(
+                what,
+                ConstraintSet.TOP,
+                toWhat,
+                ConstraintSet.BOTTOM,
+                resources.getDimension(R.dimen.dp_8).toInt()
+            )
+            applyTo(binding.root)
+        }
+    }
+
     interface Listener {
         fun menuAllItemsClick()
         fun menuFavouritesClick()
         fun menuRecentlyModifiedClick()
         fun menuSharedWithMeClick()
         fun menuOwnedByMeClick()
+    }
+
+    companion object {
+        private const val EXTRA_FILTERS_MENU_MODEL = "FILTERS_MENU_MODEL"
+        private const val TAG_SEPARATOR = "separator"
+
+        fun newInstance(model: FiltersMenuModel) =
+            FiltersMenuFragment().apply {
+                arguments = bundleOf(EXTRA_FILTERS_MENU_MODEL to model)
+            }
     }
 }

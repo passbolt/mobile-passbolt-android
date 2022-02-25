@@ -64,6 +64,16 @@ interface FiltersMenuContract {
          * Selects owned by me item in the menu
          */
         fun selectOwnedByMeItem()
+
+        /**
+         * Adds bottom separator before folders, groups and tags
+         */
+        fun addBottomSeparator()
+
+        /**
+         * Adds folders item in the menu
+         */
+        fun addFoldersMenuItem()
     }
 
     /**
@@ -75,5 +85,11 @@ interface FiltersMenuContract {
          * @param menuModel Home filters menu model containing the currently active filter
          */
         fun argsRetrieved(menuModel: FiltersMenuModel)
+
+        /**
+         * Callback when view is being created. Can be used to process visibility of extra views (i.e. folders)
+         * as soon as possible
+         */
+        fun creatingView()
     }
 }

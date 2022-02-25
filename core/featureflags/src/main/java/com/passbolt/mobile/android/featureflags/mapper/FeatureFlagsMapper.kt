@@ -33,8 +33,10 @@ class FeatureFlagsMapper {
             return FeatureFlagsModel(
                 it.legalSettings.privacyPolicyUrl.url,
                 it.legalSettings.termsAndConditionsUrl.url,
-                it.plugins.previewPassword?.enabled
-                    ?: Defaults.IS_PREVIEW_PASSWORD_AVAILABLE
+                isPreviewPasswordAvailable = it.plugins.previewPassword?.enabled
+                    ?: Defaults.IS_PREVIEW_PASSWORD_AVAILABLE,
+                areFoldersAvailable = it.plugins.folders?.enabled
+                    ?: Defaults.ARE_FOLDERS_AVAILABLE
             )
         }
 }

@@ -28,7 +28,10 @@ import org.koin.core.module.Module
 fun Module.filtersMenuModule() {
     scope<FiltersMenuFragment> {
         scoped<FiltersMenuContract.Presenter> {
-            FiltersMenuPresenter()
+            FiltersMenuPresenter(
+                getFeatureFlagsUseCase = get(),
+                coroutineLaunchContext = get()
+            )
         }
     }
 }
