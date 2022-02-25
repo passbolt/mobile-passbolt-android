@@ -17,6 +17,7 @@ coreModule "security"
 coreModule "users"
 coreModule "logger"
 coreModule "localization"
+coreModule "commonfolders"
 
 featureModule "startup"
 featureModule "setup"

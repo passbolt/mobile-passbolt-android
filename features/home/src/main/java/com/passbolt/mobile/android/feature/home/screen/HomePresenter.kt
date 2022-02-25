@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.commonfolders.usecase.FetchUserFoldersUseCase
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
@@ -61,7 +62,8 @@ class HomePresenter(
     private val secretParser: SecretParser,
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
     private val deleteResourceUseCase: DeleteResourceUseCase,
-    private val getLocalResourcesUseCase: GetLocalResourcesUseCase
+    private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
+    private val fetchUserFoldersUseCase: FetchUserFoldersUseCase
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
 
     override var view: HomeContract.View? = null
@@ -77,14 +79,14 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
-        runWhileShowingListProgress { fetchResources() }
+        runWhileShowingListProgress { fetchAllResourceData() }
         userAvatarUrl = getSelectedAccountDataUseCase.execute(Unit).avatarUrl
             .also { view.displaySearchAvatar(it) }
         view.showHomeScreenTitle(activeFilter)
     }
 
     override fun userAuthenticated() {
-        runWhileShowingListProgress { fetchResources() }
+        runWhileShowingListProgress { fetchAllResourceData() }
     }
 
     override fun detach() {
@@ -109,8 +111,25 @@ class HomePresenter(
         }
     }
 
-    private suspend fun fetchResources() {
+    /**
+     * Processes (fetching from backend and updating the local database) folders and then resources
+     */
+    private suspend fun fetchAllResourceData() {
         view?.hideUpdateButton()
+        when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+            fetchUserFoldersUseCase.execute(Unit)
+        }) {
+            is FetchUserFoldersUseCase.Output.Failure -> {
+                view?.apply {
+                    hideRefreshProgress()
+                    showError()
+                }
+            }
+            is FetchUserFoldersUseCase.Output.Success -> fetchResources()
+        }
+    }
+
+    private suspend fun fetchResources() {
         when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
             resourcesInteractor.updateResourcesWithTypes()
         }) {
@@ -162,12 +181,12 @@ class HomePresenter(
     }
 
     override fun refreshClick() {
-        runWhileShowingListProgress { fetchResources() }
+        runWhileShowingListProgress { fetchAllResourceData() }
     }
 
     override fun refreshSwipe() {
         scope.launch {
-            fetchResources()
+            fetchAllResourceData()
         }
     }
 
@@ -269,21 +288,21 @@ class HomePresenter(
 
     override fun resourceDeleted(resourceName: String) {
         runWhileShowingListProgress {
-            fetchResources()
+            fetchAllResourceData()
         }
         view?.showResourceDeletedSnackbar(resourceName)
     }
 
     override fun resourceEdited(resourceName: String) {
         runWhileShowingListProgress {
-            fetchResources()
+            fetchAllResourceData()
         }
         view?.showResourceEditedSnackbar(resourceName)
     }
 
     override fun newResourceCreated() {
         runWhileShowingListProgress {
-            fetchResources()
+            fetchAllResourceData()
         }
         view?.showResourceAddedSnackbar()
     }

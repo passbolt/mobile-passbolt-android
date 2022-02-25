@@ -3,6 +3,7 @@ package com.passbolt.mobile.android
 import android.app.Application
 import coil.Coil
 import coil.ImageLoader
+import com.passbolt.mobile.android.core.commonfolders.commonFoldersModule
 import com.passbolt.mobile.android.core.commonresource.commonResourceModule
 import com.passbolt.mobile.android.core.logger.FileLoggingTree
 import com.passbolt.mobile.android.core.logger.LogFilesManager
@@ -166,7 +167,8 @@ class PassboltApplication : Application(), KoinComponent {
                 linksApiModule,
                 usersModule,
                 loggerModule,
-                accountDetailsModule
+                accountDetailsModule,
+                commonFoldersModule
             )
         }
     }

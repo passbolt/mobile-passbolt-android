@@ -129,6 +129,7 @@ dependencies {
     implementation project(':logger')
     implementation project(':accountdetails')
     implementation project(':localization')
+    implementation project(':commonfolders')
 
     debugImplementation libs.quality.leakcanary
 

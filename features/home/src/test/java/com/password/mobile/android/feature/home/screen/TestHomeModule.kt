@@ -1,8 +1,8 @@
 package com.password.mobile.android.feature.home.screen
 
-import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.commonfolders.usecase.FetchUserFoldersUseCase
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
@@ -20,6 +20,7 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
 import com.password.mobile.android.feature.home.TestCoroutineLaunchContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
+import org.mockito.kotlin.mock
 
 internal val resourcesInteractor = mock<ResourceInteractor>()
 internal val getSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseCase>()
@@ -31,6 +32,7 @@ internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val resourceMenuModelMapper = ResourceMenuModelMapper()
 internal val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
+internal val mockFetchUserFoldersUseCase = mock<FetchUserFoldersUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -59,7 +61,8 @@ val testHomeModule = module {
             secretParser = get(),
             resourceMenuModelMapper = get(),
             deleteResourceUseCase = mockDeleteResourceUseCase,
-            getLocalResourcesUseCase = mockGetLocalResourcesUseCase
+            getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
+            fetchUserFoldersUseCase = mockFetchUserFoldersUseCase
         )
     }
 }
