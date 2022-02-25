@@ -49,7 +49,7 @@ class GetLocalResourceUseCase(
         val resourceId: String
     )
 
-    class Output(
+    data class Output(
         val resource: ResourceModel
     )
 }

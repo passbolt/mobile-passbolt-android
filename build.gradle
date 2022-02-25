@@ -20,10 +20,12 @@ buildscript {
         classpath libs.licensee
         classpath libs.playStorePublisher
         classpath libs.dokka
+        classpath libs.quality.kover
     }
 }
 
 apply plugin: "org.jetbrains.dokka"
+apply plugin: 'kover'
 
 allprojects {
     repositories {
@@ -38,15 +40,18 @@ subprojects {
     if (file("./build.gradle").exists()) {
         apply from: "${rootDir}/gradle/ktlint.gradle"
         apply from: "${rootDir}/gradle/detekt.gradle"
-        apply from: "${rootDir}/gradle/jacocoModule.gradle"
         apply from: "${rootDir}/gradle/moduleSetup.gradle"
         apply from: "${rootDir}/gradle/dokka.gradle"
     }
 }
 
-apply from: "gradle/jacocoProject.gradle"
 apply from: "gradle/dependencyUpdates.gradle"
+apply from: 'gradle/koverExcludes.gradle'
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+tasks.koverMergedHtmlReport {
+    excludes = project.koverExcludes
 }

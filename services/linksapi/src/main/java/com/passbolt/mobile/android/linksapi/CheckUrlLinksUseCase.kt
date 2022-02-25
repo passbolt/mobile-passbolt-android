@@ -35,12 +35,12 @@ class CheckUrlLinksUseCase(
             is NetworkResult.Success -> Output.Success(response.value)
         }
 
-    class Input(
+    data class Input(
         val domain: String
     )
 
     sealed class Output {
-        class Success(
+        data class Success(
             val assets: List<AssetLink>
         ) : Output()
 

@@ -51,7 +51,7 @@ class GetAllAccountsDataUseCase(
         return Output(accountsData)
     }
 
-    class Output(
+    data class Output(
         val accounts: List<Account>
     )
 }

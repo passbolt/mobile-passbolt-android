@@ -45,7 +45,7 @@ class AddLocalFoldersUseCase(
             )
     }
 
-    class Input(
+    data class Input(
         val folders: List<FolderModel>
     )
 }

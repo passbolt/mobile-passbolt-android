@@ -1,13 +1,13 @@
 package com.passbolt.mobile.android.core.commonresource.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.networking.MfaTypeProvider
+import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 
 /**
  * Passbolt - Open source password manager for teams
@@ -60,7 +60,7 @@ class GetResourcesUseCase(
                 }
             }
 
-        class Success(
+        data class Success(
             val resources: List<ResourceModel>
         ) : Output()
 

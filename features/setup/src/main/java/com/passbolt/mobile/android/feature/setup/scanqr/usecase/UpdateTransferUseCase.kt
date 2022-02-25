@@ -52,7 +52,7 @@ class UpdateTransferUseCase(
         }
     }
 
-    class Input(
+    data class Input(
         val uuid: String,
         val authToken: String,
         val currentPage: Int,
@@ -60,11 +60,11 @@ class UpdateTransferUseCase(
     )
 
     sealed class Output {
-        class Success(
+        data class Success(
             val updateTransferResponseModel: UpdateTransferResponseModel
         ) : Output()
 
-        class Failure(val error: NetworkResult.Failure<BaseResponse<UpdateTransferResponseDto>>) : Output()
+        data class Failure(val error: NetworkResult.Failure<BaseResponse<UpdateTransferResponseDto>>) : Output()
     }
 
     companion object {

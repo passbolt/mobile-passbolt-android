@@ -72,7 +72,7 @@ class ChallengeProvider(
         timeProvider.getCurrentEpochTime() + TOKEN_VALIDATION_TIME
 
     sealed class Output {
-        class Success(
+        data class Success(
             val challenge: String
         ) : Output()
 

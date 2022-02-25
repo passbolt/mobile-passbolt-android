@@ -45,7 +45,7 @@ class GetCurrentApiUrlUseCase(
         }
     }
 
-    class Output(
+    data class Output(
         val currentUrl: String
     )
 }

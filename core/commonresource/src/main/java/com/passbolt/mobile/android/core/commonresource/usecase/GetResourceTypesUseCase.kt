@@ -56,10 +56,10 @@ class GetResourceTypesUseCase(
                 else -> AuthenticationState.Authenticated
             }
 
-        class Success(
+        data class Success(
             val resourceTypes: List<ResourceTypeDto>
         ) : Output()
 
-        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }
 }

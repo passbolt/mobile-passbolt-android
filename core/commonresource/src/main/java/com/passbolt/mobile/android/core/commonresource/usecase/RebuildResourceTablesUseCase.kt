@@ -19,7 +19,7 @@ class RebuildResourceTablesUseCase(
         addLocalResourcesUseCase.execute(AddLocalResourcesUseCase.Input(input.list, selectedAccount))
     }
 
-    class Input(
+    data class Input(
         val list: List<ResourceModel>
     )
 }

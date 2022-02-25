@@ -45,7 +45,7 @@ class GetSelectedAccountUseCase(
         }
     }
 
-    class Output(
+    data class Output(
         val selectedAccount: String?
     )
 }

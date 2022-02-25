@@ -48,6 +48,6 @@ class GetServerPublicPgpKeyUseCase(
             val fingerprint: String
         ) : Output()
 
-        class Failure(val error: NetworkResult.Failure<BaseResponse<ServerPgpResponseDto>>) : Output()
+        data class Failure(val error: NetworkResult.Failure<BaseResponse<ServerPgpResponseDto>>) : Output()
     }
 }

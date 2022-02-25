@@ -50,7 +50,7 @@ class GetSelectedUserPrivateKeyUseCase(
         }
     }
 
-    class Output(
+    data class Output(
         val privateKey: String?
     )
 }

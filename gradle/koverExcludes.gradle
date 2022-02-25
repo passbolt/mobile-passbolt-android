@@ -1,0 +1,36 @@
+project.ext.koverExcludes = [
+    // database DAOs
+    "com.passbolt.mobile.android.database.dao.*",
+    // database model
+    "com.passbolt.mobile.android.entity.*",
+    // networking model
+    "com.passbolt.mobile.android.dto.*",
+    // ui model
+    "com.passbolt.mobile.android.ui.*",
+    // localization module
+    "com.passbolt.mobile.android.localization.*",
+    // base MVP classes
+    "com.passbolt.mobile.android.core.mvp.*",
+    // navigation plugin
+    "com.gaelmarhic.quadrant.*",
+    // generated build config classes
+    "*.BuildConfig",
+    // koin di modules
+    "*.*Module*",
+    // generated view bindings
+    "*.databinding.*",
+    // ui components
+    "com.passbolt.mobile.android.core.ui.*",
+    // Android ui
+    "*.*Activity*",
+    "*.*Fragment*",
+    "*.*Dialog*",
+    "*.*BottomSheet*",
+    "*.*View*",
+    // Fast adapter recycler view ui
+    "*.*Item",
+    // Application class
+    "*.PassboltApplication*",
+    // Generate navigation classes
+    "*.*Directions*"
+]

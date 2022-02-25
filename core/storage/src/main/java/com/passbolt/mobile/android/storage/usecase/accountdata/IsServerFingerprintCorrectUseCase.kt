@@ -40,12 +40,12 @@ class IsServerFingerprintCorrectUseCase(
         return Output(serverFingerprint.isNullOrEmpty() || serverFingerprint == input.fingerprint)
     }
 
-    class Input(
+    data class Input(
         val userId: String,
         val fingerprint: String
     )
 
-    class Output(
+    data class Output(
         val isCorrect: Boolean
     )
 }

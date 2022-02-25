@@ -41,7 +41,7 @@ class FetchSecretUseCase(
     )
 
     sealed class Output {
-        class EncryptedSecret(val encryptedSecret: String) : Output()
-        class Failure(val exception: Exception) : Output()
+        data class EncryptedSecret(val encryptedSecret: String) : Output()
+        data class Failure(val exception: Exception) : Output()
     }
 }

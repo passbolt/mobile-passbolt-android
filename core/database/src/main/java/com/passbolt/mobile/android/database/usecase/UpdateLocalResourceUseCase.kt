@@ -42,7 +42,7 @@ class UpdateLocalResourceUseCase(
             .update(resourceModelMapper.map(input.passwordModel))
     }
 
-    class Input(
+    data class Input(
         val passwordModel: ResourceModel
     )
 }

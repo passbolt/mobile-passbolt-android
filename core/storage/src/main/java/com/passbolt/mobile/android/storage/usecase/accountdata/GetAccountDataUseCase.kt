@@ -54,7 +54,7 @@ class GetAccountDataUseCase(
         )
     }
 
-    class Output(
+    data class Output(
         val firstName: String?,
         val lastName: String?,
         val email: String?,

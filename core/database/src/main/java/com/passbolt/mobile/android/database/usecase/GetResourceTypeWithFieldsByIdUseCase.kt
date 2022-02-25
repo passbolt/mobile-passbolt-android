@@ -48,7 +48,7 @@ class GetResourceTypeWithFieldsByIdUseCase(
         val resourceTypeId: String
     )
 
-    class Output(
+    data class Output(
         val resourceTypeId: String,
         val fields: List<ResourceField>
     )

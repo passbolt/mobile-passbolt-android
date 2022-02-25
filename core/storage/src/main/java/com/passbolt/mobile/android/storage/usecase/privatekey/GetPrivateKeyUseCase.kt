@@ -48,7 +48,7 @@ class GetPrivateKeyUseCase(
         }
     }
 
-    class Output(
+    data class Output(
         val privateKey: String
     )
 }

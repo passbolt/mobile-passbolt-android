@@ -42,6 +42,6 @@ class GetServerPublicRsaKeyUseCase(
 
         data class Success(val rsaKey: String) : Output()
 
-        class Failure(val error: NetworkResult.Failure<BaseResponse<ServerRsaResponseDto>>) : Output()
+        data class Failure(val error: NetworkResult.Failure<BaseResponse<ServerRsaResponseDto>>) : Output()
     }
 }

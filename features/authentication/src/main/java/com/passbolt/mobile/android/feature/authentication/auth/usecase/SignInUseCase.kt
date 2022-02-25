@@ -67,12 +67,12 @@ class SignInUseCase(
         }
 
     sealed class Output {
-        class Success(
+        data class Success(
             val challenge: String,
             val mfaToken: String?
         ) : Output()
 
-        class Failure(
+        data class Failure(
             val message: String,
             val type: FailureType
         ) : Output() {

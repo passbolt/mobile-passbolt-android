@@ -54,7 +54,7 @@ class SavePrivateKeyUseCase(
         object Failure : Output()
     }
 
-    class Input(
+    data class Input(
         val userId: String,
         val privateKey: String
     )
