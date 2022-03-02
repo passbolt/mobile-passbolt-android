@@ -38,7 +38,8 @@ internal interface ResourceApi {
 
     @GET(RESOURCES)
     suspend fun getResources(
-        @Query(QUERY_CONTAIN_PERMISSION) containingPermissions: Int? = 1 // always return index with permissions
+        @Query(QUERY_CONTAIN_PERMISSION) containingPermissions: Int? = 1, // always return index with permissions
+        @Query(QUERY_CONTAIN_FAVOURITE) containingFavourite: Int? = 1 // always return index with favourite info
     ): BaseResponse<List<ResourceResponseDto>>
 
     @DELETE(RESOURCE_BY_ID)
@@ -61,6 +62,7 @@ internal interface ResourceApi {
         private const val PATH_RESOURCE_ID = "resourceId"
         private const val PATH_RESOURCES = "resources"
         private const val QUERY_CONTAIN_PERMISSION = "contain[permission]"
+        private const val QUERY_CONTAIN_FAVOURITE = "contain[favorite]"
         private const val RESOURCES = "resources.json"
         private const val RESOURCE_BY_ID = "$PATH_RESOURCES/{$PATH_RESOURCE_ID}.json"
     }

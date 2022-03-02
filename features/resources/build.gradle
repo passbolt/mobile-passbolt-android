@@ -13,7 +13,7 @@ dependencies {
     implementation project(':coreui')
     implementation project(':common')
     implementation project(':secrets')
-    implementation project(path: ':ui')
+    implementation project(':ui')
     implementation project(':networking')
     implementation project(':database')
     implementation project(':storage')
@@ -24,6 +24,7 @@ dependencies {
     implementation project(':authentication')
     implementation project(':mappers')
     implementation project(':users')
+    implementation project(':localization')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

@@ -1,22 +1,11 @@
 package com.password.mobile.android.feature.home.screen
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.reset
-import com.nhaarman.mockitokotlin2.stub
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
@@ -24,6 +13,7 @@ import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccoun
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -33,6 +23,19 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
+import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
 class HomePresenterTest : KoinTest {
@@ -55,8 +58,8 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `user avatar should be displayed when provided`() = runBlockingTest {
-        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Success(emptyList(), emptyList())
+        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Success
         )
         val url = "avatar_url"
         mockAccountData(url)
@@ -79,13 +82,17 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `all fetched resources should be displayed when empty search text`() = runBlockingTest {
-        val mockedList = mockResourcesList()
-        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Success(mockedList, emptyList())
+        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Success
         )
+        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+            GetLocalResourcesUseCase.Output(mockResourcesList())
+        )
+
         mockAccountData(null)
         presenter.attach(view)
 
+        verify(view).showHomeScreenTitle(ResourcesDisplayView.ALL)
         verify(view).showProgress()
         verify(view).hideUpdateButton()
         verify(view).hideRefreshProgress()
@@ -98,11 +105,15 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `refresh swiped should reload data with filter applied when search text entered`() = runBlockingTest {
-        val mockedList = mockResourcesList()
-        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Success(mockedList, emptyList())
+        mockResourcesList()
+        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Success
+        )
+        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+            GetLocalResourcesUseCase.Output(mockResourcesList())
         )
         mockAccountData(null)
+
         presenter.attach(view)
         presenter.searchTextChange("second")
         reset(view)
@@ -117,9 +128,11 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `empty view should be displayed when search is empty`() = runBlockingTest {
-        val mockedList = mockResourcesList()
-        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Success(mockedList, emptyList())
+        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Success
+        )
+        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+            GetLocalResourcesUseCase.Output(mockResourcesList())
         )
         mockAccountData(null)
 
@@ -137,12 +150,16 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `empty view should be displayed when there are no resources`() = runBlockingTest {
-        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Success(emptyList(), emptyList())
+        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+            ResourceInteractor.Output.Success
+        )
+        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+            GetLocalResourcesUseCase.Output(emptyList())
         )
         mockAccountData(null)
         presenter.attach(view)
 
+        verify(view).showHomeScreenTitle(ResourcesDisplayView.ALL)
         verify(view).showProgress()
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
@@ -155,11 +172,14 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `error should be displayed when request failures`() = runBlockingTest {
-        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         mockAccountData(null)
+
         presenter.attach(view)
+
+        verify(view).showHomeScreenTitle(ResourcesDisplayView.ALL)
         verify(view).showProgress()
         verify(view).hideUpdateButton()
         verify(view).hideRefreshProgress()
@@ -172,7 +192,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `error during refresh clicked should show correct ui`() = runBlockingTest {
-        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         mockAccountData(null)
@@ -191,7 +211,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `item clicked should open details screen`() = runBlockingTest {
-        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         val model = ResourceModel(
@@ -203,7 +223,9 @@ class HomePresenterTest : KoinTest {
             "initials",
             "",
             "",
-            ResourcePermission.READ
+            ResourcePermission.READ,
+            false,
+            ZonedDateTime.now()
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -224,10 +246,12 @@ class HomePresenterTest : KoinTest {
             initials = "T",
             url = "",
             description = "desc",
-            permission = ResourcePermission.READ
+            permission = ResourcePermission.READ,
+            isFavourite = false,
+            modified = ZonedDateTime.now()
         )
         val menuModel = resourceMenuModelMapper.map(model)
-        whenever(resourcesInteractor.fetchResourcesWithTypes()).thenReturn(
+        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         mockAccountData(null)
@@ -365,7 +389,9 @@ class HomePresenterTest : KoinTest {
             icon = "",
             initials = "",
             description = "desc",
-            permission = ResourcePermission.READ
+            permission = ResourcePermission.READ,
+            isFavourite = false,
+            modified = ZonedDateTime.now()
         ), ResourceModel(
             resourceId = "id2",
             resourceTypeId = "resTypeId",
@@ -375,7 +401,9 @@ class HomePresenterTest : KoinTest {
             icon = "",
             initials = "",
             description = "desc",
-            permission = ResourcePermission.READ
+            permission = ResourcePermission.READ,
+            isFavourite = false,
+            modified = ZonedDateTime.now()
         )
     )
 
@@ -412,7 +440,9 @@ class HomePresenterTest : KoinTest {
             INITIALS,
             URL,
             DESCRIPTION,
-            ResourcePermission.READ
+            ResourcePermission.READ,
+            false,
+            ZonedDateTime.now()
         )
         private val DECRYPTED_SECRET = "secret".toByteArray()
     }

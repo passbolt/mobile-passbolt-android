@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.gopenpgp.com.passbolt.mobile.android.gopenpgp
+package com.passbolt.mobile.android.gopenpgp
 
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser

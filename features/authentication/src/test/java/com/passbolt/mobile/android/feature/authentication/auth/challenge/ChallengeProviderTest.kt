@@ -1,11 +1,8 @@
 package com.passbolt.mobile.android.feature.authentication.auth.challenge
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.whenever
+import com.passbolt.mobile.android.feature.authentication.challengeTestModule
 import com.passbolt.mobile.android.feature.authentication.getPrivateKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.openPgp
-import com.passbolt.mobile.android.feature.authentication.challengeTestModule
 import com.passbolt.mobile.android.feature.authentication.timeProvider
 import com.passbolt.mobile.android.feature.authentication.uuidProvider
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
@@ -16,6 +13,9 @@ import org.junit.Test
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

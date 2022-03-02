@@ -8,6 +8,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -31,11 +33,14 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
+import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
+import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import org.koin.android.ext.android.inject
 
 /**
@@ -64,7 +69,8 @@ import org.koin.android.ext.android.inject
 @Suppress("TooManyFunctions")
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
-    HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener {
+    HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener,
+    FiltersMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
     private val itemAdapter: ItemAdapter<PasswordItem> by inject()
@@ -165,7 +171,6 @@ class HomeFragment :
     private fun setState(state: State) {
         with(binding) {
             recyclerView.isVisible = state.listVisible
-            searchTextInput.isEnabled = state.searchEnabled
             emptyListContainer.isVisible = state.emptyVisible
             errorContainer.isVisible = state.errorVisible
             progress.isVisible = state.progressVisible
@@ -198,6 +203,9 @@ class HomeFragment :
                         ResourceMode.NEW
                     )
                 )
+            }
+            searchTextInput.setStartIconOnClickListener {
+                presenter.filtersClick()
             }
         }
     }
@@ -370,6 +378,63 @@ class HomeFragment :
         )
     }
 
+    override fun showFiltersMenu(activeDisplayView: ResourcesDisplayView) {
+        FiltersMenuFragment.newInstance(FiltersMenuModel(activeDisplayView))
+            .show(childFragmentManager, FiltersMenuFragment::class.java.name)
+    }
+
+    override fun menuAllItemsClick() {
+        presenter.allItemsClick()
+    }
+
+    override fun menuFavouritesClick() {
+        presenter.favouritesClick()
+    }
+
+    override fun menuRecentlyModifiedClick() {
+        presenter.recentlyModifiedClick()
+    }
+
+    override fun menuSharedWithMeClick() {
+        presenter.sharedWithMeClick()
+    }
+
+    override fun menuOwnedByMeClick() {
+        presenter.ownedByMeClick()
+    }
+
+    override fun showHomeScreenTitle(view: ResourcesDisplayView) {
+        when (view) {
+            ResourcesDisplayView.ALL -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_all_items,
+                R.drawable.ic_list
+            )
+            ResourcesDisplayView.FAVOURITES -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_favourites,
+                R.drawable.ic_star
+            )
+            ResourcesDisplayView.RECENTLY_MODIFIED -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_recently_modified,
+                R.drawable.ic_clock
+            )
+            ResourcesDisplayView.SHARED_WITH_ME -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_shared_with_me,
+                R.drawable.ic_share
+            )
+            ResourcesDisplayView.OWNED_BY_ME -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_owned_by_me,
+                R.drawable.ic_person
+            )
+        }
+    }
+
+    private fun showScreenTitleWithStartIcon(@StringRes titleRes: Int, @DrawableRes iconRes: Int) {
+        with(binding.screenTitleLabel) {
+            text = getString(titleRes)
+            setCompoundDrawablesWithIntrinsicBounds(iconRes, 0, 0, 0)
+        }
+    }
+
     companion object {
         private val AVATAR_SIZE = 30.px
     }
@@ -378,13 +443,12 @@ class HomeFragment :
         val progressVisible: Boolean,
         val errorVisible: Boolean,
         val emptyVisible: Boolean,
-        val listVisible: Boolean,
-        val searchEnabled: Boolean
+        val listVisible: Boolean
     ) {
-        EMPTY(false, false, true, false, false),
-        SEARCH_EMPTY(false, false, true, false, true),
-        ERROR(false, true, false, false, false),
-        PROGRESS(true, false, false, false, false),
-        SUCCESS(false, false, false, true, true)
+        EMPTY(false, false, true, false),
+        SEARCH_EMPTY(false, false, true, false),
+        ERROR(false, true, false, false),
+        PROGRESS(true, false, false, false),
+        SUCCESS(false, false, false, true)
     }
 }

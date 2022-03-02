@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.gopenpgp
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.Gopenpgp.test.R
-import com.passbolt.mobile.android.gopenpgp.com.passbolt.mobile.android.gopenpgp.testOpenPgpModule
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpException
 import kotlinx.coroutines.runBlocking
 import org.junit.Before

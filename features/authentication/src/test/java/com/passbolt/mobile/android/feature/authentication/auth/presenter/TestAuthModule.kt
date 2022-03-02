@@ -1,12 +1,13 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.core.users.UserProfileInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
@@ -116,6 +117,7 @@ internal val mockMfaStatusProvider = mock<MfaStatusProvider>()
 internal val mockGetSessionUseCase = mock<GetSessionUseCase>()
 internal val mockRefreshSessionUseCase = mock<RefreshSessionUseCase>()
 internal val mockRootDetector = mock<RootDetector>()
+internal val mockProfileInteractor = mock<UserProfileInteractor>()
 
 val testAuthModule = module {
     factory {
@@ -176,7 +178,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     coroutineLaunchContext = get(),
     authReasonMapper = authReasonMapper,
     rootDetector = mockRootDetector,
-    biometryInteractor = get()
+    biometryInteractor = get(),
+    userProfileInteractor = mockProfileInteractor
 )
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(
@@ -211,5 +214,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     rootDetector = mockRootDetector,
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
-    biometryInteractor = get()
+    biometryInteractor = get(),
+    userProfileInteractor = mockProfileInteractor
 )

@@ -58,6 +58,7 @@ class SummaryPresenter(
             is ResultStatus.AlreadyLinked -> view?.navigateToManageAccounts()
             is ResultStatus.Success -> view?.navigateToSignIn(currentStatus.userId)
             is ResultStatus.Failure -> view?.navigateBack()
+            is ResultStatus.HttpNotSupported -> view?.navigateBack()
         }
     }
 

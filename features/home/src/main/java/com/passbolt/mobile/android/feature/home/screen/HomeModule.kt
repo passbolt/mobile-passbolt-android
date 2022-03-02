@@ -36,13 +36,13 @@ fun Module.homeModule() {
                 coroutineLaunchContext = get(),
                 resourcesInteractor = get(),
                 getSelectedAccountDataUseCase = get(),
-                fetchAndUpdateDatabaseUseCase = get(),
                 secretInteractor = get(),
                 resourceMatcher = SearchableMatcher(),
                 resourceTypeFactory = get(),
+                secretParser = get(),
                 resourceMenuModelMapper = get(),
                 deleteResourceUseCase = get(),
-                secretParser = get()
+                getLocalResourcesUseCase = get()
             )
         }
         scoped<ItemAdapter<PasswordItem>> {

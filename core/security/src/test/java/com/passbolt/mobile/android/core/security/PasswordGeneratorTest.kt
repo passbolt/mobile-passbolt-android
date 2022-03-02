@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.core.security
 
+import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.security.passwordgenerator.CharacterSets
 import com.passbolt.mobile.android.core.security.passwordgenerator.PasswordGenerator
 import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertTrue
 import org.junit.Test
 
 /**
@@ -37,7 +37,7 @@ class PasswordGeneratorTest {
         val alphabetSet = setOf('A', 'B', 'C')
         val result = passwordGenerator.generate(setOf(alphabetSet), 18, PasswordGenerator.Entropy.FAIR)
 
-        assertTrue(result.length >= 18)
+        assertThat(result.length >= 18).isTrue()
     }
 
     @Test
@@ -51,7 +51,7 @@ class PasswordGeneratorTest {
         )
         val result = passwordGenerator.generate(alphabetSet, 18, PasswordGenerator.Entropy.VERY_STRONG)
 
-        assertTrue(result.length >= 18)
+        assertThat(result.length >= 18).isTrue()
     }
 
     @Test

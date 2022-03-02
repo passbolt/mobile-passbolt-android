@@ -47,6 +47,40 @@ The passbolt team will take the following actions:
 - Prominently feature the problem in the release announcement.
 - Provide credits in the release announcement to the reporter if they so desire.
 
+# How to build locally
+
+## With Android Studio (recommended)
+1. Launch [Android Studio](https://developer.android.com/studio) and open the cloned project
+2. Make sure that Android SDK with version `30` is installed to compile the project
+3. Wait until project configuration finishes (couple of minutes) and click `Sync with Gradle files` icon (top right toolbar - elephant with blue arrow) 
+4. Open the `Build Variants` tab (bottom left vertical pane) and under the `:app` module select `Active Build Variant` as `debug`
+5. Prepare a device for launch - at minimum `Android 10 (API 30)` is required
+   1. [create and launch Android emulator](https://developer.android.com/studio/run/managing-avds) **or**
+   2. [set up and launch on a real device](https://developer.android.com/studio/run/device)
+6. Hit the `Run` arrow (green play icon in the top center)
+
+## Without Android Studio
+1. Download [Android build tools](https://developer.android.com/studio#downloads) - scroll to `Command line tools only`
+2. Using the downloaded command line tools [install the build tools](https://developer.android.com/studio/command-line/sdkmanager#install_packages) for `API 30` required to compile the project
+3. Open terminal and navigate to cloned project root directory
+4. Use [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) to build the project from terminal `./gradlew assembleDebug` (during first build the Wrapper will also download and setup Gradle if not present) - the built application will be available at `{project-dir}/app/build/outputs/apk/debug`
+5. To install on a connected device (see above section 4.1 or 4.2) execute `./gradlew installDebug`
+
+# How run verifications locally
+1. Navigate to project root directory
+2. Execute `./gradlew detekt ktlint lintDebug unitTest jacocoProjectReport licenseeRelease dependencyUpdates`
+
+You can also run each check individually if needed:
+* `detekt` and `ktlint` - run static analysis for kotlin
+* `lintDebug` - run Android linter
+* `unitTest` - execute all unit tests
+* `jacocoProjectReport` - generate unit test coverage report
+* `licenseeRelease` - check if all dependencies have appropriate licenses
+* `dependencyUpdates` - check if any dependencies have updates in the release channel
+
+To execute Android instrumented tests connect your device and execute:
+`./gradlew connectedAndroidTest`
+
 # Credits
 
 https://www.passbolt.com/credits

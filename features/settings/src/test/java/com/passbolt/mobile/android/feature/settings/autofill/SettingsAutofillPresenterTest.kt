@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.feature.settings.autofill
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import com.passbolt.mobile.android.feature.settings.screen.autofill.SettingsAutofillContract
 import org.junit.Rule
 import org.junit.Test

@@ -1,14 +1,15 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.stub
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.core.users.UserProfileInteractor
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
@@ -136,7 +137,7 @@ class SignInPresenterTest : KoinTest {
         mockGetServerPublicPgpKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(
                 GetServerPublicPgpKeyUseCase.Output.Success(
-                    "publickKey",
+                    "publicKey",
                     "fingerprint"
                 )
             )
@@ -144,6 +145,8 @@ class SignInPresenterTest : KoinTest {
         mockGetServerPublicRsaKeyUseCase.stub {
             onBlocking { execute(any()) }.thenReturn(GetServerPublicRsaKeyUseCase.Output.Success("publicRsa"))
         }
+        whenever(mockIsServerFingerprintCorrectUseCase.execute(any()))
+            .doReturn(IsServerFingerprintCorrectUseCase.Output(true))
         mockChallengeProvider.stub {
             onBlocking { get(any(), any(), any(), any()) }.doReturn(
                 ChallengeProvider.Output.Success("challenge")
@@ -177,6 +180,9 @@ class SignInPresenterTest : KoinTest {
         whenever(mockMfaStatusProvider.provideMfaStatus(any(), any(), any())).doReturn(MfaStatus.NotRequired)
         whenever(mockGetSessionUseCase.execute(anyOrNull()))
             .doReturn(GetSessionUseCase.Output("access", "refresh", "mfa"))
+        mockProfileInteractor.stub {
+            onBlocking { fetchAndUpdateUserProfile() }.doReturn(UserProfileInteractor.Output.Success)
+        }
 
         presenter.argsRetrieved(ActivityIntents.AuthConfig.SignIn, ACCOUNT)
         presenter.attach(mockView)

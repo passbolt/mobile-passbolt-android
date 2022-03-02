@@ -3,6 +3,7 @@ package com.passbolt.mobile.android
 import com.passbolt.mobile.android.comparator.SwitchAccountUiModelComparator
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.mappers.CreateResourceMapper
+import com.passbolt.mobile.android.mappers.ResourceDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
@@ -10,6 +11,7 @@ import com.passbolt.mobile.android.mappers.SignInMapper
 import com.passbolt.mobile.android.mappers.SignOutMapper
 import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
 import com.passbolt.mobile.android.mappers.UpdateTransferMapper
+import com.passbolt.mobile.android.mappers.UserProfileMapper
 import com.passbolt.mobile.android.mappers.UsersMapper
 import org.koin.dsl.module
 
@@ -68,4 +70,8 @@ val mappersModule = module {
             comparator = get()
         )
     }
+    factory {
+        UserProfileMapper()
+    }
+    factory { ResourceDisplayViewMapper() }
 }

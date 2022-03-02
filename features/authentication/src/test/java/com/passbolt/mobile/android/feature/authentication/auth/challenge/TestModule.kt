@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication
 
 import com.google.gson.Gson
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.common.TimeProvider
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor

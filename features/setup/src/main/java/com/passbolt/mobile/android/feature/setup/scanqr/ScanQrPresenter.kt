@@ -91,6 +91,7 @@ class ScanQrPresenter(
                 ParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE -> view?.showCenterCameraOnBarcode()
                 ParseResult.UserResolvableError.ErrorType.NOT_A_PASSBOLT_QR -> view?.showNotAPassboltQr()
             }
+            is ParseResult.ScanFailure -> view?.showBarcodeScanError(parserResult.exception?.message)
         }
     }
 
@@ -111,7 +112,7 @@ class ScanQrPresenter(
             currentPage = totalPages - 1
             updateTransferAlreadyLinked(currentPage, requireNotNull(userExistsResult.userId))
         } else if (!httpsVerifier.isHttps(firstPage.content.domain)) {
-            parserFailure(Throwable("Domain should start with https"))
+            view?.navigateToSummary(ResultStatus.HttpNotSupported())
         } else {
             if (currentPage > 0) {
                 parserFailure(Throwable("Other qr code scanning has been already started"))
@@ -164,7 +165,7 @@ class ScanQrPresenter(
     private suspend fun updateTransfer(pageNumber: Int, status: Status = Status.IN_PROGRESS) {
         // in case of the first qr code is not a correct one
         if (!::transferUuid.isInitialized || !::authToken.isInitialized || !::serverDomain.isInitialized) {
-            view?.navigateToSummary(ResultStatus.Failure(""))
+            view?.navigateToSummary(ResultStatus.Failure("Could not initialize private key transfer"))
             return
         }
         val response = updateTransferUseCase.execute(
@@ -184,7 +185,7 @@ class ScanQrPresenter(
                     if (response.error.isServerNotReachable) {
                         view?.showServerNotReachable(serverDomain)
                     } else {
-                        view?.showSomethingWentWrong()
+                        view?.showUpdateTransferError(response.error.headerMessage)
                     }
                 }
             }

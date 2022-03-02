@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.entity.resource
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,5 +38,7 @@ data class Resource(
     val username: String?,
     val description: String?,
     val resourceTypeId: String,
+    val isFavourite: Boolean,
+    val modified: ZonedDateTime,
     @Embedded val folder: Folder
 )

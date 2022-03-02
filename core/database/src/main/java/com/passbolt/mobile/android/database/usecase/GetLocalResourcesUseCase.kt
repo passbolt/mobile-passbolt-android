@@ -2,9 +2,12 @@ package com.passbolt.mobile.android.database.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView
+import com.passbolt.mobile.android.mappers.ResourceDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourcesDisplayView
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,13 +33,31 @@ import com.passbolt.mobile.android.ui.ResourceModel
  */
 class GetLocalResourcesUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val resourceModelMapper: ResourceModelMapper
-) : AsyncUseCase<UserIdInput, GetLocalResourcesUseCase.Output> {
-    override suspend fun execute(input: UserIdInput): Output {
-        return Output(databaseProvider.get(input.userId).resourcesDao().getAll().map { resourceModelMapper.map(it) })
+    private val resourceModelMapper: ResourceModelMapper,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val resourceDisplayViewMapper: ResourceDisplayViewMapper
+) : AsyncUseCase<GetLocalResourcesUseCase.Input, GetLocalResourcesUseCase.Output> {
+
+    override suspend fun execute(input: Input): Output {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        val resources = databaseProvider
+            .get(userId)
+            .resourcesDao()
+            .let {
+                when (val viewType = resourceDisplayViewMapper.map(input.resourcesFilter)) {
+                    is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate()
+                    is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName()
+                    is ResourceDatabaseView.IsFavourite -> it.getFavourites()
+                    is ResourceDatabaseView.HasPermissions -> it.getWithPermissions(viewType.permissions)
+                }
+            }
+
+        return Output(resources.map { resourceModelMapper.map(it) })
     }
 
-    class Output(
-        val resources: List<ResourceModel>
+    data class Input(
+        val resourcesFilter: ResourcesDisplayView = ResourcesDisplayView.ALL
     )
+
+    data class Output(val resources: List<ResourceModel>)
 }

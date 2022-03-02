@@ -12,8 +12,6 @@ import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInterac
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAccountsUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -44,8 +42,6 @@ import kotlinx.coroutines.launch
 class AutofillResourcesPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getLocalResourcesUse: GetLocalResourcesUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val fetchAndUpdateDatabaseUseCase: FetchAndUpdateDatabaseUseCase,
     private val domainProvider: DomainProvider,
     private val resourcesInteractor: ResourceInteractor,
     private val resourceSearch: SearchableMatcher,
@@ -102,21 +98,21 @@ class AutofillResourcesPresenter(
             if (withShowingListProgress) {
                 view?.showProgress()
             }
-            when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                resourcesInteractor.fetchResourcesWithTypes()
+            when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                resourcesInteractor.updateResourcesWithTypes()
             }) {
                 is ResourceInteractor.Output.Failure -> fetchingResourcesFailure()
                 is ResourceInteractor.Output.Success -> {
-                    fetchingResourcesSuccess(result.resources)
+                    val resources = getLocalResourcesUse.execute(GetLocalResourcesUseCase.Input()).resources
+                    fetchingResourcesSuccess(resources)
                     doAfterFetch?.invoke()
                 }
             }
         }
     }
 
-    private suspend fun fetchingResourcesSuccess(list: List<ResourceModel>) {
+    private fun fetchingResourcesSuccess(list: List<ResourceModel>) {
         allItemsList = list
-        updateLocalDatabase()
         if (list.isEmpty()) {
             view?.showEmptyList()
         } else {
@@ -126,8 +122,7 @@ class AutofillResourcesPresenter(
     }
 
     private suspend fun fetchingResourcesFailure() {
-        val accountId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        allItemsList = getLocalResourcesUse.execute(UserIdInput(accountId)).resources
+        allItemsList = getLocalResourcesUse.execute(GetLocalResourcesUseCase.Input()).resources
         if (allItemsList.isNullOrEmpty()) {
             view?.showFullScreenError()
         } else {
@@ -160,10 +155,6 @@ class AutofillResourcesPresenter(
         }
     } else {
         null
-    }
-
-    private suspend fun updateLocalDatabase() {
-        fetchAndUpdateDatabaseUseCase.execute(FetchAndUpdateDatabaseUseCase.Input(allItemsList))
     }
 
     private fun showItemLoader(resourceId: String) {

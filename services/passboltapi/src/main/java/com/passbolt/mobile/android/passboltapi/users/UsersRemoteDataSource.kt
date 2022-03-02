@@ -28,4 +28,7 @@ internal class UsersRemoteDataSource(
 
     override suspend fun getUsers(hasAccessTo: List<String>?) =
         usersApi.getUsers(hasAccessTo).body
+
+    override suspend fun getMyProfile() =
+        usersApi.getMyProfile().body
 }

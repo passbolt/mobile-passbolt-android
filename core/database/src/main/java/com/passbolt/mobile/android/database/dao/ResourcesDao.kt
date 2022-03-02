@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
 
 /**
@@ -34,22 +35,31 @@ import com.passbolt.mobile.android.entity.resource.Resource
 interface ResourcesDao {
 
     @Transaction
-    @Query("SELECT * FROM Resource")
-    suspend fun getAll(): List<Resource>
+    @Query("SELECT * FROM Resource ORDER BY resourceName COLLATE NOCASE ASC")
+    suspend fun getAllOrderedByName(): List<Resource>
+
+    @Transaction
+    @Query("SELECT * FROM Resource WHERE isFavourite==1 ORDER BY modified DESC")
+    suspend fun getFavourites(): List<Resource>
+
+    @Transaction
+    @Query("SELECT * FROM Resource ORDER BY modified DESC")
+    suspend fun getAllOrderedByModifiedDate(): List<Resource>
+
+    @Transaction
+    @Query("SELECT * FROM Resource WHERE resourcePermission IN (:permissions) ORDER BY modified DESC")
+    suspend fun getWithPermissions(permissions: Set<Permission>): List<Resource>
 
     @Transaction
     @Query("SELECT * FROM Resource WHERE resourceId == :resourceId")
     suspend fun get(resourceId: String): Resource
 
-    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(resourceEntities: List<Resource>)
 
-    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(resourceEntities: Resource)
 
-    @Transaction
     @Update
     suspend fun update(resourceEntities: Resource)
 

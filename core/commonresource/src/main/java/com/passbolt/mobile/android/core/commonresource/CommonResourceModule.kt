@@ -5,6 +5,8 @@ import com.passbolt.mobile.android.core.commonresource.moremenu.resourceMoreMenu
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourcesDatabaseUseCase
+import com.passbolt.mobile.android.core.commonresource.validation.resourceValidationModule
 import org.koin.dsl.module
 
 /**
@@ -31,6 +33,7 @@ import org.koin.dsl.module
  */
 val commonResourceModule = module {
     resourceMoreMenuModule()
+    resourceValidationModule()
     single {
         GetResourcesUseCase(
             resourceRepository = get(),
@@ -46,7 +49,9 @@ val commonResourceModule = module {
         ResourceInteractor(
             getResourceTypesUseCase = get(),
             getResourcesUseCase = get(),
-            addLocalResourceTypesUseCase = get()
+            addLocalResourceTypesUseCase = get(),
+            resourceValidationRunner = get(),
+            rebuildAndGetResourcesDatabaseUseCase = get()
         )
     }
     single {
@@ -91,6 +96,13 @@ val commonResourceModule = module {
         UpdateResourceMapper(
             gson = get(),
             resourceTypeFactory = get()
+        )
+    }
+    single {
+        RebuildResourcesDatabaseUseCase(
+            getSelectedAccountUseCase = get(),
+            removeLocalResourcesUseCase = get(),
+            addLocalResourcesUseCase = get()
         )
     }
 }

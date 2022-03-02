@@ -70,6 +70,7 @@ interface AuthContract {
         fun showChallengeInvalidSignature()
         fun showChallengeTokenExpired()
         fun showChallengeVerificationFailure()
+        fun showFailedToFetchUserProfile(message: String?)
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE

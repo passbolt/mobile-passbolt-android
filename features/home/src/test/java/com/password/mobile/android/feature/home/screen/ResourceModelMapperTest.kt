@@ -4,8 +4,11 @@ import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.dto.response.ResourcePermissionDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.ui.ResourcePermission
 import org.junit.Before
 import org.junit.Test
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 
 class ResourceModelMapperTest {
@@ -25,13 +28,16 @@ class ResourceModelMapperTest {
             name = "firstname",
             uri = "uri",
             username = "username",
-            permission = ResourcePermissionDto("abc", 1, null, null, null, null, null, null)
+            permission = ResourcePermissionDto("abc", 1, null, null, null, null, null, null),
+            favorite = null,
+            modified = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
         )
         val result = mapper.map(responseDto)
         assertEquals("f", result.initials)
-        assertEquals("firstnameusernameuri", result.searchCriteria)
         assertEquals("uri", result.url)
         assertEquals("username", result.username)
         assertEquals("firstname", result.name)
+        assertEquals(ResourcePermission.READ, result.permission)
+        assertEquals(false, result.isFavourite)
     }
 }

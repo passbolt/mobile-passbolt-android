@@ -4,6 +4,9 @@ import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.database.migrations.Migration1to2
+import com.passbolt.mobile.android.database.migrations.Migration2to3
+import com.passbolt.mobile.android.database.migrations.Migration3to4
 import org.junit.Rule
 import org.junit.Test
 
@@ -46,9 +49,40 @@ class DatabaseMigrationsTest {
             close()
         }
 
-        helper.runMigrationsAndValidate(TEST_DB, 2, true, ResourceDatabase.MIGRATION_1_2)
+        helper.runMigrationsAndValidate(TEST_DB, 2, true, Migration1to2)
             .apply {
                 execSQL("INSERT INTO ResourceType VALUES(2, 'resourceTypeName', 'resourceTypeSlug')")
+                close()
+            }
+    }
+
+    @Test
+    fun migrate2To3() {
+        helper.createDatabase(TEST_DB, 2).apply {
+            execSQL("INSERT INTO Resource VALUES('id','name','READ','url','username','desc','typeId','1','folderName','READ','1')")
+            close()
+        }
+
+        helper.runMigrationsAndValidate(TEST_DB, 3, true, Migration2to3)
+            .apply {
+                execSQL("INSERT INTO Resource VALUES('id2','name','READ','url','username','desc','typeId', '1','1','folderName','READ','1')")
+                close()
+            }
+    }
+
+    @Test
+    fun migrate3To4() {
+        helper.createDatabase(TEST_DB, 3).apply {
+            execSQL("INSERT INTO Resource VALUES('id1','name','READ','url','username','desc','typeId', '1','1','folderName','READ','1')")
+            close()
+        }
+
+        helper.runMigrationsAndValidate(TEST_DB, 4, true, Migration3to4)
+            .apply {
+                execSQL(
+                    "INSERT INTO Resource VALUES('id2','name','READ','url','username','desc','typeId', '1'," +
+                            "1644909225833, '1','folderName','READ','1')"
+                )
                 close()
             }
     }
@@ -64,14 +98,14 @@ class DatabaseMigrationsTest {
             ResourceDatabase::class.java,
             TEST_DB
         )
-            .addMigrations(*ALL_MIGRATIONS).build().apply {
+            .addMigrations(Migration1to2, Migration2to3, Migration3to4)
+            .build().apply {
                 openHelper.writableDatabase
                 close()
             }
     }
 
     private companion object {
-        private val ALL_MIGRATIONS = arrayOf(ResourceDatabase.MIGRATION_1_2)
         private const val TEST_DB = "migration-test"
     }
 }

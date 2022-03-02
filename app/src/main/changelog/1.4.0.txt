@@ -1,0 +1,23 @@
+# Passbolt 1.4.0-5 Android app release notes
+
+## Added
+- Home resource views (available through a new search filter icon): favourites, recently modified, shared with me, owned by me, all
+
+## Improved
+- Improved error messages during QR code scanning
+- Updated QR scanning library to the latest version containing a new, more accurate ML model
+
+## Fixed
+- Fixed crash when unsecure HTTP connection to backend is being attempted
+- Avatar is refreshed after each sign in now
+- Fixed disabled search input (along with icons inside it) when empty resource list
+
+## Security
+- Add validation of backend response UUID fields
+- Use Java 16 for building the app locally and on CI
+
+## Maintenance
+- Add instructions how to build the app locally and run verifications
+- Add a possibility to generate dependencies(libraries) updates report
+- Setup documentation plugin and generate documentation on CI
+- Prepare the app for localization

@@ -1,4 +1,6 @@
-- access debug logs feature
-- switch account from home search
-- account details page
-- security audit report fixes
+- add home resource views (available through a new search filter icon): favourites, recently modified, shared with me, owned by me, all
+- refresh user avatar after every sign in
+- updated QR scanning library to the latest version with new, more accurate ML model; improve error messages on QR scan
+- prepare for localization
+- fix crash when HTTP backend connection is made
+- add UUID validation

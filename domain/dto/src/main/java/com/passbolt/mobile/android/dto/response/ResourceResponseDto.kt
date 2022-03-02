@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.dto.response
 
 import com.google.gson.annotations.SerializedName
+import org.json.JSONObject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,7 +33,9 @@ class ResourceResponseDto(
     val name: String,
     val uri: String?,
     val username: String?,
-    val permission: ResourcePermissionDto
+    val permission: ResourcePermissionDto,
+    val favorite: JSONObject?,
+    val modified: String
 )
 
 data class ResourcePermissionDto(

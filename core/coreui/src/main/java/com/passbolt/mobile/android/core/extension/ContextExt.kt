@@ -30,3 +30,8 @@ fun Context.selectableBackgroundBorderlessResourceId() =
     TypedValue().apply {
         theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, this, true)
     }.resourceId
+
+fun Context.selectableBackgroundResourceId() =
+    TypedValue().apply {
+        theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
+    }.resourceId

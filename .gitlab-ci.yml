@@ -1,4 +1,4 @@
-image: openjdk:11.0.7
+image: openjdk:16-bullseye
 
 variables:
   ANDROID_VERSION: "29"
@@ -37,7 +37,7 @@ verification:
   tags:
     - docker
   script:
-    - ./gradlew --no-daemon --build-cache detekt ktlint lintDebug unitTest jacocoProjectReport licenseeRelease
+    - ./gradlew --no-daemon --build-cache detekt ktlint lintDebug unitTest jacocoProjectReport licenseeRelease dependencyUpdates
   after_script:
     # jacoco report is printed to the console in order to capture it later
     # using following regex: Total.*?([0-9]{1,3})% and display in the Gitlab UI
@@ -53,12 +53,13 @@ verification:
       - "**/reports/ktlint-report.xml"
       - "**/reports/detekt-report.xml"
       - "**/lint-results-*.html"
-      - "**/lint-results-*.xml"
-      - build/reports/jacoco/jacocoProjectReport/**
+      - "**/test-results/**/TEST-*.xml"
+      - build/reports/jacoco/jacocoProjectReport/html/
+      - build/dependencyUpdates/dependecyUpdates.txt
     reports:
       junit: "**/test-results/**/TEST-*.xml"
 
-release:
+release-internal-testing:
   stage: build
   tags:
     - docker
@@ -69,7 +70,7 @@ release:
       apt-get --quiet update --yes
       apt-get --quiet install --yes software-properties-common > /dev/null
       apt-add-repository --yes ppa:deadsnakes/ppa > /dev/null
-      apt-get --quiet install --yes python3.7 > /dev/null
+      apt-get --quiet install --yes python3.9 > /dev/null
       apt-get --quiet install --yes python3-pip > /dev/null
       python3 -m pip install -r gradle/requirements.txt
 
@@ -93,7 +94,7 @@ release:
     paths:
       - "**/build/outputs/apk/**/*.apk"
 
-build-and-publish-production:
+release-production:
   stage: build
   tags:
     - docker
@@ -104,7 +105,7 @@ build-and-publish-production:
       apt-get --quiet update --yes
       apt-get --quiet install --yes software-properties-common > /dev/null
       apt-add-repository --yes ppa:deadsnakes/ppa > /dev/null
-      apt-get --quiet install --yes python3.7 > /dev/null
+      apt-get --quiet install --yes python3.9 > /dev/null
       apt-get --quiet install --yes python3-pip > /dev/null
       python3 -m pip install -r gradle/requirements.txt
 
@@ -114,7 +115,7 @@ build-and-publish-production:
       -Pandroid.injected.signing.store.password=$PROD_KEYSTORE_PASSWORD
       -Pandroid.injected.signing.key.alias=$PROD_KEY_ALIAS
       -Pandroid.injected.signing.key.password=$PROD_KEY_PASSWORD
-      clean bundleRelease publishReleaseBundle
+      clean bundleRelease publishReleaseBundle dokkaHtmlMultimodule
 
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
@@ -122,3 +123,4 @@ build-and-publish-production:
     expire_in: 72 hrs
     paths:
       - "**/build/outputs/bundle/release/*.aab"
+      - build/dokka/htmlMultiModule/

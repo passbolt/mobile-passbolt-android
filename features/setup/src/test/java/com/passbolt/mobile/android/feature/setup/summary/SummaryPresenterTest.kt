@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.feature.setup.summary
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.reset
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
 import com.passbolt.mobile.android.feature.setup.di.testModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
