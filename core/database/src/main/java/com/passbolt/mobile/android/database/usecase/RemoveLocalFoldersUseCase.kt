@@ -1,10 +1,8 @@
-package com.passbolt.mobile.android.entity.resource
+package com.passbolt.mobile.android.database.usecase
 
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.Relation
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,27 +26,14 @@ import androidx.room.Relation
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Entity
-data class Folder(
-    @PrimaryKey
-    val folderId: String,
-    @ColumnInfo(collate = ColumnInfo.NOCASE)
-    val name: String,
-    val permission: Permission,
-    val parentId: String?,
-    val isShared: Boolean
-)
+class RemoveLocalFoldersUseCase(
+    private val databaseProvider: DatabaseProvider
+) : AsyncUseCase<UserIdInput, Unit> {
 
-data class FolderWithChildResourcesAndChildFolders(
-    @Embedded val folder: Folder,
-    @Relation(
-        parentColumn = "folderId",
-        entityColumn = "folderId"
-    )
-    val resources: List<Resource>,
-    @Relation(
-        parentColumn = "folderId",
-        entityColumn = "parentId"
-    )
-    val folders: List<Folder>
-)
+    override suspend fun execute(input: UserIdInput) {
+        databaseProvider
+            .get(input.userId)
+            .foldersDao()
+            .deleteAll()
+    }
+}

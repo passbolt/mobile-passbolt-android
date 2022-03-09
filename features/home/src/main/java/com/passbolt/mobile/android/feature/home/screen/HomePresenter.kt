@@ -8,18 +8,22 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.database.usecase.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.ui.Folder
+import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 import timber.log.Timber
 
 /**
@@ -57,20 +61,22 @@ class HomePresenter(
     private val resourcesInteractor: ResourceInteractor,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val secretInteractor: SecretInteractor,
-    private val resourceMatcher: SearchableMatcher,
+    private val searchableMatcher: SearchableMatcher,
     private val resourceTypeFactory: ResourceTypeFactory,
     private val secretParser: SecretParser,
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
     private val deleteResourceUseCase: DeleteResourceUseCase,
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
-    private val foldersInteractor: FoldersInteractor
-) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter {
+    private val foldersInteractor: FoldersInteractor,
+    private val getLocalResourcesAndFoldersUseCase: GetLocalResourcesAndFoldersUseCase
+) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinComponent {
 
     override var view: HomeContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private var currentSearchText: String = ""
-    private var allItemsList: List<ResourceModel> = emptyList()
+    private var allResourceList: List<ResourceModel> = emptyList()
+    private var allFoldersList: List<FolderModelWithChildrenCount> = emptyList()
     private var currentMoreMenuResource: ResourceModel? = null
     private var userAvatarUrl: String? = null
     private val searchInputEndIconMode
@@ -146,7 +152,16 @@ class HomePresenter(
     }
 
     private suspend fun showResourcesFromDatabase() {
-        allItemsList = getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(activeFilter)).resources
+        allResourceList = getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(activeFilter)).resources
+        displayResources()
+    }
+
+    private suspend fun showResourcesAndFoldersFromDatabase(folder: Folder) {
+        val (folders, resources) = getLocalResourcesAndFoldersUseCase.execute(
+            GetLocalResourcesAndFoldersUseCase.Input(folder)
+        )
+        allFoldersList = folders
+        allResourceList = resources
         displayResources()
     }
 
@@ -159,11 +174,11 @@ class HomePresenter(
     }
 
     private fun displayResources() {
-        if (allItemsList.isEmpty()) {
+        if (allResourceList.isEmpty() && allFoldersList.isEmpty()) {
             view?.showEmptyList()
         } else {
             if (currentSearchText.isEmpty()) {
-                view?.showPasswords(allItemsList)
+                view?.showItems(allResourceList, allFoldersList)
             } else {
                 filterList()
             }
@@ -171,13 +186,16 @@ class HomePresenter(
     }
 
     private fun filterList() {
-        val filtered = allItemsList.filter {
-            resourceMatcher.matches(it, currentSearchText)
+        val filteredResources = allResourceList.filter {
+            searchableMatcher.matches(it, currentSearchText)
         }
-        if (filtered.isEmpty()) {
+        val filteredFolders = allFoldersList.filter {
+            searchableMatcher.matches(it, currentSearchText)
+        }
+        if (filteredResources.isEmpty() && filteredFolders.isEmpty()) {
             view?.showSearchEmptyList()
         } else {
-            view?.showPasswords(filtered)
+            view?.showItems(filteredResources, filteredFolders)
         }
     }
 
@@ -353,6 +371,12 @@ class HomePresenter(
         activeFilter = ResourcesDisplayView.OWNED_BY_ME
         view?.showHomeScreenTitle(activeFilter)
         scope.launch { showResourcesFromDatabase() }
+    }
+
+    override fun foldersClick() {
+        activeFilter = ResourcesDisplayView.FOLDERS
+        view?.showHomeScreenTitle(activeFilter)
+        scope.launch { showResourcesAndFoldersFromDatabase(Folder.Root) }
     }
 
     companion object {

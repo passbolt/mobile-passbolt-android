@@ -3,8 +3,10 @@ package com.passbolt.mobile.android.feature.home.screen
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.commonresource.FolderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,6 +31,9 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
+internal const val RESOURCE_ITEM_ADAPTER = "RESOURCE_ITEM_ADAPTER"
+internal const val FOLDER_ITEM_ADAPTER = "FOLDER_ITEM_ADAPTER"
+
 fun Module.homeModule() {
     scope<HomeFragment> {
         scoped<HomeContract.Presenter> {
@@ -37,20 +42,29 @@ fun Module.homeModule() {
                 resourcesInteractor = get(),
                 getSelectedAccountDataUseCase = get(),
                 secretInteractor = get(),
-                resourceMatcher = SearchableMatcher(),
+                searchableMatcher = SearchableMatcher(),
                 resourceTypeFactory = get(),
                 secretParser = get(),
                 resourceMenuModelMapper = get(),
                 deleteResourceUseCase = get(),
                 getLocalResourcesUseCase = get(),
-                foldersInteractor = get()
+                foldersInteractor = get(),
+                getLocalResourcesAndFoldersUseCase = get()
             )
         }
-        scoped<ItemAdapter<PasswordItem>> {
+        scoped<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)) {
+            ItemAdapter.items()
+        }
+        scoped<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)) {
             ItemAdapter.items()
         }
         scoped {
-            FastAdapter.with(get<ItemAdapter<PasswordItem>>())
+            FastAdapter.with(
+                listOf(
+                    get<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)),
+                    get<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER))
+                )
+            )
         }
     }
 }

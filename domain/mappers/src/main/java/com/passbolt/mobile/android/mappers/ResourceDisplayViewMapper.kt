@@ -23,5 +23,6 @@ class ResourceDisplayViewMapper {
             ResourcesDisplayView.SHARED_WITH_ME -> ResourceDatabaseView.HasPermissions(
                 setOf(Permission.READ, Permission.WRITE)
             )
+            ResourcesDisplayView.FOLDERS -> ResourceDatabaseView.ByModifiedDateDescending
         }
 }

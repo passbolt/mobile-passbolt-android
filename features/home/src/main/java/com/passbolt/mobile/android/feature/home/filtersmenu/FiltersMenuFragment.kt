@@ -156,6 +156,10 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         setBackgroundPrimaryColor(binding.ownedByMe)
     }
 
+    override fun selectFoldersMenuItem() {
+        setBackgroundPrimaryColor(binding.root.findViewWithTag(TAG_FOLDERS))
+    }
+
     private fun setBackgroundPrimaryColor(view: View) {
         view.setBackgroundColor(requireContext().getColor(R.color.primary))
     }
@@ -185,6 +189,7 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
                 resources.getDimension(R.dimen.dp_48).toInt()
             )
             id = View.generateViewId()
+            tag = TAG_FOLDERS
             text = getString(R.string.filters_menu_folders)
             TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 this,
@@ -199,6 +204,10 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
             )
             compoundDrawablePadding = dp16.toInt()
             updatePadding(left = ceil(dp16).toInt())
+            setOnClickListener {
+                listener?.menuFoldersClick()
+                dismiss()
+            }
         }
         binding.root.addView(foldersLabel)
         constrainTopToBottomInRoot(foldersLabel.id, binding.root.findViewWithTag<View>(TAG_SEPARATOR).id)
@@ -224,11 +233,13 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         fun menuRecentlyModifiedClick()
         fun menuSharedWithMeClick()
         fun menuOwnedByMeClick()
+        fun menuFoldersClick()
     }
 
     companion object {
         private const val EXTRA_FILTERS_MENU_MODEL = "FILTERS_MENU_MODEL"
-        private const val TAG_SEPARATOR = "separator"
+        private const val TAG_SEPARATOR = "viewSeparator"
+        private const val TAG_FOLDERS = "viewFolders"
 
         fun newInstance(model: FiltersMenuModel) =
             FiltersMenuFragment().apply {

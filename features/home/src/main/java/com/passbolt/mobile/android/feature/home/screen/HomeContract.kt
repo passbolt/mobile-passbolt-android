@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
@@ -30,7 +31,7 @@ import com.passbolt.mobile.android.ui.ResourcesDisplayView
 interface HomeContract {
 
     interface View : BaseAuthenticatedContract.View {
-        fun showPasswords(list: List<ResourceModel>)
+        fun showItems(resourceList: List<ResourceModel>, foldersList: List<FolderModelWithChildrenCount>)
         fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel)
         fun navigateToDetails(resourceModel: ResourceModel)
         fun hideProgress()
@@ -87,5 +88,6 @@ interface HomeContract {
         fun recentlyModifiedClick()
         fun sharedWithMeClick()
         fun ownedByMeClick()
+        fun foldersClick()
     }
 }

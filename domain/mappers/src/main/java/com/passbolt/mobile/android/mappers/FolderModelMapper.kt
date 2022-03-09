@@ -35,7 +35,7 @@ class FolderModelMapper {
             folderId = folder.id,
             parentFolderId = folder.folderParentId,
             name = folder.name.orEmpty(),
-            isShared = folder.personal ?: false,
+            isShared = folder.personal == false,
             permission = mapDtoPermissionTypeToUiModel(folder.permission.type)
         )
 

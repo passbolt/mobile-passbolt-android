@@ -102,7 +102,7 @@ class HomePresenterTest : KoinTest {
         verify(view).hideRefreshProgress()
         verify(view).hideProgress()
         verify(view).showAddButton()
-        verify(view).showPasswords(anyOrNull())
+        verify(view).showItems(anyOrNull(), anyOrNull())
         verify(view).displaySearchAvatar(null)
         verifyNoMoreInteractions(view)
     }
@@ -125,7 +125,7 @@ class HomePresenterTest : KoinTest {
 
         verify(view).hideUpdateButton()
         verify(view).hideRefreshProgress()
-        verify(view).showPasswords(anyOrNull())
+        verify(view).showItems(anyOrNull(), anyOrNull())
         verify(view).showAddButton()
         verifyNoMoreInteractions(view)
     }

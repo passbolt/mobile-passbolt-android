@@ -21,12 +21,14 @@ import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.px
+import com.passbolt.mobile.android.core.commonresource.FolderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -38,10 +40,12 @@ import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBotto
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.ui.FiltersMenuModel
+import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -73,8 +77,9 @@ class HomeFragment :
     FiltersMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
-    private val itemAdapter: ItemAdapter<PasswordItem> by inject()
-    private val fastAdapter: FastAdapter<PasswordItem> by inject()
+    private val passwordItemAdapter: ItemAdapter<PasswordItem> by inject(named(RESOURCE_ITEM_ADAPTER))
+    private val folderItemAdapter: ItemAdapter<FolderItem> by inject(named(FOLDER_ITEM_ADAPTER))
+    private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val imageLoader: ImageLoader by inject()
     private val clipboardManager: ClipboardManager? by inject()
     private val websiteOpener: WebsiteOpener by inject()
@@ -210,9 +215,10 @@ class HomeFragment :
         }
     }
 
-    override fun showPasswords(list: List<ResourceModel>) {
+    override fun showItems(resourceList: List<ResourceModel>, foldersList: List<FolderModelWithChildrenCount>) {
         setState(State.SUCCESS)
-        FastAdapterDiffUtil.calculateDiff(itemAdapter, list.map { PasswordItem(it) })
+        FastAdapterDiffUtil.calculateDiff(folderItemAdapter, foldersList.map { FolderItem(it) })
+        FastAdapterDiffUtil.calculateDiff(passwordItemAdapter, resourceList.map { PasswordItem(it) })
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
@@ -403,6 +409,10 @@ class HomeFragment :
         presenter.ownedByMeClick()
     }
 
+    override fun menuFoldersClick() {
+        presenter.foldersClick()
+    }
+
     override fun showHomeScreenTitle(view: ResourcesDisplayView) {
         when (view) {
             ResourcesDisplayView.ALL -> showScreenTitleWithStartIcon(
@@ -424,6 +434,10 @@ class HomeFragment :
             ResourcesDisplayView.OWNED_BY_ME -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_owned_by_me,
                 R.drawable.ic_person
+            )
+            ResourcesDisplayView.FOLDERS -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_folders,
+                R.drawable.ic_folder
             )
         }
     }
