@@ -27,5 +27,6 @@ enum class ResourcesDisplayView {
     FAVOURITES,
     RECENTLY_MODIFIED,
     SHARED_WITH_ME,
-    OWNED_BY_ME
+    OWNED_BY_ME,
+    FOLDERS
 }

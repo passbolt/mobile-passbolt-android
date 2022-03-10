@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.core.commonfolders.usecase
 
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
-import com.passbolt.mobile.android.database.usecase.AddLocalFoldersUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,14 +27,14 @@ import com.passbolt.mobile.android.database.usecase.AddLocalFoldersUseCase
  */
 class FoldersInteractor(
     private val fetchUserFoldersUseCase: FetchUserFoldersUseCase,
-    private val addLocalFoldersUseCase: AddLocalFoldersUseCase
+    private val rebuildLocalFoldersUseCase: RebuildFoldersTablesUseCase
 ) {
 
     suspend fun fetchAndSaveFolders(): Output {
         return when (val fetched = fetchUserFoldersUseCase.execute(Unit)) {
             is FetchUserFoldersUseCase.Output.Failure -> Output.Failure(fetched.authenticationState)
             is FetchUserFoldersUseCase.Output.Success -> {
-                addLocalFoldersUseCase.execute(AddLocalFoldersUseCase.Input(fetched.folders))
+                rebuildLocalFoldersUseCase.execute(RebuildFoldersTablesUseCase.Input(fetched.folders))
                 Output.Success
             }
         }

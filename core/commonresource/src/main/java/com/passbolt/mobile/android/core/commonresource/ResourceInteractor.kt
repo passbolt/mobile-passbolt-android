@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.core.commonresource
 
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
-import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourcesDatabaseUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.validation.ResourceValidationRunner
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
@@ -36,7 +36,7 @@ class ResourceInteractor(
     private val getResourcesUseCase: GetResourcesUseCase,
     private val addLocalResourceTypesUseCase: AddLocalResourceTypesUseCase,
     private val resourceValidationRunner: ResourceValidationRunner,
-    private val rebuildAndGetResourcesDatabaseUseCase: RebuildResourcesDatabaseUseCase
+    private val rebuildAndGetResourceTablesUseCase: RebuildResourceTablesUseCase
 ) {
 
     suspend fun updateResourcesWithTypes(): Output {
@@ -50,8 +50,8 @@ class ResourceInteractor(
                 )
                 val validatedResources = resourcesResult.resources
                     .filter { resourceValidationRunner.isValid(it) }
-                rebuildAndGetResourcesDatabaseUseCase.execute(
-                    RebuildResourcesDatabaseUseCase.Input(validatedResources)
+                rebuildAndGetResourceTablesUseCase.execute(
+                    RebuildResourceTablesUseCase.Input(validatedResources)
                 )
 
                 Output.Success

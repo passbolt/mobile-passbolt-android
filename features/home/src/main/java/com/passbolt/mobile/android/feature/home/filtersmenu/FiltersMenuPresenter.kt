@@ -23,7 +23,9 @@ class FiltersMenuPresenter(
     }
 
     override fun argsRetrieved(menuModel: FiltersMenuModel) {
-        selectCurrentlyActiveDisplayView(menuModel)
+        scope.launch {
+            selectCurrentlyActiveDisplayView(menuModel)
+        }
     }
 
     private fun selectCurrentlyActiveDisplayView(menuModel: FiltersMenuModel) {
@@ -35,6 +37,7 @@ class FiltersMenuPresenter(
                 ResourcesDisplayView.RECENTLY_MODIFIED -> selectRecentlyModifiedItem()
                 ResourcesDisplayView.SHARED_WITH_ME -> selectSharedWithMeItem()
                 ResourcesDisplayView.OWNED_BY_ME -> selectOwnedByMeItem()
+                ResourcesDisplayView.FOLDERS -> selectFoldersMenuItem()
             }
         }
     }

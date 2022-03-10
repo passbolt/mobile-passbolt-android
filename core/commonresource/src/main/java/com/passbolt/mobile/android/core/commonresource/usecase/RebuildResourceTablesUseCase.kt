@@ -7,11 +7,11 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 
-class RebuildResourcesDatabaseUseCase(
+class RebuildResourceTablesUseCase(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val removeLocalResourcesUseCase: RemoveLocalResourcesUseCase,
     private val addLocalResourcesUseCase: AddLocalResourcesUseCase
-) : AsyncUseCase<RebuildResourcesDatabaseUseCase.Input, Unit> {
+) : AsyncUseCase<RebuildResourceTablesUseCase.Input, Unit> {
 
     override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)

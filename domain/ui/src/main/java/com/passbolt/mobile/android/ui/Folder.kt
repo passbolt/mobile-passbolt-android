@@ -1,10 +1,4 @@
-package com.passbolt.mobile.android.entity.resource
-
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.Relation
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,27 +22,20 @@ import androidx.room.Relation
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Entity
-data class Folder(
-    @PrimaryKey
-    val folderId: String,
-    @ColumnInfo(collate = ColumnInfo.NOCASE)
-    val name: String,
-    val permission: Permission,
-    val parentId: String?,
-    val isShared: Boolean
-)
 
-data class FolderWithChildResourcesAndChildFolders(
-    @Embedded val folder: Folder,
-    @Relation(
-        parentColumn = "folderId",
-        entityColumn = "folderId"
-    )
-    val resources: List<Resource>,
-    @Relation(
-        parentColumn = "folderId",
-        entityColumn = "parentId"
-    )
-    val folders: List<Folder>
-)
+/**
+ * Ui model class representing currently chosen folder.
+ */
+sealed class Folder {
+
+    /**
+     * Root folder is currently chosen
+     */
+    object Root : Folder()
+
+    /**
+     * A non-root nested folder is chosen.
+     * @param folderId id of the chosen folder
+     */
+    data class Child(val folderId: String) : Folder()
+}

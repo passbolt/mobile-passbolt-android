@@ -6,7 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.passbolt.mobile.android.entity.resource.Folder
-import com.passbolt.mobile.android.entity.resource.FolderWithResources
+import com.passbolt.mobile.android.entity.resource.FolderWithChildResourcesAndChildFolders
+import com.passbolt.mobile.android.entity.resource.Resource
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,6 +38,26 @@ interface FoldersDao {
     suspend fun insert(folderEntities: List<Folder>)
 
     @Transaction
-    @Query("SELECT * FROM Folder")
-    fun getFoldersWithResources(): List<FolderWithResources>
+    @Query("DELETE FROM Folder")
+    suspend fun deleteAll()
+
+    @Transaction
+    @Query("SELECT * FROM Folder WHERE folderId=:id")
+    suspend fun getFoldersWithResourcesForFolderWithId(id: String): FolderWithChildResourcesAndChildFolders
+
+    @Transaction
+    @Query("SELECT * FROM Folder WHERE parentId IS NULL")
+    suspend fun getFoldersForRootFolder(): List<Folder>
+
+    @Transaction
+    @Query("SELECT * FROM Resource WHERE folderId IS NULL")
+    suspend fun getResourcesForRootFolder(): List<Resource>
+
+    @Transaction
+    @Query(
+        "SELECT " +
+                "(SELECT COUNT(*) FROM Resource WHERE folderId IS :id) +" +
+                "(SELECT COUNT(*) FROM Folder WHERE parentId IS :id)"
+    )
+    suspend fun getResourcesAndFoldersCountForFolderWithId(id: String): Int
 }
