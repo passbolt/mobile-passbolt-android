@@ -22,6 +22,7 @@ import com.passbolt.mobile.android.feature.accountdetails.accountDetailsModule
 import com.passbolt.mobile.android.feature.authenticationModule
 import com.passbolt.mobile.android.feature.autofill.autofillModule
 import com.passbolt.mobile.android.feature.home.homeModule
+import com.passbolt.mobile.android.feature.main.mainModule
 import com.passbolt.mobile.android.feature.resources.resourcesModule
 import com.passbolt.mobile.android.feature.secrets.secretsModule
 import com.passbolt.mobile.android.feature.settings.settingsModule
@@ -168,7 +169,8 @@ class PassboltApplication : Application(), KoinComponent {
                 usersModule,
                 loggerModule,
                 accountDetailsModule,
-                commonFoldersModule
+                commonFoldersModule,
+                mainModule
             )
         }
     }

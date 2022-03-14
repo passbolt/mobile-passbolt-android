@@ -5,6 +5,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.FolderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
+import com.passbolt.mobile.android.feature.home.screen.interactor.HomeDataInteractor
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -35,11 +36,16 @@ internal const val RESOURCE_ITEM_ADAPTER = "RESOURCE_ITEM_ADAPTER"
 internal const val FOLDER_ITEM_ADAPTER = "FOLDER_ITEM_ADAPTER"
 
 fun Module.homeModule() {
+    single {
+        HomeDataInteractor(
+            foldersInteractor = get(),
+            resourcesInteractor = get()
+        )
+    }
     scope<HomeFragment> {
         scoped<HomeContract.Presenter> {
             HomePresenter(
                 coroutineLaunchContext = get(),
-                resourcesInteractor = get(),
                 getSelectedAccountDataUseCase = get(),
                 secretInteractor = get(),
                 searchableMatcher = SearchableMatcher(),
@@ -48,7 +54,6 @@ fun Module.homeModule() {
                 resourceMenuModelMapper = get(),
                 deleteResourceUseCase = get(),
                 getLocalResourcesUseCase = get(),
-                foldersInteractor = get(),
                 getLocalResourcesAndFoldersUseCase = get()
             )
         }

@@ -7,8 +7,10 @@ import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUse
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
+import com.passbolt.mobile.android.feature.home.screen.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -16,6 +18,8 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -65,9 +69,14 @@ class HomePresenterTest : KoinTest {
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
         )
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         val url = "avatar_url"
+
         mockAccountData(url)
+
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         verify(view).displaySearchAvatar(eq(url))
     }
 
@@ -75,8 +84,11 @@ class HomePresenterTest : KoinTest {
     fun `search input end icon should switch correctly based on input`() {
         val url = "avatar_url"
         mockAccountData(url)
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
 
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.searchTextChange("abc")
         presenter.searchTextChange("")
 
@@ -86,6 +98,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `all fetched resources should be displayed when empty search text`() = runBlockingTest {
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
         )
@@ -94,12 +107,14 @@ class HomePresenterTest : KoinTest {
         )
 
         mockAccountData(null)
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
 
         verify(view).showHomeScreenTitle(ResourcesDisplayView.ALL)
+        verify(view).hideBackArrow()
         verify(view).showProgress()
-        verify(view).hideUpdateButton()
-        verify(view).hideRefreshProgress()
+        verify(view).hideAddButton()
         verify(view).hideProgress()
         verify(view).showAddButton()
         verify(view).showItems(anyOrNull(), anyOrNull())
@@ -117,13 +132,16 @@ class HomePresenterTest : KoinTest {
             GetLocalResourcesUseCase.Output(mockResourcesList())
         )
         mockAccountData(null)
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
 
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.searchTextChange("second")
         reset(view)
         presenter.refreshSwipe()
 
-        verify(view).hideUpdateButton()
+        verify(view).hideAddButton()
         verify(view).hideRefreshProgress()
         verify(view).showItems(anyOrNull(), anyOrNull())
         verify(view).showAddButton()
@@ -139,13 +157,16 @@ class HomePresenterTest : KoinTest {
             GetLocalResourcesUseCase.Output(mockResourcesList())
         )
         mockAccountData(null)
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
 
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.searchTextChange("third")
         reset(view)
         presenter.refreshSwipe()
 
-        verify(view).hideUpdateButton()
+        verify(view).hideAddButton()
         verify(view).hideRefreshProgress()
         verify(view).showSearchEmptyList()
         verify(view).showAddButton()
@@ -154,6 +175,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `empty view should be displayed when there are no resources`() = runBlockingTest {
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
         )
@@ -161,13 +183,15 @@ class HomePresenterTest : KoinTest {
             GetLocalResourcesUseCase.Output(emptyList())
         )
         mockAccountData(null)
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
 
+        verify(view).hideBackArrow()
         verify(view).showHomeScreenTitle(ResourcesDisplayView.ALL)
         verify(view).showProgress()
-        verify(view).hideRefreshProgress()
         verify(view).hideProgress()
-        verify(view).hideUpdateButton()
+        verify(view).hideAddButton()
         verify(view).showEmptyList()
         verify(view).showAddButton()
         verify(view).displaySearchAvatar(null)
@@ -176,17 +200,22 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `error should be displayed when request failures`() = runBlockingTest {
-        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
+        val refreshFlow = flowOf(
+            DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated))
         )
         mockAccountData(null)
+        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+            GetLocalResourcesUseCase.Output(emptyList())
+        )
 
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
 
+        verify(view).hideBackArrow()
         verify(view).showHomeScreenTitle(ResourcesDisplayView.ALL)
         verify(view).showProgress()
-        verify(view).hideUpdateButton()
-        verify(view).hideRefreshProgress()
+        verify(view).hideAddButton()
         verify(view).hideProgress()
         verify(view).showError()
         verify(view).displaySearchAvatar(null)
@@ -196,21 +225,26 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `error during refresh clicked should show correct ui`() = runBlockingTest {
+        val refreshFlow =
+            MutableStateFlow(DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)))
+        whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
+            GetLocalResourcesUseCase.Output(emptyList())
+        )
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         mockAccountData(null)
+
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        reset(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.refreshClick()
 
-        verify(view).showProgress()
-        verify(view).hideUpdateButton()
-        verify(view).hideRefreshProgress()
-        verify(view).hideProgress()
-        verify(view).showError()
-        verify(view, never()).showAddButton()
-        verifyNoMoreInteractions(view)
+        verify(view).hideBackArrow()
+        verify(view, times(2)).showProgress()
+        verify(view).hideAddButton()
+        verify(view, times(2)).hideProgress()
+        verify(view, times(2)).showError()
     }
 
     @Test
@@ -218,6 +252,7 @@ class HomePresenterTest : KoinTest {
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         val model = ResourceModel(
             "id",
             "resTypeId",
@@ -233,7 +268,9 @@ class HomePresenterTest : KoinTest {
             ZonedDateTime.now()
         )
         mockAccountData(null)
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         reset(view)
         presenter.itemClick(model)
         verify(view).navigateToDetails(model)
@@ -261,8 +298,11 @@ class HomePresenterTest : KoinTest {
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         mockAccountData(null)
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
 
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         reset(view)
         presenter.moreClick(model)
 
@@ -277,8 +317,11 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.DecryptFailure(RuntimeException())
             )
         }
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
 
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -292,8 +335,11 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.FetchFailure(RuntimeException())
             )
         }
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
 
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -307,8 +353,11 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.Unauthorized
             )
         }
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
 
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -330,8 +379,11 @@ class HomePresenterTest : KoinTest {
         }
         whenever(mockSecretParser.extractPassword(any(), any()))
             .doReturn(String(DECRYPTED_SECRET))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
 
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -348,8 +400,11 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.Success(DECRYPTED_SECRET)
             )
         }
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
 
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
         presenter.deleteResourceConfirmed()
@@ -375,8 +430,11 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.Success(DECRYPTED_SECRET)
             )
         }
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
 
+        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
+        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
         presenter.deleteResourceConfirmed()

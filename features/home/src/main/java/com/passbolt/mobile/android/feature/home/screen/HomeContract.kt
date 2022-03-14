@@ -1,10 +1,12 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,6 +30,7 @@ import com.passbolt.mobile.android.ui.ResourcesDisplayView
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Suppress("TooManyFunctions") // TODO MOB-321
 interface HomeContract {
 
     interface View : BaseAuthenticatedContract.View {
@@ -53,12 +56,18 @@ interface HomeContract {
         fun showGeneralError()
         fun navigateToEdit(resourceModel: ResourceModel)
         fun showResourceEditedSnackbar(resourceName: String)
-        fun hideUpdateButton()
+        fun hideAddButton()
         fun showAddButton()
         fun showDeleteConfirmationDialog()
         fun navigateToManageAccounts()
         fun showFiltersMenu(activeDisplayView: ResourcesDisplayView)
         fun showHomeScreenTitle(view: ResourcesDisplayView)
+        fun navigateToChildFolder(folderId: String, activeFilter: ResourcesDisplayView)
+        fun showBackArrow()
+        fun hideBackArrow()
+        fun navigateToRootHomeFromChildHome(activeFilter: ResourcesDisplayView)
+        fun performRefreshUsingRefreshExecutor()
+        fun navigateRootHomeFromRootHome(activeView: ResourcesDisplayView)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -89,5 +98,13 @@ interface HomeContract {
         fun sharedWithMeClick()
         fun ownedByMeClick()
         fun foldersClick()
+        fun argsRetrieved(
+            activeHomeView: ResourcesDisplayView,
+            activeFolderId: String?,
+            hasPreviousBackStackEntries: Boolean
+        )
+
+        fun folderItemClick(folderModel: FolderModel)
+        fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>)
     }
 }

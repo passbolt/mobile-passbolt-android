@@ -62,7 +62,6 @@ val testHomeModule = module {
     factory<HomeContract.Presenter> {
         HomePresenter(
             coroutineLaunchContext = get(),
-            resourcesInteractor = get(),
             getSelectedAccountDataUseCase = get(),
             secretInteractor = mockSecretInteractor,
             searchableMatcher = get(),
@@ -71,7 +70,6 @@ val testHomeModule = module {
             resourceMenuModelMapper = get(),
             deleteResourceUseCase = mockDeleteResourceUseCase,
             getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
-            foldersInteractor = mockFoldersInteractor,
             getLocalResourcesAndFoldersUseCase = mockGetLocalResourcesAndFoldersUseCase
         )
     }

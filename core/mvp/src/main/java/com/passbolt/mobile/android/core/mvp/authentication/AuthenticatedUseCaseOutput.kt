@@ -33,4 +33,12 @@ sealed class AuthenticationState {
     }
 }
 
+operator fun AuthenticationState.plus(other: AuthenticationState): AuthenticationState {
+    return when {
+        this is AuthenticationState.Authenticated && other is AuthenticationState.Authenticated ->
+            AuthenticationState.Authenticated
+        else -> AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+    }
+}
+
 typealias UnauthenticatedReason = AuthenticationState.Unauthenticated.Reason

@@ -10,6 +10,113 @@
         android:id="@+id/home"
         android:name="com.passbolt.mobile.android.feature.home.screen.HomeFragment"
         android:label="HomeFragment"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <argument
+            android:name="activeView"
+            android:defaultValue="ALL"
+            app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
+        <argument
+            android:name="activeFolderId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_home_to_homeChild"
+            app:destination="@id/homeChild"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right">
+            <argument
+                android:name="activeView"
+                android:defaultValue="FOLDERS"
+                app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
+            <argument
+                android:name="activeFolderId"
+                app:argType="string"
+                app:nullable="true" />
+        </action>
 
+    </fragment>
+
+    <fragment
+        android:id="@+id/homeChild"
+        android:name="com.passbolt.mobile.android.feature.home.screen.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home">
+
+        <action
+            android:id="@+id/action_home_to_homeChild"
+            app:destination="@id/homeChild"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right">
+            <argument
+                android:name="activeView"
+                android:defaultValue="FOLDERS"
+                app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
+            <argument
+                android:name="activeFolderId"
+                app:argType="string"
+                app:nullable="true" />
+        </action>
+
+
+    </fragment>
+
+    <action
+        android:id="@+id/action_home_to_home"
+        app:destination="@id/home"
+        app:enterAnim="@android:anim/fade_in"
+        app:exitAnim="@android:anim/fade_out"
+        app:popEnterAnim="@android:anim/fade_in"
+        app:popExitAnim="@android:anim/fade_out"
+        app:popUpTo="@id/home"
+        app:popUpToInclusive="true">
+        <argument
+            android:name="activeView"
+            app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
+        <argument
+            android:name="activeFolderId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </action>
+
+    <action
+        android:id="@+id/action_homeChild_to_home"
+        app:destination="@id/home"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right"
+        app:popUpTo="@id/home"
+        app:popUpToInclusive="true">
+        <argument
+            android:name="activeView"
+            app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
+        <argument
+            android:name="activeFolderId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </action>
+
+    <action
+        android:id="@+id/action_homeChild_back"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right"
+        app:popUpTo="@id/home"
+        app:popUpToInclusive="true">
+        <argument
+            android:name="activeView"
+            app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
+        <argument
+            android:name="activeFolderId"
+            app:argType="string"
+            app:nullable="true" />
+    </action>
 </navigation>

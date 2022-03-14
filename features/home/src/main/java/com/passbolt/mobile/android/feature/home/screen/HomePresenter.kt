@@ -2,8 +2,6 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
-import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
@@ -11,17 +9,22 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.feature.home.screen.interactor.HomeDataInteractor
+import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.Folder
+import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
@@ -55,10 +58,9 @@ import timber.log.Timber
  * shared with me, etc.) the reload is done from the database only. To refresh from backend again users can do the
  * swipe to refresh gesture.
  */
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions") // TODO MOB-321
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
-    private val resourcesInteractor: ResourceInteractor,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val secretInteractor: SecretInteractor,
     private val searchableMatcher: SearchableMatcher,
@@ -67,7 +69,6 @@ class HomePresenter(
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
     private val deleteResourceUseCase: DeleteResourceUseCase,
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
-    private val foldersInteractor: FoldersInteractor,
     private val getLocalResourcesAndFoldersUseCase: GetLocalResourcesAndFoldersUseCase
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinComponent {
 
@@ -81,18 +82,76 @@ class HomePresenter(
     private var userAvatarUrl: String? = null
     private val searchInputEndIconMode
         get() = if (currentSearchText.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
-    private var activeFilter = ResourcesDisplayView.ALL
 
-    override fun attach(view: HomeContract.View) {
-        super<BaseAuthenticatedPresenter>.attach(view)
-        runWhileShowingListProgress { fetchAllResourceData() }
+    private lateinit var activeView: ResourcesDisplayView
+    private lateinit var currentFolder: Folder
+    private var hasPreviousBackEntry = false
+    private lateinit var dataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>
+
+    override fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>) {
+        dataRefreshStatusFlow = fullDataRefreshStatusFlow
+    }
+
+    override fun argsRetrieved(
+        activeHomeView: ResourcesDisplayView,
+        activeFolderId: String?,
+        hasPreviousBackStackEntries: Boolean
+    ) {
+        activeView = activeHomeView
+        currentFolder = activeFolderId?.let { Folder.Child(it) } ?: Folder.Root
+        hasPreviousBackEntry = hasPreviousBackStackEntries
+
+        view?.apply {
+            hideAddButton()
+            showHomeScreenTitle(activeView)
+        }
+
+        handleBackArrowVisibility()
+        loadUserAvatar()
+        runWhileShowingListProgress {
+            collectDataRefreshStatus()
+        }
+    }
+
+    private suspend fun collectDataRefreshStatus() {
+        dataRefreshStatusFlow
+            .first()
+            .let {
+                when (it.output) {
+                    is HomeDataInteractor.Output.Failure -> view?.showError()
+                    is HomeDataInteractor.Output.Success -> {
+                        view?.showAddButton()
+                        showActiveHomeView()
+                    }
+                }
+            }
+    }
+
+    private fun handleBackArrowVisibility() {
+        if (hasPreviousBackEntry) {
+            view?.showBackArrow()
+        } else {
+            view?.hideBackArrow()
+        }
+    }
+
+    private fun loadUserAvatar() {
         userAvatarUrl = getSelectedAccountDataUseCase.execute(Unit).avatarUrl
-            .also { view.displaySearchAvatar(it) }
-        view.showHomeScreenTitle(activeFilter)
+            .also { view?.displaySearchAvatar(it) }
+    }
+
+    private suspend fun showActiveHomeView() {
+        when (activeView) {
+            ResourcesDisplayView.FOLDERS -> showResourcesAndFoldersFromDatabase()
+            else -> showResourcesFromDatabase()
+        }
     }
 
     override fun userAuthenticated() {
-        runWhileShowingListProgress { fetchAllResourceData() }
+        runWhileShowingListProgress {
+            view?.performRefreshUsingRefreshExecutor()
+            collectDataRefreshStatus()
+        }
     }
 
     override fun detach() {
@@ -107,7 +166,7 @@ class HomePresenter(
     override fun searchTextChange(text: String) {
         currentSearchText = text
         processSearchIconChange()
-        filterList()
+        filterHomeData()
     }
 
     private fun processSearchIconChange() {
@@ -117,52 +176,19 @@ class HomePresenter(
         }
     }
 
-    /**
-     * Processes (fetching from backend and updating the local database) folders and then resources
-     */
-    private suspend fun fetchAllResourceData() {
-        view?.hideUpdateButton()
-        when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            foldersInteractor.fetchAndSaveFolders()
-        }) {
-            // TODO Add better error handling than just general message
-            is FoldersInteractor.Output.Failure -> {
-                view?.apply {
-                    hideRefreshProgress()
-                    showError()
-                }
-            }
-            is FoldersInteractor.Output.Success -> fetchResources()
-        }
-    }
-
-    private suspend fun fetchResources() {
-        when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            resourcesInteractor.updateResourcesWithTypes()
-        }) {
-            is ResourceInteractor.Output.Failure -> {
-                view?.showError()
-            }
-            is ResourceInteractor.Output.Success -> {
-                showResourcesFromDatabase()
-                view?.showAddButton()
-            }
-        }
-        view?.hideRefreshProgress()
-    }
-
     private suspend fun showResourcesFromDatabase() {
-        allResourceList = getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(activeFilter)).resources
-        displayResources()
+        allResourceList = getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(activeView)).resources
+        allFoldersList = emptyList()
+        displayHomeData()
     }
 
-    private suspend fun showResourcesAndFoldersFromDatabase(folder: Folder) {
+    private suspend fun showResourcesAndFoldersFromDatabase() {
         val (folders, resources) = getLocalResourcesAndFoldersUseCase.execute(
-            GetLocalResourcesAndFoldersUseCase.Input(folder)
+            GetLocalResourcesAndFoldersUseCase.Input(currentFolder)
         )
         allFoldersList = folders
         allResourceList = resources
-        displayResources()
+        displayHomeData()
     }
 
     private fun runWhileShowingListProgress(action: suspend () -> Unit) {
@@ -173,19 +199,19 @@ class HomePresenter(
         }
     }
 
-    private fun displayResources() {
+    private fun displayHomeData() {
         if (allResourceList.isEmpty() && allFoldersList.isEmpty()) {
             view?.showEmptyList()
         } else {
             if (currentSearchText.isEmpty()) {
                 view?.showItems(allResourceList, allFoldersList)
             } else {
-                filterList()
+                filterHomeData()
             }
         }
     }
 
-    private fun filterList() {
+    private fun filterHomeData() {
         val filteredResources = allResourceList.filter {
             searchableMatcher.matches(it, currentSearchText)
         }
@@ -200,12 +226,17 @@ class HomePresenter(
     }
 
     override fun refreshClick() {
-        runWhileShowingListProgress { fetchAllResourceData() }
+        runWhileShowingListProgress {
+            view?.performRefreshUsingRefreshExecutor()
+            collectDataRefreshStatus()
+        }
     }
 
     override fun refreshSwipe() {
         scope.launch {
-            fetchAllResourceData()
+            view?.hideAddButton()
+            collectDataRefreshStatus()
+            view?.hideRefreshProgress()
         }
     }
 
@@ -307,21 +338,24 @@ class HomePresenter(
 
     override fun resourceDeleted(resourceName: String) {
         runWhileShowingListProgress {
-            fetchAllResourceData()
+            view?.performRefreshUsingRefreshExecutor()
+            collectDataRefreshStatus()
         }
         view?.showResourceDeletedSnackbar(resourceName)
     }
 
     override fun resourceEdited(resourceName: String) {
         runWhileShowingListProgress {
-            fetchAllResourceData()
+            view?.performRefreshUsingRefreshExecutor()
+            collectDataRefreshStatus()
         }
         view?.showResourceEditedSnackbar(resourceName)
     }
 
     override fun newResourceCreated() {
         runWhileShowingListProgress {
-            fetchAllResourceData()
+            view?.performRefreshUsingRefreshExecutor()
+            collectDataRefreshStatus()
         }
         view?.showResourceAddedSnackbar()
     }
@@ -334,49 +368,45 @@ class HomePresenter(
         view?.navigateToManageAccounts()
     }
 
-    enum class SearchInputEndIconMode {
-        AVATAR,
-        CLEAR
+    override fun filtersClick() {
+        view?.showFiltersMenu(activeView)
     }
 
-    override fun filtersClick() {
-        view?.showFiltersMenu(activeFilter)
+    private fun navigateToHomeView(activeView: ResourcesDisplayView) {
+        if (!hasPreviousBackEntry) {
+            view?.navigateRootHomeFromRootHome(activeView)
+        } else {
+            view?.navigateToRootHomeFromChildHome(activeView)
+        }
     }
 
     override fun allItemsClick() {
-        activeFilter = ResourcesDisplayView.ALL
-        view?.showHomeScreenTitle(activeFilter)
-        scope.launch { showResourcesFromDatabase() }
+        navigateToHomeView(ResourcesDisplayView.ALL)
     }
 
     override fun favouritesClick() {
-        activeFilter = ResourcesDisplayView.FAVOURITES
-        view?.showHomeScreenTitle(activeFilter)
-        scope.launch { showResourcesFromDatabase() }
+        navigateToHomeView(ResourcesDisplayView.FAVOURITES)
     }
 
     override fun recentlyModifiedClick() {
-        activeFilter = ResourcesDisplayView.RECENTLY_MODIFIED
-        view?.showHomeScreenTitle(activeFilter)
-        scope.launch { showResourcesFromDatabase() }
+        navigateToHomeView(ResourcesDisplayView.RECENTLY_MODIFIED)
     }
 
     override fun sharedWithMeClick() {
-        activeFilter = ResourcesDisplayView.SHARED_WITH_ME
-        view?.showHomeScreenTitle(activeFilter)
-        scope.launch { showResourcesFromDatabase() }
+        navigateToHomeView(ResourcesDisplayView.SHARED_WITH_ME)
     }
 
     override fun ownedByMeClick() {
-        activeFilter = ResourcesDisplayView.OWNED_BY_ME
-        view?.showHomeScreenTitle(activeFilter)
-        scope.launch { showResourcesFromDatabase() }
+        navigateToHomeView(ResourcesDisplayView.OWNED_BY_ME)
     }
 
     override fun foldersClick() {
-        activeFilter = ResourcesDisplayView.FOLDERS
-        view?.showHomeScreenTitle(activeFilter)
-        scope.launch { showResourcesAndFoldersFromDatabase(Folder.Root) }
+        navigateToHomeView(ResourcesDisplayView.FOLDERS)
+    }
+
+    override fun folderItemClick(folderModel: FolderModel) {
+        view?.navigateToChildFolder(folderModel.folderId, activeView)
+        view?.showBackArrow()
     }
 
     companion object {

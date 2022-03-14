@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTa
 import com.passbolt.mobile.android.core.commonresource.validation.ResourceValidationRunner
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.plus
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
 
@@ -60,14 +61,6 @@ class ResourceInteractor(
             }
         } else {
             Output.Failure(resourcesResult.authenticationState)
-        }
-    }
-
-    private operator fun AuthenticationState.plus(other: AuthenticationState): AuthenticationState {
-        return when {
-            this is AuthenticationState.Authenticated && other is AuthenticationState.Authenticated ->
-                AuthenticationState.Authenticated
-            else -> AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
         }
     }
 
