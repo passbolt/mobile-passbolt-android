@@ -14,6 +14,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.request.ImageRequest
@@ -27,6 +29,8 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.commonresource.FolderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
@@ -69,8 +73,7 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions") // TODO MOB-321
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
     HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener,
@@ -83,6 +86,8 @@ class HomeFragment :
     private val imageLoader: ImageLoader by inject()
     private val clipboardManager: ClipboardManager? by inject()
     private val websiteOpener: WebsiteOpener by inject()
+    private val arguments: HomeFragmentArgs by navArgs()
+    private val navController by lifecycleAwareLazy { findNavController() }
 
     private val authenticationResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -106,11 +111,24 @@ class HomeFragment :
             }
         }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        presenter.viewCreate((activity as HomeDataRefreshExecutor).supplyFullDataRefreshStatusFlow())
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
         setListeners()
+        val hasPreviousEntry = navController.previousBackStackEntry != null
         presenter.attach(this)
+        presenter.argsRetrieved(arguments.activeView, arguments.activeFolderId, hasPreviousEntry)
+    }
+
+    override fun onDestroyView() {
+        binding.recyclerView.adapter = null
+        presenter.detach()
+        super.onDestroyView()
     }
 
     override fun displaySearchAvatar(url: String?) {
@@ -151,12 +169,6 @@ class HomeFragment :
         )
     }
 
-    override fun onDestroyView() {
-        binding.recyclerView.adapter = null
-        presenter.detach()
-        super.onDestroyView()
-    }
-
     private fun initAdapter() {
         binding.recyclerView.apply {
             itemAnimator = null
@@ -169,6 +181,9 @@ class HomeFragment :
             },
             PasswordItem.MoreClick {
                 presenter.moreClick(it)
+            },
+            FolderItem.ItemClick {
+                presenter.folderItemClick(it)
             }
         ))
     }
@@ -211,6 +226,9 @@ class HomeFragment :
             }
             searchTextInput.setStartIconOnClickListener {
                 presenter.filtersClick()
+            }
+            backButton.setOnClickListener {
+                navController.popBackStack()
             }
         }
     }
@@ -353,7 +371,7 @@ class HomeFragment :
         )
     }
 
-    override fun hideUpdateButton() {
+    override fun hideAddButton() {
         binding.updateButton.hide()
     }
 
@@ -447,6 +465,30 @@ class HomeFragment :
             text = getString(titleRes)
             setCompoundDrawablesWithIntrinsicBounds(iconRes, 0, 0, 0)
         }
+    }
+
+    override fun navigateToChildFolder(folderId: String, activeFilter: ResourcesDisplayView) {
+        navController.navigate(HomeFragmentDirections.actionHomeToHomeChild(folderId))
+    }
+
+    override fun navigateToRootHomeFromChildHome(activeFilter: ResourcesDisplayView) {
+        navController.navigate(HomeFragmentDirections.actionHomeChildToHome(activeFilter))
+    }
+
+    override fun navigateRootHomeFromRootHome(activeView: ResourcesDisplayView) {
+        navController.navigate(HomeFragmentDirections.actionHomeToHome(activeView))
+    }
+
+    override fun performRefreshUsingRefreshExecutor() {
+        (activity as HomeDataRefreshExecutor).performFullDataRefresh()
+    }
+
+    override fun showBackArrow() {
+        binding.backButton.visible()
+    }
+
+    override fun hideBackArrow() {
+        binding.backButton.gone()
     }
 
     companion object {
