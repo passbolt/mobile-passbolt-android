@@ -66,11 +66,18 @@ class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResou
 
         const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
         const val EXTRA_RESOURCE_ID = "RESOURCE_ID"
+        const val EXTRA_RESOURCE_PARENT_FOLDER_ID = "RESOURCE_PARENT_FOLDER_ID"
 
-        fun newInstance(context: Context, mode: ResourceMode, existingResource: ResourceModel? = null) =
+        fun newInstance(
+            context: Context,
+            mode: ResourceMode,
+            resourceParentFolderId: String? = null,
+            existingResource: ResourceModel? = null
+        ) =
             Intent(context, ResourceActivity::class.java).apply {
                 putExtra(EXTRA_RESOURCE_MODE, mode)
                 putExtra(EXTRA_RESOURCE_MODEL, existingResource)
+                putExtra(EXTRA_RESOURCE_PARENT_FOLDER_ID, resourceParentFolderId)
             }
 
         fun resourceNameResultIntent(resourceName: String) =

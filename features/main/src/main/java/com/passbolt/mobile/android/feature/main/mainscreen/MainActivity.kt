@@ -25,7 +25,7 @@ class MainActivity : BindingScopedActivity<ActivityMainBinding>(ActivityMainBind
         presenter.performFullDataRefresh()
     }
 
-    override fun performFullDataRefresh(): Flow<DataRefreshStatus.Finished> =
+    override fun performFullDataRefresh() =
         presenter.performFullDataRefresh()
 
     override fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished> =

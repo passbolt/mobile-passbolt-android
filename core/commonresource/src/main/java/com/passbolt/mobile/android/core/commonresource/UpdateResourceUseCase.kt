@@ -66,7 +66,8 @@ class UpdateResourceUseCase(
                 secrets = createSecret(input, passphrase),
                 username = input.username,
                 uri = input.uri,
-                description = createDescription(input)
+                description = createDescription(input),
+                folderParentId = input.resourceParentFolderId
             )
         )) {
             is NetworkResult.Failure -> Output.Failure(response)
@@ -132,6 +133,7 @@ class UpdateResourceUseCase(
         val description: String?,
         val username: String?,
         val uri: String?,
-        val users: List<User>
+        val users: List<User>,
+        val resourceParentFolderId: String?
     )
 }

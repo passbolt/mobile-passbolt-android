@@ -119,6 +119,7 @@ class HomePresenterTest : KoinTest {
         verify(view).showAddButton()
         verify(view).showItems(anyOrNull(), anyOrNull())
         verify(view).displaySearchAvatar(null)
+        verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
     }
 
@@ -132,20 +133,24 @@ class HomePresenterTest : KoinTest {
             GetLocalResourcesUseCase.Output(mockResourcesList())
         )
         mockAccountData(null)
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        val refreshFlow =
+            MutableStateFlow(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        whenever(view.performRefreshUsingRefreshExecutor()).then {
+            refreshFlow.tryEmit(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        }
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.searchTextChange("second")
-        reset(view)
         presenter.refreshSwipe()
 
-        verify(view).hideAddButton()
+
+        verify(view).performRefreshUsingRefreshExecutor()
+        verify(view, times(2)).hideAddButton()
         verify(view).hideRefreshProgress()
-        verify(view).showItems(anyOrNull(), anyOrNull())
+        verify(view, times(2)).showItems(anyOrNull(), anyOrNull())
         verify(view).showAddButton()
-        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -162,15 +167,11 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
-        presenter.searchTextChange("third")
-        reset(view)
-        presenter.refreshSwipe()
+        presenter.searchTextChange("empty search")
 
         verify(view).hideAddButton()
-        verify(view).hideRefreshProgress()
         verify(view).showSearchEmptyList()
         verify(view).showAddButton()
-        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -191,6 +192,7 @@ class HomePresenterTest : KoinTest {
         verify(view).showHomeScreenTitle(ResourcesDisplayView.ALL)
         verify(view).showProgress()
         verify(view).hideProgress()
+        verify(view).hideRefreshProgress()
         verify(view).hideAddButton()
         verify(view).showEmptyList()
         verify(view).showAddButton()
@@ -217,6 +219,7 @@ class HomePresenterTest : KoinTest {
         verify(view).showProgress()
         verify(view).hideAddButton()
         verify(view).hideProgress()
+        verify(view).hideRefreshProgress()
         verify(view).showError()
         verify(view).displaySearchAvatar(null)
         verify(view, never()).showAddButton()
@@ -233,6 +236,9 @@ class HomePresenterTest : KoinTest {
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
+        whenever(view.performRefreshUsingRefreshExecutor()).then {
+            refreshFlow.tryEmit(DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)))
+        }
         mockAccountData(null)
 
         presenter.viewCreate(refreshFlow)
@@ -240,10 +246,12 @@ class HomePresenterTest : KoinTest {
         presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
         presenter.refreshClick()
 
+        verify(view).performRefreshUsingRefreshExecutor()
         verify(view).hideBackArrow()
         verify(view, times(2)).showProgress()
         verify(view).hideAddButton()
         verify(view, times(2)).hideProgress()
+        verify(view, times(2)).hideRefreshProgress()
         verify(view, times(2)).showError()
     }
 

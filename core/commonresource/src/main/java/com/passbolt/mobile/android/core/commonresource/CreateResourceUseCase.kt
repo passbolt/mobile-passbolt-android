@@ -64,7 +64,8 @@ class CreateResourceUseCase(
                 secrets = createSecret(input.password, input.description, passphrase),
                 username = input.username,
                 uri = input.uri,
-                description = input.description
+                description = input.description,
+                folderParentId = input.folderParentId
             )
         )) {
             is NetworkResult.Failure -> Output.Failure(response)
@@ -122,6 +123,7 @@ class CreateResourceUseCase(
         val password: String,
         val description: String?,
         val username: String?,
-        val uri: String?
+        val uri: String?,
+        val folderParentId: String?
     )
 }

@@ -7,9 +7,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class MainPresenter(
     private val homeDataInteractor: HomeDataInteractor,
@@ -20,16 +21,16 @@ class MainPresenter(
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    private val _dataRefreshStatusFlow = MutableStateFlow<DataRefreshStatus>(DataRefreshStatus.NotInitialized)
-    override val dataRefreshFinishedStatusFlow = _dataRefreshStatusFlow
-        .filterIsInstance<DataRefreshStatus.Finished>()
+    private val _dataRefreshStatusFlow = MutableSharedFlow<DataRefreshStatus>(replay = 1)
+    override val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished> = _dataRefreshStatusFlow
+        .filterIsInstance()
 
-    override fun performFullDataRefresh(): Flow<DataRefreshStatus.Finished> {
+    override fun performFullDataRefresh() {
         scope.launch {
+            Timber.d("Full data refresh initiated")
             val output = homeDataInteractor.refreshAllHomeScreenData()
-            _dataRefreshStatusFlow.value = DataRefreshStatus.Finished(output)
+            _dataRefreshStatusFlow.emit(DataRefreshStatus.Finished(output))
         }
-        return dataRefreshFinishedStatusFlow
     }
 
     override fun detach() {

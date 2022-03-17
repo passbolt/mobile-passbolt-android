@@ -24,7 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
@@ -75,6 +75,8 @@ class HomePresenter(
     override var view: HomeContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val dataRefreshJob = SupervisorJob()
+    private val dataRefreshScope = CoroutineScope(dataRefreshJob + coroutineLaunchContext.ui)
     private var currentSearchText: String = ""
     private var allResourceList: List<ResourceModel> = emptyList()
     private var allFoldersList: List<FolderModelWithChildrenCount> = emptyList()
@@ -104,19 +106,18 @@ class HomePresenter(
         view?.apply {
             hideAddButton()
             showHomeScreenTitle(activeView)
+            showProgress()
         }
 
         handleBackArrowVisibility()
         loadUserAvatar()
-        runWhileShowingListProgress {
-            collectDataRefreshStatus()
-        }
+        collectDataRefreshStatus()
     }
 
-    private suspend fun collectDataRefreshStatus() {
-        dataRefreshStatusFlow
-            .first()
-            .let {
+    private fun collectDataRefreshStatus() {
+        dataRefreshScope.launch {
+            dataRefreshStatusFlow.collect {
+                Timber.d("Received new home data")
                 when (it.output) {
                     is HomeDataInteractor.Output.Failure -> view?.showError()
                     is HomeDataInteractor.Output.Success -> {
@@ -124,7 +125,12 @@ class HomePresenter(
                         showActiveHomeView()
                     }
                 }
+                view?.apply {
+                    hideProgress()
+                    hideRefreshProgress()
+                }
             }
+        }
     }
 
     private fun handleBackArrowVisibility() {
@@ -148,13 +154,11 @@ class HomePresenter(
     }
 
     override fun userAuthenticated() {
-        runWhileShowingListProgress {
-            view?.performRefreshUsingRefreshExecutor()
-            collectDataRefreshStatus()
-        }
+        initRefresh()
     }
 
     override fun detach() {
+        dataRefreshScope.coroutineContext.cancelChildren()
         scope.coroutineContext.cancelChildren()
         super<BaseAuthenticatedPresenter>.detach()
     }
@@ -191,14 +195,6 @@ class HomePresenter(
         displayHomeData()
     }
 
-    private fun runWhileShowingListProgress(action: suspend () -> Unit) {
-        scope.launch {
-            view?.showProgress()
-            action()
-            view?.hideProgress()
-        }
-    }
-
     private fun displayHomeData() {
         if (allResourceList.isEmpty() && allFoldersList.isEmpty()) {
             view?.showEmptyList()
@@ -226,18 +222,12 @@ class HomePresenter(
     }
 
     override fun refreshClick() {
-        runWhileShowingListProgress {
-            view?.performRefreshUsingRefreshExecutor()
-            collectDataRefreshStatus()
-        }
+        initRefresh()
     }
 
     override fun refreshSwipe() {
-        scope.launch {
-            view?.hideAddButton()
-            collectDataRefreshStatus()
-            view?.hideRefreshProgress()
-        }
+        view?.hideAddButton()
+        view?.performRefreshUsingRefreshExecutor()
     }
 
     override fun moreClick(resourceModel: ResourceModel) {
@@ -320,8 +310,9 @@ class HomePresenter(
     }
 
     override fun deleteResourceConfirmed() {
-        currentMoreMenuResource?.let { sadResource ->
-            runWhileShowingListProgress {
+        view?.showProgress()
+        scope.launch {
+            currentMoreMenuResource?.let { sadResource ->
                 when (val response = deleteResourceUseCase
                     .execute(DeleteResourceUseCase.Input(sadResource.resourceId))) {
                     is DeleteResourceUseCase.Output.Success -> {
@@ -337,27 +328,25 @@ class HomePresenter(
     }
 
     override fun resourceDeleted(resourceName: String) {
-        runWhileShowingListProgress {
-            view?.performRefreshUsingRefreshExecutor()
-            collectDataRefreshStatus()
-        }
+        initRefresh()
         view?.showResourceDeletedSnackbar(resourceName)
     }
 
     override fun resourceEdited(resourceName: String) {
-        runWhileShowingListProgress {
-            view?.performRefreshUsingRefreshExecutor()
-            collectDataRefreshStatus()
-        }
+        initRefresh()
         view?.showResourceEditedSnackbar(resourceName)
     }
 
     override fun newResourceCreated() {
-        runWhileShowingListProgress {
-            view?.performRefreshUsingRefreshExecutor()
-            collectDataRefreshStatus()
-        }
+        initRefresh()
         view?.showResourceAddedSnackbar()
+    }
+
+    private fun initRefresh() {
+        view?.apply {
+            showProgress()
+            performRefreshUsingRefreshExecutor()
+        }
     }
 
     override fun menuEditClick() {
@@ -407,6 +396,15 @@ class HomePresenter(
     override fun folderItemClick(folderModel: FolderModel) {
         view?.navigateToChildFolder(folderModel.folderId, activeView)
         view?.showBackArrow()
+    }
+
+    override fun createResourceClick() {
+        view?.navigateToCreateResource(
+            when (val folder = currentFolder) {
+                is Folder.Child -> folder.folderId
+                is Folder.Root -> null
+            }
+        )
     }
 
     companion object {

@@ -33,6 +33,6 @@ interface MainContract {
 
     interface Presenter : BaseContract.Presenter<View> {
         val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished>
-        fun performFullDataRefresh(): Flow<DataRefreshStatus.Finished>
+        fun performFullDataRefresh()
     }
 }
