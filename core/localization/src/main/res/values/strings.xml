@@ -192,6 +192,8 @@
     <string name="home_create">Create</string>
     <string name="home_resource_deleted_format">%s password was deleted.</string>
     <string name="home_resource_edited_format">%s password was successfully edited.</string>
+    <string name="home_in_sub_folders">in subfolders:</string>
+    <string name="home_in_current_folder">in \"%s\":</string>
 
     <string name="switch_account_see_details">See details</string>
     <string name="switch_account_sign_out">Sign out</string>
@@ -315,6 +317,7 @@
     <string name="fingerprint_setup_use_description">Unlock your secrets in a second.</string>
     <string name="fingerprint_setup_biometric_title">Confirm Using Your Fingerprint</string>
     <string name="fingerprint_setup_biometric_subtitle">Touch the fingerprint sensor</string>
+    <string name="folder_root">root</string>
 
     <!--
     arrays can be inconsistent when in other languages

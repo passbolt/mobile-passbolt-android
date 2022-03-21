@@ -34,7 +34,14 @@ import kotlinx.coroutines.flow.Flow
 interface HomeContract {
 
     interface View : BaseAuthenticatedContract.View {
-        fun showItems(resourceList: List<ResourceModel>, foldersList: List<FolderModelWithChildrenCount>)
+        fun showItems(
+            resourceList: List<ResourceModel>,
+            foldersList: List<FolderModelWithChildrenCount>,
+            filteredSubFoldersList: List<FolderModelWithChildrenCount>,
+            filteredSubFolderResourceList: List<ResourceModel>,
+            sectionsConfiguration: HomeFragment.HeaderSectionConfiguration
+        )
+
         fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel)
         fun navigateToDetails(resourceModel: ResourceModel)
         fun hideProgress()
@@ -62,13 +69,14 @@ interface HomeContract {
         fun navigateToManageAccounts()
         fun showFiltersMenu(activeDisplayView: ResourcesDisplayView)
         fun showHomeScreenTitle(view: ResourcesDisplayView)
-        fun navigateToChildFolder(folderId: String, activeFilter: ResourcesDisplayView)
+        fun navigateToChildFolder(folderId: String, folderName: String, activeFilter: ResourcesDisplayView)
         fun showBackArrow()
         fun hideBackArrow()
         fun navigateToRootHomeFromChildHome(activeFilter: ResourcesDisplayView)
         fun performRefreshUsingRefreshExecutor()
         fun navigateRootHomeFromRootHome(activeView: ResourcesDisplayView)
         fun navigateToCreateResource(parentFolderId: String?)
+        fun showChildFolderTitle(activeFolderName: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -102,6 +110,7 @@ interface HomeContract {
         fun argsRetrieved(
             activeHomeView: ResourcesDisplayView,
             activeFolderId: String?,
+            activeFolderName: String?,
             hasPreviousBackStackEntries: Boolean
         )
 
