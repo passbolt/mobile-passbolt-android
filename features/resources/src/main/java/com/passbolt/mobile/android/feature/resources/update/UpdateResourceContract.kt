@@ -67,6 +67,8 @@ interface UpdateResourceContract {
         fun showEditTitle()
         fun closeWithCreateSuccessResult(name: String, id: String)
         fun closeWithEditSuccessResult(name: String)
+        fun hideScrollView()
+        fun showScrollView()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -74,6 +76,6 @@ interface UpdateResourceContract {
         fun passwordGenerateClick(tag: String)
         fun passwordTextChanged(tag: String, password: String)
         fun textChanged(tag: String, value: String)
-        fun argsRetrieved(mode: ResourceMode, resource: ResourceModel? = null)
+        fun argsRetrieved(mode: ResourceMode, resource: ResourceModel? = null, resourceParentFolderId: String?)
     }
 }

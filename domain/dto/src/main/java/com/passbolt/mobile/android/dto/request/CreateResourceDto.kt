@@ -31,7 +31,9 @@ data class CreateResourceDto(
     val secrets: List<EncryptedSecret>,
     val username: String?,
     val uri: String?,
-    val description: String?
+    val description: String?,
+    @SerializedName("folder_parent_id")
+    val folderParentId: String?
 )
 
 data class EncryptedSecret(

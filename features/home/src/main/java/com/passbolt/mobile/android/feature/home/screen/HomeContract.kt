@@ -68,6 +68,7 @@ interface HomeContract {
         fun navigateToRootHomeFromChildHome(activeFilter: ResourcesDisplayView)
         fun performRefreshUsingRefreshExecutor()
         fun navigateRootHomeFromRootHome(activeView: ResourcesDisplayView)
+        fun navigateToCreateResource(parentFolderId: String?)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -106,5 +107,6 @@ interface HomeContract {
 
         fun folderItemClick(folderModel: FolderModel)
         fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>)
+        fun createResourceClick()
     }
 }

@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.common.extension.invisible
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
@@ -57,11 +59,14 @@ class UpdateResourceFragment :
         requireActivity().intent?.getSerializableExtra(ResourceActivity.EXTRA_RESOURCE_MODE)
                 as ResourceMode
     }
+    private val bundledResourceParentFolderId by lifecycleAwareLazy {
+        requireActivity().intent?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_PARENT_FOLDER_ID)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setListeners()
         presenter.attach(this)
-        presenter.argsRetrieved(bundledMode, bundledExistingResource)
+        presenter.argsRetrieved(bundledMode, bundledExistingResource, bundledResourceParentFolderId)
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -203,5 +208,13 @@ class UpdateResourceFragment :
 
     override fun showEditTitle() {
         binding.toolbar.toolbarTitle = getString(R.string.resource_update_edit_password_title)
+    }
+
+    override fun hideScrollView() {
+        binding.scrollView.invisible()
+    }
+
+    override fun showScrollView() {
+        binding.scrollView.visible()
     }
 }

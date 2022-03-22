@@ -282,6 +282,7 @@ class ResourceDetailsFragment :
             ResourceActivity.newInstance(
                 requireContext(),
                 ResourceMode.EDIT,
+                resourceModel.folderId,
                 resourceModel
             )
         )

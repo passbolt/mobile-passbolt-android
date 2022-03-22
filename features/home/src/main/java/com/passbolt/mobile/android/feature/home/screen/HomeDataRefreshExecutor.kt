@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface HomeDataRefreshExecutor {
 
-    fun performFullDataRefresh(): Flow<DataRefreshStatus>
+    fun performFullDataRefresh()
 
     fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished>
 }

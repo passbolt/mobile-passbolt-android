@@ -217,12 +217,7 @@ class HomeFragment :
                 presenter.searchTextChange(it.toString())
             }
             updateButton.setOnClickListener {
-                resourceDetailsResult.launch(
-                    ResourceActivity.newInstance(
-                        requireContext(),
-                        ResourceMode.NEW
-                    )
-                )
+                presenter.createResourceClick()
             }
             searchTextInput.setStartIconOnClickListener {
                 presenter.filtersClick()
@@ -263,7 +258,7 @@ class HomeFragment :
 
     override fun navigateToDetails(resourceModel: ResourceModel) {
         resourceDetailsResult.launch(
-            ResourceActivity.newInstance(requireContext(), ResourceMode.DETAILS, resourceModel)
+            ResourceActivity.newInstance(requireContext(), ResourceMode.DETAILS, resourceModel.folderId, resourceModel)
         )
     }
 
@@ -366,6 +361,7 @@ class HomeFragment :
             ResourceActivity.newInstance(
                 requireContext(),
                 ResourceMode.EDIT,
+                resourceModel.folderId,
                 resourceModel
             )
         )
@@ -489,6 +485,16 @@ class HomeFragment :
 
     override fun hideBackArrow() {
         binding.backButton.gone()
+    }
+
+    override fun navigateToCreateResource(parentFolderId: String?) {
+        resourceDetailsResult.launch(
+            ResourceActivity.newInstance(
+                requireContext(),
+                ResourceMode.NEW,
+                parentFolderId
+            )
+        )
     }
 
     companion object {

@@ -85,14 +85,17 @@ class UpdateResourcePresenter(
     private lateinit var fields: List<ResourceValue>
     private lateinit var resourceUpdateType: ResourceUpdateType
     private var existingResource: ResourceModel? = null
+    private var resourceParentFolderId: String? = null
 
-    override fun argsRetrieved(mode: ResourceMode, resource: ResourceModel?) {
+    override fun argsRetrieved(mode: ResourceMode, resource: ResourceModel?, resourceParentFolderId: String?) {
+        this.resourceParentFolderId = resourceParentFolderId
         resourceUpdateType = ResourceUpdateType.from(mode)
         existingResource = resource
 
         setupUi()
 
         runWhileShowingProgress {
+            view?.hideScrollView()
             when (resourceUpdateType) {
                 ResourceUpdateType.CREATE -> createInputFields()
                 ResourceUpdateType.EDIT -> {
@@ -108,6 +111,7 @@ class UpdateResourcePresenter(
                     )
                 }
             }
+            view?.showScrollView()
         }
     }
 
@@ -298,11 +302,12 @@ class UpdateResourcePresenter(
             getFieldValue(PASSWORD_FIELD)!!, // validated to be not null
             getFieldValue(DESCRIPTION_FIELD),
             getFieldValue(USERNAME_FIELD),
-            getFieldValue(URI_FIELD)
+            getFieldValue(URI_FIELD),
+            resourceParentFolderId
         )
     }
 
-    private suspend fun createUpdateResourceInput(success: List<User>): UpdateResourceUseCase.Input {
+    private suspend fun createUpdateResourceInput(usersWhoHaveAccess: List<User>): UpdateResourceUseCase.Input {
         val password = when (resourceTypeFactory.getResourceTypeEnum(existingResource!!.resourceTypeId)) {
             ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> getFieldValue(SECRET_FIELD)!!
             ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> getFieldValue(PASSWORD_FIELD)!!
@@ -315,7 +320,8 @@ class UpdateResourcePresenter(
             getFieldValue(DESCRIPTION_FIELD),
             getFieldValue(USERNAME_FIELD),
             getFieldValue(URI_FIELD),
-            success
+            usersWhoHaveAccess,
+            resourceParentFolderId
         )
     }
 
