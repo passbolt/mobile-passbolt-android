@@ -23,10 +23,7 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
 import com.password.mobile.android.feature.home.TestCoroutineLaunchContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.stub
 
 internal val resourcesInteractor = mock<ResourceInteractor>()
 internal val getSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseCase>()
@@ -41,11 +38,7 @@ internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
 internal val mockFoldersInteractor = mock<FoldersInteractor>()
 internal val mockGetSubFoldersUseCase = mock<GetLocalSubFoldersForFolderUseCase>()
 internal val mockGetSubFoldersResourcesUseCase = mock<GetLocalSubFolderResourcesFilteredUseCase>()
-
-// TODO change when adding unit test
-internal val mockGetLocalResourcesAndFoldersUseCase = mock<GetLocalResourcesAndFoldersUseCase>().stub {
-    onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output(emptyList(), emptyList())
-}
+internal val mockGetLocalResourcesAndFoldersUseCase = mock<GetLocalResourcesAndFoldersUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
