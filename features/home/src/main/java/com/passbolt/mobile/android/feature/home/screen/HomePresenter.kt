@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import androidx.annotation.VisibleForTesting
+import com.passbolt.mobile.android.common.extension.areListsEmpty
+import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
@@ -8,6 +10,8 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPres
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalSubFolderResourcesFilteredUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalSubFoldersForFolderUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
@@ -69,7 +73,9 @@ class HomePresenter(
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
     private val deleteResourceUseCase: DeleteResourceUseCase,
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
-    private val getLocalResourcesAndFoldersUseCase: GetLocalResourcesAndFoldersUseCase
+    private val getLocalSubFoldersForFolderUseCase: GetLocalSubFoldersForFolderUseCase,
+    private val getLocalResourcesAndFoldersUseCase: GetLocalResourcesAndFoldersUseCase,
+    private val getLocalResourcesFiltered: GetLocalSubFolderResourcesFilteredUseCase
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinComponent {
 
     override var view: HomeContract.View? = null
@@ -77,18 +83,24 @@ class HomePresenter(
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private val dataRefreshJob = SupervisorJob()
     private val dataRefreshScope = CoroutineScope(dataRefreshJob + coroutineLaunchContext.ui)
+    private lateinit var dataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>
+
     private var currentSearchText: String = ""
-    private var allResourceList: List<ResourceModel> = emptyList()
-    private var allFoldersList: List<FolderModelWithChildrenCount> = emptyList()
+    private lateinit var activeView: ResourcesDisplayView
+    private lateinit var currentFolder: Folder
+    private var currentFolderName: String? = null
+    private var hasPreviousBackEntry = false
+
+    private var resourceList: List<ResourceModel> = emptyList()
+    private var foldersList: List<FolderModelWithChildrenCount> = emptyList()
+
+    private var filteredSubFolderResources: List<ResourceModel> = emptyList()
+    private var filteredSubFolders: List<FolderModelWithChildrenCount> = emptyList()
+
     private var currentMoreMenuResource: ResourceModel? = null
     private var userAvatarUrl: String? = null
     private val searchInputEndIconMode
         get() = if (currentSearchText.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
-
-    private lateinit var activeView: ResourcesDisplayView
-    private lateinit var currentFolder: Folder
-    private var hasPreviousBackEntry = false
-    private lateinit var dataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>
 
     override fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>) {
         dataRefreshStatusFlow = fullDataRefreshStatusFlow
@@ -97,15 +109,21 @@ class HomePresenter(
     override fun argsRetrieved(
         activeHomeView: ResourcesDisplayView,
         activeFolderId: String?,
+        activeFolderName: String?,
         hasPreviousBackStackEntries: Boolean
     ) {
         activeView = activeHomeView
+        currentFolderName = activeFolderName
         currentFolder = activeFolderId?.let { Folder.Child(it) } ?: Folder.Root
         hasPreviousBackEntry = hasPreviousBackStackEntries
 
         view?.apply {
             hideAddButton()
-            showHomeScreenTitle(activeView)
+            if (!activeFolderName.isNullOrBlank()) {
+                showChildFolderTitle(activeFolderName)
+            } else {
+                showHomeScreenTitle(activeView)
+            }
             showProgress()
         }
 
@@ -181,8 +199,8 @@ class HomePresenter(
     }
 
     private suspend fun showResourcesFromDatabase() {
-        allResourceList = getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(activeView)).resources
-        allFoldersList = emptyList()
+        resourceList = getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(activeView)).resources
+        foldersList = emptyList()
         displayHomeData()
     }
 
@@ -190,17 +208,25 @@ class HomePresenter(
         val (folders, resources) = getLocalResourcesAndFoldersUseCase.execute(
             GetLocalResourcesAndFoldersUseCase.Input(currentFolder)
         )
-        allFoldersList = folders
-        allResourceList = resources
+        foldersList = folders
+        resourceList = resources
         displayHomeData()
     }
 
     private fun displayHomeData() {
-        if (allResourceList.isEmpty() && allFoldersList.isEmpty()) {
+        if (resourceList.isEmpty() && foldersList.isEmpty()) {
             view?.showEmptyList()
         } else {
             if (currentSearchText.isEmpty()) {
-                view?.showItems(allResourceList, allFoldersList)
+                view?.showItems(
+                    resourceList,
+                    foldersList,
+                    filteredSubFolders,
+                    filteredSubFolderResources,
+                    HomeFragment.HeaderSectionConfiguration(
+                        isInCurrentFolderSectionVisible = false, isInSubFoldersSectionVisible = false
+                    )
+                )
             } else {
                 filterHomeData()
             }
@@ -208,18 +234,56 @@ class HomePresenter(
     }
 
     private fun filterHomeData() {
-        val filteredResources = allResourceList.filter {
-            searchableMatcher.matches(it, currentSearchText)
-        }
-        val filteredFolders = allFoldersList.filter {
-            searchableMatcher.matches(it, currentSearchText)
-        }
-        if (filteredResources.isEmpty() && filteredFolders.isEmpty()) {
-            view?.showSearchEmptyList()
-        } else {
-            view?.showItems(filteredResources, filteredFolders)
+        scope.launch {
+            val filteredResources = filterSearchableList(resourceList, currentSearchText)
+            val filteredFolders = filterSearchableList(foldersList, currentSearchText)
+
+            if (activeView == ResourcesDisplayView.FOLDERS) {
+                populateSubFoldersFilteringResults()
+            }
+            if (areListsEmpty(filteredResources, filteredFolders, filteredSubFolders, filteredSubFolderResources)
+            ) {
+                view?.showSearchEmptyList()
+            } else {
+                view?.showItems(
+                    filteredResources,
+                    filteredFolders,
+                    filteredSubFolders,
+                    filteredSubFolderResources,
+                    HomeFragment.HeaderSectionConfiguration(
+                        isInCurrentFolderSectionVisible = !areListsEmpty(filteredResources, filteredFolders),
+                        isInSubFoldersSectionVisible = !areListsEmpty(filteredSubFolderResources, filteredSubFolders),
+                        currentFolderName
+                    )
+                )
+            }
         }
     }
+
+    private suspend fun populateSubFoldersFilteringResults() {
+        if (currentSearchText.isNotBlank()) {
+            filteredSubFolders = getAllSubFolders()
+            filteredSubFolderResources = getSubFoldersResources()
+        } else {
+            filteredSubFolders = emptyList()
+            filteredSubFolderResources = emptyList()
+        }
+    }
+
+    private suspend fun getSubFoldersResources() = getLocalResourcesFiltered.execute(
+        GetLocalSubFolderResourcesFilteredUseCase.Input(
+            filteredSubFolders.map { it.folderModel.folderId }, currentSearchText
+        )
+    ).resources
+
+    private suspend fun getAllSubFolders() = getLocalSubFoldersForFolderUseCase.execute(
+        GetLocalSubFoldersForFolderUseCase.Input(currentFolder, currentSearchText)
+    ).folders
+
+    private fun <T : Searchable> filterSearchableList(list: List<T>, currentSearchText: String) =
+        list.filter {
+            searchableMatcher.matches(it, currentSearchText)
+        }
 
     override fun refreshClick() {
         initRefresh()
@@ -394,7 +458,7 @@ class HomePresenter(
     }
 
     override fun folderItemClick(folderModel: FolderModel) {
-        view?.navigateToChildFolder(folderModel.folderId, activeView)
+        view?.navigateToChildFolder(folderModel.folderId, folderModel.name, activeView)
         view?.showBackArrow()
     }
 

@@ -20,6 +20,11 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="activeFolderName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_home_to_homeChild"
             app:destination="@id/homeChild"
@@ -35,8 +40,11 @@
                 android:name="activeFolderId"
                 app:argType="string"
                 app:nullable="true" />
+            <argument
+                android:name="activeFolderName"
+                app:argType="string"
+                app:nullable="true" />
         </action>
-
     </fragment>
 
     <fragment
@@ -58,6 +66,10 @@
                 app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
             <argument
                 android:name="activeFolderId"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="activeFolderName"
                 app:argType="string"
                 app:nullable="true" />
         </action>
@@ -82,6 +94,11 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="activeFolderName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </action>
 
     <action
@@ -98,6 +115,11 @@
             app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
         <argument
             android:name="activeFolderId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="activeFolderName"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />

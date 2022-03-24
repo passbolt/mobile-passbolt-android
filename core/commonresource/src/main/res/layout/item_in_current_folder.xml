@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemInCurrentFolder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/dp_16"
+    android:background="?selectableItemBackground"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/inFolderLabel"
+        style="@style/Heading4Text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        tools:text="In Folder 1" />
+</FrameLayout>

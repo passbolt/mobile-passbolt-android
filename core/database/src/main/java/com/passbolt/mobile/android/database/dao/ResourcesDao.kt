@@ -51,6 +51,18 @@ interface ResourcesDao {
     suspend fun getWithPermissions(permissions: Set<Permission>): List<Resource>
 
     @Transaction
+    @Query(
+        "SELECT * FROM Resource WHERE (" +
+                "resourceName LIKE '%' || :searchQuery || '%' OR " +
+                "url LIKE '%' || :searchQuery || '%' OR " +
+                "username LIKE '%' || :searchQuery || '%') " +
+                "AND " +
+                "folderId IN (:inOneOfFolders) " +
+                "ORDER BY modified DESC"
+    )
+    suspend fun getFilteredForChildFolders(searchQuery: String, inOneOfFolders: List<String>): List<Resource>
+
+    @Transaction
     @Query("SELECT * FROM Resource WHERE resourceId == :resourceId")
     suspend fun get(resourceId: String): Resource
 

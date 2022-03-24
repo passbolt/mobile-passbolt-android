@@ -76,7 +76,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         verify(view).displaySearchAvatar(eq(url))
     }
 
@@ -88,7 +93,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         presenter.searchTextChange("abc")
         presenter.searchTextChange("")
 
@@ -109,7 +119,12 @@ class HomePresenterTest : KoinTest {
         mockAccountData(null)
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
 
         verify(view).showHomeScreenTitle(ResourcesDisplayView.ALL)
         verify(view).hideBackArrow()
@@ -117,7 +132,7 @@ class HomePresenterTest : KoinTest {
         verify(view).hideAddButton()
         verify(view).hideProgress()
         verify(view).showAddButton()
-        verify(view).showItems(anyOrNull(), anyOrNull())
+        verify(view).showItems(any(), any(), any(), any(), any())
         verify(view).displaySearchAvatar(null)
         verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
@@ -141,7 +156,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         presenter.searchTextChange("second")
         presenter.refreshSwipe()
 
@@ -149,7 +169,7 @@ class HomePresenterTest : KoinTest {
         verify(view).performRefreshUsingRefreshExecutor()
         verify(view, times(2)).hideAddButton()
         verify(view).hideRefreshProgress()
-        verify(view, times(2)).showItems(anyOrNull(), anyOrNull())
+        verify(view, times(2)).showItems(any(), any(), any(), any(), any())
         verify(view).showAddButton()
     }
 
@@ -166,7 +186,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         presenter.searchTextChange("empty search")
 
         verify(view).hideAddButton()
@@ -186,7 +211,12 @@ class HomePresenterTest : KoinTest {
         mockAccountData(null)
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
 
         verify(view).hideBackArrow()
         verify(view).showHomeScreenTitle(ResourcesDisplayView.ALL)
@@ -212,7 +242,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
 
         verify(view).hideBackArrow()
         verify(view).showHomeScreenTitle(ResourcesDisplayView.ALL)
@@ -243,7 +278,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         presenter.refreshClick()
 
         verify(view).performRefreshUsingRefreshExecutor()
@@ -278,7 +318,12 @@ class HomePresenterTest : KoinTest {
         mockAccountData(null)
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         reset(view)
         presenter.itemClick(model)
         verify(view).navigateToDetails(model)
@@ -310,7 +355,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         reset(view)
         presenter.moreClick(model)
 
@@ -329,7 +379,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -347,7 +402,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -365,7 +425,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -391,7 +456,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -412,7 +482,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
         presenter.deleteResourceConfirmed()
@@ -442,7 +517,12 @@ class HomePresenterTest : KoinTest {
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
-        presenter.argsRetrieved(ResourcesDisplayView.ALL, null, hasPreviousBackStackEntries = false)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.ALL,
+            null,
+            null,
+            hasPreviousBackStackEntries = false
+        )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
         presenter.deleteResourceConfirmed()

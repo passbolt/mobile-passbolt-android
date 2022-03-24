@@ -56,8 +56,36 @@ interface FoldersDao {
     @Transaction
     @Query(
         "SELECT " +
-                "(SELECT COUNT(*) FROM Resource WHERE folderId IS :id) +" +
+                "(SELECT COUNT(*) FROM Resource WHERE folderId IS :id) + " +
                 "(SELECT COUNT(*) FROM Folder WHERE parentId IS :id)"
     )
     suspend fun getResourcesAndFoldersCountForFolderWithId(id: String): Int
+
+    @Transaction
+    @Query(
+        "WITH RECURSIVE ancestor(folderId, name, permission, parentId, isShared, level) as (" +
+                "SELECT folderId, name, permission, parentId, isShared, 0 " +
+                "from Folder " +
+                "WHERE folderId = :folderId " +
+                "" +
+                "UNION ALL " +
+                "" +
+                "SELECT f.folderId, f.name, f.permission, f.parentId, f.isShared, a.level + 1 " +
+                "FROM Folder f " +
+                "JOIN ancestor a on f.parentId = a.folderId " +
+                ") " +
+                "" +
+                "SELECT folderId, name, permission, parentId, isShared " +
+                "FROM ancestor " +
+                "WHERE level > 1 AND name LIKE '%' || :subfolderNameQuery || '%'" +
+                "ORDER BY level"
+    )
+    suspend fun getFilteredSubFoldersRecursivelyForFolderWithId(
+        folderId: String,
+        subfolderNameQuery: String
+    ): List<Folder>
+
+    @Transaction
+    @Query("SELECT * FROM Folder WHERE name LIKE '%' || :subfolderNameQuery || '%'")
+    suspend fun getAllFoldersFilteredByName(subfolderNameQuery: String): List<Folder>
 }

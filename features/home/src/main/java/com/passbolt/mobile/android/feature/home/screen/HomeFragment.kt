@@ -33,6 +33,8 @@ import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.commonresource.FolderItem
+import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderItem
+import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -81,7 +83,15 @@ class HomeFragment :
 
     override val presenter: HomeContract.Presenter by inject()
     private val passwordItemAdapter: ItemAdapter<PasswordItem> by inject(named(RESOURCE_ITEM_ADAPTER))
+    private val childrenPasswordItemAdapter: ItemAdapter<PasswordItem> by inject(named(SUB_RESOURCE_ITEM_ADAPTER))
     private val folderItemAdapter: ItemAdapter<FolderItem> by inject(named(FOLDER_ITEM_ADAPTER))
+    private val childrenFolderItemAdapter: ItemAdapter<FolderItem> by inject(named(SUB_FOLDER_ITEM_ADAPTER))
+    private val inSubFoldersHeaderItemAdapter: ItemAdapter<InSubFoldersHeaderItem> by inject(
+        named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)
+    )
+    private val inCurrentFoldersHeaderItemAdapter: ItemAdapter<InCurrentFoldersHeaderItem> by inject(
+        named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)
+    )
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val imageLoader: ImageLoader by inject()
     private val clipboardManager: ClipboardManager? by inject()
@@ -122,7 +132,12 @@ class HomeFragment :
         setListeners()
         val hasPreviousEntry = navController.previousBackStackEntry != null
         presenter.attach(this)
-        presenter.argsRetrieved(arguments.activeView, arguments.activeFolderId, hasPreviousEntry)
+        presenter.argsRetrieved(
+            arguments.activeView,
+            arguments.activeFolderId,
+            arguments.activeFolderName,
+            hasPreviousEntry
+        )
     }
 
     override fun onDestroyView() {
@@ -228,12 +243,55 @@ class HomeFragment :
         }
     }
 
-    override fun showItems(resourceList: List<ResourceModel>, foldersList: List<FolderModelWithChildrenCount>) {
+    override fun showItems(
+        resourceList: List<ResourceModel>,
+        foldersList: List<FolderModelWithChildrenCount>,
+        filteredSubFoldersList: List<FolderModelWithChildrenCount>,
+        filteredSubFolderResourceList: List<ResourceModel>,
+        sectionsConfiguration: HeaderSectionConfiguration
+    ) {
         setState(State.SUCCESS)
+        // "in current folder" header
+        FastAdapterDiffUtil.calculateDiff(
+            inCurrentFoldersHeaderItemAdapter,
+            createCurrentFolderSection(sectionsConfiguration)
+        )
+        // current folder folders
         FastAdapterDiffUtil.calculateDiff(folderItemAdapter, foldersList.map { FolderItem(it) })
+        // current folder resources
         FastAdapterDiffUtil.calculateDiff(passwordItemAdapter, resourceList.map { PasswordItem(it) })
+        // "in sub-folders" header
+        FastAdapterDiffUtil.calculateDiff(
+            inSubFoldersHeaderItemAdapter,
+            createInSubFoldersSection(sectionsConfiguration)
+        )
+        // sub-folders folders
+        FastAdapterDiffUtil.calculateDiff(childrenFolderItemAdapter, filteredSubFoldersList.map { FolderItem(it) })
+        // sub-folders resources
+        FastAdapterDiffUtil.calculateDiff(
+            childrenPasswordItemAdapter,
+            filteredSubFolderResourceList.map { PasswordItem(it) })
         fastAdapter.notifyAdapterDataSetChanged()
     }
+
+    private fun createInSubFoldersSection(sectionsConfiguration: HeaderSectionConfiguration) =
+        if (sectionsConfiguration.isInSubFoldersSectionVisible) {
+            listOf(InSubFoldersHeaderItem())
+        } else {
+            emptyList()
+        }
+
+    private fun createCurrentFolderSection(sectionsConfiguration: HeaderSectionConfiguration) =
+        if (sectionsConfiguration.isInCurrentFolderSectionVisible) {
+            listOf(
+                InCurrentFoldersHeaderItem(
+                    getString(R.string.home_in_current_folder,
+                        sectionsConfiguration.currentFolderName ?: getString(R.string.folder_root))
+                )
+            )
+        } else {
+            emptyList()
+        }
 
     override fun hideProgress() {
         binding.progress.gone()
@@ -456,15 +514,23 @@ class HomeFragment :
         }
     }
 
+    override fun showChildFolderTitle(activeFolderName: String) {
+        showScreenTitleWithStartIcon(activeFolderName, R.drawable.ic_folder)
+    }
+
     private fun showScreenTitleWithStartIcon(@StringRes titleRes: Int, @DrawableRes iconRes: Int) {
+        showScreenTitleWithStartIcon(getString(titleRes), iconRes)
+    }
+
+    private fun showScreenTitleWithStartIcon(title: String, @DrawableRes iconRes: Int) {
         with(binding.screenTitleLabel) {
-            text = getString(titleRes)
+            text = title
             setCompoundDrawablesWithIntrinsicBounds(iconRes, 0, 0, 0)
         }
     }
 
-    override fun navigateToChildFolder(folderId: String, activeFilter: ResourcesDisplayView) {
-        navController.navigate(HomeFragmentDirections.actionHomeToHomeChild(folderId))
+    override fun navigateToChildFolder(folderId: String, folderName: String, activeFilter: ResourcesDisplayView) {
+        navController.navigate(HomeFragmentDirections.actionHomeToHomeChild(folderId, folderName))
     }
 
     override fun navigateToRootHomeFromChildHome(activeFilter: ResourcesDisplayView) {
@@ -513,4 +579,10 @@ class HomeFragment :
         PROGRESS(true, false, false, false),
         SUCCESS(false, false, false, true)
     }
+
+    data class HeaderSectionConfiguration(
+        val isInCurrentFolderSectionVisible: Boolean,
+        val isInSubFoldersSectionVisible: Boolean,
+        val currentFolderName: String? = null
+    )
 }
