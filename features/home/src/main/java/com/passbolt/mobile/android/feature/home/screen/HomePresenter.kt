@@ -205,11 +205,21 @@ class HomePresenter(
     }
 
     private suspend fun showResourcesAndFoldersFromDatabase() {
-        val (folders, resources) = getLocalResourcesAndFoldersUseCase.execute(
-            GetLocalResourcesAndFoldersUseCase.Input(currentFolder)
-        )
-        foldersList = folders
-        resourceList = resources
+        when (
+            val result = getLocalResourcesAndFoldersUseCase.execute(
+                GetLocalResourcesAndFoldersUseCase.Input(currentFolder)
+            )
+        ) {
+            is GetLocalResourcesAndFoldersUseCase.Output.Failure -> {
+                Timber.d("Exception during getting resources and folders. Navigating to root")
+                view?.navigateToRootHomeFromChildHome(ResourcesDisplayView.FOLDERS)
+            }
+            is GetLocalResourcesAndFoldersUseCase.Output.Success -> {
+                foldersList = result.folders
+                resourceList = result.resources
+            }
+        }
+
         displayHomeData()
     }
 

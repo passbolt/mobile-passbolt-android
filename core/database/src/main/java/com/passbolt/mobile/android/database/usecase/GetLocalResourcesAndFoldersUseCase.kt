@@ -38,37 +38,44 @@ class GetLocalResourcesAndFoldersUseCase(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
 ) : AsyncUseCase<GetLocalResourcesAndFoldersUseCase.Input, GetLocalResourcesAndFoldersUseCase.Output> {
 
-    override suspend fun execute(input: Input): Output =
-        databaseProvider
+    override suspend fun execute(input: Input): Output {
+        val foldersDao = databaseProvider
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
             .foldersDao()
-            .let { foldersDao ->
-                val (resources, folders) = when (input.folder) {
-                    is Folder.Root ->
-                        Pair(foldersDao.getResourcesForRootFolder(), foldersDao.getFoldersForRootFolder())
-                    is Folder.Child ->
-                        foldersDao.getFoldersWithResourcesForFolderWithId(input.folder.folderId)
-                            .let { Pair(it.resources, it.folders) }
-                }
 
-                Output(
-                    folders.map {
-                        FolderModelWithChildrenCount(
-                            folderModelMapper.map(it),
-                            foldersDao.getResourcesAndFoldersCountForFolderWithId(it.folderId)
-                        )
-                    },
-                    resources.map {
-                        resourceModelMapper.map(it)
-                    })
+        return runCatching {
+            val (resources, folders) = when (input.folder) {
+                is Folder.Root ->
+                    Pair(foldersDao.getResourcesForRootFolder(), foldersDao.getFoldersForRootFolder())
+                is Folder.Child ->
+                    foldersDao.getFoldersWithResourcesForFolderWithId(input.folder.folderId)
+                        .let { Pair(it.resources, it.folders) }
             }
+            Output.Success(
+                folders.map {
+                    FolderModelWithChildrenCount(
+                        folderModelMapper.map(it),
+                        foldersDao.getResourcesAndFoldersCountForFolderWithId(it.folderId)
+                    )
+                },
+                resources.map {
+                    resourceModelMapper.map(it)
+                })
+        }
+            .getOrElse { Output.Failure }
+    }
 
     data class Input(
         val folder: Folder
     )
 
-    data class Output(
-        val folders: List<FolderModelWithChildrenCount>,
-        val resources: List<ResourceModel>
-    )
+    sealed class Output {
+
+        data class Success(
+            val folders: List<FolderModelWithChildrenCount>,
+            val resources: List<ResourceModel>
+        ) : Output()
+
+        object Failure : Output()
+    }
 }

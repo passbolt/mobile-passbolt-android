@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.database.usecase.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
@@ -61,6 +62,12 @@ class HomePresenterTest : KoinTest {
         )
         mockFoldersInteractor.stub {
             onBlocking { fetchAndSaveFolders() } doReturn FoldersInteractor.Output.Success
+        }
+        mockGetLocalResourcesAndFoldersUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output.Success(
+                emptyList(),
+                emptyList()
+            )
         }
     }
 
@@ -529,6 +536,26 @@ class HomePresenterTest : KoinTest {
 
         verify(view).showDeleteConfirmationDialog()
         verify(view).showGeneralError()
+    }
+
+    @Test
+    fun `home should navigate to root when current folder cannot be retrieved`() {
+        mockGetLocalResourcesAndFoldersUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output.Failure
+        }
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        mockAccountData(null)
+
+        presenter.viewCreate(refreshFlow)
+        presenter.attach(view)
+        presenter.argsRetrieved(
+            ResourcesDisplayView.FOLDERS,
+            "not existing folder", // i.e. navigate to folder, full refresh -> folder deleted
+            null,
+            hasPreviousBackStackEntries = false
+        )
+
+        verify(view).navigateToRootHomeFromChildHome(ResourcesDisplayView.FOLDERS)
     }
 
     private fun mockResourcesList() = listOf(
