@@ -21,11 +21,13 @@ buildscript {
         classpath libs.playStorePublisher
         classpath libs.dokka
         classpath libs.quality.kover
+        classpath libs.quality.dependencyAnalysis
     }
 }
 
 apply plugin: "org.jetbrains.dokka"
-apply plugin: 'kover'
+apply plugin: "kover"
+apply plugin: "com.autonomousapps.dependency-analysis"
 
 allprojects {
     repositories {
