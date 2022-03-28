@@ -41,8 +41,8 @@ class Converters {
      * @return Zoned date time instance
      */
     @TypeConverter
-    fun dateFromTimestamp(timestampMillis: Long?): ZonedDateTime? =
-        timestampMillis?.let { ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneOffset.UTC) }
+    fun dateFromTimestamp(timestampMillis: Long): ZonedDateTime =
+        ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestampMillis), ZoneOffset.UTC)
 
     /**
      * Converts Date to Unix timestamp in milliseconds
@@ -51,6 +51,6 @@ class Converters {
      * @return Unix timestamp in millis
      */
     @TypeConverter
-    fun dateToTimestamp(date: ZonedDateTime?): Long? =
-        date?.toInstant()?.toEpochMilli()
+    fun dateToTimestamp(date: ZonedDateTime): Long =
+        date.toInstant().toEpochMilli()
 }

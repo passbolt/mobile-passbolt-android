@@ -1,9 +1,11 @@
-FROM openjdk:16-bullseye
+FROM openjdk:oraclelinux8
 
 ENV SDK_URL="https://dl.google.com/android/repository/commandlinetools-linux-6604631_latest.zip" \
     ANDROID_HOME="/usr/local/android-sdk" \
     ANDROID_VERSION=29 \
     ANDROID_BUILD_TOOLS_VERSION=29.0.2
+
+RUN microdnf install -y wget tar unzip libstdc++ findutils
 
 RUN mkdir "$ANDROID_HOME" .android \
     && cd "$ANDROID_HOME" \

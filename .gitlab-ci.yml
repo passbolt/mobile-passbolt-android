@@ -1,4 +1,4 @@
-image: openjdk:16-bullseye
+image: openjdk:oraclelinux8
 
 variables:
   ANDROID_VERSION: "29"
@@ -6,8 +6,7 @@ variables:
   ANDROID_SDK_TOOLS_VERSION: "6604631"
 
 before_script:
-  - apt-get --quiet update --yes
-  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+  - microdnf install -y wget tar unzip libstdc++ findutils python3.9 python3-pip
 
   # setup android home path for moving the downloaded sdk into it
   - export ANDROID_HOME="${PWD}/android-home"
@@ -65,15 +64,7 @@ release-internal-testing:
     - docker
   script:
     - echo $QA_KEY | base64 -d > "${HOME}/qa.keystore"
-    - |
-      echo "Initalizing python"
-      apt-get --quiet update --yes
-      apt-get --quiet install --yes software-properties-common > /dev/null
-      apt-add-repository --yes ppa:deadsnakes/ppa > /dev/null
-      apt-get --quiet install --yes python3.9 > /dev/null
-      apt-get --quiet install --yes python3-pip > /dev/null
-      python3 -m pip install -r gradle/requirements.txt
-
+    - python3 -m pip install -r gradle/requirements.txt
     - export GITLAB_BUILD_NUMBER="$(python3 gradle/gitlabBuildNumber.py "RELEASE_BUILD_NUMBER" ${CI_API_V4_URL} ${CI_PROJECT_ID} ${GITLAB_ACCESS_TOKEN})"
     - export FIREBASE_DIR="$HOME/.config/firebase"
     - install -d $FIREBASE_DIR
@@ -100,14 +91,7 @@ release-production:
     - docker
   script:
     - echo $PROD_KEYSTORE | base64 -d > "${HOME}/production.keystore"
-    - |
-      echo "Initalizing python"
-      apt-get --quiet update --yes
-      apt-get --quiet install --yes software-properties-common > /dev/null
-      apt-add-repository --yes ppa:deadsnakes/ppa > /dev/null
-      apt-get --quiet install --yes python3.9 > /dev/null
-      apt-get --quiet install --yes python3-pip > /dev/null
-      python3 -m pip install -r gradle/requirements.txt
+    - python3 -m pip install -r gradle/requirements.txt
 
     - >
       ./gradlew --no-daemon
