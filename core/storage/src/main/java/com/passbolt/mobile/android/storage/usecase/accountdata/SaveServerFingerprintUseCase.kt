@@ -41,7 +41,7 @@ class SaveServerFingerprintUseCase(
         }
     }
 
-    class Input(
+    data class Input(
         val userId: String,
         val fingerprint: String
     )

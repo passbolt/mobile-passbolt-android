@@ -59,7 +59,7 @@ class DeleteResourceUseCase(
 
         object Success : Output()
 
-        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }
 
     data class Input(

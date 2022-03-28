@@ -65,7 +65,7 @@ class AddLocalResourceTypesUseCase(
         }
     }
 
-    class Input(
+    data class Input(
         val resourceTypesDto: List<ResourceTypeDto>
     )
 }

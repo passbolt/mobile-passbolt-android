@@ -45,7 +45,7 @@ class SaveResourcesDatabasePassphraseUseCase(
         }
     }
 
-    class Input(
+    data class Input(
         val passphrase: String
     )
 }

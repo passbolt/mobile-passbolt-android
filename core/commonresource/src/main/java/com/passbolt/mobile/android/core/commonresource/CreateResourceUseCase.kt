@@ -108,16 +108,16 @@ class CreateResourceUseCase(
                 }
             }
 
-        class Success(
+        data class Success(
             val resource: ResourceModel
         ) : Output()
 
-        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
 
         object PasswordExpired : Output()
     }
 
-    class Input(
+    data class Input(
         val resourceTypeId: String,
         val name: String,
         val password: String,

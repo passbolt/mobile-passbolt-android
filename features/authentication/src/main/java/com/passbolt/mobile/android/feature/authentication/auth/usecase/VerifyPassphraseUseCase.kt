@@ -44,7 +44,7 @@ class VerifyPassphraseUseCase(
         val passphrase: ByteArray
     )
 
-    class Output(
+    data class Output(
         val isCorrect: Boolean
     )
 }

@@ -37,7 +37,7 @@ class AddLocalResourcesUseCase(
         })
     }
 
-    class Input(
+    data class Input(
         val passwordModels: List<ResourceModel>,
         val userId: String
     )

@@ -53,7 +53,7 @@ class SavePassphraseUseCase(
         passphraseCopy.erase()
     }
 
-    class Input(
+    data class Input(
         val passphrase: ByteArray,
         val authenticatedCipher: Cipher
     )

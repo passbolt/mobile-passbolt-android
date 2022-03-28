@@ -57,7 +57,7 @@ class VerifyYubikeyUseCase(
             }
         }
 
-    class Input(
+    data class Input(
         val totp: String,
         val jwtHeader: String?,
         val remember: Boolean
@@ -80,16 +80,16 @@ class VerifyYubikeyUseCase(
                 else -> AuthenticationState.Authenticated
             }
 
-        class Success(
+        data class Success(
             val mfaHeader: String?
         ) : Output()
 
-        class NetworkFailure(
+        data class NetworkFailure(
             val errorCode: Int
         ) : Output()
 
         object Unauthorized : Output()
 
-        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }
 }

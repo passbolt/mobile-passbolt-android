@@ -66,7 +66,7 @@ class VerifyTotpUseCase(
             }
         }
 
-    class Input(
+    data class Input(
         val totp: String,
         val jwtHeader: String,
         val remember: Boolean
@@ -88,11 +88,11 @@ class VerifyTotpUseCase(
                 else -> AuthenticationState.Authenticated
             }
 
-        class Success(
+        data class Success(
             val mfaHeader: String?
         ) : Output()
 
-        class NetworkFailure(
+        data class NetworkFailure(
             val errorCode: Int
         ) : Output()
 

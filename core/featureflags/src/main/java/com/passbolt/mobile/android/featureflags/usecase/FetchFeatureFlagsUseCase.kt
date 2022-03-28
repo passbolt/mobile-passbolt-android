@@ -45,10 +45,10 @@ class FetchFeatureFlagsUseCase(
 
     sealed class Output {
 
-        class Success(
+        data class Success(
             val featureFlags: FeatureFlagsModel
         ) : Output()
 
-        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }
 }

@@ -44,7 +44,7 @@ class GetResourcesDatabasePassphraseUseCase(
         return Output(passphrase)
     }
 
-    class Output(
+    data class Output(
         val passphrase: String
     )
 }

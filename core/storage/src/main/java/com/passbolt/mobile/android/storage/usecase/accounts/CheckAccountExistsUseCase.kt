@@ -34,11 +34,11 @@ class CheckAccountExistsUseCase(
         return Output(result != null, result?.userId)
     }
 
-    class Input(
+    data class Input(
         val serverId: String
     )
 
-    class Output(
+    data class Output(
         val exist: Boolean,
         val userId: String? = null
     )

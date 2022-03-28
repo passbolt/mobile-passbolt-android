@@ -56,7 +56,7 @@ class GetPassphraseUseCase(
         val authenticatedCipher: Cipher
     )
 
-    class Output(
+    data class Output(
         val potentialPassphrase: PotentialPassphrase
     )
 }

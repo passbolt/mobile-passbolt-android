@@ -45,7 +45,7 @@ class SaveSessionUseCase(
         }
     }
 
-    class Input(
+    data class Input(
         val userId: String,
         val refreshToken: String,
         val accessToken: String,

@@ -58,7 +58,7 @@ class ChallengeVerifier {
 
     sealed class Output {
         object TokenExpired : Output()
-        class Verified(
+        data class Verified(
             val accessToken: String,
             val refreshToken: String
         ) : Output()

@@ -5,8 +5,8 @@ import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesF
 import com.passbolt.mobile.android.storage.paths.SessionFileName
 import com.passbolt.mobile.android.storage.usecase.ACCESS_TOKEN_KEY
 import com.passbolt.mobile.android.storage.usecase.MFA_TOKEN_KEY
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.REFRESH_TOKEN_KEY
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -49,7 +49,7 @@ class GetSessionUseCase(
         } ?: return Output(null, null, null)
     }
 
-    class Output(
+    data class Output(
         val accessToken: String?,
         val refreshToken: String?,
         val mfaToken: String?

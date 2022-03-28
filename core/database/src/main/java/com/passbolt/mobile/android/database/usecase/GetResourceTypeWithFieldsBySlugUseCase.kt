@@ -48,7 +48,7 @@ class GetResourceTypeWithFieldsBySlugUseCase(
         val slug: String = DEFAULT_SLUG
     )
 
-    class Output(
+    data class Output(
         val resourceTypeId: String,
         val fields: List<ResourceField>
     )

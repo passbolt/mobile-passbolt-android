@@ -34,7 +34,7 @@ class GetAccountsUseCase(
     override fun execute(input: Unit): Output =
         Output(sharedPreferences.getStringSet(ACCOUNTS_ALIAS, emptySet()).orEmpty())
 
-    class Output(
+    data class Output(
         val users: Set<String>
     )
 }

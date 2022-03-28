@@ -39,7 +39,7 @@ class CheckIfPassphraseFileExistsUseCase(
         return Output(File(EncryptedFileBaseDirectory(appContext).baseDirectory, fileName).exists())
     }
 
-    class Output(
+    data class Output(
         val passphraseFileExists: Boolean
     )
 }

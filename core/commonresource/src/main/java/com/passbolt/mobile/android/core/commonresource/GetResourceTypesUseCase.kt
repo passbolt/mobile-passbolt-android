@@ -3,10 +3,10 @@ package com.passbolt.mobile.android.core.commonresource
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 import com.passbolt.mobile.android.passboltapi.resourcetypes.ResourceTypesRepository
-import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 
 /**
  * Passbolt - Open source password manager for teams
@@ -56,7 +56,7 @@ class GetResourceTypesUseCase(
                 else -> AuthenticationState.Authenticated
             }
 
-        class Success(
+        data class Success(
             val resourceTypes: List<ResourceTypeDto>
         ) : Output()
 

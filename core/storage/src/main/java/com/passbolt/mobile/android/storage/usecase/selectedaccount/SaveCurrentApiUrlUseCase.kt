@@ -41,7 +41,7 @@ class SaveCurrentApiUrlUseCase(
         }
     }
 
-    class Input(
+    data class Input(
         val currentUrl: String
     )
 }
