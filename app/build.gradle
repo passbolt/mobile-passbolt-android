@@ -4,7 +4,6 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "kotlin-parcelize"
-    id "kotlin-kapt"
     id "com.google.firebase.appdistribution"
     id "com.starter.easylauncher"
     id "com.github.triplet.play"
@@ -95,10 +94,6 @@ easylauncher {
             )
         }
     }
-}
-
-kapt {
-    correctErrorTypes true
 }
 
 dependencies {
