@@ -36,7 +36,7 @@ verification:
   tags:
     - docker
   script:
-    - ./gradlew --no-daemon --build-cache detekt ktlint lintDebug unitTest koverMergedHtmlReport licenseeRelease dependencyUpdates
+    - ./gradlew --no-daemon --build-cache detekt ktlint lintDebug unitTest koverMergedHtmlReport licenseeRelease dependencyUpdates buildHealth
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "schedule"'
   artifacts:
@@ -49,6 +49,7 @@ verification:
       - "**/test-results/**/TEST-*.xml"
       - build/reports/kover/html/
       - build/dependencyUpdates/dependecyUpdates.txt
+      - build/reports/build-health-report.txt
     reports:
       junit: "**/test-results/**/TEST-*.xml"
 
