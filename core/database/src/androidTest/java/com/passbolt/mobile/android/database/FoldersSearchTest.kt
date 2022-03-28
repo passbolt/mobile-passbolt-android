@@ -83,12 +83,10 @@ class FoldersSearchTest {
     @Test
     fun testAllSubFoldersShouldBeReturnedForFolderWithId() = runBlocking {
         val subFoldersForFolder1 = foldersDao.getFilteredSubFoldersRecursivelyForFolderWithId(
-            FOLDER_1.folderId,
-            ""
+            FOLDER_1.folderId
         )
         val subFoldersForFolder2 = foldersDao.getFilteredSubFoldersRecursivelyForFolderWithId(
-            FOLDER_2.folderId,
-            ""
+            FOLDER_2.folderId
         )
 
         assertThat(subFoldersForFolder1.size).isEqualTo(0)
@@ -96,20 +94,6 @@ class FoldersSearchTest {
         assertThat(subFoldersForFolder2.size).isEqualTo(2)
         assertThat(subFoldersForFolder2.map { it.folderId }).containsExactly(
             "rootFolder2Folder1Folder1",
-            "rootFolder2Folder1Folder1Folder1"
-        )
-        return@runBlocking
-    }
-
-    @Test
-    fun testAllSubFoldersShouldBeReturnedForFolderWithIdWithNameQuery() = runBlocking {
-        val subFoldersForFolderSearch = foldersDao.getFilteredSubFoldersRecursivelyForFolderWithId(
-            FOLDER_2.folderId,
-            "folder 1 folder 1 folder 1"
-        )
-
-        assertThat(subFoldersForFolderSearch.size).isEqualTo(1)
-        assertThat(subFoldersForFolderSearch.map { it.folderId }).containsExactly(
             "rootFolder2Folder1Folder1Folder1"
         )
         return@runBlocking

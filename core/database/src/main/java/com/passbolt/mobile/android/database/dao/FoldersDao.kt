@@ -77,15 +77,14 @@ interface FoldersDao {
                 "" +
                 "SELECT folderId, name, permission, parentId, isShared " +
                 "FROM ancestor " +
-                "WHERE level > 1 AND name LIKE '%' || :subfolderNameQuery || '%'" +
+                "WHERE level > 1 " +
                 "ORDER BY level"
     )
     suspend fun getFilteredSubFoldersRecursivelyForFolderWithId(
-        folderId: String,
-        subfolderNameQuery: String
+        folderId: String
     ): List<Folder>
 
     @Transaction
-    @Query("SELECT * FROM Folder WHERE name LIKE '%' || :subfolderNameQuery || '%'")
-    suspend fun getAllFoldersFilteredByName(subfolderNameQuery: String): List<Folder>
+    @Query("SELECT * FROM Folder")
+    suspend fun getAllFolders(): List<Folder>
 }

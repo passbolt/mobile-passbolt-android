@@ -282,22 +282,24 @@ class HomePresenter(
 
     private suspend fun populateSubFoldersFilteringResults() {
         if (currentSearchText.isNotBlank()) {
-            filteredSubFolders = getAllSubFolders()
-            filteredSubFolderResources = getSubFoldersResources()
+            val allSubFolders = getAllSubFolders()
+            filteredSubFolders = filterSearchableList(allSubFolders, currentSearchText)
+            filteredSubFolderResources = getSubFoldersFilteredResources(allSubFolders)
         } else {
             filteredSubFolders = emptyList()
             filteredSubFolderResources = emptyList()
         }
     }
 
-    private suspend fun getSubFoldersResources() = getLocalResourcesFiltered.execute(
-        GetLocalSubFolderResourcesFilteredUseCase.Input(
-            filteredSubFolders.map { it.folderModel.folderId }, currentSearchText
-        )
-    ).resources
+    private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderModelWithChildrenCount>) =
+        getLocalResourcesFiltered.execute(
+            GetLocalSubFolderResourcesFilteredUseCase.Input(
+                allSubFolders.map { it.folderModel.folderId }, currentSearchText
+            )
+        ).resources
 
     private suspend fun getAllSubFolders() = getLocalSubFoldersForFolderUseCase.execute(
-        GetLocalSubFoldersForFolderUseCase.Input(currentFolder, currentSearchText)
+        GetLocalSubFoldersForFolderUseCase.Input(currentFolder)
     ).folders
 
     private fun <T : Searchable> filterSearchableList(list: List<T>, currentSearchText: String) =
