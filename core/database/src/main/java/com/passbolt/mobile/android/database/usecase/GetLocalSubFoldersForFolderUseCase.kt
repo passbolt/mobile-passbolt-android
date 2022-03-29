@@ -43,10 +43,9 @@ class GetLocalSubFoldersForFolderUseCase(
         val folders = foldersDao.let {
             when (input.folder) {
                 is Folder.Child -> it.getFilteredSubFoldersRecursivelyForFolderWithId(
-                    input.folder.folderId,
-                    input.subFolderNameQuery
+                    input.folder.folderId
                 )
-                is Folder.Root -> it.getAllFoldersFilteredByName(input.subFolderNameQuery)
+                is Folder.Root -> it.getAllFolders()
             }
         }
 
@@ -61,8 +60,7 @@ class GetLocalSubFoldersForFolderUseCase(
     }
 
     data class Input(
-        val folder: Folder,
-        val subFolderNameQuery: String
+        val folder: Folder
     )
 
     data class Output(val folders: List<FolderModelWithChildrenCount>)
