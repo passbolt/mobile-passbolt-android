@@ -139,7 +139,9 @@ class HomePresenter(
                 when (it.output) {
                     is HomeDataInteractor.Output.Failure -> view?.showError()
                     is HomeDataInteractor.Output.Success -> {
-                        view?.showAddButton()
+                        if (shouldShowAddButton()) {
+                            view?.showAddButton()
+                        }
                         showActiveHomeView()
                     }
                 }
@@ -150,6 +152,14 @@ class HomePresenter(
             }
         }
     }
+
+    // currently show add button in root folder only (and in all other views)
+    private fun shouldShowAddButton() =
+        if (activeView != ResourcesDisplayView.FOLDERS) {
+            true
+        } else {
+            currentFolder is Folder.Root
+        }
 
     private fun handleBackArrowVisibility() {
         if (hasPreviousBackEntry) {
