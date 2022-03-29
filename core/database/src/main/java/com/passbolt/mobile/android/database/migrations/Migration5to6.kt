@@ -1,9 +1,7 @@
-package com.passbolt.mobile.android.database.dao
+package com.passbolt.mobile.android.database.migrations
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.entity.resource.ResourceField
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,10 +25,24 @@ import com.passbolt.mobile.android.entity.resource.ResourceField
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface ResourceFieldsDao : BaseDao<ResourceField> {
 
-    @Transaction
-    @Query("DELETE FROM ResourceField")
-    suspend fun deleteAll()
+@Suppress("MagicNumber")
+object Migration5to6 : Migration(5, 6) {
+
+    private const val CREATE_TAGS_TABLE = "CREATE TABLE IF NOT EXISTS Tag (" +
+            "`id` TEXT NOT NULL, " +
+            "`slug` TEXT NOT NULL, " +
+            "`isShared` INTEGER NOT NULL, " +
+            "PRIMARY KEY(`id`))"
+    private const val CREATE_TAG_RESOURCE_CROSS_REF_TABLE = "CREATE TABLE IF NOT EXISTS ResourceAndTagsCrossRef (" +
+            "`tagId` TEXT NOT NULL, " +
+            "`resourceId` TEXT NOT NULL, " +
+            "PRIMARY KEY(`tagId`, `resourceId`))"
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        with(database) {
+            execSQL(CREATE_TAGS_TABLE)
+            execSQL(CREATE_TAG_RESOURCE_CROSS_REF_TABLE)
+        }
+    }
 }

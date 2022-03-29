@@ -16,7 +16,7 @@ class ResourceModelMapperTest {
 
     @Before
     fun setUp() {
-        mapper = ResourceModelMapper(InitialsProvider())
+        mapper = ResourceModelMapper(InitialsProvider(),)
     }
 
     @Test
@@ -31,7 +31,8 @@ class ResourceModelMapperTest {
             permission = PermissionDto("abc", 1, null, null, null, null, null, null),
             favorite = null,
             modified = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
-            resourceFolderId = null
+            resourceFolderId = null,
+            tags = emptyList()
         )
         val result = mapper.map(responseDto)
         assertEquals("f", result.initials)

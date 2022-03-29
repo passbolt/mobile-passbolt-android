@@ -38,12 +38,6 @@ dependencies {
 android {
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += ["room.schemaLocation":
-                                  "$projectDir/schemas".toString()]
-            }
-        }
     }
 
     useLibrary("android.test.runner")
@@ -57,4 +51,8 @@ android {
         exclude "META-INF/AL2.0"
         exclude "META-INF/LGPL2.1"
     }
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas".toString())
 }

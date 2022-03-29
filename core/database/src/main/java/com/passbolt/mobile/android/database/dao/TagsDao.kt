@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.database.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import com.passbolt.mobile.android.entity.resource.ResourceField
+import com.passbolt.mobile.android.entity.resource.Tag
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,9 +28,13 @@ import com.passbolt.mobile.android.entity.resource.ResourceField
  * @since v1.0
  */
 @Dao
-interface ResourceFieldsDao : BaseDao<ResourceField> {
+interface TagsDao : BaseDao<Tag> {
 
     @Transaction
-    @Query("DELETE FROM ResourceField")
+    @Query("SELECT * FROM Tag")
+    suspend fun getAll(): List<Tag>
+
+    @Transaction
+    @Query("DELETE FROM Tag")
     suspend fun deleteAll()
 }

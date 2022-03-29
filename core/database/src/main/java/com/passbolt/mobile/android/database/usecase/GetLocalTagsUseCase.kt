@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.database.dao
+package com.passbolt.mobile.android.database.usecase
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.entity.resource.ResourceField
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.TagsModelMapper
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.TagModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,10 +28,16 @@ import com.passbolt.mobile.android.entity.resource.ResourceField
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface ResourceFieldsDao : BaseDao<ResourceField> {
+class GetLocalTagsUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val tagModelMapper: TagsModelMapper,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : AsyncUseCase<Unit, List<TagModel>> {
 
-    @Transaction
-    @Query("DELETE FROM ResourceField")
-    suspend fun deleteAll()
+    override suspend fun execute(input: Unit) =
+        databaseProvider
+            .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
+            .tagsDao()
+            .getAll()
+            .map { tagModelMapper.map(it) }
 }

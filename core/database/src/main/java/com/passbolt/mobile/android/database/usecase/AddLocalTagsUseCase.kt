@@ -2,8 +2,9 @@ package com.passbolt.mobile.android.database.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.entity.resource.ResourceAndTagsCrossRef
+import com.passbolt.mobile.android.mappers.TagsModelMapper
+import com.passbolt.mobile.android.ui.ResourceModelWithTags
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,23 +28,32 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AddLocalResourcesUseCase(
+class AddLocalTagsUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val resourceModelMapper: ResourceModelMapper
-) : AsyncUseCase<AddLocalResourcesUseCase.Input, Unit> {
+    private val tagModelMapper: TagsModelMapper
+) : AsyncUseCase<AddLocalTagsUseCase.Input, Unit> {
 
     override suspend fun execute(input: Input) {
-        databaseProvider
+        val tagsDao = databaseProvider
             .get(input.userId)
-            .resourcesDao()
-            .insertAll(
-                input.passwordModels.map {
-                    resourceModelMapper.map(it)
-                })
+            .tagsDao()
+
+        val tagsAndResourcesCrossRefDao = databaseProvider
+            .get(input.userId)
+            .resourcesAndTagsCrossRefDao()
+
+        input.resourcesWithtagsModels
+            .map { it.resourceModel.resourceId to it.resourceTags }
+            .forEach { (resourceId, tags) ->
+                tags.forEach {
+                    tagsDao.insert(tagModelMapper.map(it))
+                    tagsAndResourcesCrossRefDao.insertTagAndResourceCrossRef(ResourceAndTagsCrossRef(it.id, resourceId))
+                }
+            }
     }
 
     data class Input(
-        val passwordModels: List<ResourceModel>,
+        val resourcesWithtagsModels: List<ResourceModelWithTags>,
         val userId: String
     )
 }

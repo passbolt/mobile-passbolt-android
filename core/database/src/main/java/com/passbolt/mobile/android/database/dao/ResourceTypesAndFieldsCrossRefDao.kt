@@ -32,5 +32,5 @@ interface ResourceTypesAndFieldsCrossRefDao : BaseDao<ResourceTypesAndFieldsCros
 
     @Transaction
     @Query("DELETE FROM ResourceTypesAndFieldsCrossRef")
-    override suspend fun deleteAll()
+    suspend fun deleteAll()
 }

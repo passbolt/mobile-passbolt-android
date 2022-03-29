@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUse
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.RebuildTagsTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.validation.resourceValidationModule
 import org.koin.dsl.module
 
@@ -37,7 +38,8 @@ val commonResourceModule = module {
     single {
         GetResourcesUseCase(
             resourceRepository = get(),
-            mapper = get()
+            resourceModelMapper = get(),
+            tagModelMapper = get()
         )
     }
     single {
@@ -51,7 +53,8 @@ val commonResourceModule = module {
             getResourcesUseCase = get(),
             addLocalResourceTypesUseCase = get(),
             resourceValidationRunner = get(),
-            rebuildAndGetResourceTablesUseCase = get()
+            rebuildResourceTablesUseCase = get(),
+            rebuildTagsTablesUseCase = get()
         )
     }
     single {
@@ -103,6 +106,13 @@ val commonResourceModule = module {
             getSelectedAccountUseCase = get(),
             removeLocalResourcesUseCase = get(),
             addLocalResourcesUseCase = get()
+        )
+    }
+    single {
+        RebuildTagsTablesUseCase(
+            getSelectedAccountUseCase = get(),
+            removeLocalTagsUseCase = get(),
+            addLocalTagsUseCase = get()
         )
     }
 }
