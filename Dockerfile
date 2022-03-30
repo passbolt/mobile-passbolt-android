@@ -1,25 +1,25 @@
 FROM openjdk:oraclelinux8
 
-ENV SDK_URL="https://dl.google.com/android/repository/commandlinetools-linux-6604631_latest.zip" \
-    ANDROID_HOME="/usr/local/android-sdk" \
-    ANDROID_VERSION=29 \
-    ANDROID_BUILD_TOOLS_VERSION=29.0.2
+ENV ANDROID_HOME="/usr/local/android-sdk" \
+    ANDROID_SDK_ROOT="/usr/local/android-sdk" \
+    ANDROID_VERSION=31 \
+    ANDROID_BUILD_TOOLS_VERSION="30.0.2" \
+    ANDROID_SDK_TOOLS_VERSION="8092744" \
 
-RUN microdnf install -y wget tar unzip libstdc++ findutils
+RUN microdnf install -y wget tar unzip libstdc++ findutils python3.9 python3-pip
 
-RUN mkdir "$ANDROID_HOME" .android \
-    && cd "$ANDROID_HOME" \
-    && curl -o sdk.zip $SDK_URL \
-    && unzip sdk.zip \
-    && rm sdk.zip
+# setup android home path for moving the downloaded sdk into it
+RUN install -d $ANDROID_HOME
 
-RUN yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses
-
-RUN $ANDROID_HOME/cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_HOME --update
-
-RUN yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_HOME \
-    "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
-    "platforms;android-${ANDROID_VERSION}"
+# download and extract android sdk tools
+RUN wget --quiet --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip \
+    && unzip $ANDROID_HOME/cmdline-tools.zip -d $ANDROID_HOME \
+    && rm $ANDROID_HOME/cmdline-tools.zip \
+    && export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/bin \
+    && yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true \
+    && sdkmanager --sdk_root=${ANDROID_HOME} --update \
+    && sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
+    && sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_VERSION}"
 
 RUN mkdir /application
 

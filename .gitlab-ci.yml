@@ -1,30 +1,7 @@
-image: openjdk:oraclelinux8
+image: registry.gitlab.com/passbolt/passbolt-ci-docker-images/android-app:latest
 
 variables:
-  ANDROID_VERSION: "29"
-  ANDROID_BUILD_TOOLS_VERSION: "29.0.2"
-  ANDROID_SDK_TOOLS_VERSION: "6604631"
-
-before_script:
-  - microdnf install -y wget tar unzip libstdc++ findutils python3.9 python3-pip
-
-  # setup android home path for moving the downloaded sdk into it
-  - export ANDROID_HOME="${PWD}/android-home"
-  - install -d $ANDROID_HOME
-
-  # download and extract android sdk tools
-  - wget --quiet --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip
-  - pushd $ANDROID_HOME
-  - unzip cmdline-tools.zip
-  - rm cmdline-tools.zip
-  - popd
-  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/bin
-
-  # accept licenses and setup android sdk
-  - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
-  - sdkmanager --sdk_root=${ANDROID_HOME} --update
-  - sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
-  - sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_VERSION}"
+  ANDROID_HOME: "${PWD}/android-home"
 
 # jobs need to be defined in a single stage in order to be executed in parallel
 # conditions if a job is started for a particular commit/push are defined under 'rules' sections
