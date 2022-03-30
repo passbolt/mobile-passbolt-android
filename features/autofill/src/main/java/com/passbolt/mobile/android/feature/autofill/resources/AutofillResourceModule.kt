@@ -43,7 +43,7 @@ fun Module.autofillResourcesModule() {
                 coroutineLaunchContext = get(),
                 getLocalResourcesUse = get(),
                 domainProvider = get(),
-                resourcesInteractor = get(),
+                homeDataInteractor = get(),
                 resourceSearch = get(),
                 secretInteractor = get(),
                 getSelectedAccountDataUseCase = get(),

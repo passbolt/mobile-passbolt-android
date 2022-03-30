@@ -21,7 +21,6 @@ dependencies {
     implementation project(':resources')
     implementation project(':database')
     implementation project(':commonresource')
-    implementation project(':autofill')
     implementation project(':secrets')
     implementation project(':authentication')
     implementation project(':entity')
