@@ -25,6 +25,10 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="isActiveFolderShared"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_home_to_homeChild"
             app:destination="@id/homeChild"
@@ -44,6 +48,9 @@
                 android:name="activeFolderName"
                 app:argType="string"
                 app:nullable="true" />
+            <argument
+                android:name="isActiveFolderShared"
+                app:argType="boolean" />
         </action>
     </fragment>
 
@@ -72,8 +79,10 @@
                 android:name="activeFolderName"
                 app:argType="string"
                 app:nullable="true" />
+            <argument
+                android:name="isActiveFolderShared"
+                app:argType="boolean" />
         </action>
-
 
     </fragment>
 
@@ -99,6 +108,10 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="isActiveFolderShared"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </action>
 
     <action
@@ -123,22 +136,9 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
-    </action>
-
-    <action
-        android:id="@+id/action_homeChild_back"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/slide_out_left"
-        app:popEnterAnim="@anim/slide_in_left"
-        app:popExitAnim="@anim/slide_out_right"
-        app:popUpTo="@id/home"
-        app:popUpToInclusive="true">
         <argument
-            android:name="activeView"
-            app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
-        <argument
-            android:name="activeFolderId"
-            app:argType="string"
-            app:nullable="true" />
+            android:name="isActiveFolderShared"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </action>
 </navigation>

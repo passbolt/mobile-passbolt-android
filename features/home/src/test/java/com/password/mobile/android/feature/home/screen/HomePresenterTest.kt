@@ -87,7 +87,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         verify(view).displaySearchAvatar(eq(url))
     }
@@ -104,7 +105,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         presenter.searchTextChange("abc")
         presenter.searchTextChange("")
@@ -130,7 +132,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
 
         verify(view).showHomeScreenTitle(ResourcesDisplayView.ALL)
@@ -167,7 +170,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         presenter.searchTextChange("second")
         presenter.refreshSwipe()
@@ -197,7 +201,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         presenter.searchTextChange("empty search")
 
@@ -222,7 +227,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
 
         verify(view).hideBackArrow()
@@ -253,7 +259,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
 
         verify(view).hideBackArrow()
@@ -289,7 +296,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         presenter.refreshClick()
 
@@ -329,7 +337,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         reset(view)
         presenter.itemClick(model)
@@ -366,7 +375,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         reset(view)
         presenter.moreClick(model)
@@ -390,7 +400,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
@@ -413,7 +424,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
@@ -436,7 +448,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
@@ -467,7 +480,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
@@ -493,7 +507,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
@@ -528,7 +543,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.ALL,
             null,
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
@@ -552,7 +568,8 @@ class HomePresenterTest : KoinTest {
             ResourcesDisplayView.FOLDERS,
             "not existing folder", // i.e. navigate to folder, full refresh -> folder deleted
             null,
-            hasPreviousBackStackEntries = false
+            isActiveFolderShared = false,
+            hasPreviousEntry = false
         )
 
         verify(view).navigateToRootHomeFromChildHome(ResourcesDisplayView.FOLDERS)

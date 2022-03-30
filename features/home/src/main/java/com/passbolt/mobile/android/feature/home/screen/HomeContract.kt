@@ -69,14 +69,19 @@ interface HomeContract {
         fun navigateToManageAccounts()
         fun showFiltersMenu(activeDisplayView: ResourcesDisplayView)
         fun showHomeScreenTitle(view: ResourcesDisplayView)
-        fun navigateToChildFolder(folderId: String, folderName: String, activeFilter: ResourcesDisplayView)
+        fun navigateToChildFolder(
+            folderId: String,
+            folderName: String,
+            activeFilter: ResourcesDisplayView,
+            isActiveFolderShared: Boolean
+        )
         fun showBackArrow()
         fun hideBackArrow()
         fun navigateToRootHomeFromChildHome(activeFilter: ResourcesDisplayView)
         fun performRefreshUsingRefreshExecutor()
         fun navigateRootHomeFromRootHome(activeView: ResourcesDisplayView)
         fun navigateToCreateResource(parentFolderId: String?)
-        fun showChildFolderTitle(activeFolderName: String)
+        fun showChildFolderTitle(activeFolderName: String, isShared: Boolean)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -111,7 +116,8 @@ interface HomeContract {
             activeHomeView: ResourcesDisplayView,
             activeFolderId: String?,
             activeFolderName: String?,
-            hasPreviousBackStackEntries: Boolean
+            isActiveFolderShared: Boolean,
+            hasPreviousEntry: Boolean
         )
 
         fun folderItemClick(folderModel: FolderModel)
