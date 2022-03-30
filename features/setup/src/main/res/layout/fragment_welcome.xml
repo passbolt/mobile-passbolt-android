@@ -24,7 +24,8 @@
                 android:layout_gravity="end"
                 android:layout_marginEnd="@dimen/dp_16"
                 android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_help" />
+                android:src="@drawable/ic_help"
+                app:tint="@color/icon_tint" />
 
         </com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar>
 
