@@ -20,8 +20,7 @@ import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.Secret
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.Folder
-import com.passbolt.mobile.android.ui.FolderModel
-import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
+import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import kotlinx.coroutines.CoroutineScope
@@ -92,10 +91,10 @@ class HomePresenter(
     private var hasPreviousBackEntry = false
 
     private var resourceList: List<ResourceModel> = emptyList()
-    private var foldersList: List<FolderModelWithChildrenCount> = emptyList()
+    private var foldersList: List<FolderWithCount> = emptyList()
 
     private var filteredSubFolderResources: List<ResourceModel> = emptyList()
-    private var filteredSubFolders: List<FolderModelWithChildrenCount> = emptyList()
+    private var filteredSubFolders: List<FolderWithCount> = emptyList()
 
     private var currentMoreMenuResource: ResourceModel? = null
     private var userAvatarUrl: String? = null
@@ -116,7 +115,7 @@ class HomePresenter(
         activeView = activeHomeView
         currentFolderName = activeFolderName
         currentFolder = activeFolderId?.let { Folder.Child(it) } ?: Folder.Root
-        hasPreviousBackEntry = isActiveFolderShared
+        hasPreviousBackEntry = hasPreviousEntry
 
         view?.apply {
             hideAddButton()
@@ -283,8 +282,12 @@ class HomePresenter(
 
     private suspend fun populateSubFoldersFilteringResults() {
         if (currentSearchText.isNotBlank()) {
+            // resources need to be shown for all child folders
             val allSubFolders = getAllSubFolders()
-            filteredSubFolders = filterSearchableList(allSubFolders, currentSearchText)
+            // direct child folders are shown in top section; in filters show only child folders level>=1
+            val subFoldersChildren = allSubFolders.filter { it.parentId != currentFolder.folderId }
+
+            filteredSubFolders = filterSearchableList(subFoldersChildren, currentSearchText)
             filteredSubFolderResources = getSubFoldersFilteredResources(allSubFolders)
         } else {
             filteredSubFolders = emptyList()
@@ -292,10 +295,10 @@ class HomePresenter(
         }
     }
 
-    private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderModelWithChildrenCount>) =
+    private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderWithCount>) =
         getLocalResourcesFiltered.execute(
             GetLocalSubFolderResourcesFilteredUseCase.Input(
-                allSubFolders.map { it.folderModel.folderId }, currentSearchText
+                allSubFolders.map { it.folderId }, currentSearchText
             )
         ).resources
 
@@ -480,7 +483,7 @@ class HomePresenter(
         navigateToHomeView(ResourcesDisplayView.FOLDERS)
     }
 
-    override fun folderItemClick(folderModel: FolderModel) {
+    override fun folderItemClick(folderModel: FolderWithCount) {
         view?.navigateToChildFolder(folderModel.folderId, folderModel.name, activeView, folderModel.isShared)
         view?.showBackArrow()
     }

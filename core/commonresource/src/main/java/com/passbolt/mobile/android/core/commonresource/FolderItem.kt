@@ -10,8 +10,7 @@ import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.asBinding
 import com.passbolt.mobile.android.commonresource.R
 import com.passbolt.mobile.android.commonresource.databinding.ItemFolderBinding
-import com.passbolt.mobile.android.ui.FolderModel
-import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
+import com.passbolt.mobile.android.ui.FolderWithCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,7 +35,7 @@ import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
  * @since v1.0
  */
 class FolderItem(
-    val folderModelWithChildrenCount: FolderModelWithChildrenCount
+    val folderWithCount: FolderWithCount
 ) : AbstractBindingItem<ItemFolderBinding>() {
 
     override val type: Int
@@ -48,12 +47,12 @@ class FolderItem(
     override fun bindView(binding: ItemFolderBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            name.text = folderModelWithChildrenCount.folderModel.name
-            folderModelWithChildrenCount.folderChildrenCount.let {
-                folderChildrenCount.text = it.toString()
+            name.text = folderWithCount.name
+            folderWithCount.let {
+                folderChildrenCount.text = it.subItemsCount.toString()
             }
             icon.setImageResource(
-                if (folderModelWithChildrenCount.folderModel.isShared) {
+                if (folderWithCount.isShared) {
                     R.drawable.ic_filled_shared_folder_with_bg
                 } else {
                     R.drawable.ic_filled_folder_with_bg
@@ -63,7 +62,7 @@ class FolderItem(
     }
 
     class ItemClick(
-        private val clickListener: (FolderModel) -> Unit
+        private val clickListener: (FolderWithCount) -> Unit
     ) : ClickEventHook<FolderItem>() {
 
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
@@ -78,7 +77,7 @@ class FolderItem(
             fastAdapter: FastAdapter<FolderItem>,
             item: FolderItem
         ) {
-            clickListener.invoke(item.folderModelWithChildrenCount.folderModel)
+            clickListener.invoke(item.folderWithCount)
         }
     }
 }

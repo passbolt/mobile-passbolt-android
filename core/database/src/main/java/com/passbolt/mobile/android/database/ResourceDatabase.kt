@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.passbolt.mobile.android.database.dao.FoldersDao
+import com.passbolt.mobile.android.database.dao.ResourceFieldsDao
+import com.passbolt.mobile.android.database.dao.ResourceTypesAndFieldsCrossRefDao
 import com.passbolt.mobile.android.database.dao.ResourceTypesDao
 import com.passbolt.mobile.android.database.dao.ResourcesDao
 import com.passbolt.mobile.android.database.typeconverters.Converters
@@ -51,6 +53,10 @@ abstract class ResourceDatabase : RoomDatabase() {
     abstract fun resourcesDao(): ResourcesDao
 
     abstract fun resourceTypesDao(): ResourceTypesDao
+
+    abstract fun resourceFieldsDao(): ResourceFieldsDao
+
+    abstract fun resourceTypesAndFieldsCrossRefDao(): ResourceTypesAndFieldsCrossRefDao
 
     abstract fun foldersDao(): FoldersDao
 }

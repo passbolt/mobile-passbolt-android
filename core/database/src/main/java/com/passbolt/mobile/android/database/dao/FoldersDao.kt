@@ -1,13 +1,10 @@
 package com.passbolt.mobile.android.database.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.passbolt.mobile.android.entity.resource.Folder
-import com.passbolt.mobile.android.entity.resource.FolderWithChildResourcesAndChildFolders
-import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.entity.resource.FolderWithChildItemsCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,34 +29,36 @@ import com.passbolt.mobile.android.entity.resource.Resource
  * @since v1.0
  */
 @Dao
-interface FoldersDao {
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(folderEntities: List<Folder>)
-
-    @Transaction
-    @Query("DELETE FROM Folder")
-    suspend fun deleteAll()
-
-    @Transaction
-    @Query("SELECT * FROM Folder WHERE folderId=:id")
-    suspend fun getFoldersWithResourcesForFolderWithId(id: String): FolderWithChildResourcesAndChildFolders
-
-    @Transaction
-    @Query("SELECT * FROM Folder WHERE parentId IS NULL")
-    suspend fun getFoldersForRootFolder(): List<Folder>
-
-    @Transaction
-    @Query("SELECT * FROM Resource WHERE folderId IS NULL")
-    suspend fun getResourcesForRootFolder(): List<Resource>
+interface FoldersDao : BaseDao<Folder> {
 
     @Transaction
     @Query(
-        "SELECT " +
-                "(SELECT COUNT(*) FROM Resource WHERE folderId IS :id) + " +
-                "(SELECT COUNT(*) FROM Folder WHERE parentId IS :id)"
+        "SELECT folderId, name, permission, parentId, isShared, " +
+                "(SELECT " +
+                "( " +
+                "(SELECT count(*) FROM Folder f_count WHERE f_count.parentId is f.folderId)" +
+                " + " +
+                "(SELECT count(*) FROM Resource r_count WHERE r_count.folderId is f.folderId)" +
+                ")" +
+                ") AS childItemsCount " +
+                "FROM Folder f"
     )
-    suspend fun getResourcesAndFoldersCountForFolderWithId(id: String): Int
+    suspend fun getAllFolders(): List<FolderWithChildItemsCount>
+
+    @Transaction
+    @Query(
+        "SELECT folderId, name, permission, parentId, isShared, " +
+                "(SELECT " +
+                "( " +
+                "(SELECT count(*) FROM folder f1 WHERE f1.parentId is k.folderId)" +
+                " + " +
+                "(SELECT count(*) FROM resource r1 WHERE r1.folderId is k.folderId)" +
+                ")" +
+                ") AS childItemsCount " +
+                "FROM folder k " +
+                "WHERE k.parentId IS :folderId"
+    )
+    suspend fun getFolderDirectChildFolders(folderId: String?): List<FolderWithChildItemsCount>
 
     @Transaction
     @Query(
@@ -75,16 +74,21 @@ interface FoldersDao {
                 "JOIN ancestor a on f.parentId = a.folderId " +
                 ") " +
                 "" +
-                "SELECT folderId, name, permission, parentId, isShared " +
-                "FROM ancestor " +
-                "WHERE level > 1 " +
+                "SELECT folderId, name, permission, parentId, isShared, " +
+                "(SELECT" +
+                "(" +
+                "(select count(*) from  folder fc where fc.parentId is a.folderId) + " +
+                "(select count(*) from resource rc where rc.folderId is a.folderId) " +
+                ")" +
+                ") AS childItemsCount " +
+                "" +
+                "FROM ancestor a " +
+                "WHERE level > 0 " +
                 "ORDER BY level"
     )
-    suspend fun getFilteredSubFoldersRecursivelyForFolderWithId(
-        folderId: String
-    ): List<Folder>
+    suspend fun getFolderAllChildFoldersRecursively(folderId: String): List<FolderWithChildItemsCount>
 
     @Transaction
-    @Query("SELECT * FROM Folder")
-    suspend fun getAllFolders(): List<Folder>
+    @Query("DELETE FROM Folder")
+    override suspend fun deleteAll()
 }

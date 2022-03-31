@@ -46,7 +46,7 @@ import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBotto
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.ui.FiltersMenuModel
-import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
+import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
@@ -246,8 +246,8 @@ class HomeFragment :
 
     override fun showItems(
         resourceList: List<ResourceModel>,
-        foldersList: List<FolderModelWithChildrenCount>,
-        filteredSubFoldersList: List<FolderModelWithChildrenCount>,
+        foldersList: List<FolderWithCount>,
+        filteredSubFoldersList: List<FolderWithCount>,
         filteredSubFolderResourceList: List<ResourceModel>,
         sectionsConfiguration: HeaderSectionConfiguration
     ) {

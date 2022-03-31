@@ -34,8 +34,12 @@ data class FolderModel(
     override val searchCriteria: String = name
 ) : Searchable
 
-data class FolderModelWithChildrenCount(
-    val folderModel: FolderModel,
-    val folderChildrenCount: Int,
-    override val searchCriteria: String = folderModel.searchCriteria
+data class FolderWithCount(
+    val folderId: String,
+    val name: String,
+    val permission: ResourcePermission,
+    val parentId: String?,
+    val isShared: Boolean,
+    val subItemsCount: Int,
+    override val searchCriteria: String = name
 ) : Searchable

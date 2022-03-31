@@ -39,7 +39,16 @@ data class Folder(
     val isShared: Boolean
 )
 
-data class FolderWithChildResourcesAndChildFolders(
+data class FolderWithChildItemsCount(
+    val folderId: String,
+    val name: String,
+    val permission: Permission,
+    val parentId: String?,
+    val isShared: Boolean,
+    val childItemsCount: Int
+)
+
+data class FolderWithChildItems(
     @Embedded val folder: Folder,
     @Relation(
         parentColumn = "folderId",

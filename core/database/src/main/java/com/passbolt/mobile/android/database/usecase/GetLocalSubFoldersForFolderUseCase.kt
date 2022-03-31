@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.Folder
-import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
+import com.passbolt.mobile.android.ui.FolderWithCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,22 +40,19 @@ class GetLocalSubFoldersForFolderUseCase(
         val foldersDao = databaseProvider
             .get(userId)
             .foldersDao()
+
         val folders = foldersDao.let {
             when (input.folder) {
-                is Folder.Child -> it.getFilteredSubFoldersRecursivelyForFolderWithId(
-                    input.folder.folderId
-                )
+                // get all children recursively
+                is Folder.Child -> it.getFolderAllChildFoldersRecursively(input.folder.folderId)
+                // getting all children recursively for root == getting all possible children
+                // could also use it.getFolderAllChildFoldersRecursively(null), but UNION does not work with nulls
                 is Folder.Root -> it.getAllFolders()
             }
         }
 
         return Output(
-            folders.map {
-                FolderModelWithChildrenCount(
-                    folderModelMapper.map(it),
-                    foldersDao.getResourcesAndFoldersCountForFolderWithId(it.folderId)
-                )
-            }
+            folders.map { folderModelMapper.map(it) }
         )
     }
 
@@ -63,5 +60,5 @@ class GetLocalSubFoldersForFolderUseCase(
         val folder: Folder
     )
 
-    data class Output(val folders: List<FolderModelWithChildrenCount>)
+    data class Output(val folders: List<FolderWithCount>)
 }
