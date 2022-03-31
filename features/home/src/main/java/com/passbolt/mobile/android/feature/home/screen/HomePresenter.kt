@@ -110,17 +110,18 @@ class HomePresenter(
         activeHomeView: ResourcesDisplayView,
         activeFolderId: String?,
         activeFolderName: String?,
-        hasPreviousBackStackEntries: Boolean
+        isActiveFolderShared: Boolean,
+        hasPreviousEntry: Boolean
     ) {
         activeView = activeHomeView
         currentFolderName = activeFolderName
         currentFolder = activeFolderId?.let { Folder.Child(it) } ?: Folder.Root
-        hasPreviousBackEntry = hasPreviousBackStackEntries
+        hasPreviousBackEntry = isActiveFolderShared
 
         view?.apply {
             hideAddButton()
             if (!activeFolderName.isNullOrBlank()) {
-                showChildFolderTitle(activeFolderName)
+                showChildFolderTitle(activeFolderName, isActiveFolderShared)
             } else {
                 showHomeScreenTitle(activeView)
             }
@@ -480,7 +481,7 @@ class HomePresenter(
     }
 
     override fun folderItemClick(folderModel: FolderModel) {
-        view?.navigateToChildFolder(folderModel.folderId, folderModel.name, activeView)
+        view?.navigateToChildFolder(folderModel.folderId, folderModel.name, activeView, folderModel.isShared)
         view?.showBackArrow()
     }
 

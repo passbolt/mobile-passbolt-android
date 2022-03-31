@@ -136,6 +136,7 @@ class HomeFragment :
             arguments.activeView,
             arguments.activeFolderId,
             arguments.activeFolderName,
+            arguments.isActiveFolderShared,
             hasPreviousEntry
         )
     }
@@ -285,8 +286,10 @@ class HomeFragment :
         if (sectionsConfiguration.isInCurrentFolderSectionVisible) {
             listOf(
                 InCurrentFoldersHeaderItem(
-                    getString(R.string.home_in_current_folder,
-                        sectionsConfiguration.currentFolderName ?: getString(R.string.folder_root))
+                    getString(
+                        R.string.home_in_current_folder,
+                        sectionsConfiguration.currentFolderName ?: getString(R.string.folder_root)
+                    )
                 )
             )
         } else {
@@ -514,8 +517,11 @@ class HomeFragment :
         }
     }
 
-    override fun showChildFolderTitle(activeFolderName: String) {
-        showScreenTitleWithStartIcon(activeFolderName, R.drawable.ic_folder)
+    override fun showChildFolderTitle(activeFolderName: String, isShared: Boolean) {
+        showScreenTitleWithStartIcon(
+            activeFolderName,
+            if (isShared) R.drawable.ic_shared_folder else R.drawable.ic_folder
+        )
     }
 
     private fun showScreenTitleWithStartIcon(@StringRes titleRes: Int, @DrawableRes iconRes: Int) {
@@ -529,8 +535,13 @@ class HomeFragment :
         }
     }
 
-    override fun navigateToChildFolder(folderId: String, folderName: String, activeFilter: ResourcesDisplayView) {
-        navController.navigate(HomeFragmentDirections.actionHomeToHomeChild(folderId, folderName))
+    override fun navigateToChildFolder(
+        folderId: String,
+        folderName: String,
+        activeFilter: ResourcesDisplayView,
+        isActiveFolderShared: Boolean
+    ) {
+        navController.navigate(HomeFragmentDirections.actionHomeToHomeChild(folderId, folderName, isActiveFolderShared))
     }
 
     override fun navigateToRootHomeFromChildHome(activeFilter: ResourcesDisplayView) {
