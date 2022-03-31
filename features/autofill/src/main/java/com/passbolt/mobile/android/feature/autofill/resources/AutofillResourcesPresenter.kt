@@ -1,13 +1,13 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
 import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.feature.home.screen.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -43,7 +43,7 @@ class AutofillResourcesPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getLocalResourcesUse: GetLocalResourcesUseCase,
     private val domainProvider: DomainProvider,
-    private val resourcesInteractor: ResourceInteractor,
+    private val homeDataInteractor: HomeDataInteractor,
     private val resourceSearch: SearchableMatcher,
     private val secretInteractor: SecretInteractor,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
@@ -81,37 +81,37 @@ class AutofillResourcesPresenter(
     override fun userAuthenticated() {
         userAvatarUrl = getSelectedAccountDataUseCase.execute(Unit).avatarUrl
             .also { view?.displaySearchAvatar(it) }
-        fetchResources()
+        refreshHomeData()
     }
 
     override fun refreshSwipe() {
-        fetchResources(withShowingListProgress = false)
+        refreshHomeData(withShowingListProgress = false)
     }
 
     override fun searchAvatarClick() {
         view?.navigateToManageAccount()
     }
 
-    private fun fetchResources(withShowingListProgress: Boolean = true, doAfterFetch: (() -> Unit)? = null) {
+    private fun refreshHomeData(withShowingListProgress: Boolean = true, doAfterFetch: (() -> Unit)? = null) {
         scope.launch {
             view?.hideUpdateButton()
             if (withShowingListProgress) {
                 view?.showProgress()
             }
             when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                resourcesInteractor.updateResourcesWithTypes()
+                homeDataInteractor.refreshAllHomeScreenData()
             }) {
-                is ResourceInteractor.Output.Failure -> fetchingResourcesFailure()
-                is ResourceInteractor.Output.Success -> {
+                is HomeDataInteractor.Output.Failure -> refreshDataFailure()
+                is HomeDataInteractor.Output.Success -> {
                     val resources = getLocalResourcesUse.execute(GetLocalResourcesUseCase.Input()).resources
-                    fetchingResourcesSuccess(resources)
+                    refreshDataSuccess(resources)
                     doAfterFetch?.invoke()
                 }
             }
         }
     }
 
-    private fun fetchingResourcesSuccess(list: List<ResourceModel>) {
+    private fun refreshDataSuccess(list: List<ResourceModel>) {
         allItemsList = list
         if (list.isEmpty()) {
             view?.showEmptyList()
@@ -121,7 +121,7 @@ class AutofillResourcesPresenter(
         view?.showUpdateButton()
     }
 
-    private suspend fun fetchingResourcesFailure() {
+    private suspend fun refreshDataFailure() {
         allItemsList = getLocalResourcesUse.execute(GetLocalResourcesUseCase.Input()).resources
         if (allItemsList.isNullOrEmpty()) {
             view?.showFullScreenError()
@@ -237,7 +237,7 @@ class AutofillResourcesPresenter(
     override fun newResourceCreated(newResourceId: String?) {
         view?.showResourceAddedSnackbar()
         view?.showProgress()
-        fetchResources(withShowingListProgress = true) {
+        refreshHomeData(withShowingListProgress = true) {
             newResourceId?.let { newResourceId ->
                 allItemsList.indexOfFirst { it.resourceId == newResourceId }.let { index ->
                     view?.scrollResourcesToPosition(index)
