@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.main.mainscreen
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import kotlinx.coroutines.flow.Flow
 
@@ -29,9 +29,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface MainContract {
 
-    interface View : BaseContract.View
+    interface View : BaseAuthenticatedContract.View
 
-    interface Presenter : BaseContract.Presenter<View> {
+    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished>
         fun performFullDataRefresh()
     }
