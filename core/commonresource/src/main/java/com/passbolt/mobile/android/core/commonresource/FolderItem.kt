@@ -8,7 +8,6 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.asBinding
-import com.passbolt.mobile.android.common.extension.invisible
 import com.passbolt.mobile.android.commonresource.R
 import com.passbolt.mobile.android.commonresource.databinding.ItemFolderBinding
 import com.passbolt.mobile.android.ui.FolderModel
@@ -52,7 +51,6 @@ class FolderItem(
             name.text = folderModelWithChildrenCount.folderModel.name
             folderModelWithChildrenCount.folderChildrenCount.let {
                 folderChildrenCount.text = it.toString()
-                if (it == 0) navigationChevronImage.invisible()
             }
             icon.setImageResource(
                 if (folderModelWithChildrenCount.folderModel.isShared) {
