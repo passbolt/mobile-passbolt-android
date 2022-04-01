@@ -28,14 +28,18 @@ package com.passbolt.mobile.android.ui
  */
 sealed class Folder {
 
+    abstract val folderId: String?
+
     /**
      * Root folder is currently chosen
      */
-    object Root : Folder()
+    object Root : Folder() {
+        override val folderId: String? = null
+    }
 
     /**
      * A non-root nested folder is chosen.
      * @param folderId id of the chosen folder
      */
-    data class Child(val folderId: String) : Folder()
+    data class Child(override val folderId: String) : Folder()
 }

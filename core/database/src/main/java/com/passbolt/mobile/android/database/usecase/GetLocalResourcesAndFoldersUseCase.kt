@@ -6,7 +6,7 @@ import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.Folder
-import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
+import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -43,24 +43,17 @@ class GetLocalResourcesAndFoldersUseCase(
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
             .foldersDao()
 
+        val resourcesDao = databaseProvider
+            .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
+            .resourcesDao()
+
         return runCatching {
-            val (resources, folders) = when (input.folder) {
-                is Folder.Root ->
-                    Pair(foldersDao.getResourcesForRootFolder(), foldersDao.getFoldersForRootFolder())
-                is Folder.Child ->
-                    foldersDao.getFoldersWithResourcesForFolderWithId(input.folder.folderId)
-                        .let { Pair(it.resources, it.folders) }
-            }
+            val resourcesInFolder = resourcesDao.getResourcesForFolderWithId(input.folder.folderId)
+            val foldersInFolder = foldersDao.getFolderDirectChildFolders(input.folder.folderId)
+
             Output.Success(
-                folders.map {
-                    FolderModelWithChildrenCount(
-                        folderModelMapper.map(it),
-                        foldersDao.getResourcesAndFoldersCountForFolderWithId(it.folderId)
-                    )
-                },
-                resources.map {
-                    resourceModelMapper.map(it)
-                })
+                foldersInFolder.map { folderModelMapper.map(it) },
+                resourcesInFolder.map { resourceModelMapper.map(it) })
         }
             .getOrElse { Output.Failure }
     }
@@ -72,7 +65,7 @@ class GetLocalResourcesAndFoldersUseCase(
     sealed class Output {
 
         data class Success(
-            val folders: List<FolderModelWithChildrenCount>,
+            val folders: List<FolderWithCount>,
             val resources: List<ResourceModel>
         ) : Output()
 

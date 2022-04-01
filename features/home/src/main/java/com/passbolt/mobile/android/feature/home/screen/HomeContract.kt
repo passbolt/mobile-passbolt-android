@@ -1,8 +1,7 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.ui.FolderModel
-import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
+import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
@@ -36,8 +35,8 @@ interface HomeContract {
     interface View : BaseAuthenticatedContract.View {
         fun showItems(
             resourceList: List<ResourceModel>,
-            foldersList: List<FolderModelWithChildrenCount>,
-            filteredSubFoldersList: List<FolderModelWithChildrenCount>,
+            foldersList: List<FolderWithCount>,
+            filteredSubFoldersList: List<FolderWithCount>,
             filteredSubFolderResourceList: List<ResourceModel>,
             sectionsConfiguration: HomeFragment.HeaderSectionConfiguration
         )
@@ -120,7 +119,7 @@ interface HomeContract {
             hasPreviousEntry: Boolean
         )
 
-        fun folderItemClick(folderModel: FolderModel)
+        fun folderItemClick(folderModel: FolderWithCount)
         fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>)
         fun createResourceClick()
     }

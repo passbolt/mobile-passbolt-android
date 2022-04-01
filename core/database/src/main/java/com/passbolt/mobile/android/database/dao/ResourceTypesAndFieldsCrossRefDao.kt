@@ -3,8 +3,7 @@ package com.passbolt.mobile.android.database.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import com.passbolt.mobile.android.entity.resource.ResourceType
-import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
+import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRef
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,17 +28,9 @@ import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
  * @since v1.0
  */
 @Dao
-interface ResourceTypesDao : BaseDao<ResourceType> {
+interface ResourceTypesAndFieldsCrossRefDao : BaseDao<ResourceTypesAndFieldsCrossRef> {
 
     @Transaction
-    @Query("SELECT * FROM ResourceType WHERE resourceTypeId = :resourceType")
-    suspend fun getResourceTypeWithFieldsById(resourceType: String): ResourceTypeIdWithFields
-
-    @Transaction
-    @Query("SELECT * FROM ResourceType WHERE slug = :slug")
-    suspend fun getResourceTypeWithFieldsBySlug(slug: String): ResourceTypeIdWithFields
-
-    @Transaction
-    @Query("DELETE FROM ResourceField")
+    @Query("DELETE FROM ResourceTypesAndFieldsCrossRef")
     override suspend fun deleteAll()
 }

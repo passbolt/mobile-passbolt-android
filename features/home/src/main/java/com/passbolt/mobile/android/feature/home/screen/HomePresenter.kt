@@ -20,15 +20,17 @@ import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.Secret
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.Folder
-import com.passbolt.mobile.android.ui.FolderModel
-import com.passbolt.mobile.android.ui.FolderModelWithChildrenCount
+import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
@@ -83,24 +85,26 @@ class HomePresenter(
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private val dataRefreshJob = SupervisorJob()
     private val dataRefreshScope = CoroutineScope(dataRefreshJob + coroutineLaunchContext.ui)
+    private val filteringJob = SupervisorJob()
+    private val filteringScope = CoroutineScope(filteringJob + coroutineLaunchContext.ui)
     private lateinit var dataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>
 
-    private var currentSearchText: String = ""
+    private var currentSearchText = MutableStateFlow("")
     private lateinit var activeView: ResourcesDisplayView
     private lateinit var currentFolder: Folder
     private var currentFolderName: String? = null
     private var hasPreviousBackEntry = false
 
     private var resourceList: List<ResourceModel> = emptyList()
-    private var foldersList: List<FolderModelWithChildrenCount> = emptyList()
+    private var foldersList: List<FolderWithCount> = emptyList()
 
     private var filteredSubFolderResources: List<ResourceModel> = emptyList()
-    private var filteredSubFolders: List<FolderModelWithChildrenCount> = emptyList()
+    private var filteredSubFolders: List<FolderWithCount> = emptyList()
 
     private var currentMoreMenuResource: ResourceModel? = null
     private var userAvatarUrl: String? = null
     private val searchInputEndIconMode
-        get() = if (currentSearchText.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
+        get() = if (currentSearchText.value.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
 
     override fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>) {
         dataRefreshStatusFlow = fullDataRefreshStatusFlow
@@ -116,7 +120,7 @@ class HomePresenter(
         activeView = activeHomeView
         currentFolderName = activeFolderName
         currentFolder = activeFolderId?.let { Folder.Child(it) } ?: Folder.Root
-        hasPreviousBackEntry = isActiveFolderShared
+        hasPreviousBackEntry = hasPreviousEntry
 
         view?.apply {
             hideAddButton()
@@ -131,6 +135,7 @@ class HomePresenter(
         handleBackArrowVisibility()
         loadUserAvatar()
         collectDataRefreshStatus()
+        collectFilteringRefreshes()
     }
 
     private fun collectDataRefreshStatus() {
@@ -151,6 +156,18 @@ class HomePresenter(
                     hideRefreshProgress()
                 }
             }
+        }
+    }
+
+    private fun collectFilteringRefreshes() {
+        filteringScope.launch {
+            currentSearchText
+                .drop(1) // initial empty value
+                .collectLatest {
+                    Timber.d("New search text received")
+                    processSearchIconChange()
+                    filterHomeData()
+                }
         }
     }
 
@@ -188,6 +205,7 @@ class HomePresenter(
 
     override fun detach() {
         dataRefreshScope.coroutineContext.cancelChildren()
+        filteringScope.coroutineContext.cancelChildren()
         scope.coroutineContext.cancelChildren()
         super<BaseAuthenticatedPresenter>.detach()
     }
@@ -197,9 +215,7 @@ class HomePresenter(
     }
 
     override fun searchTextChange(text: String) {
-        currentSearchText = text
-        processSearchIconChange()
-        filterHomeData()
+        currentSearchText.value = text
     }
 
     private fun processSearchIconChange() {
@@ -238,7 +254,7 @@ class HomePresenter(
         if (resourceList.isEmpty() && foldersList.isEmpty()) {
             view?.showEmptyList()
         } else {
-            if (currentSearchText.isEmpty()) {
+            if (currentSearchText.value.isEmpty()) {
                 view?.showItems(
                     resourceList,
                     foldersList,
@@ -249,42 +265,48 @@ class HomePresenter(
                     )
                 )
             } else {
-                filterHomeData()
+                filteringScope.launch {
+                    Timber.d("Applying existing search criteria")
+                    processSearchIconChange()
+                    filterHomeData()
+                }
             }
         }
     }
 
-    private fun filterHomeData() {
-        scope.launch {
-            val filteredResources = filterSearchableList(resourceList, currentSearchText)
-            val filteredFolders = filterSearchableList(foldersList, currentSearchText)
+    private suspend fun filterHomeData() {
+        val filteredResources = filterSearchableList(resourceList, currentSearchText.value)
+        val filteredFolders = filterSearchableList(foldersList, currentSearchText.value)
 
-            if (activeView == ResourcesDisplayView.FOLDERS) {
-                populateSubFoldersFilteringResults()
-            }
-            if (areListsEmpty(filteredResources, filteredFolders, filteredSubFolders, filteredSubFolderResources)
-            ) {
-                view?.showSearchEmptyList()
-            } else {
-                view?.showItems(
-                    filteredResources,
-                    filteredFolders,
-                    filteredSubFolders,
-                    filteredSubFolderResources,
-                    HomeFragment.HeaderSectionConfiguration(
-                        isInCurrentFolderSectionVisible = !areListsEmpty(filteredResources, filteredFolders),
-                        isInSubFoldersSectionVisible = !areListsEmpty(filteredSubFolderResources, filteredSubFolders),
-                        currentFolderName
-                    )
+        if (activeView == ResourcesDisplayView.FOLDERS) {
+            populateSubFoldersFilteringResults()
+        }
+        if (areListsEmpty(filteredResources, filteredFolders, filteredSubFolders, filteredSubFolderResources)
+        ) {
+            view?.showSearchEmptyList()
+        } else {
+            view?.showItems(
+                filteredResources,
+                filteredFolders,
+                filteredSubFolders,
+                filteredSubFolderResources,
+                HomeFragment.HeaderSectionConfiguration(
+                    isInCurrentFolderSectionVisible = !areListsEmpty(filteredResources, filteredFolders),
+                    isInSubFoldersSectionVisible = !areListsEmpty(filteredSubFolderResources, filteredSubFolders),
+                    currentFolderName
                 )
-            }
+            )
         }
     }
 
     private suspend fun populateSubFoldersFilteringResults() {
-        if (currentSearchText.isNotBlank()) {
+        if (currentSearchText.value.isNotBlank()) {
+            // resources need to be shown for all child folders
             val allSubFolders = getAllSubFolders()
-            filteredSubFolders = filterSearchableList(allSubFolders, currentSearchText)
+            // direct child folders are shown in top section; in filters show only child folders level>=1
+            val subFoldersChildren = allSubFolders.filter { it.parentId != currentFolder.folderId }
+
+            filteredSubFolders = filterSearchableList(subFoldersChildren, currentSearchText.value)
             filteredSubFolderResources = getSubFoldersFilteredResources(allSubFolders)
         } else {
             filteredSubFolders = emptyList()
@@ -292,10 +314,10 @@ class HomePresenter(
         }
     }
 
-    private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderModelWithChildrenCount>) =
+    private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderWithCount>) =
         getLocalResourcesFiltered.execute(
             GetLocalSubFolderResourcesFilteredUseCase.Input(
-                allSubFolders.map { it.folderModel.folderId }, currentSearchText
+                allSubFolders.map { it.folderId }, currentSearchText.value
             )
         ).resources
 
@@ -480,7 +502,7 @@ class HomePresenter(
         navigateToHomeView(ResourcesDisplayView.FOLDERS)
     }
 
-    override fun folderItemClick(folderModel: FolderModel) {
+    override fun folderItemClick(folderModel: FolderWithCount) {
         view?.navigateToChildFolder(folderModel.folderId, folderModel.name, activeView, folderModel.isShared)
         view?.showBackArrow()
     }

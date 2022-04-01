@@ -1,10 +1,8 @@
 package com.passbolt.mobile.android.database.dao
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.entity.resource.ResourceType
-import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Update
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,18 +26,19 @@ import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface ResourceTypesDao : BaseDao<ResourceType> {
+/**
+ * Base DAO class implementing simple CRUD ops.
+ */
+interface BaseDao<T> {
 
-    @Transaction
-    @Query("SELECT * FROM ResourceType WHERE resourceTypeId = :resourceType")
-    suspend fun getResourceTypeWithFieldsById(resourceType: String): ResourceTypeIdWithFields
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(entities: List<T>)
 
-    @Transaction
-    @Query("SELECT * FROM ResourceType WHERE slug = :slug")
-    suspend fun getResourceTypeWithFieldsBySlug(slug: String): ResourceTypeIdWithFields
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(entity: T): Long
 
-    @Transaction
-    @Query("DELETE FROM ResourceField")
-    override suspend fun deleteAll()
+    @Update
+    suspend fun update(entity: T)
+
+    suspend fun deleteAll()
 }

@@ -42,25 +42,30 @@ class AddLocalResourceTypesUseCase(
             .get(selectedAccount)
             .resourceTypesDao()
 
+        val resourceFieldsDao = databaseProvider
+            .get(selectedAccount)
+            .resourceFieldsDao()
+
+        val resourceTypesAndFieldsCrossRefDao = databaseProvider
+            .get(selectedAccount)
+            .resourceTypesAndFieldsCrossRefDao()
+
         val resourceTypeDbModel = resourceTypesModelMapper
             .map(input.resourceTypesDto)
 
         // insert each resource types along with its fields and ResourceType<->ResourceField cross reference
-        with(resourceTypesDao) {
-            deleteResourceFields()
-            deleteResourceTypesAndFieldsCrossRef()
-            // TODO reset ResourceFields primary key
-            resourceTypeDbModel.forEach { resourceType ->
-                insertResourceType(resourceType.resourceType)
-                resourceType.resourceFields.forEach { resourceTypeField ->
-                    val resourceTypeFieldId = insertResourceField(resourceTypeField)
-                    insertResourceTypeAndFieldCrossRef(
-                        ResourceTypesAndFieldsCrossRef(
-                            resourceType.resourceType.resourceTypeId,
-                            resourceTypeFieldId
-                        )
+        resourceFieldsDao.deleteAll()
+        resourceTypesAndFieldsCrossRefDao.deleteAll()
+        resourceTypeDbModel.forEach { resourceType ->
+            resourceTypesDao.insert(resourceType.resourceType)
+            resourceType.resourceFields.forEach { resourceTypeField ->
+                val resourceTypeFieldId = resourceFieldsDao.insert(resourceTypeField)
+                resourceTypesAndFieldsCrossRefDao.insert(
+                    ResourceTypesAndFieldsCrossRef(
+                        resourceType.resourceType.resourceTypeId,
+                        resourceTypeFieldId
                     )
-                }
+                )
             }
         }
     }

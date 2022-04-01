@@ -1,11 +1,8 @@
 package com.passbolt.mobile.android.database.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
 
@@ -32,7 +29,7 @@ import com.passbolt.mobile.android.entity.resource.Resource
  * @since v1.0
  */
 @Dao
-interface ResourcesDao {
+interface ResourcesDao : BaseDao<Resource> {
 
     @Transaction
     @Query("SELECT * FROM Resource ORDER BY resourceName COLLATE NOCASE ASC")
@@ -66,16 +63,11 @@ interface ResourcesDao {
     @Query("SELECT * FROM Resource WHERE resourceId == :resourceId")
     suspend fun get(resourceId: String): Resource
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(resourceEntities: List<Resource>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(resourceEntities: Resource)
-
-    @Update
-    suspend fun update(resourceEntities: Resource)
+    @Transaction
+    @Query("SELECT * FROM Resource WHERE folderId IS :folderId")
+    suspend fun getResourcesForFolderWithId(folderId: String?): List<Resource>
 
     @Transaction
     @Query("DELETE FROM Resource")
-    suspend fun deleteAll()
+    override suspend fun deleteAll()
 }

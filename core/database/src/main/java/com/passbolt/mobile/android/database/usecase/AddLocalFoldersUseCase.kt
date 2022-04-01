@@ -39,9 +39,8 @@ class AddLocalFoldersUseCase(
         databaseProvider
             .get(currentAccount)
             .foldersDao()
-            .insert(
-                input.folders
-                    .map { folderModelMapper.map(it) }
+            .insertAll(
+                input.folders.map { folderModelMapper.map(it) }
             )
     }
 
