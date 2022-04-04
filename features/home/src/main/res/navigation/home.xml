@@ -12,23 +12,10 @@
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
         <argument
-            android:name="activeView"
-            android:defaultValue="ALL"
-            app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
-        <argument
-            android:name="activeFolderId"
+            android:name="HomeView"
             android:defaultValue="@null"
-            app:argType="string"
+            app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView"
             app:nullable="true" />
-        <argument
-            android:name="activeFolderName"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="isActiveFolderShared"
-            android:defaultValue="false"
-            app:argType="boolean" />
         <action
             android:id="@+id/action_home_to_homeChild"
             app:destination="@id/homeChild"
@@ -37,20 +24,8 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right">
             <argument
-                android:name="activeView"
-                android:defaultValue="FOLDERS"
-                app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
-            <argument
-                android:name="activeFolderId"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="activeFolderName"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="isActiveFolderShared"
-                app:argType="boolean" />
+                android:name="HomeView"
+                app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView" />
         </action>
     </fragment>
 
@@ -68,22 +43,9 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right">
             <argument
-                android:name="activeView"
-                android:defaultValue="FOLDERS"
-                app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
-            <argument
-                android:name="activeFolderId"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="activeFolderName"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="isActiveFolderShared"
-                app:argType="boolean" />
+                android:name="HomeView"
+                app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView" />
         </action>
-
     </fragment>
 
     <action
@@ -96,22 +58,8 @@
         app:popUpTo="@id/home"
         app:popUpToInclusive="true">
         <argument
-            android:name="activeView"
-            app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
-        <argument
-            android:name="activeFolderId"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="activeFolderName"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="isActiveFolderShared"
-            android:defaultValue="false"
-            app:argType="boolean" />
+            android:name="HomeView"
+            app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView" />
     </action>
 
     <action
@@ -124,21 +72,7 @@
         app:popUpTo="@id/home"
         app:popUpToInclusive="true">
         <argument
-            android:name="activeView"
-            app:argType="com.passbolt.mobile.android.ui.ResourcesDisplayView" />
-        <argument
-            android:name="activeFolderId"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="activeFolderName"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="isActiveFolderShared"
-            android:defaultValue="false"
-            app:argType="boolean" />
+            android:name="HomeView"
+            app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView" />
     </action>
 </navigation>

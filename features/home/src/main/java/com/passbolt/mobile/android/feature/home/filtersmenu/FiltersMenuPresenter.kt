@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.feature.home.filtersmenu
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel
-import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -32,12 +32,13 @@ class FiltersMenuPresenter(
         view?.apply {
             unselectAll()
             when (menuModel.activeDisplayView) {
-                ResourcesDisplayView.ALL -> selectAllItemsItem()
-                ResourcesDisplayView.FAVOURITES -> selectFavouritesItem()
-                ResourcesDisplayView.RECENTLY_MODIFIED -> selectRecentlyModifiedItem()
-                ResourcesDisplayView.SHARED_WITH_ME -> selectSharedWithMeItem()
-                ResourcesDisplayView.OWNED_BY_ME -> selectOwnedByMeItem()
-                ResourcesDisplayView.FOLDERS -> selectFoldersMenuItem()
+                is HomeDisplayView.AllItems -> selectAllItemsItem()
+                is HomeDisplayView.Favourites -> selectFavouritesItem()
+                is HomeDisplayView.RecentlyModified -> selectRecentlyModifiedItem()
+                is HomeDisplayView.SharedWithMe -> selectSharedWithMeItem()
+                is HomeDisplayView.OwnedByMe -> selectOwnedByMeItem()
+                is HomeDisplayView.Folders -> selectFoldersMenuItem()
+                is HomeDisplayView.Tags -> selectTagsMenuItem()
             }
         }
     }

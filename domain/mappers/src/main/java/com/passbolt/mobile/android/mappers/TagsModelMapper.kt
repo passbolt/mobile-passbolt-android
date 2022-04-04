@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.response.TagDto
 import com.passbolt.mobile.android.entity.resource.Tag
+import com.passbolt.mobile.android.entity.resource.TagWithTaggedItemsCount
 import com.passbolt.mobile.android.ui.TagModel
+import com.passbolt.mobile.android.ui.TagWithCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -47,5 +49,13 @@ class TagsModelMapper {
             id = tagEntity.id,
             slug = tagEntity.slug,
             isShared = tagEntity.isShared
+        )
+
+    fun map(tag: TagWithTaggedItemsCount): TagWithCount =
+        TagWithCount(
+            tag.id,
+            tag.slug,
+            tag.isShared,
+            tag.taggedItemsCount
         )
 }

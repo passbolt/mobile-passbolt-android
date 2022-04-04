@@ -1,8 +1,11 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.database.usecase
 
-import android.os.Parcelable
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
-import kotlinx.parcelize.Parcelize
+import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,8 +29,25 @@ import kotlinx.parcelize.Parcelize
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GetLocalResourcesWithTagUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val resourceModelMapper: ResourceModelMapper,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : AsyncUseCase<GetLocalResourcesWithTagUseCase.Input, GetLocalResourcesWithTagUseCase.Output> {
 
-@Parcelize
-data class FiltersMenuModel(
-    val activeDisplayView: HomeDisplayView
-) : Parcelable
+    override suspend fun execute(input: Input): Output {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        val resources = databaseProvider
+            .get(userId)
+            .resourcesDao()
+            .getResourcesWithTag(requireNotNull(input.tag.activeTagId))
+
+        return Output(resources.map { resourceModelMapper.map(it) })
+    }
+
+    data class Input(
+        val tag: HomeDisplayView.Tags
+    )
+
+    data class Output(val resources: List<ResourceModel>)
+}

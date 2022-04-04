@@ -9,7 +9,6 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.plus
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
-import com.passbolt.mobile.android.ui.ResourcesDisplayView
 
 /**
  * Passbolt - Open source password manager for teams
@@ -68,8 +67,6 @@ class ResourceInteractor(
             Output.Failure(resourcesResult.authenticationState)
         }
     }
-
-    data class Input(val displayView: ResourcesDisplayView = ResourcesDisplayView.ALL)
 
     sealed class Output : AuthenticatedUseCaseOutput {
 

@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.TagsModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.TagModel
+import com.passbolt.mobile.android.ui.TagWithCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,12 +32,12 @@ class GetLocalTagsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val tagModelMapper: TagsModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<Unit, List<TagModel>> {
+) : AsyncUseCase<Unit, List<TagWithCount>> {
 
     override suspend fun execute(input: Unit) =
         databaseProvider
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
             .tagsDao()
-            .getAll()
+            .getAllWithTaggedItemsCount()
             .map { tagModelMapper.map(it) }
 }

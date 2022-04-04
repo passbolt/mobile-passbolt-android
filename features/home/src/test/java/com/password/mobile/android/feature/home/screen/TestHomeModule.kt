@@ -10,8 +10,10 @@ import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTa
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFoldersForFolderUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
@@ -39,6 +41,8 @@ internal val mockFoldersInteractor = mock<FoldersInteractor>()
 internal val mockGetSubFoldersUseCase = mock<GetLocalSubFoldersForFolderUseCase>()
 internal val mockGetSubFoldersResourcesUseCase = mock<GetLocalSubFolderResourcesFilteredUseCase>()
 internal val mockGetLocalResourcesAndFoldersUseCase = mock<GetLocalResourcesAndFoldersUseCase>()
+internal val mockGetLocalTagsUseCase = mock<GetLocalTagsUseCase>()
+internal val mockGetLocalResourcesWithTagsUseCase = mock<GetLocalResourcesWithTagUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -63,9 +67,11 @@ val testHomeModule = module {
             resourceMenuModelMapper = get(),
             deleteResourceUseCase = mockDeleteResourceUseCase,
             getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
-            getLocalResourcesAndFoldersUseCase = mockGetLocalResourcesAndFoldersUseCase,
             getLocalSubFoldersForFolderUseCase = mockGetSubFoldersUseCase,
-            getLocalResourcesFiltered = mockGetSubFoldersResourcesUseCase
+            getLocalResourcesAndFoldersUseCase = mockGetLocalResourcesAndFoldersUseCase,
+            getLocalResourcesFiltered = mockGetSubFoldersResourcesUseCase,
+            getLocalTagsUseCase = mockGetLocalTagsUseCase,
+            getLocalResourcesWithTagUseCase = mockGetLocalResourcesWithTagsUseCase
         )
     }
 }

@@ -9,8 +9,8 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.asBinding
 import com.passbolt.mobile.android.commonresource.R
-import com.passbolt.mobile.android.commonresource.databinding.ItemFolderBinding
-import com.passbolt.mobile.android.ui.FolderWithCount
+import com.passbolt.mobile.android.commonresource.databinding.ItemTagBinding
+import com.passbolt.mobile.android.ui.TagWithCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,48 +34,48 @@ import com.passbolt.mobile.android.ui.FolderWithCount
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class FolderItem(
-    val folderWithCount: FolderWithCount
-) : AbstractBindingItem<ItemFolderBinding>() {
+class TagItem(
+    val tagWithCount: TagWithCount
+) : AbstractBindingItem<ItemTagBinding>() {
 
     override val type: Int
-        get() = R.id.itemFolder
+        get() = R.id.itemTag
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemFolderBinding =
-        ItemFolderBinding.inflate(inflater, parent, false)
+    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemTagBinding =
+        ItemTagBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemFolderBinding, payloads: List<Any>) {
+    override fun bindView(binding: ItemTagBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            name.text = folderWithCount.name
-            folderChildrenCount.text = folderWithCount.subItemsCount.toString()
+            name.text = tagWithCount.slug
+            taggedItemsCount.text = tagWithCount.taggedResourcesCount.toString()
             icon.setImageResource(
-                if (folderWithCount.isShared) {
-                    R.drawable.ic_filled_shared_folder_with_bg
+                if (tagWithCount.isShared) {
+                    R.drawable.ic_filled_shared_tag_with_bg
                 } else {
-                    R.drawable.ic_filled_folder_with_bg
+                    R.drawable.ic_filled_tag_with_bg
                 }
             )
         }
     }
 
     class ItemClick(
-        private val clickListener: (FolderWithCount) -> Unit
-    ) : ClickEventHook<FolderItem>() {
+        private val clickListener: (TagWithCount) -> Unit
+    ) : ClickEventHook<TagItem>() {
 
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemFolderBinding> {
-                it.itemFolder
+            return viewHolder.asBinding<ItemTagBinding> {
+                it.itemTag
             }
         }
 
         override fun onClick(
             v: View,
             position: Int,
-            fastAdapter: FastAdapter<FolderItem>,
-            item: FolderItem
+            fastAdapter: FastAdapter<TagItem>,
+            item: TagItem
         ) {
-            clickListener.invoke(item.folderWithCount)
+            clickListener.invoke(item.tagWithCount)
         }
     }
 }

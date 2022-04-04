@@ -68,6 +68,15 @@ interface ResourcesDao : BaseDao<Resource> {
     suspend fun getResourcesForFolderWithId(folderId: String?): List<Resource>
 
     @Transaction
+    @Query(
+        "SELECT * FROM Resource r " +
+                "INNER JOIN ResourceAndTagsCrossRef cr " +
+                "ON r.resourceId=cr.resourceId " +
+                "WHERE cr.tagId=:tagId"
+    )
+    suspend fun getResourcesWithTag(tagId: String): List<Resource>
+
+    @Transaction
     @Query("DELETE FROM Resource")
     suspend fun deleteAll()
 }

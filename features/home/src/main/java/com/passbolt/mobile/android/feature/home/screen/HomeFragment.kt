@@ -36,12 +36,14 @@ import com.passbolt.mobile.android.core.commonresource.FolderItem
 import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
+import com.passbolt.mobile.android.core.commonresource.TagItem
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
@@ -49,7 +51,7 @@ import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-import com.passbolt.mobile.android.ui.ResourcesDisplayView
+import com.passbolt.mobile.android.ui.TagWithCount
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 
@@ -86,6 +88,7 @@ class HomeFragment :
     private val childrenPasswordItemAdapter: ItemAdapter<PasswordItem> by inject(named(SUB_RESOURCE_ITEM_ADAPTER))
     private val folderItemAdapter: ItemAdapter<FolderItem> by inject(named(FOLDER_ITEM_ADAPTER))
     private val childrenFolderItemAdapter: ItemAdapter<FolderItem> by inject(named(SUB_FOLDER_ITEM_ADAPTER))
+    private val tagsItemAdapter: ItemAdapter<TagItem> by inject(named(TAGS_ITEM_ADAPTER))
     private val inSubFoldersHeaderItemAdapter: ItemAdapter<InSubFoldersHeaderItem> by inject(
         named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)
     )
@@ -132,13 +135,7 @@ class HomeFragment :
         setListeners()
         val hasPreviousEntry = navController.previousBackStackEntry != null
         presenter.attach(this)
-        presenter.argsRetrieved(
-            arguments.activeView,
-            arguments.activeFolderId,
-            arguments.activeFolderName,
-            arguments.isActiveFolderShared,
-            hasPreviousEntry
-        )
+        presenter.argsRetrieved(arguments.homeView, hasPreviousEntry)
     }
 
     override fun onDestroyView() {
@@ -200,6 +197,9 @@ class HomeFragment :
             },
             FolderItem.ItemClick {
                 presenter.folderItemClick(it)
+            },
+            TagItem.ItemClick {
+                presenter.tagItemClick(it)
             }
         ))
     }
@@ -247,6 +247,7 @@ class HomeFragment :
     override fun showItems(
         resourceList: List<ResourceModel>,
         foldersList: List<FolderWithCount>,
+        tagsList: List<TagWithCount>,
         filteredSubFoldersList: List<FolderWithCount>,
         filteredSubFolderResourceList: List<ResourceModel>,
         sectionsConfiguration: HeaderSectionConfiguration
@@ -259,6 +260,8 @@ class HomeFragment :
         )
         // current folder folders
         FastAdapterDiffUtil.calculateDiff(folderItemAdapter, foldersList.map { FolderItem(it) })
+        // tags
+        FastAdapterDiffUtil.calculateDiff(tagsItemAdapter, tagsList.map { TagItem(it) })
         // current folder resources
         FastAdapterDiffUtil.calculateDiff(passwordItemAdapter, resourceList.map { PasswordItem(it) })
         // "in sub-folders" header
@@ -459,7 +462,7 @@ class HomeFragment :
         )
     }
 
-    override fun showFiltersMenu(activeDisplayView: ResourcesDisplayView) {
+    override fun showFiltersMenu(activeDisplayView: HomeDisplayView) {
         FiltersMenuFragment.newInstance(FiltersMenuModel(activeDisplayView))
             .show(childFragmentManager, FiltersMenuFragment::class.java.name)
     }
@@ -489,34 +492,38 @@ class HomeFragment :
     }
 
     override fun menuTagsClick() {
-        // TODO
+        presenter.tagsClick()
     }
 
-    override fun showHomeScreenTitle(view: ResourcesDisplayView) {
+    override fun showHomeScreenTitle(view: HomeDisplayView) {
         when (view) {
-            ResourcesDisplayView.ALL -> showScreenTitleWithStartIcon(
+            is HomeDisplayView.AllItems -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_all_items,
                 R.drawable.ic_list
             )
-            ResourcesDisplayView.FAVOURITES -> showScreenTitleWithStartIcon(
+            is HomeDisplayView.Favourites -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_favourites,
                 R.drawable.ic_star
             )
-            ResourcesDisplayView.RECENTLY_MODIFIED -> showScreenTitleWithStartIcon(
+            is HomeDisplayView.RecentlyModified -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_recently_modified,
                 R.drawable.ic_clock
             )
-            ResourcesDisplayView.SHARED_WITH_ME -> showScreenTitleWithStartIcon(
+            is HomeDisplayView.SharedWithMe -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_shared_with_me,
                 R.drawable.ic_share
             )
-            ResourcesDisplayView.OWNED_BY_ME -> showScreenTitleWithStartIcon(
+            is HomeDisplayView.OwnedByMe -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_owned_by_me,
                 R.drawable.ic_person
             )
-            ResourcesDisplayView.FOLDERS -> showScreenTitleWithStartIcon(
+            is HomeDisplayView.Folders -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_folders,
                 R.drawable.ic_folder
+            )
+            is HomeDisplayView.Tags -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_tags,
+                R.drawable.ic_tag
             )
         }
     }
@@ -525,6 +532,13 @@ class HomeFragment :
         showScreenTitleWithStartIcon(
             activeFolderName,
             if (isShared) R.drawable.ic_shared_folder else R.drawable.ic_folder
+        )
+    }
+
+    override fun showTagTitle(activeTagTitle: String, isShared: Boolean) {
+        showScreenTitleWithStartIcon(
+            activeTagTitle,
+            if (isShared) R.drawable.ic_shared_tag else R.drawable.ic_tag
         )
     }
 
@@ -539,21 +553,22 @@ class HomeFragment :
         }
     }
 
-    override fun navigateToChildFolder(
-        folderId: String,
-        folderName: String,
-        activeFilter: ResourcesDisplayView,
-        isActiveFolderShared: Boolean
-    ) {
-        navController.navigate(HomeFragmentDirections.actionHomeToHomeChild(folderId, folderName, isActiveFolderShared))
+    override fun navigateToChild(homeView: HomeDisplayView) {
+        navController.navigate(
+            HomeFragmentDirections.actionHomeToHomeChild(homeView)
+        )
     }
 
-    override fun navigateToRootHomeFromChildHome(activeFilter: ResourcesDisplayView) {
-        navController.navigate(HomeFragmentDirections.actionHomeChildToHome(activeFilter))
+    override fun navigateToRootHomeFromChildHome(homeView: HomeDisplayView) {
+        navController.navigate(
+            HomeFragmentDirections.actionHomeChildToHome(homeView)
+        )
     }
 
-    override fun navigateRootHomeFromRootHome(activeView: ResourcesDisplayView) {
-        navController.navigate(HomeFragmentDirections.actionHomeToHome(activeView))
+    override fun navigateRootHomeFromRootHome(homeView: HomeDisplayView) {
+        navController.navigate(
+            HomeFragmentDirections.actionHomeToHome(homeView)
+        )
     }
 
     override fun performRefreshUsingRefreshExecutor() {

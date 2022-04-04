@@ -84,6 +84,11 @@ interface FiltersMenuContract {
          * Adds tags item in the menu
          */
         fun addTagsMenuItem()
+
+        /**
+         * Selects tags item in the menu
+         */
+        fun selectTagsMenuItem()
     }
 
     /**
