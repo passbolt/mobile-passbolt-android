@@ -16,7 +16,7 @@ class ResourceModelMapperTest {
 
     @Before
     fun setUp() {
-        mapper = ResourceModelMapper(InitialsProvider(),)
+        mapper = ResourceModelMapper(InitialsProvider())
     }
 
     @Test

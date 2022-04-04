@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -67,13 +68,13 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
     ): View {
         binding = FiletrsBottomsheetBinding.inflate(inflater)
         presenter.creatingView()
+        presenter.attach(this)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
-        presenter.attach(this)
         presenter.argsRetrieved(menuModel)
     }
 
@@ -182,18 +183,43 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
     }
 
     override fun addFoldersMenuItem() {
+        val foldersMenuItem = createMenuItem(
+            getString(R.string.filters_menu_folders),
+            R.drawable.ic_folder,
+            TAG_FOLDERS
+        ) { listener?.menuFoldersClick() }
+        binding.root.addView(foldersMenuItem)
+        constrainTopToBottomInRoot(foldersMenuItem.id, binding.root.findViewWithTag<View>(TAG_SEPARATOR).id)
+    }
+
+    override fun addTagsMenuItem() {
+        val tagsMenuItem = createMenuItem(
+            getString(R.string.filters_menu_tags),
+            R.drawable.ic_tag,
+            TAG_TAGS
+        ) { listener?.menuTagsClick() }
+        binding.root.addView(tagsMenuItem)
+        constrainTopToBottomInRoot(tagsMenuItem.id, binding.root.findViewWithTag<View>(TAG_FOLDERS).id)
+    }
+
+    private fun createMenuItem(
+        label: String,
+        @DrawableRes startDrawableResId: Int,
+        viewTag: String,
+        onClick: () -> Unit
+    ): TextView {
         val dp16 = resources.getDimension(R.dimen.dp_16)
-        val foldersLabel = TextView(requireContext(), null, 0, R.style.PasswordMenuItem).apply {
+        return TextView(requireContext(), null, 0, R.style.PasswordMenuItem).apply {
             layoutParams = ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.MATCH_PARENT,
                 resources.getDimension(R.dimen.dp_48).toInt()
             )
             id = View.generateViewId()
-            tag = TAG_FOLDERS
-            text = getString(R.string.filters_menu_folders)
+            tag = viewTag
+            text = label
             TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 this,
-                ContextCompat.getDrawable(requireContext(), R.drawable.ic_folder),
+                ContextCompat.getDrawable(requireContext(), startDrawableResId),
                 null,
                 null,
                 null
@@ -205,12 +231,10 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
             compoundDrawablePadding = dp16.toInt()
             updatePadding(left = ceil(dp16).toInt())
             setOnClickListener {
-                listener?.menuFoldersClick()
+                onClick()
                 dismiss()
             }
         }
-        binding.root.addView(foldersLabel)
-        constrainTopToBottomInRoot(foldersLabel.id, binding.root.findViewWithTag<View>(TAG_SEPARATOR).id)
     }
 
     private fun constrainTopToBottomInRoot(@IdRes what: Int, @IdRes toWhat: Int) {
@@ -234,12 +258,14 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         fun menuSharedWithMeClick()
         fun menuOwnedByMeClick()
         fun menuFoldersClick()
+        fun menuTagsClick()
     }
 
     companion object {
         private const val EXTRA_FILTERS_MENU_MODEL = "FILTERS_MENU_MODEL"
         private const val TAG_SEPARATOR = "viewSeparator"
         private const val TAG_FOLDERS = "viewFolders"
+        private const val TAG_TAGS = "viewTags"
 
         fun newInstance(model: FiltersMenuModel) =
             FiltersMenuFragment().apply {

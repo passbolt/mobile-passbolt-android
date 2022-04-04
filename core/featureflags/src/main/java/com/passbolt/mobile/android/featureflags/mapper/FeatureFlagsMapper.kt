@@ -36,7 +36,9 @@ class FeatureFlagsMapper {
                 isPreviewPasswordAvailable = it.plugins.previewPassword?.enabled
                     ?: Defaults.IS_PREVIEW_PASSWORD_AVAILABLE,
                 areFoldersAvailable = it.plugins.folders?.enabled
-                    ?: Defaults.ARE_FOLDERS_AVAILABLE
+                    ?: Defaults.ARE_FOLDERS_AVAILABLE,
+                areTagsAvailable = it.plugins.tags?.enabled
+                    ?: Defaults.ARE_TAGS_AVAILABLE
             )
         }
 }

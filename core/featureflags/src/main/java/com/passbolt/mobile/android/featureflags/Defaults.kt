@@ -26,4 +26,5 @@ package com.passbolt.mobile.android.featureflags
 object Defaults {
     const val IS_PREVIEW_PASSWORD_AVAILABLE = true
     const val ARE_FOLDERS_AVAILABLE = false
+    const val ARE_TAGS_AVAILABLE = false
 }

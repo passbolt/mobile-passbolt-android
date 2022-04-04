@@ -199,7 +199,13 @@ class ResourceDetailsPresenterTest : KoinTest {
         mockGetFeatureFlagsUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetFeatureFlagsUseCase.Output(
-                    FeatureFlagsModel(null, null, isPreviewPasswordAvailable = false, areFoldersAvailable = false)
+                    FeatureFlagsModel(
+                        null,
+                        null,
+                        isPreviewPasswordAvailable = false,
+                        areFoldersAvailable = false,
+                        areTagsAvailable = false
+                    )
                 )
             )
         }
