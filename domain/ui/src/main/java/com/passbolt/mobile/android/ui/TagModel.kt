@@ -1,9 +1,7 @@
-package com.passbolt.mobile.android.database.dao
+package com.passbolt.mobile.android.ui
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.entity.resource.ResourceField
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,10 +25,10 @@ import com.passbolt.mobile.android.entity.resource.ResourceField
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface ResourceFieldsDao : BaseDao<ResourceField> {
 
-    @Transaction
-    @Query("DELETE FROM ResourceField")
-    suspend fun deleteAll()
-}
+@Parcelize
+data class TagModel(
+    val id: String,
+    val slug: String,
+    val isShared: Boolean
+) : Parcelable

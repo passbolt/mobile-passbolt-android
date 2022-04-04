@@ -43,5 +43,13 @@ data class ResourceResponseDto(
     val username: String?,
     val permission: PermissionDto,
     val favorite: JSONObject?,
-    val modified: String
+    val modified: String,
+    val tags: List<TagDto>?
+)
+
+data class TagDto(
+    val id: String,
+    val slug: String,
+    @SerializedName("is_shared")
+    val isShared: Boolean
 )

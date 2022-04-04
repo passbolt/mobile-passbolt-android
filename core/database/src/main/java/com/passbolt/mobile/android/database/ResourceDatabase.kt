@@ -7,13 +7,17 @@ import com.passbolt.mobile.android.database.dao.FoldersDao
 import com.passbolt.mobile.android.database.dao.ResourceFieldsDao
 import com.passbolt.mobile.android.database.dao.ResourceTypesAndFieldsCrossRefDao
 import com.passbolt.mobile.android.database.dao.ResourceTypesDao
+import com.passbolt.mobile.android.database.dao.ResourcesAndTagsCrossRefDao
 import com.passbolt.mobile.android.database.dao.ResourcesDao
+import com.passbolt.mobile.android.database.dao.TagsDao
 import com.passbolt.mobile.android.database.typeconverters.Converters
 import com.passbolt.mobile.android.entity.resource.Folder
 import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.entity.resource.ResourceAndTagsCrossRef
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceType
 import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRef
+import com.passbolt.mobile.android.entity.resource.Tag
 
 /**
  * Passbolt - Open source password manager for teams
@@ -44,8 +48,11 @@ import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRe
         Folder::class,
         ResourceType::class,
         ResourceField::class,
-        ResourceTypesAndFieldsCrossRef::class],
-    version = 5
+        ResourceTypesAndFieldsCrossRef::class,
+        Tag::class,
+        ResourceAndTagsCrossRef::class
+    ],
+    version = 6
 )
 @TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {
@@ -59,4 +66,8 @@ abstract class ResourceDatabase : RoomDatabase() {
     abstract fun resourceTypesAndFieldsCrossRefDao(): ResourceTypesAndFieldsCrossRefDao
 
     abstract fun foldersDao(): FoldersDao
+
+    abstract fun tagsDao(): TagsDao
+
+    abstract fun resourcesAndTagsCrossRefDao(): ResourcesAndTagsCrossRefDao
 }

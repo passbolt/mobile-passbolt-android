@@ -46,3 +46,8 @@ data class ResourceModel(
     var clickable: Boolean = true,
     override val searchCriteria: String = "$name$username$url"
 ) : Parcelable, Searchable
+
+data class ResourceModelWithTags(
+    val resourceModel: ResourceModel,
+    val resourceTags: List<TagModel>
+)

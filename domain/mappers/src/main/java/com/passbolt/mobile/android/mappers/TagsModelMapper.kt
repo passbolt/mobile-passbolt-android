@@ -1,9 +1,8 @@
-package com.passbolt.mobile.android.database.dao
+package com.passbolt.mobile.android.mappers
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.entity.resource.ResourceField
+import com.passbolt.mobile.android.dto.response.TagDto
+import com.passbolt.mobile.android.entity.resource.Tag
+import com.passbolt.mobile.android.ui.TagModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,10 +26,26 @@ import com.passbolt.mobile.android.entity.resource.ResourceField
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface ResourceFieldsDao : BaseDao<ResourceField> {
+class TagsModelMapper {
 
-    @Transaction
-    @Query("DELETE FROM ResourceField")
-    suspend fun deleteAll()
+    fun map(tag: TagDto): TagModel =
+        TagModel(
+            id = tag.id,
+            slug = tag.slug,
+            isShared = tag.isShared
+        )
+
+    fun map(tagModel: TagModel): Tag =
+        Tag(
+            id = tagModel.id,
+            slug = tagModel.slug,
+            isShared = tagModel.isShared
+        )
+
+    fun map(tagEntity: Tag): TagModel =
+        TagModel(
+            id = tagEntity.id,
+            slug = tagEntity.slug,
+            isShared = tagEntity.isShared
+        )
 }

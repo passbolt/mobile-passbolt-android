@@ -41,5 +41,5 @@ interface ResourceTypesDao : BaseDao<ResourceType> {
 
     @Transaction
     @Query("DELETE FROM ResourceField")
-    override suspend fun deleteAll()
+    suspend fun deleteAll()
 }

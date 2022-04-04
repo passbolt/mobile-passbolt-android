@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.commonresource
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.RebuildTagsTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.validation.ResourceValidationRunner
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
@@ -37,7 +38,8 @@ class ResourceInteractor(
     private val getResourcesUseCase: GetResourcesUseCase,
     private val addLocalResourceTypesUseCase: AddLocalResourceTypesUseCase,
     private val resourceValidationRunner: ResourceValidationRunner,
-    private val rebuildAndGetResourceTablesUseCase: RebuildResourceTablesUseCase
+    private val rebuildResourceTablesUseCase: RebuildResourceTablesUseCase,
+    private val rebuildTagsTablesUseCase: RebuildTagsTablesUseCase
 ) {
 
     suspend fun updateResourcesWithTypes(): Output {
@@ -50,9 +52,12 @@ class ResourceInteractor(
                     AddLocalResourceTypesUseCase.Input(resourceTypesResult.resourceTypes)
                 )
                 val validatedResources = resourcesResult.resources
-                    .filter { resourceValidationRunner.isValid(it) }
-                rebuildAndGetResourceTablesUseCase.execute(
-                    RebuildResourceTablesUseCase.Input(validatedResources)
+                    .filter { resourceValidationRunner.isValid(it.resourceModel) }
+                rebuildResourceTablesUseCase.execute(
+                    RebuildResourceTablesUseCase.Input(validatedResources.map { it.resourceModel })
+                )
+                rebuildTagsTablesUseCase.execute(
+                    RebuildTagsTablesUseCase.Input(validatedResources)
                 )
 
                 Output.Success

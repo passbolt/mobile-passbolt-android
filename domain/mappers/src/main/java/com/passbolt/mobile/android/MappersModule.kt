@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
 import com.passbolt.mobile.android.mappers.SignInMapper
 import com.passbolt.mobile.android.mappers.SignOutMapper
 import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
+import com.passbolt.mobile.android.mappers.TagsModelMapper
 import com.passbolt.mobile.android.mappers.UpdateTransferMapper
 import com.passbolt.mobile.android.mappers.UserProfileMapper
 import com.passbolt.mobile.android.mappers.UsersMapper
@@ -76,4 +77,5 @@ val mappersModule = module {
     }
     factory { ResourceDisplayViewMapper() }
     factory { FolderModelMapper() }
+    factory { TagsModelMapper() }
 }

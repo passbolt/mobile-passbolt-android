@@ -69,5 +69,5 @@ interface ResourcesDao : BaseDao<Resource> {
 
     @Transaction
     @Query("DELETE FROM Resource")
-    override suspend fun deleteAll()
+    suspend fun deleteAll()
 }

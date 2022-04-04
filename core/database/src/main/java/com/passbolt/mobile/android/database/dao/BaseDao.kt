@@ -39,6 +39,4 @@ interface BaseDao<T> {
 
     @Update
     suspend fun update(entity: T)
-
-    suspend fun deleteAll()
 }

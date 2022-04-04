@@ -4,16 +4,19 @@ import com.passbolt.mobile.android.database.usecase.AddLocalFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.AddLocalTagsUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourceUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFoldersForFolderUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalTagsUseCase
 import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.RemoveLocalTagsUseCase
 import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.database.usecase.UpdateLocalResourceUseCase
 import org.koin.android.ext.koin.androidApplication
@@ -150,6 +153,25 @@ val databaseModule = module {
         GetLocalSubFolderResourcesFilteredUseCase(
             databaseProvider = get(),
             resourceModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+
+    single {
+        RemoveLocalTagsUseCase(
+            databaseProvider = get()
+        )
+    }
+    single {
+        AddLocalTagsUseCase(
+            databaseProvider = get(),
+            tagModelMapper = get()
+        )
+    }
+    single {
+        GetLocalTagsUseCase(
+            databaseProvider = get(),
+            tagModelMapper = get(),
             getSelectedAccountUseCase = get()
         )
     }

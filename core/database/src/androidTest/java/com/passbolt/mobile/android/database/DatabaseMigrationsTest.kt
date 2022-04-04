@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
 import com.passbolt.mobile.android.database.migrations.Migration4to5
+import com.passbolt.mobile.android.database.migrations.Migration5to6
 import org.junit.Rule
 import org.junit.Test
 
@@ -109,6 +110,16 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate5To6() {
+        helper.runMigrationsAndValidate(TEST_DB, 6, true, Migration5to6)
+            .apply {
+                execSQL("INSERT INTO Tag VALUES('id1','tagSlug',0)")
+                execSQL("INSERT INTO ResourceAndTagsCrossRef VALUES('id1','id2')")
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -119,7 +130,7 @@ class DatabaseMigrationsTest {
             ResourceDatabase::class.java,
             TEST_DB
         )
-            .addMigrations(Migration1to2, Migration2to3, Migration3to4, Migration4to5)
+            .addMigrations(Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6)
             .build().apply {
                 openHelper.writableDatabase
                 close()

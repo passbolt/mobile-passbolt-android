@@ -90,5 +90,5 @@ interface FoldersDao : BaseDao<Folder> {
 
     @Transaction
     @Query("DELETE FROM Folder")
-    override suspend fun deleteAll()
+    suspend fun deleteAll()
 }

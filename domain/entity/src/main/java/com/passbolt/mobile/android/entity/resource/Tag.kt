@@ -1,9 +1,7 @@
-package com.passbolt.mobile.android.database.dao
+package com.passbolt.mobile.android.entity.resource
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.entity.resource.ResourceField
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,10 +25,20 @@ import com.passbolt.mobile.android.entity.resource.ResourceField
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface ResourceFieldsDao : BaseDao<ResourceField> {
 
-    @Transaction
-    @Query("DELETE FROM ResourceField")
-    suspend fun deleteAll()
-}
+const val TAG_ID = "tagId"
+const val RESOURCE_ID = "resourceId"
+
+@Entity
+data class Tag(
+    @PrimaryKey
+    val id: String,
+    val slug: String,
+    val isShared: Boolean
+)
+
+@Entity(primaryKeys = [TAG_ID, RESOURCE_ID])
+data class ResourceAndTagsCrossRef(
+    val tagId: String,
+    val resourceId: String
+)

@@ -43,11 +43,7 @@ internal val mockGetLocalResourcesAndFoldersUseCase = mock<GetLocalResourcesAndF
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
     factory { resourcesInteractor }
-    factory {
-        ResourceModelMapper(
-            initialsProvider = get()
-        )
-    }
+    factory { ResourceModelMapper(initialsProvider = get()) }
     factory { getSelectedAccountDataUseCase }
     factory { fetchAndUpdateDatabaseUseCase }
     factory { InitialsProvider() }
