@@ -1,6 +1,3 @@
-- add home resource views (available through a new search filter icon): favourites, recently modified, shared with me, owned by me, all
-- refresh user avatar after every sign in
-- updated QR scanning library to the latest version with new, more accurate ML model; improve error messages on QR scan
-- prepare for localization
-- fix crash when HTTP backend connection is made
-- add UUID validation
+- added home folders view (available through the search filter icon): browse folders and search in folders and sub-folders
+- autofill: fix crash when websites/apps have two-page sign in (i.e. username only on first page and password on another)
+- security: support latest java 17 build
