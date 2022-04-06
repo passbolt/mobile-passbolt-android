@@ -1,10 +1,11 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-import com.passbolt.mobile.android.ui.ResourcesDisplayView
+import com.passbolt.mobile.android.ui.TagWithCount
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -36,6 +37,7 @@ interface HomeContract {
         fun showItems(
             resourceList: List<ResourceModel>,
             foldersList: List<FolderWithCount>,
+            tagsList: List<TagWithCount>,
             filteredSubFoldersList: List<FolderWithCount>,
             filteredSubFolderResourceList: List<ResourceModel>,
             sectionsConfiguration: HomeFragment.HeaderSectionConfiguration
@@ -66,21 +68,17 @@ interface HomeContract {
         fun showAddButton()
         fun showDeleteConfirmationDialog()
         fun navigateToManageAccounts()
-        fun showFiltersMenu(activeDisplayView: ResourcesDisplayView)
-        fun showHomeScreenTitle(view: ResourcesDisplayView)
-        fun navigateToChildFolder(
-            folderId: String,
-            folderName: String,
-            activeFilter: ResourcesDisplayView,
-            isActiveFolderShared: Boolean
-        )
+        fun showFiltersMenu(activeDisplayView: HomeDisplayView)
+        fun showHomeScreenTitle(view: HomeDisplayView)
+        fun navigateToChild(homeView: HomeDisplayView)
         fun showBackArrow()
         fun hideBackArrow()
-        fun navigateToRootHomeFromChildHome(activeFilter: ResourcesDisplayView)
+        fun navigateToRootHomeFromChildHome(homeView: HomeDisplayView)
         fun performRefreshUsingRefreshExecutor()
-        fun navigateRootHomeFromRootHome(activeView: ResourcesDisplayView)
+        fun navigateRootHomeFromRootHome(homeView: HomeDisplayView)
         fun navigateToCreateResource(parentFolderId: String?)
         fun showChildFolderTitle(activeFolderName: String, isShared: Boolean)
+        fun showTagTitle(activeTagTitle: String, isShared: Boolean)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -111,16 +109,11 @@ interface HomeContract {
         fun sharedWithMeClick()
         fun ownedByMeClick()
         fun foldersClick()
-        fun argsRetrieved(
-            activeHomeView: ResourcesDisplayView,
-            activeFolderId: String?,
-            activeFolderName: String?,
-            isActiveFolderShared: Boolean,
-            hasPreviousEntry: Boolean
-        )
-
+        fun argsRetrieved(homeDisplayView: HomeDisplayView?, hasPreviousEntry: Boolean)
         fun folderItemClick(folderModel: FolderWithCount)
         fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>)
         fun createResourceClick()
+        fun tagsClick()
+        fun tagItemClick(tag: TagWithCount)
     }
 }

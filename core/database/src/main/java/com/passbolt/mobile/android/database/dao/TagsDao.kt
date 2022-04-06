@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.passbolt.mobile.android.entity.resource.Tag
+import com.passbolt.mobile.android.entity.resource.TagWithTaggedItemsCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,6 +34,18 @@ interface TagsDao : BaseDao<Tag> {
     @Transaction
     @Query("SELECT * FROM Tag")
     suspend fun getAll(): List<Tag>
+
+    @Transaction
+    @Query(
+        "SELECT id, slug, isShared, " +
+                "(SELECT" +
+                "(" +
+                "(select distinct count(resourceId) from resourceandtagscrossref rTCR where rTCR.tagId is t.id) " +
+                ")" +
+                ") AS taggedItemsCount " +
+                "FROM Tag t"
+    )
+    suspend fun getAllWithTaggedItemsCount(): List<TagWithTaggedItemsCount>
 
     @Transaction
     @Query("DELETE FROM Tag")

@@ -1,10 +1,10 @@
 package com.password.mobile.android.feature.home.filtersmenu
 
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuContract
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel
-import com.passbolt.mobile.android.ui.ResourcesDisplayView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
@@ -45,7 +45,7 @@ class FiltersMenuPresenterTest : KoinTest {
 
         presenter.attach(view)
         presenter.creatingView()
-        presenter.argsRetrieved(FiltersMenuModel(ResourcesDisplayView.ALL))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.AllItems))
 
         verify(view).addBottomSeparator()
         verify(view).addFoldersMenuItem()
@@ -68,18 +68,20 @@ class FiltersMenuPresenterTest : KoinTest {
 
         presenter.attach(view)
         presenter.creatingView()
-        presenter.argsRetrieved(FiltersMenuModel(ResourcesDisplayView.ALL))
-        presenter.argsRetrieved(FiltersMenuModel(ResourcesDisplayView.FAVOURITES))
-        presenter.argsRetrieved(FiltersMenuModel(ResourcesDisplayView.FOLDERS))
-        presenter.argsRetrieved(FiltersMenuModel(ResourcesDisplayView.OWNED_BY_ME))
-        presenter.argsRetrieved(FiltersMenuModel(ResourcesDisplayView.SHARED_WITH_ME))
-        presenter.argsRetrieved(FiltersMenuModel(ResourcesDisplayView.RECENTLY_MODIFIED))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.AllItems))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.Favourites))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.OwnedByMe))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.SharedWithMe))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.RecentlyModified))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.folderRoot()))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.tagsRoot()))
 
         verify(view).selectAllItemsItem()
         verify(view).selectFavouritesItem()
-        verify(view).selectFoldersMenuItem()
         verify(view).selectOwnedByMeItem()
         verify(view).selectSharedWithMeItem()
         verify(view).selectRecentlyModifiedItem()
+        verify(view).selectFoldersMenuItem()
+        verify(view).selectTagsMenuItem()
     }
 }

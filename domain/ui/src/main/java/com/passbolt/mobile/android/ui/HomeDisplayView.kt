@@ -1,4 +1,8 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.feature.home.screen.model
+
+import android.os.Parcelable
+import com.passbolt.mobile.android.ui.Folder
+import kotlinx.parcelize.Parcelize
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,11 +26,44 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-enum class ResourcesDisplayView {
-    ALL,
-    FAVOURITES,
-    RECENTLY_MODIFIED,
-    SHARED_WITH_ME,
-    OWNED_BY_ME,
-    FOLDERS
+
+sealed class HomeDisplayView : Parcelable {
+
+    @Parcelize
+    object AllItems : HomeDisplayView(), Parcelable
+
+    @Parcelize
+    object Favourites : HomeDisplayView(), Parcelable
+
+    @Parcelize
+    object RecentlyModified : HomeDisplayView(), Parcelable
+
+    @Parcelize
+    object SharedWithMe : HomeDisplayView(), Parcelable
+
+    @Parcelize
+    object OwnedByMe : HomeDisplayView(), Parcelable
+
+    @Parcelize
+    data class Folders(
+        val activeFolder: Folder,
+        val activeFolderName: String? = null,
+        val isActiveFolderShared: Boolean? = null
+    ) : HomeDisplayView(), Parcelable
+
+    @Parcelize
+    data class Tags(
+        val activeTagId: String? = null,
+        val activeTagName: String? = null,
+        val isActiveTagShared: Boolean? = null
+    ) : HomeDisplayView(), Parcelable
+
+    companion object {
+
+        fun default() = AllItems
+
+        fun folderRoot() = Folders(Folder.Root)
+
+        fun tagsRoot() = Tags()
+    }
 }

@@ -3,11 +3,11 @@ package com.passbolt.mobile.android.database.usecase
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
 import com.passbolt.mobile.android.mappers.ResourceDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.ResourcesDisplayView
 
 /**
  * Passbolt - Open source password manager for teams
@@ -44,7 +44,7 @@ class GetLocalResourcesUseCase(
             .get(userId)
             .resourcesDao()
             .let {
-                when (val viewType = resourceDisplayViewMapper.map(input.resourcesFilter)) {
+                when (val viewType = resourceDisplayViewMapper.map(input.homeDisplayView)) {
                     is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate()
                     is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName()
                     is ResourceDatabaseView.IsFavourite -> it.getFavourites()
@@ -56,7 +56,7 @@ class GetLocalResourcesUseCase(
     }
 
     data class Input(
-        val resourcesFilter: ResourcesDisplayView = ResourcesDisplayView.ALL
+        val homeDisplayView: HomeDisplayView = HomeDisplayView.AllItems
     )
 
     data class Output(val resources: List<ResourceModel>)

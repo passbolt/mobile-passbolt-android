@@ -157,6 +157,10 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         setBackgroundPrimaryColor(binding.ownedByMe)
     }
 
+    override fun selectTagsMenuItem() {
+        setBackgroundPrimaryColor(binding.root.findViewWithTag(TAG_TAGS))
+    }
+
     override fun selectFoldersMenuItem() {
         setBackgroundPrimaryColor(binding.root.findViewWithTag(TAG_FOLDERS))
     }

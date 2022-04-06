@@ -37,6 +37,13 @@ data class Tag(
     val isShared: Boolean
 )
 
+data class TagWithTaggedItemsCount(
+    val id: String,
+    val slug: String,
+    val isShared: Boolean,
+    val taggedItemsCount: Int
+)
+
 @Entity(primaryKeys = [TAG_ID, RESOURCE_ID])
 data class ResourceAndTagsCrossRef(
     val tagId: String,

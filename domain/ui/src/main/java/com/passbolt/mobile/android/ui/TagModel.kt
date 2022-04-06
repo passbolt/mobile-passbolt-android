@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.ui
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import com.passbolt.mobile.android.common.search.Searchable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,9 +25,16 @@ import kotlinx.parcelize.Parcelize
  * @since v1.0
  */
 
-@Parcelize
 data class TagModel(
     val id: String,
     val slug: String,
     val isShared: Boolean
-) : Parcelable
+)
+
+data class TagWithCount(
+    val id: String,
+    val slug: String,
+    val isShared: Boolean,
+    val taggedResourcesCount: Int,
+    override val searchCriteria: String = slug
+) : Searchable

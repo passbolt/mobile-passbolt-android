@@ -7,9 +7,11 @@ import com.passbolt.mobile.android.core.commonresource.FolderItem
 import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
+import com.passbolt.mobile.android.core.commonresource.TagItem
 import com.passbolt.mobile.android.feature.home.screen.interactor.HomeDataInteractor
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
+import org.koin.dsl.ScopeDSL
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,6 +42,7 @@ internal const val FOLDER_ITEM_ADAPTER = "FOLDER_ITEM_ADAPTER"
 internal const val SUB_FOLDER_ITEM_ADAPTER = "SUB_FOLDER_ITEM_ADAPTER"
 internal const val IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER = "IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER"
 internal const val IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER = "IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER"
+internal const val TAGS_ITEM_ADAPTER = "TAGS_ITEM_ADAPTER"
 
 fun Module.homeModule() {
     single {
@@ -60,34 +63,20 @@ fun Module.homeModule() {
                 resourceMenuModelMapper = get(),
                 deleteResourceUseCase = get(),
                 getLocalResourcesUseCase = get(),
-                getLocalResourcesAndFoldersUseCase = get(),
                 getLocalSubFoldersForFolderUseCase = get(),
-                getLocalResourcesFiltered = get()
+                getLocalResourcesAndFoldersUseCase = get(),
+                getLocalResourcesFiltered = get(),
+                getLocalTagsUseCase = get(),
+                getLocalResourcesWithTagUseCase = get()
             )
         }
-        scoped<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped<ItemAdapter<InSubFoldersHeaderItem>>(named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped<ItemAdapter<PasswordItem>>(named(SUB_RESOURCE_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped<ItemAdapter<FolderItem>>(named(SUB_FOLDER_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
-        scoped<ItemAdapter<InCurrentFoldersHeaderItem>>(named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)) {
-            ItemAdapter.items()
-        }
+        declareHomeListAdapters()
         scoped {
             FastAdapter.with(
                 listOf(
                     get<ItemAdapter<InCurrentFoldersHeaderItem>>(named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)),
                     get<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)),
+                    get<ItemAdapter<TagItem>>(named(TAGS_ITEM_ADAPTER)),
                     get<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)),
                     get<ItemAdapter<InSubFoldersHeaderItem>>(named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)),
                     get<ItemAdapter<FolderItem>>(named(SUB_FOLDER_ITEM_ADAPTER)),
@@ -95,5 +84,29 @@ fun Module.homeModule() {
                 )
             )
         }
+    }
+}
+
+fun ScopeDSL.declareHomeListAdapters() {
+    scoped<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)) {
+        ItemAdapter.items()
+    }
+    scoped<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)) {
+        ItemAdapter.items()
+    }
+    scoped<ItemAdapter<InSubFoldersHeaderItem>>(named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)) {
+        ItemAdapter.items()
+    }
+    scoped<ItemAdapter<PasswordItem>>(named(SUB_RESOURCE_ITEM_ADAPTER)) {
+        ItemAdapter.items()
+    }
+    scoped<ItemAdapter<FolderItem>>(named(SUB_FOLDER_ITEM_ADAPTER)) {
+        ItemAdapter.items()
+    }
+    scoped<ItemAdapter<InCurrentFoldersHeaderItem>>(named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)) {
+        ItemAdapter.items()
+    }
+    scoped<ItemAdapter<TagItem>>(named(TAGS_ITEM_ADAPTER)) {
+        ItemAdapter.items()
     }
 }

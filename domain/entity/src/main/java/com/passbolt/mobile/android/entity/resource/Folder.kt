@@ -1,10 +1,8 @@
 package com.passbolt.mobile.android.entity.resource
 
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 
 /**
  * Passbolt - Open source password manager for teams
@@ -46,18 +44,4 @@ data class FolderWithChildItemsCount(
     val parentId: String?,
     val isShared: Boolean,
     val childItemsCount: Int
-)
-
-data class FolderWithChildItems(
-    @Embedded val folder: Folder,
-    @Relation(
-        parentColumn = "folderId",
-        entityColumn = "folderId"
-    )
-    val resources: List<Resource>,
-    @Relation(
-        parentColumn = "folderId",
-        entityColumn = "parentId"
-    )
-    val folders: List<Folder>
 )

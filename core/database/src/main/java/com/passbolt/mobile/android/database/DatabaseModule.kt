@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.database.usecase.AddLocalTagsUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourceUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFoldersForFolderUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalTagsUseCase
@@ -172,6 +173,13 @@ val databaseModule = module {
         GetLocalTagsUseCase(
             databaseProvider = get(),
             tagModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        GetLocalResourcesWithTagUseCase(
+            databaseProvider = get(),
+            resourceModelMapper = get(),
             getSelectedAccountUseCase = get()
         )
     }

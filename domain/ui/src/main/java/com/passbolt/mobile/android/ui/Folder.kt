@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.ui
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,20 +29,23 @@ package com.passbolt.mobile.android.ui
 /**
  * Ui model class representing currently chosen folder.
  */
-sealed class Folder {
+sealed class Folder : Parcelable {
 
     abstract val folderId: String?
 
     /**
      * Root folder is currently chosen
      */
-    object Root : Folder() {
-        override val folderId: String? = null
+    @Parcelize
+    object Root : Folder(), Parcelable {
+        override val folderId: String?
+            get() = null
     }
 
     /**
      * A non-root nested folder is chosen.
      * @param folderId id of the chosen folder
      */
-    data class Child(override val folderId: String) : Folder()
+    @Parcelize
+    data class Child(override val folderId: String) : Folder(), Parcelable
 }
