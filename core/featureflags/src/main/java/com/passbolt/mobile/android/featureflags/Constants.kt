@@ -28,4 +28,5 @@ object Constants {
     const val TERMS_AND_CONDITIONS_KEY = "TERMS_AND_CONDITIONS_KEY"
     const val PREVIEW_PASSWORD_KEY = "PREVIEW_PASSWORD_KEY"
     const val FOLDERS_KEY = "FOLDERS_KEY"
+    const val TAGS_KEY = "TAGS_KEY"
 }

@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.featureflags.Constants.FOLDERS_KEY
 import com.passbolt.mobile.android.featureflags.Constants.PREVIEW_PASSWORD_KEY
 import com.passbolt.mobile.android.featureflags.Constants.PRIVACY_POLICY_KEY
+import com.passbolt.mobile.android.featureflags.Constants.TAGS_KEY
 import com.passbolt.mobile.android.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
@@ -45,6 +46,7 @@ class SaveFeatureFlagsUseCase(
             putString(TERMS_AND_CONDITIONS_KEY, input.featureFlags.termsAndConditionsUrl)
             putBoolean(PREVIEW_PASSWORD_KEY, input.featureFlags.isPreviewPasswordAvailable)
             putBoolean(FOLDERS_KEY, input.featureFlags.areFoldersAvailable)
+            putBoolean(TAGS_KEY, input.featureFlags.areTagsAvailable)
             apply()
         }
     }

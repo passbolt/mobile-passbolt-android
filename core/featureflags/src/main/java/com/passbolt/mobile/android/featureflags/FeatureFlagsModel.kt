@@ -27,5 +27,6 @@ data class FeatureFlagsModel(
     val privacyPolicyUrl: String?,
     val termsAndConditionsUrl: String?,
     val isPreviewPasswordAvailable: Boolean,
-    val areFoldersAvailable: Boolean
+    val areFoldersAvailable: Boolean,
+    val areTagsAvailable: Boolean
 )

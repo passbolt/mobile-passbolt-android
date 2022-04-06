@@ -488,6 +488,10 @@ class HomeFragment :
         presenter.foldersClick()
     }
 
+    override fun menuTagsClick() {
+        // TODO
+    }
+
     override fun showHomeScreenTitle(view: ResourcesDisplayView) {
         when (view) {
             ResourcesDisplayView.ALL -> showScreenTitleWithStartIcon(

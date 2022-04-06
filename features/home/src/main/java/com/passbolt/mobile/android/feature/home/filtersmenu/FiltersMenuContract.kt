@@ -79,6 +79,11 @@ interface FiltersMenuContract {
          * Selects folders item in the menu
          */
         fun selectFoldersMenuItem()
+
+        /**
+         * Adds tags item in the menu
+         */
+        fun addTagsMenuItem()
     }
 
     /**

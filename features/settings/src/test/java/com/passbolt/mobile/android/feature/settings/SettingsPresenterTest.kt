@@ -75,7 +75,13 @@ class SettingsPresenterTest : KoinTest {
         getFeatureFlagsUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetFeatureFlagsUseCase.Output(
-                    FeatureFlagsModel(URL, URL, isPreviewPasswordAvailable = true, areFoldersAvailable = false)
+                    FeatureFlagsModel(
+                        URL,
+                        URL,
+                        isPreviewPasswordAvailable = true,
+                        areFoldersAvailable = false,
+                        areTagsAvailable = false
+                    )
                 )
             )
         }
@@ -126,7 +132,13 @@ class SettingsPresenterTest : KoinTest {
         getFeatureFlagsUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetFeatureFlagsUseCase.Output(
-                    FeatureFlagsModel(null, null, isPreviewPasswordAvailable = true, areFoldersAvailable = false)
+                    FeatureFlagsModel(
+                        null,
+                        null,
+                        isPreviewPasswordAvailable = true,
+                        areFoldersAvailable = false,
+                        areTagsAvailable = false
+                    )
                 )
             )
         }

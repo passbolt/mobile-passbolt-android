@@ -173,7 +173,13 @@ class SignInPresenterTest : KoinTest {
         mockFeatureFlagsInteractor.stub {
             onBlocking { fetchAndSaveFeatureFlags() }.doReturn(
                 FeatureFlagsInteractor.Output.Success(
-                    FeatureFlagsModel(null, null, isPreviewPasswordAvailable = true, areFoldersAvailable = false)
+                    FeatureFlagsModel(
+                        null,
+                        null,
+                        isPreviewPasswordAvailable = true,
+                        areFoldersAvailable = false,
+                        areTagsAvailable = true
+                    )
                 )
             )
         }

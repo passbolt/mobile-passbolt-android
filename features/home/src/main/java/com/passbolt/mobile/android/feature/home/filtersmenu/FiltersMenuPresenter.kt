@@ -44,11 +44,15 @@ class FiltersMenuPresenter(
 
     private fun processAdditionalItemsVisibility() {
         scope.launch {
-            if (getFeatureFlagsUseCase.execute(Unit).featureFlags.areFoldersAvailable) {
+            val featureFlags = getFeatureFlagsUseCase.execute(Unit).featureFlags
+            if (featureFlags.areFoldersAvailable) {
                 view?.apply {
                     addBottomSeparator()
                     addFoldersMenuItem()
                 }
+            }
+            if (featureFlags.areTagsAvailable) {
+                view?.addTagsMenuItem()
             }
         }
     }

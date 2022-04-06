@@ -49,7 +49,8 @@ data class UrlDto(
 
 data class PluginsDto(
     val previewPassword: PluginAvailabilityDto?,
-    val folders: PluginAvailabilityDto?
+    val folders: PluginAvailabilityDto?,
+    val tags: PluginAvailabilityDto?
 )
 
 data class PluginAvailabilityDto(
