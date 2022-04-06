@@ -65,7 +65,6 @@ class CookiesInterceptor {
 
         private val ANONYMOUS_PATHS = setOf(
             AuthPaths.AUTH_SIGN_IN,
-            AuthPaths.SETTINGS,
             AuthPaths.AUTH_RSA,
             AuthPaths.MFA_VERIFICATION_TOTP,
             AuthPaths.MFA_VERIFICATION_YUBIKEY,
