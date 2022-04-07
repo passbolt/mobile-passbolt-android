@@ -1,9 +1,7 @@
-package com.passbolt.mobile.android.core.commongroups
+package com.passbolt.mobile.android.core.commongroups.usecase
 
-import com.passbolt.mobile.android.core.commongroups.usecase.FetchUserGroupsUseCase
-import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
-import com.passbolt.mobile.android.core.commongroups.usecase.RebuildGroupsTablesUseCase
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,26 +25,28 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GroupsInteractor(
+    private val fetchUserGroupsUseCase: FetchUserGroupsUseCase,
+    private val rebuildLocalGroupsUseCase: RebuildGroupsTablesUseCase
+) {
 
-val commonGroupsModule = module {
-    single {
-        FetchUserGroupsUseCase(
-            groupsRepository = get(),
-            groupsModelMapper = get(),
-            getSelectedAccountDataUseCase = get()
-        )
+    suspend fun fetchAndSaveGroups(): Output {
+        return when (val fetched = fetchUserGroupsUseCase.execute(Unit)) {
+            is FetchUserGroupsUseCase.Output.Failure -> Output.Failure(fetched.authenticationState)
+            is FetchUserGroupsUseCase.Output.Success -> {
+                rebuildLocalGroupsUseCase.execute(RebuildGroupsTablesUseCase.Input(fetched.groups))
+                Output.Success
+            }
+        }
     }
-    single {
-        RebuildGroupsTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalGroupsUseCase = get(),
-            addLocalGroupsUseCase = get()
-        )
-    }
-    single {
-        GroupsInteractor(
-            fetchUserGroupsUseCase = get(),
-            rebuildLocalGroupsUseCase = get()
-        )
+
+    sealed class Output : AuthenticatedUseCaseOutput {
+
+        object Success : Output() {
+            override val authenticationState: AuthenticationState
+                get() = AuthenticationState.Authenticated
+        }
+
+        data class Failure(override val authenticationState: AuthenticationState) : Output()
     }
 }

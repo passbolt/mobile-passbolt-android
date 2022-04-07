@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.database
 
 import com.passbolt.mobile.android.database.usecase.AddLocalFoldersUseCase
+import com.passbolt.mobile.android.database.usecase.AddLocalGroupsUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
@@ -16,6 +17,7 @@ import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsByI
 import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalFoldersUseCase
+import com.passbolt.mobile.android.database.usecase.RemoveLocalGroupsUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalTagsUseCase
 import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
@@ -181,6 +183,18 @@ val databaseModule = module {
             databaseProvider = get(),
             resourceModelMapper = get(),
             getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        AddLocalGroupsUseCase(
+            databaseProvider = get(),
+            groupsModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        RemoveLocalGroupsUseCase(
+            databaseProvider = get()
         )
     }
 }

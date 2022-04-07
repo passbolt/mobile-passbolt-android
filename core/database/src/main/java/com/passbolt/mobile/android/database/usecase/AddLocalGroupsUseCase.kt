@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.core.commongroups
+package com.passbolt.mobile.android.database.usecase
 
-import com.passbolt.mobile.android.core.commongroups.usecase.FetchUserGroupsUseCase
-import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
-import com.passbolt.mobile.android.core.commongroups.usecase.RebuildGroupsTablesUseCase
-import org.koin.dsl.module
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.GroupsModelMapper
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.GroupModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,26 +28,23 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class AddLocalGroupsUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val groupsModelMapper: GroupsModelMapper,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : AsyncUseCase<AddLocalGroupsUseCase.Input, Unit> {
 
-val commonGroupsModule = module {
-    single {
-        FetchUserGroupsUseCase(
-            groupsRepository = get(),
-            groupsModelMapper = get(),
-            getSelectedAccountDataUseCase = get()
-        )
+    override suspend fun execute(input: Input) {
+        val currentAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        databaseProvider
+            .get(currentAccount)
+            .groupsDao()
+            .insertAll(
+                input.groups.map { groupsModelMapper.map(it) }
+            )
     }
-    single {
-        RebuildGroupsTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalGroupsUseCase = get(),
-            addLocalGroupsUseCase = get()
-        )
-    }
-    single {
-        GroupsInteractor(
-            fetchUserGroupsUseCase = get(),
-            rebuildLocalGroupsUseCase = get()
-        )
-    }
+
+    data class Input(
+        val groups: List<GroupModel>
+    )
 }

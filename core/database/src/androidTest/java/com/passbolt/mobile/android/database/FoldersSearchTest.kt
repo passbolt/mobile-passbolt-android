@@ -68,10 +68,10 @@ class FoldersSearchTest {
 
     private fun insertTestStructure() = runBlocking {
         foldersDao.apply {
-            insert(listOf(FOLDER_1, FOLDER_2, FOLDER_3, FOLDER_4, FOLDER_5))
+            insertAll(listOf(FOLDER_1, FOLDER_2, FOLDER_3, FOLDER_4, FOLDER_5))
         }
         resourcesDao.apply {
-            insert(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_4, RESOURCE_5))
+            insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_4, RESOURCE_5))
         }
     }
 
@@ -82,31 +82,21 @@ class FoldersSearchTest {
 
     @Test
     fun testAllSubFoldersShouldBeReturnedForFolderWithId() = runBlocking {
-        val subFoldersForFolder1 = foldersDao.getFilteredSubFoldersRecursivelyForFolderWithId(
+        val subFoldersForFolder1 = foldersDao.getFolderAllChildFoldersRecursively(
             FOLDER_1.folderId
         )
-        val subFoldersForFolder2 = foldersDao.getFilteredSubFoldersRecursivelyForFolderWithId(
+        val subFoldersForFolder2 = foldersDao.getFolderAllChildFoldersRecursively(
             FOLDER_2.folderId
         )
 
         assertThat(subFoldersForFolder1.size).isEqualTo(0)
 
-        assertThat(subFoldersForFolder2.size).isEqualTo(2)
+        assertThat(subFoldersForFolder2.size).isEqualTo(3)
         assertThat(subFoldersForFolder2.map { it.folderId }).containsExactly(
+            "rootFolder2Folder1",
             "rootFolder2Folder1Folder1",
             "rootFolder2Folder1Folder1Folder1"
         )
-        return@runBlocking
-    }
-
-    @Test
-    fun testSubfolderWithResourcesCountShouldBeCorrect() = runBlocking {
-        val resourcesAndFoldersCountForRootFolder2 = foldersDao.getResourcesAndFoldersCountForFolderWithId(
-            FOLDER_2.folderId,
-        )
-
-        assertThat(resourcesAndFoldersCountForRootFolder2).isEqualTo(3)
-
         return@runBlocking
     }
 

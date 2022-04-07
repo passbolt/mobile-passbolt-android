@@ -1,9 +1,9 @@
-package com.passbolt.mobile.android.core.commongroups
+package com.passbolt.mobile.android.database.dao
 
-import com.passbolt.mobile.android.core.commongroups.usecase.FetchUserGroupsUseCase
-import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
-import com.passbolt.mobile.android.core.commongroups.usecase.RebuildGroupsTablesUseCase
-import org.koin.dsl.module
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
+import com.passbolt.mobile.android.entity.group.UsersGroup
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,25 +28,10 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val commonGroupsModule = module {
-    single {
-        FetchUserGroupsUseCase(
-            groupsRepository = get(),
-            groupsModelMapper = get(),
-            getSelectedAccountDataUseCase = get()
-        )
-    }
-    single {
-        RebuildGroupsTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalGroupsUseCase = get(),
-            addLocalGroupsUseCase = get()
-        )
-    }
-    single {
-        GroupsInteractor(
-            fetchUserGroupsUseCase = get(),
-            rebuildLocalGroupsUseCase = get()
-        )
-    }
+@Dao
+interface GroupsDao : BaseDao<UsersGroup> {
+
+    @Transaction
+    @Query("DELETE FROM UsersGroup")
+    suspend fun deleteAll()
 }
