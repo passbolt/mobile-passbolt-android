@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.passboltapi.folders.FoldersApi
 import com.passbolt.mobile.android.passboltapi.folders.FoldersDataSource
 import com.passbolt.mobile.android.passboltapi.folders.FoldersRemoteDataSource
 import com.passbolt.mobile.android.passboltapi.folders.FoldersRepository
+import com.passbolt.mobile.android.passboltapi.groups.groupsApiModule
 import com.passbolt.mobile.android.passboltapi.mfa.MfaApi
 import com.passbolt.mobile.android.passboltapi.mfa.MfaDataSource
 import com.passbolt.mobile.android.passboltapi.mfa.MfaRemoteDataSource
@@ -176,6 +177,8 @@ val passboltApiModule = module {
             responseHandler = get()
         )
     }
+    groupsApiModule()
+    // TODO extract other definitions to separate package modules
 }
 
 private fun provideRestService(okHttpClient: OkHttpClient): RestService {

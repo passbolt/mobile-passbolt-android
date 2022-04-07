@@ -1,7 +1,9 @@
-package com.passbolt.mobile.android.mappers
+package com.passbolt.mobile.android.passboltapi.groups
 
-import com.passbolt.mobile.android.entity.resource.Permission
-import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.GroupsResponseDto
+import retrofit2.http.GET
+import retrofit2.http.Query
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,22 +28,16 @@ import com.passbolt.mobile.android.ui.ResourcePermission
  * @since v1.0
  */
 
-internal fun Permission.toUiModel() = when (this) {
-    Permission.READ -> ResourcePermission.READ
-    Permission.WRITE -> ResourcePermission.UPDATE
-    Permission.OWNER -> ResourcePermission.OWNER
-}
+internal interface GroupsApi {
 
-@Suppress("MagicNumber")
-internal fun mapDtoPermissionTypeToUiModel(type: Int) = when (type) {
-    1 -> ResourcePermission.READ
-    7 -> ResourcePermission.UPDATE
-    15 -> ResourcePermission.OWNER
-    else -> throw IllegalArgumentException("Unsupported DTO permission value: $type")
-}
+    @GET(GROUPS)
+    suspend fun getGroups(
+        @Query(QUERY_FILTER_USERS) users: List<String>
+    ): BaseResponse<List<GroupsResponseDto>>
 
-internal fun ResourcePermission.toEntityModel() = when (this) {
-    ResourcePermission.READ -> Permission.READ
-    ResourcePermission.UPDATE -> Permission.WRITE
-    ResourcePermission.OWNER -> Permission.OWNER
+    private companion object {
+        private const val GROUPS = "groups.json"
+
+        private const val QUERY_FILTER_USERS = "filter[has-users]"
+    }
 }

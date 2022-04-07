@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.comparator.SwitchAccountUiModelComparator
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.mappers.CreateResourceMapper
 import com.passbolt.mobile.android.mappers.FolderModelMapper
+import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.ResourceDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
@@ -78,4 +79,5 @@ val mappersModule = module {
     factory { ResourceDisplayViewMapper() }
     factory { FolderModelMapper() }
     factory { TagsModelMapper() }
+    factory { GroupsModelMapper() }
 }
