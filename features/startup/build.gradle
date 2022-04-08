@@ -13,12 +13,11 @@ dependencies {
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
-
     implementation libs.androidx.fragment
     implementation libs.androidx.activity
-
     implementation libs.di.koin
     implementation libs.di.koinExt
+    implementation libs.androidx.splashScreen
 }
 
 android {
