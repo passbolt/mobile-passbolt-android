@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.home.screen
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
 import com.passbolt.mobile.android.ui.FolderWithCount
+import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.TagWithCount
@@ -38,6 +39,7 @@ interface HomeContract {
             resourceList: List<ResourceModel>,
             foldersList: List<FolderWithCount>,
             tagsList: List<TagWithCount>,
+            groupsList: List<GroupWithCount>,
             filteredSubFoldersList: List<FolderWithCount>,
             filteredSubFolderResourceList: List<ResourceModel>,
             sectionsConfiguration: HomeFragment.HeaderSectionConfiguration
@@ -79,6 +81,7 @@ interface HomeContract {
         fun navigateToCreateResource(parentFolderId: String?)
         fun showChildFolderTitle(activeFolderName: String, isShared: Boolean)
         fun showTagTitle(activeTagTitle: String, isShared: Boolean)
+        fun showGroupTitle(groupName: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -115,5 +118,7 @@ interface HomeContract {
         fun createResourceClick()
         fun tagsClick()
         fun tagItemClick(tag: TagWithCount)
+        fun groupsClick()
+        fun groupItemClick(group: GroupWithCount)
     }
 }

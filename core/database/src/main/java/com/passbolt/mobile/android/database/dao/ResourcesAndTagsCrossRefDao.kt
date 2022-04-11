@@ -1,8 +1,6 @@
 package com.passbolt.mobile.android.database.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.passbolt.mobile.android.entity.resource.ResourceAndTagsCrossRef
@@ -34,9 +32,5 @@ interface ResourcesAndTagsCrossRefDao : BaseDao<ResourceAndTagsCrossRef> {
 
     @Transaction
     @Query("DELETE FROM ResourceAndTagsCrossRef")
-    suspend fun deleteTagsCrossRef()
-
-    @Transaction
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTagAndResourceCrossRef(crossRef: ResourceAndTagsCrossRef)
+    suspend fun deleteAll()
 }

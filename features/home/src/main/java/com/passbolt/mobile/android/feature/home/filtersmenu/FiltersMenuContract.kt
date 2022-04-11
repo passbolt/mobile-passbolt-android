@@ -89,6 +89,16 @@ interface FiltersMenuContract {
          * Selects tags item in the menu
          */
         fun selectTagsMenuItem()
+
+        /**
+         * Adds groups item in the menu
+         */
+        fun addGroupsMenuItem()
+
+        /**
+         * Selects groups menu item
+         */
+        fun selectGroupsMenuItem()
     }
 
     /**

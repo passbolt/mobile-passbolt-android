@@ -125,6 +125,7 @@ class DatabaseMigrationsTest {
         helper.runMigrationsAndValidate(TEST_DB, 7, true, Migration6to7)
             .apply {
                 execSQL("INSERT INTO UsersGroup VALUES('id1','name')")
+                execSQL("INSERT INTO ResourceAndGroupsCrossRef VALUES('resId1','id1')")
                 close()
             }
     }

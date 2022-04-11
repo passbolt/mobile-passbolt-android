@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.passbolt.mobile.android.entity.group.UsersGroup
+import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,4 +35,18 @@ interface GroupsDao : BaseDao<UsersGroup> {
     @Transaction
     @Query("DELETE FROM UsersGroup")
     suspend fun deleteAll()
+
+    @Transaction
+    @Query(
+        "SELECT groupId, name, " +
+                "(SELECT" +
+                "(" +
+                "(select distinct count(resourceId) " +
+                "from resourceandgroupscrossref rGCR " +
+                "where rGCR.groupId is g.groupId) " +
+                ")" +
+                ") AS childItemsCount " +
+                "FROM UsersGroup g"
+    )
+    suspend fun getAllWithSharedItemsCount(): List<UsersGroupWithChildItemsCount>
 }

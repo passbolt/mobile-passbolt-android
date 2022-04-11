@@ -39,3 +39,9 @@ data class UsersGroupWithChildItemsCount(
     val name: String,
     val childItemsCount: Int
 )
+
+@Entity(primaryKeys = ["resourceId", "groupId"])
+data class ResourceAndGroupsCrossRef(
+    val resourceId: String,
+    val groupId: String
+)

@@ -1,8 +1,11 @@
-package com.passbolt.mobile.android.database.usecase
+package com.passbolt.mobile.android.core.commonresource.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.usecase.AddLocalResourceAndGroupsCrossRefUseCase
+import com.passbolt.mobile.android.database.usecase.RemoveLocalResourceAndGroupsCrossRefUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.ResourceModelWithTagsAndGroups
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,20 +29,19 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RemoveLocalTagsUseCase(
-    private val databaseProvider: DatabaseProvider
-) : AsyncUseCase<UserIdInput, Unit> {
+class RebuildResourceAndGroupsCrossRefTablesUseCase(
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val removeLocalResourceAndGroupsCrossRefUseCase: RemoveLocalResourceAndGroupsCrossRefUseCase,
+    private val addLocalResourceAndGroupsCrossRefUseCase: AddLocalResourceAndGroupsCrossRefUseCase
+) : AsyncUseCase<RebuildResourceAndGroupsCrossRefTablesUseCase.Input, Unit> {
 
-    override suspend fun execute(input: UserIdInput) {
-        val tagsDao = databaseProvider
-            .get(input.userId)
-            .tagsDao()
-
-        val tagsAndResourcesCrossRefDao = databaseProvider
-            .get(input.userId)
-            .resourcesAndTagsCrossRefDao()
-
-        tagsAndResourcesCrossRefDao.deleteAll()
-        tagsDao.deleteAll()
+    override suspend fun execute(input: Input) {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        removeLocalResourceAndGroupsCrossRefUseCase.execute(UserIdInput(userId))
+        addLocalResourceAndGroupsCrossRefUseCase.execute(
+            AddLocalResourceAndGroupsCrossRefUseCase.Input(input.resourcesWithTagsAndGroups, userId)
+        )
     }
+
+    data class Input(val resourcesWithTagsAndGroups: List<ResourceModelWithTagsAndGroups>)
 }

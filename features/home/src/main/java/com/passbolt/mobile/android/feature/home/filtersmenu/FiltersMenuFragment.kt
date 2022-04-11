@@ -149,6 +149,10 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         setBackgroundPrimaryColor(binding.recentlyModified)
     }
 
+    override fun selectGroupsMenuItem() {
+        setBackgroundPrimaryColor(binding.root.findViewWithTag(TAG_GROUPS))
+    }
+
     override fun selectSharedWithMeItem() {
         setBackgroundPrimaryColor(binding.sharedWithMe)
     }
@@ -204,6 +208,16 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         ) { listener?.menuTagsClick() }
         binding.root.addView(tagsMenuItem)
         constrainTopToBottomInRoot(tagsMenuItem.id, binding.root.findViewWithTag<View>(TAG_FOLDERS).id)
+    }
+
+    override fun addGroupsMenuItem() {
+        val groupsMenuItem = createMenuItem(
+            getString(R.string.filters_menu_groups),
+            R.drawable.ic_group,
+            TAG_GROUPS
+        ) { listener?.menuGroupsClick() }
+        binding.root.addView(groupsMenuItem)
+        constrainTopToBottomInRoot(groupsMenuItem.id, binding.root.findViewWithTag<View>(TAG_TAGS).id)
     }
 
     private fun createMenuItem(
@@ -263,6 +277,7 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         fun menuOwnedByMeClick()
         fun menuFoldersClick()
         fun menuTagsClick()
+        fun menuGroupsClick()
     }
 
     companion object {
@@ -270,6 +285,7 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         private const val TAG_SEPARATOR = "viewSeparator"
         private const val TAG_FOLDERS = "viewFolders"
         private const val TAG_TAGS = "viewTags"
+        private const val TAG_GROUPS = "viewGroups"
 
         fun newInstance(model: FiltersMenuModel) =
             FiltersMenuFragment().apply {

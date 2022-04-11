@@ -1,8 +1,11 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.response.GroupsResponseDto
+import com.passbolt.mobile.android.dto.response.PermissionWithGroupDto
 import com.passbolt.mobile.android.entity.group.UsersGroup
+import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
 import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.ui.GroupWithCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,7 +39,21 @@ class GroupsModelMapper {
 
     fun map(group: GroupModel): UsersGroup =
         UsersGroup(
-            groupId = group.groupName,
+            groupId = group.groupId,
             name = group.groupName
         )
+
+    fun map(group: UsersGroupWithChildItemsCount) =
+        GroupWithCount(
+            groupId = group.groupId,
+            groupName = group.name,
+            groupItemsCount = group.childItemsCount
+        )
+
+    fun map(permission: PermissionWithGroupDto) = permission.group?.let {
+        GroupModel(
+            it.id,
+            it.name
+        )
+    }
 }

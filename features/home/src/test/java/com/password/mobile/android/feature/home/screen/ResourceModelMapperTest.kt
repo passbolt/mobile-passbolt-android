@@ -32,7 +32,8 @@ class ResourceModelMapperTest {
             favorite = null,
             modified = ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
             resourceFolderId = null,
-            tags = emptyList()
+            tags = emptyList(),
+            permissions = emptyList()
         )
         val result = mapper.map(responseDto)
         assertEquals("f", result.initials)

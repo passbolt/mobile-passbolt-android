@@ -2,13 +2,16 @@ package com.passbolt.mobile.android.database
 
 import com.passbolt.mobile.android.database.usecase.AddLocalFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalGroupsUseCase
+import com.passbolt.mobile.android.database.usecase.AddLocalResourceAndGroupsCrossRefUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourceUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
 import com.passbolt.mobile.android.database.usecase.AddLocalTagsUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalGroupsUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourceUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFoldersForFolderUseCase
@@ -18,6 +21,7 @@ import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsByS
 import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalGroupsUseCase
+import com.passbolt.mobile.android.database.usecase.RemoveLocalResourceAndGroupsCrossRefUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalTagsUseCase
 import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
@@ -195,6 +199,30 @@ val databaseModule = module {
     single {
         RemoveLocalGroupsUseCase(
             databaseProvider = get()
+        )
+    }
+    single {
+        GetLocalGroupsUseCase(
+            databaseProvider = get(),
+            groupModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        AddLocalResourceAndGroupsCrossRefUseCase(
+            databaseProvider = get()
+        )
+    }
+    single {
+        RemoveLocalResourceAndGroupsCrossRefUseCase(
+            databaseProvider = get()
+        )
+    }
+    single {
+        GetLocalResourcesWithGroupUseCase(
+            databaseProvider = get(),
+            resourceModelMapper = get(),
+            getSelectedAccountUseCase = get()
         )
     }
 }

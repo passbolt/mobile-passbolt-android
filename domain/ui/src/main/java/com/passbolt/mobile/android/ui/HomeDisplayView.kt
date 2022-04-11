@@ -58,6 +58,12 @@ sealed class HomeDisplayView : Parcelable {
         val isActiveTagShared: Boolean? = null
     ) : HomeDisplayView(), Parcelable
 
+    @Parcelize
+    data class Groups(
+        val activeGroupId: String? = null,
+        val activeGroupName: String? = null
+    ) : HomeDisplayView(), Parcelable
+
     companion object {
 
         fun default() = AllItems
@@ -65,5 +71,7 @@ sealed class HomeDisplayView : Parcelable {
         fun folderRoot() = Folders(Folder.Root)
 
         fun tagsRoot() = Tags()
+
+        fun groupsRoot() = Groups()
     }
 }

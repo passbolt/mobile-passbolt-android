@@ -75,6 +75,7 @@ class FiltersMenuPresenterTest : KoinTest {
         presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.RecentlyModified))
         presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.folderRoot()))
         presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.tagsRoot()))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.groupsRoot()))
 
         verify(view).selectAllItemsItem()
         verify(view).selectFavouritesItem()
@@ -83,5 +84,6 @@ class FiltersMenuPresenterTest : KoinTest {
         verify(view).selectRecentlyModifiedItem()
         verify(view).selectFoldersMenuItem()
         verify(view).selectTagsMenuItem()
+        verify(view).selectGroupsMenuItem()
     }
 }

@@ -33,10 +33,16 @@ object Migration6to7 : Migration(6, 7) {
             "`groupId` TEXT NOT NULL, " +
             "`name` TEXT NOT NULL COLLATE NOCASE, " +
             "PRIMARY KEY(`groupId`))"
+    private const val CREATE_RESOURCES_AND_GROUPS_CROSS_REF_TABLE =
+        "CREATE TABLE IF NOT EXISTS ResourceAndGroupsCrossRef(" +
+                "`resourceId` TEXT NOT NULL, " +
+                "`groupId` TEXT NOT NULL, " +
+                "PRIMARY KEY(`resourceId`, `groupId`))"
 
     override fun migrate(database: SupportSQLiteDatabase) {
         with(database) {
             execSQL(CREATE_GROUPS_TABLE)
+            execSQL(CREATE_RESOURCES_AND_GROUPS_CROSS_REF_TABLE)
         }
     }
 }
