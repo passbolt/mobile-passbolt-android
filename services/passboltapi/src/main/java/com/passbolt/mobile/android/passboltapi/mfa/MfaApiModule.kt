@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.passboltapi.groups
+package com.passbolt.mobile.android.passboltapi.mfa
 
 import com.passbolt.mobile.android.core.networking.RestService
 import org.koin.core.module.Module
@@ -26,20 +26,20 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.groupsApiModule() {
-    single {
-        GroupsRepository(
-            groupsDataSource = get(),
-            responseHandler = get()
+internal fun Module.mfaApiModule() {
+    single<MfaDataSource> {
+        MfaRemoteDataSource(
+            mfaApi = get()
         )
     }
-    single<GroupsDataSource> {
-        GroupsRemoteDataSource(
-            groupsApi = get()
+    single {
+        MfaRepository(
+            mfaDataSource = get(),
+            responseHandler = get()
         )
     }
     single {
         get<RestService>()
-            .service(GroupsApi::class.java)
+            .service(MfaApi::class.java)
     }
 }

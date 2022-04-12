@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
 import java.time.Duration
 
@@ -70,10 +71,11 @@ val networkingModule = module {
         CookiesInterceptor.AddCookiesInterceptor()
     }
     single { CookieExtractor() }
-    single {
+
+    single<RestService> {
         RetrofitRestService(
-            client = get(),
-            converterFactory = get()
+            client = get(named(DEFAULT_HTTP_CLIENT)),
+            converterFactory = GsonConverterFactory.create()
         )
     }
     single {

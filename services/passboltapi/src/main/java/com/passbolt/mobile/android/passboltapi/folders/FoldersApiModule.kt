@@ -1,16 +1,7 @@
-package com.passbolt.mobile.android.passboltapi
+package com.passbolt.mobile.android.passboltapi.folders
 
-import com.passbolt.mobile.android.passboltapi.auth.authApiModule
-import com.passbolt.mobile.android.passboltapi.folders.foldersApiModule
-import com.passbolt.mobile.android.passboltapi.groups.groupsApiModule
-import com.passbolt.mobile.android.passboltapi.mfa.mfaApiModule
-import com.passbolt.mobile.android.passboltapi.registration.registrationApiModule
-import com.passbolt.mobile.android.passboltapi.resource.resourceApiModule
-import com.passbolt.mobile.android.passboltapi.resourcetypes.resourceTypesApiModule
-import com.passbolt.mobile.android.passboltapi.secrets.secretsApiModule
-import com.passbolt.mobile.android.passboltapi.settings.settingsApiModule
-import com.passbolt.mobile.android.passboltapi.users.usersApiModule
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.networking.RestService
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,15 +25,21 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val passboltApiModule = module {
-    registrationApiModule()
-    authApiModule()
-    mfaApiModule()
-    secretsApiModule()
-    resourceApiModule()
-    resourceTypesApiModule()
-    foldersApiModule()
-    groupsApiModule()
-    usersApiModule()
-    settingsApiModule()
+
+internal fun Module.foldersApiModule() {
+    single<FoldersDataSource> {
+        FoldersRemoteDataSource(
+            foldersApi = get()
+        )
+    }
+    single {
+        FoldersRepository(
+            foldersDataSource = get(),
+            responseHandler = get()
+        )
+    }
+    single {
+        get<RestService>()
+            .service(FoldersApi::class.java)
+    }
 }

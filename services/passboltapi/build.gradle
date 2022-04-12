@@ -7,7 +7,6 @@ dependencies {
     api project(":networking")
     implementation project(":dto")
 
-    implementation libs.networking.retrofitGsonConverter
     implementation libs.di.koin
     implementation libs.di.koinExt
 }

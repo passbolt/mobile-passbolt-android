@@ -1,10 +1,8 @@
-package com.passbolt.mobile.android.passboltapi.registration.data
+package com.passbolt.mobile.android.passboltapi.registration
 
 import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
-import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.passboltapi.registration.RegistrationApi
-import com.passbolt.mobile.android.passboltapi.registration.RegistrationDataSource
+import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
 
 /**
  * Passbolt - Open source password manager for teams

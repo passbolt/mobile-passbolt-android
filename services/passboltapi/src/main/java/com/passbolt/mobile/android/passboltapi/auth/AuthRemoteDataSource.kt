@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.passboltapi.auth.data
+package com.passbolt.mobile.android.passboltapi.auth
 
 import com.passbolt.mobile.android.dto.request.RefreshSessionRequest
 import com.passbolt.mobile.android.dto.request.SignInRequestDto
@@ -7,8 +7,6 @@ import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
 import com.passbolt.mobile.android.dto.response.ServerRsaResponseDto
 import com.passbolt.mobile.android.dto.response.SignInResponseDto
-import com.passbolt.mobile.android.passboltapi.auth.AuthApi
-import com.passbolt.mobile.android.passboltapi.auth.AuthDataSource
 import retrofit2.Response
 
 /**
