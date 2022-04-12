@@ -525,6 +525,82 @@ class HomePresenterTest : KoinTest {
         verify(view).navigateToRootHomeFromChildHome(HomeDisplayView.folderRoot())
     }
 
+    @Test
+    fun `view should show correct titles for child items`() {
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        mockAccountData(null)
+
+        presenter.viewCreate(refreshFlow)
+        presenter.attach(view)
+        presenter.argsRetrieved(
+            HomeDisplayView.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
+            hasPreviousEntry = false
+        )
+        presenter.argsRetrieved(
+            HomeDisplayView.Tags("id", "tag name", isActiveTagShared = false),
+            hasPreviousEntry = false
+        )
+        presenter.argsRetrieved(
+            HomeDisplayView.Groups("id", "group name"),
+            hasPreviousEntry = false
+        )
+        presenter.argsRetrieved(HomeDisplayView.RecentlyModified, hasPreviousEntry = false)
+        presenter.argsRetrieved(HomeDisplayView.SharedWithMe, hasPreviousEntry = false)
+        presenter.argsRetrieved(HomeDisplayView.OwnedByMe, hasPreviousEntry = false)
+        presenter.argsRetrieved(HomeDisplayView.Favourites, hasPreviousEntry = false)
+        presenter.argsRetrieved(HomeDisplayView.AllItems, hasPreviousEntry = false)
+
+        verify(view).showChildFolderTitle("folder name", isShared = false)
+        verify(view).showTagTitle("tag name", isShared = false)
+        verify(view).showGroupTitle("group name")
+        verify(view, times(5)).showHomeScreenTitle(any())
+    }
+
+    @Test
+    fun `view should show back arrow when in child item`() {
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        mockAccountData(null)
+
+        presenter.viewCreate(refreshFlow)
+        presenter.attach(view)
+        presenter.argsRetrieved(
+            HomeDisplayView.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
+            hasPreviousEntry = true
+        )
+        presenter.argsRetrieved(
+            HomeDisplayView.Tags("id", "tag name", isActiveTagShared = false),
+            hasPreviousEntry = true
+        )
+        presenter.argsRetrieved(
+            HomeDisplayView.Groups("id", "group name"),
+            hasPreviousEntry = true
+        )
+
+        verify(view, times(3)).showBackArrow()
+    }
+
+    @Test
+    fun `view should navigate to selected item correctly based on root or child item`() {
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        mockAccountData(null)
+
+        presenter.viewCreate(refreshFlow)
+        presenter.attach(view)
+        presenter.argsRetrieved(
+            HomeDisplayView.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
+            hasPreviousEntry = true
+        )
+        presenter.tagsClick()
+        presenter.argsRetrieved(
+            HomeDisplayView.tagsRoot(),
+            hasPreviousEntry = false
+        )
+        presenter.foldersClick()
+
+        verify(view).navigateToRootHomeFromChildHome(HomeDisplayView.tagsRoot())
+        verify(view).navigateRootHomeFromRootHome(HomeDisplayView.folderRoot())
+    }
+
     private fun mockResourcesList() = listOf(
         ResourceModel(
             resourceId = "id1",
