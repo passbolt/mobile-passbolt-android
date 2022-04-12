@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.comparator
+package com.passbolt.mobile.android.mappers.comparator
 
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 

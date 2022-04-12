@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
  * Mapper responsible for mapping between UI related resource display view type and database related
  * ordering and filtering types.
  */
-class ResourceDisplayViewMapper {
+class HomeDisplayViewMapper {
 
     /**
      * @param homeView UI related resources display view type

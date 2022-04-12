@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
-import com.passbolt.mobile.android.mappers.ResourceDisplayViewMapper
+import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -35,7 +35,7 @@ class GetLocalResourcesUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val resourceDisplayViewMapper: ResourceDisplayViewMapper
+    private val homeDisplayViewMapper: HomeDisplayViewMapper
 ) : AsyncUseCase<GetLocalResourcesUseCase.Input, GetLocalResourcesUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
@@ -44,7 +44,7 @@ class GetLocalResourcesUseCase(
             .get(userId)
             .resourcesDao()
             .let {
-                when (val viewType = resourceDisplayViewMapper.map(input.homeDisplayView)) {
+                when (val viewType = homeDisplayViewMapper.map(input.homeDisplayView)) {
                     is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate()
                     is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName()
                     is ResourceDatabaseView.IsFavourite -> it.getFavourites()

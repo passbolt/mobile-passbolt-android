@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.mappers
 
-import com.passbolt.mobile.android.comparator.SwitchAccountUiModelComparator
+import com.passbolt.mobile.android.mappers.comparator.SwitchAccountUiModelComparator
 import com.passbolt.mobile.android.entity.account.Account
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
