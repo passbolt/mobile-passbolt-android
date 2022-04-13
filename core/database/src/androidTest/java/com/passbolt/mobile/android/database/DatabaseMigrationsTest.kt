@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
 import com.passbolt.mobile.android.database.migrations.Migration4to5
 import com.passbolt.mobile.android.database.migrations.Migration5to6
+import com.passbolt.mobile.android.database.migrations.Migration6to7
 import org.junit.Rule
 import org.junit.Test
 
@@ -120,6 +121,15 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate6To7() {
+        helper.runMigrationsAndValidate(TEST_DB, 7, true, Migration6to7)
+            .apply {
+                execSQL("INSERT INTO UsersGroup VALUES('id1','name')")
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -130,7 +140,10 @@ class DatabaseMigrationsTest {
             ResourceDatabase::class.java,
             TEST_DB
         )
-            .addMigrations(Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6)
+            .addMigrations(
+                Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
+                Migration6to7
+            )
             .build().apply {
                 openHelper.writableDatabase
                 close()

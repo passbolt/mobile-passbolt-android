@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.response.GroupsResponseDto
+import com.passbolt.mobile.android.entity.group.UsersGroup
 import com.passbolt.mobile.android.ui.GroupModel
 
 /**
@@ -31,5 +32,11 @@ class GroupsModelMapper {
         GroupModel(
             groupId = group.id,
             groupName = group.name
+        )
+
+    fun map(group: GroupModel): UsersGroup =
+        UsersGroup(
+            groupId = group.groupName,
+            name = group.groupName
         )
 }

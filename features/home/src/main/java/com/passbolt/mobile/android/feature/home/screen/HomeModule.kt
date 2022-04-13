@@ -48,7 +48,8 @@ fun Module.homeModule() {
     single {
         HomeDataInteractor(
             foldersInteractor = get(),
-            resourcesInteractor = get()
+            resourcesInteractor = get(),
+            groupsInteractor = get()
         )
     }
     scope<HomeFragment> {

@@ -1,9 +1,8 @@
-package com.passbolt.mobile.android.core.commongroups
+package com.passbolt.mobile.android.entity.group
 
-import com.passbolt.mobile.android.core.commongroups.usecase.FetchUserGroupsUseCase
-import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
-import com.passbolt.mobile.android.core.commongroups.usecase.RebuildGroupsTablesUseCase
-import org.koin.dsl.module
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,26 +26,16 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Entity
+data class UsersGroup(
+    @PrimaryKey
+    val groupId: String,
+    @ColumnInfo(collate = ColumnInfo.NOCASE)
+    val name: String
+)
 
-val commonGroupsModule = module {
-    single {
-        FetchUserGroupsUseCase(
-            groupsRepository = get(),
-            groupsModelMapper = get(),
-            getSelectedAccountDataUseCase = get()
-        )
-    }
-    single {
-        RebuildGroupsTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalGroupsUseCase = get(),
-            addLocalGroupsUseCase = get()
-        )
-    }
-    single {
-        GroupsInteractor(
-            fetchUserGroupsUseCase = get(),
-            rebuildLocalGroupsUseCase = get()
-        )
-    }
-}
+data class UsersGroupWithChildItemsCount(
+    val groupId: String,
+    val name: String,
+    val childItemsCount: Int
+)

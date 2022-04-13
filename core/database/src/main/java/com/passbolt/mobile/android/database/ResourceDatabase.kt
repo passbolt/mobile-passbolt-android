@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.passbolt.mobile.android.database.dao.FoldersDao
+import com.passbolt.mobile.android.database.dao.GroupsDao
 import com.passbolt.mobile.android.database.dao.ResourceFieldsDao
 import com.passbolt.mobile.android.database.dao.ResourceTypesAndFieldsCrossRefDao
 import com.passbolt.mobile.android.database.dao.ResourceTypesDao
@@ -11,6 +12,7 @@ import com.passbolt.mobile.android.database.dao.ResourcesAndTagsCrossRefDao
 import com.passbolt.mobile.android.database.dao.ResourcesDao
 import com.passbolt.mobile.android.database.dao.TagsDao
 import com.passbolt.mobile.android.database.typeconverters.Converters
+import com.passbolt.mobile.android.entity.group.UsersGroup
 import com.passbolt.mobile.android.entity.resource.Folder
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceAndTagsCrossRef
@@ -50,9 +52,10 @@ import com.passbolt.mobile.android.entity.resource.Tag
         ResourceField::class,
         ResourceTypesAndFieldsCrossRef::class,
         Tag::class,
-        ResourceAndTagsCrossRef::class
+        ResourceAndTagsCrossRef::class,
+        UsersGroup::class
     ],
-    version = 6
+    version = 7
 )
 @TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {
@@ -70,4 +73,6 @@ abstract class ResourceDatabase : RoomDatabase() {
     abstract fun tagsDao(): TagsDao
 
     abstract fun resourcesAndTagsCrossRefDao(): ResourcesAndTagsCrossRefDao
+
+    abstract fun groupsDao(): GroupsDao
 }

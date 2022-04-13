@@ -1,9 +1,7 @@
-package com.passbolt.mobile.android.core.commongroups
+package com.passbolt.mobile.android.database.migrations
 
-import com.passbolt.mobile.android.core.commongroups.usecase.FetchUserGroupsUseCase
-import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
-import com.passbolt.mobile.android.core.commongroups.usecase.RebuildGroupsTablesUseCase
-import org.koin.dsl.module
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,25 +26,17 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val commonGroupsModule = module {
-    single {
-        FetchUserGroupsUseCase(
-            groupsRepository = get(),
-            groupsModelMapper = get(),
-            getSelectedAccountDataUseCase = get()
-        )
-    }
-    single {
-        RebuildGroupsTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalGroupsUseCase = get(),
-            addLocalGroupsUseCase = get()
-        )
-    }
-    single {
-        GroupsInteractor(
-            fetchUserGroupsUseCase = get(),
-            rebuildLocalGroupsUseCase = get()
-        )
+@Suppress("MagicNumber")
+object Migration6to7 : Migration(6, 7) {
+
+    private const val CREATE_GROUPS_TABLE = "CREATE TABLE IF NOT EXISTS UsersGroup(" +
+            "`groupId` TEXT NOT NULL, " +
+            "`name` TEXT NOT NULL COLLATE NOCASE, " +
+            "PRIMARY KEY(`groupId`))"
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        with(database) {
+            execSQL(CREATE_GROUPS_TABLE)
+        }
     }
 }

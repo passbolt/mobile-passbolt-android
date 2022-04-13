@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.home.screen.interactor
 
 import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
+import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
@@ -34,14 +35,17 @@ import com.passbolt.mobile.android.core.mvp.authentication.plus
  */
 class HomeDataInteractor(
     private val foldersInteractor: FoldersInteractor,
-    private val resourcesInteractor: ResourceInteractor
+    private val resourcesInteractor: ResourceInteractor,
+    private val groupsInteractor: GroupsInteractor
 ) {
 
     suspend fun refreshAllHomeScreenData(): Output {
         val foldersRefreshOutput = foldersInteractor.fetchAndSaveFolders()
         val resourcesAndResourcesTypesOutput = resourcesInteractor.updateResourcesWithTypes()
+        val groupsRefreshOutput = groupsInteractor.fetchAndSaveGroups()
         return if (foldersRefreshOutput is FoldersInteractor.Output.Success &&
-            resourcesAndResourcesTypesOutput is ResourceInteractor.Output.Success
+            resourcesAndResourcesTypesOutput is ResourceInteractor.Output.Success &&
+            groupsRefreshOutput is GroupsInteractor.Output.Success
         ) {
             Output.Success
         } else {

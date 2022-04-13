@@ -61,7 +61,7 @@ class SortByModifiedDateTest {
     @ExperimentalCoroutinesApi
     @Test
     fun testSortingWithNoTimeZones() = runBlocking {
-        resourcesDao.insert(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3))
+    resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3))
 
         val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate()
 
@@ -74,7 +74,7 @@ class SortByModifiedDateTest {
     @ExperimentalCoroutinesApi
     @Test
     fun testSortingWithTimeZones() = runBlocking {
-        resourcesDao.insert(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_1_ZONE_MINUS, RESOURCE_1_ZONE_PLUS))
+        resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_1_ZONE_MINUS, RESOURCE_1_ZONE_PLUS))
 
         val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate()
 
