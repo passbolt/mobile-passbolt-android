@@ -8,8 +8,10 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.database.usecase.GetLocalGroupsUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFoldersForFolderUseCase
@@ -43,6 +45,8 @@ internal val mockGetSubFoldersResourcesUseCase = mock<GetLocalSubFolderResources
 internal val mockGetLocalResourcesAndFoldersUseCase = mock<GetLocalResourcesAndFoldersUseCase>()
 internal val mockGetLocalTagsUseCase = mock<GetLocalTagsUseCase>()
 internal val mockGetLocalResourcesWithTagsUseCase = mock<GetLocalResourcesWithTagUseCase>()
+internal val mockGetLocalGroupsUseCase = mock<GetLocalGroupsUseCase>()
+internal val mockGetLocalResourcesWithGroupsUseCase = mock<GetLocalResourcesWithGroupUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -71,7 +75,9 @@ val testHomeModule = module {
             getLocalResourcesAndFoldersUseCase = mockGetLocalResourcesAndFoldersUseCase,
             getLocalResourcesFiltered = mockGetSubFoldersResourcesUseCase,
             getLocalTagsUseCase = mockGetLocalTagsUseCase,
-            getLocalResourcesWithTagUseCase = mockGetLocalResourcesWithTagsUseCase
+            getLocalResourcesWithTagUseCase = mockGetLocalResourcesWithTagsUseCase,
+            getLocalGroupsUseCase = mockGetLocalGroupsUseCase,
+            getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase
         )
     }
 }

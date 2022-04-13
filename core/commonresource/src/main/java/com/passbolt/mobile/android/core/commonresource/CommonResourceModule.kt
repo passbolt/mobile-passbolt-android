@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.commonresource.moremenu.resourceMoreMenu
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceAndGroupsCrossRefTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildTagsTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.validation.resourceValidationModule
@@ -39,7 +40,8 @@ val commonResourceModule = module {
         GetResourcesUseCase(
             resourceRepository = get(),
             resourceModelMapper = get(),
-            tagModelMapper = get()
+            tagModelMapper = get(),
+            groupsModelMapper = get()
         )
     }
     single {
@@ -54,7 +56,8 @@ val commonResourceModule = module {
             addLocalResourceTypesUseCase = get(),
             resourceValidationRunner = get(),
             rebuildResourceTablesUseCase = get(),
-            rebuildTagsTablesUseCase = get()
+            rebuildTagsTablesUseCase = get(),
+            rebuildResourceAndGroupsCrossRefTablesUseCase = get()
         )
     }
     single {
@@ -113,6 +116,13 @@ val commonResourceModule = module {
             getSelectedAccountUseCase = get(),
             removeLocalTagsUseCase = get(),
             addLocalTagsUseCase = get()
+        )
+    }
+    single {
+        RebuildResourceAndGroupsCrossRefTablesUseCase(
+            getSelectedAccountUseCase = get(),
+            removeLocalResourceAndGroupsCrossRefUseCase = get(),
+            addLocalResourceAndGroupsCrossRefUseCase = get()
         )
     }
 }

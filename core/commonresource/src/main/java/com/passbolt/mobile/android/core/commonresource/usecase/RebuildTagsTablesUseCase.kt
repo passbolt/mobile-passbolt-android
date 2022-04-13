@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.database.usecase.AddLocalTagsUseCase
 import com.passbolt.mobile.android.database.usecase.RemoveLocalTagsUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.ResourceModelWithTags
+import com.passbolt.mobile.android.ui.ResourceModelWithTagsAndGroups
 
 class RebuildTagsTablesUseCase(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
@@ -25,6 +25,6 @@ class RebuildTagsTablesUseCase(
     }
 
     data class Input(
-        val list: List<ResourceModelWithTags>
+        val list: List<ResourceModelWithTagsAndGroups>
     )
 }

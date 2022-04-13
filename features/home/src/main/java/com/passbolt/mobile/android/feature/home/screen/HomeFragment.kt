@@ -33,6 +33,7 @@ import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.commonresource.FolderItem
+import com.passbolt.mobile.android.core.commonresource.GroupItem
 import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
@@ -49,6 +50,7 @@ import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCount
+import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.TagWithCount
@@ -89,6 +91,7 @@ class HomeFragment :
     private val folderItemAdapter: ItemAdapter<FolderItem> by inject(named(FOLDER_ITEM_ADAPTER))
     private val childrenFolderItemAdapter: ItemAdapter<FolderItem> by inject(named(SUB_FOLDER_ITEM_ADAPTER))
     private val tagsItemAdapter: ItemAdapter<TagItem> by inject(named(TAGS_ITEM_ADAPTER))
+    private val groupsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUPS_ITEM_ADAPTER))
     private val inSubFoldersHeaderItemAdapter: ItemAdapter<InSubFoldersHeaderItem> by inject(
         named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)
     )
@@ -200,6 +203,9 @@ class HomeFragment :
             },
             TagItem.ItemClick {
                 presenter.tagItemClick(it)
+            },
+            GroupItem.ItemClick {
+                presenter.groupItemClick(it)
             }
         ))
     }
@@ -248,6 +254,7 @@ class HomeFragment :
         resourceList: List<ResourceModel>,
         foldersList: List<FolderWithCount>,
         tagsList: List<TagWithCount>,
+        groupsList: List<GroupWithCount>,
         filteredSubFoldersList: List<FolderWithCount>,
         filteredSubFolderResourceList: List<ResourceModel>,
         sectionsConfiguration: HeaderSectionConfiguration
@@ -262,6 +269,8 @@ class HomeFragment :
         FastAdapterDiffUtil.calculateDiff(folderItemAdapter, foldersList.map { FolderItem(it) })
         // tags
         FastAdapterDiffUtil.calculateDiff(tagsItemAdapter, tagsList.map { TagItem(it) })
+        // groups
+        FastAdapterDiffUtil.calculateDiff(groupsItemAdapter, groupsList.map { GroupItem(it) })
         // current folder resources
         FastAdapterDiffUtil.calculateDiff(passwordItemAdapter, resourceList.map { PasswordItem(it) })
         // "in sub-folders" header
@@ -495,6 +504,10 @@ class HomeFragment :
         presenter.tagsClick()
     }
 
+    override fun menuGroupsClick() {
+        presenter.groupsClick()
+    }
+
     override fun showHomeScreenTitle(view: HomeDisplayView) {
         when (view) {
             is HomeDisplayView.AllItems -> showScreenTitleWithStartIcon(
@@ -525,6 +538,10 @@ class HomeFragment :
                 R.string.filters_menu_tags,
                 R.drawable.ic_tag
             )
+            is HomeDisplayView.Groups -> showScreenTitleWithStartIcon(
+                R.string.filters_menu_groups,
+                R.drawable.ic_group
+            )
         }
     }
 
@@ -540,6 +557,10 @@ class HomeFragment :
             activeTagTitle,
             if (isShared) R.drawable.ic_shared_tag else R.drawable.ic_tag
         )
+    }
+
+    override fun showGroupTitle(groupName: String) {
+        showScreenTitleWithStartIcon(groupName, R.drawable.ic_group)
     }
 
     private fun showScreenTitleWithStartIcon(@StringRes titleRes: Int, @DrawableRes iconRes: Int) {

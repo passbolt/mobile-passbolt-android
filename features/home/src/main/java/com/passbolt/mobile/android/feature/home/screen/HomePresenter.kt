@@ -8,8 +8,10 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.database.usecase.GetLocalGroupsUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.database.usecase.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.database.usecase.GetLocalSubFoldersForFolderUseCase
@@ -24,6 +26,7 @@ import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderWithCount
+import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.TagWithCount
 import kotlinx.coroutines.CoroutineScope
@@ -82,7 +85,9 @@ class HomePresenter(
     private val getLocalResourcesAndFoldersUseCase: GetLocalResourcesAndFoldersUseCase,
     private val getLocalResourcesFiltered: GetLocalSubFolderResourcesFilteredUseCase,
     private val getLocalTagsUseCase: GetLocalTagsUseCase,
-    private val getLocalResourcesWithTagUseCase: GetLocalResourcesWithTagUseCase
+    private val getLocalResourcesWithTagUseCase: GetLocalResourcesWithTagUseCase,
+    private val getLocalGroupsUseCase: GetLocalGroupsUseCase,
+    private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinComponent {
 
     override var view: HomeContract.View? = null
@@ -101,6 +106,7 @@ class HomePresenter(
     private var resourceList: List<ResourceModel> = emptyList()
     private var foldersList: List<FolderWithCount> = emptyList()
     private var tagsList: List<TagWithCount> = emptyList()
+    private var groupsList: List<GroupWithCount> = emptyList()
 
     private var filteredSubFolderResources: List<ResourceModel> = emptyList()
     private var filteredSubFolders: List<FolderWithCount> = emptyList()
@@ -134,7 +140,16 @@ class HomePresenter(
         when (val currentHomeView = homeView) {
             is HomeDisplayView.Folders -> processFoldersTitle(currentHomeView, view)
             is HomeDisplayView.Tags -> processTagsTitle(currentHomeView, view)
+            is HomeDisplayView.Groups -> processGroupsTitle(currentHomeView, view)
             else -> view.showHomeScreenTitle(currentHomeView)
+        }
+    }
+
+    private fun processGroupsTitle(currentHomeView: HomeDisplayView.Groups, view: HomeContract.View) {
+        if (currentHomeView.activeGroupId != null) {
+            view.showGroupTitle(requireNotNull(currentHomeView.activeGroupName))
+        } else {
+            view.showHomeScreenTitle(currentHomeView)
         }
     }
 
@@ -217,6 +232,7 @@ class HomePresenter(
         when (val currentHomeView = homeView) {
             is HomeDisplayView.Folders -> showResourcesAndFoldersFromDatabase(currentHomeView)
             is HomeDisplayView.Tags -> showTagsFromDatabase(currentHomeView)
+            is HomeDisplayView.Groups -> showGroupsFromDatabase(currentHomeView)
             else -> showResourcesFromDatabase()
         }
     }
@@ -251,6 +267,7 @@ class HomePresenter(
         resourceList = getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(homeView)).resources
         foldersList = emptyList()
         tagsList = emptyList()
+        groupsList = emptyList()
         displayHomeData()
     }
 
@@ -259,17 +276,37 @@ class HomePresenter(
             resourceList = emptyList()
             tagsList = getLocalTagsUseCase.execute(Unit)
             foldersList = emptyList()
+            groupsList = emptyList()
         } else { // resources with active tag
             tagsList = emptyList()
             foldersList = emptyList()
+            groupsList = emptyList()
             resourceList = getLocalResourcesWithTagUseCase.execute(GetLocalResourcesWithTagUseCase.Input(tags))
                 .resources
         }
         displayHomeData()
     }
 
+    private suspend fun showGroupsFromDatabase(groups: HomeDisplayView.Groups) {
+        if (groups.activeGroupId == null) { // groups root - list of groups
+            resourceList = emptyList()
+            tagsList = emptyList()
+            foldersList = emptyList()
+            groupsList = getLocalGroupsUseCase.execute(Unit)
+        } else { // resources shared with group
+            tagsList = emptyList()
+            foldersList = emptyList()
+            groupsList = emptyList()
+            resourceList = getLocalResourcesWithGroupsUseCase.execute(
+                GetLocalResourcesWithGroupUseCase.Input(groups)
+            ).resources
+        }
+        displayHomeData()
+    }
+
     private suspend fun showResourcesAndFoldersFromDatabase(folders: HomeDisplayView.Folders) {
         tagsList = emptyList()
+        groupsList = emptyList()
         when (
             val result = getLocalResourcesAndFoldersUseCase.execute(
                 GetLocalResourcesAndFoldersUseCase.Input(folders.activeFolder)
@@ -289,7 +326,7 @@ class HomePresenter(
     }
 
     private fun displayHomeData() {
-        if (areListsEmpty(resourceList, foldersList, tagsList)) {
+        if (areListsEmpty(resourceList, foldersList, tagsList, groupsList)) {
             view?.showEmptyList()
         } else {
             if (currentSearchText.value.isEmpty()) {
@@ -297,6 +334,7 @@ class HomePresenter(
                     resourceList,
                     foldersList,
                     tagsList,
+                    groupsList,
                     filteredSubFolders,
                     filteredSubFolderResources,
                     HomeFragment.HeaderSectionConfiguration(
@@ -317,6 +355,7 @@ class HomePresenter(
         val filteredResources = filterSearchableList(resourceList, currentSearchText.value)
         val filteredFolders = filterSearchableList(foldersList, currentSearchText.value)
         val filteredTags = filterSearchableList(tagsList, currentSearchText.value)
+        val filteredGroups = filterSearchableList(groupsList, currentSearchText.value)
 
         homeView.apply {
             if (this is HomeDisplayView.Folders) {
@@ -328,6 +367,7 @@ class HomePresenter(
                 filteredResources,
                 filteredFolders,
                 filteredTags,
+                filteredGroups,
                 filteredSubFolders,
                 filteredSubFolderResources
             )
@@ -338,6 +378,7 @@ class HomePresenter(
                 filteredResources,
                 filteredFolders,
                 filteredTags,
+                filteredGroups,
                 filteredSubFolders,
                 filteredSubFolderResources,
                 HomeFragment.HeaderSectionConfiguration(
@@ -562,6 +603,10 @@ class HomePresenter(
         navigateToHomeView(HomeDisplayView.tagsRoot())
     }
 
+    override fun groupsClick() {
+        navigateToHomeView(HomeDisplayView.groupsRoot())
+    }
+
     override fun folderItemClick(folderModel: FolderWithCount) {
         view?.navigateToChild(
             HomeDisplayView.Folders(
@@ -578,6 +623,15 @@ class HomePresenter(
                 tag.id,
                 tag.slug,
                 tag.isShared
+            )
+        )
+    }
+
+    override fun groupItemClick(group: GroupWithCount) {
+        view?.navigateToChild(
+            HomeDisplayView.Groups(
+                group.groupId,
+                group.groupName
             )
         )
     }

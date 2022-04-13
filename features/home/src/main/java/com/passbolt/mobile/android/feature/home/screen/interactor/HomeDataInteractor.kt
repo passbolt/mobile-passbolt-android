@@ -40,9 +40,9 @@ class HomeDataInteractor(
 ) {
 
     suspend fun refreshAllHomeScreenData(): Output {
+        val groupsRefreshOutput = groupsInteractor.fetchAndSaveGroups()
         val foldersRefreshOutput = foldersInteractor.fetchAndSaveFolders()
         val resourcesAndResourcesTypesOutput = resourcesInteractor.updateResourcesWithTypes()
-        val groupsRefreshOutput = groupsInteractor.fetchAndSaveGroups()
         return if (foldersRefreshOutput is FoldersInteractor.Output.Success &&
             resourcesAndResourcesTypesOutput is ResourceInteractor.Output.Success &&
             groupsRefreshOutput is GroupsInteractor.Output.Success

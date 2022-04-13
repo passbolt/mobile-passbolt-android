@@ -4,6 +4,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.FolderItem
+import com.passbolt.mobile.android.core.commonresource.GroupItem
 import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
@@ -43,6 +44,7 @@ internal const val SUB_FOLDER_ITEM_ADAPTER = "SUB_FOLDER_ITEM_ADAPTER"
 internal const val IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER = "IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER"
 internal const val IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER = "IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER"
 internal const val TAGS_ITEM_ADAPTER = "TAGS_ITEM_ADAPTER"
+internal const val GROUPS_ITEM_ADAPTER = "GROUPS_ITEM_ADAPTER"
 
 fun Module.homeModule() {
     single {
@@ -68,7 +70,9 @@ fun Module.homeModule() {
                 getLocalResourcesAndFoldersUseCase = get(),
                 getLocalResourcesFiltered = get(),
                 getLocalTagsUseCase = get(),
-                getLocalResourcesWithTagUseCase = get()
+                getLocalResourcesWithTagUseCase = get(),
+                getLocalGroupsUseCase = get(),
+                getLocalResourcesWithGroupsUseCase = get()
             )
         }
         declareHomeListAdapters()
@@ -78,6 +82,7 @@ fun Module.homeModule() {
                     get<ItemAdapter<InCurrentFoldersHeaderItem>>(named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)),
                     get<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)),
                     get<ItemAdapter<TagItem>>(named(TAGS_ITEM_ADAPTER)),
+                    get<ItemAdapter<TagItem>>(named(GROUPS_ITEM_ADAPTER)),
                     get<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)),
                     get<ItemAdapter<InSubFoldersHeaderItem>>(named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)),
                     get<ItemAdapter<FolderItem>>(named(SUB_FOLDER_ITEM_ADAPTER)),
@@ -108,6 +113,9 @@ fun ScopeDSL.declareHomeListAdapters() {
         ItemAdapter.items()
     }
     scoped<ItemAdapter<TagItem>>(named(TAGS_ITEM_ADAPTER)) {
+        ItemAdapter.items()
+    }
+    scoped<ItemAdapter<GroupItem>>(named(GROUPS_ITEM_ADAPTER)) {
         ItemAdapter.items()
     }
 }

@@ -25,5 +25,6 @@ class ResourceDisplayViewMapper {
             )
             is HomeDisplayView.Folders -> ResourceDatabaseView.ByModifiedDateDescending
             is HomeDisplayView.Tags -> ResourceDatabaseView.ByModifiedDateDescending
+            is HomeDisplayView.Groups -> ResourceDatabaseView.ByModifiedDateDescending
         }
 }

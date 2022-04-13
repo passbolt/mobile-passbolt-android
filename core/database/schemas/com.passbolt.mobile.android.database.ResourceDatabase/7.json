@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "038bfc0be45062c2f999b196a39b42af",
+    "identityHash": "0a63af34f16873ed0c13e63f104e2c82",
     "entities": [
       {
         "tableName": "Resource",
@@ -315,12 +315,39 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "ResourceAndGroupsCrossRef",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`resourceId` TEXT NOT NULL, `groupId` TEXT NOT NULL, PRIMARY KEY(`resourceId`, `groupId`))",
+        "fields": [
+          {
+            "fieldPath": "resourceId",
+            "columnName": "resourceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupId",
+            "columnName": "groupId",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "resourceId",
+            "groupId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '038bfc0be45062c2f999b196a39b42af')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0a63af34f16873ed0c13e63f104e2c82')"
     ]
   }
 }

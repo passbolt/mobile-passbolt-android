@@ -39,6 +39,7 @@ class FiltersMenuPresenter(
                 is HomeDisplayView.OwnedByMe -> selectOwnedByMeItem()
                 is HomeDisplayView.Folders -> selectFoldersMenuItem()
                 is HomeDisplayView.Tags -> selectTagsMenuItem()
+                is HomeDisplayView.Groups -> selectGroupsMenuItem()
             }
         }
     }
@@ -55,6 +56,7 @@ class FiltersMenuPresenter(
             if (featureFlags.areTagsAvailable) {
                 view?.addTagsMenuItem()
             }
+            view?.addGroupsMenuItem()
         }
     }
 

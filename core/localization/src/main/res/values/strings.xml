@@ -207,6 +207,7 @@
     <string name="filters_menu_owned_by_me">Owned by me</string>
     <string name="filters_menu_folders">Folders</string>
     <string name="filters_menu_tags">Tags</string>
+    <string name="filters_menu_groups">Groups</string>
 
     <string name="main_menu_home">Home</string>
     <string name="main_menu_settings">Settings</string>

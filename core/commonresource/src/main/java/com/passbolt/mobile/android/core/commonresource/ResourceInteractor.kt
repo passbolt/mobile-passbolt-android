@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.commonresource
 
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceAndGroupsCrossRefTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildTagsTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.validation.ResourceValidationRunner
@@ -38,7 +39,8 @@ class ResourceInteractor(
     private val addLocalResourceTypesUseCase: AddLocalResourceTypesUseCase,
     private val resourceValidationRunner: ResourceValidationRunner,
     private val rebuildResourceTablesUseCase: RebuildResourceTablesUseCase,
-    private val rebuildTagsTablesUseCase: RebuildTagsTablesUseCase
+    private val rebuildTagsTablesUseCase: RebuildTagsTablesUseCase,
+    private val rebuildResourceAndGroupsCrossRefTablesUseCase: RebuildResourceAndGroupsCrossRefTablesUseCase
 ) {
 
     suspend fun updateResourcesWithTypes(): Output {
@@ -52,13 +54,16 @@ class ResourceInteractor(
                 )
                 val validatedResources = resourcesResult.resources
                     .filter { resourceValidationRunner.isValid(it.resourceModel) }
+
                 rebuildResourceTablesUseCase.execute(
                     RebuildResourceTablesUseCase.Input(validatedResources.map { it.resourceModel })
                 )
                 rebuildTagsTablesUseCase.execute(
                     RebuildTagsTablesUseCase.Input(validatedResources)
                 )
-
+                rebuildResourceAndGroupsCrossRefTablesUseCase.execute(
+                    RebuildResourceAndGroupsCrossRefTablesUseCase.Input(validatedResources)
+                )
                 Output.Success
             } else {
                 Output.Failure(resourcesResult.authenticationState + resourceTypesResult.authenticationState)

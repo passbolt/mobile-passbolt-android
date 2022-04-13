@@ -2,7 +2,10 @@ package com.passbolt.mobile.android.database.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
+import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,20 +29,25 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RemoveLocalTagsUseCase(
-    private val databaseProvider: DatabaseProvider
-) : AsyncUseCase<UserIdInput, Unit> {
+class GetLocalResourcesWithGroupUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val resourceModelMapper: ResourceModelMapper,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : AsyncUseCase<GetLocalResourcesWithGroupUseCase.Input, GetLocalResourcesWithGroupUseCase.Output> {
 
-    override suspend fun execute(input: UserIdInput) {
-        val tagsDao = databaseProvider
-            .get(input.userId)
-            .tagsDao()
+    override suspend fun execute(input: Input): Output {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        val resources = databaseProvider
+            .get(userId)
+            .resourcesDao()
+            .getResourcesWithGroup(requireNotNull(input.tag.activeGroupId))
 
-        val tagsAndResourcesCrossRefDao = databaseProvider
-            .get(input.userId)
-            .resourcesAndTagsCrossRefDao()
-
-        tagsAndResourcesCrossRefDao.deleteAll()
-        tagsDao.deleteAll()
+        return Output(resources.map { resourceModelMapper.map(it) })
     }
+
+    data class Input(
+        val tag: HomeDisplayView.Groups
+    )
+
+    data class Output(val resources: List<ResourceModel>)
 }

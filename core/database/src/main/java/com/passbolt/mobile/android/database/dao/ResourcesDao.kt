@@ -77,6 +77,15 @@ interface ResourcesDao : BaseDao<Resource> {
     suspend fun getResourcesWithTag(tagId: String): List<Resource>
 
     @Transaction
+    @Query(
+        "SELECT * FROM Resource r " +
+                "INNER JOIN ResourceAndGroupsCrossRef cr " +
+                "ON r.resourceId=cr.resourceId " +
+                "WHERE cr.groupId=:groupId"
+    )
+    suspend fun getResourcesWithGroup(groupId: String): List<Resource>
+
+    @Transaction
     @Query("DELETE FROM Resource")
     suspend fun deleteAll()
 }

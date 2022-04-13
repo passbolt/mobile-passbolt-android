@@ -1,7 +1,9 @@
-package com.passbolt.mobile.android.dto.response
+package com.passbolt.mobile.android.database.usecase
 
-import com.google.gson.annotations.SerializedName
-import org.json.JSONObject
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.entity.group.ResourceAndGroupsCrossRef
+import com.passbolt.mobile.android.ui.ResourceModelWithTagsAndGroups
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,32 +27,26 @@ import org.json.JSONObject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-/**
- * Model of resource used to parse backend response.
- * @param resourceTypeId id of the type of the resource (secret, secret with description and more in future)
- * @param resourceFolderId id of the resource folder or null if in root
- * @param favorite if resource is in favourites it contains a favourite object else null
- */
-data class ResourceResponseDto(
-    val id: String,
-    @SerializedName("resource_type_id")
-    val resourceTypeId: String,
-    @SerializedName("folder_parent_id")
-    val resourceFolderId: String?,
-    val description: String?,
-    val name: String,
-    val uri: String?,
-    val username: String?,
-    val permission: PermissionDto,
-    val favorite: JSONObject?,
-    val modified: String,
-    val tags: List<TagDto>?,
-    val permissions: List<PermissionWithGroupDto>?
-)
+class AddLocalResourceAndGroupsCrossRefUseCase(
+    private val databaseProvider: DatabaseProvider
+) : AsyncUseCase<AddLocalResourceAndGroupsCrossRefUseCase.Input, Unit> {
 
-data class TagDto(
-    val id: String,
-    val slug: String,
-    @SerializedName("is_shared")
-    val isShared: Boolean
-)
+    override suspend fun execute(input: Input) {
+        val resourcesAndGroupsCrossRefDao = databaseProvider
+            .get(input.userId)
+            .resourcesAndGroupsCrossRefDao()
+
+        input.resourcesWithTagsModelAndGroups
+            .map { it.resourceModel.resourceId to it.resourceGroups }
+            .forEach { (resourceId, groups) ->
+                groups.forEach {
+                    resourcesAndGroupsCrossRefDao.insert(ResourceAndGroupsCrossRef(resourceId, it.groupId))
+                }
+            }
+    }
+
+    data class Input(
+        val resourcesWithTagsModelAndGroups: List<ResourceModelWithTagsAndGroups>,
+        val userId: String
+    )
+}
