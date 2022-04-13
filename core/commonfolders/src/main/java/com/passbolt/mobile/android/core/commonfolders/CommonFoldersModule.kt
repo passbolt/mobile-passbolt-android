@@ -38,7 +38,8 @@ val commonFoldersModule = module {
     single {
         FoldersInteractor(
             fetchUserFoldersUseCase = get(),
-            rebuildLocalFoldersUseCase = get()
+            rebuildLocalFoldersUseCase = get(),
+            getFeatureFlagsUseCase = get()
         )
     }
     single {

@@ -79,7 +79,7 @@
                         android:imeOptions="actionSearch"
                         android:inputType="text"
                         android:maxLines="1"
-                        android:textColor="@color/text_secondary" />
+                        android:textColor="@color/text_primary" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

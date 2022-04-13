@@ -1,0 +1,18 @@
+# Passbolt 1.5.0-6 Android app release notes
+
+## Added
+- Home folders view (available through the search filter icon): browse folders and search in folders and sub-folders
+
+## Improved
+- Fasten the build by using pre-build Docker image with pre-installed Android SDK and tools
+
+## Fixed
+- Autofill: fix crash when websites/apps have two-page sign in (i.e. username only on first page and password on another)
+
+## Security
+- Support latest build using latest Java 17
+- Use latest openjdk:oraclelinux8 for Docker build (0 known vulnerabilities confirmed by Snyk)
+
+## Maintenance
+- Add Kotlin kover for calculating test coverage
+- Add dependency analysis plugin for detecting unused / incorrectly included dependencies
