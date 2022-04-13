@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.core.commonresource.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
-import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
+import com.passbolt.mobile.android.database.impl.resources.AddLocalResourcesUseCase
+import com.passbolt.mobile.android.database.impl.resources.RemoveLocalResourcesUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel

@@ -25,7 +25,7 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.biometricKeyIvModule() {
+internal fun Module.biometricKeyIvModule() {
     factory {
         GetBiometricKeyIvUseCase(
             encryptedSharedPreferencesFactory = get()

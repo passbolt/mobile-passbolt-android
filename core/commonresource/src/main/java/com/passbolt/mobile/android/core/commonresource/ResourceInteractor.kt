@@ -9,7 +9,7 @@ import com.passbolt.mobile.android.core.commonresource.validation.ResourceValida
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.plus
-import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
+import com.passbolt.mobile.android.database.impl.resourcetypes.AddLocalResourceTypesUseCase
 
 /**
  * Passbolt - Open source password manager for teams

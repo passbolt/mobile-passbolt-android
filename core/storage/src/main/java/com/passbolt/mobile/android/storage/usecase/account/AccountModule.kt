@@ -25,7 +25,7 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.accountModule() {
+internal fun Module.accountModule() {
     factory {
         SaveAccountUseCase(
             sharedPreferences = get()

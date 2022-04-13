@@ -27,7 +27,7 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.passphraseModule() {
+internal fun Module.passphraseModule() {
     factory {
         CheckIfPassphraseFileExistsUseCase(
             appContext = androidContext()

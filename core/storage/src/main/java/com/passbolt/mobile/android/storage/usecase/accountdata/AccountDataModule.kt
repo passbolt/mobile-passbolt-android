@@ -25,7 +25,7 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.accountDataModule() {
+internal fun Module.accountDataModule() {
     single {
         GetAccountDataUseCase(
             encryptedSharedPreferencesFactory = get()

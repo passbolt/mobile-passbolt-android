@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.resources.update.fieldsgenerator
 
-import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsBySlugUseCase
+import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.feature.resources.update.ResourceValue
 
 /**

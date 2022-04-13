@@ -2,9 +2,8 @@ package com.passbolt.mobile.android.feature.setup.summary
 
 import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.common.UuidProvider
-import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.database.SaveResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import org.koin.dsl.module
 
 /**
