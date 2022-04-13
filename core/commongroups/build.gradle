@@ -1,0 +1,27 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':mvp')
+    implementation project(':entity')
+    implementation project(':storage')
+    implementation project(':mappers')
+    implementation project(':ui')
+    implementation project(':dto')
+    implementation project(':networking')
+    implementation project(':passboltapi')
+    implementation project(':database')
+    implementation project(':gopenpgp')
+
+    implementation libs.di.koin
+    implementation libs.di.koinExt
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

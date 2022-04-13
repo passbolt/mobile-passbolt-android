@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.mappers
+package com.passbolt.mobile.android.passboltapi.groups
 
-import com.passbolt.mobile.android.entity.resource.Permission
-import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.dto.response.GroupsResponseDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,22 +25,7 @@ import com.passbolt.mobile.android.ui.ResourcePermission
  * @since v1.0
  */
 
-internal fun Permission.toUiModel() = when (this) {
-    Permission.READ -> ResourcePermission.READ
-    Permission.WRITE -> ResourcePermission.UPDATE
-    Permission.OWNER -> ResourcePermission.OWNER
-}
+interface GroupsDataSource {
 
-@Suppress("MagicNumber")
-internal fun mapDtoPermissionTypeToUiModel(type: Int) = when (type) {
-    1 -> ResourcePermission.READ
-    7 -> ResourcePermission.UPDATE
-    15 -> ResourcePermission.OWNER
-    else -> throw IllegalArgumentException("Unsupported DTO permission value: $type")
-}
-
-internal fun ResourcePermission.toEntityModel() = when (this) {
-    ResourcePermission.READ -> Permission.READ
-    ResourcePermission.UPDATE -> Permission.WRITE
-    ResourcePermission.OWNER -> Permission.OWNER
+    suspend fun getGroups(containingUsers: List<String>): List<GroupsResponseDto>
 }

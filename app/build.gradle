@@ -123,6 +123,7 @@ dependencies {
     implementation project(':accountdetails')
     implementation project(':localization')
     implementation project(':commonfolders')
+    implementation project(':commongroups')
 
     debugImplementation libs.quality.leakcanary
 

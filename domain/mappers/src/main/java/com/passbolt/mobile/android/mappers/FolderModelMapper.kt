@@ -3,10 +3,8 @@ package com.passbolt.mobile.android.mappers
 import com.passbolt.mobile.android.dto.response.FolderResponseDto
 import com.passbolt.mobile.android.entity.resource.Folder
 import com.passbolt.mobile.android.entity.resource.FolderWithChildItemsCount
-import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.FolderWithCount
-import com.passbolt.mobile.android.ui.ResourcePermission
 
 /**
  * Passbolt - Open source password manager for teams
@@ -68,10 +66,4 @@ class FolderModelMapper {
             isShared = folderWithChildItemsCount.isShared,
             subItemsCount = folderWithChildItemsCount.childItemsCount
         )
-
-    private fun ResourcePermission.toEntityModel() = when (this) {
-        ResourcePermission.READ -> Permission.READ
-        ResourcePermission.UPDATE -> Permission.WRITE
-        ResourcePermission.OWNER -> Permission.OWNER
-    }
 }
