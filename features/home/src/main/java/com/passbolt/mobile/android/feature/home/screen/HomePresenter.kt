@@ -207,13 +207,18 @@ class HomePresenter(
         }
     }
 
-    // currently show add button in root folder only (and in all other views)
-    private fun shouldShowAddButton() =
-        if (homeView !is HomeDisplayView.Folders) {
-            true
-        } else {
-            (homeView as HomeDisplayView.Folders).activeFolder is Folder.Root
+    // currently show add button in root folder only (and in all other views except tags and groups)
+    private fun shouldShowAddButton(): Boolean {
+        homeView.let {
+            if (it is HomeDisplayView.Tags || it is HomeDisplayView.Groups) {
+                return false
+            }
+            if (it is HomeDisplayView.Folders) {
+                return it.activeFolder is Folder.Root
+            }
         }
+        return true
+    }
 
     private fun handleBackArrowVisibility() {
         if (hasPreviousBackEntry) {
