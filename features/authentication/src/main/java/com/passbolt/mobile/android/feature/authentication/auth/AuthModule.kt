@@ -169,7 +169,8 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
     getPassphraseUseCase = get(),
     authReasonMapper = get(),
     rootDetector = get(),
-    biometryInteractor = get()
+    biometryInteractor = get(),
+    runtimeAuthenticatedFlag = get()
 )
 
 private fun Scope.signInPresenter() = SignInPresenter(
@@ -191,7 +192,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     verifyPassphraseUseCase = get(),
     coroutineLaunchContext = get(),
     authReasonMapper = get(),
-    rootDetector = get()
+    rootDetector = get(),
+    runtimeAuthenticatedFlag = get()
 )
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
@@ -214,5 +216,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
     biometryInteractor = get(),
-    userProfileInteractor = get()
+    userProfileInteractor = get(),
+    runtimeAuthenticatedFlag = get()
 )

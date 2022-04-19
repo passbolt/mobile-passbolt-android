@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.resources.databinding.ActivityResourcesBinding
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
@@ -36,6 +37,8 @@ import org.koin.android.ext.android.inject
 class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResourcesBinding::inflate) {
 
     private val flagSecureSetter: FlagSecureSetter by inject()
+    private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
+
     private val mode by lifecycleAwareLazy {
         intent.getSerializableExtra(EXTRA_RESOURCE_MODE) as ResourceMode
     }
@@ -43,6 +46,7 @@ class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResou
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        runtimeAuthenticatedFlag.require(this)
         flagSecureSetter.set(this)
 
         val navHostFragment = findNavHostFragment(R.id.fragmentContainer)

@@ -5,6 +5,7 @@ import androidx.annotation.CallSuper
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
@@ -57,6 +58,7 @@ abstract class AuthBasePresenter(
     private val authReasonMapper: AuthReasonMapper,
     private val rootDetector: RootDetector,
     private val biometryInteractor: BiometryInteractor,
+    protected val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthContract.Presenter {
 
@@ -64,7 +66,6 @@ abstract class AuthBasePresenter(
 
     private val job = SupervisorJob()
     protected val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-
     protected lateinit var userId: String
     private lateinit var authConfig: ActivityIntents.AuthConfig
 

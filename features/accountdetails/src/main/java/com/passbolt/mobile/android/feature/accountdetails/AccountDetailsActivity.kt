@@ -1,7 +1,10 @@
 package com.passbolt.mobile.android.feature.accountdetails
 
+import android.os.Bundle
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.accountdetails.databinding.ActivityAccountDetailsBinding
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,4 +29,12 @@ import com.passbolt.mobile.android.feature.accountdetails.databinding.ActivityAc
  * @since v1.0
  */
 class AccountDetailsActivity :
-    BindingActivity<ActivityAccountDetailsBinding>(ActivityAccountDetailsBinding::inflate)
+    BindingActivity<ActivityAccountDetailsBinding>(ActivityAccountDetailsBinding::inflate) {
+
+    private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        runtimeAuthenticatedFlag.require(this)
+    }
+}

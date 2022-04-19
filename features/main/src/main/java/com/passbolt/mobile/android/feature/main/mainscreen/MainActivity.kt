@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.navigation.ui.setupWithNavController
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
@@ -20,9 +21,11 @@ class MainActivity :
     private val bottomNavController by lifecycleAwareLazy {
         findNavHostFragment(binding.fragmentContainer.id).navController
     }
+    private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        runtimeAuthenticatedFlag.require(this)
         binding.mainNavigation.setupWithNavController(bottomNavController)
         presenter.attach(this)
         presenter.performFullDataRefresh()
