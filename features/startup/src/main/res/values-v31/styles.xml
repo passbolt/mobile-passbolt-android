@@ -10,6 +10,9 @@
         <item name="windowSplashScreenAnimatedIcon">@drawable/passbolt_splash_logo</item>
         <item name="windowSplashScreenAnimationDuration">1000</item>
 
+        <!-- bottom branding image -->
+        <item name="android:windowSplashScreenBrandingImage">@drawable/branding_image</item>
+
         <!-- theme of the activity shown after splash -->
         <item name="postSplashScreenTheme">@style/Theme.Passbolt</item>
     </style>

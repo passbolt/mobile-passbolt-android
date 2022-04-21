@@ -47,7 +47,8 @@ ext {
             cameraView: "1.0.0-alpha24",
             lifecycle: "2.3.1",
             swiperefresh: "1.1.0",
-            appStartUp: "1.1.1"
+            appStartUp: "1.1.1",
+            splashScreen: "1.0.0-beta02"
         ],
         material: "1.4.0-beta01",
         networking: [
@@ -140,7 +141,8 @@ ext {
             lifecycleAnnotationProcessor: "androidx.lifecycle:lifecycle-common-java8:${versions.androidx.lifecycle}",
             processLifecycle: "androidx.lifecycle:lifecycle-process:${versions.androidx.lifecycle}",
             swiperefresh: "androidx.swiperefreshlayout:swiperefreshlayout:${versions.androidx.swiperefresh}",
-            appStartUp: "androidx.startup:startup-runtime:${versions.androidx.appStartUp}"
+            appStartUp: "androidx.startup:startup-runtime:${versions.androidx.appStartUp}",
+            splashScreen: "androidx.core:core-splashscreen:${versions.androidx.splashScreen}"
         ],
         material: "com.google.android.material:material:${versions.material}",
         networking: [

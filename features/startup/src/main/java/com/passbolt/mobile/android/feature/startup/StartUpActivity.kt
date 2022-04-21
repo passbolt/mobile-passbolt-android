@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.startup
 
 import android.os.Bundle
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.startup.databinding.ActivityStartupBinding
@@ -12,6 +13,8 @@ class StartUpActivity : BindingScopedActivity<ActivityStartupBinding>(ActivitySt
     private val presenter: StartUpContract.Presenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+
         super.onCreate(savedInstanceState)
         presenter.attach(this)
     }
