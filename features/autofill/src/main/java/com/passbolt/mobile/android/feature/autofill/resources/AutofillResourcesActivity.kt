@@ -28,6 +28,7 @@ import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.AutofillMode
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
@@ -72,6 +73,7 @@ class AutofillResourcesActivity :
     private val fastAdapter: FastAdapter<GenericItem> by inject(named<ResourceListUiModel>())
     private val resourceUiItemsMapper: ResourceUiItemsMapper by inject()
     private val imageLoader: ImageLoader by inject()
+    private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
     private val bundledAutofillUri by lifecycleAwareLazy {
         intent.getStringExtra(ActivityIntents.EXTRA_AUTOFILL_URI)
     }
@@ -101,6 +103,7 @@ class AutofillResourcesActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        runtimeAuthenticatedFlag.require(this)
         returnAutofillDatasetStrategy = scope.get(named(bundledAutofillMode)) { parametersOf(this) }
         initAdapter()
         setListeners()

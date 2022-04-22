@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.core.users.UserProfileInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
@@ -64,7 +65,8 @@ class RefreshSessionPresenter(
     getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysInteractor,
     signInVerifyInteractor: SignInVerifyInteractor,
     biometryInteractor: BiometryInteractor,
-    userProfileInteractor: UserProfileInteractor
+    userProfileInteractor: UserProfileInteractor,
+    runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag
 ) : SignInPresenter(
     saveSessionUseCase,
     saveSelectedAccountUseCase,
@@ -84,7 +86,8 @@ class RefreshSessionPresenter(
     verifyPassphraseUseCase,
     coroutineLaunchContext,
     authReasonMapper,
-    rootDetector
+    rootDetector,
+    runtimeAuthenticatedFlag
 ) {
 
     override fun performSignIn(passphrase: ByteArray) {
@@ -94,6 +97,7 @@ class RefreshSessionPresenter(
             view?.hideProgress()
             when (refreshSessionResult) {
                 is RefreshSessionUseCase.Output.Success -> {
+                    runtimeAuthenticatedFlag.isAuthenticated = true
                     view?.authSuccess()
                 }
                 is RefreshSessionUseCase.Output.Failure -> {

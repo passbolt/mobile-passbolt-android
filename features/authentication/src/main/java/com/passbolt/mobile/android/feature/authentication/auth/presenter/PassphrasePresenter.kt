@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
@@ -46,7 +47,8 @@ class PassphrasePresenter(
     getPassphraseUseCase: GetPassphraseUseCase,
     authReasonMapper: AuthReasonMapper,
     rootDetector: RootDetector,
-    biometryInteractor: BiometryInteractor
+    biometryInteractor: BiometryInteractor,
+    runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag
 ) : AuthBasePresenter(
     getAccountDataUseCase,
     getPrivateKeyUseCase,
@@ -57,6 +59,7 @@ class PassphrasePresenter(
     authReasonMapper,
     rootDetector,
     biometryInteractor,
+    runtimeAuthenticatedFlag,
     coroutineLaunchContext
 ) {
 
@@ -65,12 +68,14 @@ class PassphrasePresenter(
         passphrase.erase()
         view?.apply {
             clearPassphraseInput()
+            runtimeAuthenticatedFlag.isAuthenticated = true
             authSuccess()
         }
     }
 
     override fun biometricAuthSuccess(authenticatedCipher: Cipher?) {
         super.biometricAuthSuccess(authenticatedCipher)
+        runtimeAuthenticatedFlag.isAuthenticated = true
         view?.authSuccess()
     }
 
@@ -79,10 +84,12 @@ class PassphrasePresenter(
     }
 
     override fun totpSucceeded(mfaHeader: String?) {
+        runtimeAuthenticatedFlag.isAuthenticated = true
         view?.authSuccess()
     }
 
     override fun yubikeySucceeded(mfaHeader: String?) {
+        runtimeAuthenticatedFlag.isAuthenticated = true
         view?.authSuccess()
     }
 }

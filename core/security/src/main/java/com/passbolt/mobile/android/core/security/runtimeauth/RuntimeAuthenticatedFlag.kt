@@ -1,11 +1,10 @@
-package com.passbolt.mobile.android.core.security
+package com.passbolt.mobile.android.core.security.runtimeauth
 
-import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
-import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
-import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
-import com.scottyab.rootbeer.RootBeer
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.security.R
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,14 +28,23 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+/**
+ *
+ */
+class RuntimeAuthenticatedFlag(
+    var isAuthenticated: Boolean = false
+) {
 
-val securityModule = module {
-    single { FlagSecureSetter() }
-    factory { RootBeer(androidContext()) }
-    single {
-        RootDetector(
-            rootBeer = get()
-        )
+    fun require(activity: AppCompatActivity) {
+        if (!isAuthenticated) {
+            with(activity) {
+                val message = "Started ${this.javaClass.name} without authenticating first"
+                Timber.e(NoRuntimeAuthException(message))
+                Toast.makeText(this, this.getString(R.string.authentication_required), Toast.LENGTH_SHORT)
+                    .show()
+                startActivity(ActivityIntents.start(this))
+                finish()
+            }
+        }
     }
-    single { RuntimeAuthenticatedFlag() }
 }

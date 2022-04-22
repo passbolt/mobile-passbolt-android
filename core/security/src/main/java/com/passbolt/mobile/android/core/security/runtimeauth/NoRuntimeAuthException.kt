@@ -1,11 +1,4 @@
-package com.passbolt.mobile.android.core.security
-
-import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
-import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
-import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
-import com.scottyab.rootbeer.RootBeer
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module
+package com.passbolt.mobile.android.core.security.runtimeauth
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,14 +22,4 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-val securityModule = module {
-    single { FlagSecureSetter() }
-    factory { RootBeer(androidContext()) }
-    single {
-        RootDetector(
-            rootBeer = get()
-        )
-    }
-    single { RuntimeAuthenticatedFlag() }
-}
+class NoRuntimeAuthException(override val message: String) : RuntimeException(message)

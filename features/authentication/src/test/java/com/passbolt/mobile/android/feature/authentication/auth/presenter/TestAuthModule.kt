@@ -1,12 +1,10 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.core.users.UserProfileInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
@@ -38,6 +36,9 @@ import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCa
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import javax.crypto.Cipher
 
 /**
@@ -146,6 +147,7 @@ val testAuthModule = module {
             fingerprintInfoProvider = mockFingerprintInformationProvider
         )
     }
+    single { RuntimeAuthenticatedFlag() }
     factory<AuthContract.Presenter> { (authConfig: ActivityIntents.AuthConfig) ->
         when (authConfig) {
             is ActivityIntents.AuthConfig.Startup -> signInPresenter()
@@ -179,7 +181,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     authReasonMapper = authReasonMapper,
     rootDetector = mockRootDetector,
     biometryInteractor = get(),
-    userProfileInteractor = mockProfileInteractor
+    userProfileInteractor = mockProfileInteractor,
+    runtimeAuthenticatedFlag = get()
 )
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(
@@ -192,7 +195,8 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
     getPassphraseUseCase = mockGetPassphraseUseCase,
     authReasonMapper = authReasonMapper,
     rootDetector = mockRootDetector,
-    biometryInteractor = get()
+    biometryInteractor = get(),
+    runtimeAuthenticatedFlag = get()
 )
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
@@ -215,5 +219,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
     biometryInteractor = get(),
-    userProfileInteractor = mockProfileInteractor
+    userProfileInteractor = mockProfileInteractor,
+    runtimeAuthenticatedFlag = get()
 )

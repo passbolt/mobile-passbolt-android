@@ -4,6 +4,7 @@ import android.app.Application
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.navigation.isAuthenticated
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -43,6 +44,7 @@ class PassboltApplication : Application(), KoinComponent {
 
     private val appForegroundListener: AppForegroundListener by inject()
     private val applicationScope = MainScope()
+    private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -56,6 +58,7 @@ class PassboltApplication : Application(), KoinComponent {
     private fun registerAppForegroundListener() {
         registerActivityLifecycleCallbacks(appForegroundListener)
         applicationScope.launch {
+            runtimeAuthenticatedFlag.isAuthenticated = false
             appForegroundListener.appWentForegroundFlow.collect {
                 if (it.isAuthenticated()) {
                     it.startActivity(

@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.core.users.UserProfileInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
@@ -71,7 +72,8 @@ open class SignInPresenter(
     verifyPassphraseUseCase: VerifyPassphraseUseCase,
     coroutineLaunchContext: CoroutineLaunchContext,
     authReasonMapper: AuthReasonMapper,
-    rootDetector: RootDetector
+    rootDetector: RootDetector,
+    runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag
 ) : AuthBasePresenter(
     getAccountDataUseCase,
     getPrivateKeyUseCase,
@@ -82,6 +84,7 @@ open class SignInPresenter(
     authReasonMapper,
     rootDetector,
     biometryInteractor,
+    runtimeAuthenticatedFlag,
     coroutineLaunchContext
 ) {
 
@@ -179,7 +182,7 @@ open class SignInPresenter(
             )) {
                 MfaStatus.NotRequired -> {
                     Timber.d("MFA not required")
-                    mfaNotRequired()
+                    signInSuccess()
                 }
                 is MfaStatus.Required -> {
                     Timber.d("MFA required")
@@ -191,10 +194,6 @@ open class SignInPresenter(
 
     override fun fingerprintServerConfirmationClick(fingerprint: String) {
         saveServerFingerprintUseCase.execute(SaveServerFingerprintUseCase.Input(userId, fingerprint))
-    }
-
-    private fun mfaNotRequired() {
-        signInSuccess()
     }
 
     private fun mfaRequired(mfaProviders: List<String>, jwtToken: String) {
@@ -227,6 +226,7 @@ open class SignInPresenter(
 
     private fun signInSuccess(updateSession: Boolean = true) {
         Timber.d("Authentication success")
+        runtimeAuthenticatedFlag.isAuthenticated = true
         val currentLoginState = requireNotNull(loginState)
         if (updateSession) {
             saveSessionUseCase.execute(
