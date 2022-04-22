@@ -12,6 +12,7 @@ dependencies {
     api libs.networking.retrofit
     api libs.networking.okHttp
     api libs.networking.okHttpLoggingInterceptor
+    implementation libs.networking.retrofitGsonConverter
 
     implementation libs.di.koin
     implementation libs.di.koinExt

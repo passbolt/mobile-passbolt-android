@@ -8,8 +8,8 @@ import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUse
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.ResourceDatabase
-import com.passbolt.mobile.android.database.dao.ResourceTypesDao
-import com.passbolt.mobile.android.database.usecase.GetLocalResourceUseCase
+import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceTypesDao
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.resources.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser

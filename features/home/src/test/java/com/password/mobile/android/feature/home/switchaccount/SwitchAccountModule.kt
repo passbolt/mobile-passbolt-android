@@ -1,20 +1,20 @@
 package com.password.mobile.android.feature.home.switchaccount
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import com.passbolt.mobile.android.comparator.SwitchAccountUiModelComparator
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.entity.account.Account
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountContract
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountPresenter
 import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
+import com.passbolt.mobile.android.mappers.comparator.SwitchAccountUiModelComparator
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.password.mobile.android.feature.home.TestCoroutineLaunchContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 
 internal val accountsList = listOf(
     Account(

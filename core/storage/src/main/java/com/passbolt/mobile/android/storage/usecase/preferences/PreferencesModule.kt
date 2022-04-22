@@ -25,7 +25,7 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.preferencesModule() {
+internal fun Module.preferencesModule() {
     factory {
         GetGlobalPreferencesUseCase(
             encryptedSharedPreferencesFactory = get()

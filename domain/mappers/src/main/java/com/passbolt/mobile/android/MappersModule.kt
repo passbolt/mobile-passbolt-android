@@ -1,11 +1,10 @@
 package com.passbolt.mobile.android
 
-import com.passbolt.mobile.android.comparator.SwitchAccountUiModelComparator
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.mappers.CreateResourceMapper
 import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
-import com.passbolt.mobile.android.mappers.ResourceDisplayViewMapper
+import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
@@ -16,6 +15,7 @@ import com.passbolt.mobile.android.mappers.TagsModelMapper
 import com.passbolt.mobile.android.mappers.UpdateTransferMapper
 import com.passbolt.mobile.android.mappers.UserProfileMapper
 import com.passbolt.mobile.android.mappers.UsersMapper
+import com.passbolt.mobile.android.mappers.comparator.SwitchAccountUiModelComparator
 import org.koin.dsl.module
 
 /**
@@ -67,17 +67,15 @@ val mappersModule = module {
     single { ResourceMenuModelMapper() }
     single { UsersMapper() }
     single { SwitchAccountUiModelComparator() }
-    factory {
+    single {
         SwitchAccountModelMapper(
             selectedAccountUseCase = get(),
             comparator = get()
         )
     }
-    factory {
-        UserProfileMapper()
-    }
-    factory { ResourceDisplayViewMapper() }
-    factory { FolderModelMapper() }
-    factory { TagsModelMapper() }
-    factory { GroupsModelMapper() }
+    single { UserProfileMapper() }
+    single { HomeDisplayViewMapper() }
+    single { FolderModelMapper() }
+    single { TagsModelMapper() }
+    single { GroupsModelMapper() }
 }

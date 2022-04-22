@@ -1,31 +1,12 @@
 package com.passbolt.mobile.android.database
 
-import com.passbolt.mobile.android.database.usecase.AddLocalFoldersUseCase
-import com.passbolt.mobile.android.database.usecase.AddLocalGroupsUseCase
-import com.passbolt.mobile.android.database.usecase.AddLocalResourceAndGroupsCrossRefUseCase
-import com.passbolt.mobile.android.database.usecase.AddLocalResourceTypesUseCase
-import com.passbolt.mobile.android.database.usecase.AddLocalResourceUseCase
-import com.passbolt.mobile.android.database.usecase.AddLocalResourcesUseCase
-import com.passbolt.mobile.android.database.usecase.AddLocalTagsUseCase
-import com.passbolt.mobile.android.database.usecase.GetLocalGroupsUseCase
-import com.passbolt.mobile.android.database.usecase.GetLocalResourceUseCase
-import com.passbolt.mobile.android.database.usecase.GetLocalResourcesAndFoldersUseCase
-import com.passbolt.mobile.android.database.usecase.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.database.usecase.GetLocalResourcesWithGroupUseCase
-import com.passbolt.mobile.android.database.usecase.GetLocalResourcesWithTagUseCase
-import com.passbolt.mobile.android.database.usecase.GetLocalSubFolderResourcesFilteredUseCase
-import com.passbolt.mobile.android.database.usecase.GetLocalSubFoldersForFolderUseCase
-import com.passbolt.mobile.android.database.usecase.GetLocalTagsUseCase
-import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsByIdUseCase
-import com.passbolt.mobile.android.database.usecase.GetResourceTypeWithFieldsBySlugUseCase
-import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
-import com.passbolt.mobile.android.database.usecase.RemoveLocalFoldersUseCase
-import com.passbolt.mobile.android.database.usecase.RemoveLocalGroupsUseCase
-import com.passbolt.mobile.android.database.usecase.RemoveLocalResourceAndGroupsCrossRefUseCase
-import com.passbolt.mobile.android.database.usecase.RemoveLocalResourcesUseCase
-import com.passbolt.mobile.android.database.usecase.RemoveLocalTagsUseCase
-import com.passbolt.mobile.android.database.usecase.SaveResourcesDatabasePassphraseUseCase
-import com.passbolt.mobile.android.database.usecase.UpdateLocalResourceUseCase
+import com.passbolt.mobile.android.database.impl.folders.foldersModule
+import com.passbolt.mobile.android.database.impl.groups.groupsModule
+import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.resourceAndGroupsCrossRefModule
+import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.resourceAndTagsCrossRefModule
+import com.passbolt.mobile.android.database.impl.resources.resourcesModule
+import com.passbolt.mobile.android.database.impl.resourcetypes.resourceTypesModule
+import com.passbolt.mobile.android.database.impl.tags.tagsModule
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
@@ -52,177 +33,18 @@ import org.koin.dsl.module
  * @since v1.0
  */
 val databaseModule = module {
+    resourcesModule()
+    resourceTypesModule()
+    resourceAndTagsCrossRefModule()
+    resourceAndGroupsCrossRefModule()
+    foldersModule()
+    tagsModule()
+    groupsModule()
+
     single {
         DatabaseProvider(
             getResourcesDatabasePassphraseUseCase = get(),
             androidApplication()
-        )
-    }
-    single {
-        GetResourcesDatabasePassphraseUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        SaveResourcesDatabasePassphraseUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        AddLocalResourcesUseCase(
-            databaseProvider = get(),
-            resourceModelMapper = get()
-        )
-    }
-    single {
-        AddLocalResourceUseCase(
-            databaseProvider = get(),
-            resourceModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetLocalResourcesUseCase(
-            databaseProvider = get(),
-            resourceModelMapper = get(),
-            getSelectedAccountUseCase = get(),
-            resourceDisplayViewMapper = get()
-        )
-    }
-    single {
-        GetResourceTypeWithFieldsByIdUseCase(
-            databaseProvider = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetResourceTypeWithFieldsBySlugUseCase(
-            databaseProvider = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        RemoveLocalResourcesUseCase(
-            databaseProvider = get()
-        )
-    }
-    single {
-        AddLocalResourceTypesUseCase(
-            databaseProvider = get(),
-            resourceTypesModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        UpdateLocalResourceUseCase(
-            databaseProvider = get(),
-            resourceModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetLocalResourceUseCase(
-            databaseProvider = get(),
-            resourceModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        AddLocalFoldersUseCase(
-            databaseProvider = get(),
-            folderModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        RemoveLocalFoldersUseCase(
-            databaseProvider = get()
-        )
-    }
-    single {
-        GetLocalResourcesAndFoldersUseCase(
-            databaseProvider = get(),
-            folderModelMapper = get(),
-            resourceModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetLocalSubFoldersForFolderUseCase(
-            databaseProvider = get(),
-            folderModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetLocalSubFolderResourcesFilteredUseCase(
-            databaseProvider = get(),
-            resourceModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-
-    single {
-        RemoveLocalTagsUseCase(
-            databaseProvider = get()
-        )
-    }
-    single {
-        AddLocalTagsUseCase(
-            databaseProvider = get(),
-            tagModelMapper = get()
-        )
-    }
-    single {
-        GetLocalTagsUseCase(
-            databaseProvider = get(),
-            tagModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetLocalResourcesWithTagUseCase(
-            databaseProvider = get(),
-            resourceModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        AddLocalGroupsUseCase(
-            databaseProvider = get(),
-            groupsModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        RemoveLocalGroupsUseCase(
-            databaseProvider = get()
-        )
-    }
-    single {
-        GetLocalGroupsUseCase(
-            databaseProvider = get(),
-            groupModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        AddLocalResourceAndGroupsCrossRefUseCase(
-            databaseProvider = get()
-        )
-    }
-    single {
-        RemoveLocalResourceAndGroupsCrossRefUseCase(
-            databaseProvider = get()
-        )
-    }
-    single {
-        GetLocalResourcesWithGroupUseCase(
-            databaseProvider = get(),
-            resourceModelMapper = get(),
-            getSelectedAccountUseCase = get()
         )
     }
 }
