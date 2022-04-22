@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.mappers
 
-import com.passbolt.mobile.android.mappers.comparator.SwitchAccountUiModelComparator
 import com.passbolt.mobile.android.entity.account.Account
+import com.passbolt.mobile.android.mappers.comparator.SwitchAccountUiModelComparator
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 
@@ -32,14 +32,11 @@ class SwitchAccountModelMapper(
     private val comparator: SwitchAccountUiModelComparator
 ) {
 
-    private val selectedAccountId by lazy {
-        selectedAccountUseCase.execute(Unit).selectedAccount
-    }
-
-    fun map(accounts: List<Account>): List<SwitchAccountUiModel> =
-        accounts
+    fun map(accounts: List<Account>): List<SwitchAccountUiModel> {
+        val currentAccount = selectedAccountUseCase.execute(Unit).selectedAccount
+        return accounts
             .map {
-                if (isCurrentUser(it)) {
+                if (isCurrentUser(it, currentAccount)) {
                     SwitchAccountUiModel.HeaderItem(
                         label = it.label ?: AccountModelMapper.defaultLabel(it.firstName, it.lastName),
                         email = it.email.orEmpty(),
@@ -56,7 +53,8 @@ class SwitchAccountModelMapper(
             }
             .plus(SwitchAccountUiModel.ManageAccountsItem)
             .sortedWith(comparator)
+    }
 
-    private fun isCurrentUser(account: Account) =
-        account.userId == selectedAccountId
+    private fun isCurrentUser(account: Account, currentAccount: String?) =
+        account.userId == currentAccount
 }
