@@ -66,24 +66,9 @@ interface FiltersMenuContract {
         fun selectOwnedByMeItem()
 
         /**
-         * Adds bottom separator before folders, groups and tags
-         */
-        fun addBottomSeparator()
-
-        /**
-         * Adds folders item in the menu
-         */
-        fun addFoldersMenuItem()
-
-        /**
          * Selects folders item in the menu
          */
         fun selectFoldersMenuItem()
-
-        /**
-         * Adds tags item in the menu
-         */
-        fun addTagsMenuItem()
 
         /**
          * Selects tags item in the menu
@@ -91,14 +76,19 @@ interface FiltersMenuContract {
         fun selectTagsMenuItem()
 
         /**
-         * Adds groups item in the menu
-         */
-        fun addGroupsMenuItem()
-
-        /**
          * Selects groups menu item
          */
         fun selectGroupsMenuItem()
+
+        /**
+         * Shows folders item that is hidden by default (available under feature flag)
+         */
+        fun showFoldersMenuItem()
+
+        /**
+         * Shows tags item that is hidden by default (available under feature flag)
+         */
+        fun showTagsMenuItem()
     }
 
     /**
