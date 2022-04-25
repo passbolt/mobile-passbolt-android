@@ -47,9 +47,8 @@ class FiltersMenuPresenterTest : KoinTest {
         presenter.creatingView()
         presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.AllItems))
 
-        verify(view).addBottomSeparator()
-        verify(view).addFoldersMenuItem()
-        verify(view).addTagsMenuItem()
+        verify(view).showFoldersMenuItem()
+        verify(view).showTagsMenuItem()
     }
 
     @Test

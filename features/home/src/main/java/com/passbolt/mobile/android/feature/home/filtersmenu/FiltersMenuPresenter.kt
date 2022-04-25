@@ -48,15 +48,11 @@ class FiltersMenuPresenter(
         scope.launch {
             val featureFlags = getFeatureFlagsUseCase.execute(Unit).featureFlags
             if (featureFlags.areFoldersAvailable) {
-                view?.apply {
-                    addBottomSeparator()
-                    addFoldersMenuItem()
-                }
+                view?.showFoldersMenuItem()
             }
             if (featureFlags.areTagsAvailable) {
-                view?.addTagsMenuItem()
+                view?.showTagsMenuItem()
             }
-            view?.addGroupsMenuItem()
         }
     }
 

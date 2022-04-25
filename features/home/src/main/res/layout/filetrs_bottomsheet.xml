@@ -3,10 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/dp_24"
-    android:id="@+id/root"
     tools:ignore="missingConstraints">
 
     <TextView
@@ -87,5 +87,43 @@
         app:drawableStartCompat="@drawable/ic_person"
         app:drawableTint="@color/icon_tint"
         app:layout_constraintTop_toBottomOf="@+id/sharedWithMe" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginTop="@dimen/dp_16"
+        android:layout_marginBottom="@dimen/dp_16"
+        android:background="@color/divider"
+        app:layout_constraintTop_toBottomOf="@id/ownedByMe" />
+
+    <TextView
+        android:id="@+id/folders"
+        style="@style/PasswordMenuItem"
+        android:drawablePadding="@dimen/dp_16"
+        android:text="@string/filters_menu_folders"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_folder"
+        app:drawableTint="@color/icon_tint"
+        app:layout_constraintTop_toBottomOf="@+id/separator" />
+
+    <TextView
+        android:id="@+id/tags"
+        style="@style/PasswordMenuItem"
+        android:drawablePadding="@dimen/dp_16"
+        android:text="@string/filters_menu_tags"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_tag"
+        app:drawableTint="@color/icon_tint"
+        app:layout_constraintTop_toBottomOf="@+id/folders" />
+
+    <TextView
+        android:id="@+id/groups"
+        style="@style/PasswordMenuItem"
+        android:drawablePadding="@dimen/dp_16"
+        android:text="@string/filters_menu_groups"
+        app:drawableStartCompat="@drawable/ic_group"
+        app:drawableTint="@color/icon_tint"
+        app:layout_constraintTop_toBottomOf="@+id/tags" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
