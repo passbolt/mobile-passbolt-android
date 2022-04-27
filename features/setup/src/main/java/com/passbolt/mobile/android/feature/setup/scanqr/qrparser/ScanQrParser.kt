@@ -57,13 +57,17 @@ class ScanQrParser(
         scanFlow
             .map { qrScanResultsMapper.apply(it) }
             .collect {
-                if (it is ParseResult.PassboltQr.FirstPage && it.isNotScanned()) {
-                    processFirstPageData(it)
-                    _pareResultFlow.tryEmit(it)
-                } else if (it is ParseResult.PassboltQr.SubsequentPage && it.isNotScanned()) {
-                    if (isFirstPageScanned) {
-                        processSubsequentPageData(it)
+                if (it is ParseResult.PassboltQr.FirstPage) {
+                    if (it.isNotScanned()) {
+                        processFirstPageData(it)
                         _pareResultFlow.tryEmit(it)
+                    }
+                } else if (it is ParseResult.PassboltQr.SubsequentPage) {
+                    if (isFirstPageScanned) {
+                        if (it.isNotScanned()) {
+                            processSubsequentPageData(it)
+                            _pareResultFlow.tryEmit(it)
+                        }
                     } else {
                         Timber.e("First page was not scanned, but subsequent page received")
                         _pareResultFlow.tryEmit(ParseResult.Failure())
