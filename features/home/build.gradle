@@ -28,6 +28,7 @@ dependencies {
     implementation project(':featureflags')
     implementation project(':commonfolders')
     implementation project(':commongroups')
+    implementation project(':users')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

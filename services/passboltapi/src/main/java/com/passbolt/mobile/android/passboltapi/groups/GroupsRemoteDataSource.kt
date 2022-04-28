@@ -27,5 +27,5 @@ internal class GroupsRemoteDataSource(
 ) : GroupsDataSource {
 
     override suspend fun getGroups(containingUsers: List<String>) =
-        groupsApi.getGroups(containingUsers).body
+        groupsApi.getGroups(containingUsers = containingUsers).body
 }

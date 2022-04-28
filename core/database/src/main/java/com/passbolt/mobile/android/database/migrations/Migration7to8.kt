@@ -1,7 +1,7 @@
-package com.passbolt.mobile.android.mappers
+package com.passbolt.mobile.android.database.migrations
 
-import com.passbolt.mobile.android.dto.response.UserProfileResponseDto
-import com.passbolt.mobile.android.ui.UserProfileModel
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,13 +25,28 @@ import com.passbolt.mobile.android.ui.UserProfileModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UserProfileMapper {
 
-    fun mapToUi(profileResponseDto: UserProfileResponseDto?) = profileResponseDto?.let {
-        UserProfileModel(
-            firstName = profileResponseDto.firstName,
-            lastName = profileResponseDto.lastName,
-            avatarUrl = profileResponseDto.avatar?.url?.medium
-        )
+@Suppress("MagicNumber")
+object Migration7to8 : Migration(7, 8) {
+
+    private const val CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS User (" +
+            "`id` TEXT NOT NULL, " +
+            "`userName` TEXT NOT NULL, " +
+            "`firstName` TEXT, " +
+            "`lastName` TEXT, " +
+            "`avatarUrl` TEXT, " +
+            "`armoredKey` TEXT NOT NULL, " +
+            "`bits` INTEGER NOT NULL, " +
+            "`uid` TEXT NOT NULL, " +
+            "`keyId` TEXT NOT NULL, " +
+            "`fingerprint` TEXT NOT NULL, " +
+            "`type` TEXT NOT NULL, " +
+            "`expires` INTEGER NOT NULL, " +
+            "PRIMARY KEY(`id`))"
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        with(database) {
+            execSQL(CREATE_USERS_TABLE)
+        }
     }
 }

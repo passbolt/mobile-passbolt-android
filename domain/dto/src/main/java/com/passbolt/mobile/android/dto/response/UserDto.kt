@@ -28,11 +28,18 @@ data class UserDto(
     val id: String,
     @SerializedName("gpgkey")
     val gpgKey: GpgKeyDto,
-    val profile: UserProfileResponseDto?
+    val profile: UserProfileResponseDto?,
+    val username: String
 )
 
 data class GpgKeyDto(
     @SerializedName("armored_key")
     val armoredKey: String,
-    val fingerprint: String
+    val fingerprint: String,
+    val expires: String?,
+    val bits: Int,
+    val uid: String,
+    @SerializedName("key_id")
+    val keyId: String,
+    val type: String
 )

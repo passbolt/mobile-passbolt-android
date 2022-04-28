@@ -1,7 +1,9 @@
-package com.passbolt.mobile.android.mappers
+package com.passbolt.mobile.android.entity.folder
 
-import com.passbolt.mobile.android.dto.response.UserProfileResponseDto
-import com.passbolt.mobile.android.ui.UserProfileModel
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.passbolt.mobile.android.entity.resource.Permission
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,13 +27,22 @@ import com.passbolt.mobile.android.ui.UserProfileModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UserProfileMapper {
+@Entity
+data class Folder(
+    @PrimaryKey
+    val folderId: String,
+    @ColumnInfo(collate = ColumnInfo.NOCASE)
+    val name: String,
+    val permission: Permission,
+    val parentId: String?,
+    val isShared: Boolean
+)
 
-    fun mapToUi(profileResponseDto: UserProfileResponseDto?) = profileResponseDto?.let {
-        UserProfileModel(
-            firstName = profileResponseDto.firstName,
-            lastName = profileResponseDto.lastName,
-            avatarUrl = profileResponseDto.avatar?.url?.medium
-        )
-    }
-}
+data class FolderWithChildItemsCount(
+    val folderId: String,
+    val name: String,
+    val permission: Permission,
+    val parentId: String?,
+    val isShared: Boolean,
+    val childItemsCount: Int
+)

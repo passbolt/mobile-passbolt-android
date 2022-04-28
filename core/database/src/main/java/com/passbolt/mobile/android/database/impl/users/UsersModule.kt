@@ -1,4 +1,6 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.database.impl.users
+
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,12 +24,25 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class User(
-    val id: String,
-    val gpgKey: GpgKey
-)
 
-data class GpgKey(
-    val armoredKey: String,
-    val fingerprint: String
-)
+internal fun Module.usersModule() {
+    single {
+        RemoveLocalUsersUseCase(
+            databaseProvider = get()
+        )
+    }
+    single {
+        AddLocalUsersUseCase(
+            databaseProvider = get(),
+            userModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        GetLocalUsersUseCase(
+            databaseProvider = get(),
+            userModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+}
