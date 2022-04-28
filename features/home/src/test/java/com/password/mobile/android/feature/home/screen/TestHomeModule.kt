@@ -8,20 +8,19 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.GetLocalResourcesWithGroupUseCase
-import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFoldersForFolderUseCase
+import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsUseCase
+import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.GetLocalResourcesWithGroupUseCase
+import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.GetLocalResourcesWithTagUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.database.impl.tags.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.password.mobile.android.feature.home.TestCoroutineLaunchContext
@@ -51,7 +50,6 @@ internal val mockGetLocalResourcesWithGroupsUseCase = mock<GetLocalResourcesWith
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
     factory { resourcesInteractor }
-    factory { ResourceModelMapper(initialsProvider = get()) }
     factory { getSelectedAccountDataUseCase }
     factory { fetchAndUpdateDatabaseUseCase }
     factory { InitialsProvider() }

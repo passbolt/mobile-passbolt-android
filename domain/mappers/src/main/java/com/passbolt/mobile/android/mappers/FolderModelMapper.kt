@@ -28,7 +28,9 @@ import com.passbolt.mobile.android.ui.FolderWithCount
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class FolderModelMapper {
+class FolderModelMapper(
+    private val permissionsModelMapper: PermissionsModelMapper
+) {
 
     fun map(folder: FolderResponseDto): FolderModel =
         FolderModel(
@@ -36,14 +38,14 @@ class FolderModelMapper {
             parentFolderId = folder.folderParentId,
             name = folder.name.orEmpty(),
             isShared = folder.personal == false,
-            permission = mapDtoPermissionTypeToUiModel(folder.permission.type)
+            permission = permissionsModelMapper.map(folder.permission.type)
         )
 
     fun map(folderModel: FolderModel): Folder =
         Folder(
             folderId = folderModel.folderId,
             name = folderModel.name,
-            permission = folderModel.permission.toEntityModel(),
+            permission = permissionsModelMapper.map(folderModel.permission),
             parentId = folderModel.parentFolderId,
             isShared = folderModel.isShared
         )
@@ -54,14 +56,14 @@ class FolderModelMapper {
             name = folderEntity.name,
             parentFolderId = folderEntity.parentId,
             isShared = folderEntity.isShared,
-            permission = folderEntity.permission.toUiModel()
+            permission = permissionsModelMapper.map(folderEntity.permission)
         )
 
     fun map(folderWithChildItemsCount: FolderWithChildItemsCount) =
         FolderWithCount(
             folderId = folderWithChildItemsCount.folderId,
             name = folderWithChildItemsCount.name,
-            permission = folderWithChildItemsCount.permission.toUiModel(),
+            permission = permissionsModelMapper.map(folderWithChildItemsCount.permission),
             parentId = folderWithChildItemsCount.parentId,
             isShared = folderWithChildItemsCount.isShared,
             subItemsCount = folderWithChildItemsCount.childItemsCount

@@ -1,6 +1,10 @@
-package com.passbolt.mobile.android.passboltapi.groups
+package com.passbolt.mobile.android.database.impl.usersandgroupscrossref
 
-import com.passbolt.mobile.android.dto.response.GroupsResponseDto
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
+import com.passbolt.mobile.android.database.impl.base.BaseDao
+import com.passbolt.mobile.android.entity.group.UsersAndGroupCrossRef
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,8 +28,10 @@ import com.passbolt.mobile.android.dto.response.GroupsResponseDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Dao
+interface UsersAndGroupsCrossRefDao : BaseDao<UsersAndGroupCrossRef> {
 
-interface GroupsDataSource {
-
-    suspend fun getGroups(): List<GroupsResponseDto>
+    @Transaction
+    @Query("DELETE FROM UsersAndGroupCrossRef")
+    suspend fun deleteAll()
 }

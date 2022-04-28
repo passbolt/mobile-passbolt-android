@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.database.impl.groups.AddLocalGroupsUseCase
 import com.passbolt.mobile.android.database.impl.groups.RemoveLocalGroupsUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.ui.GroupModelWithUsers
 
 class RebuildGroupsTablesUseCase(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
@@ -20,6 +20,6 @@ class RebuildGroupsTablesUseCase(
     }
 
     class Input(
-        val groups: List<GroupModel>
+        val groups: List<GroupModelWithUsers>
     )
 }

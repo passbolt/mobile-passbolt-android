@@ -27,16 +27,6 @@ import org.koin.core.module.Module
 
 internal fun Module.resourceAndGroupsCrossRefModule() {
     single {
-        AddLocalResourceAndGroupsCrossRefUseCase(
-            databaseProvider = get()
-        )
-    }
-    single {
-        RemoveLocalResourceAndGroupsCrossRefUseCase(
-            databaseProvider = get()
-        )
-    }
-    single {
         GetLocalResourcesWithGroupUseCase(
             databaseProvider = get(),
             resourceModelMapper = get(),

@@ -32,8 +32,7 @@ val commonGroupsModule = module {
     single {
         FetchUserGroupsUseCase(
             groupsRepository = get(),
-            groupsModelMapper = get(),
-            getSelectedAccountDataUseCase = get()
+            groupsModelMapper = get()
         )
     }
     single {

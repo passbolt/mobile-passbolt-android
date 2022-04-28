@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.entity.resource.ResourceAndTagsCrossRef
 import com.passbolt.mobile.android.mappers.TagsModelMapper
-import com.passbolt.mobile.android.ui.ResourceModelWithTagsAndGroups
+import com.passbolt.mobile.android.ui.ResourceModelWithTagsAndPermissions
 
 /**
  * Passbolt - Open source password manager for teams
@@ -53,7 +53,7 @@ class AddLocalTagsUseCase(
     }
 
     data class Input(
-        val resourcesWithTagsModelAndGroups: List<ResourceModelWithTagsAndGroups>,
+        val resourcesWithTagsModelAndGroups: List<ResourceModelWithTagsAndPermissions>,
         val userId: String
     )
 }

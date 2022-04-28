@@ -66,4 +66,15 @@ internal fun Module.resourcesModule() {
             getSelectedAccountUseCase = get()
         )
     }
+    single {
+        AddLocalResourcePermissionsUseCase(
+            databaseProvider = get(),
+            permissionsModelMapper = get()
+        )
+    }
+    single {
+        RemoveLocalResourcePermissionsUseCase(
+            databaseProvider = get()
+        )
+    }
 }

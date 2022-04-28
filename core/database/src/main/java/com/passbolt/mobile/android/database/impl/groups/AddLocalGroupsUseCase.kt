@@ -2,9 +2,10 @@ package com.passbolt.mobile.android.database.impl.groups
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.entity.group.UsersAndGroupCrossRef
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.ui.GroupModelWithUsers
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,15 +37,32 @@ class AddLocalGroupsUseCase(
 
     override suspend fun execute(input: Input) {
         val currentAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        databaseProvider
+        val groupsDao = databaseProvider
             .get(currentAccount)
             .groupsDao()
-            .insertAll(
-                input.groups.map { groupsModelMapper.map(it) }
-            )
+        val usersAndGroupsCrossRefDao = databaseProvider
+            .get(currentAccount)
+            .usersAndGroupsCrossRefDao()
+
+        groupsDao.insertAll(
+            input.groups
+                .map { it.groupModel }
+                .map(groupsModelMapper::map)
+        )
+
+        input.groups.forEach { groupWithUsers ->
+            groupWithUsers.users.forEach { groupUser ->
+                usersAndGroupsCrossRefDao.insert(
+                    UsersAndGroupCrossRef(
+                        userId = groupUser.userId,
+                        groupId = groupWithUsers.groupModel.groupId
+                    )
+                )
+            }
+        }
     }
 
     data class Input(
-        val groups: List<GroupModel>
+        val groups: List<GroupModelWithUsers>
     )
 }

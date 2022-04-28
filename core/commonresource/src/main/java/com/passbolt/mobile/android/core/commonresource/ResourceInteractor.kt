@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.core.commonresource
 
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
-import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceAndGroupsCrossRefTablesUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourcePermissionsTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildTagsTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.validation.ResourceValidationRunner
@@ -40,7 +40,7 @@ class ResourceInteractor(
     private val resourceValidationRunner: ResourceValidationRunner,
     private val rebuildResourceTablesUseCase: RebuildResourceTablesUseCase,
     private val rebuildTagsTablesUseCase: RebuildTagsTablesUseCase,
-    private val rebuildResourceAndGroupsCrossRefTablesUseCase: RebuildResourceAndGroupsCrossRefTablesUseCase
+    private val rebuildResourcePermissionsTablesUseCase: RebuildResourcePermissionsTablesUseCase
 ) {
 
     suspend fun updateResourcesWithTypes(): Output {
@@ -61,8 +61,8 @@ class ResourceInteractor(
                 rebuildTagsTablesUseCase.execute(
                     RebuildTagsTablesUseCase.Input(validatedResources)
                 )
-                rebuildResourceAndGroupsCrossRefTablesUseCase.execute(
-                    RebuildResourceAndGroupsCrossRefTablesUseCase.Input(validatedResources)
+                rebuildResourcePermissionsTablesUseCase.execute(
+                    RebuildResourcePermissionsTablesUseCase.Input(validatedResources)
                 )
                 Output.Success
             } else {

@@ -30,8 +30,8 @@ class GroupsRepository(
     private val responseHandler: ResponseHandler
 ) {
 
-    suspend fun getGroups(containingUsers: List<String>) =
+    suspend fun getGroups() =
         callWithHandler(responseHandler) {
-            groupsDataSource.getGroups(containingUsers)
+            groupsDataSource.getGroups()
         }
 }
