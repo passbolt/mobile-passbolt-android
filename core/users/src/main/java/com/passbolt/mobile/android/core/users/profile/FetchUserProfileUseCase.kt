@@ -1,8 +1,12 @@
-package com.passbolt.mobile.android.core.users
+package com.passbolt.mobile.android.core.users.profile
 
-import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.mappers.UserProfileMapper
+import com.passbolt.mobile.android.passboltapi.users.UsersRepository
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.UserProfileModel
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,33 +30,29 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UserProfileInteractor(
-    private val fetchUserProfileUseCase: FetchUserProfileUseCase,
-    private val updateAccountDataUseCase: UpdateAccountDataUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) {
+class FetchUserProfileUseCase(
+    private val usersRepository: UsersRepository,
+    private val userProfileMapper: UserProfileMapper
+) : AsyncUseCase<UserIdInput, FetchUserProfileUseCase.Output> {
 
-    suspend fun fetchAndUpdateUserProfile(): Output {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        return when (val result = fetchUserProfileUseCase.execute(UserIdInput(userId))) {
-            is FetchUserProfileUseCase.Output.Failure -> Output.Failure(result.message)
-            is FetchUserProfileUseCase.Output.Success -> {
-                updateAccountDataUseCase.execute(
-                    UpdateAccountDataUseCase.Input(
-                        userId = userId,
-                        avatarUrl = result.profile.avatarUrl,
-                        firstName = result.profile.firstName,
-                        lastName = result.profile.lastName
-                    )
-                )
-                Output.Success
+    override suspend fun execute(input: UserIdInput): Output =
+        when (val result = usersRepository.getMyProfile()) {
+            is NetworkResult.Failure.NetworkError -> Output.Failure(result.exception.message)
+            is NetworkResult.Failure.ServerError -> Output.Failure(result.headerMessage)
+            is NetworkResult.Success -> {
+                val profile = userProfileMapper.mapToUi(result.value.profile)
+                if (profile != null) {
+                    Output.Success(profile)
+                } else {
+                    Timber.e("User profile was not present in the API response")
+                    Output.Failure("User profile not present in the response")
+                }
             }
         }
-    }
 
     sealed class Output {
 
-        object Success : Output()
+        data class Success(val profile: UserProfileModel) : Output()
 
         data class Failure(val message: String?) : Output()
     }

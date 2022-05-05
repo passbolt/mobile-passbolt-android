@@ -1,4 +1,10 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.database.impl.users
+
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.UsersModelMapper
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.UserModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,8 +28,23 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class UserProfile(
-    val firstName: String?,
-    val lastName: String?,
-    val avatarUrl: String?
-)
+class AddLocalUsersUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val userModelMapper: UsersModelMapper,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : AsyncUseCase<AddLocalUsersUseCase.Input, Unit> {
+
+    override suspend fun execute(input: Input) {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        databaseProvider
+            .get(userId)
+            .usersDao()
+            .insertAll(
+                input.users.map(userModelMapper::map)
+            )
+    }
+
+    data class Input(
+        val users: List<UserModel>
+    )
+}

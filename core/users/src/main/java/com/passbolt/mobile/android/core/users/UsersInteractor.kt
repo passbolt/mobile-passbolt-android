@@ -1,7 +1,7 @@
-package com.passbolt.mobile.android.mappers
+package com.passbolt.mobile.android.core.users
 
-import com.passbolt.mobile.android.dto.response.UserProfileResponseDto
-import com.passbolt.mobile.android.ui.UserProfileModel
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,13 +25,28 @@ import com.passbolt.mobile.android.ui.UserProfileModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UserProfileMapper {
+class UsersInteractor(
+    private val fetchUsersUseCase: FetchUsersUseCase,
+    private val rebuildLocalUsersUseCase: RebuildUsersTablesUseCase
+) {
 
-    fun mapToUi(profileResponseDto: UserProfileResponseDto?) = profileResponseDto?.let {
-        UserProfileModel(
-            firstName = profileResponseDto.firstName,
-            lastName = profileResponseDto.lastName,
-            avatarUrl = profileResponseDto.avatar?.url?.medium
-        )
+    suspend fun fetchAndSaveUsers(): Output {
+        return when (val fetched = fetchUsersUseCase.execute(FetchUsersUseCase.Input())) {
+            is FetchUsersUseCase.Output.Failure<*> -> Output.Failure(fetched.authenticationState)
+            is FetchUsersUseCase.Output.Success -> {
+                rebuildLocalUsersUseCase.execute(RebuildUsersTablesUseCase.Input(fetched.users))
+                Output.Success
+            }
+        }
+    }
+
+    sealed class Output : AuthenticatedUseCaseOutput {
+
+        object Success : Output() {
+            override val authenticationState: AuthenticationState
+                get() = AuthenticationState.Authenticated
+        }
+
+        data class Failure(override val authenticationState: AuthenticationState) : Output()
     }
 }

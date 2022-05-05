@@ -16,10 +16,10 @@ class RebuildResourceTablesUseCase(
     override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         removeLocalResourcesUseCase.execute(UserIdInput(selectedAccount))
-        addLocalResourcesUseCase.execute(AddLocalResourcesUseCase.Input(input.list, selectedAccount))
+        addLocalResourcesUseCase.execute(AddLocalResourcesUseCase.Input(input.resources, selectedAccount))
     }
 
     data class Input(
-        val list: List<ResourceModel>
+        val resources: List<ResourceModel>
     )
 }

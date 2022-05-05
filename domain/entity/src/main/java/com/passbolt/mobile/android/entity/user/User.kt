@@ -1,8 +1,9 @@
-package com.passbolt.mobile.android.entity.resource
+package com.passbolt.mobile.android.entity.user
 
-import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,21 +28,28 @@ import androidx.room.PrimaryKey
  * @since v1.0
  */
 @Entity
-data class Folder(
+data class User(
     @PrimaryKey
-    val folderId: String,
-    @ColumnInfo(collate = ColumnInfo.NOCASE)
-    val name: String,
-    val permission: Permission,
-    val parentId: String?,
-    val isShared: Boolean
+    val id: String,
+    val userName: String,
+    @Embedded
+    val profile: UserProfile,
+    @Embedded
+    val gpgKey: UserGpgKey
 )
 
-data class FolderWithChildItemsCount(
-    val folderId: String,
-    val name: String,
-    val permission: Permission,
-    val parentId: String?,
-    val isShared: Boolean,
-    val childItemsCount: Int
+data class UserProfile(
+    val firstName: String?,
+    val lastName: String?,
+    val avatarUrl: String?
+)
+
+data class UserGpgKey(
+    val armoredKey: String,
+    val bits: Int,
+    val uid: String?,
+    val keyId: String,
+    val fingerprint: String,
+    val type: String?,
+    val expires: ZonedDateTime?
 )

@@ -1,7 +1,10 @@
-package com.passbolt.mobile.android.mappers
+package com.passbolt.mobile.android.database.impl.users
 
-import com.passbolt.mobile.android.dto.response.UserProfileResponseDto
-import com.passbolt.mobile.android.ui.UserProfileModel
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
+import com.passbolt.mobile.android.database.impl.base.BaseDao
+import com.passbolt.mobile.android.entity.user.User
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,13 +28,14 @@ import com.passbolt.mobile.android.ui.UserProfileModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UserProfileMapper {
+@Dao
+interface UsersDao : BaseDao<User> {
 
-    fun mapToUi(profileResponseDto: UserProfileResponseDto?) = profileResponseDto?.let {
-        UserProfileModel(
-            firstName = profileResponseDto.firstName,
-            lastName = profileResponseDto.lastName,
-            avatarUrl = profileResponseDto.avatar?.url?.medium
-        )
-    }
+    @Transaction
+    @Query("SELECT * FROM User")
+    suspend fun getAll(): List<User>
+
+    @Transaction
+    @Query("DELETE FROM User")
+    suspend fun deleteAll()
 }

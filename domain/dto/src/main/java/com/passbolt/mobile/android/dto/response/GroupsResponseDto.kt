@@ -33,5 +33,10 @@ data class GroupsResponseDto(
     val deleted: Boolean?,
     val modified: String?,
     @SerializedName("modified_by")
-    val modifiedBy: String?
+    val modifiedBy: String?,
+    val users: List<GroupUser>?
+)
+
+data class GroupUser(
+    val id: String
 )

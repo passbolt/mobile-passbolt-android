@@ -4,8 +4,8 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.passbolt.mobile.android.database.impl.base.BaseDao
-import com.passbolt.mobile.android.entity.resource.Folder
-import com.passbolt.mobile.android.entity.resource.FolderWithChildItemsCount
+import com.passbolt.mobile.android.entity.folder.Folder
+import com.passbolt.mobile.android.entity.folder.FolderWithChildItemsCount
 
 /**
  * Passbolt - Open source password manager for teams

@@ -5,9 +5,9 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.mappers.UsersMapper
+import com.passbolt.mobile.android.mappers.UsersModelMapper
 import com.passbolt.mobile.android.passboltapi.users.UsersRepository
-import com.passbolt.mobile.android.ui.User
+import com.passbolt.mobile.android.ui.UserModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,7 +33,7 @@ import com.passbolt.mobile.android.ui.User
  */
 class FetchUsersUseCase(
     private val usersRepository: UsersRepository,
-    private val usersMapper: UsersMapper
+    private val usersMapper: UsersModelMapper
 ) : AsyncUseCase<FetchUsersUseCase.Input, FetchUsersUseCase.Output> {
 
     override suspend fun execute(input: Input) =
@@ -65,7 +65,7 @@ class FetchUsersUseCase(
             }
 
         data class Success(
-            val users: List<User>
+            val users: List<UserModel>
         ) : Output()
 
         data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()

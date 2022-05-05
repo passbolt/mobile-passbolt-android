@@ -16,7 +16,7 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.User
+import com.passbolt.mobile.android.ui.UserModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -133,7 +133,7 @@ class UpdateResourceUseCase(
         val description: String?,
         val username: String?,
         val uri: String?,
-        val users: List<User>,
+        val users: List<UserModel>,
         val resourceParentFolderId: String?
     )
 }

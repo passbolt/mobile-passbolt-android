@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.core.users
 
+import com.passbolt.mobile.android.core.users.profile.userProfileModule
 import org.koin.dsl.module
 
 /**
@@ -26,6 +27,8 @@ import org.koin.dsl.module
  */
 
 val usersModule = module {
+    userProfileModule()
+
     single {
         FetchUsersUseCase(
             usersRepository = get(),
@@ -33,16 +36,16 @@ val usersModule = module {
         )
     }
     single {
-        FetchUserProfileUseCase(
-            usersRepository = get(),
-            userProfileMapper = get()
+        RebuildUsersTablesUseCase(
+            getSelectedAccountUseCase = get(),
+            removeLocalUsersUseCase = get(),
+            addLocalUsersUseCase = get()
         )
     }
     single {
-        UserProfileInteractor(
-            fetchUserProfileUseCase = get(),
-            updateAccountDataUseCase = get(),
-            getSelectedAccountUseCase = get()
+        UsersInteractor(
+            fetchUsersUseCase = get(),
+            rebuildLocalUsersUseCase = get()
         )
     }
 }

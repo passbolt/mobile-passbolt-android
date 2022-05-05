@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.mappers
+package com.passbolt.mobile.android.ui
 
-import com.passbolt.mobile.android.dto.response.UserProfileResponseDto
-import com.passbolt.mobile.android.ui.UserProfileModel
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,13 +24,25 @@ import com.passbolt.mobile.android.ui.UserProfileModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UserProfileMapper {
+data class UserModel(
+    val id: String,
+    val userName: String,
+    val gpgKey: GpgKeyModel,
+    val profile: UserProfileModel
+)
 
-    fun mapToUi(profileResponseDto: UserProfileResponseDto?) = profileResponseDto?.let {
-        UserProfileModel(
-            firstName = profileResponseDto.firstName,
-            lastName = profileResponseDto.lastName,
-            avatarUrl = profileResponseDto.avatar?.url?.medium
-        )
-    }
-}
+data class GpgKeyModel(
+    val armoredKey: String,
+    val fingerprint: String,
+    val bits: Int,
+    val uid: String?,
+    val keyId: String,
+    val type: String?,
+    val expires: ZonedDateTime?
+)
+
+data class UserProfileModel(
+    val firstName: String?,
+    val lastName: String?,
+    val avatarUrl: String?
+)

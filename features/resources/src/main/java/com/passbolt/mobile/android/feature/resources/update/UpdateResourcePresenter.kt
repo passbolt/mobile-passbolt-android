@@ -30,7 +30,7 @@ import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.NewF
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.ResourceUpdateType
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.User
+import com.passbolt.mobile.android.ui.UserModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -307,7 +307,7 @@ class UpdateResourcePresenter(
         )
     }
 
-    private suspend fun createUpdateResourceInput(usersWhoHaveAccess: List<User>): UpdateResourceUseCase.Input {
+    private suspend fun createUpdateResourceInput(usersWhoHaveAccess: List<UserModel>): UpdateResourceUseCase.Input {
         val password = when (resourceTypeFactory.getResourceTypeEnum(existingResource!!.resourceTypeId)) {
             ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> getFieldValue(SECRET_FIELD)!!
             ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> getFieldValue(PASSWORD_FIELD)!!

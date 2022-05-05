@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.resource
 import com.passbolt.mobile.android.database.impl.resources.resourcesModule
 import com.passbolt.mobile.android.database.impl.resourcetypes.resourceTypesModule
 import com.passbolt.mobile.android.database.impl.tags.tagsModule
+import com.passbolt.mobile.android.database.impl.users.usersModule
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
@@ -40,6 +41,7 @@ val databaseModule = module {
     foldersModule()
     tagsModule()
     groupsModule()
+    usersModule()
 
     single {
         DatabaseProvider(

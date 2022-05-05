@@ -16,7 +16,7 @@ import com.passbolt.mobile.android.database.FoldersSearchTest.SearchFolderStruct
 import com.passbolt.mobile.android.database.FoldersSearchTest.SearchFolderStructure.RESOURCE_5
 import com.passbolt.mobile.android.database.impl.folders.FoldersDao
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
-import com.passbolt.mobile.android.entity.resource.Folder
+import com.passbolt.mobile.android.entity.folder.Folder
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
 import kotlinx.coroutines.runBlocking

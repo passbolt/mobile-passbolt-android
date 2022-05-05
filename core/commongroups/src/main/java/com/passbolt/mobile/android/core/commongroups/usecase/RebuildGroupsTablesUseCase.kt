@@ -16,10 +16,10 @@ class RebuildGroupsTablesUseCase(
     override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         removeLocalGroupsUseCase.execute(UserIdInput(selectedAccount))
-        addLocalGroupsUseCase.execute(AddLocalGroupsUseCase.Input(input.list))
+        addLocalGroupsUseCase.execute(AddLocalGroupsUseCase.Input(input.groups))
     }
 
     class Input(
-        val list: List<GroupModel>
+        val groups: List<GroupModel>
     )
 }

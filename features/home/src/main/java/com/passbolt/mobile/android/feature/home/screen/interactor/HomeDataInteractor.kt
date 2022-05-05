@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.plus
+import com.passbolt.mobile.android.core.users.UsersInteractor
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,21 +37,26 @@ import com.passbolt.mobile.android.core.mvp.authentication.plus
 class HomeDataInteractor(
     private val foldersInteractor: FoldersInteractor,
     private val resourcesInteractor: ResourceInteractor,
-    private val groupsInteractor: GroupsInteractor
+    private val groupsInteractor: GroupsInteractor,
+    private val usersInteractor: UsersInteractor
 ) {
 
     suspend fun refreshAllHomeScreenData(): Output {
+        val userInteractorOutput = usersInteractor.fetchAndSaveUsers()
         val groupsRefreshOutput = groupsInteractor.fetchAndSaveGroups()
         val foldersRefreshOutput = foldersInteractor.fetchAndSaveFolders()
         val resourcesAndResourcesTypesOutput = resourcesInteractor.updateResourcesWithTypes()
         return if (foldersRefreshOutput is FoldersInteractor.Output.Success &&
             resourcesAndResourcesTypesOutput is ResourceInteractor.Output.Success &&
-            groupsRefreshOutput is GroupsInteractor.Output.Success
+            groupsRefreshOutput is GroupsInteractor.Output.Success &&
+            userInteractorOutput is UsersInteractor.Output.Success
         ) {
             Output.Success
         } else {
             Output.Failure(
-                foldersRefreshOutput.authenticationState +
+                userInteractorOutput.authenticationState +
+                        groupsRefreshOutput.authenticationState +
+                        foldersRefreshOutput.authenticationState +
                         resourcesAndResourcesTypesOutput.authenticationState
             )
         }

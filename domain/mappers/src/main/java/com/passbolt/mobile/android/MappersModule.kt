@@ -14,7 +14,7 @@ import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
 import com.passbolt.mobile.android.mappers.TagsModelMapper
 import com.passbolt.mobile.android.mappers.UpdateTransferMapper
 import com.passbolt.mobile.android.mappers.UserProfileMapper
-import com.passbolt.mobile.android.mappers.UsersMapper
+import com.passbolt.mobile.android.mappers.UsersModelMapper
 import com.passbolt.mobile.android.mappers.comparator.SwitchAccountUiModelComparator
 import org.koin.dsl.module
 
@@ -65,7 +65,7 @@ val mappersModule = module {
         )
     }
     single { ResourceMenuModelMapper() }
-    single { UsersMapper() }
+    single { UsersModelMapper() }
     single { SwitchAccountUiModelComparator() }
     single {
         SwitchAccountModelMapper(

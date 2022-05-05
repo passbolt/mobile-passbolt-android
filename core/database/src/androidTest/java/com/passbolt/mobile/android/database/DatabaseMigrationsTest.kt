@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.database.migrations.Migration3to4
 import com.passbolt.mobile.android.database.migrations.Migration4to5
 import com.passbolt.mobile.android.database.migrations.Migration5to6
 import com.passbolt.mobile.android.database.migrations.Migration6to7
+import com.passbolt.mobile.android.database.migrations.Migration7to8
 import org.junit.Rule
 import org.junit.Test
 
@@ -131,6 +132,18 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate7To8() {
+        helper.runMigrationsAndValidate(TEST_DB, 8, true, Migration7to8)
+            .apply {
+                execSQL(
+                    "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833)"
+                )
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -143,7 +156,7 @@ class DatabaseMigrationsTest {
         )
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
-                Migration6to7
+                Migration6to7, Migration7to8
             )
             .build().apply {
                 openHelper.writableDatabase

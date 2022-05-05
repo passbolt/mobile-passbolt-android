@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.mappers
+package com.passbolt.mobile.android.database.impl.users
 
-import com.passbolt.mobile.android.dto.response.UserProfileResponseDto
-import com.passbolt.mobile.android.ui.UserProfileModel
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,13 +26,14 @@ import com.passbolt.mobile.android.ui.UserProfileModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UserProfileMapper {
+class RemoveLocalUsersUseCase(
+    private val databaseProvider: DatabaseProvider
+) : AsyncUseCase<UserIdInput, Unit> {
 
-    fun mapToUi(profileResponseDto: UserProfileResponseDto?) = profileResponseDto?.let {
-        UserProfileModel(
-            firstName = profileResponseDto.firstName,
-            lastName = profileResponseDto.lastName,
-            avatarUrl = profileResponseDto.avatar?.url?.medium
-        )
+    override suspend fun execute(input: UserIdInput) {
+        databaseProvider
+            .get(input.userId)
+            .usersDao()
+            .deleteAll()
     }
 }

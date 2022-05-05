@@ -18,13 +18,13 @@ class RebuildTagsTablesUseCase(
         removeLocalTagsUseCase.execute(UserIdInput(selectedAccount))
         addLocalTagsUseCase.execute(
             AddLocalTagsUseCase.Input(
-                input.list,
+                input.tags,
                 selectedAccount
             )
         )
     }
 
     data class Input(
-        val list: List<ResourceModelWithTagsAndGroups>
+        val tags: List<ResourceModelWithTagsAndGroups>
     )
 }

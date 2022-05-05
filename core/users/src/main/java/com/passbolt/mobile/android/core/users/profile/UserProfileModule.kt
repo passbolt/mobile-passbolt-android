@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.mappers
+package com.passbolt.mobile.android.core.users.profile
 
-import com.passbolt.mobile.android.dto.response.UserProfileResponseDto
-import com.passbolt.mobile.android.ui.UserProfileModel
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,13 +24,18 @@ import com.passbolt.mobile.android.ui.UserProfileModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UserProfileMapper {
-
-    fun mapToUi(profileResponseDto: UserProfileResponseDto?) = profileResponseDto?.let {
-        UserProfileModel(
-            firstName = profileResponseDto.firstName,
-            lastName = profileResponseDto.lastName,
-            avatarUrl = profileResponseDto.avatar?.url?.medium
+fun Module.userProfileModule() {
+    single {
+        FetchUserProfileUseCase(
+            usersRepository = get(),
+            userProfileMapper = get()
+        )
+    }
+    single {
+        UserProfileInteractor(
+            fetchUserProfileUseCase = get(),
+            updateAccountDataUseCase = get(),
+            getSelectedAccountUseCase = get()
         )
     }
 }

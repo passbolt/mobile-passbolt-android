@@ -32,12 +32,14 @@ internal interface GroupsApi {
 
     @GET(GROUPS)
     suspend fun getGroups(
-        @Query(QUERY_FILTER_USERS) users: List<String>
+        @Query(QUERY_CONTAIN_USER) containingUser: Int = 1, // always return groups with users
+        @Query(QUERY_FILTER_USERS) containingUsers: List<String>? = null
     ): BaseResponse<List<GroupsResponseDto>>
 
     private companion object {
         private const val GROUPS = "groups.json"
 
         private const val QUERY_FILTER_USERS = "filter[has-users]"
+        private const val QUERY_CONTAIN_USER = "contain[user]"
     }
 }

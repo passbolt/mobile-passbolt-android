@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.response.FolderResponseDto
-import com.passbolt.mobile.android.entity.resource.Folder
-import com.passbolt.mobile.android.entity.resource.FolderWithChildItemsCount
+import com.passbolt.mobile.android.entity.folder.Folder
+import com.passbolt.mobile.android.entity.folder.FolderWithChildItemsCount
 import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.FolderWithCount
 

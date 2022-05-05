@@ -16,10 +16,10 @@ class RebuildFoldersTablesUseCase(
     override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         removeLocalFoldersUseCase.execute(UserIdInput(selectedAccount))
-        addLocalFoldersUseCase.execute(AddLocalFoldersUseCase.Input(input.list))
+        addLocalFoldersUseCase.execute(AddLocalFoldersUseCase.Input(input.folders))
     }
 
     class Input(
-        val list: List<FolderModel>
+        val folders: List<FolderModel>
     )
 }
