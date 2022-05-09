@@ -1,6 +1,12 @@
 package com.passbolt.mobile.android.feature.resources.details
 
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.passbolt.mobile.android.core.commonresource.GroupItem
+import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.CounterItem
+import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.UserItem
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,6 +31,10 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
+internal const val GROUP_ITEM_ADAPTER = "GROUP_ITEM_ADAPTER"
+internal const val USER_ITEM_ADAPTER = "USER_ITEM_ADAPTER"
+internal const val COUNTER_ITEM_ADAPTER = "COUNTER_ITEM_ADAPTER"
+
 fun Module.detailsModule() {
     scope<ResourceDetailsFragment> {
         scoped<ResourceDetailsContract.Presenter> {
@@ -38,7 +48,26 @@ fun Module.detailsModule() {
                 getFeatureFlagsUseCase = get(),
                 resourceMenuModelMapper = get(),
                 deleteResourceUseCase = get(),
-                getLocalResourceUseCase = get()
+                getLocalResourceUseCase = get(),
+                getLocalResourcePermissionsUseCase = get()
+            )
+        }
+        scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {
+            ItemAdapter.items()
+        }
+        scoped<ItemAdapter<GroupItem>>(named(USER_ITEM_ADAPTER)) {
+            ItemAdapter.items()
+        }
+        scoped<ItemAdapter<GroupItem>>(named(COUNTER_ITEM_ADAPTER)) {
+            ItemAdapter.items()
+        }
+        scoped {
+            FastAdapter.with(
+                listOf(
+                    get<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)),
+                    get<ItemAdapter<UserItem>>(named(USER_ITEM_ADAPTER)),
+                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER))
+                )
             )
         }
     }

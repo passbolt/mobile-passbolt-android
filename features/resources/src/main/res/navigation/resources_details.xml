@@ -14,6 +14,23 @@
         <argument
             android:name="resourceModel"
             app:argType="com.passbolt.mobile.android.ui.ResourceModel" />
+        <action
+            android:id="@+id/action_resourceDetails_to_resourcePermissionsFragment"
+            app:destination="@id/resourcePermissionsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/resourcePermissionsFragment"
+        android:name="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsFragment"
+        android:label="ResourcePermissionsFragment"
+        tools:layout="@layout/fragment_resource_permissions">
+        <argument
+            android:name="resourceId"
+            app:argType="string" />
     </fragment>
 
 </navigation>

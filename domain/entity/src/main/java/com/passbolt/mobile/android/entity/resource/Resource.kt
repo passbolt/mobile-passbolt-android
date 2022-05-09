@@ -41,3 +41,19 @@ data class Resource(
     val isFavourite: Boolean,
     val modified: ZonedDateTime
 )
+
+data class ResourceUserPermission(
+    val userId: String,
+    val permission: Permission,
+    val firstName: String?,
+    val lastName: String?,
+    val avatarUrl: String?,
+    val userName: String,
+    val fingerprint: String
+)
+
+data class ResourceGroupPermission(
+    val groupId: String,
+    val permission: Permission,
+    val groupName: String
+)

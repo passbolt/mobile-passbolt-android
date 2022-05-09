@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUse
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
@@ -12,6 +13,7 @@ import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.Secret
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -51,6 +53,7 @@ class ResourceDetailsPresenter(
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
     private val deleteResourceUseCase: DeleteResourceUseCase,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
+    private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter {
@@ -64,19 +67,29 @@ class ResourceDetailsPresenter(
     // TODO consider resource types - for now only description can be both encrypted and unencrypted
     // TODO for future draw and set encrypted properties dynamically based on database input
 
-    // TODO consider fetching from API to reflect also changes done via web?
     override fun argsReceived(resourceId: String) {
         scope.launch {
-            resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
-            view?.apply {
-                displayTitle(resourceModel.name)
-                displayUsername(resourceModel.username.orEmpty())
-                displayInitialsIcon(resourceModel.name, resourceModel.initials)
-                displayUrl(resourceModel.url.orEmpty())
-                showPasswordHidden()
-                showPasswordHiddenIcon()
-                handleDescriptionField(resourceModel)
-                handleFeatureFlags()
+            launch { // get and display resource
+                resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
+                view?.apply {
+                    displayTitle(resourceModel.name)
+                    displayUsername(resourceModel.username.orEmpty())
+                    displayInitialsIcon(resourceModel.name, resourceModel.initials)
+                    displayUrl(resourceModel.url.orEmpty())
+                    showPasswordHidden()
+                    showPasswordHiddenIcon()
+                    handleDescriptionField(resourceModel)
+                    handleFeatureFlags()
+                }
+            }
+            launch { // get and display permissions
+                val resourcePermissions = getLocalResourcePermissionsUseCase
+                    .execute(GetLocalResourcePermissionsUseCase.Input(resourceId)).permissions
+
+                view?.showPermissions(
+                    resourcePermissions.filterIsInstance<PermissionModelUi.GroupPermissionModel>(),
+                    resourcePermissions.filterIsInstance<PermissionModelUi.UserPermissionModel>()
+                )
             }
         }
     }
@@ -257,6 +270,10 @@ class ResourceDetailsPresenter(
             action()
             view?.hideProgress()
         }
+    }
+
+    override fun sharedWithClick() {
+        view?.navigateToResourcePermissions(resourceModel.resourceId)
     }
 
     override fun detach() {

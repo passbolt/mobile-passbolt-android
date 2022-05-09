@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.ui
 
+import android.content.Context
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -34,3 +36,32 @@ sealed class PermissionModel(val permission: ResourcePermission) {
         val group: GroupModel
     ) : PermissionModel(permission)
 }
+
+sealed class PermissionModelUi(val permission: ResourcePermission) {
+
+    fun getPermissionTextValue(context: Context) = context.getString(
+        when (permission) {
+            ResourcePermission.READ -> R.string.resource_permissions_can_read
+            ResourcePermission.UPDATE -> R.string.resource_permissions_can_update
+            ResourcePermission.OWNER -> R.string.resource_permissions_is_owner
+        }
+    )
+
+    class UserPermissionModel(
+        permission: ResourcePermission,
+        val user: UserWithAvatar
+    ) : PermissionModelUi(permission)
+
+    class GroupPermissionModel(
+        permission: ResourcePermission,
+        val group: GroupModel
+    ) : PermissionModelUi(permission)
+}
+
+data class UserWithAvatar(
+    val userId: String,
+    val firstName: String,
+    val lastName: String,
+    val userName: String,
+    val avatarUrl: String?
+)

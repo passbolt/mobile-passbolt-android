@@ -2,8 +2,12 @@ package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.response.PermissionWithGroupDto
 import com.passbolt.mobile.android.entity.resource.Permission
+import com.passbolt.mobile.android.entity.resource.ResourceGroupPermission
+import com.passbolt.mobile.android.entity.resource.ResourceUserPermission
 import com.passbolt.mobile.android.ui.PermissionModel
+import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.ui.UserWithAvatar
 
 /**
  * Passbolt - Open source password manager for teams
@@ -64,4 +68,30 @@ class PermissionsModelMapper(
                 permissionWithGroups.aroForeignKey!!
             )
         }
+
+    fun map(
+        groupsPermissions: List<ResourceGroupPermission>,
+        usersPermissions: List<ResourceUserPermission>
+    ) =
+        mutableListOf<PermissionModelUi>()
+            .apply {
+                groupsPermissions.mapTo(this) {
+                    PermissionModelUi.GroupPermissionModel(
+                        map(it.permission),
+                        groupsModelMapper.map(it)
+                    )
+                }
+                usersPermissions.mapTo(this) {
+                    PermissionModelUi.UserPermissionModel(
+                        map(it.permission),
+                        UserWithAvatar(
+                            it.userId,
+                            it.firstName.orEmpty(),
+                            it.lastName.orEmpty(),
+                            it.userName,
+                            it.avatarUrl
+                        )
+                    )
+                }
+            }
 }

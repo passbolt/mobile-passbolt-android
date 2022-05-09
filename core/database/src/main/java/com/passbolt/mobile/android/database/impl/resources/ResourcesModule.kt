@@ -77,4 +77,11 @@ internal fun Module.resourcesModule() {
             databaseProvider = get()
         )
     }
+    single {
+        GetLocalResourcePermissionsUseCase(
+            databaseProvider = get(),
+            permissionsModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
 }

@@ -66,6 +66,19 @@
                 tools:text="DD" />
 
             <TextView
+                android:id="@+id/informationLabel"
+                style="@style/Heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_8"
+                android:layout_marginTop="@dimen/dp_32"
+                android:text="@string/resource_details_information"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/sp_12"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/name" />
+
+            <TextView
                 android:id="@+id/urlHeader"
                 style="@style/Heading"
                 android:layout_width="0dp"
@@ -78,7 +91,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@id/urlIcon"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/name" />
+                app:layout_constraintTop_toBottomOf="@+id/informationLabel" />
 
             <TextView
                 android:id="@+id/urlValue"
@@ -114,7 +127,7 @@
                 style="@style/Heading"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_32"
+                android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_8"
                 android:text="@string/resource_details_username_header"
                 android:textColor="@color/text_primary"
@@ -228,6 +241,42 @@
                 android:textSize="@dimen/sp_12"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/descriptionValue" />
+
+            <TextView
+                android:id="@+id/sharedWithLabel"
+                style="@style/Heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_8"
+                android:layout_marginTop="@dimen/dp_32"
+                android:text="@string/resource_details_shared_with"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/sp_12"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/seeDescriptionButton" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/sharedWithRecycler"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_40"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_8"
+                app:layout_constraintEnd_toStartOf="@id/sharedWithNavIcon"
+                app:layout_constraintStart_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/sharedWithLabel" />
+
+            <ImageView
+                android:id="@+id/sharedWithNavIcon"
+                android:layout_width="@dimen/dp_8"
+                android:layout_height="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_12"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrow_right"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="@id/sharedWithRecycler"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/sharedWithRecycler"
+                app:tint="@color/icon_tint" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"
