@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/counterItem"
+    android:layout_width="@dimen/dp_40"
+    android:layout_height="@dimen/dp_40"
+    android:autoSizeTextType="uniform"
+    android:background="@drawable/ic_counter_avatar"
+    android:gravity="center"
+    android:padding="@dimen/dp_8"
+    android:scaleType="centerCrop"
+    tools:text="99+" />

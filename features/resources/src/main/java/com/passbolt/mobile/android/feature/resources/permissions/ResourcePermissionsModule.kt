@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.feature.resources
+package com.passbolt.mobile.android.feature.resources.permissions
 
-import com.passbolt.mobile.android.feature.resources.details.detailsModule
-import com.passbolt.mobile.android.feature.resources.permissions.permissionsModule
-import com.passbolt.mobile.android.feature.resources.update.updateResourceModule
-import org.koin.dsl.module
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.passbolt.mobile.android.feature.resources.permissions.recycler.PermissionItem
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,8 +29,25 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val resourcesModule = module {
-    detailsModule()
-    updateResourceModule()
-    permissionsModule()
+internal const val PERMISSIONS_ITEM_ADAPTER = "PERMISSIONS_ITEM_ADAPTER"
+
+fun Module.permissionsModule() {
+    scope<ResourcePermissionsFragment> {
+        scoped<ResourcePermissionsContract.Presenter> {
+            ResourcePermissionsPresenter(
+                coroutineLaunchContext = get(),
+                getLocalResourcePermissionsUseCase = get()
+            )
+        }
+        scoped<ItemAdapter<PermissionItem>>(named(PERMISSIONS_ITEM_ADAPTER)) {
+            ItemAdapter.items()
+        }
+        scoped {
+            FastAdapter.with(
+                listOf(
+                    get<ItemAdapter<PermissionItem>>(named(PERMISSIONS_ITEM_ADAPTER))
+                )
+            )
+        }
+    }
 }

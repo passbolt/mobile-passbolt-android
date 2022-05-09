@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resources.details
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.graphics.Color
@@ -10,9 +11,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.google.android.material.snackbar.Snackbar
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.GenericItem
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
@@ -26,9 +33,14 @@ import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
+import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.CounterItem
+import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.GroupItem
+import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.UserItem
+import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -79,7 +91,15 @@ class ResourceDetailsFragment :
     private val urlCopyFields
         get() = listOf(binding.urlHeader, binding.urlIcon)
 
+    private val sharedWithFields
+        get() = listOf(binding.sharedWithLabel, binding.sharedWithNavIcon)
+
     private val websiteOpener: WebsiteOpener by inject()
+
+    private val groupPermissionsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUP_ITEM_ADAPTER))
+    private val userPermissionsItemAdapter: ItemAdapter<UserItem> by inject(named(USER_ITEM_ADAPTER))
+    private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
+    private val fastAdapter: FastAdapter<GenericItem> by inject()
 
     private val resourceDetailsResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -92,6 +112,7 @@ class ResourceDetailsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
+        setUpPermissionsRecycler()
         presenter.attach(this)
         presenter.argsReceived(bundledResourceModel.resourceId)
     }
@@ -106,6 +127,7 @@ class ResourceDetailsFragment :
         super.onDestroyView()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setListeners() {
         with(binding) {
             usernameCopyFields.forEach { it.setDebouncingOnClick { presenter.usernameCopyClick() } }
@@ -116,6 +138,18 @@ class ResourceDetailsFragment :
             moreIcon.setDebouncingOnClick { presenter.moreClick() }
             seeDescriptionButton.setDebouncingOnClick { presenter.seeDescriptionButtonClick() }
             descriptionHeader.setDebouncingOnClick { presenter.menuCopyDescriptionClick() }
+            sharedWithFields.forEach { it.setDebouncingOnClick { presenter.sharedWithClick() } }
+            fastAdapter.onClickListener = { _, _, _, _ ->
+                presenter.sharedWithClick()
+                true
+            }
+        }
+    }
+
+    private fun setUpPermissionsRecycler() {
+        binding.sharedWithRecycler.apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = fastAdapter
         }
     }
 
@@ -305,6 +339,21 @@ class ResourceDetailsFragment :
             .setNegativeButton(R.string.cancel) { _, _ -> }
             .setCancelable(false)
             .show()
+    }
+
+    override fun showPermissions(
+        groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
+        userPermissions: List<PermissionModelUi.UserPermissionModel>
+    ) {
+        FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })
+        FastAdapterDiffUtil.calculateDiff(userPermissionsItemAdapter, userPermissions.map { UserItem(it) })
+        fastAdapter.notifyAdapterDataSetChanged()
+    }
+
+    override fun navigateToResourcePermissions(resourceId: String) {
+        findNavController().navigate(
+            ResourceDetailsFragmentDirections.actionResourceDetailsToResourcePermissionsFragment(resourceId)
+        )
     }
 
     companion object {
