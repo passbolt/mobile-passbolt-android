@@ -10,3 +10,6 @@ See more at https://docs.google.com/document/d/1OlQUD13pquaW7JzNtbt7MqAlulnahHf5
 
 ## Maintenance
 - Refactor structure and create separate DI modules for projects: database, mappers, passboltapi
+
+## Fixed
+- Barcodes not being detected on Fairphone devices
