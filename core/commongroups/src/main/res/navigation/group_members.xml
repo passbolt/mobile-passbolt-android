@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/group_members"
+    app:startDestination="@id/groupMembersFragment">
+
+    <fragment
+        android:id="@+id/groupMembersFragment"
+        android:name="com.passbolt.mobile.android.core.commongroups.groupmembers.GroupMembersFragment"
+        android:label="GroupMembersFragment"
+        tools:layout="@layout/fragment_group_members">
+        <action
+            android:id="@+id/action_groupMembersFragment_to_groupMemberDetailsFragment"
+            app:destination="@id/groupMemberDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/groupMemberDetailsFragment"
+        android:name="com.passbolt.mobile.android.core.commongroups.groupmemberdetails.GroupMemberDetailsFragment"
+        android:label="GroupMemberDetailsFragment"
+        tools:layout="@layout/fragment_group_member_details">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+    </fragment>
+</navigation>

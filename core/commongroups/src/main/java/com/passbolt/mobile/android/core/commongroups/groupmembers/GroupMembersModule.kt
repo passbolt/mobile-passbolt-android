@@ -1,11 +1,10 @@
-package com.passbolt.mobile.android.core.commongroups
+package com.passbolt.mobile.android.core.commongroups.groupmembers
 
-import com.passbolt.mobile.android.core.commongroups.groupmemberdetails.groupMemberDetailsModule
-import com.passbolt.mobile.android.core.commongroups.groupmembers.groupMembersModule
-import com.passbolt.mobile.android.core.commongroups.usecase.FetchUserGroupsUseCase
-import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
-import com.passbolt.mobile.android.core.commongroups.usecase.RebuildGroupsTablesUseCase
-import org.koin.dsl.module
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.passbolt.mobile.android.core.commongroups.groupmembers.recycler.GroupMemberItem
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,27 +29,25 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val commonGroupsModule = module {
-    groupMembersModule()
-    groupMemberDetailsModule()
+internal const val GROUP_MEMBER_ITEM_ADAPTER = "GROUP_MEMBER_ITEM_ADAPTER"
 
-    single {
-        FetchUserGroupsUseCase(
-            groupsRepository = get(),
-            groupsModelMapper = get()
-        )
-    }
-    single {
-        RebuildGroupsTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalGroupsUseCase = get(),
-            addLocalGroupsUseCase = get()
-        )
-    }
-    single {
-        GroupsInteractor(
-            fetchUserGroupsUseCase = get(),
-            rebuildLocalGroupsUseCase = get()
-        )
+fun Module.groupMembersModule() {
+    scope<GroupMembersFragment> {
+        scoped<GroupMembersContract.Presenter> {
+            GroupMembersPresenter(
+                coroutineLaunchContext = get(),
+                getGroupWithUsersUseCase = get()
+            )
+        }
+        scoped<ItemAdapter<GroupMemberItem>>(named(GROUP_MEMBER_ITEM_ADAPTER)) {
+            ItemAdapter.items()
+        }
+        scoped {
+            FastAdapter.with(
+                listOf(
+                    get<ItemAdapter<GroupMemberItem>>(named(GROUP_MEMBER_ITEM_ADAPTER))
+                )
+            )
+        }
     }
 }

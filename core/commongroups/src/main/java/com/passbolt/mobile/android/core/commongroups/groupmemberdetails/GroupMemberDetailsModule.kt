@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android.core.commongroups
+package com.passbolt.mobile.android.core.commongroups.groupmemberdetails
 
-import com.passbolt.mobile.android.core.commongroups.groupmemberdetails.groupMemberDetailsModule
-import com.passbolt.mobile.android.core.commongroups.groupmembers.groupMembersModule
-import com.passbolt.mobile.android.core.commongroups.usecase.FetchUserGroupsUseCase
-import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
-import com.passbolt.mobile.android.core.commongroups.usecase.RebuildGroupsTablesUseCase
-import org.koin.dsl.module
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,27 +25,13 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val commonGroupsModule = module {
-    groupMembersModule()
-    groupMemberDetailsModule()
-
-    single {
-        FetchUserGroupsUseCase(
-            groupsRepository = get(),
-            groupsModelMapper = get()
-        )
-    }
-    single {
-        RebuildGroupsTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalGroupsUseCase = get(),
-            addLocalGroupsUseCase = get()
-        )
-    }
-    single {
-        GroupsInteractor(
-            fetchUserGroupsUseCase = get(),
-            rebuildLocalGroupsUseCase = get()
-        )
+fun Module.groupMemberDetailsModule() {
+    scope<GroupMemberDetailsFragment> {
+        scoped<GroupMemberDetailsContract.Presenter> {
+            GroupMemberDetailsPresenter(
+                coroutineLaunchContext = get(),
+                getLocalUserUseCase = get()
+            )
+        }
     }
 }

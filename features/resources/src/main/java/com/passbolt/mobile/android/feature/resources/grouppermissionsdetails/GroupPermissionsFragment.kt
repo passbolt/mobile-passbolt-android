@@ -2,14 +2,18 @@ package com.passbolt.mobile.android.feature.resources.grouppermissionsdetails
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.core.commongroups.groupmembers.GroupMembersFragment
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentGroupPermissionsBinding
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.membersrecycler.GroupUserItem
 import com.passbolt.mobile.android.ui.PermissionModelUi
@@ -34,6 +38,12 @@ class GroupPermissionsFragment :
         setupGroupMembersRecycler()
         presenter.attach(this)
         presenter.argsRetrieved(args.groupId, args.permission)
+    }
+
+    override fun onDestroyView() {
+        binding.groupMembersRecycler.adapter = null
+        presenter.detach()
+        super.onDestroyView()
     }
 
     private fun setupGroupMembersRecycler() {
@@ -69,6 +79,14 @@ class GroupPermissionsFragment :
     }
 
     override fun navigateToGroupMembers(groupId: String) {
-        // TODO
+        findNavController().navigate(
+            R.id.group_members, GroupMembersFragment.newBundle(groupId),
+            NavOptions.Builder()
+                .setEnterAnim(R.anim.slide_in_right)
+                .setExitAnim(R.anim.slide_out_left)
+                .setPopEnterAnim(R.anim.slide_in_left)
+                .setPopExitAnim(R.anim.slide_out_right)
+                .build()
+        )
     }
 }

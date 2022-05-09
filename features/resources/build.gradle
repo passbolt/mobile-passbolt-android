@@ -25,6 +25,7 @@ dependencies {
     implementation project(':mappers')
     implementation project(':users')
     implementation project(':localization')
+    implementation project(':commongroups')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

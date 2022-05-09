@@ -72,4 +72,6 @@
             app:argType="com.passbolt.mobile.android.ui.ResourcePermission" />
     </fragment>
 
+    <include app:graph="@navigation/group_members" />
+
 </navigation>

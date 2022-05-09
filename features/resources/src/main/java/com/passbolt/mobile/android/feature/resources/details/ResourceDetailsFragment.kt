@@ -123,6 +123,7 @@ class ResourceDetailsFragment :
     }
 
     override fun onDestroyView() {
+        binding.sharedWithRecycler.adapter = null
         presenter.detach()
         super.onDestroyView()
     }

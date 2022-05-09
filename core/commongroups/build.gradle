@@ -3,6 +3,8 @@ plugins {
     id "kotlin-android"
 }
 
+apply plugin: "androidx.navigation.safeargs"
+
 dependencies {
     implementation project(':common')
     implementation project(':mvp')
@@ -15,9 +17,18 @@ dependencies {
     implementation project(':passboltapi')
     implementation project(':database')
     implementation project(':gopenpgp')
+    implementation project(':authentication')
+    implementation project(':coreui')
 
     implementation libs.di.koin
     implementation libs.di.koinExt
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+    implementation libs.fastAdapter.core
+    implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.diff
+    implementation libs.coil.core
+    implementation libs.coil.base
 }
 
 android {

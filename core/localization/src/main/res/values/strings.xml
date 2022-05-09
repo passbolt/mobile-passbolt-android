@@ -330,14 +330,18 @@
     <string name="resource_permissions_is_owner">Is owner</string>
 
     <string name="group_permission_permission">Permission</string>
+    <string name="group_permission_group_members">Group members</string>
 
     <string name="user_permission_permission">Permission</string>
-    <string name="group_permission_group_members">Group members</string>
+
+    <string name="group_members_title">Group members</string>
+
+    <string name="group_member_details_group_member">Group member</string>
 
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
--->
+    -->
     <string-array name="username_hint_values"
         tools:ignore="InconsistentArrays">
         <item>mail</item>
