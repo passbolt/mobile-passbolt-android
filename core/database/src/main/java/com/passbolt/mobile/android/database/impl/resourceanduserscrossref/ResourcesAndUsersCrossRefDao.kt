@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.database.impl.resourceandgroupscrossref
+package com.passbolt.mobile.android.database.impl.resourceanduserscrossref
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.entity.group.ResourceAndGroupsCrossRef
-import com.passbolt.mobile.android.ui.ResourceModelWithTagsAndGroups
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
+import com.passbolt.mobile.android.database.impl.base.BaseDao
+import com.passbolt.mobile.android.entity.user.ResourceAndUsersCrossRef
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,26 +28,10 @@ import com.passbolt.mobile.android.ui.ResourceModelWithTagsAndGroups
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AddLocalResourceAndGroupsCrossRefUseCase(
-    private val databaseProvider: DatabaseProvider
-) : AsyncUseCase<AddLocalResourceAndGroupsCrossRefUseCase.Input, Unit> {
+@Dao
+interface ResourcesAndUsersCrossRefDao : BaseDao<ResourceAndUsersCrossRef> {
 
-    override suspend fun execute(input: Input) {
-        val resourcesAndGroupsCrossRefDao = databaseProvider
-            .get(input.userId)
-            .resourcesAndGroupsCrossRefDao()
-
-        input.resourcesWithTagsModelAndGroups
-            .map { it.resourceModel.resourceId to it.resourceGroups }
-            .forEach { (resourceId, groups) ->
-                groups.forEach {
-                    resourcesAndGroupsCrossRefDao.insert(ResourceAndGroupsCrossRef(resourceId, it.groupId))
-                }
-            }
-    }
-
-    data class Input(
-        val resourcesWithTagsModelAndGroups: List<ResourceModelWithTagsAndGroups>,
-        val userId: String
-    )
+    @Transaction
+    @Query("DELETE FROM ResourceAndUsersCrossRef")
+    suspend fun deleteAll()
 }

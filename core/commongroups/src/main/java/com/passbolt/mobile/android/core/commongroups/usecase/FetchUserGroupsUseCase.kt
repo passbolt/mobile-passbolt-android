@@ -7,8 +7,7 @@ import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.passboltapi.groups.GroupsRepository
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.ui.GroupModelWithUsers
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,18 +33,15 @@ import com.passbolt.mobile.android.ui.GroupModel
  */
 class FetchUserGroupsUseCase(
     private val groupsRepository: GroupsRepository,
-    private val groupsModelMapper: GroupsModelMapper,
-    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
+    private val groupsModelMapper: GroupsModelMapper
 ) : AsyncUseCase<Unit, FetchUserGroupsUseCase.Output> {
 
     override suspend fun execute(input: Unit): Output {
-        val selectedAccount = requireNotNull(getSelectedAccountDataUseCase.execute(Unit).serverId)
-        return when (val result = groupsRepository.getGroups(listOf(selectedAccount))) {
+        return when (val result = groupsRepository.getGroups()) {
             is NetworkResult.Failure.NetworkError -> Output.Failure(result)
             is NetworkResult.Failure.ServerError -> Output.Failure(result)
             is NetworkResult.Success -> Output.Success(
-                result.value
-                    .map { groupsModelMapper.map(it) }
+                result.value.map(groupsModelMapper::map)
             )
         }
     }
@@ -68,7 +64,7 @@ class FetchUserGroupsUseCase(
                 }
             }
 
-        data class Success(val groups: List<GroupModel>) : Output()
+        data class Success(val groups: List<GroupModelWithUsers>) : Output()
 
         data class Failure(val result: NetworkResult.Failure<*>) : Output()
     }

@@ -47,8 +47,8 @@ data class ResourceModel(
     override val searchCriteria: String = "$name$username$url"
 ) : Parcelable, Searchable
 
-data class ResourceModelWithTagsAndGroups(
+data class ResourceModelWithTagsAndPermissions(
     val resourceModel: ResourceModel,
     val resourceTags: List<TagModel>,
-    val resourceGroups: List<GroupModel>
+    val resourcePermissions: List<PermissionModel>
 )

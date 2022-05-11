@@ -1,8 +1,11 @@
-package com.passbolt.mobile.android.database.impl.resourceandgroupscrossref
+package com.passbolt.mobile.android.core.commonresource.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.impl.resources.AddLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.database.impl.resources.RemoveLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.ResourceModelWithTagsAndPermissions
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,14 +29,19 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RemoveLocalResourceAndGroupsCrossRefUseCase(
-    private val databaseProvider: DatabaseProvider
-) : AsyncUseCase<UserIdInput, Unit> {
+class RebuildResourcePermissionsTablesUseCase(
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val removeLocalResourcePermissionsUseCase: RemoveLocalResourcePermissionsUseCase,
+    private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase
+) : AsyncUseCase<RebuildResourcePermissionsTablesUseCase.Input, Unit> {
 
-    override suspend fun execute(input: UserIdInput) {
-        databaseProvider
-            .get(input.userId)
-            .resourcesAndGroupsCrossRefDao()
-            .deleteAll()
+    override suspend fun execute(input: Input) {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        removeLocalResourcePermissionsUseCase.execute(UserIdInput(userId))
+        addLocalResourcePermissionsUseCase.execute(
+            AddLocalResourcePermissionsUseCase.Input(input.resourcesWithTagsAndPermissions, userId)
+        )
     }
+
+    data class Input(val resourcesWithTagsAndPermissions: List<ResourceModelWithTagsAndPermissions>)
 }

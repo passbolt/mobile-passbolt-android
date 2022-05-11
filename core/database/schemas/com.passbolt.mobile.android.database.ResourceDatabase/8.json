@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 8,
-    "identityHash": "816a39cbeb6d4bc5e7316352dded33d0",
+    "identityHash": "82f5f0b5ccc176ea10625f00cee0986c",
     "entities": [
       {
         "tableName": "Resource",
@@ -318,7 +318,7 @@
       },
       {
         "tableName": "ResourceAndGroupsCrossRef",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`resourceId` TEXT NOT NULL, `groupId` TEXT NOT NULL, PRIMARY KEY(`resourceId`, `groupId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`resourceId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `permission` TEXT NOT NULL, PRIMARY KEY(`resourceId`, `groupId`))",
         "fields": [
           {
             "fieldPath": "resourceId",
@@ -329,6 +329,12 @@
           {
             "fieldPath": "groupId",
             "columnName": "groupId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "permission",
+            "columnName": "permission",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -428,12 +434,72 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "UsersAndGroupCrossRef",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` TEXT NOT NULL, `groupId` TEXT NOT NULL, PRIMARY KEY(`userId`, `groupId`))",
+        "fields": [
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupId",
+            "columnName": "groupId",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "userId",
+            "groupId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "ResourceAndUsersCrossRef",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`resourceId` TEXT NOT NULL, `userId` TEXT NOT NULL, `permission` TEXT NOT NULL, PRIMARY KEY(`resourceId`, `userId`))",
+        "fields": [
+          {
+            "fieldPath": "resourceId",
+            "columnName": "resourceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "permission",
+            "columnName": "permission",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "resourceId",
+            "userId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '816a39cbeb6d4bc5e7316352dded33d0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '82f5f0b5ccc176ea10625f00cee0986c')"
     ]
   }
 }

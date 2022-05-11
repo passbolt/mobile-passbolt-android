@@ -1,10 +1,12 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.response.GroupsResponseDto
-import com.passbolt.mobile.android.dto.response.PermissionWithGroupDto
+import com.passbolt.mobile.android.dto.response.PermissionGroupDto
 import com.passbolt.mobile.android.entity.group.UsersGroup
 import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
 import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.ui.GroupModelWithUsers
+import com.passbolt.mobile.android.ui.GroupUser
 import com.passbolt.mobile.android.ui.GroupWithCount
 
 /**
@@ -31,10 +33,13 @@ import com.passbolt.mobile.android.ui.GroupWithCount
  */
 class GroupsModelMapper {
 
-    fun map(group: GroupsResponseDto): GroupModel =
-        GroupModel(
-            groupId = group.id,
-            groupName = group.name
+    fun map(group: GroupsResponseDto): GroupModelWithUsers =
+        GroupModelWithUsers(
+            GroupModel(
+                groupId = group.id,
+                groupName = group.name
+            ),
+            group.users?.map { GroupUser(it.id) }.orEmpty()
         )
 
     fun map(group: GroupModel): UsersGroup =
@@ -50,10 +55,9 @@ class GroupsModelMapper {
             groupItemsCount = group.childItemsCount
         )
 
-    fun map(permission: PermissionWithGroupDto) = permission.group?.let {
+    fun map(permission: PermissionGroupDto) =
         GroupModel(
-            it.id,
-            it.name
+            permission.id,
+            permission.name
         )
-    }
 }

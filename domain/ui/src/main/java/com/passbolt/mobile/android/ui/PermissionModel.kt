@@ -1,7 +1,4 @@
-package com.passbolt.mobile.android.mappers
-
-import com.passbolt.mobile.android.entity.resource.Permission
-import com.passbolt.mobile.android.ui.ResourcePermission
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,23 +22,15 @@ import com.passbolt.mobile.android.ui.ResourcePermission
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+sealed class PermissionModel(val permission: ResourcePermission) {
 
-internal fun Permission.toUiModel() = when (this) {
-    Permission.READ -> ResourcePermission.READ
-    Permission.WRITE -> ResourcePermission.UPDATE
-    Permission.OWNER -> ResourcePermission.OWNER
-}
+    class UserPermissionModel(
+        permission: ResourcePermission,
+        val userId: String
+    ) : PermissionModel(permission)
 
-@Suppress("MagicNumber")
-internal fun mapDtoPermissionTypeToUiModel(type: Int) = when (type) {
-    1 -> ResourcePermission.READ
-    7 -> ResourcePermission.UPDATE
-    15 -> ResourcePermission.OWNER
-    else -> throw IllegalArgumentException("Unsupported DTO permission value: $type")
-}
-
-internal fun ResourcePermission.toEntityModel() = when (this) {
-    ResourcePermission.READ -> Permission.READ
-    ResourcePermission.UPDATE -> Permission.WRITE
-    ResourcePermission.OWNER -> Permission.OWNER
+    class GroupPermissionModel(
+        permission: ResourcePermission,
+        val group: GroupModel
+    ) : PermissionModel(permission)
 }

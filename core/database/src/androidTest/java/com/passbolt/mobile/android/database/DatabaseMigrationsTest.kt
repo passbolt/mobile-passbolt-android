@@ -139,6 +139,15 @@ class DatabaseMigrationsTest {
                     "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
                             "4096,'uid','keyId','fingerprint','type',1644909225833)"
                 )
+                execSQL(
+                    "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId','groupId','READ')"
+                )
+                execSQL(
+                    "INSERT INTO UsersAndGroupCrossRef VALUES('userId','groupId')"
+                )
+                execSQL(
+                    "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId','userId', 'OWNER')"
+                )
                 close()
             }
     }

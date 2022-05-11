@@ -37,16 +37,40 @@ object Migration7to8 : Migration(7, 8) {
             "`avatarUrl` TEXT, " +
             "`armoredKey` TEXT NOT NULL, " +
             "`bits` INTEGER NOT NULL, " +
-            "`uid` TEXT NOT NULL, " +
+            "`uid` TEXT, " +
             "`keyId` TEXT NOT NULL, " +
             "`fingerprint` TEXT NOT NULL, " +
-            "`type` TEXT NOT NULL, " +
-            "`expires` INTEGER NOT NULL, " +
+            "`type` TEXT, " +
+            "`expires` INTEGER, " +
             "PRIMARY KEY(`id`))"
+
+    private const val DROP_RESOURCE_AND_GROUPS_CROSS_REF_TABLE = "DROP TABLE ResourceAndGroupsCrossRef"
+    private const val CREATE_RESOURCE_AND_GROUPS_CROSS_REF_TABLE =
+        "CREATE TABLE IF NOT EXISTS ResourceAndGroupsCrossRef (" +
+                "`resourceId` TEXT NOT NULL, " +
+                "`groupId` TEXT NOT NULL, " +
+                "`permission` TEXT NOT NULL, " +
+                "PRIMARY KEY(`resourceId`, `groupId`))"
+
+    private const val CREATE_USERS_AND_GROUPS_CROSS_REF_TABLE = "CREATE TABLE IF NOT EXISTS UsersAndGroupCrossRef (" +
+            "`userId` TEXT NOT NULL, " +
+            "`groupId` TEXT NOT NULL, " +
+            "PRIMARY KEY(`userId`, `groupId`))"
+
+    private const val CREATE_RESOURCE_AND_USERS_CROSS_REF_TABLE =
+        "CREATE TABLE IF NOT EXISTS ResourceAndUsersCrossRef (" +
+                "`resourceId` TEXT NOT NULL, " +
+                "`userId` TEXT NOT NULL, " +
+                "`permission` TEXT NOT NULL, " +
+                "PRIMARY KEY(`resourceId`, `userId`))"
 
     override fun migrate(database: SupportSQLiteDatabase) {
         with(database) {
             execSQL(CREATE_USERS_TABLE)
+            execSQL(DROP_RESOURCE_AND_GROUPS_CROSS_REF_TABLE)
+            execSQL(CREATE_RESOURCE_AND_GROUPS_CROSS_REF_TABLE)
+            execSQL(CREATE_USERS_AND_GROUPS_CROSS_REF_TABLE)
+            execSQL(CREATE_RESOURCE_AND_USERS_CROSS_REF_TABLE)
         }
     }
 }

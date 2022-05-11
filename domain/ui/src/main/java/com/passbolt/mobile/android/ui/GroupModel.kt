@@ -31,6 +31,15 @@ data class GroupModel(
     override val searchCriteria: String = groupName
 ) : Searchable
 
+data class GroupModelWithUsers(
+    val groupModel: GroupModel,
+    val users: List<GroupUser>
+)
+
+data class GroupUser(
+    val userId: String
+)
+
 data class GroupWithCount(
     val groupId: String,
     val groupName: String,

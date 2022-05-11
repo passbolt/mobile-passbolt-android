@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.mappers.CreateResourceMapper
 import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
+import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
@@ -50,7 +51,8 @@ val mappersModule = module {
     single { SignInMapper() }
     single {
         ResourceModelMapper(
-            initialsProvider = get()
+            initialsProvider = get(),
+            permissionsModelMapper = get()
         )
     }
     single { SignOutMapper() }
@@ -75,7 +77,16 @@ val mappersModule = module {
     }
     single { UserProfileMapper() }
     single { HomeDisplayViewMapper() }
-    single { FolderModelMapper() }
+    single {
+        FolderModelMapper(
+            permissionsModelMapper = get()
+        )
+    }
     single { TagsModelMapper() }
     single { GroupsModelMapper() }
+    single {
+        PermissionsModelMapper(
+            groupsModelMapper = get()
+        )
+    }
 }

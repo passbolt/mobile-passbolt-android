@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.entity.group
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.passbolt.mobile.android.entity.resource.Permission
 
 /**
  * Passbolt - Open source password manager for teams
@@ -43,5 +44,12 @@ data class UsersGroupWithChildItemsCount(
 @Entity(primaryKeys = ["resourceId", "groupId"])
 data class ResourceAndGroupsCrossRef(
     val resourceId: String,
+    val groupId: String,
+    val permission: Permission
+)
+
+@Entity(primaryKeys = ["userId", "groupId"])
+data class UsersAndGroupCrossRef(
+    val userId: String,
     val groupId: String
 )

@@ -29,7 +29,8 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 class ResourceModelMapper(
-    private val initialsProvider: InitialsProvider
+    private val initialsProvider: InitialsProvider,
+    private val permissionsModelMapper: PermissionsModelMapper
 ) {
 
     fun map(resource: ResourceResponseDto): ResourceModel =
@@ -43,7 +44,7 @@ class ResourceModelMapper(
             initials = initialsProvider.get(resource.name),
             url = resource.uri,
             description = resource.description,
-            permission = mapDtoPermissionTypeToUiModel(resource.permission.type),
+            permission = permissionsModelMapper.map(resource.permission.type),
             isFavourite = resource.favorite != null,
             modified = ZonedDateTime.parse(resource.modified)
         )
@@ -54,7 +55,7 @@ class ResourceModelMapper(
             folderId = resourceModel.folderId,
             resourceName = resourceModel.name,
             description = resourceModel.description,
-            resourcePermission = resourceModel.permission.toEntityModel(),
+            resourcePermission = permissionsModelMapper.map(resourceModel.permission),
             url = resourceModel.url,
             username = resourceModel.username,
             resourceTypeId = resourceModel.resourceTypeId,
@@ -73,7 +74,7 @@ class ResourceModelMapper(
             initials = initialsProvider.get(resourceEntity.resourceName),
             url = resourceEntity.url,
             description = resourceEntity.description,
-            permission = resourceEntity.resourcePermission.toUiModel(),
+            permission = permissionsModelMapper.map(resourceEntity.resourcePermission),
             isFavourite = resourceEntity.isFavourite,
             modified = resourceEntity.modified
         )

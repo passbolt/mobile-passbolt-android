@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.entity.user
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.passbolt.mobile.android.entity.resource.Permission
 import java.time.ZonedDateTime
 
 /**
@@ -52,4 +53,11 @@ data class UserGpgKey(
     val fingerprint: String,
     val type: String?,
     val expires: ZonedDateTime?
+)
+
+@Entity(primaryKeys = ["resourceId", "userId"])
+data class ResourceAndUsersCrossRef(
+    val resourceId: String,
+    val userId: String,
+    val permission: Permission
 )
