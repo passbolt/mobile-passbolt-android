@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceType
@@ -11,8 +12,12 @@ import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.ui.UserWithAvatar
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -71,6 +76,21 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_MODEL.resourceId)) }
                 .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL))
         }
+        mockGetLocalResourcePermissionsUseCase.stub {
+            onBlocking { execute(GetLocalResourcePermissionsUseCase.Input(RESOURCE_MODEL.resourceId)) }
+                .doReturn(GetLocalResourcePermissionsUseCase.Output(listOf(groupPermission, userPermission)))
+        }
+        mockGetFeatureFlagsUseCase.stub {
+            onBlocking { execute(Unit) } doReturn GetFeatureFlagsUseCase.Output(
+                FeatureFlagsModel(
+                    privacyPolicyUrl = null,
+                    termsAndConditionsUrl = null,
+                    isPreviewPasswordAvailable = true,
+                    areFoldersAvailable = true,
+                    areTagsAvailable = true
+                )
+            )
+        }
         presenter.attach(view)
     }
 
@@ -84,6 +104,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view).displayUrl(URL)
         verify(view).showPasswordHidden()
         verify(view).showPasswordHiddenIcon()
+        verify(view).showPermissions(listOf(groupPermission), listOf(userPermission))
         verifyNoMoreInteractions(view)
     }
 
@@ -229,6 +250,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view).closeWithDeleteSuccessResult(RESOURCE_MODEL.name)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun `delete resource should show error when there is deletion error`() = runBlockingTest {
         whenever(mockDeleteResourceUseCase.execute(any()))
@@ -248,6 +270,14 @@ class ResourceDetailsPresenterTest : KoinTest {
 
         verify(view).showDeleteConfirmationDialog()
         verify(view).showGeneralError()
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `resource permissions should be displayed`() = runBlockingTest {
+        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+
+        verify(view).showPermissions(listOf(groupPermission), listOf(userPermission))
     }
 
     private companion object {
@@ -274,5 +304,12 @@ class ResourceDetailsPresenterTest : KoinTest {
             ZonedDateTime.now()
         )
         private val DECRYPTED_SECRET = "decrypted".toByteArray()
+        private val groupPermission = PermissionModelUi.GroupPermissionModel(
+            ResourcePermission.READ, GroupModel("grId", "grName")
+        )
+        private val userPermission = PermissionModelUi.UserPermissionModel(
+            ResourcePermission.OWNER,
+            UserWithAvatar("usId", "first", "last", "uName", null)
+        )
     }
 }

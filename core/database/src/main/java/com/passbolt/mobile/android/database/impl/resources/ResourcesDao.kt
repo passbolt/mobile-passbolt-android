@@ -6,6 +6,8 @@ import androidx.room.Transaction
 import com.passbolt.mobile.android.database.impl.base.BaseDao
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.entity.resource.ResourceGroupPermission
+import com.passbolt.mobile.android.entity.resource.ResourceUserPermission
 
 /**
  * Passbolt - Open source password manager for teams
@@ -85,6 +87,29 @@ interface ResourcesDao : BaseDao<Resource> {
                 "WHERE cr.groupId=:groupId"
     )
     suspend fun getResourcesWithGroup(groupId: String): List<Resource>
+
+    @Transaction
+    @Query(
+        "SELECT rUCR.userId, rUCR.permission, u.firstName, u.lastName, u.avatarUrl, u.userName, u.fingerprint " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceAndUsersCrossRef rUCR " +
+                "ON rUCR.resourceId = r.resourceId " +
+                "INNER JOIN User u " +
+                "ON u.id = rUCR.userId " +
+                "WHERE r.resourceId = :resourceId"
+    )
+    suspend fun getResourceUsersPermissions(resourceId: String): List<ResourceUserPermission>
+
+    @Transaction
+    @Query(
+        "SELECT rGCR.groupId, rGCR.permission, ug.name as groupName from Resource r " +
+                "INNER JOIN ResourceAndGroupsCrossRef rGCR " +
+                "ON rGCR.resourceId = r.resourceId " +
+                "INNER JOIN UsersGroup ug " +
+                "ON ug.groupId = rGCR.groupId " +
+                "where r.resourceId = :resourceId"
+    )
+    suspend fun getResourceGroupsPermissions(resourceId: String): List<ResourceGroupPermission>
 
     @Transaction
     @Query("DELETE FROM Resource")

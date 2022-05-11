@@ -1,15 +1,13 @@
 package com.passbolt.mobile.android.feature.resources.details
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.ResourceDatabase
-import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceTypesDao
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceTypesDao
 import com.passbolt.mobile.android.feature.resources.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
@@ -17,6 +15,9 @@ import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import org.koin.dsl.module
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 
 /**
  * Passbolt - Open source password manager for teams
@@ -58,6 +59,7 @@ val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 val resourceMenuModelMapper = ResourceMenuModelMapper()
 val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
 val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
+val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
 
 val testResourceDetailsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
@@ -72,7 +74,8 @@ val testResourceDetailsModule = module {
             getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
             resourceMenuModelMapper = resourceMenuModelMapper,
             deleteResourceUseCase = mockDeleteResourceUseCase,
-            getLocalResourceUseCase = mockGetLocalResourceUseCase
+            getLocalResourceUseCase = mockGetLocalResourceUseCase,
+            getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase
         )
     }
 }

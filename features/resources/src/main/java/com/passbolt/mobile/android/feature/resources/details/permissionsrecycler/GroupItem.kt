@@ -1,9 +1,11 @@
-package com.passbolt.mobile.android.feature.resources
+package com.passbolt.mobile.android.feature.resources.details.permissionsrecycler
 
-import com.passbolt.mobile.android.feature.resources.details.detailsModule
-import com.passbolt.mobile.android.feature.resources.permissions.permissionsModule
-import com.passbolt.mobile.android.feature.resources.update.updateResourceModule
-import org.koin.dsl.module
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.passbolt.mobile.android.feature.resources.R
+import com.passbolt.mobile.android.feature.resources.databinding.ItemGroupBinding
+import com.passbolt.mobile.android.ui.PermissionModelUi
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,9 +29,20 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GroupItem(
+    val model: PermissionModelUi.GroupPermissionModel
+) : AbstractBindingItem<ItemGroupBinding>() {
 
-val resourcesModule = module {
-    detailsModule()
-    updateResourceModule()
-    permissionsModule()
+    override val type: Int
+        get() = R.id.groupItem
+
+    override fun bindView(binding: ItemGroupBinding, payloads: List<Any>) {
+        with(binding) {
+            root.setImageResource(R.drawable.ic_group_avatar)
+        }
+    }
+
+    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemGroupBinding {
+        return ItemGroupBinding.inflate(inflater, parent, false)
+    }
 }

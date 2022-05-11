@@ -223,6 +223,8 @@
     <string name="resource_details_decryption_failure">Error during secret decryption</string>
     <string name="resource_details_fetch_failure">Error during downloading the secret</string>
     <string name="resource_details_resource_edited_format">%s password was successfully edited.</string>
+    <string name="resource_details_information">Information</string>
+    <string name="resource_details_shared_with">Shared with</string>
 
     <string name="more_details_copy_password">Copy password</string>
     <string name="more_details_copy_description">Copy description</string>
@@ -321,6 +323,11 @@
     <string name="fingerprint_setup_biometric_title">Confirm Using Your Fingerprint</string>
     <string name="fingerprint_setup_biometric_subtitle">Touch the fingerprint sensor</string>
     <string name="folder_root">root</string>
+
+    <string name="resource_permissions_shared_with">Shared with</string>
+    <string name="resource_permissions_can_read">Can read</string>
+    <string name="resource_permissions_can_update">Can update</string>
+    <string name="resource_permissions_is_owner">Is owner</string>
 
     <!--
     arrays can be inconsistent when in other languages

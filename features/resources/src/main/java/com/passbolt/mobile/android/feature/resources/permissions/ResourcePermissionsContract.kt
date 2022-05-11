@@ -1,9 +1,7 @@
-package com.passbolt.mobile.android.feature.resources
+package com.passbolt.mobile.android.feature.resources.permissions
 
-import com.passbolt.mobile.android.feature.resources.details.detailsModule
-import com.passbolt.mobile.android.feature.resources.permissions.permissionsModule
-import com.passbolt.mobile.android.feature.resources.update.updateResourceModule
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.ui.PermissionModelUi
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,9 +25,13 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface ResourcePermissionsContract {
 
-val resourcesModule = module {
-    detailsModule()
-    updateResourceModule()
-    permissionsModule()
+    interface View : BaseAuthenticatedContract.View {
+        fun showPermissions(permissions: List<PermissionModelUi>)
+    }
+
+    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+        fun argsReceived(resourceId: String)
+    }
 }
