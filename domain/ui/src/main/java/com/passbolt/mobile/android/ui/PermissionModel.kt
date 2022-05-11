@@ -39,14 +39,6 @@ sealed class PermissionModel(val permission: ResourcePermission) {
 
 sealed class PermissionModelUi(val permission: ResourcePermission) {
 
-    fun getPermissionTextValue(context: Context) = context.getString(
-        when (permission) {
-            ResourcePermission.READ -> R.string.resource_permissions_can_read
-            ResourcePermission.UPDATE -> R.string.resource_permissions_can_update
-            ResourcePermission.OWNER -> R.string.resource_permissions_is_owner
-        }
-    )
-
     class UserPermissionModel(
         permission: ResourcePermission,
         val user: UserWithAvatar
@@ -56,6 +48,25 @@ sealed class PermissionModelUi(val permission: ResourcePermission) {
         permission: ResourcePermission,
         val group: GroupModel
     ) : PermissionModelUi(permission)
+
+    companion object {
+
+        fun getPermissionTextValue(context: Context, permission: ResourcePermission) = context.getString(
+            when (permission) {
+                ResourcePermission.READ -> R.string.resource_permissions_can_read
+                ResourcePermission.UPDATE -> R.string.resource_permissions_can_update
+                ResourcePermission.OWNER -> R.string.resource_permissions_is_owner
+            }
+        )
+
+        fun getPermissionIcon(context: Context, permission: ResourcePermission) = context.getDrawable(
+            when (permission) {
+                ResourcePermission.READ -> R.drawable.ic_permission_read
+                ResourcePermission.UPDATE -> R.drawable.ic_permission_edit
+                ResourcePermission.OWNER -> R.drawable.ic_permission_owner
+            }
+        )
+    }
 }
 
 data class UserWithAvatar(

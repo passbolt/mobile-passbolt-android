@@ -10,6 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.common.FingerprintFormatter
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.databinding.DialogServerFingerprintBinding
 import org.koin.core.component.KoinComponent
@@ -40,7 +41,7 @@ import org.koin.core.component.inject
 class ServerFingerprintChangedDialog : DialogFragment(), KoinComponent {
 
     private var listener: Listener? = null
-    private val fingerprintParser: FingerprintParser by inject()
+    private val fingerprintFormatter: FingerprintFormatter by inject()
     private val bundledFingerprint by lifecycleAwareLazy {
         requireArguments().getString(FINGERPRINT_KEY).orEmpty()
     }
@@ -53,7 +54,7 @@ class ServerFingerprintChangedDialog : DialogFragment(), KoinComponent {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = DialogServerFingerprintBinding.inflate(inflater)
         setupListeners(binding)
-        fingerprintParser.parse(bundledFingerprint)?.let {
+        fingerprintFormatter.format(bundledFingerprint)?.let {
             binding.fingerprintFirstLine.text = it
         }
         isCancelable = false

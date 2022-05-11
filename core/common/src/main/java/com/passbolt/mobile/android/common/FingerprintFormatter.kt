@@ -1,10 +1,4 @@
-package com.passbolt.mobile.android.database.impl.users
-
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.database.impl.base.BaseDao
-import com.passbolt.mobile.android.entity.user.User
+package com.passbolt.mobile.android.common
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,18 +22,27 @@ import com.passbolt.mobile.android.entity.user.User
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface UsersDao : BaseDao<User> {
+class FingerprintFormatter {
 
-    @Transaction
-    @Query("SELECT * FROM User WHERE id=:userId")
-    suspend fun get(userId: String): User
+    fun format(fingerprint: String): String? {
+        if (fingerprint.length != FINGERPRINT_LENGTH) {
+            return null
+        }
 
-    @Transaction
-    @Query("SELECT * FROM User")
-    suspend fun getAll(): List<User>
+        val parsedString = buildString {
+            append(fingerprint.substring(0, fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
+            appendLine()
+            appendLine()
+            append(fingerprint.substring(fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
+        }
 
-    @Transaction
-    @Query("DELETE FROM User")
-    suspend fun deleteAll()
+        return parsedString
+    }
+
+    fun formatWithRawFallback(fingerprint: String) = format(fingerprint) ?: fingerprint
+
+    companion object {
+        private const val FINGERPRINT_LENGTH = 40
+        private const val FINGERPRINT_BLOCK_LENGTH = 4
+    }
 }

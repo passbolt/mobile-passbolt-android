@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.initializers
 import android.content.Context
 import androidx.startup.Initializer
 import com.passbolt.mobile.android.appModule
+import com.passbolt.mobile.android.common.commonModule
 import com.passbolt.mobile.android.core.commonfolders.commonFoldersModule
 import com.passbolt.mobile.android.core.commongroups.commonGroupsModule
 import com.passbolt.mobile.android.core.commonresource.commonResourceModule
@@ -92,7 +93,8 @@ class KoinInitializer : Initializer<Unit> {
                 accountDetailsModule,
                 commonFoldersModule,
                 mainModule,
-                commonGroupsModule
+                commonGroupsModule,
+                commonModule
             )
         }
     }

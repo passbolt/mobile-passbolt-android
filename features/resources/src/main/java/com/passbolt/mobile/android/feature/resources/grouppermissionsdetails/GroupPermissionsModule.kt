@@ -1,10 +1,11 @@
-package com.passbolt.mobile.android.database.impl.users
+package com.passbolt.mobile.android.feature.resources.grouppermissionsdetails
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.database.impl.base.BaseDao
-import com.passbolt.mobile.android.entity.user.User
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.passbolt.mobile.android.core.commonresource.GroupItem
+import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.membersrecycler.GroupUserItem
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,18 +29,24 @@ import com.passbolt.mobile.android.entity.user.User
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface UsersDao : BaseDao<User> {
 
-    @Transaction
-    @Query("SELECT * FROM User WHERE id=:userId")
-    suspend fun get(userId: String): User
+internal const val GROUP_MEMBER_ITEM_ADAPTER = "GROUP_MEMBER_ITEM_ADAPTER"
 
-    @Transaction
-    @Query("SELECT * FROM User")
-    suspend fun getAll(): List<User>
-
-    @Transaction
-    @Query("DELETE FROM User")
-    suspend fun deleteAll()
+fun Module.groupPermissionsModule() {
+    scope<GroupPermissionsFragment> {
+        scoped<GroupPermissionsContract.Presenter> {
+            GroupPermissionsPresenter(
+                coroutineLaunchContext = get(),
+                getGroupWithUsersUseCase = get()
+            )
+        }
+        scoped<ItemAdapter<GroupItem>>(named(GROUP_MEMBER_ITEM_ADAPTER)) {
+            ItemAdapter.items()
+        }
+        scoped {
+            FastAdapter.with(
+                get<ItemAdapter<GroupUserItem>>(named(GROUP_MEMBER_ITEM_ADAPTER))
+            )
+        }
+    }
 }

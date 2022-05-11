@@ -1,10 +1,13 @@
-package com.passbolt.mobile.android.database.impl.users
+package com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.membersrecycler
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.database.impl.base.BaseDao
-import com.passbolt.mobile.android.entity.user.User
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import coil.load
+import coil.transform.CircleCropTransformation
+import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.passbolt.mobile.android.feature.resources.R
+import com.passbolt.mobile.android.feature.resources.databinding.ItemGroupUserBinding
+import com.passbolt.mobile.android.ui.UserModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,18 +31,24 @@ import com.passbolt.mobile.android.entity.user.User
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface UsersDao : BaseDao<User> {
+class GroupUserItem(
+    val model: UserModel
+) : AbstractBindingItem<ItemGroupUserBinding>() {
 
-    @Transaction
-    @Query("SELECT * FROM User WHERE id=:userId")
-    suspend fun get(userId: String): User
+    override val type: Int
+        get() = R.id.groupUserItem
 
-    @Transaction
-    @Query("SELECT * FROM User")
-    suspend fun getAll(): List<User>
+    override fun bindView(binding: ItemGroupUserBinding, payloads: List<Any>) {
+        with(binding) {
+            root.load(model.profile.avatarUrl) {
+                error(R.drawable.ic_user_avatar)
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.ic_user_avatar)
+            }
+        }
+    }
 
-    @Transaction
-    @Query("DELETE FROM User")
-    suspend fun deleteAll()
+    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemGroupUserBinding {
+        return ItemGroupUserBinding.inflate(inflater, parent, false)
+    }
 }

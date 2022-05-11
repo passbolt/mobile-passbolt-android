@@ -1,10 +1,6 @@
-package com.passbolt.mobile.android.database.impl.users
+package com.passbolt.mobile.android.feature.resources.userpermissionsdetails
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.database.impl.base.BaseDao
-import com.passbolt.mobile.android.entity.user.User
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,18 +24,14 @@ import com.passbolt.mobile.android.entity.user.User
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface UsersDao : BaseDao<User> {
 
-    @Transaction
-    @Query("SELECT * FROM User WHERE id=:userId")
-    suspend fun get(userId: String): User
-
-    @Transaction
-    @Query("SELECT * FROM User")
-    suspend fun getAll(): List<User>
-
-    @Transaction
-    @Query("DELETE FROM User")
-    suspend fun deleteAll()
+fun Module.userPermissionsModule() {
+    scope<UserPermissionsFragment> {
+        scoped<UserPermissionsContract.Presenter> {
+            UserPermissionsPresenter(
+                coroutineLaunchContext = get(),
+                getLocalUserUseCase = get()
+            )
+        }
+    }
 }

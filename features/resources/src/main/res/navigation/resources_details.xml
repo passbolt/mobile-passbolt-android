@@ -31,6 +31,45 @@
         <argument
             android:name="resourceId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_resourcePermissionsFragment_to_groupPermissionsFragment"
+            app:destination="@id/groupPermissionsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_resourcePermissionsFragment_to_userPermissionsFragment"
+            app:destination="@id/userPermissionsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/groupPermissionsFragment"
+        android:name="com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.GroupPermissionsFragment"
+        android:label="GroupPermissionsFragment"
+        tools:layout="@layout/fragment_group_permissions">
+        <argument
+            android:name="groupId"
+            app:argType="string" />
+        <argument
+            android:name="permission"
+            app:argType="com.passbolt.mobile.android.ui.ResourcePermission" />
+    </fragment>
+    <fragment
+        android:id="@+id/userPermissionsFragment"
+        android:name="com.passbolt.mobile.android.feature.resources.userpermissionsdetails.UserPermissionsFragment"
+        android:label="UserPermissionsFragment"
+        tools:layout="@layout/fragment_user_permissions">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+        <argument
+            android:name="permission"
+            app:argType="com.passbolt.mobile.android.ui.ResourcePermission" />
     </fragment>
 
 </navigation>

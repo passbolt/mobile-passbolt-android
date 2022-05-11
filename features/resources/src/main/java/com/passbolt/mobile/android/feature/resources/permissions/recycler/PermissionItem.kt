@@ -47,7 +47,7 @@ class PermissionItem(
 
     override fun bindView(binding: ItemPermissionBinding, payloads: List<Any>) {
         with(binding) {
-            permissionValue.text = model.getPermissionTextValue(binding.root.context)
+            permissionValue.text = PermissionModelUi.getPermissionTextValue(binding.root.context, model.permission)
             when (model) {
                 is PermissionModelUi.GroupPermissionModel -> {
                     icon.setImageResource(R.drawable.ic_group_avatar)
