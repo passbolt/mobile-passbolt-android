@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.resources.permissions
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
@@ -13,6 +14,7 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourcePermissionsBinding
 import com.passbolt.mobile.android.feature.resources.permissions.recycler.PermissionItem
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.ResourcePermission
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 
@@ -39,6 +41,27 @@ class ResourcePermissionsFragment :
             layoutManager = LinearLayoutManager(context)
             adapter = fastAdapter
         }
+        fastAdapter.addEventHook(
+            PermissionItem.ItemClick { presenter.permissionClick(it) }
+        )
+    }
+
+    override fun navigateToGroupPermissionDetails(groupId: String, permission: ResourcePermission) {
+        findNavController().navigate(
+            ResourcePermissionsFragmentDirections.actionResourcePermissionsFragmentToGroupPermissionsFragment(
+                groupId,
+                permission
+            )
+        )
+    }
+
+    override fun navigateToUserPermissionDetails(userId: String, permission: ResourcePermission) {
+        findNavController().navigate(
+            ResourcePermissionsFragmentDirections.actionResourcePermissionsFragmentToUserPermissionsFragment(
+                userId,
+                permission
+            )
+        )
     }
 
     override fun showPermissions(permissions: List<PermissionModelUi>) {

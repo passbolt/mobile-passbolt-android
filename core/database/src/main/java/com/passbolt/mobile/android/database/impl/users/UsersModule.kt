@@ -45,4 +45,11 @@ internal fun Module.usersModule() {
             getSelectedAccountUseCase = get()
         )
     }
+    single {
+        GetLocalUserUseCase(
+            databaseProvider = get(),
+            userModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
 }

@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.authentication
 
-import com.passbolt.mobile.android.feature.authentication.auth.FingerprintParser
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import org.koin.core.module.Module
 
@@ -36,9 +35,6 @@ fun Module.authenticationMainModule() {
                 saveCurrentApiUrlUseCase = get()
             )
         }
-    }
-    single {
-        FingerprintParser()
     }
     factory {
         RefreshSessionUseCase(

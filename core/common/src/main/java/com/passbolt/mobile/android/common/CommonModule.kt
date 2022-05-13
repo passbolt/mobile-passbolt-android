@@ -1,4 +1,6 @@
-package com.passbolt.mobile.android.feature.authentication.auth
+package com.passbolt.mobile.android.common
+
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,25 +24,9 @@ package com.passbolt.mobile.android.feature.authentication.auth
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class FingerprintParser {
 
-    fun parse(fingerprint: String): String? {
-        if (fingerprint.length != FINGERPRINT_LENGTH) {
-            return null
-        }
-
-        val parsedString = buildString {
-            append(fingerprint.substring(0, fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
-            appendLine()
-            appendLine()
-            append(fingerprint.substring(fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
-        }
-
-        return parsedString
-    }
-
-    companion object {
-        private const val FINGERPRINT_LENGTH = 40
-        private const val FINGERPRINT_BLOCK_LENGTH = 4
+val commonModule = module {
+    single {
+        FingerprintFormatter()
     }
 }

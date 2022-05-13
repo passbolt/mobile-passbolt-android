@@ -1,9 +1,13 @@
 package com.passbolt.mobile.android.entity.group
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Junction
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import com.passbolt.mobile.android.entity.resource.Permission
+import com.passbolt.mobile.android.entity.user.User
 
 /**
  * Passbolt - Open source password manager for teams
@@ -52,4 +56,14 @@ data class ResourceAndGroupsCrossRef(
 data class UsersAndGroupCrossRef(
     val userId: String,
     val groupId: String
+)
+
+data class GroupWithUsers(
+    @Embedded val group: UsersGroup,
+    @Relation(
+        parentColumn = "groupId",
+        entityColumn = "id",
+        associateBy = Junction(UsersAndGroupCrossRef::class, parentColumn = "groupId", entityColumn = "userId")
+    )
+    val users: List<User>
 )

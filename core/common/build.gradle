@@ -16,6 +16,8 @@ dependencies {
 
     implementation libs.networking.retrofit
     implementation libs.networking.okHttp
+    implementation libs.di.koin
+    implementation libs.di.koinExt
 }
 
 android {

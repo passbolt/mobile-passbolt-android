@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.passbolt.mobile.android.database.impl.base.BaseDao
+import com.passbolt.mobile.android.entity.group.GroupWithUsers
 import com.passbolt.mobile.android.entity.group.UsersGroup
 import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
 
@@ -50,4 +51,8 @@ interface GroupsDao : BaseDao<UsersGroup> {
                 "FROM UsersGroup g"
     )
     suspend fun getAllWithSharedItemsCount(): List<UsersGroupWithChildItemsCount>
+
+    @Transaction
+    @Query("SELECT * FROM UsersGroup WHERE groupId=:groupId")
+    suspend fun getGroupWithUsers(groupId: String): GroupWithUsers
 }

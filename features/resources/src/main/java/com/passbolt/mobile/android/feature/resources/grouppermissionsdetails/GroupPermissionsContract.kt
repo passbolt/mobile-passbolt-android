@@ -1,10 +1,8 @@
-package com.passbolt.mobile.android.database.impl.users
+package com.passbolt.mobile.android.feature.resources.grouppermissionsdetails
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.database.impl.base.BaseDao
-import com.passbolt.mobile.android.entity.user.User
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.ui.UserModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,18 +26,17 @@ import com.passbolt.mobile.android.entity.user.User
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Dao
-interface UsersDao : BaseDao<User> {
+interface GroupPermissionsContract {
 
-    @Transaction
-    @Query("SELECT * FROM User WHERE id=:userId")
-    suspend fun get(userId: String): User
+    interface View : BaseAuthenticatedContract.View {
+        fun showPermission(permission: ResourcePermission)
+        fun showGroupName(groupName: String)
+        fun showGroupUsers(users: List<UserModel>)
+        fun navigateToGroupMembers(groupId: String)
+    }
 
-    @Transaction
-    @Query("SELECT * FROM User")
-    suspend fun getAll(): List<User>
-
-    @Transaction
-    @Query("DELETE FROM User")
-    suspend fun deleteAll()
+    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+        fun argsRetrieved(groupId: String, permission: ResourcePermission)
+        fun groupMembersRecyclerClick()
+    }
 }

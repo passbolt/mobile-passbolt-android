@@ -14,8 +14,6 @@ dependencies {
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
     implementation libs.balloon
-    implementation libs.di.koin
-    implementation libs.di.koinExt
 }
 
 android {

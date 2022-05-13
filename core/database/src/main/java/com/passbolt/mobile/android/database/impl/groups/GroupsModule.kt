@@ -45,4 +45,12 @@ internal fun Module.groupsModule() {
             getSelectedAccountUseCase = get()
         )
     }
+    single {
+        GetGroupWithUsersUseCase(
+            databaseProvider = get(),
+            groupModelMapper = get(),
+            getSelectedAccountUseCase = get(),
+            usersModelMapper = get()
+        )
+    }
 }

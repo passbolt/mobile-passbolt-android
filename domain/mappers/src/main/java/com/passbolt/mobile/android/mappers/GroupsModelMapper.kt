@@ -67,4 +67,7 @@ class GroupsModelMapper {
             groupPermission.groupId,
             groupPermission.groupName
         )
+
+    fun map(group: UsersGroup) =
+        GroupModel(group.groupId, group.name)
 }
