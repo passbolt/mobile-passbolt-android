@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/dp_16"
+        app:layout_constraintTop_toTopOf="parent"
+        app:toolbarTitle="@string/group_members_title" />
+
+    <ImageView
+        android:id="@+id/avatarImage"
+        android:layout_width="@dimen/dp_96"
+        android:layout_height="@dimen/dp_96"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_32"
+        android:src="@drawable/ic_group_avatar" />
+
+    <TextView
+        android:id="@+id/nameLabel"
+        style="@style/Heading4Text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_16"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/sp_20"
+        tools:text="Passbolt" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/groupMembersRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/dp_32"
+        android:layout_weight="1" />
+
+</LinearLayout>

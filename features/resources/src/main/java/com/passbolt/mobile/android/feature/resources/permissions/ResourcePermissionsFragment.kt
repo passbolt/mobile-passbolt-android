@@ -36,6 +36,12 @@ class ResourcePermissionsFragment :
         presenter.argsReceived(args.resourceId)
     }
 
+    override fun onDestroyView() {
+        binding.permissionsRecycler.adapter = null
+        presenter.detach()
+        super.onDestroyView()
+    }
+
     private fun initPermissionsRecycler() {
         with(binding.permissionsRecycler) {
             layoutManager = LinearLayoutManager(context)
