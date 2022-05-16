@@ -1,0 +1,15 @@
+# Passbolt 1.6.0-7 Android app release notes
+
+## Added
+- You can find tags and groups entries inside the filter menu
+- Support for new Splash screen API - enjoy faster startup an all APIs and cool animation on API 31+
+
+## Security
+- Added a runtime authenticated flag to mitigate low priority issue from security audit (PBL-06-001 WP1).
+See more at https://docs.google.com/document/d/1OlQUD13pquaW7JzNtbt7MqAlulnahHf5DPceyUiuVxc/edit#heading=h.mpzy02plbjy6
+
+## Maintenance
+- Refactor structure and create separate DI modules for projects: database, mappers, passboltapi
+
+## Fixed
+- Barcodes not being detected on Fairphone devices

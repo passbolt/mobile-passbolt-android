@@ -1,6 +1,6 @@
 ext {
-    projectVersionName = "1.5.0"
-    projectVersionCode = 6
+    projectVersionName = "1.6.0"
+    projectVersionCode = 7
 
     projectCompileSdk = 31
     projectMinSdk = 29
@@ -43,8 +43,8 @@ ext {
             biometric: "1.2.0-alpha03",
             fragment: "1.4.0-alpha04",
             activity: "1.2.2",
-            cameraX: "1.0.0",
-            cameraView: "1.0.0-alpha24",
+            cameraX: "1.0.2",
+            cameraView: "1.0.0-alpha32",
             lifecycle: "2.3.1",
             swiperefresh: "1.1.0",
             appStartUp: "1.1.1",
