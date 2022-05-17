@@ -20,11 +20,15 @@ class EncourageAccessibilityAutofillPresenter(
     }
 
     override fun overlayClick() {
-        view?.navigateToOverlayTutorial()
+        // TODO temporary disable tutorial - broken links
+        // view?.navigateToOverlayTutorial()
+        view?.navigateToOverlaySettings()
     }
 
     override fun serviceClick() {
-        view?.navigateToServiceTutorial()
+        // TODO temporary disable tutorial - broken links
+        // view?.navigateToServiceTutorial()
+        view?.navigateToServiceSettings()
     }
 
     override fun backPressed() {

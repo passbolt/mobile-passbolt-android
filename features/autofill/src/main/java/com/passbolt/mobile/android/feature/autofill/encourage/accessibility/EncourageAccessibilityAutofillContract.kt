@@ -37,6 +37,8 @@ interface EncourageAccessibilityAutofillContract {
         fun notifyPossibleAutofillChange()
         fun dismissWithNoAction()
         fun showAutofillEnabledDialog()
+        fun navigateToOverlaySettings()
+        fun navigateToServiceSettings()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
