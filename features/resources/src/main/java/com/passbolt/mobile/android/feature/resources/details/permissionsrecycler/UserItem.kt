@@ -6,7 +6,7 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.resources.R
-import com.passbolt.mobile.android.feature.resources.databinding.ItemGroupBinding
+import com.passbolt.mobile.android.feature.resources.databinding.ItemUserBinding
 import com.passbolt.mobile.android.ui.PermissionModelUi
 
 /**
@@ -33,12 +33,12 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
  */
 class UserItem(
     val model: PermissionModelUi.UserPermissionModel
-) : AbstractBindingItem<ItemGroupBinding>() {
+) : AbstractBindingItem<ItemUserBinding>() {
 
     override val type: Int
         get() = R.id.userItem
 
-    override fun bindView(binding: ItemGroupBinding, payloads: List<Any>) {
+    override fun bindView(binding: ItemUserBinding, payloads: List<Any>) {
         with(binding) {
             root.load(model.user.avatarUrl) {
                 error(R.drawable.ic_user_avatar)
@@ -48,7 +48,7 @@ class UserItem(
         }
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemGroupBinding {
-        return ItemGroupBinding.inflate(inflater, parent, false)
+    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemUserBinding {
+        return ItemUserBinding.inflate(inflater, parent, false)
     }
 }

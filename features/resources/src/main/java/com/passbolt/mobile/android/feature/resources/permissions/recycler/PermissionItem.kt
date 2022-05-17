@@ -50,7 +50,7 @@ class PermissionItem(
             permissionValue.text = PermissionModelUi.getPermissionTextValue(binding.root.context, model.permission)
             when (model) {
                 is PermissionModelUi.GroupPermissionModel -> {
-                    icon.setImageResource(R.drawable.ic_group_avatar)
+                    icon.setImageResource(R.drawable.ic_filled_group_with_bg)
                     name.text = model.group.groupName
                     userName.gone()
                 }

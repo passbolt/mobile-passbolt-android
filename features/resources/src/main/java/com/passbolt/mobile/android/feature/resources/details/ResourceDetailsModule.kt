@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.feature.resources.details
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.core.commonresource.GroupItem
-import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.CounterItem
 import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.UserItem
+import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -55,10 +55,10 @@ fun Module.detailsModule() {
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {
             ItemAdapter.items()
         }
-        scoped<ItemAdapter<GroupItem>>(named(USER_ITEM_ADAPTER)) {
+        scoped<ItemAdapter<UserItem>>(named(USER_ITEM_ADAPTER)) {
             ItemAdapter.items()
         }
-        scoped<ItemAdapter<GroupItem>>(named(COUNTER_ITEM_ADAPTER)) {
+        scoped<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER)) {
             ItemAdapter.items()
         }
         scoped {

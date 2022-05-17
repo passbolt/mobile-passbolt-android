@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.resources.grouppermissionsdetails
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.doOnLayout
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -12,10 +13,12 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.core.commongroups.groupmembers.GroupMembersFragment
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentGroupPermissionsBinding
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.membersrecycler.GroupUserItem
+import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
@@ -30,6 +33,7 @@ class GroupPermissionsFragment :
     override val presenter: GroupPermissionsContract.Presenter by inject()
     private val args: GroupPermissionsFragmentArgs by navArgs()
     private val groupMembersItemAdapter: ItemAdapter<GroupUserItem> by inject(named(GROUP_MEMBER_ITEM_ADAPTER))
+    private val counterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
     private val fastAdapter: FastAdapter<GenericItem> by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -37,7 +41,14 @@ class GroupPermissionsFragment :
         initDefaultToolbar(binding.toolbar)
         setupGroupMembersRecycler()
         presenter.attach(this)
-        presenter.argsRetrieved(args.groupId, args.permission)
+        binding.groupMembersRecycler.doOnLayout {
+            presenter.argsRetrieved(
+                args.groupId,
+                args.permission,
+                it.width,
+                resources.getDimension(R.dimen.dp_40)
+            )
+        }
     }
 
     override fun onDestroyView() {
@@ -52,7 +63,9 @@ class GroupPermissionsFragment :
             true
         }
         with(binding.groupMembersRecycler) {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = object : LinearLayoutManager(context, HORIZONTAL, false) {
+                override fun canScrollHorizontally() = false
+            }
             adapter = fastAdapter
         }
     }
@@ -73,8 +86,15 @@ class GroupPermissionsFragment :
         binding.nameLabel.text = groupName
     }
 
-    override fun showGroupUsers(users: List<UserModel>) {
+    override fun showGroupUsers(
+        users: List<UserModel>,
+        counterValue: List<String>,
+        overlapOffset: Int
+    ) {
+        val decorator = OverlappingItemDecorator(OverlappingItemDecorator.Overlap(left = overlapOffset))
+        binding.groupMembersRecycler.addItemDecoration(decorator)
         FastAdapterDiffUtil.calculateDiff(groupMembersItemAdapter, users.map { GroupUserItem((it)) })
+        FastAdapterDiffUtil.calculateDiff(counterItemAdapter, counterValue.map { CounterItem((it)) })
         fastAdapter.notifyAdapterDataSetChanged()
     }
 

@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.doOnLayout
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amulyakhare.textdrawable.TextDrawable
@@ -28,12 +29,13 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
+import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
-import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.CounterItem
+import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
 import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.GroupItem
 import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.UserItem
 import com.passbolt.mobile.android.ui.PermissionModelUi
@@ -114,7 +116,13 @@ class ResourceDetailsFragment :
         setListeners()
         setUpPermissionsRecycler()
         presenter.attach(this)
-        presenter.argsReceived(bundledResourceModel.resourceId)
+        binding.sharedWithRecycler.doOnLayout {
+            presenter.argsReceived(
+                bundledResourceModel.resourceId,
+                it.width,
+                resources.getDimension(R.dimen.dp_40)
+            )
+        }
     }
 
     override fun onStop() {
@@ -149,7 +157,9 @@ class ResourceDetailsFragment :
 
     private fun setUpPermissionsRecycler() {
         binding.sharedWithRecycler.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = object : LinearLayoutManager(context, HORIZONTAL, false) {
+                override fun canScrollHorizontally() = false
+            }
             adapter = fastAdapter
         }
     }
@@ -344,10 +354,15 @@ class ResourceDetailsFragment :
 
     override fun showPermissions(
         groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
-        userPermissions: List<PermissionModelUi.UserPermissionModel>
+        userPermissions: List<PermissionModelUi.UserPermissionModel>,
+        counterValue: List<String>,
+        overlapOffset: Int
     ) {
+        val decorator = OverlappingItemDecorator(OverlappingItemDecorator.Overlap(left = overlapOffset))
+        binding.sharedWithRecycler.addItemDecoration(decorator)
         FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })
         FastAdapterDiffUtil.calculateDiff(userPermissionsItemAdapter, userPermissions.map { UserItem(it) })
+        FastAdapterDiffUtil.calculateDiff(permissionsCounterItemAdapter, counterValue.map { CounterItem(it) })
         fastAdapter.notifyAdapterDataSetChanged()
     }
 

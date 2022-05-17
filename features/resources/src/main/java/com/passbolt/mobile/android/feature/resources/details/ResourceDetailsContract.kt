@@ -57,13 +57,16 @@ interface ResourceDetailsContract {
         fun showDeleteConfirmationDialog()
         fun showPermissions(
             groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
-            userPermissions: List<PermissionModelUi.UserPermissionModel>
+            userPermissions: List<PermissionModelUi.UserPermissionModel>,
+            counterValue: List<String>,
+            overlapOffset: Int
         )
+
         fun navigateToResourcePermissions(resourceId: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsReceived(resourceId: String)
+        fun argsReceived(resourceId: String, permissionsListWidth: Int, permissionItemWidth: Float)
         fun usernameCopyClick()
         fun urlCopyClick()
         fun moreClick()
