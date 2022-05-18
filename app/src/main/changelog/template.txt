@@ -1,0 +1,16 @@
+# Passbolt X.X.X-X Android app release notes
+
+## Added
+-
+
+## Improved
+-
+
+## Fixed
+-
+
+## Security
+-
+
+## Maintenance
+-
