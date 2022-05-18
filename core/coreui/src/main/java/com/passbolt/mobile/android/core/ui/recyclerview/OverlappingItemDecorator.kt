@@ -1,8 +1,8 @@
-package com.passbolt.mobile.android.feature.resources.grouppermissionsdetails
+package com.passbolt.mobile.android.core.ui.recyclerview
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.ui.ResourcePermission
-import com.passbolt.mobile.android.ui.UserModel
+import android.graphics.Rect
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,22 +26,22 @@ import com.passbolt.mobile.android.ui.UserModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface GroupPermissionsContract {
+class OverlappingItemDecorator(private val overlap: Overlap) : RecyclerView.ItemDecoration() {
 
-    interface View : BaseAuthenticatedContract.View {
-        fun showPermission(permission: ResourcePermission)
-        fun showGroupName(groupName: String)
-        fun showGroupUsers(users: List<UserModel>, counterValue: List<String>, overlapOffset: Int)
-        fun navigateToGroupMembers(groupId: String)
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+        if (!EXCLUDED_POSITIONS.contains(parent.getChildAdapterPosition(view))) {
+            outRect.set(overlap.left, overlap.top, overlap.right, overlap.bottom)
+        }
     }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsRetrieved(
-            groupId: String,
-            permission: ResourcePermission,
-            membersRecyclerWidth: Int,
-            membersItemWidth: Float
-        )
-        fun groupMembersRecyclerClick()
+    data class Overlap(
+        val left: Int = 0,
+        val top: Int = 0,
+        val right: Int = 0,
+        val bottom: Int = 0
+    )
+
+    private companion object {
+        private val EXCLUDED_POSITIONS = hashSetOf(RecyclerView.NO_POSITION, 0)
     }
 }

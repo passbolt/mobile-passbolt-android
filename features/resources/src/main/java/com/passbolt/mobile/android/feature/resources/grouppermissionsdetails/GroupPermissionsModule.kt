@@ -4,6 +4,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.core.commonresource.GroupItem
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.membersrecycler.GroupUserItem
+import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -31,6 +32,7 @@ import org.koin.core.qualifier.named
  */
 
 internal const val GROUP_MEMBER_ITEM_ADAPTER = "GROUP_MEMBER_ITEM_ADAPTER"
+internal const val COUNTER_ITEM_ADAPTER = "COUNTER_ITEM_ADAPTER"
 
 fun Module.groupPermissionsModule() {
     scope<GroupPermissionsFragment> {
@@ -43,9 +45,15 @@ fun Module.groupPermissionsModule() {
         scoped<ItemAdapter<GroupItem>>(named(GROUP_MEMBER_ITEM_ADAPTER)) {
             ItemAdapter.items()
         }
+        scoped<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER)) {
+            ItemAdapter.items()
+        }
         scoped {
             FastAdapter.with(
-                get<ItemAdapter<GroupUserItem>>(named(GROUP_MEMBER_ITEM_ADAPTER))
+                listOf(
+                    get<ItemAdapter<GroupUserItem>>(named(GROUP_MEMBER_ITEM_ADAPTER)),
+                    get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER))
+                )
             )
         }
     }

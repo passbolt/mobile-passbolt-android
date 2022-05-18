@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.resources.grouppermissionsdetails
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.groups.GetGroupWithUsersUseCase
+import com.passbolt.mobile.android.feature.resources.permissionavatarlist.UsersDatasetCreator
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -21,14 +22,27 @@ class GroupPermissionsPresenter(
 
     private lateinit var groupId: String
 
-    override fun argsRetrieved(groupId: String, permission: ResourcePermission) {
+    override fun argsRetrieved(
+        groupId: String,
+        permission: ResourcePermission,
+        membersRecyclerWidth: Int,
+        membersItemWidth: Float
+    ) {
         this.groupId = groupId
         view?.showPermission(permission)
         scope.launch {
             getGroupWithUsersUseCase.execute(GetGroupWithUsersUseCase.Input(groupId)).groupWithUsers.let {
                 view?.apply {
                     showGroupName(it.group.groupName)
-                    showGroupUsers(it.users)
+
+                    val usersDisplayDataset = UsersDatasetCreator(membersRecyclerWidth, membersItemWidth)
+                        .prepareDataset(it.users)
+
+                    view?.showGroupUsers(
+                        usersDisplayDataset.users,
+                        usersDisplayDataset.counterValue,
+                        usersDisplayDataset.overlap
+                    )
                 }
             }
         }

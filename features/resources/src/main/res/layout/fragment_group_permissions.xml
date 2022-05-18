@@ -23,7 +23,7 @@
             android:layout_width="@dimen/dp_96"
             android:layout_height="@dimen/dp_96"
             android:layout_marginTop="@dimen/dp_32"
-            android:src="@drawable/ic_group_avatar"
+            android:src="@drawable/ic_filled_group_with_bg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />

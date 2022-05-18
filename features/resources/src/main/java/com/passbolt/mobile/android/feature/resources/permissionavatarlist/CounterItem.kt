@@ -1,11 +1,10 @@
-package com.passbolt.mobile.android.feature.resources.details.permissionsrecycler
+package com.passbolt.mobile.android.feature.resources.permissionavatarlist
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.resources.R
-import com.passbolt.mobile.android.feature.resources.databinding.ItemGroupBinding
-import com.passbolt.mobile.android.ui.PermissionModel
+import com.passbolt.mobile.android.feature.resources.databinding.ItemCounterBinding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,19 +29,17 @@ import com.passbolt.mobile.android.ui.PermissionModel
  * @since v1.0
  */
 class CounterItem(
-    val model: PermissionModel.UserPermissionModel
-) : AbstractBindingItem<ItemGroupBinding>() {
+    val counterValue: String
+) : AbstractBindingItem<ItemCounterBinding>() {
 
     override val type: Int
         get() = R.id.counterItem
 
-    override fun bindView(binding: ItemGroupBinding, payloads: List<Any>) {
-        with(binding) {
-            root.setImageResource(R.drawable.ic_user_avatar)
-        }
+    override fun bindView(binding: ItemCounterBinding, payloads: List<Any>) {
+        binding.counterItem.text = counterValue
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemGroupBinding {
-        return ItemGroupBinding.inflate(inflater, parent, false)
+    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemCounterBinding {
+        return ItemCounterBinding.inflate(inflater, parent, false)
     }
 }

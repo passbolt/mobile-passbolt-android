@@ -28,6 +28,7 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -96,7 +97,11 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     fun `constant password details should be shown correct`() {
-        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
 
         verify(view).displayTitle(NAME)
         verify(view).displayUsername(USERNAME)
@@ -104,7 +109,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view).displayUrl(URL)
         verify(view).showPasswordHidden()
         verify(view).showPasswordHiddenIcon()
-        verify(view).showPermissions(listOf(groupPermission), listOf(userPermission))
+        verify(view).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         verifyNoMoreInteractions(view)
     }
 
@@ -127,7 +132,11 @@ class ResourceDetailsPresenterTest : KoinTest {
             )
         }
 
-        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
 
         verify(view).showDescription(DESCRIPTION, useSecretFont = false)
     }
@@ -151,7 +160,11 @@ class ResourceDetailsPresenterTest : KoinTest {
             )
         }
 
-        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
 
         verify(view).showDescriptionIsEncrypted()
     }
@@ -169,7 +182,11 @@ class ResourceDetailsPresenterTest : KoinTest {
         whenever(mockSecretParser.extractPassword(any(), any()))
             .doReturn(String(DECRYPTED_SECRET))
 
-        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
         presenter.secretIconClick()
         presenter.secretIconClick()
 
@@ -185,7 +202,11 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.DecryptFailure(RuntimeException()))
         }
 
-        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
         presenter.secretIconClick()
 
         verify(view).showDecryptionFailure()
@@ -197,7 +218,11 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.FetchFailure(RuntimeException()))
         }
 
-        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
         presenter.secretIconClick()
 
         verify(view).showFetchFailure()
@@ -209,7 +234,11 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.Unauthorized)
         }
 
-        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
         presenter.secretIconClick()
 
         verify(view).showAuth(AuthenticationState.Unauthenticated.Reason.Passphrase)
@@ -231,7 +260,11 @@ class ResourceDetailsPresenterTest : KoinTest {
             )
         }
 
-        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
 
         verify(view).hidePasswordEyeIcon()
     }
@@ -241,7 +274,11 @@ class ResourceDetailsPresenterTest : KoinTest {
         whenever(mockDeleteResourceUseCase.execute(any()))
             .thenReturn(DeleteResourceUseCase.Output.Success)
 
-        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
         presenter.moreClick()
         presenter.menuDeleteClick()
         presenter.deleteResourceConfirmed()
@@ -263,7 +300,11 @@ class ResourceDetailsPresenterTest : KoinTest {
                 )
             )
 
-        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
         presenter.moreClick()
         presenter.menuDeleteClick()
         presenter.deleteResourceConfirmed()
@@ -275,9 +316,13 @@ class ResourceDetailsPresenterTest : KoinTest {
     @ExperimentalCoroutinesApi
     @Test
     fun `resource permissions should be displayed`() = runBlockingTest {
-        presenter.argsReceived(RESOURCE_MODEL.resourceId)
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
 
-        verify(view).showPermissions(listOf(groupPermission), listOf(userPermission))
+        verify(view).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
     }
 
     private companion object {

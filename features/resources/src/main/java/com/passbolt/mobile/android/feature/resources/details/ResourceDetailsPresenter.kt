@@ -8,12 +8,12 @@ import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.feature.resources.permissionavatarlist.PermissionsDatasetCreator
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -59,15 +59,24 @@ class ResourceDetailsPresenter(
     ResourceDetailsContract.Presenter {
 
     override var view: ResourceDetailsContract.View? = null
-    private lateinit var resourceModel: ResourceModel
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+
+    private lateinit var resourceModel: ResourceModel
     private var isPasswordVisible = false
+    private var permissionsListWidth: Int = -1
+    private var permissionItemWidth: Float = -1f
 
     // TODO consider resource types - for now only description can be both encrypted and unencrypted
     // TODO for future draw and set encrypted properties dynamically based on database input
 
-    override fun argsReceived(resourceId: String) {
+    override fun argsReceived(resourceId: String, permissionsListWidth: Int, permissionItemWidth: Float) {
+        this.permissionsListWidth = permissionsListWidth
+        this.permissionItemWidth = permissionItemWidth
+        getResourcesAndPermissions(resourceId)
+    }
+
+    private fun getResourcesAndPermissions(resourceId: String) {
         scope.launch {
             launch { // get and display resource
                 resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
@@ -83,12 +92,17 @@ class ResourceDetailsPresenter(
                 }
             }
             launch { // get and display permissions
-                val resourcePermissions = getLocalResourcePermissionsUseCase
+                val permissions = getLocalResourcePermissionsUseCase
                     .execute(GetLocalResourcePermissionsUseCase.Input(resourceId)).permissions
 
+                val permissionsDisplayDataset = PermissionsDatasetCreator(permissionsListWidth, permissionItemWidth)
+                    .prepareDataset(permissions)
+
                 view?.showPermissions(
-                    resourcePermissions.filterIsInstance<PermissionModelUi.GroupPermissionModel>(),
-                    resourcePermissions.filterIsInstance<PermissionModelUi.UserPermissionModel>()
+                    permissionsDisplayDataset.groupPermissions,
+                    permissionsDisplayDataset.userPermissions,
+                    permissionsDisplayDataset.counterValue,
+                    permissionsDisplayDataset.overlap
                 )
             }
         }
@@ -260,7 +274,7 @@ class ResourceDetailsPresenter(
     }
 
     override fun resourceEdited(resourceName: String) {
-        argsReceived(resourceModel.resourceId)
+        getResourcesAndPermissions(resourceModel.resourceId)
         view?.showResourceEditedSnackbar(resourceName)
     }
 
