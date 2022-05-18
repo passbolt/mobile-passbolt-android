@@ -16,7 +16,9 @@ import com.passbolt.mobile.android.feature.autofill.databinding.DialogAccessibil
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
 import com.passbolt.mobile.android.feature.autofill.enabled.DialogMode
 import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.AutofillTutorialDialog
+import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.SettingsNavigator
 import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.TutorialMode
+import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
 
@@ -49,6 +51,7 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
     private var listener: Listener? = null
     private val presenter: EncourageAccessibilityAutofillContract.Presenter by scope.inject()
     private lateinit var binding: DialogAccessibilityEncourageAutofillBinding
+    private val settingsNavigator: SettingsNavigator by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,6 +128,14 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
         }.show(
             childFragmentManager, EncourageAccessibilityAutofillDialog::class.java.name
         )
+    }
+
+    override fun navigateToOverlaySettings() {
+        settingsNavigator.navigateToAppSettings(requireActivity())
+    }
+
+    override fun navigateToServiceSettings() {
+        settingsNavigator.navigateToAccessibilitySettings(requireActivity())
     }
 
     override fun dismissWithNotify() {
