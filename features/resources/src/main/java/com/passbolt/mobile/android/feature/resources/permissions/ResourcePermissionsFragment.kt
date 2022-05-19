@@ -96,8 +96,12 @@ class ResourcePermissionsFragment :
         )
     }
 
-    override fun navigateToSelectShareRecipients() {
-        // TODO
+    override fun navigateToSelectShareRecipients(resourceId: String) {
+        findNavController().navigate(
+            ResourcePermissionsFragmentDirections.actionResourcePermissionsFragmentToPermissionRecipientsFragment(
+                resourceId
+            )
+        )
     }
 
     override fun showPermissions(permissions: List<PermissionModelUi>) {

@@ -11,7 +11,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFoldersForFolderUseCase
-import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsUseCase
+import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsWithShareItemsCountUseCase
 import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
@@ -44,7 +44,7 @@ internal val mockGetSubFoldersResourcesUseCase = mock<GetLocalSubFolderResources
 internal val mockGetLocalResourcesAndFoldersUseCase = mock<GetLocalResourcesAndFoldersUseCase>()
 internal val mockGetLocalTagsUseCase = mock<GetLocalTagsUseCase>()
 internal val mockGetLocalResourcesWithTagsUseCase = mock<GetLocalResourcesWithTagUseCase>()
-internal val mockGetLocalGroupsUseCase = mock<GetLocalGroupsUseCase>()
+internal val mockGetLocalGroupsWithItemCountUseCase = mock<GetLocalGroupsWithShareItemsCountUseCase>()
 internal val mockGetLocalResourcesWithGroupsUseCase = mock<GetLocalResourcesWithGroupUseCase>()
 
 @ExperimentalCoroutinesApi
@@ -74,7 +74,7 @@ val testHomeModule = module {
             getLocalResourcesFiltered = mockGetSubFoldersResourcesUseCase,
             getLocalTagsUseCase = mockGetLocalTagsUseCase,
             getLocalResourcesWithTagUseCase = mockGetLocalResourcesWithTagsUseCase,
-            getLocalGroupsUseCase = mockGetLocalGroupsUseCase,
+            getLocalGroupsWithShareItemsCountUseCase = mockGetLocalGroupsWithItemCountUseCase,
             getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase
         )
     }

@@ -72,7 +72,7 @@ fun Module.homeModule() {
                 getLocalResourcesFiltered = get(),
                 getLocalTagsUseCase = get(),
                 getLocalResourcesWithTagUseCase = get(),
-                getLocalGroupsUseCase = get(),
+                getLocalGroupsWithShareItemsCountUseCase = get(),
                 getLocalResourcesWithGroupsUseCase = get()
             )
         }

@@ -339,6 +339,9 @@
 
     <string name="group_member_details_group_member">Group member</string>
 
+    <string name="permission_recipients_select_users">Select users</string>
+    <string name="permission_recipients_already_added">Already added</string>
+
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code

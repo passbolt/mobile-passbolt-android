@@ -40,6 +40,10 @@ interface UsersDao : BaseDao<User> {
     suspend fun getAll(): List<User>
 
     @Transaction
+    @Query("SELECT * FROM User WHERE id NOT IN (:ids)")
+    suspend fun getAllExcluding(ids: List<String>): List<User>
+
+    @Transaction
     @Query("DELETE FROM User")
     suspend fun deleteAll()
 }

@@ -1,0 +1,178 @@
+package com.passbolt.mobile.android.feature.resources.permissionrecipients
+
+import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.database.impl.users.GetLocalUsersUseCase
+import com.passbolt.mobile.android.feature.resources.permissionavatarlist.PermissionsDatasetCreator
+import com.passbolt.mobile.android.mappers.PermissionsModelMapper
+import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.ui.UserModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
+
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
+class PermissionRecipientsPresenter(
+    private val getLocalGroupsUseCase: GetLocalGroupsUseCase,
+    private val getLocalUsersUseCase: GetLocalUsersUseCase,
+    private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
+    private val permissionsModelMapper: PermissionsModelMapper,
+    private val searchableMatcher: SearchableMatcher,
+    coroutineLaunchContext: CoroutineLaunchContext
+) :
+    PermissionRecipientsContract.Presenter,
+    BaseAuthenticatedPresenter<PermissionRecipientsContract.View>(coroutineLaunchContext) {
+
+    override var view: PermissionRecipientsContract.View? = null
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val selectedPermissions = hashSetOf<PermissionModelUi>()
+    private var alreadyAddedListWidth: Int = -1
+    private var alreadyAddedItemWidth: Float = -1f
+    private lateinit var groups: List<GroupModel>
+    private lateinit var users: List<UserModel>
+    private lateinit var existingPermissions: List<PermissionModelUi>
+    private val existingGroupsIds: List<String>
+        get() = existingPermissions
+            .filterIsInstance<PermissionModelUi.GroupPermissionModel>()
+            .map { it.group.groupId }
+    private val existingUsersIds: List<String>
+        get() = existingPermissions
+            .filterIsInstance<PermissionModelUi.UserPermissionModel>()
+            .map { it.user.userId }
+
+    /*
+        Initial users and groups list has to be filtered - existing permissions have to be excluded from list.
+        However existing permissions have to be added when users starts to search under separate "already added section"
+     */
+    override fun argsReceived(resourceId: String, alreadyAddedListWidth: Int, alreadyAddedItemWidth: Float) {
+        this.alreadyAddedListWidth = alreadyAddedListWidth
+        this.alreadyAddedItemWidth = alreadyAddedItemWidth
+
+        scope.launch {
+            existingPermissions = getLocalResourcePermissionsUseCase
+                .execute(GetLocalResourcePermissionsUseCase.Input(resourceId))
+                .permissions
+            showPermissions(existingPermissions)
+
+            groups = getLocalGroupsUseCase.execute(GetLocalGroupsUseCase.Input(existingGroupsIds)).groups
+            users = getLocalUsersUseCase.execute(GetLocalUsersUseCase.Input(existingUsersIds)).users
+
+            view?.showRecipients(groups, users)
+        }
+    }
+
+    override fun searchTextChange(searchText: String) {
+        processSearchIconChange(searchText)
+        view?.filterGroupsAndUsers(searchText)
+    }
+
+    /*
+        User entered search query - show existing permissions additionally.
+     */
+    override fun groupsAndUsersItemsFiltered(constraint: String) {
+        val filteredExistingUsersAndGroups = existingPermissions
+            .filter { searchableMatcher.matches(it, constraint) }
+        view?.showExistingUsersAndGroups(filteredExistingUsersAndGroups)
+    }
+
+    /*
+        Search query is cleared - hide existing permissions.
+     */
+    override fun groupsAndUsersFilterReset() {
+        view?.showExistingUsersAndGroups(emptyList())
+    }
+
+    private fun processSearchIconChange(searchText: String) {
+        if (searchText.isNotBlank()) {
+            view?.displayClearSearchIcon()
+        } else {
+            view?.hideClearSearchIcon()
+        }
+    }
+
+    private fun showPermissions(permissions: List<PermissionModelUi>) {
+        val permissionsDisplayDataset = PermissionsDatasetCreator(alreadyAddedListWidth, alreadyAddedItemWidth)
+            .prepareDataset(permissions)
+        view?.showPermissions(
+            permissionsDisplayDataset.groupPermissions,
+            permissionsDisplayDataset.userPermissions,
+            permissionsDisplayDataset.counterValue,
+            permissionsDisplayDataset.overlap
+        )
+    }
+
+    override fun groupRecipientSelectionChanged(model: GroupModel, isSelected: Boolean) {
+        val permissionModel = permissionsModelMapper.map(model, DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS)
+        processSelection(isSelected, permissionModel)
+    }
+
+    override fun userRecipientSelectionChanged(model: UserModel, isSelected: Boolean) {
+        val permissionModel = permissionsModelMapper.map(model, DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS)
+        processSelection(isSelected, permissionModel)
+    }
+
+    private fun processSelection(
+        isSelected: Boolean,
+        permissionModel: PermissionModelUi
+    ) {
+        if (isSelected) { // add permission to set
+            selectedPermissions.add(permissionModel)
+        } else { // remove permission from set
+            val permissionRecipientId = when (permissionModel) {
+                is PermissionModelUi.GroupPermissionModel -> permissionModel.group.groupId
+                is PermissionModelUi.UserPermissionModel -> permissionModel.user.userId
+            }
+            val selectedItem = selectedPermissions.first {
+                when (it) {
+                    is PermissionModelUi.GroupPermissionModel -> it.group.groupId == permissionRecipientId
+                    is PermissionModelUi.UserPermissionModel -> it.user.userId == permissionRecipientId
+                }
+            }
+            selectedPermissions.remove(selectedItem)
+        }
+        showPermissions(existingPermissions + selectedPermissions)
+    }
+
+    override fun searchClearClick() {
+        view?.clearSearch()
+        view?.hideClearSearchIcon()
+    }
+
+    override fun detach() {
+        scope.coroutineContext.cancelChildren()
+        super<BaseAuthenticatedPresenter>.detach()
+    }
+
+    private companion object {
+        private val DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS = ResourcePermission.READ
+    }
+}

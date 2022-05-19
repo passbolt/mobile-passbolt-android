@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.GroupWithCount
+import com.passbolt.mobile.android.ui.GroupModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,12 +32,21 @@ class GetLocalGroupsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val groupModelMapper: GroupsModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<Unit, List<GroupWithCount>> {
+) : AsyncUseCase<GetLocalGroupsUseCase.Input, GetLocalGroupsUseCase.Output> {
 
-    override suspend fun execute(input: Unit) =
-        databaseProvider
+    override suspend fun execute(input: Input) =
+        Output(databaseProvider
             .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
             .groupsDao()
-            .getAllWithSharedItemsCount()
+            .getAllExcluding(input.excludeByIds)
             .map { groupModelMapper.map(it) }
+        )
+
+    data class Input(
+        val excludeByIds: List<String> = emptyList()
+    )
+
+    data class Output(
+        val groups: List<GroupModel>
+    )
 }

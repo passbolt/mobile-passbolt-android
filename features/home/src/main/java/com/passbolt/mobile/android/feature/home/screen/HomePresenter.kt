@@ -11,7 +11,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFoldersForFolderUseCase
-import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsUseCase
+import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsWithShareItemsCountUseCase
 import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
@@ -87,7 +87,7 @@ class HomePresenter(
     private val getLocalResourcesFiltered: GetLocalSubFolderResourcesFilteredUseCase,
     private val getLocalTagsUseCase: GetLocalTagsUseCase,
     private val getLocalResourcesWithTagUseCase: GetLocalResourcesWithTagUseCase,
-    private val getLocalGroupsUseCase: GetLocalGroupsUseCase,
+    private val getLocalGroupsWithShareItemsCountUseCase: GetLocalGroupsWithShareItemsCountUseCase,
     private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinComponent {
 
@@ -298,7 +298,7 @@ class HomePresenter(
             resourceList = emptyList()
             tagsList = emptyList()
             foldersList = emptyList()
-            groupsList = getLocalGroupsUseCase.execute(Unit)
+            groupsList = getLocalGroupsWithShareItemsCountUseCase.execute(Unit)
         } else { // resources shared with group
             tagsList = emptyList()
             foldersList = emptyList()

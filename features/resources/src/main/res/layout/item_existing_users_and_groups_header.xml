@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    android:id="@+id/itemExistingUsersAndGroupsHeaderItem"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Heading4Text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/dp_16"
+    android:text="@string/permission_recipients_already_added"
+    android:textColor="@color/text_primary" />

@@ -4,9 +4,11 @@ import com.passbolt.mobile.android.dto.response.PermissionWithGroupDto
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.ResourceGroupPermission
 import com.passbolt.mobile.android.entity.resource.ResourceUserPermission
+import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.ui.UserModel
 import com.passbolt.mobile.android.ui.UserWithAvatar
 
 /**
@@ -33,7 +35,8 @@ import com.passbolt.mobile.android.ui.UserWithAvatar
  */
 
 class PermissionsModelMapper(
-    private val groupsModelMapper: GroupsModelMapper
+    private val groupsModelMapper: GroupsModelMapper,
+    private val usersModelMapper: UsersModelMapper
 ) {
 
     fun map(permission: Permission) = when (permission) {
@@ -94,4 +97,10 @@ class PermissionsModelMapper(
                     )
                 }
             }
+
+    fun map(model: GroupModel, permission: ResourcePermission) =
+        PermissionModelUi.GroupPermissionModel(permission, model)
+
+    fun map(model: UserModel, permission: ResourcePermission) =
+        PermissionModelUi.UserPermissionModel(permission, usersModelMapper.mapToUserWithAvatar(model))
 }

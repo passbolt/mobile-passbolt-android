@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.entity.user.UserProfile
 import com.passbolt.mobile.android.ui.GpgKeyModel
 import com.passbolt.mobile.android.ui.UserModel
 import com.passbolt.mobile.android.ui.UserProfileModel
+import com.passbolt.mobile.android.ui.UserWithAvatar
 import java.time.ZonedDateTime
 
 class UsersModelMapper {
@@ -67,5 +68,14 @@ class UsersModelMapper {
                 input.profile.lastName,
                 input.profile.avatarUrl
             )
+        )
+
+    fun mapToUserWithAvatar(input: UserModel) =
+        UserWithAvatar(
+            input.id,
+            input.profile.firstName.orEmpty(),
+            input.profile.lastName.orEmpty(),
+            input.userName,
+            input.profile.avatarUrl
         )
 }
