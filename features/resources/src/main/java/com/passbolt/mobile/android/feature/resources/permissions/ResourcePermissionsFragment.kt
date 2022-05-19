@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.resources.permissions
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.updatePadding
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -9,8 +10,11 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourcePermissionsBinding
 import com.passbolt.mobile.android.feature.resources.permissions.recycler.PermissionItem
 import com.passbolt.mobile.android.ui.PermissionModelUi
@@ -31,9 +35,21 @@ class ResourcePermissionsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
+        setListeners()
         initPermissionsRecycler()
         presenter.attach(this)
-        presenter.argsReceived(args.resourceId)
+        presenter.argsReceived(args.resourceId, args.mode)
+    }
+
+    private fun setListeners() {
+        with(binding) {
+            saveButton.setDebouncingOnClick {
+                presenter.saveClick()
+            }
+            addPermissionButton.setDebouncingOnClick {
+                presenter.addPermissionClick()
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -52,26 +68,51 @@ class ResourcePermissionsFragment :
         )
     }
 
-    override fun navigateToGroupPermissionDetails(groupId: String, permission: ResourcePermission) {
+    override fun navigateToGroupPermissionDetails(
+        groupId: String,
+        permission: ResourcePermission,
+        mode: ResourcePermissionsMode
+    ) {
         findNavController().navigate(
             ResourcePermissionsFragmentDirections.actionResourcePermissionsFragmentToGroupPermissionsFragment(
                 groupId,
-                permission
+                permission,
+                mode
             )
         )
     }
 
-    override fun navigateToUserPermissionDetails(userId: String, permission: ResourcePermission) {
+    override fun navigateToUserPermissionDetails(
+        userId: String,
+        permission: ResourcePermission,
+        mode: ResourcePermissionsMode
+    ) {
         findNavController().navigate(
             ResourcePermissionsFragmentDirections.actionResourcePermissionsFragmentToUserPermissionsFragment(
                 userId,
-                permission
+                permission,
+                mode
             )
         )
+    }
+
+    override fun navigateToSelectShareRecipients() {
+        // TODO
     }
 
     override fun showPermissions(permissions: List<PermissionModelUi>) {
         FastAdapterDiffUtil.calculateDiff(permissionsItemAdapter, permissions.map { PermissionItem(it) })
         fastAdapter.notifyAdapterDataSetChanged()
+    }
+
+    override fun showSaveButton() {
+        with(binding) {
+            saveLayout.visible()
+            permissionsRecycler.updatePadding(bottom = resources.getDimension(R.dimen.dp_96).toInt())
+        }
+    }
+
+    override fun showAddUserButton() {
+        binding.addPermissionButton.visible()
     }
 }

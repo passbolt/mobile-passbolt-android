@@ -35,9 +35,10 @@ import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
-import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
 import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.GroupItem
 import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.UserItem
+import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
+import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -299,6 +300,10 @@ class ResourceDetailsFragment :
         presenter.menuEditClick()
     }
 
+    override fun menuShareClick() {
+        presenter.menuShareClick()
+    }
+
     override fun openWebsite(url: String) {
         websiteOpener.open(requireContext(), url)
     }
@@ -366,9 +371,9 @@ class ResourceDetailsFragment :
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
-    override fun navigateToResourcePermissions(resourceId: String) {
+    override fun navigateToResourcePermissions(resourceId: String, mode: ResourcePermissionsMode) {
         findNavController().navigate(
-            ResourceDetailsFragmentDirections.actionResourceDetailsToResourcePermissionsFragment(resourceId)
+            ResourceDetailsFragmentDirections.actionResourceDetailsToResourcePermissionsFragment(resourceId, mode)
         )
     }
 

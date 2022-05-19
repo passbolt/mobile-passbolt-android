@@ -1,19 +1,19 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.feature.resources.permissions
 
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
+ * <p>
  * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
  * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
  * agreement with Passbolt SA.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License along with this program. If not,
  * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
  *
@@ -22,36 +22,6 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-sealed class PermissionModel(val permission: ResourcePermission) {
-
-    class UserPermissionModel(
-        permission: ResourcePermission,
-        val userId: String
-    ) : PermissionModel(permission)
-
-    class GroupPermissionModel(
-        permission: ResourcePermission,
-        val group: GroupModel
-    ) : PermissionModel(permission)
+enum class ResourcePermissionsMode {
+    VIEW, EDIT
 }
-
-sealed class PermissionModelUi(val permission: ResourcePermission) {
-
-    class UserPermissionModel(
-        permission: ResourcePermission,
-        val user: UserWithAvatar
-    ) : PermissionModelUi(permission)
-
-    class GroupPermissionModel(
-        permission: ResourcePermission,
-        val group: GroupModel
-    ) : PermissionModelUi(permission)
-}
-
-data class UserWithAvatar(
-    val userId: String,
-    val firstName: String,
-    val lastName: String,
-    val userName: String,
-    val avatarUrl: String?
-)

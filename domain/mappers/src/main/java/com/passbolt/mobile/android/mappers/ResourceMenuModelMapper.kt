@@ -10,7 +10,8 @@ class ResourceMenuModelMapper {
         ResourceMoreMenuModel(
             title = resourceModel.name,
             canDelete = resourceModel.permission in WRITE_PERMISSIONS,
-            canEdit = resourceModel.permission in WRITE_PERMISSIONS
+            canEdit = resourceModel.permission in WRITE_PERMISSIONS,
+            canShare = resourceModel.permission == ResourcePermission.OWNER
         )
 
     private companion object {

@@ -6,6 +6,13 @@
     android:id="@+id/resources"
     app:startDestination="@id/resourceDetails">
 
+    <argument
+        android:name="resourceId"
+        app:argType="string" />
+    <argument
+        android:name="mode"
+        app:argType="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode" />
+
     <fragment
         android:id="@+id/resourceDetails"
         android:name="com.passbolt.mobile.android.feature.resources.details.ResourceDetailsFragment"
@@ -28,9 +35,6 @@
         android:name="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsFragment"
         android:label="ResourcePermissionsFragment"
         tools:layout="@layout/fragment_resource_permissions">
-        <argument
-            android:name="resourceId"
-            app:argType="string" />
         <action
             android:id="@+id/action_resourcePermissionsFragment_to_groupPermissionsFragment"
             app:destination="@id/groupPermissionsFragment"
@@ -45,6 +49,12 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="resourceId"
+            app:argType="string" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode" />
     </fragment>
 
     <fragment
@@ -58,6 +68,9 @@
         <argument
             android:name="permission"
             app:argType="com.passbolt.mobile.android.ui.ResourcePermission" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode" />
     </fragment>
     <fragment
         android:id="@+id/userPermissionsFragment"
@@ -70,6 +83,9 @@
         <argument
             android:name="permission"
             app:argType="com.passbolt.mobile.android.ui.ResourcePermission" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode" />
     </fragment>
 
     <include app:graph="@navigation/group_members" />

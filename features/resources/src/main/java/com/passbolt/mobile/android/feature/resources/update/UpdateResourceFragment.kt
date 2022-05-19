@@ -199,7 +199,7 @@ class UpdateResourceFragment :
     }
 
     override fun showEditButton() {
-        binding.updateButton.text = getString(R.string.resource_update_edit_button)
+        binding.updateButton.text = getString(R.string.save)
     }
 
     override fun showCreateTitle() {

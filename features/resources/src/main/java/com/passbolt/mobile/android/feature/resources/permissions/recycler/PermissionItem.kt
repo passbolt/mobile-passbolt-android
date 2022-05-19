@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.ItemPermissionBinding
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.ResourcePermission
 
 /**
  * Passbolt - Open source password manager for teams
@@ -47,7 +48,7 @@ class PermissionItem(
 
     override fun bindView(binding: ItemPermissionBinding, payloads: List<Any>) {
         with(binding) {
-            permissionValue.text = PermissionModelUi.getPermissionTextValue(binding.root.context, model.permission)
+            permissionValue.text = ResourcePermission.getPermissionTextValue(binding.root.context, model.permission)
             when (model) {
                 is PermissionModelUi.GroupPermissionModel -> {
                     icon.setImageResource(R.drawable.ic_filled_group_with_bg)

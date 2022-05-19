@@ -11,8 +11,12 @@ class ResourceMoreMenuPresenter : ResourceMoreMenuContract.Presenter {
     }
 
     private fun processEditAndDeleteButtons(menuModel: ResourceMoreMenuModel) {
-        if (menuModel.canDelete || menuModel.canEdit) {
+        if (menuModel.canDelete || menuModel.canEdit || menuModel.canShare) {
             view?.showSeparator()
+        }
+
+        if (menuModel.canShare) {
+            view?.showShareButton()
         }
 
         if (menuModel.canDelete) {

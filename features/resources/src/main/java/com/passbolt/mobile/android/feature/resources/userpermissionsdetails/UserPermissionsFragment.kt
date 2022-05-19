@@ -5,12 +5,12 @@ import android.view.View
 import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
-import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.common.FingerprintFormatter
+import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentUserPermissionsBinding
-import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 import org.koin.android.ext.android.inject
@@ -27,19 +27,34 @@ class UserPermissionsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
+        setListeners()
         presenter.attach(this)
-        presenter.argsRetrieved(args.userId, args.permission)
+        presenter.argsRetrieved(args.userId, args.permission, args.mode)
+    }
+
+    private fun setListeners() {
+        binding.permissionSelect.onPermissionSelectedListener = {
+            presenter.onPermissionSelected(it)
+        }
     }
 
     override fun showPermission(permission: ResourcePermission) {
         with(binding.permissionLabel) {
-            text = PermissionModelUi.getPermissionTextValue(context, permission)
+            visible()
+            text = ResourcePermission.getPermissionTextValue(context, permission)
             setCompoundDrawablesWithIntrinsicBounds(
-                PermissionModelUi.getPermissionIcon(context, permission),
+                ResourcePermission.getPermissionIcon(context, permission),
                 null,
                 null,
                 null
             )
+        }
+    }
+
+    override fun showPermissionChoices(currentPermission: ResourcePermission) {
+        with(binding.permissionSelect) {
+            visible()
+            selectPermission(currentPermission, silently = true)
         }
     }
 
