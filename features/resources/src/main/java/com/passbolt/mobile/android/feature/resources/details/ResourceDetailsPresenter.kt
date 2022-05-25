@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermi
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.resources.permissionavatarlist.PermissionsDatasetCreator
+import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
@@ -273,6 +274,10 @@ class ResourceDetailsPresenter(
         view?.navigateToEditResource(resourceModel)
     }
 
+    override fun menuShareClick() {
+        view?.navigateToResourcePermissions(resourceModel.resourceId, ResourcePermissionsMode.EDIT)
+    }
+
     override fun resourceEdited(resourceName: String) {
         getResourcesAndPermissions(resourceModel.resourceId)
         view?.showResourceEditedSnackbar(resourceName)
@@ -287,7 +292,7 @@ class ResourceDetailsPresenter(
     }
 
     override fun sharedWithClick() {
-        view?.navigateToResourcePermissions(resourceModel.resourceId)
+        view?.navigateToResourcePermissions(resourceModel.resourceId, ResourcePermissionsMode.VIEW)
     }
 
     override fun detach() {

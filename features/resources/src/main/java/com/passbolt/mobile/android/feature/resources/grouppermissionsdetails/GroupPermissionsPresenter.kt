@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPres
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.groups.GetGroupWithUsersUseCase
 import com.passbolt.mobile.android.feature.resources.permissionavatarlist.UsersDatasetCreator
+import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -25,11 +26,15 @@ class GroupPermissionsPresenter(
     override fun argsRetrieved(
         groupId: String,
         permission: ResourcePermission,
+        mode: ResourcePermissionsMode,
         membersRecyclerWidth: Int,
         membersItemWidth: Float
     ) {
         this.groupId = groupId
-        view?.showPermission(permission)
+        when (mode) {
+            ResourcePermissionsMode.VIEW -> view?.showPermission(permission)
+            ResourcePermissionsMode.EDIT -> view?.showPermissionChoices(permission)
+        }
         scope.launch {
             getGroupWithUsersUseCase.execute(GetGroupWithUsersUseCase.Input(groupId)).groupWithUsers.let {
                 view?.apply {
@@ -50,6 +55,10 @@ class GroupPermissionsPresenter(
 
     override fun groupMembersRecyclerClick() {
         view?.navigateToGroupMembers(groupId)
+    }
+
+    override fun onPermissionSelected(permission: ResourcePermission) {
+        // TODO
     }
 
     override fun detach() {

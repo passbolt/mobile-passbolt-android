@@ -30,12 +30,25 @@ interface ResourcePermissionsContract {
 
     interface View : BaseAuthenticatedContract.View {
         fun showPermissions(permissions: List<PermissionModelUi>)
-        fun navigateToGroupPermissionDetails(groupId: String, permission: ResourcePermission)
-        fun navigateToUserPermissionDetails(userId: String, permission: ResourcePermission)
+        fun navigateToGroupPermissionDetails(
+            groupId: String,
+            permission: ResourcePermission,
+            mode: ResourcePermissionsMode
+        )
+        fun navigateToUserPermissionDetails(
+            userId: String,
+            permission: ResourcePermission,
+            mode: ResourcePermissionsMode
+        )
+        fun showAddUserButton()
+        fun showSaveButton()
+        fun navigateToSelectShareRecipients()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsReceived(resourceId: String)
+        fun argsReceived(resourceId: String, mode: ResourcePermissionsMode)
         fun permissionClick(permission: PermissionModelUi)
+        fun saveClick()
+        fun addPermissionClick()
     }
 }

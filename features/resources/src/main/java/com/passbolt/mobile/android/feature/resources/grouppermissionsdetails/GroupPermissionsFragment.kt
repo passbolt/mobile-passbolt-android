@@ -11,6 +11,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.commongroups.groupmembers.GroupMembersFragment
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
@@ -19,7 +20,6 @@ import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentGroupPermissionsBinding
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.membersrecycler.GroupUserItem
 import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
-import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 import org.koin.android.ext.android.inject
@@ -39,15 +39,23 @@ class GroupPermissionsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
+        setListeners()
         setupGroupMembersRecycler()
         presenter.attach(this)
         binding.groupMembersRecycler.doOnLayout {
             presenter.argsRetrieved(
                 args.groupId,
                 args.permission,
+                args.mode,
                 it.width,
                 resources.getDimension(R.dimen.dp_40)
             )
+        }
+    }
+
+    private fun setListeners() {
+        binding.permissionSelect.onPermissionSelectedListener = {
+            presenter.onPermissionSelected(it)
         }
     }
 
@@ -72,13 +80,21 @@ class GroupPermissionsFragment :
 
     override fun showPermission(permission: ResourcePermission) {
         with(binding.permissionLabel) {
-            text = PermissionModelUi.getPermissionTextValue(context, permission)
+            visible()
+            text = ResourcePermission.getPermissionTextValue(context, permission)
             setCompoundDrawablesWithIntrinsicBounds(
-                PermissionModelUi.getPermissionIcon(context, permission),
+                ResourcePermission.getPermissionIcon(context, permission),
                 null,
                 null,
                 null
             )
+        }
+    }
+
+    override fun showPermissionChoices(currentPermission: ResourcePermission) {
+        with(binding.permissionSelect) {
+            visible()
+            selectPermission(currentPermission, silently = true)
         }
     }
 

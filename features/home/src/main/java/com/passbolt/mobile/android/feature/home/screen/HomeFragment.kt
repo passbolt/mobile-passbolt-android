@@ -48,6 +48,7 @@ import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
+import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
@@ -366,6 +367,10 @@ class HomeFragment :
         presenter.menuDeleteClick()
     }
 
+    override fun menuShareClick() {
+        presenter.menuShareClick()
+    }
+
     override fun openWebsite(url: String) {
         websiteOpener.open(requireContext(), url)
     }
@@ -438,6 +443,11 @@ class HomeFragment :
                 resourceModel
             )
         )
+    }
+
+    override fun navigateToResourcePermissions(resourceId: String, mode: ResourcePermissionsMode) {
+        // TODO navigation safe args not supported between modules - add deeplink
+        // HomeFragmentDirections.actionHomeToResourceDetailsGraph(resourceId, mode)
     }
 
     override fun hideAddButton() {

@@ -32,6 +32,7 @@ interface ResourceMoreMenuContract {
         fun showSeparator()
         fun showDeleteButton()
         fun showEditButton()
+        fun showShareButton()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

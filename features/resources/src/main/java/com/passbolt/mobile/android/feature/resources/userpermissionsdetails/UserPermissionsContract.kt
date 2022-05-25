@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.resources.userpermissionsdetails
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 
@@ -31,9 +32,11 @@ interface UserPermissionsContract {
     interface View : BaseAuthenticatedContract.View {
         fun showPermission(permission: ResourcePermission)
         fun showUserData(user: UserModel)
+        fun showPermissionChoices(currentPermission: ResourcePermission)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsRetrieved(userId: String, permission: ResourcePermission)
+        fun argsRetrieved(userId: String, permission: ResourcePermission, mode: ResourcePermissionsMode)
+        fun onPermissionSelected(permission: ResourcePermission)
     }
 }

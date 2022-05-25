@@ -82,37 +82,22 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
 
     private fun setListeners() {
         with(binding) {
-            copyPassword.setDebouncingOnClick {
-                listener?.menuCopyPasswordClick()
-                dismiss()
-            }
-            copyDescription.setDebouncingOnClick {
-                listener?.menuCopyDescriptionClick()
-                dismiss()
-            }
-            copyUrl.setDebouncingOnClick {
-                listener?.menuCopyUrlClick()
-                dismiss()
-            }
-            copyUsername.setDebouncingOnClick {
-                listener?.menuCopyUsernameClick()
-                dismiss()
-            }
-            launchWebsite.setDebouncingOnClick {
-                listener?.menuLaunchWebsiteClick()
-                dismiss()
-            }
-            delete.setDebouncingOnClick {
-                listener?.menuDeleteClick()
-                dismiss()
-            }
-            edit.setDebouncingOnClick {
-                listener?.menuEditClick()
-                dismiss()
-            }
-            close.setDebouncingOnClick {
-                dismiss()
-            }
+            setDebouncingOnClickAndDismiss(copyPassword) { listener?.menuCopyPasswordClick() }
+            setDebouncingOnClickAndDismiss(copyDescription) { listener?.menuCopyDescriptionClick() }
+            setDebouncingOnClickAndDismiss(copyUrl) { listener?.menuCopyUrlClick() }
+            setDebouncingOnClickAndDismiss(copyUsername) { listener?.menuCopyUsernameClick() }
+            setDebouncingOnClickAndDismiss(launchWebsite) { listener?.menuLaunchWebsiteClick() }
+            setDebouncingOnClickAndDismiss(share) { listener?.menuShareClick() }
+            setDebouncingOnClickAndDismiss(delete) { listener?.menuDeleteClick() }
+            setDebouncingOnClickAndDismiss(edit) { listener?.menuEditClick() }
+            setDebouncingOnClickAndDismiss(close)
+        }
+    }
+
+    private fun setDebouncingOnClickAndDismiss(view: View, action: () -> Unit = {}) {
+        view.setDebouncingOnClick {
+            action()
+            dismiss()
         }
     }
 
@@ -132,6 +117,10 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
         binding.edit.visible()
     }
 
+    override fun showShareButton() {
+        binding.share.visible()
+    }
+
     companion object {
         private const val EXTRA_RESOURCE_MENU_MODEL = "RESOURCE_MENU_MODEL"
 
@@ -149,5 +138,6 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
         fun menuLaunchWebsiteClick()
         fun menuDeleteClick()
         fun menuEditClick()
+        fun menuShareClick()
     }
 }

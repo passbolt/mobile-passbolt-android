@@ -18,8 +18,15 @@ class ResourcePermissionsPresenter(
     override var view: ResourcePermissionsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private lateinit var mode: ResourcePermissionsMode
 
-    override fun argsReceived(resourceId: String) {
+    override fun argsReceived(resourceId: String, mode: ResourcePermissionsMode) {
+        this.mode = mode
+        processItemsVisibility(mode)
+        getResourcePermissions(resourceId)
+    }
+
+    private fun getResourcePermissions(resourceId: String) {
         scope.launch {
             getLocalResourcePermissionsUseCase
                 .execute(GetLocalResourcePermissionsUseCase.Input(resourceId)).permissions
@@ -27,13 +34,30 @@ class ResourcePermissionsPresenter(
         }
     }
 
+    private fun processItemsVisibility(mode: ResourcePermissionsMode) {
+        if (mode == ResourcePermissionsMode.EDIT) {
+            view?.apply {
+                showAddUserButton()
+                showSaveButton()
+            }
+        }
+    }
+
     override fun permissionClick(permission: PermissionModelUi) {
         when (permission) {
             is PermissionModelUi.GroupPermissionModel ->
-                view?.navigateToGroupPermissionDetails(permission.group.groupId, permission.permission)
+                view?.navigateToGroupPermissionDetails(permission.group.groupId, permission.permission, mode)
             is PermissionModelUi.UserPermissionModel ->
-                view?.navigateToUserPermissionDetails(permission.user.userId, permission.permission)
+                view?.navigateToUserPermissionDetails(permission.user.userId, permission.permission, mode)
         }
+    }
+
+    override fun saveClick() {
+        // TODO
+    }
+
+    override fun addPermissionClick() {
+        view?.navigateToSelectShareRecipients()
     }
 
     override fun detach() {

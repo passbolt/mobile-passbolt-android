@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.ui
 
+import android.content.Context
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,5 +27,23 @@ package com.passbolt.mobile.android.ui
 enum class ResourcePermission {
     READ,
     UPDATE,
-    OWNER
+    OWNER;
+
+    companion object {
+        fun getPermissionTextValue(context: Context, permission: ResourcePermission) = context.getString(
+            when (permission) {
+                READ -> R.string.resource_permissions_can_read
+                UPDATE -> R.string.resource_permissions_can_update
+                OWNER -> R.string.resource_permissions_is_owner
+            }
+        )
+
+        fun getPermissionIcon(context: Context, permission: ResourcePermission) = context.getDrawable(
+            when (permission) {
+                READ -> R.drawable.ic_permission_read
+                UPDATE -> R.drawable.ic_permission_edit
+                OWNER -> R.drawable.ic_permission_owner
+            }
+        )
+    }
 }
