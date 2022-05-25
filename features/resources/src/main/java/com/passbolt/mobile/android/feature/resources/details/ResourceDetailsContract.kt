@@ -63,6 +63,7 @@ interface ResourceDetailsContract {
         )
 
         fun navigateToResourcePermissions(resourceId: String)
+        fun setResourceEditedResult(resourceName: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
