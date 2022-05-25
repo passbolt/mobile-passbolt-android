@@ -35,9 +35,9 @@ import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
-import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
 import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.GroupItem
 import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.UserItem
+import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -315,6 +315,13 @@ class ResourceDetailsFragment :
             )
             finish()
         }
+    }
+
+    override fun setResourceEditedResult(resourceName: String) {
+        requireActivity().setResult(
+            ResourceActivity.RESULT_RESOURCE_EDITED,
+            ResourceActivity.resourceNameResultIntent(resourceName)
+        )
     }
 
     override fun showGeneralError() {
