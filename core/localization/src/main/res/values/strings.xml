@@ -17,6 +17,7 @@
     <string name="no_passwords">There are no passwords</string>
     <string name="authentication_required">Authentication required</string>
     <string name="save">Save</string>
+    <string name="apply">Apply</string>
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_refresh">Refresh</string>

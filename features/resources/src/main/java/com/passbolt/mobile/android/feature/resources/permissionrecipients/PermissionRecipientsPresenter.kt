@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.users.GetLocalUsersUseCase
 import com.passbolt.mobile.android.feature.resources.permissionavatarlist.PermissionsDatasetCreator
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
@@ -43,7 +42,6 @@ import kotlinx.coroutines.launch
 class PermissionRecipientsPresenter(
     private val getLocalGroupsUseCase: GetLocalGroupsUseCase,
     private val getLocalUsersUseCase: GetLocalUsersUseCase,
-    private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
     private val permissionsModelMapper: PermissionsModelMapper,
     private val searchableMatcher: SearchableMatcher,
     coroutineLaunchContext: CoroutineLaunchContext
@@ -54,37 +52,43 @@ class PermissionRecipientsPresenter(
     override var view: PermissionRecipientsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private val selectedPermissions = hashSetOf<PermissionModelUi>()
+
     private var alreadyAddedListWidth: Int = -1
     private var alreadyAddedItemWidth: Float = -1f
+    private lateinit var alreadyAddedUsers: List<PermissionModelUi.UserPermissionModel>
+
+    private val selectedPermissions = mutableListOf<PermissionModelUi>()
+    private lateinit var alreadyAddedGroups: List<PermissionModelUi.GroupPermissionModel>
     private lateinit var groups: List<GroupModel>
     private lateinit var users: List<UserModel>
-    private lateinit var existingPermissions: List<PermissionModelUi>
-    private val existingGroupsIds: List<String>
-        get() = existingPermissions
-            .filterIsInstance<PermissionModelUi.GroupPermissionModel>()
-            .map { it.group.groupId }
-    private val existingUsersIds: List<String>
-        get() = existingPermissions
-            .filterIsInstance<PermissionModelUi.UserPermissionModel>()
-            .map { it.user.userId }
 
     /*
         Initial users and groups list has to be filtered - existing permissions have to be excluded from list.
         However existing permissions have to be added when users starts to search under separate "already added section"
      */
-    override fun argsReceived(resourceId: String, alreadyAddedListWidth: Int, alreadyAddedItemWidth: Float) {
+    override fun argsReceived(
+        alreadyAddedGroupPermissions: List<PermissionModelUi.GroupPermissionModel>,
+        alreadyAddeduserPermissions: List<PermissionModelUi.UserPermissionModel>,
+        alreadyAddedListWidth: Int,
+        alreadyAddedItemWidth: Float
+    ) {
         this.alreadyAddedListWidth = alreadyAddedListWidth
         this.alreadyAddedItemWidth = alreadyAddedItemWidth
+        this.alreadyAddedGroups = alreadyAddedGroupPermissions
+        this.alreadyAddedUsers = alreadyAddeduserPermissions
 
         scope.launch {
-            existingPermissions = getLocalResourcePermissionsUseCase
-                .execute(GetLocalResourcePermissionsUseCase.Input(resourceId))
-                .permissions
-            showPermissions(existingPermissions)
+            showPermissions(alreadyAddedGroupPermissions + alreadyAddeduserPermissions)
 
-            groups = getLocalGroupsUseCase.execute(GetLocalGroupsUseCase.Input(existingGroupsIds)).groups
-            users = getLocalUsersUseCase.execute(GetLocalUsersUseCase.Input(existingUsersIds)).users
+            groups = getLocalGroupsUseCase.execute(
+                GetLocalGroupsUseCase.Input(
+                    alreadyAddedGroupPermissions.map { it.group.groupId })
+            ).groups
+
+            users = getLocalUsersUseCase.execute(
+                GetLocalUsersUseCase.Input(
+                    alreadyAddeduserPermissions.map { it.user.userId })
+            ).users
 
             view?.showRecipients(groups, users)
         }
@@ -99,7 +103,7 @@ class PermissionRecipientsPresenter(
         User entered search query - show existing permissions additionally.
      */
     override fun groupsAndUsersItemsFiltered(constraint: String) {
-        val filteredExistingUsersAndGroups = existingPermissions
+        val filteredExistingUsersAndGroups = (alreadyAddedGroups + alreadyAddedUsers)
             .filter { searchableMatcher.matches(it, constraint) }
         view?.showExistingUsersAndGroups(filteredExistingUsersAndGroups)
     }
@@ -159,12 +163,19 @@ class PermissionRecipientsPresenter(
             }
             selectedPermissions.remove(selectedItem)
         }
-        showPermissions(existingPermissions + selectedPermissions)
+        showPermissions(alreadyAddedGroups + alreadyAddedUsers + selectedPermissions)
     }
 
     override fun searchClearClick() {
         view?.clearSearch()
         view?.hideClearSearchIcon()
+    }
+
+    override fun saveButtonClick() {
+        view?.apply {
+            setSelectedPermissionsResult(alreadyAddedGroups + alreadyAddedUsers + selectedPermissions)
+            navigateBack()
+        }
     }
 
     override fun detach() {

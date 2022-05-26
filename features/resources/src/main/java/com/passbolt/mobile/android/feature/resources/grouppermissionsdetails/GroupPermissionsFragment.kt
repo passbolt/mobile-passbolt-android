@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.feature.resources.grouppermissionsdetails
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.core.view.doOnLayout
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -11,6 +13,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.commongroups.groupmembers.GroupMembersFragment
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
@@ -20,6 +23,7 @@ import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentGroupPermissionsBinding
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.membersrecycler.GroupUserItem
 import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
+import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 import org.koin.android.ext.android.inject
@@ -44,7 +48,6 @@ class GroupPermissionsFragment :
         presenter.attach(this)
         binding.groupMembersRecycler.doOnLayout {
             presenter.argsRetrieved(
-                args.groupId,
                 args.permission,
                 args.mode,
                 it.width,
@@ -54,8 +57,13 @@ class GroupPermissionsFragment :
     }
 
     private fun setListeners() {
-        binding.permissionSelect.onPermissionSelectedListener = {
-            presenter.onPermissionSelected(it)
+        with(binding) {
+            permissionSelect.onPermissionSelectedListener = {
+                presenter.onPermissionSelected(it)
+            }
+            saveButton.setDebouncingOnClick {
+                presenter.saveButtonClick()
+            }
         }
     }
 
@@ -92,10 +100,14 @@ class GroupPermissionsFragment :
     }
 
     override fun showPermissionChoices(currentPermission: ResourcePermission) {
-        with(binding.permissionSelect) {
-            visible()
-            selectPermission(currentPermission, silently = true)
+        with(binding) {
+            permissionSelect.visible()
+            permissionSelect.selectPermission(currentPermission, silently = true)
         }
+    }
+
+    override fun showSaveLayout() {
+        binding.saveLayout.visible()
     }
 
     override fun showGroupName(groupName: String) {
@@ -124,5 +136,21 @@ class GroupPermissionsFragment :
                 .setPopExitAnim(R.anim.slide_out_right)
                 .build()
         )
+    }
+
+    override fun setUpdatedPermissionResult(permission: PermissionModelUi.GroupPermissionModel) {
+        setFragmentResult(
+            EXTRA_UPDATED_GROUP_PERMISSION_BUNDLE_KEY,
+            bundleOf(EXTRA_UPDATED_GROUP_PERMISSION to permission)
+        )
+    }
+
+    override fun navigateBack() {
+        findNavController().popBackStack()
+    }
+
+    companion object {
+        const val EXTRA_UPDATED_GROUP_PERMISSION_BUNDLE_KEY = "EXTRA_UPDATED_GROUP_PERMISSION_BUNDLE"
+        const val EXTRA_UPDATED_GROUP_PERMISSION = "EXTRA_UPDATED_GROUP_PERMISSION"
     }
 }

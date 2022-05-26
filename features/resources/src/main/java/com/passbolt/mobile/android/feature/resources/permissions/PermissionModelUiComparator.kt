@@ -1,12 +1,6 @@
-package com.passbolt.mobile.android.feature.resources.permissionrecipients.recipientsrecycler
+package com.passbolt.mobile.android.feature.resources.permissions
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import coil.load
-import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.passbolt.mobile.android.feature.resources.R
-import com.passbolt.mobile.android.feature.resources.databinding.ItemPermissionRecipientGroupBinding
-import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.ui.PermissionModelUi
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,22 +24,18 @@ import com.passbolt.mobile.android.ui.GroupModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GroupRecipientItem(
-    val model: GroupModel
-) : AbstractBindingItem<ItemPermissionRecipientGroupBinding>() {
 
-    override val type: Int
-        get() = R.id.groupRecipientItem
+class PermissionModelUiComparator : Comparator<PermissionModelUi> {
 
-    override fun bindView(binding: ItemPermissionRecipientGroupBinding, payloads: List<Any>) {
-        with(binding) {
-            icon.load(R.drawable.ic_filled_group_with_bg)
-            name.text = model.groupName
-            radio.isChecked = root.isSelected
-        }
+    override fun compare(first: PermissionModelUi, second: PermissionModelUi): Int {
+        return order.indexOf(first::class.java)
+            .compareTo(order.indexOf(second::class.java))
     }
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemPermissionRecipientGroupBinding {
-        return ItemPermissionRecipientGroupBinding.inflate(inflater, parent, false)
+    private companion object {
+        private val order = listOf(
+            PermissionModelUi.GroupPermissionModel::class.java,
+            PermissionModelUi.UserPermissionModel::class.java
+        )
     }
 }

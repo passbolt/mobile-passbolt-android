@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.ui
 
+import android.os.Parcelable
 import com.passbolt.mobile.android.common.search.Searchable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,21 +39,24 @@ sealed class PermissionModel(val permission: ResourcePermission) {
     ) : PermissionModel(permission)
 }
 
-sealed class PermissionModelUi(val permission: ResourcePermission) : Searchable {
+sealed class PermissionModelUi(open val permission: ResourcePermission) : Searchable, Parcelable {
 
+    @Parcelize
     class UserPermissionModel(
-        permission: ResourcePermission,
+        override val permission: ResourcePermission,
         val user: UserWithAvatar,
         override val searchCriteria: String = user.searchCriteria
-    ) : PermissionModelUi(permission)
+    ) : PermissionModelUi(permission), Parcelable
 
+    @Parcelize
     class GroupPermissionModel(
-        permission: ResourcePermission,
+        override val permission: ResourcePermission,
         val group: GroupModel,
         override val searchCriteria: String = group.searchCriteria
-    ) : PermissionModelUi(permission)
+    ) : PermissionModelUi(permission), Parcelable
 }
 
+@Parcelize
 data class UserWithAvatar(
     val userId: String,
     val firstName: String,
@@ -59,4 +64,4 @@ data class UserWithAvatar(
     val userName: String,
     val avatarUrl: String?,
     override val searchCriteria: String = "$userName$firstName$lastName"
-) : Searchable
+) : Searchable, Parcelable
