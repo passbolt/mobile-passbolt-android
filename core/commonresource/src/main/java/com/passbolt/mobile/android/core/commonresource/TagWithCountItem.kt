@@ -9,8 +9,8 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.asBinding
 import com.passbolt.mobile.android.commonresource.R
-import com.passbolt.mobile.android.commonresource.databinding.ItemGroupBinding
-import com.passbolt.mobile.android.ui.GroupWithCount
+import com.passbolt.mobile.android.commonresource.databinding.ItemTagWithCountBinding
+import com.passbolt.mobile.android.ui.TagWithCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,41 +34,48 @@ import com.passbolt.mobile.android.ui.GroupWithCount
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GroupItem(
-    val groupWithCount: GroupWithCount
-) : AbstractBindingItem<ItemGroupBinding>() {
+class TagWithCountItem(
+    val tagWithCount: TagWithCount
+) : AbstractBindingItem<ItemTagWithCountBinding>() {
 
     override val type: Int
-        get() = R.id.itemGroup
+        get() = R.id.itemTag
 
-    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemGroupBinding =
-        ItemGroupBinding.inflate(inflater, parent, false)
+    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemTagWithCountBinding =
+        ItemTagWithCountBinding.inflate(inflater, parent, false)
 
-    override fun bindView(binding: ItemGroupBinding, payloads: List<Any>) {
+    override fun bindView(binding: ItemTagWithCountBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            name.text = groupWithCount.groupName
-            taggedItemsCount.text = groupWithCount.groupItemsCount.toString()
+            name.text = tagWithCount.slug
+            taggedItemsCount.text = tagWithCount.taggedResourcesCount.toString()
+            icon.setImageResource(
+                if (tagWithCount.isShared) {
+                    R.drawable.ic_filled_shared_tag_with_bg
+                } else {
+                    R.drawable.ic_filled_tag_with_bg
+                }
+            )
         }
     }
 
     class ItemClick(
-        private val clickListener: (GroupWithCount) -> Unit
-    ) : ClickEventHook<GroupItem>() {
+        private val clickListener: (TagWithCount) -> Unit
+    ) : ClickEventHook<TagWithCountItem>() {
 
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
-            return viewHolder.asBinding<ItemGroupBinding> {
-                it.itemGroup
+            return viewHolder.asBinding<ItemTagWithCountBinding> {
+                it.itemTag
             }
         }
 
         override fun onClick(
             v: View,
             position: Int,
-            fastAdapter: FastAdapter<GroupItem>,
-            item: GroupItem
+            fastAdapter: FastAdapter<TagWithCountItem>,
+            item: TagWithCountItem
         ) {
-            clickListener.invoke(item.groupWithCount)
+            clickListener.invoke(item.tagWithCount)
         }
     }
 }

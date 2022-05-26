@@ -33,11 +33,11 @@ import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.commonresource.FolderItem
-import com.passbolt.mobile.android.core.commonresource.GroupItem
+import com.passbolt.mobile.android.core.commonresource.GroupWithCountItem
 import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
-import com.passbolt.mobile.android.core.commonresource.TagItem
+import com.passbolt.mobile.android.core.commonresource.TagWithCountItem
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
@@ -90,8 +90,8 @@ class HomeFragment :
     private val childrenPasswordItemAdapter: ItemAdapter<PasswordItem> by inject(named(SUB_RESOURCE_ITEM_ADAPTER))
     private val folderItemAdapter: ItemAdapter<FolderItem> by inject(named(FOLDER_ITEM_ADAPTER))
     private val childrenFolderItemAdapter: ItemAdapter<FolderItem> by inject(named(SUB_FOLDER_ITEM_ADAPTER))
-    private val tagsItemAdapter: ItemAdapter<TagItem> by inject(named(TAGS_ITEM_ADAPTER))
-    private val groupsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUPS_ITEM_ADAPTER))
+    private val tagsItemAdapter: ItemAdapter<TagWithCountItem> by inject(named(TAGS_ITEM_ADAPTER))
+    private val groupsItemAdapter: ItemAdapter<GroupWithCountItem> by inject(named(GROUPS_ITEM_ADAPTER))
     private val inSubFoldersHeaderItemAdapter: ItemAdapter<InSubFoldersHeaderItem> by inject(
         named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)
     )
@@ -201,10 +201,10 @@ class HomeFragment :
             FolderItem.ItemClick {
                 presenter.folderItemClick(it)
             },
-            TagItem.ItemClick {
+            TagWithCountItem.ItemClick {
                 presenter.tagItemClick(it)
             },
-            GroupItem.ItemClick {
+            GroupWithCountItem.ItemClick {
                 presenter.groupItemClick(it)
             }
         ))
@@ -268,9 +268,9 @@ class HomeFragment :
         // current folder folders
         FastAdapterDiffUtil.calculateDiff(folderItemAdapter, foldersList.map { FolderItem(it) })
         // tags
-        FastAdapterDiffUtil.calculateDiff(tagsItemAdapter, tagsList.map { TagItem(it) })
+        FastAdapterDiffUtil.calculateDiff(tagsItemAdapter, tagsList.map { TagWithCountItem(it) })
         // groups
-        FastAdapterDiffUtil.calculateDiff(groupsItemAdapter, groupsList.map { GroupItem(it) })
+        FastAdapterDiffUtil.calculateDiff(groupsItemAdapter, groupsList.map { GroupWithCountItem(it) })
         // current folder resources
         FastAdapterDiffUtil.calculateDiff(passwordItemAdapter, resourceList.map { PasswordItem(it) })
         // "in sub-folders" header

@@ -64,6 +64,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/groupMembersHeader" />
 
+        <View
+            android:id="@+id/groupMembersRecyclerClickableArea"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_40"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginEnd="@dimen/dp_8"
+            app:layout_constraintEnd_toStartOf="@id/groupMembersNavIcon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/groupMembersHeader" />
+
         <ImageView
             android:id="@+id/groupMembersNavIcon"
             android:layout_width="@dimen/dp_8"

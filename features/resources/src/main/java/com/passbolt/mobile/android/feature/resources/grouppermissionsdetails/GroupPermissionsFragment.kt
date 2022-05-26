@@ -11,6 +11,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.commongroups.groupmembers.GroupMembersFragment
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
@@ -40,6 +41,7 @@ class GroupPermissionsFragment :
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
         setupGroupMembersRecycler()
+        setListeners()
         presenter.attach(this)
         binding.groupMembersRecycler.doOnLayout {
             presenter.argsRetrieved(
@@ -55,6 +57,15 @@ class GroupPermissionsFragment :
         binding.groupMembersRecycler.adapter = null
         presenter.detach()
         super.onDestroyView()
+    }
+
+    private fun setListeners() {
+        with(binding) {
+            listOf(groupMembersRecyclerClickableArea, groupMembersNavIcon)
+                .forEach {
+                    it.setDebouncingOnClick { presenter.groupMembersRecyclerClick() }
+                }
+        }
     }
 
     private fun setupGroupMembersRecycler() {

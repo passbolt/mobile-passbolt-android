@@ -94,7 +94,7 @@ class ResourceDetailsFragment :
         get() = listOf(binding.urlHeader, binding.urlIcon)
 
     private val sharedWithFields
-        get() = listOf(binding.sharedWithLabel, binding.sharedWithNavIcon)
+        get() = listOf(binding.sharedWithLabel, binding.sharedWithRecyclerClickableArea, binding.sharedWithNavIcon)
 
     private val websiteOpener: WebsiteOpener by inject()
 
