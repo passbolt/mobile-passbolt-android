@@ -1,10 +1,7 @@
-package com.passbolt.mobile.android.database.impl.users
+package com.passbolt.mobile.android.core.extension
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.mappers.UsersModelMapper
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.UserModel
+import android.graphics.drawable.Drawable
+import com.google.android.material.textfield.TextInputLayout
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,25 +25,16 @@ import com.passbolt.mobile.android.ui.UserModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetLocalUsersUseCase(
-    private val databaseProvider: DatabaseProvider,
-    private val userModelMapper: UsersModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<GetLocalUsersUseCase.Input, GetLocalUsersUseCase.Output> {
 
-    override suspend fun execute(input: Input) =
-        databaseProvider
-            .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
-            .usersDao()
-            .getAllExcluding(input.excludedByIds)
-            .map(userModelMapper::map)
-            .let { Output(it) }
+fun TextInputLayout.setSearchEndIconWithListener(icon: Drawable, listener: () -> Unit) {
+    endIconMode = TextInputLayout.END_ICON_CUSTOM
+    endIconDrawable = icon
+    setEndIconOnClickListener {
+        listener.invoke()
+    }
+}
 
-    data class Input(
-        val excludedByIds: List<String> = emptyList()
-    )
-
-    data class Output(
-        val users: List<UserModel>
-    )
+fun TextInputLayout.clearEndIcon() {
+    endIconMode = TextInputLayout.END_ICON_NONE
+    endIconDrawable = null
 }

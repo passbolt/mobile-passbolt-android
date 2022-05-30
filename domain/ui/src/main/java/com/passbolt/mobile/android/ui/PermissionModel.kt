@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.ui
 
+import com.passbolt.mobile.android.common.search.Searchable
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -35,16 +37,18 @@ sealed class PermissionModel(val permission: ResourcePermission) {
     ) : PermissionModel(permission)
 }
 
-sealed class PermissionModelUi(val permission: ResourcePermission) {
+sealed class PermissionModelUi(val permission: ResourcePermission) : Searchable {
 
     class UserPermissionModel(
         permission: ResourcePermission,
-        val user: UserWithAvatar
+        val user: UserWithAvatar,
+        override val searchCriteria: String = user.searchCriteria
     ) : PermissionModelUi(permission)
 
     class GroupPermissionModel(
         permission: ResourcePermission,
-        val group: GroupModel
+        val group: GroupModel,
+        override val searchCriteria: String = group.searchCriteria
     ) : PermissionModelUi(permission)
 }
 
@@ -53,5 +57,6 @@ data class UserWithAvatar(
     val firstName: String,
     val lastName: String,
     val userName: String,
-    val avatarUrl: String?
-)
+    val avatarUrl: String?,
+    override val searchCriteria: String = "$userName$firstName$lastName"
+) : Searchable

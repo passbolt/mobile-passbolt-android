@@ -19,9 +19,11 @@ class ResourcePermissionsPresenter(
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
     private lateinit var mode: ResourcePermissionsMode
+    private lateinit var resourceId: String
 
     override fun argsReceived(resourceId: String, mode: ResourcePermissionsMode) {
         this.mode = mode
+        this.resourceId = resourceId
         processItemsVisibility(mode)
         getResourcePermissions(resourceId)
     }
@@ -57,7 +59,7 @@ class ResourcePermissionsPresenter(
     }
 
     override fun addPermissionClick() {
-        view?.navigateToSelectShareRecipients()
+        view?.navigateToSelectShareRecipients(resourceId)
     }
 
     override fun detach() {

@@ -39,7 +39,7 @@ internal fun Module.groupsModule() {
         )
     }
     single {
-        GetLocalGroupsUseCase(
+        GetLocalGroupsWithShareItemsCountUseCase(
             databaseProvider = get(),
             groupModelMapper = get(),
             getSelectedAccountUseCase = get()
@@ -51,6 +51,13 @@ internal fun Module.groupsModule() {
             groupModelMapper = get(),
             getSelectedAccountUseCase = get(),
             usersModelMapper = get()
+        )
+    }
+    single {
+        GetLocalGroupsUseCase(
+            databaseProvider = get(),
+            groupModelMapper = get(),
+            getSelectedAccountUseCase = get()
         )
     }
 }

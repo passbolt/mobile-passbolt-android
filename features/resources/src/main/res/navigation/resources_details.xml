@@ -55,6 +55,13 @@
         <argument
             android:name="mode"
             app:argType="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode" />
+        <action
+            android:id="@+id/action_resourcePermissionsFragment_to_permissionRecipientsFragment"
+            app:destination="@id/permissionRecipientsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -89,5 +96,15 @@
     </fragment>
 
     <include app:graph="@navigation/group_members" />
+
+    <fragment
+        android:id="@+id/permissionRecipientsFragment"
+        android:name="com.passbolt.mobile.android.feature.resources.permissionrecipients.PermissionRecipientsFragment"
+        android:label="PermissionRecipientsFragment"
+        tools:layout="@layout/fragment_permission_recipients" >
+        <argument
+            android:name="resourceId"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

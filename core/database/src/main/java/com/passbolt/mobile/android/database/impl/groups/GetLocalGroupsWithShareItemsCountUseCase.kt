@@ -1,12 +1,10 @@
 package com.passbolt.mobile.android.database.impl.groups
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import com.passbolt.mobile.android.database.impl.base.BaseDao
-import com.passbolt.mobile.android.entity.group.GroupWithUsers
-import com.passbolt.mobile.android.entity.group.UsersGroup
-import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.GroupsModelMapper
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.GroupWithCount
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,33 +28,16 @@ import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GetLocalGroupsWithShareItemsCountUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val groupModelMapper: GroupsModelMapper,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : AsyncUseCase<Unit, List<GroupWithCount>> {
 
-@Dao
-interface GroupsDao : BaseDao<UsersGroup> {
-
-    @Transaction
-    @Query("SELECT * FROM UsersGroup WHERE groupId NOT IN (:ids)")
-    suspend fun getAllExcluding(ids: List<String>): List<UsersGroup>
-
-    @Transaction
-    @Query("DELETE FROM UsersGroup")
-    suspend fun deleteAll()
-
-    @Transaction
-    @Query(
-        "SELECT groupId, name, " +
-                "(SELECT" +
-                "(" +
-                "(select distinct count(resourceId) " +
-                "from resourceandgroupscrossref rGCR " +
-                "where rGCR.groupId is g.groupId) " +
-                ")" +
-                ") AS childItemsCount " +
-                "FROM UsersGroup g"
-    )
-    suspend fun getAllWithSharedItemsCount(): List<UsersGroupWithChildItemsCount>
-
-    @Transaction
-    @Query("SELECT * FROM UsersGroup WHERE groupId=:groupId")
-    suspend fun getGroupWithUsers(groupId: String): GroupWithUsers
+    override suspend fun execute(input: Unit) =
+        databaseProvider
+            .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
+            .groupsDao()
+            .getAllWithSharedItemsCount()
+            .map { groupModelMapper.map(it) }
 }

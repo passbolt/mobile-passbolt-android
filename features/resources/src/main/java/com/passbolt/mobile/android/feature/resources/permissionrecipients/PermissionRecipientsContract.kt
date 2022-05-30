@@ -1,8 +1,9 @@
-package com.passbolt.mobile.android.feature.resources.permissions
+package com.passbolt.mobile.android.feature.resources.permissionrecipients
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
-import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.ui.UserModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,29 +27,35 @@ import com.passbolt.mobile.android.ui.ResourcePermission
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface ResourcePermissionsContract {
-
-    interface View : BaseAuthenticatedContract.View {
-        fun showPermissions(permissions: List<PermissionModelUi>)
-        fun navigateToGroupPermissionDetails(
-            groupId: String,
-            permission: ResourcePermission,
-            mode: ResourcePermissionsMode
-        )
-        fun navigateToUserPermissionDetails(
-            userId: String,
-            permission: ResourcePermission,
-            mode: ResourcePermissionsMode
-        )
-        fun showAddUserButton()
-        fun showSaveButton()
-        fun navigateToSelectShareRecipients(resourceId: String)
-    }
+interface PermissionRecipientsContract {
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsReceived(resourceId: String, mode: ResourcePermissionsMode)
-        fun permissionClick(permission: PermissionModelUi)
-        fun saveClick()
-        fun addPermissionClick()
+        fun groupRecipientSelectionChanged(model: GroupModel, isSelected: Boolean)
+        fun userRecipientSelectionChanged(model: UserModel, isSelected: Boolean)
+        fun argsReceived(resourceId: String, alreadyAddedListWidth: Int, alreadyAddedItemWidth: Float)
+        fun searchTextChange(searchText: String)
+        fun searchClearClick()
+        fun groupsAndUsersItemsFiltered(constraint: String)
+        fun groupsAndUsersFilterReset()
+    }
+
+    interface View : BaseAuthenticatedContract.View {
+        fun showRecipients(
+            groups: List<GroupModel>,
+            users: List<UserModel>
+        )
+
+        fun showPermissions(
+            groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
+            userPermissions: List<PermissionModelUi.UserPermissionModel>,
+            counterValue: List<String>,
+            overlap: Int
+        )
+
+        fun displayClearSearchIcon()
+        fun hideClearSearchIcon()
+        fun clearSearch()
+        fun filterGroupsAndUsers(searchText: String)
+        fun showExistingUsersAndGroups(list: List<PermissionModelUi>)
     }
 }

@@ -86,7 +86,8 @@ val mappersModule = module {
     single { GroupsModelMapper() }
     single {
         PermissionsModelMapper(
-            groupsModelMapper = get()
+            groupsModelMapper = get(),
+            usersModelMapper = get()
         )
     }
 }

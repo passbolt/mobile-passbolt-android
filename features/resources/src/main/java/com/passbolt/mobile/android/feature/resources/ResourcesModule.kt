@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.resources
 
 import com.passbolt.mobile.android.feature.resources.details.detailsModule
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.groupPermissionsModule
+import com.passbolt.mobile.android.feature.resources.permissionrecipients.permissionRecipientsModule
 import com.passbolt.mobile.android.feature.resources.permissions.permissionsModule
 import com.passbolt.mobile.android.feature.resources.update.updateResourceModule
 import com.passbolt.mobile.android.feature.resources.userpermissionsdetails.userPermissionsModule
@@ -36,4 +37,5 @@ val resourcesModule = module {
     permissionsModule()
     groupPermissionsModule()
     userPermissionsModule()
+    permissionRecipientsModule()
 }

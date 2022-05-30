@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.feature.home.screen
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -21,7 +20,6 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -39,6 +37,7 @@ import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.TagItem
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
+import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
@@ -156,31 +155,21 @@ class HomeFragment :
             .placeholder(R.drawable.ic_avatar_placeholder)
             .target(
                 onError = {
-                    setSearchEndIconWithListener(
+                    binding.searchTextInput.setSearchEndIconWithListener(
                         ContextCompat.getDrawable(requireContext(), R.drawable.ic_avatar_placeholder)!!,
                         presenter::searchAvatarClick
                     )
                 },
                 onSuccess = {
-                    setSearchEndIconWithListener(it, presenter::searchAvatarClick)
+                    binding.searchTextInput.setSearchEndIconWithListener(it, presenter::searchAvatarClick)
                 }
             )
             .build()
         imageLoader.enqueue(request)
     }
 
-    private fun setSearchEndIconWithListener(icon: Drawable, listener: () -> Unit) {
-        with(binding.searchTextInput) {
-            endIconMode = TextInputLayout.END_ICON_CUSTOM
-            endIconDrawable = icon
-            setEndIconOnClickListener {
-                listener.invoke()
-            }
-        }
-    }
-
     override fun displaySearchClearIcon() {
-        setSearchEndIconWithListener(
+        binding.searchTextInput.setSearchEndIconWithListener(
             ContextCompat.getDrawable(requireContext(), R.drawable.ic_close)!!,
             presenter::searchClearClick
         )

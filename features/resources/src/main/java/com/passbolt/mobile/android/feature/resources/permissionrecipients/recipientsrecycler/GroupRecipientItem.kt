@@ -1,10 +1,11 @@
-package com.passbolt.mobile.android.database.impl.users
+package com.passbolt.mobile.android.feature.resources.permissionrecipients.recipientsrecycler
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.mappers.UsersModelMapper
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.UserModel
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.passbolt.mobile.android.feature.resources.R
+import com.passbolt.mobile.android.feature.resources.databinding.ItemPermissionRecipientGroupBinding
+import com.passbolt.mobile.android.ui.GroupModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,25 +29,22 @@ import com.passbolt.mobile.android.ui.UserModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetLocalUsersUseCase(
-    private val databaseProvider: DatabaseProvider,
-    private val userModelMapper: UsersModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<GetLocalUsersUseCase.Input, GetLocalUsersUseCase.Output> {
+class GroupRecipientItem(
+    val model: GroupModel
+) : AbstractBindingItem<ItemPermissionRecipientGroupBinding>() {
 
-    override suspend fun execute(input: Input) =
-        databaseProvider
-            .get(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
-            .usersDao()
-            .getAllExcluding(input.excludedByIds)
-            .map(userModelMapper::map)
-            .let { Output(it) }
+    override val type: Int
+        get() = R.id.groupRecipientItem
 
-    data class Input(
-        val excludedByIds: List<String> = emptyList()
-    )
+    override fun bindView(binding: ItemPermissionRecipientGroupBinding, payloads: List<Any>) {
+        with(binding) {
+            icon.setImageResource(R.drawable.ic_filled_group_with_bg)
+            name.text = model.groupName
+            radio.isChecked = root.isSelected
+        }
+    }
 
-    data class Output(
-        val users: List<UserModel>
-    )
+    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemPermissionRecipientGroupBinding {
+        return ItemPermissionRecipientGroupBinding.inflate(inflater, parent, false)
+    }
 }
