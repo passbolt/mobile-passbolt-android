@@ -42,26 +42,26 @@ import org.mockito.kotlin.mock
  * @since v1.0
  */
 
-val mockSecretInterActor = mock<SecretInteractor>()
-val mockResourceTypesDao = mock<ResourceTypesDao>()
-val mockResourceDatabase = mock<ResourceDatabase> {
+internal val mockSecretInterActor = mock<SecretInteractor>()
+internal val mockResourceTypesDao = mock<ResourceTypesDao>()
+internal val mockResourceDatabase = mock<ResourceDatabase> {
     on { resourceTypesDao() }.doReturn(mockResourceTypesDao)
 }
-val mockDatabaseProvider = mock<DatabaseProvider> {
+internal val mockDatabaseProvider = mock<DatabaseProvider> {
     on { get(any()) }.doReturn(mockResourceDatabase)
 }
-val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>() {
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>() {
     on { execute(Unit) }.doReturn(GetSelectedAccountUseCase.Output("userId"))
 }
-val mockSecretParser = mock<SecretParser>()
-val mockResourceTypeFactory = mock<ResourceTypeFactory>()
-val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
-val resourceMenuModelMapper = ResourceMenuModelMapper()
-val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
-val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
-val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
+internal val mockSecretParser = mock<SecretParser>()
+internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
+internal val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
+internal val resourceMenuModelMapper = ResourceMenuModelMapper()
+internal val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
+internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
+internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
 
-val testResourceDetailsModule = module {
+internal val testResourceDetailsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
     factory<ResourceDetailsContract.Presenter> {
         ResourceDetailsPresenter(

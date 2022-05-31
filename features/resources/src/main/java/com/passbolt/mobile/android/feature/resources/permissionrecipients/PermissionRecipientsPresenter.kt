@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resources.permissionrecipients
 
+import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -68,17 +69,17 @@ class PermissionRecipientsPresenter(
      */
     override fun argsReceived(
         alreadyAddedGroupPermissions: List<PermissionModelUi.GroupPermissionModel>,
-        alreadyAddeduserPermissions: List<PermissionModelUi.UserPermissionModel>,
+        alreadyAddedUserPermissions: List<PermissionModelUi.UserPermissionModel>,
         alreadyAddedListWidth: Int,
         alreadyAddedItemWidth: Float
     ) {
         this.alreadyAddedListWidth = alreadyAddedListWidth
         this.alreadyAddedItemWidth = alreadyAddedItemWidth
         this.alreadyAddedGroups = alreadyAddedGroupPermissions
-        this.alreadyAddedUsers = alreadyAddeduserPermissions
+        this.alreadyAddedUsers = alreadyAddedUserPermissions
 
         scope.launch {
-            showPermissions(alreadyAddedGroupPermissions + alreadyAddeduserPermissions)
+            showPermissions(alreadyAddedGroupPermissions + alreadyAddedUserPermissions)
 
             groups = getLocalGroupsUseCase.execute(
                 GetLocalGroupsUseCase.Input(
@@ -87,7 +88,7 @@ class PermissionRecipientsPresenter(
 
             users = getLocalUsersUseCase.execute(
                 GetLocalUsersUseCase.Input(
-                    alreadyAddeduserPermissions.map { it.user.userId })
+                    alreadyAddedUserPermissions.map { it.user.userId })
             ).users
 
             view?.showRecipients(groups, users)
@@ -122,7 +123,7 @@ class PermissionRecipientsPresenter(
 
     private fun processSearchIconChange(searchText: String) {
         if (searchText.isNotBlank()) {
-            view?.displayClearSearchIcon()
+            view?.showClearSearchIcon()
         } else {
             view?.hideClearSearchIcon()
         }
@@ -188,7 +189,8 @@ class PermissionRecipientsPresenter(
         super<BaseAuthenticatedPresenter>.detach()
     }
 
-    private companion object {
-        private val DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS = ResourcePermission.READ
+    companion object {
+        @VisibleForTesting
+        val DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS = ResourcePermission.READ
     }
 }
