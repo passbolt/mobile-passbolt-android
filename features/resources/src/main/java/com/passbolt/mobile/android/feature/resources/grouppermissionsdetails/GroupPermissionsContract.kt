@@ -39,6 +39,8 @@ interface GroupPermissionsContract {
         fun showSaveLayout()
         fun setUpdatedPermissionResult(permission: PermissionModelUi.GroupPermissionModel)
         fun navigateBack()
+        fun showPermissionDeleteConfirmation()
+        fun setDeletePermissionResult(groupPermission: PermissionModelUi.GroupPermissionModel)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -51,5 +53,7 @@ interface GroupPermissionsContract {
         fun groupMembersRecyclerClick()
         fun onPermissionSelected(permission: ResourcePermission)
         fun saveButtonClick()
+        fun deletePermissionClick()
+        fun permissionDeleteConfirmClick()
     }
 }

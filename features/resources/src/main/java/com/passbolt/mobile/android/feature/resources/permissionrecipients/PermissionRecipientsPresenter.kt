@@ -102,10 +102,15 @@ class PermissionRecipientsPresenter(
     /*
         User entered search query - show existing permissions additionally.
      */
-    override fun groupsAndUsersItemsFiltered(constraint: String) {
+    override fun groupsAndUsersItemsFiltered(constraint: String, resultsSize: Int) {
         val filteredExistingUsersAndGroups = (alreadyAddedGroups + alreadyAddedUsers)
             .filter { searchableMatcher.matches(it, constraint) }
         view?.showExistingUsersAndGroups(filteredExistingUsersAndGroups)
+        if (resultsSize == 0 && filteredExistingUsersAndGroups.isEmpty()) {
+            view?.showEmptyState()
+        } else {
+            view?.hideEmptyState()
+        }
     }
 
     /*

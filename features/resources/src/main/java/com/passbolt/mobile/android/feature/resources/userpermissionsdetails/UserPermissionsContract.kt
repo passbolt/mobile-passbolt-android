@@ -37,11 +37,15 @@ interface UserPermissionsContract {
         fun showSaveLayout()
         fun setUpdatedPermissionResult(userPermission: PermissionModelUi.UserPermissionModel)
         fun navigateBack()
+        fun showPermissionDeleteConfirmation()
+        fun setDeletePermissionResult(userPermission: PermissionModelUi.UserPermissionModel)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun argsRetrieved(userPermission: PermissionModelUi.UserPermissionModel, mode: ResourcePermissionsMode)
         fun onPermissionSelected(permission: ResourcePermission)
         fun saveClick()
+        fun deletePermissionClick()
+        fun permissionDeleteConfirmClick()
     }
 }

@@ -128,13 +128,29 @@
     <LinearLayout
         android:id="@+id/saveLayout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_96"
+        android:layout_height="@dimen/dp_116"
         android:layout_gravity="bottom"
         android:background="@color/background"
         android:elevation="@dimen/dp_24"
+        android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/deletePermissionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_16"
+            android:drawablePadding="@dimen/dp_8"
+            android:gravity="center"
+            android:text="@string/user_permission_delete"
+            android:textColor="@color/text_secondary"
+            android:textFontWeight="600"
+            android:textSize="@dimen/sp_14"
+            app:drawableStartCompat="@drawable/ic_trash"
+            app:drawableTint="@color/text_secondary" />
 
         <Button
             android:id="@+id/saveButton"
@@ -144,7 +160,7 @@
             android:layout_gravity="bottom"
             android:layout_marginHorizontal="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_16"
-            android:text="@string/save" />
+            android:text="@string/apply" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

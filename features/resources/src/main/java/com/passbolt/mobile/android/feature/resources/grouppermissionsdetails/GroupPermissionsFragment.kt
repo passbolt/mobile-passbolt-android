@@ -13,6 +13,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.common.dialogs.permissionDeletionConfirmationAlertDialog
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.commongroups.groupmembers.GroupMembersFragment
@@ -60,6 +61,9 @@ class GroupPermissionsFragment :
         with(binding) {
             permissionSelect.onPermissionSelectedListener = {
                 presenter.onPermissionSelected(it)
+            }
+            deletePermissionButton.setDebouncingOnClick {
+                presenter.deletePermissionClick()
             }
             saveButton.setDebouncingOnClick {
                 presenter.saveButtonClick()
@@ -145,12 +149,27 @@ class GroupPermissionsFragment :
         )
     }
 
+    override fun setDeletePermissionResult(groupPermission: PermissionModelUi.GroupPermissionModel) {
+        setFragmentResult(
+            EXTRA_UPDATED_GROUP_PERMISSION_BUNDLE_KEY,
+            bundleOf(EXTRA_DELETED_GROUP_PERMISSION to groupPermission)
+        )
+    }
+
+    override fun showPermissionDeleteConfirmation() {
+        permissionDeletionConfirmationAlertDialog(requireContext()) {
+            presenter.permissionDeleteConfirmClick()
+        }
+            .show()
+    }
+
     override fun navigateBack() {
         findNavController().popBackStack()
     }
 
     companion object {
-        const val EXTRA_UPDATED_GROUP_PERMISSION_BUNDLE_KEY = "EXTRA_UPDATED_GROUP_PERMISSION_BUNDLE"
-        const val EXTRA_UPDATED_GROUP_PERMISSION = "EXTRA_UPDATED_GROUP_PERMISSION"
+        const val EXTRA_UPDATED_GROUP_PERMISSION_BUNDLE_KEY = "UPDATED_GROUP_PERMISSION_BUNDLE"
+        const val EXTRA_UPDATED_GROUP_PERMISSION = "UPDATED_GROUP_PERMISSION"
+        const val EXTRA_DELETED_GROUP_PERMISSION = "DELETED_GROUP_PERMISSION"
     }
 }

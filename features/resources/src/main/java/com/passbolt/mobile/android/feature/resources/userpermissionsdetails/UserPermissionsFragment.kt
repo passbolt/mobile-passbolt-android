@@ -9,6 +9,7 @@ import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.passbolt.mobile.android.common.FingerprintFormatter
+import com.passbolt.mobile.android.common.dialogs.permissionDeletionConfirmationAlertDialog
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
@@ -41,6 +42,9 @@ class UserPermissionsFragment :
         with(binding) {
             permissionSelect.onPermissionSelectedListener = {
                 presenter.onPermissionSelected(it)
+            }
+            deletePermissionButton.setDebouncingOnClick {
+                presenter.deletePermissionClick()
             }
             saveButton.setDebouncingOnClick {
                 presenter.saveClick()
@@ -92,6 +96,20 @@ class UserPermissionsFragment :
         )
     }
 
+    override fun setDeletePermissionResult(userPermission: PermissionModelUi.UserPermissionModel) {
+        setFragmentResult(
+            EXTRA_UPDATED_USER_PERMISSION_BUNDLE_KEY,
+            bundleOf(EXTRA_DELETED_USER_PERMISSION to userPermission)
+        )
+    }
+
+    override fun showPermissionDeleteConfirmation() {
+        permissionDeletionConfirmationAlertDialog(requireContext()) {
+            presenter.permissionDeleteConfirmClick()
+        }
+            .show()
+    }
+
     override fun navigateBack() {
         findNavController().popBackStack()
     }
@@ -99,5 +117,6 @@ class UserPermissionsFragment :
     companion object {
         const val EXTRA_UPDATED_USER_PERMISSION_BUNDLE_KEY = "UPDATED_PERMISSION_BUNDLE"
         const val EXTRA_UPDATED_USER_PERMISSION = "UPDATED_PERMISSION"
+        const val EXTRA_DELETED_USER_PERMISSION = "DELETED_PERMISSION"
     }
 }

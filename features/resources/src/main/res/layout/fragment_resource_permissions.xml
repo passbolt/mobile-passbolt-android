@@ -19,6 +19,27 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?android:attr/actionBarSize"
+        android:paddingBottom="@dimen/dp_96"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <TextView
+        android:id="@+id/emptyState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        android:background="@color/background"
+        android:drawablePadding="@dimen/dp_24"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/dp_80"
+        android:paddingBottom="@dimen/dp_96"
+        android:text="@string/resource_permissions_one_owner"
+        android:textColor="@color/text_primary"
+        android:textFontWeight="600"
+        android:textSize="@dimen/sp_24"
+        android:visibility="gone"
+        app:drawableBottomCompat="@drawable/ic_empty_state"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
@@ -40,8 +61,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_96"
         android:layout_gravity="bottom"
-        android:elevation="@dimen/dp_24"
         android:background="@color/background"
+        android:elevation="@dimen/dp_24"
         android:visibility="gone">
 
         <Button

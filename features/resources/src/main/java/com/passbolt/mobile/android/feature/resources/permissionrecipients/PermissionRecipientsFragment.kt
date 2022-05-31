@@ -17,7 +17,9 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ItemFilter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.select.getSelectExtension
+import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.extension.clearEndIcon
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
@@ -106,7 +108,7 @@ class PermissionRecipientsFragment :
     }
 
     private val filteredByConstraintListener = GenericFilteredByConstraintListener(
-        onFiltered = { presenter.groupsAndUsersItemsFiltered(it) },
+        onFiltered = { constraint, resultsSize -> presenter.groupsAndUsersItemsFiltered(constraint, resultsSize) },
         onFilterReset = { presenter.groupsAndUsersFilterReset() }
     )
 
@@ -259,6 +261,14 @@ class PermissionRecipientsFragment :
 
     override fun navigateBack() {
         findNavController().popBackStack()
+    }
+
+    override fun showEmptyState() {
+        binding.emptyState.visible()
+    }
+
+    override fun hideEmptyState() {
+        binding.emptyState.gone()
     }
 
     companion object {

@@ -91,7 +91,7 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
 
     override fun showExitConfirmation() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.scan_qr_exit_confirmation_dialog_title)
+            .setTitle(R.string.are_you_sure)
             .setMessage(R.string.scan_qr_exit_confirmation_dialog_message)
             .setPositiveButton(R.string.cancel) { _, _ -> }
             .setNegativeButton(R.string.stop_scanning) { _, _ -> presenter.exitConfirmClick() }

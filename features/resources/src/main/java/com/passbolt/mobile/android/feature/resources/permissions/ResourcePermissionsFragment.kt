@@ -7,10 +7,12 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
@@ -68,6 +70,11 @@ class ResourcePermissionsFragment :
         )?.let { permission ->
             presenter.userPermissionModified(permission)
         }
+        bundle.getParcelable<PermissionModelUi.UserPermissionModel>(
+            UserPermissionsFragment.EXTRA_DELETED_USER_PERMISSION
+        )?.let { permission ->
+            presenter.userPermissionDeleted(permission)
+        }
         Unit
     }
     private val groupPermissionUpdatedListener = { _: String, bundle: Bundle ->
@@ -75,6 +82,11 @@ class ResourcePermissionsFragment :
             GroupPermissionsFragment.EXTRA_UPDATED_GROUP_PERMISSION
         )?.let { permission ->
             presenter.groupPermissionModified(permission)
+        }
+        bundle.getParcelable<PermissionModelUi.GroupPermissionModel>(
+            GroupPermissionsFragment.EXTRA_DELETED_GROUP_PERMISSION
+        )?.let { permission ->
+            presenter.groupPermissionDeleted(permission)
         }
         Unit
     }
@@ -174,7 +186,21 @@ class ResourcePermissionsFragment :
         }
     }
 
+    override fun showOneOwnerSnackbar() {
+        Snackbar.make(requireView(), R.string.resource_permissions_one_owner, Snackbar.LENGTH_SHORT)
+            .setAnchorView(binding.addPermissionButton)
+            .show()
+    }
+
     override fun showAddUserButton() {
         binding.addPermissionButton.visible()
+    }
+
+    override fun showEmptyState() {
+        binding.emptyState.visible()
+    }
+
+    override fun hideEmptyState() {
+        binding.emptyState.gone()
     }
 }

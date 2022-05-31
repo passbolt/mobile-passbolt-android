@@ -106,7 +106,7 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
 
     override fun showLeaveConfirmationDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.auth_exit_dialog_title)
+            .setTitle(R.string.are_you_sure)
             .setMessage(R.string.auth_exit_dialog_message)
             .setPositiveButton(R.string.continue_setup) { _, _ -> }
             .setNegativeButton(R.string.cancel_setup) { _, _ -> presenter.leaveConfirmationClick() }

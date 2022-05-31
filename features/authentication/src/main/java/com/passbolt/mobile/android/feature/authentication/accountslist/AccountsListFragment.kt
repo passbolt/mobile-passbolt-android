@@ -21,6 +21,7 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
@@ -30,7 +31,6 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.item.Acco
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AddNewAccountItem
 import com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy.AccountListStrategy
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
-import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAccountsListBinding
 import com.passbolt.mobile.android.ui.AccountModelUi
 import org.koin.android.ext.android.get
@@ -203,7 +203,7 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
 
     override fun showRemoveAccountConfirmationDialog(model: AccountModelUi.AccountModel) {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.accounts_list_remove_account_title)
+            .setTitle(R.string.are_you_sure)
             .setMessage(R.string.accounts_list_remove_account_message)
             .setPositiveButton(R.string.accounts_list_remove_account) { _, _ ->
                 presenter.confirmRemoveAccountClick(model)

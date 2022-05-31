@@ -178,7 +178,7 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     override fun showDisableFingerprintConfirmationDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.settings_disable_fingerprint_confirmation_title)
+            .setTitle(R.string.are_you_sure)
             .setMessage(R.string.settings_disable_fingerprint_confirmation_message)
             .setPositiveButton(R.string.settings_disable) { _, _ -> presenter.disableFingerprintConfirmed() }
             .setNegativeButton(R.string.cancel) { _, _ -> presenter.disableFingerprintCanceled() }
