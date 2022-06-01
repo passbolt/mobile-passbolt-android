@@ -70,11 +70,8 @@
         android:label="GroupPermissionsFragment"
         tools:layout="@layout/fragment_group_permissions">
         <argument
-            android:name="groupId"
-            app:argType="string" />
-        <argument
             android:name="permission"
-            app:argType="com.passbolt.mobile.android.ui.ResourcePermission" />
+            app:argType="com.passbolt.mobile.android.ui.PermissionModelUi$GroupPermissionModel" />
         <argument
             android:name="mode"
             app:argType="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode" />
@@ -85,11 +82,8 @@
         android:label="UserPermissionsFragment"
         tools:layout="@layout/fragment_user_permissions">
         <argument
-            android:name="userId"
-            app:argType="string" />
-        <argument
             android:name="permission"
-            app:argType="com.passbolt.mobile.android.ui.ResourcePermission" />
+            app:argType="com.passbolt.mobile.android.ui.PermissionModelUi$UserPermissionModel" />
         <argument
             android:name="mode"
             app:argType="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode" />
@@ -101,10 +95,13 @@
         android:id="@+id/permissionRecipientsFragment"
         android:name="com.passbolt.mobile.android.feature.resources.permissionrecipients.PermissionRecipientsFragment"
         android:label="PermissionRecipientsFragment"
-        tools:layout="@layout/fragment_permission_recipients" >
+        tools:layout="@layout/fragment_permission_recipients">
         <argument
-            android:name="resourceId"
-            app:argType="string" />
+            android:name="userPermissions"
+            app:argType="com.passbolt.mobile.android.ui.PermissionModelUi$UserPermissionModel[]" />
+        <argument
+            android:name="groupPermissions"
+            app:argType="com.passbolt.mobile.android.ui.PermissionModelUi$GroupPermissionModel[]" />
     </fragment>
 
 </navigation>

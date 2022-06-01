@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,102 +7,131 @@
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:toolbarTitle="@string/user_permission_permission" />
 
-        <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
-            android:id="@+id/toolbar"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingBottom="@dimen/dp_96"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:toolbarTitle="@string/user_permission_permission" />
+            android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/avatarImage"
-            android:layout_width="@dimen/dp_96"
-            android:layout_height="@dimen/dp_96"
-            android:layout_marginTop="@dimen/dp_32"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            tools:src="@drawable/ic_avatar_placeholder" />
+            <ImageView
+                android:id="@+id/avatarImage"
+                android:layout_width="@dimen/dp_96"
+                android:layout_height="@dimen/dp_96"
+                android:layout_marginTop="@dimen/dp_32"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/ic_avatar_placeholder" />
 
-        <TextView
-            android:id="@+id/nameLabel"
-            style="@style/Heading4Text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_24"
-            android:textSize="@dimen/sp_20"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/avatarImage"
-            tools:text="Passbolt" />
+            <TextView
+                android:id="@+id/nameLabel"
+                style="@style/Heading4Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:textSize="@dimen/sp_20"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/avatarImage"
+                tools:text="Passbolt" />
 
-        <TextView
-            android:id="@+id/emailLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_24"
-            android:textColor="@color/text_secondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/nameLabel"
-            tools:text="passbolt@passbolt.com" />
+            <TextView
+                android:id="@+id/emailLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:textColor="@color/text_secondary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/nameLabel"
+                tools:text="passbolt@passbolt.com" />
 
-        <TextView
-            android:id="@+id/fingerprintLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_24"
-            android:fontFamily="@font/inconsolata"
-            android:textColor="@color/text_secondary"
-            android:textSize="@dimen/sp_16"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/emailLabel"
-            tools:text="93UT 247Z 1R1V F142" />
+            <TextView
+                android:id="@+id/fingerprintLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:fontFamily="@font/inconsolata"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/sp_16"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/emailLabel"
+                tools:text="93UT 247Z 1R1V F142" />
 
-        <TextView
-            android:id="@+id/permissionHeader"
-            style="@style/Heading4Text"
+            <TextView
+                android:id="@+id/permissionHeader"
+                style="@style/Heading4Text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_32"
+                android:text="@string/user_permission_permission"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/sp_12"
+                app:layout_constraintTop_toBottomOf="@id/fingerprintLabel" />
+
+            <TextView
+                android:id="@+id/permissionLabel"
+                style="@style/Heading4Text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_16"
+                android:drawablePadding="@dimen/dp_12"
+                android:gravity="center_vertical"
+                android:text="@string/user_permission_permission"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/sp_14"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/permissionHeader"
+                tools:drawableStart="@drawable/ic_permission_owner"
+                tools:text="is owner"
+                tools:visibility="visible" />
+
+            <com.passbolt.mobile.android.feature.resources.permissions.permissionselectview.PermissionSelectView
+                android:id="@+id/permissionSelect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_16"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/permissionLabel"
+                tools:visibility="visible" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/saveLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_96"
+        android:layout_gravity="bottom"
+        android:background="@color/background"
+        android:elevation="@dimen/dp_24"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:visibility="visible">
+
+        <Button
+            android:id="@+id/saveButton"
+            style="@style/PrimaryBlueButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_16"
-            android:layout_marginTop="@dimen/dp_32"
-            android:text="@string/user_permission_permission"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/sp_12"
-            app:layout_constraintTop_toBottomOf="@id/fingerprintLabel" />
-
-        <TextView
-            android:id="@+id/permissionLabel"
-            style="@style/Heading4Text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
+            android:layout_height="@dimen/dp_56"
+            android:layout_gravity="bottom"
+            android:layout_marginHorizontal="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_16"
-            android:drawablePadding="@dimen/dp_12"
-            android:gravity="center_vertical"
-            android:text="@string/user_permission_permission"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/sp_14"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/permissionHeader"
-            tools:drawableStart="@drawable/ic_permission_owner"
-            tools:text="is owner"
-            tools:visibility="visible" />
-
-        <com.passbolt.mobile.android.feature.resources.permissions.permissionselectview.PermissionSelectView
-            android:id="@+id/permissionSelect"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_16"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/permissionLabel"
-            tools:visibility="visible" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+            android:text="@string/save" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

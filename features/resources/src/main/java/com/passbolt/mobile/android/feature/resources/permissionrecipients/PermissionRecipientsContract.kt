@@ -32,11 +32,17 @@ interface PermissionRecipientsContract {
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun groupRecipientSelectionChanged(model: GroupModel, isSelected: Boolean)
         fun userRecipientSelectionChanged(model: UserModel, isSelected: Boolean)
-        fun argsReceived(resourceId: String, alreadyAddedListWidth: Int, alreadyAddedItemWidth: Float)
+        fun argsReceived(
+            alreadyAddedGroupPermissions: List<PermissionModelUi.GroupPermissionModel>,
+            alreadyAddeduserPermissions: List<PermissionModelUi.UserPermissionModel>,
+            alreadyAddedListWidth: Int,
+            alreadyAddedItemWidth: Float
+        )
         fun searchTextChange(searchText: String)
         fun searchClearClick()
         fun groupsAndUsersItemsFiltered(constraint: String)
         fun groupsAndUsersFilterReset()
+        fun saveButtonClick()
     }
 
     interface View : BaseAuthenticatedContract.View {
@@ -57,5 +63,7 @@ interface PermissionRecipientsContract {
         fun clearSearch()
         fun filterGroupsAndUsers(searchText: String)
         fun showExistingUsersAndGroups(list: List<PermissionModelUi>)
+        fun setSelectedPermissionsResult(selectedPermissions: List<PermissionModelUi>)
+        fun navigateBack()
     }
 }

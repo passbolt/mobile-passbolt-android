@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.resources.permissions
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.ui.PermissionModelUi
-import com.passbolt.mobile.android.ui.ResourcePermission
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,18 +30,21 @@ interface ResourcePermissionsContract {
     interface View : BaseAuthenticatedContract.View {
         fun showPermissions(permissions: List<PermissionModelUi>)
         fun navigateToGroupPermissionDetails(
-            groupId: String,
-            permission: ResourcePermission,
+            permission: PermissionModelUi.GroupPermissionModel,
             mode: ResourcePermissionsMode
         )
+
         fun navigateToUserPermissionDetails(
-            userId: String,
-            permission: ResourcePermission,
+            permission: PermissionModelUi.UserPermissionModel,
             mode: ResourcePermissionsMode
         )
+
         fun showAddUserButton()
         fun showSaveButton()
-        fun navigateToSelectShareRecipients(resourceId: String)
+        fun navigateToSelectShareRecipients(
+            groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
+            userPermissions: List<PermissionModelUi.UserPermissionModel>
+        )
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -50,5 +52,8 @@ interface ResourcePermissionsContract {
         fun permissionClick(permission: PermissionModelUi)
         fun saveClick()
         fun addPermissionClick()
+        fun shareRecipientsAdded(shareRecipients: ArrayList<PermissionModelUi>?)
+        fun userPermissionModified(permission: PermissionModelUi.UserPermissionModel)
+        fun groupPermissionModified(permission: PermissionModelUi.GroupPermissionModel)
     }
 }

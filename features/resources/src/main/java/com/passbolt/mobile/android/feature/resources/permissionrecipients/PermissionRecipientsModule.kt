@@ -51,12 +51,11 @@ fun Module.permissionRecipientsModule() {
     scope<PermissionRecipientsFragment> {
         scoped<PermissionRecipientsContract.Presenter> {
             PermissionRecipientsPresenter(
-                coroutineLaunchContext = get(),
                 getLocalGroupsUseCase = get(),
                 getLocalUsersUseCase = get(),
-                getLocalResourcePermissionsUseCase = get(),
                 permissionsModelMapper = get(),
-                searchableMatcher = get()
+                searchableMatcher = get(),
+                coroutineLaunchContext = get()
             )
         }
         usersAndGroupsRecyclerDependencies()

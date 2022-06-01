@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.database.impl.groups.GetGroupWithUsersUseCase
 import com.passbolt.mobile.android.feature.resources.permissionavatarlist.UsersDatasetCreator
 import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
+import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -21,24 +22,28 @@ class GroupPermissionsPresenter(
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    private lateinit var groupId: String
+    private lateinit var groupPermission: PermissionModelUi.GroupPermissionModel
 
     override fun argsRetrieved(
-        groupId: String,
-        permission: ResourcePermission,
+        permission: PermissionModelUi.GroupPermissionModel,
         mode: ResourcePermissionsMode,
         membersRecyclerWidth: Int,
         membersItemWidth: Float
     ) {
-        this.groupId = groupId
+        this.groupPermission = permission
         when (mode) {
-            ResourcePermissionsMode.VIEW -> view?.showPermission(permission)
-            ResourcePermissionsMode.EDIT -> view?.showPermissionChoices(permission)
+            ResourcePermissionsMode.VIEW -> view?.showPermission(permission.permission)
+            ResourcePermissionsMode.EDIT -> {
+                view?.apply {
+                    showPermissionChoices(permission.permission)
+                    showSaveLayout()
+                }
+            }
         }
         scope.launch {
-            getGroupWithUsersUseCase.execute(GetGroupWithUsersUseCase.Input(groupId)).groupWithUsers.let {
-                view?.apply {
-                    showGroupName(it.group.groupName)
+            getGroupWithUsersUseCase.execute(GetGroupWithUsersUseCase.Input(permission.group.groupId)).groupWithUsers
+                .let {
+                    view?.showGroupName(it.group.groupName)
 
                     val usersDisplayDataset = UsersDatasetCreator(membersRecyclerWidth, membersItemWidth)
                         .prepareDataset(it.users)
@@ -49,16 +54,22 @@ class GroupPermissionsPresenter(
                         usersDisplayDataset.overlap
                     )
                 }
-            }
         }
     }
 
     override fun groupMembersRecyclerClick() {
-        view?.navigateToGroupMembers(groupId)
+        view?.navigateToGroupMembers(groupPermission.group.groupId)
     }
 
     override fun onPermissionSelected(permission: ResourcePermission) {
-        // TODO
+        groupPermission = PermissionModelUi.GroupPermissionModel(permission, groupPermission.group.copy())
+    }
+
+    override fun saveButtonClick() {
+        view?.apply {
+            setUpdatedPermissionResult(groupPermission)
+            navigateBack()
+        }
     }
 
     override fun detach() {

@@ -2,15 +2,20 @@ package com.passbolt.mobile.android.feature.resources.userpermissionsdetails
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.passbolt.mobile.android.common.FingerprintFormatter
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentUserPermissionsBinding
+import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 import org.koin.android.ext.android.inject
@@ -29,12 +34,17 @@ class UserPermissionsFragment :
         initDefaultToolbar(binding.toolbar)
         setListeners()
         presenter.attach(this)
-        presenter.argsRetrieved(args.userId, args.permission, args.mode)
+        presenter.argsRetrieved(args.permission, args.mode)
     }
 
     private fun setListeners() {
-        binding.permissionSelect.onPermissionSelectedListener = {
-            presenter.onPermissionSelected(it)
+        with(binding) {
+            permissionSelect.onPermissionSelectedListener = {
+                presenter.onPermissionSelected(it)
+            }
+            saveButton.setDebouncingOnClick {
+                presenter.saveClick()
+            }
         }
     }
 
@@ -69,5 +79,25 @@ class UserPermissionsFragment :
                 placeholder(R.drawable.ic_user_avatar)
             }
         }
+    }
+
+    override fun showSaveLayout() {
+        binding.saveLayout.visible()
+    }
+
+    override fun setUpdatedPermissionResult(userPermission: PermissionModelUi.UserPermissionModel) {
+        setFragmentResult(
+            EXTRA_UPDATED_USER_PERMISSION_BUNDLE_KEY,
+            bundleOf(EXTRA_UPDATED_USER_PERMISSION to userPermission)
+        )
+    }
+
+    override fun navigateBack() {
+        findNavController().popBackStack()
+    }
+
+    companion object {
+        const val EXTRA_UPDATED_USER_PERMISSION_BUNDLE_KEY = "UPDATED_PERMISSION_BUNDLE"
+        const val EXTRA_UPDATED_USER_PERMISSION = "UPDATED_PERMISSION"
     }
 }

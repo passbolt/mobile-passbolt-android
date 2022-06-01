@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.resources.grouppermissionsdetails
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
+import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 
@@ -35,17 +36,20 @@ interface GroupPermissionsContract {
         fun showGroupUsers(users: List<UserModel>, counterValue: List<String>, overlapOffset: Int)
         fun navigateToGroupMembers(groupId: String)
         fun showPermissionChoices(currentPermission: ResourcePermission)
+        fun showSaveLayout()
+        fun setUpdatedPermissionResult(permission: PermissionModelUi.GroupPermissionModel)
+        fun navigateBack()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun argsRetrieved(
-            groupId: String,
-            permission: ResourcePermission,
+            permission: PermissionModelUi.GroupPermissionModel,
             mode: ResourcePermissionsMode,
             membersRecyclerWidth: Int,
             membersItemWidth: Float
         )
         fun groupMembersRecyclerClick()
         fun onPermissionSelected(permission: ResourcePermission)
+        fun saveButtonClick()
     }
 }

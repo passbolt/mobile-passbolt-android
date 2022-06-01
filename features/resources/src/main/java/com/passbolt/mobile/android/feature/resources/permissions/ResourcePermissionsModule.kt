@@ -36,7 +36,8 @@ fun Module.permissionsModule() {
         scoped<ResourcePermissionsContract.Presenter> {
             ResourcePermissionsPresenter(
                 coroutineLaunchContext = get(),
-                getLocalResourcePermissionsUseCase = get()
+                getLocalResourcePermissionsUseCase = get(),
+                permissionModelUiComparator = get()
             )
         }
         scoped<ItemAdapter<PermissionItem>>(named(PERMISSIONS_ITEM_ADAPTER)) {
@@ -48,6 +49,9 @@ fun Module.permissionsModule() {
                     get<ItemAdapter<PermissionItem>>(named(PERMISSIONS_ITEM_ADAPTER))
                 )
             )
+        }
+        scoped {
+            PermissionModelUiComparator()
         }
     }
 }

@@ -3,8 +3,11 @@ package com.passbolt.mobile.android.feature.resources.permissionrecipients
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.doOnLayout
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
@@ -14,6 +17,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ItemFilter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.select.getSelectExtension
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.extension.clearEndIcon
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
@@ -115,7 +119,8 @@ class PermissionRecipientsFragment :
         presenter.attach(this)
         binding.alreadyAddedRecycler.doOnLayout {
             presenter.argsReceived(
-                args.resourceId,
+                args.groupPermissions.toList(),
+                args.userPermissions.toList(),
                 it.width,
                 resources.getDimension(R.dimen.dp_40)
             )
@@ -150,6 +155,9 @@ class PermissionRecipientsFragment :
         with(binding) {
             searchEditText.doAfterTextChanged {
                 presenter.searchTextChange(it.toString())
+            }
+            saveButton.setDebouncingOnClick {
+                presenter.saveButtonClick()
             }
         }
     }
@@ -242,7 +250,20 @@ class PermissionRecipientsFragment :
         groupRecipientItemAdapter.filter(null)
     }
 
-    private companion object {
+    override fun setSelectedPermissionsResult(selectedPermissions: List<PermissionModelUi>) {
+        setFragmentResult(
+            EXTRA_NEW_PERMISSIONS_BUNDLE_KEY,
+            bundleOf(EXTRA_NEW_PERMISSIONS to ArrayList(selectedPermissions))
+        )
+    }
+
+    override fun navigateBack() {
+        findNavController().popBackStack()
+    }
+
+    companion object {
+        const val EXTRA_NEW_PERMISSIONS_BUNDLE_KEY = "EXTRA_NEW_PERMISSIONS_BUNDLE"
+        const val EXTRA_NEW_PERMISSIONS = "EXTRA_NEW_PERMISSIONS"
         private const val BUNDLE_USERS_AND_GROUPS_ADAPTER_SELECTIONS = "BUNDLE_USERS_AND_GROUPS_ADAPTER_SELECTIONS"
     }
 }

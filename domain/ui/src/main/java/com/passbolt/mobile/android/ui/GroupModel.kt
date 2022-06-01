@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.ui
 
+import android.os.Parcelable
 import com.passbolt.mobile.android.common.search.Searchable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,11 +27,12 @@ import com.passbolt.mobile.android.common.search.Searchable
  * @since v1.0
  */
 
+@Parcelize
 data class GroupModel(
     val groupId: String,
     val groupName: String,
     override val searchCriteria: String = groupName
-) : Searchable
+) : Searchable, Parcelable
 
 data class GroupModelWithUsers(
     val groupModel: GroupModel,

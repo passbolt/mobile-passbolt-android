@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.resources.details.permissionsrecycle
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import coil.load
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.ItemGroupBinding
@@ -38,7 +39,7 @@ class GroupItem(
 
     override fun bindView(binding: ItemGroupBinding, payloads: List<Any>) {
         with(binding) {
-            root.setImageResource(R.drawable.ic_group_avatar)
+            root.load(R.drawable.ic_group_avatar)
         }
     }
 
