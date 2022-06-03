@@ -2,9 +2,9 @@ package com.passbolt.mobile.android.feature.main.mainscreen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
-import com.passbolt.mobile.android.feature.home.screen.interactor.HomeDataInteractor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren

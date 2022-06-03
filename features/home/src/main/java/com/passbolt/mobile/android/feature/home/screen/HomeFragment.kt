@@ -47,7 +47,6 @@ import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
-import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
@@ -124,6 +123,9 @@ class HomeFragment :
             }
             if (it.resultCode == ResourceActivity.RESULT_RESOURCE_CREATED) {
                 presenter.newResourceCreated()
+            }
+            if (it.resultCode == ResourceActivity.RESULT_RESOURCE_SHARED) {
+                presenter.resourceShared()
             }
         }
 
@@ -375,29 +377,19 @@ class HomeFragment :
     }
 
     override fun showGeneralError() {
-        Snackbar.make(binding.rootLayout, R.string.common_failure, Snackbar.LENGTH_SHORT)
-            .setAnchorView(binding.updateButton)
-            .show()
+        showSnackbar(R.string.common_failure)
     }
 
     override fun showResourceDeletedSnackbar(name: String) {
-        Snackbar.make(
-            binding.rootLayout,
-            getString(R.string.home_resource_deleted_format, name),
-            Snackbar.LENGTH_LONG
-        )
-            .setAnchorView(binding.updateButton)
-            .show()
+        showSnackbar(R.string.common_message_resource_deleted, name)
     }
 
     override fun showResourceEditedSnackbar(resourceName: String) {
-        Snackbar.make(
-            binding.rootLayout,
-            getString(R.string.home_resource_edited_format, resourceName),
-            Snackbar.LENGTH_LONG
-        )
-            .setAnchorView(binding.updateButton)
-            .show()
+        showSnackbar(R.string.common_message_resource_edited, resourceName)
+    }
+
+    override fun showResourceSharedSnackbar() {
+        showSnackbar(R.string.common_message_resource_shared)
     }
 
     override fun navigateToSwitchAccount() {
@@ -410,11 +402,11 @@ class HomeFragment :
     }
 
     override fun showResourceAddedSnackbar() {
-        Snackbar.make(
-            binding.root,
-            R.string.resource_update_create_success,
-            Snackbar.LENGTH_SHORT
-        )
+        showSnackbar(R.string.resource_update_create_success)
+    }
+
+    private fun showSnackbar(@StringRes messageResId: Int, vararg messageArgs: String) {
+        Snackbar.make(binding.root, getString(messageResId, messageArgs), Snackbar.LENGTH_SHORT)
             .setAnchorView(binding.updateButton)
             .show()
     }
@@ -434,9 +426,10 @@ class HomeFragment :
         )
     }
 
-    override fun navigateToResourcePermissions(resourceId: String, mode: ResourcePermissionsMode) {
-        // TODO navigation safe args not supported between modules - add deeplink
-        // HomeFragmentDirections.actionHomeToResourceDetailsGraph(resourceId, mode)
+    override fun navigateToEditResourcePermissions(resource: ResourceModel) {
+        resourceDetailsResult.launch(
+            ResourceActivity.newInstance(requireContext(), ResourceMode.SHARE, existingResource = resource)
+        )
     }
 
     override fun hideAddButton() {

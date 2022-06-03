@@ -1,0 +1,34 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+android {
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    useLibrary("android.test.runner")
+    useLibrary("android.test.base")
+    useLibrary("android.test.mock")
+}
+
+dependencies {
+    implementation project(':commonfolders')
+    implementation project(':commonresource')
+    implementation project(':commongroups')
+    implementation project(':users')
+    implementation project(':mvp')
+    implementation project(':database')
+    implementation project(':storage')
+    implementation project(':secrets')
+    implementation project(':gopenpgp')
+    implementation project(':mappers')
+    implementation project(':ui')
+    implementation project(':dto')
+    implementation project(':networking')
+    implementation project(':common')
+
+    implementation libs.di.koin
+    implementation libs.di.koinExt
+}

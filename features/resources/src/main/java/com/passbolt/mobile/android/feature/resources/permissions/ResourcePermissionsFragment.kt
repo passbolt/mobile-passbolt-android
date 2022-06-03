@@ -2,7 +2,10 @@ package com.passbolt.mobile.android.feature.resources.permissions
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.StringRes
+import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -16,8 +19,11 @@ import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resources.R
+import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourcePermissionsBinding
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.GroupPermissionsFragment
 import com.passbolt.mobile.android.feature.resources.permissionrecipients.PermissionRecipientsFragment
@@ -132,7 +138,7 @@ class ResourcePermissionsFragment :
         mode: ResourcePermissionsMode
     ) {
         setFragmentResultListener(
-            GroupPermissionsFragment.EXTRA_UPDATED_GROUP_PERMISSION_BUNDLE_KEY,
+            GroupPermissionsFragment.REQUEST_UPDATE_GROUP_PERMISSION,
             groupPermissionUpdatedListener
         )
         findNavController().navigate(
@@ -148,7 +154,7 @@ class ResourcePermissionsFragment :
         mode: ResourcePermissionsMode
     ) {
         setFragmentResultListener(
-            UserPermissionsFragment.EXTRA_UPDATED_USER_PERMISSION_BUNDLE_KEY,
+            UserPermissionsFragment.REQUEST_UPDATE_USER_PERMISSIONS,
             userPermissionUpdatedListener
         )
         findNavController().navigate(
@@ -187,7 +193,11 @@ class ResourcePermissionsFragment :
     }
 
     override fun showOneOwnerSnackbar() {
-        Snackbar.make(requireView(), R.string.resource_permissions_one_owner, Snackbar.LENGTH_SHORT)
+        showSnackbar(R.string.resource_permissions_one_owner)
+    }
+
+    private fun showSnackbar(@StringRes messageResId: Int) {
+        Snackbar.make(requireView(), messageResId, Snackbar.LENGTH_SHORT)
             .setAnchorView(binding.addPermissionButton)
             .show()
     }
@@ -202,5 +212,52 @@ class ResourcePermissionsFragment :
 
     override fun hideEmptyState() {
         binding.emptyState.gone()
+    }
+
+    override fun showShareSimulationFailure() {
+        showSnackbar(R.string.resource_permissions_share_simulation_failed)
+    }
+
+    override fun showShareFailure() {
+        showSnackbar(R.string.resource_permissions_share_failed)
+    }
+
+    override fun showSecretFetchFailure() {
+        showSnackbar(R.string.resource_permissions_secret_fetch_failure)
+    }
+
+    override fun showSecretEncryptFailure() {
+        showSnackbar(R.string.resource_permissions_secret_encrypt_failure)
+    }
+
+    override fun showSecretDecryptFailure() {
+        showSnackbar(R.string.resource_permissions_secret_decrypt_failure)
+    }
+
+    override fun showProgress() {
+        showProgressDialog(childFragmentManager)
+    }
+
+    override fun hideProgress() {
+        hideProgressDialog(childFragmentManager)
+    }
+
+    override fun closeWithShareSuccessResult() {
+        when (args.navigationOrigin) {
+            NavigationOrigin.RESOURCE_DETAILS_SCREEN -> {
+                setFragmentResult(REQUEST_UPDATE_PERMISSIONS, bundleOf())
+                findNavController().popBackStack()
+            }
+            NavigationOrigin.HOME_RESOURCE_MORE_MENU -> {
+                with(requireActivity()) {
+                    setResult(ResourceActivity.RESULT_RESOURCE_SHARED)
+                    finish()
+                }
+            }
+        }
+    }
+
+    companion object {
+        const val REQUEST_UPDATE_PERMISSIONS = "REQUEST_UPDATE_PERMISSIONS"
     }
 }

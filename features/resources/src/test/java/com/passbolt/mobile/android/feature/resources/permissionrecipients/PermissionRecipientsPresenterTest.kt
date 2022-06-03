@@ -133,7 +133,7 @@ class PermissionRecipientsPresenterTest : KoinTest {
 
         val userPermissionsCaptor = argumentCaptor<List<PermissionModelUi.UserPermissionModel>>()
         val mapped = permissionsModelMapper.map(
-            NEW_USER, PermissionRecipientsPresenter.DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS
+            NEW_USER, PermissionRecipientsPresenter.DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS, "permId"
         )
 
         verify(view).showPermissions(

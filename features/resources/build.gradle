@@ -26,6 +26,9 @@ dependencies {
     implementation project(':users')
     implementation project(':localization')
     implementation project(':commongroups')
+    implementation project(':dto')
+    implementation project(':gopenpgp')
+    implementation project(':data')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

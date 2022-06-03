@@ -148,14 +148,14 @@ class GroupPermissionsFragment :
 
     override fun setUpdatedPermissionResult(permission: PermissionModelUi.GroupPermissionModel) {
         setFragmentResult(
-            EXTRA_UPDATED_GROUP_PERMISSION_BUNDLE_KEY,
+            REQUEST_UPDATE_GROUP_PERMISSION,
             bundleOf(EXTRA_UPDATED_GROUP_PERMISSION to permission)
         )
     }
 
     override fun setDeletePermissionResult(groupPermission: PermissionModelUi.GroupPermissionModel) {
         setFragmentResult(
-            EXTRA_UPDATED_GROUP_PERMISSION_BUNDLE_KEY,
+            REQUEST_UPDATE_GROUP_PERMISSION,
             bundleOf(EXTRA_DELETED_GROUP_PERMISSION to groupPermission)
         )
     }
@@ -172,7 +172,7 @@ class GroupPermissionsFragment :
     }
 
     companion object {
-        const val EXTRA_UPDATED_GROUP_PERMISSION_BUNDLE_KEY = "UPDATED_GROUP_PERMISSION_BUNDLE"
+        const val REQUEST_UPDATE_GROUP_PERMISSION = "REQUEST_UPDATE_GROUP_PERMISSION"
         const val EXTRA_UPDATED_GROUP_PERMISSION = "UPDATED_GROUP_PERMISSION"
         const val EXTRA_DELETED_GROUP_PERMISSION = "DELETED_GROUP_PERMISSION"
     }

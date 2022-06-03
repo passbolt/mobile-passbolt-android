@@ -19,6 +19,7 @@ coreModule "logger"
 coreModule "localization"
 coreModule "commonfolders"
 coreModule "commongroups"
+coreModule "data"
 
 featureModule "startup"
 featureModule "setup"

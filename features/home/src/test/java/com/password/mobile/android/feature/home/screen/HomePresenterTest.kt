@@ -6,12 +6,12 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
-import com.passbolt.mobile.android.feature.home.screen.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -402,7 +402,7 @@ class HomePresenterTest : KoinTest {
     fun `view should show auth when passphrase not in cache`() {
         mockSecretInteractor.stub {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.Unauthorized
+                SecretInteractor.Output.Unauthorized(AuthenticationState.Unauthenticated.Reason.Session)
             )
         }
         val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))

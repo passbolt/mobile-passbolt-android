@@ -62,7 +62,11 @@ class GroupPermissionsPresenter(
     }
 
     override fun onPermissionSelected(permission: ResourcePermission) {
-        groupPermission = PermissionModelUi.GroupPermissionModel(permission, groupPermission.group.copy())
+        groupPermission = PermissionModelUi.GroupPermissionModel(
+            permission,
+            groupPermission.permissionId,
+            groupPermission.group.copy()
+        )
     }
 
     override fun saveButtonClick() {

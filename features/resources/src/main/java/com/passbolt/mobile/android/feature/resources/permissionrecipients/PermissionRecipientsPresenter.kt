@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsUseCase
 import com.passbolt.mobile.android.database.impl.users.GetLocalUsersUseCase
 import com.passbolt.mobile.android.feature.resources.permissionavatarlist.PermissionsDatasetCreator
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
+import com.passbolt.mobile.android.mappers.SharePermissionsModelMapper.Companion.TEMPORARY_NEW_PERMISSION_ID
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
@@ -141,12 +142,16 @@ class PermissionRecipientsPresenter(
     }
 
     override fun groupRecipientSelectionChanged(model: GroupModel, isSelected: Boolean) {
-        val permissionModel = permissionsModelMapper.map(model, DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS)
+        val permissionModel = permissionsModelMapper.map(
+            model, DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS, TEMPORARY_NEW_PERMISSION_ID
+        )
         processSelection(isSelected, permissionModel)
     }
 
     override fun userRecipientSelectionChanged(model: UserModel, isSelected: Boolean) {
-        val permissionModel = permissionsModelMapper.map(model, DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS)
+        val permissionModel = permissionsModelMapper.map(
+            model, DEFAULT_PERMISSIONS_FOR_NEW_RECIPIENTS, TEMPORARY_NEW_PERMISSION_ID
+        )
         processSelection(isSelected, permissionModel)
     }
 
@@ -173,8 +178,11 @@ class PermissionRecipientsPresenter(
     }
 
     override fun searchClearClick() {
-        view?.clearSearch()
-        view?.hideClearSearchIcon()
+        view?.apply {
+            hideEmptyState()
+            clearSearch()
+            hideClearSearchIcon()
+        }
     }
 
     override fun saveButtonClick() {

@@ -45,6 +45,7 @@ data class Resource(
 data class ResourceUserPermission(
     val userId: String,
     val permission: Permission,
+    val permissionId: String,
     val firstName: String?,
     val lastName: String?,
     val avatarUrl: String?,
@@ -55,5 +56,6 @@ data class ResourceUserPermission(
 data class ResourceGroupPermission(
     val groupId: String,
     val permission: Permission,
+    val permissionId: String,
     val groupName: String
 )

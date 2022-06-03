@@ -26,34 +26,44 @@ import kotlinx.parcelize.Parcelize
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-sealed class PermissionModel(val permission: ResourcePermission) {
+sealed class PermissionModel(
+    val permission: ResourcePermission,
+    val permissionId: String
+) {
 
     class UserPermissionModel(
         permission: ResourcePermission,
+        permissionId: String,
         val userId: String
-    ) : PermissionModel(permission)
+    ) : PermissionModel(permission, permissionId)
 
     class GroupPermissionModel(
         permission: ResourcePermission,
+        permissionId: String,
         val group: GroupModel
-    ) : PermissionModel(permission)
+    ) : PermissionModel(permission, permissionId)
 }
 
-sealed class PermissionModelUi(open val permission: ResourcePermission) : Searchable, Parcelable {
+sealed class PermissionModelUi(
+    open val permission: ResourcePermission,
+    open val permissionId: String
+) : Searchable, Parcelable {
 
     @Parcelize
-    class UserPermissionModel(
+    data class UserPermissionModel(
         override val permission: ResourcePermission,
+        override val permissionId: String,
         val user: UserWithAvatar,
         override val searchCriteria: String = user.searchCriteria
-    ) : PermissionModelUi(permission), Parcelable
+    ) : PermissionModelUi(permission, permissionId), Parcelable
 
     @Parcelize
-    class GroupPermissionModel(
+    data class GroupPermissionModel(
         override val permission: ResourcePermission,
+        override val permissionId: String,
         val group: GroupModel,
         override val searchCriteria: String = group.searchCriteria
-    ) : PermissionModelUi(permission), Parcelable
+    ) : PermissionModelUi(permission, permissionId), Parcelable
 }
 
 @Parcelize

@@ -24,6 +24,10 @@
     <string name="common_refresh">Refresh</string>
     <string name="common_sign_out">Sign out</string>
 
+    <string name="common_message_resource_edited">%s password was successfully edited.</string>
+    <string name="common_message_resource_deleted">%s password was deleted.</string>
+    <string name="common_message_resource_shared">The resource permissions were updated.</string>
+
     <string name="fingerprint_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Biometric authorization has been blocked due to too many attempts.</string>
     <string name="fingerprint_biometric_error_blocked">Biometric authorization has been blocked for 30 seconds.</string>
@@ -192,8 +196,6 @@
     <string name="home_decryption_failure">Error during secret decryption</string>
     <string name="home_fetch_failure">Error during downloading the secret</string>
     <string name="home_create">Create</string>
-    <string name="home_resource_deleted_format">%s password was deleted.</string>
-    <string name="home_resource_edited_format">%s password was successfully edited.</string>
     <string name="home_in_sub_folders">in subfolders:</string>
     <string name="home_in_current_folder">in \"%s\":</string>
 
@@ -223,7 +225,6 @@
     <string name="resource_details_see_description">See description</string>
     <string name="resource_details_decryption_failure">Error during secret decryption</string>
     <string name="resource_details_fetch_failure">Error during downloading the secret</string>
-    <string name="resource_details_resource_edited_format">%s password was successfully edited.</string>
     <string name="resource_details_information">Information</string>
     <string name="resource_details_shared_with">Shared with</string>
 
@@ -327,6 +328,11 @@
     <string name="resource_permissions_can_update">Can update</string>
     <string name="resource_permissions_is_owner">Is owner</string>
     <string name="resource_permissions_one_owner">Please make sure there is at least one owner.</string>
+    <string name="resource_permissions_share_simulation_failed">There was an error during share simulation</string>
+    <string name="resource_permissions_share_failed">There was an error during share </string>
+    <string name="resource_permissions_secret_fetch_failure">There was an error during secret fetching</string>
+    <string name="resource_permissions_secret_encrypt_failure">There was an error during secret encryption</string>
+    <string name="resource_permissions_secret_decrypt_failure">There was an error during secret decryption</string>
 
     <string name="group_permission_permission">Permission</string>
     <string name="group_permission_group_members">Group members</string>

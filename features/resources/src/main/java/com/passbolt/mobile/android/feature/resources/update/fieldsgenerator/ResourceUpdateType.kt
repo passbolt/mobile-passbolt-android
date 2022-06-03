@@ -34,7 +34,7 @@ enum class ResourceUpdateType {
         fun from(mode: ResourceMode) = when (mode) {
             ResourceMode.NEW -> CREATE
             ResourceMode.EDIT -> EDIT
-            ResourceMode.DETAILS -> throw IllegalStateException("${mode.name} is not a resource update type")
+            else -> throw IllegalStateException("${mode.name} is not a resource update type")
         }
     }
 }

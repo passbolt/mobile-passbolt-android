@@ -3,12 +3,14 @@ package com.passbolt.mobile.android.feature.resources
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.navigation.fragment.NavHostFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.resources.databinding.ActivityResourcesBinding
+import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 
@@ -56,15 +58,28 @@ class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResou
             ResourceMode.NEW -> inflater.inflate(R.navigation.resources_new)
             ResourceMode.EDIT -> inflater.inflate(R.navigation.resources_new)
             ResourceMode.DETAILS -> inflater.inflate(R.navigation.resources_details)
+            ResourceMode.SHARE -> inflater.inflate(R.navigation.resources_details)
         }
 
         navHostFragment.navController.setGraph(graph, intent.extras)
+
+        if (mode == ResourceMode.SHARE) {
+            navigateToResourcePermissions(navHostFragment)
+        }
+    }
+
+    private fun navigateToResourcePermissions(navHostFragment: NavHostFragment) {
+        val resourceId = requireNotNull(intent.getParcelableExtra<ResourceModel>(EXTRA_RESOURCE_MODEL)).resourceId
+        navHostFragment.navController.navigate(
+            ResourcesDetailsDirections.actionGlobalResourcePermissionsFragment(resourceId, ResourcePermissionsMode.EDIT)
+        )
     }
 
     companion object {
         const val RESULT_RESOURCE_DELETED = 8000
         const val RESULT_RESOURCE_EDITED = 8001
         const val RESULT_RESOURCE_CREATED = 8002
+        const val RESULT_RESOURCE_SHARED = 8003
         const val EXTRA_RESOURCE_MODEL = "RESOURCE_MODEL"
         const val EXTRA_RESOURCE_MODE = "RESOURCE_MODE"
 

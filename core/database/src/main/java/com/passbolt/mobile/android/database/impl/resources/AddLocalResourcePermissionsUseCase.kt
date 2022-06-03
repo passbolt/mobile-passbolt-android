@@ -50,7 +50,8 @@ class AddLocalResourcePermissionsUseCase(
                                 ResourceAndGroupsCrossRef(
                                     resourceId,
                                     permission.group.groupId,
-                                    permissionsModelMapper.map(permission.permission)
+                                    permissionsModelMapper.map(permission.permission),
+                                    permission.permissionId
                                 )
                             )
                         is PermissionModel.UserPermissionModel -> {
@@ -58,7 +59,8 @@ class AddLocalResourcePermissionsUseCase(
                                 ResourceAndUsersCrossRef(
                                     resourceId,
                                     permission.userId,
-                                    permissionsModelMapper.map(permission.permission)
+                                    permissionsModelMapper.map(permission.permission),
+                                    permission.permissionId
                                 )
                             )
                         }

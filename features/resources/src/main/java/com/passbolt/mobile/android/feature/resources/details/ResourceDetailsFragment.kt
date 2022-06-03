@@ -8,10 +8,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.doOnLayout
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amulyakhare.textdrawable.TextDrawable
@@ -38,6 +40,7 @@ import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourc
 import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.GroupItem
 import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.UserItem
 import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
+import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsFragment
 import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -104,13 +107,16 @@ class ResourceDetailsFragment :
     private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
     private val fastAdapter: FastAdapter<GenericItem> by inject()
 
-    private val resourceDetailsResult =
+    private val resourceUpdateResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == ResourceActivity.RESULT_RESOURCE_EDITED) {
                 val name = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_NAME)
                 presenter.resourceEdited(name.orEmpty())
             }
         }
+    private val resourceShareResult = { _: String, _: Bundle ->
+        presenter.resourceShared()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -330,12 +336,11 @@ class ResourceDetailsFragment :
     }
 
     override fun showGeneralError() {
-        Snackbar.make(requireView(), R.string.common_failure, Snackbar.LENGTH_SHORT)
-            .show()
+        showSnackbar(R.string.common_failure)
     }
 
     override fun navigateToEditResource(resourceModel: ResourceModel) {
-        resourceDetailsResult.launch(
+        resourceUpdateResult.launch(
             ResourceActivity.newInstance(
                 requireContext(),
                 ResourceMode.EDIT,
@@ -346,12 +351,7 @@ class ResourceDetailsFragment :
     }
 
     override fun showResourceEditedSnackbar(resourceName: String) {
-        Snackbar.make(
-            requireView(),
-            getString(R.string.resource_details_resource_edited_format, resourceName),
-            Snackbar.LENGTH_LONG
-        )
-            .show()
+        showSnackbar(R.string.common_message_resource_edited, resourceName)
     }
 
     override fun showDeleteConfirmationDialog() {
@@ -379,9 +379,22 @@ class ResourceDetailsFragment :
     }
 
     override fun navigateToResourcePermissions(resourceId: String, mode: ResourcePermissionsMode) {
+        setFragmentResultListener(
+            ResourcePermissionsFragment.REQUEST_UPDATE_PERMISSIONS,
+            resourceShareResult
+        )
         findNavController().navigate(
             ResourceDetailsFragmentDirections.actionResourceDetailsToResourcePermissionsFragment(resourceId, mode)
         )
+    }
+
+    override fun showResourceSharedSnackbar() {
+        showSnackbar(R.string.common_message_resource_shared)
+    }
+
+    private fun showSnackbar(@StringRes messageResId: Int, vararg messageArgs: String) {
+        Snackbar.make(binding.root, getString(messageResId, messageArgs), Snackbar.LENGTH_SHORT)
+            .show()
     }
 
     companion object {

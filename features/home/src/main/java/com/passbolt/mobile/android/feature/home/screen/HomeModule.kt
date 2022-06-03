@@ -9,7 +9,6 @@ import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderIte
 import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.TagWithCountItem
-import com.passbolt.mobile.android.feature.home.screen.interactor.HomeDataInteractor
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.ScopeDSL
@@ -47,14 +46,6 @@ internal const val TAGS_ITEM_ADAPTER = "TAGS_ITEM_ADAPTER"
 internal const val GROUPS_ITEM_ADAPTER = "GROUPS_ITEM_ADAPTER"
 
 fun Module.homeModule() {
-    single {
-        HomeDataInteractor(
-            foldersInteractor = get(),
-            resourcesInteractor = get(),
-            groupsInteractor = get(),
-            usersInteractor = get()
-        )
-    }
     scope<HomeFragment> {
         scoped<HomeContract.Presenter> {
             HomePresenter(
