@@ -41,5 +41,6 @@ interface AccountDetailsContract {
         fun clearValidationErrors()
         fun showLabelLengthError(labelMaxLength: Int)
         fun showLabelChanged()
+        fun setLabel(label: String)
     }
 }

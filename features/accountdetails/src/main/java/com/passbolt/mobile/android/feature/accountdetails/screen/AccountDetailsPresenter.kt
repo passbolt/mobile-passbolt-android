@@ -50,6 +50,7 @@ class AccountDetailsPresenter(
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     private lateinit var label: String
+    private lateinit var defaultLabel: String
 
     override fun attach(view: AccountDetailsContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
@@ -59,7 +60,8 @@ class AccountDetailsPresenter(
     private fun displayAccountData() {
         scope.launch {
             val data = getSelectedAccountDataUseCase.execute(Unit)
-            label = data.label ?: AccountModelMapper.defaultLabel(data.firstName, data.lastName)
+            defaultLabel = AccountModelMapper.defaultLabel(data.firstName, data.lastName)
+            label = data.label ?: defaultLabel
 
             view?.apply {
                 showEmail(data.email.orEmpty())
@@ -73,6 +75,9 @@ class AccountDetailsPresenter(
 
     override fun labelInputChanged(label: String) {
         this.label = label
+        if (label.isEmpty()) {
+            view?.setLabel(defaultLabel)
+        }
     }
 
     override fun saveClick() {
@@ -102,6 +107,6 @@ class AccountDetailsPresenter(
     }
 
     private companion object {
-        private const val LABEL_MAX_LENGTH = 25
+        private const val LABEL_MAX_LENGTH = 64
     }
 }

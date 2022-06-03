@@ -107,4 +107,8 @@ class AccountDetailsFragment :
         Snackbar.make(requireView(), R.string.account_details_label_saved, Snackbar.LENGTH_SHORT)
             .show()
     }
+
+    override fun setLabel(label: String) {
+        binding.labelInput.text = label
+    }
 }

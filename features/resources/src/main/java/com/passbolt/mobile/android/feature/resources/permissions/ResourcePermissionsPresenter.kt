@@ -4,9 +4,9 @@ import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
+import com.passbolt.mobile.android.data.interactor.ShareInteractor
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.data.interactor.ShareInteractor
 import com.passbolt.mobile.android.feature.resources.permissions.validation.HasOneOwnerPermission
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import kotlinx.coroutines.CoroutineScope
