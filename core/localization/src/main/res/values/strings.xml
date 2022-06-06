@@ -18,6 +18,7 @@
     <string name="authentication_required">Authentication required</string>
     <string name="save">Save</string>
     <string name="apply">Apply</string>
+    <string name="confirm">Confirm</string>
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_refresh">Refresh</string>
@@ -35,7 +36,6 @@
 
     <string name="resource_will_be_deleted">This will permanently remove this password from your account.</string>
 
-    <string name="logout_dialog_title">Are you sure?</string>
     <string name="logout_dialog_message">If you sign out you will need to sign in again.</string>
     <string name="logout_dialog_sign_out">Sign out</string>
 
@@ -98,7 +98,6 @@
     <string name="accounts_list_remove_account">Remove</string>
     <string name="accounts_list_removing_done">Done</string>
     <string name="accounts_list_add_new_account">Add new account</string>
-    <string name="accounts_list_remove_account_title">Are you sure?</string>
     <string name="accounts_list_remove_account_message">This will remove your account from this device. Your passwords will not be deleted.</string>
     <string name="accounts_list_manage_accounts">Manage accounts</string>
     <string name="accounts_list_account_removed">The account has been removed from this device.</string>
@@ -110,7 +109,6 @@
     <string name="auth_forgot_password_title">Did you forgot your passphrase?</string>
     <string name="auth_forgot_password_message">Unfortunately you cannot access your data if you do not remember your passphrase. Please contact your administrator to unlock your account.</string>
     <string name="auth_enter_passphrase">Enter your passphrase</string>
-    <string name="auth_exit_dialog_title">Are you sure?</string>
     <string name="auth_exit_dialog_message">If you leave, you may need to set up your account again.</string>
     <string name="auth_biometric_title">Confirm Using Your Fingerprint</string>
     <string name="auth_biometric_subtitle" />
@@ -259,7 +257,6 @@
     <string name="settings_logs">Access the logs</string>
     <string name="settings_licenses">Open Source Licenses</string>
     <string name="settings_title">Settings</string>
-    <string name="settings_disable_fingerprint_confirmation_title">Are you sure?</string>
     <string name="settings_disable_fingerprint_confirmation_message">After disabling Fingerprint you will need to login by using your passphrase.</string>
     <string name="settings_turn_on_biometric_title">Turn on fingerprint authentication</string>
     <string name="settings_turn_on_biometric_subtitle">Touch the fingerprint sensor</string>
@@ -299,7 +296,6 @@
     <string name="transfer_details_camera_required_dialog_message">Sorry, you need a device with a camera to continue, as the key transfer is done using QR codes.</string>
     <string name="transfer_details_camera_access_dialog_message">Please provide permissions to the Passbolt application to access the camera in your settings.</string>
 
-    <string name="scan_qr_exit_confirmation_dialog_title">Are you sure?</string>
     <string name="scan_qr_exit_confirmation_dialog_message">If you leave, you will need to scan QR codes again.</string>
     <string name="scan_qr_exit_information_dialog_message">You will see a sequence of QR codes. We will scan these codes until the progress bar is full. then you will be able to login!</string>
     <string name="scan_qr_exit_information_dialog_title">Scanning QR codes</string>
@@ -330,11 +326,14 @@
     <string name="resource_permissions_can_read">Can read</string>
     <string name="resource_permissions_can_update">Can update</string>
     <string name="resource_permissions_is_owner">Is owner</string>
+    <string name="resource_permissions_one_owner">Please make sure there is at least one owner.</string>
 
     <string name="group_permission_permission">Permission</string>
     <string name="group_permission_group_members">Group members</string>
+    <string name="group_permission_delete">Delete permission</string>
 
     <string name="user_permission_permission">Permission</string>
+    <string name="user_permission_delete">Delete permission</string>
 
     <string name="group_members_title">Group members</string>
 
@@ -342,6 +341,9 @@
 
     <string name="permission_recipients_select_users">Select users</string>
     <string name="permission_recipients_already_added">Already added</string>
+    <string name="permission_recipients_user_not_found">User not found</string>
+
+    <string name="permission_deletion_dialog_message">The password will no longer be shared with this user.</string>
 
     <!--
     arrays can be inconsistent when in other languages

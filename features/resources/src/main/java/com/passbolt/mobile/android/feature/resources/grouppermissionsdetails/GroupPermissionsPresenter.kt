@@ -72,6 +72,17 @@ class GroupPermissionsPresenter(
         }
     }
 
+    override fun deletePermissionClick() {
+        view?.showPermissionDeleteConfirmation()
+    }
+
+    override fun permissionDeleteConfirmClick() {
+        view?.apply {
+            setDeletePermissionResult(groupPermission)
+            navigateBack()
+        }
+    }
+
     override fun detach() {
         scope.coroutineContext.cancelChildren()
         super<BaseAuthenticatedPresenter>.detach()

@@ -29,8 +29,16 @@ import com.passbolt.mobile.android.common.R
 
 fun signOutAlertDialog(context: Context, confirmAction: () -> Unit): AlertDialog =
     AlertDialog.Builder(context)
-        .setTitle(R.string.logout_dialog_title)
+        .setTitle(R.string.are_you_sure)
         .setMessage(R.string.logout_dialog_message)
         .setPositiveButton(R.string.logout_dialog_sign_out) { _, _ -> confirmAction() }
+        .setNegativeButton(R.string.cancel) { _, _ -> }
+        .create()
+
+fun permissionDeletionConfirmationAlertDialog(context: Context, confirmAction: () -> Unit): AlertDialog =
+    AlertDialog.Builder(context)
+        .setTitle(R.string.are_you_sure)
+        .setMessage(R.string.permission_deletion_dialog_message)
+        .setPositiveButton(R.string.confirm) { _, _ -> confirmAction() }
         .setNegativeButton(R.string.cancel) { _, _ -> }
         .create()

@@ -52,6 +52,17 @@ class UserPermissionsPresenter(
         }
     }
 
+    override fun deletePermissionClick() {
+        view?.showPermissionDeleteConfirmation()
+    }
+
+    override fun permissionDeleteConfirmClick() {
+        view?.apply {
+            setDeletePermissionResult(userPermission)
+            navigateBack()
+        }
+    }
+
     override fun detach() {
         scope.coroutineContext.cancelChildren()
         super<BaseAuthenticatedPresenter>.detach()

@@ -45,6 +45,10 @@ interface ResourcePermissionsContract {
             groupPermissions: List<PermissionModelUi.GroupPermissionModel>,
             userPermissions: List<PermissionModelUi.UserPermissionModel>
         )
+
+        fun showOneOwnerSnackbar()
+        fun showEmptyState()
+        fun hideEmptyState()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -55,5 +59,7 @@ interface ResourcePermissionsContract {
         fun shareRecipientsAdded(shareRecipients: ArrayList<PermissionModelUi>?)
         fun userPermissionModified(permission: PermissionModelUi.UserPermissionModel)
         fun groupPermissionModified(permission: PermissionModelUi.GroupPermissionModel)
+        fun userPermissionDeleted(permission: PermissionModelUi.UserPermissionModel)
+        fun groupPermissionDeleted(permission: PermissionModelUi.GroupPermissionModel)
     }
 }
