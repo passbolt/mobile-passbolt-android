@@ -235,7 +235,7 @@ class PermissionRecipientsFragment :
         alreadyAddedFastAdapter.notifyAdapterDataSetChanged()
     }
 
-    override fun displayClearSearchIcon() {
+    override fun showClearSearchIcon() {
         binding.searchTextInput.setSearchEndIconWithListener(
             ContextCompat.getDrawable(requireContext(), R.drawable.ic_close)!!,
             presenter::searchClearClick

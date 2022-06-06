@@ -34,7 +34,7 @@ interface PermissionRecipientsContract {
         fun userRecipientSelectionChanged(model: UserModel, isSelected: Boolean)
         fun argsReceived(
             alreadyAddedGroupPermissions: List<PermissionModelUi.GroupPermissionModel>,
-            alreadyAddeduserPermissions: List<PermissionModelUi.UserPermissionModel>,
+            alreadyAddedUserPermissions: List<PermissionModelUi.UserPermissionModel>,
             alreadyAddedListWidth: Int,
             alreadyAddedItemWidth: Float
         )
@@ -58,7 +58,7 @@ interface PermissionRecipientsContract {
             overlap: Int
         )
 
-        fun displayClearSearchIcon()
+        fun showClearSearchIcon()
         fun hideClearSearchIcon()
         fun clearSearch()
         fun filterGroupsAndUsers(searchText: String)
