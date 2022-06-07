@@ -95,7 +95,7 @@ class ResourceDetailsFragment :
         get() = listOf(binding.urlHeader, binding.urlIcon)
 
     private val sharedWithFields
-        get() = listOf(binding.sharedWithLabel, binding.sharedWithNavIcon)
+        get() = listOf(binding.sharedWithLabel, binding.sharedWithRecyclerClickableArea, binding.sharedWithNavIcon)
 
     private val websiteOpener: WebsiteOpener by inject()
 
@@ -320,6 +320,13 @@ class ResourceDetailsFragment :
             )
             finish()
         }
+    }
+
+    override fun setResourceEditedResult(resourceName: String) {
+        requireActivity().setResult(
+            ResourceActivity.RESULT_RESOURCE_EDITED,
+            ResourceActivity.resourceNameResultIntent(resourceName)
+        )
     }
 
     override fun showGeneralError() {

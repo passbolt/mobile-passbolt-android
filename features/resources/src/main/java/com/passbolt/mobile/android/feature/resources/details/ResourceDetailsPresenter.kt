@@ -280,7 +280,10 @@ class ResourceDetailsPresenter(
 
     override fun resourceEdited(resourceName: String) {
         getResourcesAndPermissions(resourceModel.resourceId)
-        view?.showResourceEditedSnackbar(resourceName)
+        view?.apply {
+            showResourceEditedSnackbar(resourceName)
+            setResourceEditedResult(resourceName)
+        }
     }
 
     private fun runWhileShowingListProgress(action: suspend () -> Unit) {

@@ -62,7 +62,9 @@ interface ResourceDetailsContract {
             counterValue: List<String>,
             overlapOffset: Int
         )
+
         fun navigateToResourcePermissions(resourceId: String, mode: ResourcePermissionsMode)
+        fun setResourceEditedResult(resourceName: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

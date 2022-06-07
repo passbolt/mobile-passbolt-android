@@ -1,0 +1,5 @@
+# Passbolt 1.7.0-8 Android app release notes
+
+## Added
+- Share permissions read only view (edit is coming up in next sprint) - view which groups and users the resource is shared with in the
+resource details screen; View what permissions do they have and for groups you can also browse members;

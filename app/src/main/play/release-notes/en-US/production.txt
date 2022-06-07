@@ -1,3 +1,2 @@
-- added home folders view (available through the search filter icon): browse folders and search in folders and sub-folders
-- autofill: fix crash when websites/apps have two-page sign in (i.e. username only on first page and password on another)
-- security: support latest java 17 build
+- Share permissions read only view (edit is coming up in next) - view which groups and users the resource is shared with in the
+resource details screen; View what permissions do they have and for groups you can also browse members;

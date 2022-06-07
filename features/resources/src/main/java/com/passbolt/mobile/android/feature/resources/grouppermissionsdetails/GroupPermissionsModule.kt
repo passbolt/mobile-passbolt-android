@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.resources.grouppermissionsdetails
 
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.core.commonresource.GroupItem
+import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.GroupItem
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.membersrecycler.GroupUserItem
 import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
 import org.koin.core.module.Module

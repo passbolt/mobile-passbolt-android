@@ -68,6 +68,10 @@ class GroupPermissionsFragment :
             saveButton.setDebouncingOnClick {
                 presenter.saveButtonClick()
             }
+            listOf(groupMembersRecyclerClickableArea, groupMembersNavIcon)
+                .forEach {
+                    it.setDebouncingOnClick { presenter.groupMembersRecyclerClick() }
+                }
         }
     }
 

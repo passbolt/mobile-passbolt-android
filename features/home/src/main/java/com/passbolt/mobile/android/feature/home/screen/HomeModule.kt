@@ -4,11 +4,11 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.FolderItem
-import com.passbolt.mobile.android.core.commonresource.GroupItem
+import com.passbolt.mobile.android.core.commonresource.GroupWithCountItem
 import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
-import com.passbolt.mobile.android.core.commonresource.TagItem
+import com.passbolt.mobile.android.core.commonresource.TagWithCountItem
 import com.passbolt.mobile.android.feature.home.screen.interactor.HomeDataInteractor
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -82,8 +82,8 @@ fun Module.homeModule() {
                 listOf(
                     get<ItemAdapter<InCurrentFoldersHeaderItem>>(named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)),
                     get<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)),
-                    get<ItemAdapter<TagItem>>(named(TAGS_ITEM_ADAPTER)),
-                    get<ItemAdapter<TagItem>>(named(GROUPS_ITEM_ADAPTER)),
+                    get<ItemAdapter<TagWithCountItem>>(named(TAGS_ITEM_ADAPTER)),
+                    get<ItemAdapter<GroupWithCountItem>>(named(GROUPS_ITEM_ADAPTER)),
                     get<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)),
                     get<ItemAdapter<InSubFoldersHeaderItem>>(named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)),
                     get<ItemAdapter<FolderItem>>(named(SUB_FOLDER_ITEM_ADAPTER)),
@@ -113,10 +113,10 @@ fun ScopeDSL.declareHomeListAdapters() {
     scoped<ItemAdapter<InCurrentFoldersHeaderItem>>(named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)) {
         ItemAdapter.items()
     }
-    scoped<ItemAdapter<TagItem>>(named(TAGS_ITEM_ADAPTER)) {
+    scoped<ItemAdapter<TagWithCountItem>>(named(TAGS_ITEM_ADAPTER)) {
         ItemAdapter.items()
     }
-    scoped<ItemAdapter<GroupItem>>(named(GROUPS_ITEM_ADAPTER)) {
+    scoped<ItemAdapter<GroupWithCountItem>>(named(GROUPS_ITEM_ADAPTER)) {
         ItemAdapter.items()
     }
 }
