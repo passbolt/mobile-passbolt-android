@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
@@ -70,6 +71,11 @@ class HomePresenterTest : KoinTest {
                 emptyList()
             )
         }
+        mockGetLocalResourcesFilteredByTagUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalResourcesFilteredByTagUseCase.Output(
+                emptyList()
+            )
+        }
     }
 
     @Test
@@ -129,6 +135,7 @@ class HomePresenterTest : KoinTest {
         )
 
         verify(view).showHomeScreenTitle(HomeDisplayView.AllItems)
+        verify(view).showAllItemsSearchHint()
         verify(view).hideBackArrow()
         verify(view).showProgress()
         verify(view).hideAddButton()
@@ -216,6 +223,7 @@ class HomePresenterTest : KoinTest {
 
         verify(view).hideBackArrow()
         verify(view).showHomeScreenTitle(HomeDisplayView.AllItems)
+        verify(view).showAllItemsSearchHint()
         verify(view).showProgress()
         verify(view).hideProgress()
         verify(view).hideRefreshProgress()
@@ -245,6 +253,7 @@ class HomePresenterTest : KoinTest {
 
         verify(view).hideBackArrow()
         verify(view).showHomeScreenTitle(HomeDisplayView.AllItems)
+        verify(view).showAllItemsSearchHint()
         verify(view).showProgress()
         verify(view).hideAddButton()
         verify(view).hideProgress()

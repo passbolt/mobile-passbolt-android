@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
@@ -42,6 +43,7 @@ import kotlinx.coroutines.launch
 class AutofillResourcesPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getLocalResourcesUse: GetLocalResourcesUseCase,
+    private val getLocalResourcesFilteredByTag: GetLocalResourcesFilteredByTagUseCase,
     private val domainProvider: DomainProvider,
     private val homeDataInteractor: HomeDataInteractor,
     private val resourceSearch: SearchableMatcher,
@@ -205,7 +207,9 @@ class AutofillResourcesPresenter(
     override fun searchTextChange(text: String) {
         currentSearchText = text
         processSearchIconChange()
-        filterList()
+        scope.launch {
+            filterList()
+        }
     }
 
     private fun processSearchIconChange() {
@@ -215,10 +219,13 @@ class AutofillResourcesPresenter(
         }
     }
 
-    private fun filterList() {
+    private suspend fun filterList() {
+        // show resources and additionally resources which have tags matching search
         val filtered = allItemsList.filter {
             resourceSearch.matches(it, currentSearchText)
-        }
+        } + getLocalResourcesFilteredByTag.execute(
+            GetLocalResourcesFilteredByTagUseCase.Input(currentSearchText)
+        ).resources
         if (filtered.isEmpty()) {
             view?.showSearchEmptyList()
         } else {

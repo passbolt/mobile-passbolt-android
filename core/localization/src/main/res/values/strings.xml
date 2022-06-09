@@ -13,7 +13,9 @@
     <string name="stop_scanning">Stop scanning</string>
     <string name="delete">Delete</string>
     <string name="are_you_sure">Are you sure?</string>
-    <string name="search_hint">Search name, user or url</string>
+    <string name="default_home_search_hint">Search name, user or url</string>
+    <string name="all_items_home_search_hint">Search name, user, url or tag</string>
+    <string name="user_search_hint">Search for users…</string>
     <string name="no_passwords">There are no passwords</string>
     <string name="authentication_required">Authentication required</string>
     <string name="save">Save</string>

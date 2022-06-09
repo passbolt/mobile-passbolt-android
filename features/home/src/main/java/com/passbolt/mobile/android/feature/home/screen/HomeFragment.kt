@@ -500,6 +500,14 @@ class HomeFragment :
         presenter.groupsClick()
     }
 
+    override fun showAllItemsSearchHint() {
+        binding.searchEditText.hint = getString(R.string.all_items_home_search_hint)
+    }
+
+    override fun showDefaultSearchHint() {
+        binding.searchEditText.hint = getString(R.string.default_home_search_hint)
+    }
+
     override fun showHomeScreenTitle(view: HomeDisplayView) {
         when (view) {
             is HomeDisplayView.AllItems -> showScreenTitleWithStartIcon(

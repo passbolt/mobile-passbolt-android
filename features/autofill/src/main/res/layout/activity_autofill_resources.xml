@@ -64,7 +64,7 @@
                         android:id="@+id/searchEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/search_hint"
+                        android:hint="@string/all_items_home_search_hint"
                         android:imeOptions="actionSearch"
                         android:inputType="text"
                         android:maxLines="1"

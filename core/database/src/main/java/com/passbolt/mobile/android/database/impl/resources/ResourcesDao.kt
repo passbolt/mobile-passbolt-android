@@ -113,6 +113,18 @@ interface ResourcesDao : BaseDao<Resource> {
     suspend fun getResourceGroupsPermissions(resourceId: String): List<ResourceGroupPermission>
 
     @Transaction
+    @Query(
+        "SELECT * FROM Resource r " +
+                "INNER JOIN ResourceAndTagsCrossRef rTCR " +
+                "ON rTCR.resourceId = r.resourceId " +
+                "INNER JOIN Tag t " +
+                "ON t.id =rTCr.tagId " +
+                "WHERE t.slug LIKE '%' || :tagSearchQuery || '%' " +
+                "ORDER BY resourceName COLLATE NOCASE ASC"
+    )
+    suspend fun getAllThatHaveTagContaining(tagSearchQuery: String): List<Resource>
+
+    @Transaction
     @Query("DELETE FROM Resource")
     suspend fun deleteAll()
 }

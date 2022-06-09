@@ -64,7 +64,8 @@ fun Module.homeModule() {
                 getLocalTagsUseCase = get(),
                 getLocalResourcesWithTagUseCase = get(),
                 getLocalGroupsWithShareItemsCountUseCase = get(),
-                getLocalResourcesWithGroupsUseCase = get()
+                getLocalResourcesWithGroupsUseCase = get(),
+                getLocalResourcesFilteredByTag = get()
             )
         }
         declareHomeListAdapters()

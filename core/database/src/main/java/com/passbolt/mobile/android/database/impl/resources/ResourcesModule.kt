@@ -84,4 +84,11 @@ internal fun Module.resourcesModule() {
             getSelectedAccountUseCase = get()
         )
     }
+    single {
+        GetLocalResourcesFilteredByTagUseCase(
+            databaseProvider = get(),
+            resourceModelMapper = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
 }
