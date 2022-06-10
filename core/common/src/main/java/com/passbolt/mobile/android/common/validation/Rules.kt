@@ -6,4 +6,4 @@ object StringNotBlank :
     Rule<String>({ it.isNotBlank() })
 
 class StringMaxLength(length: Int) :
-    Rule<String>({ it.length < length })
+    Rule<String>({ it.length <= length })
