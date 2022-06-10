@@ -8,6 +8,8 @@ import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCa
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourcePermissionsTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildTagsTablesUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.ShareResourceUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.SimulateShareResourceUseCase
 import com.passbolt.mobile.android.core.commonresource.validation.resourceValidationModule
 import org.koin.dsl.module
 
@@ -123,6 +125,16 @@ val commonResourceModule = module {
             getSelectedAccountUseCase = get(),
             removeLocalResourcePermissionsUseCase = get(),
             addLocalResourcePermissionsUseCase = get()
+        )
+    }
+    single {
+        SimulateShareResourceUseCase(
+            shareRepository = get()
+        )
+    }
+    single {
+        ShareResourceUseCase(
+            shareRepository = get()
         )
     }
 }

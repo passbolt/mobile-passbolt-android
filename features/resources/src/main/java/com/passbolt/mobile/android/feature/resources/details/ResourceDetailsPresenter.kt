@@ -303,6 +303,10 @@ class ResourceDetailsPresenter(
         super<BaseAuthenticatedPresenter>.detach()
     }
 
+    override fun resourceShared() {
+        view?.showResourceSharedSnackbar()
+    }
+
     companion object {
         private const val WEBSITE_LABEL = "Website"
         private const val USERNAME_LABEL = "Username"

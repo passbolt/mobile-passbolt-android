@@ -2,7 +2,6 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
-import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -83,7 +82,8 @@ interface HomeContract {
         fun showChildFolderTitle(activeFolderName: String, isShared: Boolean)
         fun showTagTitle(activeTagTitle: String, isShared: Boolean)
         fun showGroupTitle(groupName: String)
-        fun navigateToResourcePermissions(resourceId: String, mode: ResourcePermissionsMode)
+        fun navigateToEditResourcePermissions(resource: ResourceModel)
+        fun showResourceSharedSnackbar()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -123,5 +123,6 @@ interface HomeContract {
         fun groupsClick()
         fun groupItemClick(group: GroupWithCount)
         fun menuShareClick()
+        fun resourceShared()
     }
 }

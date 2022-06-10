@@ -53,6 +53,13 @@ class PermissionsModelMapper(
         else -> throw IllegalArgumentException("Unsupported DTO permission value: $permissionInt")
     }
 
+    @Suppress("MagicNumber")
+    fun mapToPermissionInt(permission: ResourcePermission) = when (permission) {
+        ResourcePermission.READ -> 1
+        ResourcePermission.UPDATE -> 7
+        ResourcePermission.OWNER -> 15
+    }
+
     fun map(permission: ResourcePermission) = when (permission) {
         ResourcePermission.READ -> Permission.READ
         ResourcePermission.UPDATE -> Permission.WRITE
@@ -63,11 +70,13 @@ class PermissionsModelMapper(
         if (permissionWithGroups.group != null) {
             PermissionModel.GroupPermissionModel(
                 map(permissionWithGroups.type),
+                permissionWithGroups.id,
                 groupsModelMapper.map(permissionWithGroups.group!!)
             )
         } else {
             PermissionModel.UserPermissionModel(
                 map(permissionWithGroups.type),
+                permissionWithGroups.id,
                 permissionWithGroups.aroForeignKey!!
             )
         }
@@ -81,12 +90,14 @@ class PermissionsModelMapper(
                 groupsPermissions.mapTo(this) {
                     PermissionModelUi.GroupPermissionModel(
                         map(it.permission),
+                        it.permissionId,
                         groupsModelMapper.map(it)
                     )
                 }
                 usersPermissions.mapTo(this) {
                     PermissionModelUi.UserPermissionModel(
                         map(it.permission),
+                        it.permissionId,
                         UserWithAvatar(
                             it.userId,
                             it.firstName.orEmpty(),
@@ -98,9 +109,9 @@ class PermissionsModelMapper(
                 }
             }
 
-    fun map(model: GroupModel, permission: ResourcePermission) =
-        PermissionModelUi.GroupPermissionModel(permission, model)
+    fun map(model: GroupModel, permission: ResourcePermission, permissionId: String) =
+        PermissionModelUi.GroupPermissionModel(permission, permissionId, model)
 
-    fun map(model: UserModel, permission: ResourcePermission) =
-        PermissionModelUi.UserPermissionModel(permission, usersModelMapper.mapToUserWithAvatar(model))
+    fun map(model: UserModel, permission: ResourcePermission, permissionId: String) =
+        PermissionModelUi.UserPermissionModel(permission, permissionId, usersModelMapper.mapToUserWithAvatar(model))
 }

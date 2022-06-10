@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/resources"
+    android:id="@+id/resourcesDetails"
     app:startDestination="@id/resourceDetails">
 
     <argument
@@ -27,7 +27,12 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:popExitAnim="@anim/slide_out_right" >
+            <argument
+                android:name="navigationOrigin"
+                android:defaultValue="RESOURCE_DETAILS_SCREEN"
+                app:argType="com.passbolt.mobile.android.feature.resources.permissions.NavigationOrigin" />
+        </action>
     </fragment>
 
     <fragment
@@ -55,6 +60,9 @@
         <argument
             android:name="mode"
             app:argType="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode" />
+        <argument
+            android:name="navigationOrigin"
+            app:argType="com.passbolt.mobile.android.feature.resources.permissions.NavigationOrigin" />
         <action
             android:id="@+id/action_resourcePermissionsFragment_to_permissionRecipientsFragment"
             app:destination="@id/permissionRecipientsFragment"
@@ -103,5 +111,20 @@
             android:name="groupPermissions"
             app:argType="com.passbolt.mobile.android.ui.PermissionModelUi$GroupPermissionModel[]" />
     </fragment>
+
+    <action
+        android:id="@+id/action_global_resourcePermissionsFragment"
+        app:destination="@id/resourcePermissionsFragment">
+        <argument
+            android:name="resourceId"
+            app:argType="string" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode" />
+        <argument
+            android:name="navigationOrigin"
+            android:defaultValue="HOME_RESOURCE_MORE_MENU"
+            app:argType="com.passbolt.mobile.android.feature.resources.permissions.NavigationOrigin" />
+    </action>
 
 </navigation>

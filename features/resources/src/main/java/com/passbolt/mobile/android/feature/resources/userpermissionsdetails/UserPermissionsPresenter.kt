@@ -42,7 +42,11 @@ class UserPermissionsPresenter(
     }
 
     override fun onPermissionSelected(permission: ResourcePermission) {
-        userPermission = PermissionModelUi.UserPermissionModel(permission, userPermission.user.copy())
+        userPermission = PermissionModelUi.UserPermissionModel(
+            permission,
+            userPermission.permissionId,
+            userPermission.user.copy()
+        )
     }
 
     override fun saveClick() {

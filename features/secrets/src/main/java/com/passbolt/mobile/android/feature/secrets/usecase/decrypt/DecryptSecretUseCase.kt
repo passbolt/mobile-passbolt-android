@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.feature.secrets.usecase.decrypt
 
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
@@ -56,7 +58,7 @@ class DecryptSecretUseCase(
                 passphraseCopy.erase()
                 Output.DecryptedSecret(decrypted)
             } else {
-                Output.Unauthorized
+                Output.Unauthorized(AuthenticationState.Unauthenticated.Reason.Passphrase)
             }
         } catch (exception: Exception) {
             Timber.e(exception)
@@ -70,7 +72,7 @@ class DecryptSecretUseCase(
 
     sealed class Output {
 
-        object Unauthorized : Output()
+        data class Unauthorized(val reason: UnauthenticatedReason) : Output()
 
         data class Failure(val exception: Exception) : Output()
 

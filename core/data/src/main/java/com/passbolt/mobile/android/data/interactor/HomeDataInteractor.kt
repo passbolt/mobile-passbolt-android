@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.home.screen.interactor
+package com.passbolt.mobile.android.data.interactor
 
 import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
 import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor

@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.feature.resources.permissions
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
+import com.passbolt.mobile.android.data.interactor.ShareInteractor
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.feature.resources.base.TestCoroutineLaunchContext
 import org.koin.dsl.module
@@ -30,15 +32,20 @@ import org.mockito.kotlin.mock
  */
 
 internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
+internal val mockShareInteractor = mock<ShareInteractor>()
+internal val mockHomeDataInteractor = mock<HomeDataInteractor>()
+
 
 internal val testResourcePermissionsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
     factory { PermissionModelUiComparator() }
     factory<ResourcePermissionsContract.Presenter> {
         ResourcePermissionsPresenter(
-            coroutineLaunchContext = get(),
             getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
-            permissionModelUiComparator = get()
+            permissionModelUiComparator = get(),
+            shareInteractor = mockShareInteractor,
+            coroutineLaunchContext = get(),
+            homeDataInteractor = mockHomeDataInteractor
         )
     }
 }

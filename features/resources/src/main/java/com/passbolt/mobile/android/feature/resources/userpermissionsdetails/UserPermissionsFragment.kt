@@ -91,14 +91,14 @@ class UserPermissionsFragment :
 
     override fun setUpdatedPermissionResult(userPermission: PermissionModelUi.UserPermissionModel) {
         setFragmentResult(
-            EXTRA_UPDATED_USER_PERMISSION_BUNDLE_KEY,
+            REQUEST_UPDATE_USER_PERMISSIONS,
             bundleOf(EXTRA_UPDATED_USER_PERMISSION to userPermission)
         )
     }
 
     override fun setDeletePermissionResult(userPermission: PermissionModelUi.UserPermissionModel) {
         setFragmentResult(
-            EXTRA_UPDATED_USER_PERMISSION_BUNDLE_KEY,
+            REQUEST_UPDATE_USER_PERMISSIONS,
             bundleOf(EXTRA_DELETED_USER_PERMISSION to userPermission)
         )
     }
@@ -115,7 +115,7 @@ class UserPermissionsFragment :
     }
 
     companion object {
-        const val EXTRA_UPDATED_USER_PERMISSION_BUNDLE_KEY = "UPDATED_PERMISSION_BUNDLE"
+        const val REQUEST_UPDATE_USER_PERMISSIONS = "REQUEST_UPDATE_USER_PERMISSIONS"
         const val EXTRA_UPDATED_USER_PERMISSION = "UPDATED_PERMISSION"
         const val EXTRA_DELETED_USER_PERMISSION = "DELETED_PERMISSION"
     }

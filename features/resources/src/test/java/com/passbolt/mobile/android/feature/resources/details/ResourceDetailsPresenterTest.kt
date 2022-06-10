@@ -231,7 +231,11 @@ class ResourceDetailsPresenterTest : KoinTest {
     @Test
     fun `view should show auth when passphrase not in cache`() {
         mockSecretInterActor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.Unauthorized)
+            onBlocking { fetchAndDecrypt(ID) }.doReturn(
+                SecretInteractor.Output.Unauthorized(
+                    AuthenticationState.Unauthenticated.Reason.Session
+                )
+            )
         }
 
         presenter.argsReceived(
@@ -350,10 +354,11 @@ class ResourceDetailsPresenterTest : KoinTest {
         )
         private val DECRYPTED_SECRET = "decrypted".toByteArray()
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
-            ResourcePermission.READ, GroupModel("grId", "grName")
+            ResourcePermission.READ, "permId1", GroupModel("grId", "grName")
         )
         private val userPermission = PermissionModelUi.UserPermissionModel(
             ResourcePermission.OWNER,
+            "permId2",
             UserWithAvatar("usId", "first", "last", "uName", null)
         )
     }

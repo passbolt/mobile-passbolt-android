@@ -49,6 +49,14 @@ interface ResourcePermissionsContract {
         fun showOneOwnerSnackbar()
         fun showEmptyState()
         fun hideEmptyState()
+        fun showShareSimulationFailure()
+        fun showShareFailure()
+        fun showSecretFetchFailure()
+        fun showSecretEncryptFailure()
+        fun showSecretDecryptFailure()
+        fun showProgress()
+        fun hideProgress()
+        fun closeWithShareSuccessResult()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

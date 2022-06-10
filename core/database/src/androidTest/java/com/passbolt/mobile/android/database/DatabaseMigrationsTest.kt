@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.database.migrations.Migration4to5
 import com.passbolt.mobile.android.database.migrations.Migration5to6
 import com.passbolt.mobile.android.database.migrations.Migration6to7
 import com.passbolt.mobile.android.database.migrations.Migration7to8
+import com.passbolt.mobile.android.database.migrations.Migration8to9
 import org.junit.Rule
 import org.junit.Test
 
@@ -153,6 +154,20 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate8To9() {
+        helper.runMigrationsAndValidate(TEST_DB, 9, true, Migration8to9)
+            .apply {
+                execSQL(
+                    "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId9','groupId9','READ','permissionId')"
+                )
+                execSQL(
+                    "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId9','userId9', 'OWNER','permissionId')"
+                )
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -165,7 +180,7 @@ class DatabaseMigrationsTest {
         )
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
-                Migration6to7, Migration7to8
+                Migration6to7, Migration7to8, Migration8to9
             )
             .build().apply {
                 openHelper.writableDatabase

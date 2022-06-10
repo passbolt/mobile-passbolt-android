@@ -65,6 +65,7 @@ interface ResourceDetailsContract {
 
         fun navigateToResourcePermissions(resourceId: String, mode: ResourcePermissionsMode)
         fun setResourceEditedResult(resourceName: String)
+        fun showResourceSharedSnackbar()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -87,5 +88,6 @@ interface ResourceDetailsContract {
         fun deleteResourceConfirmed()
         fun sharedWithClick()
         fun menuShareClick()
+        fun resourceShared()
     }
 }

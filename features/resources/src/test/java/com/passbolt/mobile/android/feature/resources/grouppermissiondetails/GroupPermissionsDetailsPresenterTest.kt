@@ -148,7 +148,7 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
             UserProfileModel("first", "last", "avatarUrl")
         )
         private val GROUP = GroupModel("grId", "grName")
-        private val GROUP_PERMISSION = PermissionModelUi.GroupPermissionModel(ResourcePermission.READ, GROUP)
+        private val GROUP_PERMISSION = PermissionModelUi.GroupPermissionModel(ResourcePermission.READ, "permId", GROUP)
         private val GROUP_WITH_USERS = GroupWithUsersModel(GROUP, listOf(USER))
     }
 }

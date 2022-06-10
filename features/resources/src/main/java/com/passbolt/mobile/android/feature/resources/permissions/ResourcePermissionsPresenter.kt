@@ -3,7 +3,10 @@ package com.passbolt.mobile.android.feature.resources.permissions
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.data.interactor.ShareInteractor
 import com.passbolt.mobile.android.feature.resources.permissions.validation.HasOneOwnerPermission
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +40,8 @@ import kotlinx.coroutines.launch
 class ResourcePermissionsPresenter(
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
     private val permissionModelUiComparator: PermissionModelUiComparator,
+    private val shareInteractor: ShareInteractor,
+    private val homeDataInteractor: HomeDataInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : ResourcePermissionsContract.Presenter,
     BaseAuthenticatedPresenter<ResourcePermissionsContract.View>(coroutineLaunchContext) {
@@ -103,9 +108,36 @@ class ResourcePermissionsPresenter(
                 }
             }
             onValid {
-                // TODO
+                shareResource()
             }
         }
+    }
+
+    private fun shareResource() {
+        view?.showProgress()
+        scope.launch {
+            when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                shareInteractor.simulateAndShare(resourceId, recipients)
+            }) {
+                is ShareInteractor.Output.SecretDecryptFailure -> view?.showSecretDecryptFailure()
+                is ShareInteractor.Output.SecretEncryptFailure -> view?.showSecretEncryptFailure()
+                is ShareInteractor.Output.SecretFetchFailure -> view?.showSecretFetchFailure()
+                is ShareInteractor.Output.ShareFailure -> view?.showShareFailure()
+                is ShareInteractor.Output.SimulateShareFailure -> view?.showShareSimulationFailure()
+                is ShareInteractor.Output.Success -> shareSuccess()
+                is ShareInteractor.Output.Unauthorized -> {
+                    /* not interested */
+                }
+            }
+            view?.hideProgress()
+        }
+    }
+
+    private suspend fun shareSuccess() {
+        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+            homeDataInteractor.refreshAllHomeScreenData()
+        }
+        view?.closeWithShareSuccessResult()
     }
 
     override fun addPermissionClick() {
@@ -128,7 +160,11 @@ class ResourcePermissionsPresenter(
             ?.let { existingPermission ->
                 val existingPermissionIndex = recipients.indexOf(existingPermission)
                 recipients[existingPermissionIndex] =
-                    PermissionModelUi.UserPermissionModel(permission.permission, existingPermission.user.copy())
+                    PermissionModelUi.UserPermissionModel(
+                        permission.permission,
+                        permission.permissionId,
+                        existingPermission.user.copy()
+                    )
             }
     }
 
@@ -146,7 +182,11 @@ class ResourcePermissionsPresenter(
             ?.let { existingPermission ->
                 val existingPermissionIndex = recipients.indexOf(existingPermission)
                 recipients[existingPermissionIndex] =
-                    PermissionModelUi.GroupPermissionModel(permission.permission, existingPermission.group.copy())
+                    PermissionModelUi.GroupPermissionModel(
+                        permission.permission,
+                        permission.permissionId,
+                        existingPermission.group.copy()
+                    )
             }
     }
 

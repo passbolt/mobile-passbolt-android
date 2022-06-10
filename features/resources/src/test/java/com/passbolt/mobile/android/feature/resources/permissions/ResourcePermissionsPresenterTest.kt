@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.feature.resources.permissions
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
+import com.passbolt.mobile.android.data.interactor.ShareInteractor
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
@@ -13,11 +15,13 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyBlocking
 
 /**
  * Passbolt - Open source password manager for teams
@@ -143,7 +147,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
 
         presenter.argsReceived(RESOURCE_ID, ResourcePermissionsMode.VIEW)
         val modifiedPermission = PermissionModelUi.UserPermissionModel(
-            ResourcePermission.OWNER, USER_PERMISSIONS[0].user.copy()
+            ResourcePermission.OWNER, "permId", USER_PERMISSIONS[0].user.copy()
         )
         presenter.userPermissionModified(modifiedPermission)
 
@@ -166,7 +170,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
 
         presenter.argsReceived(RESOURCE_ID, ResourcePermissionsMode.VIEW)
         val modifiedPermission = PermissionModelUi.GroupPermissionModel(
-            ResourcePermission.OWNER, GROUP_PERMISSIONS[0].group.copy()
+            ResourcePermission.OWNER, "permId", GROUP_PERMISSIONS[0].group.copy()
         )
         presenter.groupPermissionModified(modifiedPermission)
 
@@ -179,17 +183,44 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
     }
 
+    @Test
+    fun `view should set result and go back after share success`() {
+        val mockPermissions = GROUP_PERMISSIONS + USER_PERMISSIONS[0].copy(permission = ResourcePermission.OWNER)
+        mockGetLocalResourcePermissionsUseCase.stub {
+            onBlocking { execute(GetLocalResourcePermissionsUseCase.Input(RESOURCE_ID)) }
+                .doReturn(GetLocalResourcePermissionsUseCase.Output(mockPermissions))
+        }
+        mockShareInteractor.stub {
+            onBlocking { simulateAndShare(any(), any()) }
+                .doReturn(ShareInteractor.Output.Success)
+        }
+        mockHomeDataInteractor.stub {
+            onBlocking { refreshAllHomeScreenData() }
+                .doReturn(HomeDataInteractor.Output.Success)
+        }
+
+        presenter.argsReceived(RESOURCE_ID, ResourcePermissionsMode.VIEW)
+        presenter.saveClick()
+
+        verify(view).showProgress()
+        verifyBlocking(mockHomeDataInteractor) { refreshAllHomeScreenData() }
+        verify(view).closeWithShareSuccessResult()
+        verify(view).hideProgress()
+    }
+
     private companion object {
         private const val RESOURCE_ID = "resid"
         private val GROUP_PERMISSIONS = listOf(
             PermissionModelUi.GroupPermissionModel(
                 ResourcePermission.READ,
+                "groupPermId",
                 GroupModel("groupId", "groupname")
             )
         )
         private val USER_PERMISSIONS = listOf(
             PermissionModelUi.UserPermissionModel(
                 ResourcePermission.READ,
+                "userPermId",
                 UserWithAvatar("userId", "first", "last", "userName", "avartUrl")
             )
         )

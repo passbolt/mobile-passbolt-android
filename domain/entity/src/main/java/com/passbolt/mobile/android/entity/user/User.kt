@@ -59,5 +59,6 @@ data class UserGpgKey(
 data class ResourceAndUsersCrossRef(
     val resourceId: String,
     val userId: String,
-    val permission: Permission
+    val permission: Permission,
+    val permissionId: String
 )

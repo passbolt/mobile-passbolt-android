@@ -102,7 +102,8 @@ class UserPermissionsDetailsPresenterTest : KoinTest {
     fun `permission update should be handled correct`() {
         presenter.argsRetrieved(
             USER_PERMISSION,
-            ResourcePermissionsMode.EDIT)
+            ResourcePermissionsMode.EDIT
+        )
         presenter.onPermissionSelected(ResourcePermission.UPDATE)
         presenter.saveClick()
 
@@ -117,7 +118,8 @@ class UserPermissionsDetailsPresenterTest : KoinTest {
     fun `permission deletion should be handled correct`() {
         presenter.argsRetrieved(
             USER_PERMISSION,
-            ResourcePermissionsMode.EDIT)
+            ResourcePermissionsMode.EDIT
+        )
         presenter.deletePermissionClick()
         presenter.permissionDeleteConfirmClick()
 
@@ -136,6 +138,7 @@ class UserPermissionsDetailsPresenterTest : KoinTest {
             GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now()),
             UserProfileModel(USER_WITH_AVATAR.firstName, USER_WITH_AVATAR.lastName, USER_WITH_AVATAR.avatarUrl)
         )
-        private val USER_PERMISSION = PermissionModelUi.UserPermissionModel(ResourcePermission.READ, USER_WITH_AVATAR)
+        private val USER_PERMISSION =
+            PermissionModelUi.UserPermissionModel(ResourcePermission.READ, "permId", USER_WITH_AVATAR)
     }
 }

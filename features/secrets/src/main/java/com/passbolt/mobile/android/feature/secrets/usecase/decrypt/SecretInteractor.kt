@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.secrets.usecase.decrypt
 
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import retrofit2.HttpException
 import java.net.HttpURLConnection
 
@@ -42,7 +43,7 @@ class SecretInteractor(
         when (val output = decryptSecretUseCase.execute(DecryptSecretUseCase.Input(encryptedSecret))) {
             is DecryptSecretUseCase.Output.DecryptedSecret -> Output.Success(output.decryptedSecret)
             is DecryptSecretUseCase.Output.Failure -> Output.DecryptFailure(output.exception)
-            is DecryptSecretUseCase.Output.Unauthorized -> Output.Unauthorized
+            is DecryptSecretUseCase.Output.Unauthorized -> Output.Unauthorized(output.reason)
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
@@ -62,7 +63,7 @@ class SecretInteractor(
 
         data class DecryptFailure(val exception: Exception) : Output()
 
-        object Unauthorized : Output()
+        data class Unauthorized(val reason: UnauthenticatedReason) : Output()
 
         data class Success(val decryptedSecret: ByteArray) : Output() {
             override fun equals(other: Any?): Boolean {

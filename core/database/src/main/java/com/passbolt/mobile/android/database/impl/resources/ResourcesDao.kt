@@ -90,7 +90,8 @@ interface ResourcesDao : BaseDao<Resource> {
 
     @Transaction
     @Query(
-        "SELECT rUCR.userId, rUCR.permission, u.firstName, u.lastName, u.avatarUrl, u.userName, u.fingerprint " +
+        "SELECT rUCR.userId, rUCR.permission, rUCR.permissionId, " +
+                "u.firstName, u.lastName, u.avatarUrl, u.userName, u.fingerprint " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceAndUsersCrossRef rUCR " +
                 "ON rUCR.resourceId = r.resourceId " +
@@ -102,7 +103,7 @@ interface ResourcesDao : BaseDao<Resource> {
 
     @Transaction
     @Query(
-        "SELECT rGCR.groupId, rGCR.permission, ug.name as groupName from Resource r " +
+        "SELECT rGCR.groupId, rGCR.permission, rGCR.permissionId ,ug.name as groupName from Resource r " +
                 "INNER JOIN ResourceAndGroupsCrossRef rGCR " +
                 "ON rGCR.resourceId = r.resourceId " +
                 "INNER JOIN UsersGroup ug " +

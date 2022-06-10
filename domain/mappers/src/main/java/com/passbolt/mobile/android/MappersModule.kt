@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
+import com.passbolt.mobile.android.mappers.SharePermissionsModelMapper
 import com.passbolt.mobile.android.mappers.SignInMapper
 import com.passbolt.mobile.android.mappers.SignOutMapper
 import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
@@ -88,6 +89,11 @@ val mappersModule = module {
         PermissionsModelMapper(
             groupsModelMapper = get(),
             usersModelMapper = get()
+        )
+    }
+    single {
+        SharePermissionsModelMapper(
+            permissionsModelMapper = get()
         )
     }
 }
