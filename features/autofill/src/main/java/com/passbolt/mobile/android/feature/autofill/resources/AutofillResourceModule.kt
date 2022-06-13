@@ -42,6 +42,7 @@ fun Module.autofillResourcesModule() {
             AutofillResourcesPresenter(
                 coroutineLaunchContext = get(),
                 getLocalResourcesUse = get(),
+                getLocalResourcesFilteredByTag = get(),
                 domainProvider = get(),
                 homeDataInteractor = get(),
                 resourceSearch = get(),

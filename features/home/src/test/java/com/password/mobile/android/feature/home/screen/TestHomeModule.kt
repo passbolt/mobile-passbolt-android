@@ -14,6 +14,7 @@ import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFoldersForFo
 import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsWithShareItemsCountUseCase
 import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.GetLocalResourcesWithTagUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.database.impl.tags.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
@@ -46,6 +47,7 @@ internal val mockGetLocalTagsUseCase = mock<GetLocalTagsUseCase>()
 internal val mockGetLocalResourcesWithTagsUseCase = mock<GetLocalResourcesWithTagUseCase>()
 internal val mockGetLocalGroupsWithItemCountUseCase = mock<GetLocalGroupsWithShareItemsCountUseCase>()
 internal val mockGetLocalResourcesWithGroupsUseCase = mock<GetLocalResourcesWithGroupUseCase>()
+internal val mockGetLocalResourcesFilteredByTagUseCase = mock<GetLocalResourcesFilteredByTagUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -75,7 +77,8 @@ val testHomeModule = module {
             getLocalTagsUseCase = mockGetLocalTagsUseCase,
             getLocalResourcesWithTagUseCase = mockGetLocalResourcesWithTagsUseCase,
             getLocalGroupsWithShareItemsCountUseCase = mockGetLocalGroupsWithItemCountUseCase,
-            getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase
+            getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase,
+            getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase
         )
     }
 }

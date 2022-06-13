@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFoldersForFo
 import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsWithShareItemsCountUseCase
 import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.GetLocalResourcesWithTagUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.database.impl.tags.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
@@ -81,6 +82,7 @@ class HomePresenter(
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
     private val deleteResourceUseCase: DeleteResourceUseCase,
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
+    private val getLocalResourcesFilteredByTag: GetLocalResourcesFilteredByTagUseCase,
     private val getLocalSubFoldersForFolderUseCase: GetLocalSubFoldersForFolderUseCase,
     private val getLocalResourcesAndFoldersUseCase: GetLocalResourcesAndFoldersUseCase,
     private val getLocalResourcesFiltered: GetLocalSubFolderResourcesFilteredUseCase,
@@ -126,6 +128,7 @@ class HomePresenter(
 
         view?.apply {
             hideAddButton()
+            processSearchHint(this)
             processScreenTitle(this)
             showProgress()
         }
@@ -134,6 +137,13 @@ class HomePresenter(
         loadUserAvatar()
         collectDataRefreshStatus()
         collectFilteringRefreshes()
+    }
+
+    private fun processSearchHint(view: HomeContract.View) {
+        when (homeView) {
+            is HomeDisplayView.AllItems -> view.showAllItemsSearchHint()
+            else -> view.showDefaultSearchHint()
+        }
     }
 
     private fun processScreenTitle(view: HomeContract.View) {
@@ -357,7 +367,11 @@ class HomePresenter(
     }
 
     private suspend fun filterHomeData() {
-        val filteredResources = filterSearchableList(resourceList, currentSearchText.value)
+        var filteredResources = filterSearchableList(resourceList, currentSearchText.value)
+        // filtered resources + additionally append resources that have tag that matches filter
+        if (homeView is HomeDisplayView.AllItems) {
+            filteredResources = filteredResources + getResourcesFilteredByTag()
+        }
         val filteredFolders = filterSearchableList(foldersList, currentSearchText.value)
         val filteredTags = filterSearchableList(tagsList, currentSearchText.value)
         val filteredGroups = filterSearchableList(groupsList, currentSearchText.value)
@@ -399,6 +413,10 @@ class HomePresenter(
             )
         }
     }
+
+    private suspend fun getResourcesFilteredByTag() = getLocalResourcesFilteredByTag.execute(
+        GetLocalResourcesFilteredByTagUseCase.Input(currentSearchText.value)
+    ).resources
 
     private suspend fun populateSubFoldersFilteringResults(folders: HomeDisplayView.Folders) {
         if (currentSearchText.value.isNotBlank()) {

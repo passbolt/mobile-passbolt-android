@@ -84,6 +84,8 @@ interface HomeContract {
         fun showGroupTitle(groupName: String)
         fun navigateToEditResourcePermissions(resource: ResourceModel)
         fun showResourceSharedSnackbar()
+        fun showAllItemsSearchHint()
+        fun showDefaultSearchHint()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
