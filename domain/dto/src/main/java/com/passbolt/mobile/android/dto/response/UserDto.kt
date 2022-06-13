@@ -38,8 +38,8 @@ data class GpgKeyDto(
     val fingerprint: String,
     val expires: String?,
     val bits: Int,
-    val uid: String,
+    val uid: String?,
     @SerializedName("key_id")
     val keyId: String,
-    val type: String
+    val type: String?
 )
