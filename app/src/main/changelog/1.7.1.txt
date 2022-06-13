@@ -1,0 +1,5 @@
+# Passbolt 1.7.1-9 Android app release notes
+
+## Fixed
+- Inactive users (without an already set up gpg key) are now filtered when fetched from the backend - fixes a crash for admins
+who when fetching users receive also inactive users on the list
