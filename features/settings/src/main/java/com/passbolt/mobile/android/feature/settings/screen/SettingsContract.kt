@@ -27,6 +27,7 @@ import javax.crypto.Cipher
  */
 interface SettingsContract {
 
+    @Suppress("TooManyFunctions")
     interface View : BaseContract.View {
         fun openUrl(url: String)
         fun navigateToManageAccounts()
@@ -56,6 +57,8 @@ interface SettingsContract {
         fun setEnableLogsSwitchOff()
         fun enableAccessLogs()
         fun disableAccessLogs()
+        fun showPrivacyPolicyButton()
+        fun showTermsAndConditionsButton()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -77,5 +80,6 @@ interface SettingsContract {
         fun licensesClick()
         fun logsClick()
         fun enableDebugLogsChanged(areLogsEnabled: Boolean)
+        fun viewResumed()
     }
 }

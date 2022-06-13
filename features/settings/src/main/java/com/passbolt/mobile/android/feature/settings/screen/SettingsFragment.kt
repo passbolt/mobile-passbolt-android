@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
@@ -68,6 +70,12 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         presenter.enableDebugLogsChanged(it)
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+        presenter.attach(this)
+        return view
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
@@ -75,7 +83,7 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     override fun onResume() {
         super.onResume()
-        presenter.attach(this)
+        presenter.viewResumed()
     }
 
     override fun onDestroyView() {
@@ -250,6 +258,14 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     override fun hideTermsAndConditionsButton() {
         binding.termsSetting.gone()
+    }
+
+    override fun showPrivacyPolicyButton() {
+        binding.privacySetting.visible()
+    }
+
+    override fun showTermsAndConditionsButton() {
+        binding.termsSetting.visible()
     }
 
     override fun showProgress() {

@@ -40,15 +40,14 @@ fun Module.settingsModule() {
                 passphraseMemoryCache = get(),
                 biometricCipher = get(),
                 saveBiometricKeyIvUseCase = get(),
-                removeBiometricKeyUseCase = get(),
                 fingerprintInformationProvider = get(),
                 getFeatureFlagsUseCase = get(),
                 signOutUseCase = get(),
                 getGlobalPreferencesUseCase = get(),
                 saveGlobalPreferencesUseCase = get(),
                 fileLoggingTree = get(),
-                coroutineLaunchContext = get(),
-                biometryInteractor = get()
+                biometryInteractor = get(),
+                coroutineLaunchContext = get()
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }
