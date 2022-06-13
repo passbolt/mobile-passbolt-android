@@ -6,7 +6,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.logger.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.security.rootdetection.rootWarningAlertDialog
@@ -57,7 +56,6 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
         with(binding) {
             noAccountButton.setDebouncingOnClick { presenter.noAccountButtonClick() }
             connectToAccountButton.setDebouncingOnClick { presenter.connectToAccountClick() }
-            toolbar.setNavigationOnClickListener { requireActivity().finish() }
             helpButton.setDebouncingOnClick {
                 presenter.helpClick()
             }
@@ -65,7 +63,10 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     }
 
     override fun initBackNavigation() {
-        initDefaultToolbar(binding.toolbar)
+        with(binding.toolbar) {
+            setNavigationIcon(com.passbolt.mobile.android.core.ui.R.drawable.ic_back)
+            setNavigationOnClickListener { requireActivity().finish() }
+        }
     }
 
     override fun showAccountCreationInfoDialog() {
