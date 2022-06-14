@@ -13,22 +13,25 @@ import java.time.ZonedDateTime
 class UsersModelMapper {
 
     fun map(input: List<UserDto>) =
-        input.map {
-            UserModel(
-                it.id,
-                it.username,
-                GpgKeyModel(
-                    it.gpgKey.armoredKey,
-                    it.gpgKey.fingerprint,
-                    it.gpgKey.bits,
-                    it.gpgKey.uid,
-                    it.gpgKey.keyId,
-                    it.gpgKey.type,
-                    it.gpgKey.expires?.let { expires -> ZonedDateTime.parse(expires) }
-                ),
-                UserProfileModel(it.profile?.firstName, it.profile?.lastName, it.profile?.avatar?.url?.medium)
-            )
-        }
+        input
+            .filter { it.active && !it.deleted }
+            .map {
+                val usersGpgKey = requireNotNull(it.gpgKey)
+                UserModel(
+                    it.id,
+                    it.username,
+                    GpgKeyModel(
+                        usersGpgKey.armoredKey,
+                        usersGpgKey.fingerprint,
+                        usersGpgKey.bits,
+                        usersGpgKey.uid,
+                        usersGpgKey.keyId,
+                        usersGpgKey.type,
+                        usersGpgKey.expires?.let { expires -> ZonedDateTime.parse(expires) }
+                    ),
+                    UserProfileModel(it.profile?.firstName, it.profile?.lastName, it.profile?.avatar?.url?.medium)
+                )
+            }
 
     fun map(input: UserModel) =
         User(
