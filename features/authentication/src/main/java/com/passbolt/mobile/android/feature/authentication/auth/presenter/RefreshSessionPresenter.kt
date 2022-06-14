@@ -47,10 +47,10 @@ import kotlinx.coroutines.launch
 // presenter for sign in view used for refreshing the session using dedicated endpoint
 class RefreshSessionPresenter(
     private val refreshSessionUseCase: RefreshSessionUseCase,
+    private val passphraseMemoryCache: PassphraseMemoryCache,
     saveSessionUseCase: SaveSessionUseCase,
     saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     getAccountDataUseCase: GetAccountDataUseCase,
-    passphraseMemoryCache: PassphraseMemoryCache,
     featureFlagsInteractor: FeatureFlagsInteractor,
     signOutUseCase: SignOutUseCase,
     saveServerFingerprintUseCase: SaveServerFingerprintUseCase,
@@ -97,6 +97,7 @@ class RefreshSessionPresenter(
             view?.hideProgress()
             when (refreshSessionResult) {
                 is RefreshSessionUseCase.Output.Success -> {
+                    passphraseMemoryCache.set(passphrase)
                     runtimeAuthenticatedFlag.isAuthenticated = true
                     view?.authSuccess()
                 }
