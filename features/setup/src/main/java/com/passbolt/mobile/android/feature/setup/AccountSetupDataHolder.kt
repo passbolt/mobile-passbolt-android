@@ -1,6 +1,5 @@
-package com.passbolt.mobile.android.feature.startup
+package com.passbolt.mobile.android.feature.setup
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
 import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 
 /**
@@ -25,13 +24,6 @@ import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class StartUpContract {
-    interface View : BaseContract.View {
-        fun navigateToSetup(accountSetupDataModel: AccountSetupDataModel?)
-        fun navigateToSignIn()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun accountSetupDataRetrieved(accountSetupDataModel: AccountSetupDataModel?)
-    }
+interface AccountSetupDataHolder {
+    val bundledAccountSetupData: AccountSetupDataModel?
 }

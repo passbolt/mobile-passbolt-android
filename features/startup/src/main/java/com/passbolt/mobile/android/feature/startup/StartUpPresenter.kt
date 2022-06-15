@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.startup
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAccountsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -37,14 +38,13 @@ class StartUpPresenter(
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    override fun attach(view: StartUpContract.View) {
-        super.attach(view)
+    override fun accountSetupDataRetrieved(accountSetupDataModel: AccountSetupDataModel?) {
         scope.launch {
             val accounts = getAccountsUseCase.execute(Unit).users
             if (accounts.isEmpty()) {
-                view.navigateToSetup()
+                view?.navigateToSetup(accountSetupDataModel)
             } else {
-                view.navigateToSignIn()
+                view?.navigateToSignIn()
             }
         }
     }

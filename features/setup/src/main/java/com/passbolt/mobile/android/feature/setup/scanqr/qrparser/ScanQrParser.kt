@@ -96,7 +96,7 @@ class ScanQrParser(
         }
 
     suspend fun verifyScannedKey() = withContext(coroutineLaunchContext.io) {
-        try {
+            try {
             if (scannedBytes.sha512().hex() == hash) {
                 val assembledKey = keyAssembler.assemblePrivateKey(scannedBytes)
                 _pareResultFlow.tryEmit(ParseResult.FinishedWithSuccess(assembledKey))

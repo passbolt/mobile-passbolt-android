@@ -97,30 +97,36 @@ class ScanQrPresenterTest : KoinTest {
 
     @Test
     fun `click information dialog should display help menu`() {
+        presenter.argsRetrieved(null)
         presenter.infoIconClick()
         verify(view).showHelpMenu()
     }
 
     @Test
     fun `click back should display proper dialog`() {
+        presenter.argsRetrieved(null)
         presenter.backClick()
         verify(view).showExitConfirmation()
     }
 
     @Test
     fun `click exit confirmation should navigate back`() {
+        presenter.argsRetrieved(null)
         presenter.exitConfirmClick()
         verify(view).navigateBack()
     }
 
     @Test
     fun `camera error should display start camera error tooltip`() {
+        presenter.argsRetrieved(null)
         presenter.startCameraError(Exception())
         verify(view).showStartCameraError()
     }
 
     @Test
     fun `view should show correct user resolvable error tooltips`() = runBlockingTest {
+        presenter.argsRetrieved(null)
+
         parseFlow.emit(ParseResult.UserResolvableError(NO_BARCODES_IN_RANGE))
         parseFlow.emit(ParseResult.UserResolvableError(MULTIPLE_BARCODES))
         parseFlow.emit(ParseResult.UserResolvableError(NOT_A_PASSBOLT_QR))
@@ -132,6 +138,8 @@ class ScanQrPresenterTest : KoinTest {
 
     @Test
     fun `view should initialize progress and show keep going after first page scan`() = runBlockingTest {
+        presenter.argsRetrieved(null)
+
         whenever(uuidProvider.get()).doReturn("testUserId")
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
         whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
@@ -144,6 +152,8 @@ class ScanQrPresenterTest : KoinTest {
 
     @Test
     fun `view should navigate to scanning error after scan failure`() = runBlockingTest {
+        presenter.argsRetrieved(null)
+
         parseFlow.emit(ParseResult.Failure())
 
         argumentCaptor<ResultStatus>().apply {
@@ -154,6 +164,8 @@ class ScanQrPresenterTest : KoinTest {
 
     @Test
     fun `view should navigate to scanning success after scanning finished`() = runBlockingTest {
+        presenter.argsRetrieved(null)
+
         whenever(uuidProvider.get()).doReturn("testUserId")
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
@@ -176,6 +188,8 @@ class ScanQrPresenterTest : KoinTest {
 
     @Test
     fun `view should navigate to failure after scanning non https domain`() = runBlockingTest {
+        presenter.argsRetrieved(null)
+
         whenever(uuidProvider.get()).doReturn("testUserId")
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
@@ -198,6 +212,8 @@ class ScanQrPresenterTest : KoinTest {
 
     @Test
     fun `view should navigate to already linked after scanning existing key`() = runBlockingTest {
+        presenter.argsRetrieved(null)
+
         whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
         whenever(uuidProvider.get()).doReturn("testUserId")
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Failure)
