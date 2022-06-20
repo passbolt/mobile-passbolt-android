@@ -56,11 +56,7 @@ class AuthenticatedOperationRunner(
         val response = request.invoke()
         val authenticationState = response.authenticationState
         return if (authenticationState is AuthenticationState.Unauthenticated) {
-            Timber.d(
-                "%s\n%s",
-                "Authenticated operation runner $this waits for auth refresh",
-                "Trying to refresh session in background"
-            )
+            Timber.d("Authenticated operation runner $this waits for auth refresh")
             when (val reason = authenticationState.reason) {
                 is AuthenticationState.Unauthenticated.Reason.Session -> backgroundRefreshSessionSession(reason)
                 is AuthenticationState.Unauthenticated.Reason.Mfa -> authenticateUsingUi(reason)
@@ -68,13 +64,14 @@ class AuthenticatedOperationRunner(
             }
 
             Timber.d("Authenticated operation runner $this restarts initial operation")
-            request.invoke()
+            runOperation(request)
         } else {
             response
         }
     }
 
     private suspend fun backgroundRefreshSessionSession(reason: UnauthenticatedReason) {
+        Timber.d("Starting background session refresh")
         when (refreshSessionUseCase.execute(Unit)) {
             is RefreshSessionUseCase.Output.Success -> {
                 Timber.d("Background session refresh succeeded")
@@ -87,6 +84,7 @@ class AuthenticatedOperationRunner(
     }
 
     private suspend fun authenticateUsingUi(reason: UnauthenticatedReason) {
+        Timber.d("Starting UI authentication")
         needAuthenticationRefreshedFlow.tryEmit(reason)
         authenticationRefreshedFlow
             .drop(1) // drop initial value

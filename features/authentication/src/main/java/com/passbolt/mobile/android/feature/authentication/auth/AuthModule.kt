@@ -198,10 +198,10 @@ private fun Scope.signInPresenter() = SignInPresenter(
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     refreshSessionUseCase = get(),
+    passphraseMemoryCache = get(),
     saveSessionUseCase = get(),
     saveSelectedAccountUseCase = get(),
     getAccountDataUseCase = get(),
-    passphraseMemoryCache = get(),
     featureFlagsInteractor = get(),
     signOutUseCase = get(),
     saveServerFingerprintUseCase = get(),

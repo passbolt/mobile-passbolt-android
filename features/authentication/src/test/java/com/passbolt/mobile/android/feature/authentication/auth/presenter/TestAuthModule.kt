@@ -201,10 +201,10 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     refreshSessionUseCase = mockRefreshSessionUseCase,
+    passphraseMemoryCache = mockPassphraseMemoryCache,
     saveSessionUseCase = mock(),
     saveSelectedAccountUseCase = mock(),
     getAccountDataUseCase = mockGetAccountDataUseCase,
-    passphraseMemoryCache = mockPassphraseMemoryCache,
     featureFlagsInteractor = mockFeatureFlagsInteractor,
     signOutUseCase = mockSignOutUseCase,
     saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,

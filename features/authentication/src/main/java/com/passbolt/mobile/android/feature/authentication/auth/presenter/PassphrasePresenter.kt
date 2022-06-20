@@ -65,10 +65,10 @@ class PassphrasePresenter(
 
     override fun onPassphraseVerified(passphrase: ByteArray) {
         passphraseMemoryCache.set(passphrase)
+        runtimeAuthenticatedFlag.isAuthenticated = true
         passphrase.erase()
         view?.apply {
             clearPassphraseInput()
-            runtimeAuthenticatedFlag.isAuthenticated = true
             authSuccess()
         }
     }
