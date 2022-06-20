@@ -29,6 +29,12 @@ class MainPresenter(
 
     override fun attach(view: MainContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
+        performFullDataRefresh()
+        view.checkForAppUpdates()
+    }
+
+    override fun appUpdateDownloaded() {
+        view?.showAppUpdateDownloadedSnackbar()
     }
 
     override fun detach() {

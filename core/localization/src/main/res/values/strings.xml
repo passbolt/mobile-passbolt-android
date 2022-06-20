@@ -353,6 +353,10 @@
 
     <string name="permission_deletion_dialog_message">The password will no longer be shared with this user.</string>
 
+    <string name="main_update_downloaded">Passbolt update has just been downloaded</string>
+    <string name="main_update_download_in_progress">Downloading in background. We\'ll notify you once the download finishes.</string>
+    <string name="main_update_downloaded_install">Install</string>
+
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code

@@ -29,10 +29,14 @@ import kotlinx.coroutines.flow.Flow
 
 interface MainContract {
 
-    interface View : BaseAuthenticatedContract.View
+    interface View : BaseAuthenticatedContract.View {
+        fun checkForAppUpdates()
+        fun showAppUpdateDownloadedSnackbar()
+    }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished>
         fun performFullDataRefresh()
+        fun appUpdateDownloaded()
     }
 }
