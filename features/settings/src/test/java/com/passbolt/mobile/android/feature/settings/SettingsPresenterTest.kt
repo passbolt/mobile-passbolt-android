@@ -23,6 +23,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -222,6 +223,42 @@ class SettingsPresenterTest : KoinTest {
             verify(savePassphraseUseCase).execute(capture())
             assertThat(firstValue.passphrase).isEqualTo(PASSPHRASE)
         }
+    }
+
+    @Test
+    fun `refreshing feature flags should cause UI refresh`() {
+        val featureFlags = FeatureFlagsModel(
+            null,
+            null,
+            isPreviewPasswordAvailable = true,
+            areFoldersAvailable = false,
+            areTagsAvailable = false
+        )
+        getFeatureFlagsUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetFeatureFlagsUseCase.Output(featureFlags)
+            )
+        }
+
+        presenter.attach(view)
+
+        verify(view).hidePrivacyPolicyButton()
+        verify(view).hideTermsAndConditionsButton()
+
+        getFeatureFlagsUseCase.apply {
+            reset(this)
+            stub {
+                onBlocking { execute(Unit) }.doReturn(
+                    GetFeatureFlagsUseCase.Output(
+                        featureFlags.copy(privacyPolicyUrl = URL, termsAndConditionsUrl = URL)
+                    )
+                )
+            }
+        }
+        presenter.viewResumed()
+
+        verify(view).showPrivacyPolicyButton()
+        verify(view).showTermsAndConditionsButton()
     }
 
     private companion object {

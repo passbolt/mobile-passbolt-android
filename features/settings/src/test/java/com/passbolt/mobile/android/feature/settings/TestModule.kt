@@ -69,15 +69,14 @@ val testModule = module {
             passphraseMemoryCache = get(),
             biometricCipher = get(),
             saveBiometricKeyIvUseCase = get(),
-            removeBiometricKeyUseCase = get(),
             fingerprintInformationProvider = get(),
             getFeatureFlagsUseCase = get(),
             signOutUseCase = get(),
             getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
             saveGlobalPreferencesUseCase = mockSaveGlobalPreferencesUseCase,
             fileLoggingTree = mock(),
-            coroutineLaunchContext = get(),
-            biometryInteractor = mockBiometryInteractor
+            biometryInteractor = mockBiometryInteractor,
+            coroutineLaunchContext = get()
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

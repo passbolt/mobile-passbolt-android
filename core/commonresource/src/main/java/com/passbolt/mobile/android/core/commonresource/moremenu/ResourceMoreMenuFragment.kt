@@ -56,14 +56,14 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
         savedInstanceState: Bundle?
     ): View {
         binding = ViewPasswordBottomsheetBinding.inflate(inflater)
+        presenter.attach(this)
+        presenter.argsRetrieved(menuModel)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
-        presenter.attach(this)
-        presenter.argsRetrieved(menuModel)
     }
 
     override fun onAttach(context: Context) {

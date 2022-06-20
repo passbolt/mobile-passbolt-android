@@ -11,7 +11,6 @@ import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
-import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
@@ -35,7 +34,6 @@ class SettingsPresenter(
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val biometricCipher: BiometricCipher,
     private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase,
-    private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
     private val fingerprintInformationProvider: FingerprintInformationProvider,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val signOutUseCase: SignOutUseCase,
@@ -53,7 +51,20 @@ class SettingsPresenter(
 
     override fun attach(view: SettingsContract.View) {
         super.attach(view)
-        handleFingerprintSwitchState(view)
+        refreshMenuItemsState()
+    }
+
+    override fun viewResumed() {
+        scope.launch {
+            val latestFeatureFlags = getFeatureFlagsUseCase.execute(Unit).featureFlags
+            if (latestFeatureFlags != featureFlags) {
+                refreshMenuItemsState()
+            }
+        }
+    }
+
+    private fun refreshMenuItemsState() {
+        handleFingerprintSwitchState()
         handleFeatureFlagsUrls()
         logSettingChanged(getGlobalPreferencesUseCase.execute(Unit).areDebugLogsEnabled)
     }
@@ -63,21 +74,25 @@ class SettingsPresenter(
             featureFlags = getFeatureFlagsUseCase.execute(Unit).featureFlags
             if (featureFlags.privacyPolicyUrl.isNullOrBlank()) {
                 view?.hidePrivacyPolicyButton()
+            } else {
+                view?.showPrivacyPolicyButton()
             }
             if (featureFlags.termsAndConditionsUrl.isNullOrBlank()) {
                 view?.hideTermsAndConditionsButton()
+            } else {
+                view?.showTermsAndConditionsButton()
             }
         }
     }
 
-    private fun handleFingerprintSwitchState(view: SettingsContract.View) {
+    private fun handleFingerprintSwitchState() {
         if (checkIfPassphraseExistsUseCase.execute(
                 UserIdInput(requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount))
             ).passphraseFileExists
         ) {
-            view.toggleFingerprintOn(silently = true)
+            view?.toggleFingerprintOn(silently = true)
         } else {
-            view.toggleFingerprintOff(silently = true)
+            view?.toggleFingerprintOff(silently = true)
         }
     }
 
