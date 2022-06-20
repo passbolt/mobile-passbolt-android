@@ -213,10 +213,12 @@ class HomeFragment :
 
     override fun showEmptyList() {
         setState(State.EMPTY)
+        binding.appBar.setExpanded(true)
     }
 
     override fun showSearchEmptyList() {
         setState(State.SEARCH_EMPTY)
+        binding.appBar.setExpanded(true)
     }
 
     private fun setListeners() {
@@ -310,6 +312,7 @@ class HomeFragment :
 
     override fun showError() {
         setState(State.ERROR)
+        binding.appBar.setExpanded(true)
     }
 
     override fun showProgress() {
