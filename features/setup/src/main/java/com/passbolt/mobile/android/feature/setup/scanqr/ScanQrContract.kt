@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import kotlinx.coroutines.flow.StateFlow
@@ -59,5 +60,6 @@ interface ScanQrContract {
         fun startCameraError(exc: Exception)
         fun viewResumed()
         fun viewPaused()
+        fun argsRetrieved(bundledAccountSetupData: AccountSetupDataModel?)
     }
 }

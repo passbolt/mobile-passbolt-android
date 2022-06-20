@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import com.passbolt.mobile.android.core.ui.dialog.CoreDialogFactory
+import com.passbolt.mobile.android.feature.setup.AccountSetupDataHolder
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
 import com.passbolt.mobile.android.feature.setup.scanqr.di.SCAN_MANAGER_SCOPE
@@ -60,11 +61,13 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initToolbar()
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backPressedCallback)
         scanManagerScope = getKoin().getOrCreateScope(SCAN_MANAGER_SCOPE, named(SCAN_MANAGER_SCOPE))
         scanManager = scanManagerScope.get()
+
         presenter.attach(this)
-        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backPressedCallback)
-        initToolbar()
+        presenter.argsRetrieved((requireActivity() as? AccountSetupDataHolder)?.bundledAccountSetupData)
     }
 
     override fun onResume() {

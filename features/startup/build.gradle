@@ -10,6 +10,7 @@ dependencies {
     implementation project(':storage')
     implementation project(':common')
     implementation project(':authentication')
+    implementation project(':navigation')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

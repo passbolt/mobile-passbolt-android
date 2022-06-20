@@ -39,9 +39,11 @@ object ActivityIntents {
     const val EXTRA_USER_ID = "USER_ID"
     const val EXTRA_AUTOFILL_URI = "URI"
     const val EXTRA_AUTOFILL_MODE_NAME = "AUTOFILL_MODE"
+    const val EXTRA_ACCOUNT_SETUP_DATA = "ACCOUNT_SETUP_DATA"
 
-    fun setup(context: Context) = Intent().apply {
+    fun setup(context: Context, accountSetupData: AccountSetupDataModel? = null) = Intent().apply {
         setClassName(context, Setup.SET_UP_ACTIVITY)
+        putExtra(EXTRA_ACCOUNT_SETUP_DATA, accountSetupData)
     }
 
     fun home(context: Context) = Intent().apply {

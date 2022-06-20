@@ -1,7 +1,7 @@
-package com.passbolt.mobile.android.feature.startup
+package com.passbolt.mobile.android.core.navigation
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,13 +25,18 @@ import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class StartUpContract {
-    interface View : BaseContract.View {
-        fun navigateToSetup(accountSetupDataModel: AccountSetupDataModel?)
-        fun navigateToSignIn()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun accountSetupDataRetrieved(accountSetupDataModel: AccountSetupDataModel?)
-    }
-}
+/**
+ * This class is used as data transfer object of account data (private key, user data, etc) which is injected via the
+ * launch arguments.
+ */
+@Parcelize
+data class AccountSetupDataModel(
+    val userId: String,
+    val domain: String,
+    val userName: String,
+    val firstName: String,
+    val lastName: String,
+    val avatarUrl: String?,
+    val keyFingerprint: String,
+    val armoredKey: String
+) : Parcelable

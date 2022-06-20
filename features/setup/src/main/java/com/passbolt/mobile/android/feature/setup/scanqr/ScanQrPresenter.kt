@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
@@ -66,16 +67,23 @@ class ScanQrPresenter(
     private var totalPages: Int by Delegates.notNull()
     private var currentPage = 0
 
-    override fun attach(view: ScanQrContract.View) {
-        super.attach(view)
+    override fun argsRetrieved(bundledAccountSetupData: AccountSetupDataModel?) {
+        if (bundledAccountSetupData != null) {
+            injectPredefinedAccount(bundledAccountSetupData)
+        } else {
+            initQrScanning()
+        }
+    }
+
+    private fun initQrScanning() {
         scope.launch {
-            launch { qrParser.startParsing(view.scanResultChannel()) }
+            launch { qrParser.startParsing(view!!.scanResultChannel()) }
             launch {
                 qrParser.parseResultFlow
                     .collect { processParseResult(it) }
             }
         }
-        view.startAnalysis()
+        view?.startAnalysis()
     }
 
     private suspend fun processParseResult(parserResult: ParseResult) {
@@ -232,6 +240,31 @@ class ScanQrPresenter(
                 serverId = serverId
             )
         )
+    }
+
+    private fun injectPredefinedAccount(accountSetupData: AccountSetupDataModel) {
+        val userId = uuidProvider.get()
+        saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(accountSetupData.domain))
+        updateAccountDataUseCase.execute(
+            UpdateAccountDataUseCase.Input(
+                userId = userId,
+                firstName = accountSetupData.firstName,
+                lastName = accountSetupData.lastName,
+                avatarUrl = accountSetupData.avatarUrl,
+                email = accountSetupData.userName,
+                url = accountSetupData.domain,
+                serverId = accountSetupData.userId
+            )
+        )
+
+        when (savePrivateKeyUseCase.execute(SavePrivateKeyUseCase.Input(userId, accountSetupData.armoredKey))) {
+            SavePrivateKeyUseCase.Output.Failure -> {
+                view?.navigateToSummary(ResultStatus.Failure(""))
+            }
+            SavePrivateKeyUseCase.Output.Success -> {
+                view?.navigateToSummary(ResultStatus.Success(userId))
+            }
+        }
     }
 
     override fun startCameraError(exc: Exception) {
