@@ -221,17 +221,22 @@ class AutofillResourcesPresenter(
 
     private suspend fun filterList() {
         // show resources and additionally resources which have tags matching search
-        val filtered = allItemsList.filter {
+        val filtered = (allItemsList.filter {
             resourceSearch.matches(it, currentSearchText)
-        } + getLocalResourcesFilteredByTag.execute(
-            GetLocalResourcesFilteredByTagUseCase.Input(currentSearchText)
-        ).resources
+        } + getResourcesWithTagContaining(currentSearchText))
+            .distinctBy { it.resourceId }
+
         if (filtered.isEmpty()) {
             view?.showSearchEmptyList()
         } else {
             view?.showResources(filtered.map { ResourceListUiModel.Data(it) })
         }
     }
+
+    private suspend fun getResourcesWithTagContaining(currentSearchText: String) =
+        getLocalResourcesFilteredByTag.execute(
+            GetLocalResourcesFilteredByTagUseCase.Input(currentSearchText)
+        ).resources
 
     override fun searchClearClick() {
         view?.clearSearchInput()
