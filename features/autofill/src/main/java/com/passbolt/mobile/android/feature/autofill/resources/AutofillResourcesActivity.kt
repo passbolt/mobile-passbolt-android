@@ -198,6 +198,7 @@ class AutofillResourcesActivity :
 
     override fun showSearchEmptyList() {
         setState(State.SEARCH_EMPTY)
+        binding.appBar.setExpanded(true)
     }
 
     private fun setState(state: State) {
@@ -212,6 +213,7 @@ class AutofillResourcesActivity :
 
     override fun showEmptyList() {
         setState(State.EMPTY)
+        binding.appBar.setExpanded(true)
     }
 
     override fun showResources(resources: List<ResourceListUiModel>) {
@@ -249,6 +251,7 @@ class AutofillResourcesActivity :
 
     override fun showFullScreenError() {
         setState(State.ERROR)
+        binding.appBar.setExpanded(true)
     }
 
     override fun showProgress() {
