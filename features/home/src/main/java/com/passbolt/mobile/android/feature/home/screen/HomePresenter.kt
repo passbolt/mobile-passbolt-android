@@ -370,7 +370,8 @@ class HomePresenter(
         var filteredResources = filterSearchableList(resourceList, currentSearchText.value)
         // filtered resources + additionally append resources that have tag that matches filter
         if (homeView is HomeDisplayView.AllItems) {
-            filteredResources = filteredResources + getResourcesFilteredByTag()
+            filteredResources = (filteredResources + getResourcesFilteredByTag())
+                .distinctBy { it.resourceId }
         }
         val filteredFolders = filterSearchableList(foldersList, currentSearchText.value)
         val filteredTags = filterSearchableList(tagsList, currentSearchText.value)

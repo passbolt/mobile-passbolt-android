@@ -120,7 +120,8 @@ interface ResourcesDao : BaseDao<Resource> {
                 "INNER JOIN Tag t " +
                 "ON t.id =rTCr.tagId " +
                 "WHERE t.slug LIKE '%' || :tagSearchQuery || '%' " +
-                "ORDER BY resourceName COLLATE NOCASE ASC"
+                "GROUP BY r.resourceId " +
+                "ORDER BY resourceName COLLATE NOCASE ASC "
     )
     suspend fun getAllThatHaveTagContaining(tagSearchQuery: String): List<Resource>
 
