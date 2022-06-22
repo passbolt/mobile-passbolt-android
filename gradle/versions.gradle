@@ -79,7 +79,8 @@ ext {
         licensee: "1.3.0",
         rootbeer: "0.1.0",
         playStorePublisher: "3.7.0",
-        dokka: "1.6.10"
+        dokka: "1.6.10",
+        inAppUpdate: "2.0.0"
     ]
 
     libs = [
@@ -182,6 +183,10 @@ ext {
         balloon: "com.github.skydoves:balloon:${versions.balloon}",
         pinentry: "com.alimuzaffar.lib:pinentryedittext:${versions.pinentry}",
         rootbeer: "com.scottyab:rootbeer-lib:${versions.rootbeer}",
-        playStorePublisher: "com.github.triplet.gradle:play-publisher:${versions.playStorePublisher}"
+        playStorePublisher: "com.github.triplet.gradle:play-publisher:${versions.playStorePublisher}",
+        inAppUpdate: [
+            core: "com.google.android.play:app-update:${versions.inAppUpdate}",
+            ktx: "com.google.android.play:app-update-ktx:${versions.inAppUpdate}"
+        ]
     ]
 }

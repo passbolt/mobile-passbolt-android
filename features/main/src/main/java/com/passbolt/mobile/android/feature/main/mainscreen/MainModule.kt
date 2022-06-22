@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.feature.main.mainscreen
 
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 
 /**
@@ -33,5 +35,6 @@ fun Module.mainModule() {
                 coroutineLaunchContext = get()
             )
         }
+        scoped { AppUpdateManagerFactory.create(androidContext()) }
     }
 }
