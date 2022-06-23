@@ -393,7 +393,7 @@ class ResourceDetailsFragment :
     }
 
     private fun showSnackbar(@StringRes messageResId: Int, vararg messageArgs: String) {
-        Snackbar.make(binding.root, getString(messageResId, messageArgs), Snackbar.LENGTH_SHORT)
+        Snackbar.make(binding.root, getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
             .show()
     }
 
