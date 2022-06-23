@@ -1,0 +1,18 @@
+# Passbolt 1.9.0-11 Android app release notes
+
+## Added
+- In-app update flow - when a new version is released you will receive in-app notification and in-app update&installation process
+
+## Improved
+- Resized resource menu icons to common dimensions
+
+## Fixed
+- Expanded search app bar when search has empty results (there was a scenario when empty state could be shown while search bar
+could be swiped up - and no way to clear the the search query)
+- Fixed scenario when both session and passphrase expired and after clicking on a secret "eye" icon there was a need of clicking twice
+to see the secret
+- Fixed slight blinking when creating settings view and resource menu view
+
+## Maintenance
+- Currently only for debuggable application (UI testing & development) - there is a possibility to inject user account using
+ADB command

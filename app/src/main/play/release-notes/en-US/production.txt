@@ -1,2 +1,4 @@
-- Share permissions read only view (edit is coming up in next) - view which groups and users the resource is shared with in the
-resource details screen; View what permissions do they have and for groups you can also browse members;
+- Added in-app update flow - when a new version is released you will receive in-app notification and in-app update&installation process
+- Fixed scenario when both session and passphrase expired and after clicking on a secret "eye" icon there was a need of clicking twice
+to see the secret
+- A few UI/UX fixes
