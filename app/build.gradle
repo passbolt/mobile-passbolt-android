@@ -77,18 +77,18 @@ easylauncher {
     buildTypes {
         debug {
             enable true
-            filters = chromeLike(
+            filters = customRibbon(
                 label: "debug:${getVersionCode()}",
                 labelColor: "#000000",
-                ribbonColor: "#DCDCDC"
+                ribbonColor: "#41C1FF"
             )
         }
         qa {
             enable true
-            filters = chromeLike(
+            filters = customRibbon(
                 label: "qa:${getVersionCode()}",
                 labelColor: "#000000",
-                ribbonColor: "#057610"
+                ribbonColor: "#0C9115"
             )
         }
     }
