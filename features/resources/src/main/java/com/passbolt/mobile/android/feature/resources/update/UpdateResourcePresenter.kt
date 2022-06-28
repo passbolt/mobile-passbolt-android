@@ -13,8 +13,8 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.security.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.core.users.FetchUsersUseCase
 import com.passbolt.mobile.android.database.impl.resources.AddLocalResourceUseCase
-import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.database.impl.resources.UpdateLocalResourceUseCase
+import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.resources.ResourceMode
@@ -255,6 +255,7 @@ class UpdateResourcePresenter(
             is CreateResourceUseCase.Output.PasswordExpired -> {
                 /* will not happen in BaseAuthenticatedPresenter */
             }
+            is CreateResourceUseCase.Output.OpenPgpError -> view?.showEncryptionError()
         }
     }
 
@@ -280,6 +281,7 @@ class UpdateResourcePresenter(
                     is UpdateResourceUseCase.Output.PasswordExpired -> {
                         /* will not happen in BaseAuthenticatedPresenter */
                     }
+                    is UpdateResourceUseCase.Output.OpenPgpError -> view?.showEncryptionError()
                 }
             }
             is FetchUsersUseCase.Output.Failure<*> -> {
