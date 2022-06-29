@@ -136,4 +136,11 @@ dependencies {
     implementation libs.di.koinExt
     implementation libs.gson
     implementation libs.androidx.appStartUp
+
+    androidTestImplementation libs.androidx.appcompat
+    androidTestImplementation libs.test.androidTestsRunner
+    androidTestImplementation libs.test.androidTestRules
+    androidTestImplementation libs.test.espressoCore
+    androidTestImplementation libs.di.koinTest
+    androidTestImplementation libs.di.koinTestJUnit
 }
