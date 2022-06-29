@@ -30,7 +30,8 @@ fun Module.filtersMenuModule() {
         scoped<FiltersMenuContract.Presenter> {
             FiltersMenuPresenter(
                 getFeatureFlagsUseCase = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
+                updateAccountPreferencesUseCase = get()
             )
         }
     }

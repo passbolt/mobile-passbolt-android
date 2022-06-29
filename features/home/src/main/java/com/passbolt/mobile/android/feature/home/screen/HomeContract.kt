@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -70,14 +70,14 @@ interface HomeContract {
         fun showAddButton()
         fun showDeleteConfirmationDialog()
         fun navigateToManageAccounts()
-        fun showFiltersMenu(activeDisplayView: HomeDisplayView)
-        fun showHomeScreenTitle(view: HomeDisplayView)
-        fun navigateToChild(homeView: HomeDisplayView)
+        fun showFiltersMenu(activeDisplayView: HomeDisplayViewModel)
+        fun showHomeScreenTitle(view: HomeDisplayViewModel)
+        fun navigateToChild(homeView: HomeDisplayViewModel)
         fun showBackArrow()
         fun hideBackArrow()
-        fun navigateToRootHomeFromChildHome(homeView: HomeDisplayView)
+        fun navigateToRootHomeFromChildHome(homeView: HomeDisplayViewModel)
         fun performRefreshUsingRefreshExecutor()
-        fun navigateRootHomeFromRootHome(homeView: HomeDisplayView)
+        fun navigateRootHomeFromRootHome(homeView: HomeDisplayViewModel)
         fun navigateToCreateResource(parentFolderId: String?)
         fun showChildFolderTitle(activeFolderName: String, isShared: Boolean)
         fun showTagTitle(activeTagTitle: String, isShared: Boolean)
@@ -116,7 +116,7 @@ interface HomeContract {
         fun sharedWithMeClick()
         fun ownedByMeClick()
         fun foldersClick()
-        fun argsRetrieved(homeDisplayView: HomeDisplayView?, hasPreviousEntry: Boolean)
+        fun argsRetrieved(homeDisplayView: HomeDisplayViewModel?, hasPreviousEntry: Boolean)
         fun folderItemClick(folderModel: FolderWithCount)
         fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>)
         fun createResourceClick()

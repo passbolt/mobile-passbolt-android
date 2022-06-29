@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.ui
 
 import android.os.Parcelable
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -29,5 +29,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class FiltersMenuModel(
-    val activeDisplayView: HomeDisplayView
+    val activeDisplayView: HomeDisplayViewModel
 ) : Parcelable

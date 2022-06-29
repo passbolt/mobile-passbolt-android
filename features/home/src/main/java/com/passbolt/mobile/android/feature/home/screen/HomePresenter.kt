@@ -19,12 +19,14 @@ import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilt
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.database.impl.tags.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
+import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetAccountPreferencesUseCase
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
@@ -89,7 +91,9 @@ class HomePresenter(
     private val getLocalTagsUseCase: GetLocalTagsUseCase,
     private val getLocalResourcesWithTagUseCase: GetLocalResourcesWithTagUseCase,
     private val getLocalGroupsWithShareItemsCountUseCase: GetLocalGroupsWithShareItemsCountUseCase,
-    private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase
+    private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase,
+    private val getAccountPreferencesUseCase: GetAccountPreferencesUseCase,
+    private val homeModelMapper: HomeDisplayViewMapper
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinComponent {
 
     override var view: HomeContract.View? = null
@@ -101,7 +105,7 @@ class HomePresenter(
     private val filteringScope = CoroutineScope(filteringJob + coroutineLaunchContext.ui)
 
     private lateinit var dataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>
-    private lateinit var homeView: HomeDisplayView
+    private lateinit var homeView: HomeDisplayViewModel
     private var currentSearchText = MutableStateFlow("")
     private var hasPreviousBackEntry = false
 
@@ -122,8 +126,8 @@ class HomePresenter(
         dataRefreshStatusFlow = fullDataRefreshStatusFlow
     }
 
-    override fun argsRetrieved(homeDisplayView: HomeDisplayView?, hasPreviousEntry: Boolean) {
-        homeView = homeDisplayView ?: HomeDisplayView.default()
+    override fun argsRetrieved(homeDisplayView: HomeDisplayViewModel?, hasPreviousEntry: Boolean) {
+        homeView = homeDisplayView ?: homeModelMapper.map(getAccountPreferencesUseCase.execute(Unit).userSetHomeView)
         hasPreviousBackEntry = hasPreviousEntry
 
         view?.apply {
@@ -141,21 +145,21 @@ class HomePresenter(
 
     private fun processSearchHint(view: HomeContract.View) {
         when (homeView) {
-            is HomeDisplayView.AllItems -> view.showAllItemsSearchHint()
+            is HomeDisplayViewModel.AllItems -> view.showAllItemsSearchHint()
             else -> view.showDefaultSearchHint()
         }
     }
 
     private fun processScreenTitle(view: HomeContract.View) {
         when (val currentHomeView = homeView) {
-            is HomeDisplayView.Folders -> processFoldersTitle(currentHomeView, view)
-            is HomeDisplayView.Tags -> processTagsTitle(currentHomeView, view)
-            is HomeDisplayView.Groups -> processGroupsTitle(currentHomeView, view)
+            is HomeDisplayViewModel.Folders -> processFoldersTitle(currentHomeView, view)
+            is HomeDisplayViewModel.Tags -> processTagsTitle(currentHomeView, view)
+            is HomeDisplayViewModel.Groups -> processGroupsTitle(currentHomeView, view)
             else -> view.showHomeScreenTitle(currentHomeView)
         }
     }
 
-    private fun processGroupsTitle(currentHomeView: HomeDisplayView.Groups, view: HomeContract.View) {
+    private fun processGroupsTitle(currentHomeView: HomeDisplayViewModel.Groups, view: HomeContract.View) {
         if (currentHomeView.activeGroupId != null) {
             view.showGroupTitle(requireNotNull(currentHomeView.activeGroupName))
         } else {
@@ -163,7 +167,7 @@ class HomePresenter(
         }
     }
 
-    private fun processTagsTitle(currentHomeView: HomeDisplayView.Tags, view: HomeContract.View) {
+    private fun processTagsTitle(currentHomeView: HomeDisplayViewModel.Tags, view: HomeContract.View) {
         if (currentHomeView.activeTagId != null && currentHomeView.isActiveTagShared != null) {
             view.showTagTitle(
                 requireNotNull(currentHomeView.activeTagName),
@@ -174,7 +178,7 @@ class HomePresenter(
         }
     }
 
-    private fun processFoldersTitle(currentHomeView: HomeDisplayView.Folders, view: HomeContract.View) {
+    private fun processFoldersTitle(currentHomeView: HomeDisplayViewModel.Folders, view: HomeContract.View) {
         when (currentHomeView.activeFolder) {
             is Folder.Child -> view.showChildFolderTitle(
                 requireNotNull(currentHomeView.activeFolderName),
@@ -220,10 +224,10 @@ class HomePresenter(
     // currently show add button in root folder only (and in all other views except tags and groups)
     private fun shouldShowAddButton(): Boolean {
         homeView.let {
-            if (it is HomeDisplayView.Tags || it is HomeDisplayView.Groups) {
+            if (it is HomeDisplayViewModel.Tags || it is HomeDisplayViewModel.Groups) {
                 return false
             }
-            if (it is HomeDisplayView.Folders) {
+            if (it is HomeDisplayViewModel.Folders) {
                 return it.activeFolder is Folder.Root
             }
         }
@@ -245,9 +249,9 @@ class HomePresenter(
 
     private suspend fun showActiveHomeView() {
         when (val currentHomeView = homeView) {
-            is HomeDisplayView.Folders -> showResourcesAndFoldersFromDatabase(currentHomeView)
-            is HomeDisplayView.Tags -> showTagsFromDatabase(currentHomeView)
-            is HomeDisplayView.Groups -> showGroupsFromDatabase(currentHomeView)
+            is HomeDisplayViewModel.Folders -> showResourcesAndFoldersFromDatabase(currentHomeView)
+            is HomeDisplayViewModel.Tags -> showTagsFromDatabase(currentHomeView)
+            is HomeDisplayViewModel.Groups -> showGroupsFromDatabase(currentHomeView)
             else -> showResourcesFromDatabase()
         }
     }
@@ -286,7 +290,7 @@ class HomePresenter(
         displayHomeData()
     }
 
-    private suspend fun showTagsFromDatabase(tags: HomeDisplayView.Tags) {
+    private suspend fun showTagsFromDatabase(tags: HomeDisplayViewModel.Tags) {
         if (tags.activeTagId == null) { // tags root - list of tags
             resourceList = emptyList()
             tagsList = getLocalTagsUseCase.execute(Unit)
@@ -302,7 +306,7 @@ class HomePresenter(
         displayHomeData()
     }
 
-    private suspend fun showGroupsFromDatabase(groups: HomeDisplayView.Groups) {
+    private suspend fun showGroupsFromDatabase(groups: HomeDisplayViewModel.Groups) {
         if (groups.activeGroupId == null) { // groups root - list of groups
             resourceList = emptyList()
             tagsList = emptyList()
@@ -319,7 +323,7 @@ class HomePresenter(
         displayHomeData()
     }
 
-    private suspend fun showResourcesAndFoldersFromDatabase(folders: HomeDisplayView.Folders) {
+    private suspend fun showResourcesAndFoldersFromDatabase(folders: HomeDisplayViewModel.Folders) {
         tagsList = emptyList()
         groupsList = emptyList()
         when (
@@ -329,7 +333,7 @@ class HomePresenter(
         ) {
             is GetLocalResourcesAndFoldersUseCase.Output.Failure -> {
                 Timber.d("Exception during getting resources and folders. Navigating to root")
-                this.view?.navigateToRootHomeFromChildHome(HomeDisplayView.folderRoot())
+                this.view?.navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
             }
             is GetLocalResourcesAndFoldersUseCase.Output.Success -> {
                 foldersList = result.folders
@@ -369,7 +373,7 @@ class HomePresenter(
     private suspend fun filterHomeData() {
         var filteredResources = filterSearchableList(resourceList, currentSearchText.value)
         // filtered resources + additionally append resources that have tag that matches filter
-        if (homeView is HomeDisplayView.AllItems) {
+        if (homeView is HomeDisplayViewModel.AllItems) {
             filteredResources = (filteredResources + getResourcesFilteredByTag())
                 .distinctBy { it.resourceId }
         }
@@ -378,7 +382,7 @@ class HomePresenter(
         val filteredGroups = filterSearchableList(groupsList, currentSearchText.value)
 
         homeView.apply {
-            if (this is HomeDisplayView.Folders) {
+            if (this is HomeDisplayViewModel.Folders) {
                 populateSubFoldersFilteringResults(this)
             }
         }
@@ -403,13 +407,13 @@ class HomePresenter(
                 filteredSubFolderResources,
                 HomeFragment.HeaderSectionConfiguration(
                     isInCurrentFolderSectionVisible =
-                    homeView is HomeDisplayView.Folders && !areListsEmpty(filteredResources, filteredFolders),
+                    homeView is HomeDisplayViewModel.Folders && !areListsEmpty(filteredResources, filteredFolders),
                     isInSubFoldersSectionVisible =
-                    homeView is HomeDisplayView.Folders && !areListsEmpty(
+                    homeView is HomeDisplayViewModel.Folders && !areListsEmpty(
                         filteredSubFolderResources,
                         filteredSubFolders
                     ),
-                    (homeView as? HomeDisplayView.Folders)?.activeFolderName
+                    (homeView as? HomeDisplayViewModel.Folders)?.activeFolderName
                 )
             )
         }
@@ -419,7 +423,7 @@ class HomePresenter(
         GetLocalResourcesFilteredByTagUseCase.Input(currentSearchText.value)
     ).resources
 
-    private suspend fun populateSubFoldersFilteringResults(folders: HomeDisplayView.Folders) {
+    private suspend fun populateSubFoldersFilteringResults(folders: HomeDisplayViewModel.Folders) {
         if (currentSearchText.value.isNotBlank()) {
             // resources need to be shown for all child folders
             val allSubFolders = getAllSubFolders(folders)
@@ -441,7 +445,7 @@ class HomePresenter(
             )
         ).resources
 
-    private suspend fun getAllSubFolders(folders: HomeDisplayView.Folders) =
+    private suspend fun getAllSubFolders(folders: HomeDisplayViewModel.Folders) =
         getLocalSubFoldersForFolderUseCase.execute(
             GetLocalSubFoldersForFolderUseCase.Input(folders.activeFolder)
         ).folders
@@ -596,7 +600,7 @@ class HomePresenter(
         view?.showFiltersMenu(homeView)
     }
 
-    private fun navigateToHomeView(homeView: HomeDisplayView) {
+    private fun navigateToHomeView(homeView: HomeDisplayViewModel) {
         if (!hasPreviousBackEntry) {
             view?.navigateRootHomeFromRootHome(homeView)
         } else {
@@ -611,40 +615,40 @@ class HomePresenter(
     }
 
     override fun allItemsClick() {
-        navigateToHomeView(HomeDisplayView.AllItems)
+        navigateToHomeView(HomeDisplayViewModel.AllItems)
     }
 
     override fun favouritesClick() {
-        navigateToHomeView(HomeDisplayView.Favourites)
+        navigateToHomeView(HomeDisplayViewModel.Favourites)
     }
 
     override fun recentlyModifiedClick() {
-        navigateToHomeView(HomeDisplayView.RecentlyModified)
+        navigateToHomeView(HomeDisplayViewModel.RecentlyModified)
     }
 
     override fun sharedWithMeClick() {
-        navigateToHomeView(HomeDisplayView.SharedWithMe)
+        navigateToHomeView(HomeDisplayViewModel.SharedWithMe)
     }
 
     override fun ownedByMeClick() {
-        navigateToHomeView(HomeDisplayView.OwnedByMe)
+        navigateToHomeView(HomeDisplayViewModel.OwnedByMe)
     }
 
     override fun foldersClick() {
-        navigateToHomeView(HomeDisplayView.folderRoot())
+        navigateToHomeView(HomeDisplayViewModel.folderRoot())
     }
 
     override fun tagsClick() {
-        navigateToHomeView(HomeDisplayView.tagsRoot())
+        navigateToHomeView(HomeDisplayViewModel.tagsRoot())
     }
 
     override fun groupsClick() {
-        navigateToHomeView(HomeDisplayView.groupsRoot())
+        navigateToHomeView(HomeDisplayViewModel.groupsRoot())
     }
 
     override fun folderItemClick(folderModel: FolderWithCount) {
         view?.navigateToChild(
-            HomeDisplayView.Folders(
+            HomeDisplayViewModel.Folders(
                 Folder.Child(folderModel.folderId),
                 folderModel.name,
                 folderModel.isShared
@@ -654,7 +658,7 @@ class HomePresenter(
 
     override fun tagItemClick(tag: TagWithCount) {
         view?.navigateToChild(
-            HomeDisplayView.Tags(
+            HomeDisplayViewModel.Tags(
                 tag.id,
                 tag.slug,
                 tag.isShared
@@ -664,7 +668,7 @@ class HomePresenter(
 
     override fun groupItemClick(group: GroupWithCount) {
         view?.navigateToChild(
-            HomeDisplayView.Groups(
+            HomeDisplayViewModel.Groups(
                 group.groupId,
                 group.groupName
             )
@@ -674,7 +678,7 @@ class HomePresenter(
     override fun createResourceClick() {
         view?.navigateToCreateResource(
             when (val currentHomeView = homeView) {
-                is HomeDisplayView.Folders -> currentHomeView.activeFolder.folderId
+                is HomeDisplayViewModel.Folders -> currentHomeView.activeFolder.folderId
                 else -> null
             }
         )

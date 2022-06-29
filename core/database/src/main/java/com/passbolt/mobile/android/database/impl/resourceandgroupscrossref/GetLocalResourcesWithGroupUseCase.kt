@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.database.impl.resourceandgroupscrossref
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -46,7 +46,7 @@ class GetLocalResourcesWithGroupUseCase(
     }
 
     data class Input(
-        val tag: HomeDisplayView.Groups
+        val tag: HomeDisplayViewModel.Groups
     )
 
     data class Output(val resources: List<ResourceModel>)

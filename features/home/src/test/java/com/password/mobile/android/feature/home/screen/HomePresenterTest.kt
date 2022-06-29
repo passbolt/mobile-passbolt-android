@@ -1,5 +1,6 @@
 package com.password.mobile.android.feature.home.screen
 
+import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
@@ -10,12 +11,14 @@ import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetAccountPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -33,6 +36,7 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -91,7 +95,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         verify(view).displaySearchAvatar(eq(url))
@@ -106,7 +110,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         presenter.searchTextChange("abc")
@@ -130,11 +134,11 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
 
-        verify(view).showHomeScreenTitle(HomeDisplayView.AllItems)
+        verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
         verify(view).hideBackArrow()
         verify(view).showProgress()
@@ -166,7 +170,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         presenter.searchTextChange("second")
@@ -194,7 +198,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         presenter.searchTextChange("empty search")
@@ -217,12 +221,12 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
 
         verify(view).hideBackArrow()
-        verify(view).showHomeScreenTitle(HomeDisplayView.AllItems)
+        verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
         verify(view).showProgress()
         verify(view).hideProgress()
@@ -247,12 +251,12 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
 
         verify(view).hideBackArrow()
-        verify(view).showHomeScreenTitle(HomeDisplayView.AllItems)
+        verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
         verify(view).showProgress()
         verify(view).hideAddButton()
@@ -282,7 +286,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         presenter.refreshClick()
@@ -320,7 +324,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         reset(view)
@@ -355,7 +359,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         reset(view)
@@ -377,7 +381,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
@@ -398,7 +402,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
@@ -419,7 +423,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
@@ -448,7 +452,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
@@ -472,7 +476,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
@@ -505,7 +509,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.AllItems,
+            HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
         presenter.moreClick(RESOURCE_MODEL)
@@ -527,11 +531,11 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.Folders(Folder.Child("childId"), "child name", isActiveFolderShared = false),
+            HomeDisplayViewModel.Folders(Folder.Child("childId"), "child name", isActiveFolderShared = false),
             hasPreviousEntry = false
         )
 
-        verify(view).navigateToRootHomeFromChildHome(HomeDisplayView.folderRoot())
+        verify(view).navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
     }
 
     @Test
@@ -542,22 +546,22 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
+            HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = false
         )
         presenter.argsRetrieved(
-            HomeDisplayView.Tags("id", "tag name", isActiveTagShared = false),
+            HomeDisplayViewModel.Tags("id", "tag name", isActiveTagShared = false),
             hasPreviousEntry = false
         )
         presenter.argsRetrieved(
-            HomeDisplayView.Groups("id", "group name"),
+            HomeDisplayViewModel.Groups("id", "group name"),
             hasPreviousEntry = false
         )
-        presenter.argsRetrieved(HomeDisplayView.RecentlyModified, hasPreviousEntry = false)
-        presenter.argsRetrieved(HomeDisplayView.SharedWithMe, hasPreviousEntry = false)
-        presenter.argsRetrieved(HomeDisplayView.OwnedByMe, hasPreviousEntry = false)
-        presenter.argsRetrieved(HomeDisplayView.Favourites, hasPreviousEntry = false)
-        presenter.argsRetrieved(HomeDisplayView.AllItems, hasPreviousEntry = false)
+        presenter.argsRetrieved(HomeDisplayViewModel.RecentlyModified, hasPreviousEntry = false)
+        presenter.argsRetrieved(HomeDisplayViewModel.SharedWithMe, hasPreviousEntry = false)
+        presenter.argsRetrieved(HomeDisplayViewModel.OwnedByMe, hasPreviousEntry = false)
+        presenter.argsRetrieved(HomeDisplayViewModel.Favourites, hasPreviousEntry = false)
+        presenter.argsRetrieved(HomeDisplayViewModel.AllItems, hasPreviousEntry = false)
 
         verify(view).showChildFolderTitle("folder name", isShared = false)
         verify(view).showTagTitle("tag name", isShared = false)
@@ -573,15 +577,15 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
+            HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = true
         )
         presenter.argsRetrieved(
-            HomeDisplayView.Tags("id", "tag name", isActiveTagShared = false),
+            HomeDisplayViewModel.Tags("id", "tag name", isActiveTagShared = false),
             hasPreviousEntry = true
         )
         presenter.argsRetrieved(
-            HomeDisplayView.Groups("id", "group name"),
+            HomeDisplayViewModel.Groups("id", "group name"),
             hasPreviousEntry = true
         )
 
@@ -596,18 +600,42 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
-            HomeDisplayView.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
+            HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = true
         )
         presenter.tagsClick()
         presenter.argsRetrieved(
-            HomeDisplayView.tagsRoot(),
+            HomeDisplayViewModel.tagsRoot(),
             hasPreviousEntry = false
         )
         presenter.foldersClick()
 
-        verify(view).navigateToRootHomeFromChildHome(HomeDisplayView.tagsRoot())
-        verify(view).navigateRootHomeFromRootHome(HomeDisplayView.folderRoot())
+        verify(view).navigateToRootHomeFromChildHome(HomeDisplayViewModel.tagsRoot())
+        verify(view).navigateRootHomeFromRootHome(HomeDisplayViewModel.folderRoot())
+    }
+
+    @Test
+    fun `view root should user selected filter by default`() {
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        whenever(mockAccountPreferencesUseCase.execute(any())).doReturn(
+            GetAccountPreferencesUseCase.Output(
+                lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
+                userSetHomeView = HomeDisplayView.FOLDERS
+            )
+        )
+        mockAccountData(null)
+
+        presenter.viewCreate(refreshFlow)
+        presenter.attach(view)
+        presenter.argsRetrieved(
+            homeDisplayView = null,
+            hasPreviousEntry = false
+        )
+
+        argumentCaptor<HomeDisplayViewModel> {
+            verify(view).showHomeScreenTitle(capture())
+            assertThat(firstValue).isInstanceOf(HomeDisplayViewModel.Folders::class.java)
+        }
     }
 
     private fun mockResourcesList() = listOf(

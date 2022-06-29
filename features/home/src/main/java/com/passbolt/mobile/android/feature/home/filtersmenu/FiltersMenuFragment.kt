@@ -90,14 +90,38 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
 
     private fun setListeners() {
         with(binding) {
-            allItems.setListenerWithDismiss { listener?.menuAllItemsClick() }
-            favourites.setListenerWithDismiss { listener?.menuFavouritesClick() }
-            recentlyModified.setListenerWithDismiss { listener?.menuRecentlyModifiedClick() }
-            sharedWithMe.setListenerWithDismiss { listener?.menuSharedWithMeClick() }
-            ownedByMe.setListenerWithDismiss { listener?.menuOwnedByMeClick() }
-            folders.setListenerWithDismiss { listener?.menuFoldersClick() }
-            tags.setListenerWithDismiss { listener?.menuTagsClick() }
-            groups.setListenerWithDismiss { listener?.menuGroupsClick() }
+            allItems.setListenerWithDismiss {
+                presenter.allItemsClick()
+                listener?.menuAllItemsClick()
+            }
+            favourites.setListenerWithDismiss {
+                presenter.favouritesClick()
+                listener?.menuFavouritesClick()
+            }
+            recentlyModified.setListenerWithDismiss {
+                presenter.recentlyModifiedClick()
+                listener?.menuRecentlyModifiedClick()
+            }
+            sharedWithMe.setListenerWithDismiss {
+                presenter.sharedWithMeClick()
+                listener?.menuSharedWithMeClick()
+            }
+            ownedByMe.setListenerWithDismiss {
+                presenter.ownedByMeClick()
+                listener?.menuOwnedByMeClick()
+            }
+            folders.setListenerWithDismiss {
+                presenter.foldersClick()
+                listener?.menuFoldersClick()
+            }
+            tags.setListenerWithDismiss {
+                presenter.tagsClick()
+                listener?.menuTagsClick()
+            }
+            groups.setListenerWithDismiss {
+                presenter.groupsClick()
+                listener?.menuGroupsClick()
+            }
             close.setListenerWithDismiss { }
         }
     }

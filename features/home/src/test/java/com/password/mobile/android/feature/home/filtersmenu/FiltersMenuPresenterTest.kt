@@ -1,7 +1,7 @@
 package com.password.mobile.android.feature.home.filtersmenu
 
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuContract
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel
@@ -45,7 +45,7 @@ class FiltersMenuPresenterTest : KoinTest {
 
         presenter.attach(view)
         presenter.creatingView()
-        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.AllItems))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayViewModel.AllItems))
 
         verify(view).showFoldersMenuItem()
         verify(view).showTagsMenuItem()
@@ -67,14 +67,14 @@ class FiltersMenuPresenterTest : KoinTest {
 
         presenter.attach(view)
         presenter.creatingView()
-        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.AllItems))
-        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.Favourites))
-        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.OwnedByMe))
-        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.SharedWithMe))
-        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.RecentlyModified))
-        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.folderRoot()))
-        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.tagsRoot()))
-        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayView.groupsRoot()))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayViewModel.AllItems))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayViewModel.Favourites))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayViewModel.OwnedByMe))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayViewModel.SharedWithMe))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayViewModel.RecentlyModified))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayViewModel.folderRoot()))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayViewModel.tagsRoot()))
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayViewModel.groupsRoot()))
 
         verify(view).selectAllItemsItem()
         verify(view).selectFavouritesItem()
