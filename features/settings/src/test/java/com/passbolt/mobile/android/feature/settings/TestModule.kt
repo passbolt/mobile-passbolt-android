@@ -1,7 +1,5 @@
 package com.passbolt.mobile.android.feature.settings
 
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
@@ -18,11 +16,14 @@ import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKey
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetAccountPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import javax.crypto.Cipher
 
 internal val checkIfPassphraseFileExistsUseCase = mock<CheckIfPassphraseFileExistsUseCase>()
@@ -45,6 +46,7 @@ internal val getFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
 internal val mockSaveGlobalPreferencesUseCase = mock<SaveGlobalPreferencesUseCase>()
 internal val mockBiometryInteractor = mock<BiometryInteractor>()
+internal val mockAccountPreferencesUseCase = mock<GetAccountPreferencesUseCase>()
 
 @ExperimentalCoroutinesApi
 val testModule = module {
@@ -76,7 +78,8 @@ val testModule = module {
             saveGlobalPreferencesUseCase = mockSaveGlobalPreferencesUseCase,
             fileLoggingTree = mock(),
             biometryInteractor = mockBiometryInteractor,
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            getAccountPreferencesUseCase = mockAccountPreferencesUseCase
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

@@ -21,6 +21,7 @@ import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetAccountPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
@@ -621,7 +622,7 @@ class HomePresenterTest : KoinTest {
         whenever(mockAccountPreferencesUseCase.execute(any())).doReturn(
             GetAccountPreferencesUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
-                userSetHomeView = HomeDisplayView.FOLDERS
+                userSetHomeView = DefaultFilterModel.FOLDERS
             )
         )
         mockAccountData(null)

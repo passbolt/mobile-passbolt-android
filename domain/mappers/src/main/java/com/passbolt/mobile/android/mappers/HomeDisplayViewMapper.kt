@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.DefaultFilterModel
 
 /**
  * Mapper responsible for mapping between UI related resource display view type and database related
@@ -29,7 +30,7 @@ class HomeDisplayViewMapper {
             is HomeDisplayViewModel.Groups -> ResourceDatabaseView.ByModifiedDateDescending
         }
 
-    fun map(homeView: HomeDisplayView): HomeDisplayViewModel =
+    private fun map(homeView: HomeDisplayView): HomeDisplayViewModel =
         when (homeView) {
             HomeDisplayView.ALL_ITEMS -> HomeDisplayViewModel.AllItems
             HomeDisplayView.FAVOURITES -> HomeDisplayViewModel.Favourites
@@ -39,5 +40,18 @@ class HomeDisplayViewMapper {
             HomeDisplayView.FOLDERS -> HomeDisplayViewModel.folderRoot()
             HomeDisplayView.TAGS -> HomeDisplayViewModel.tagsRoot()
             HomeDisplayView.GROUPS -> HomeDisplayViewModel.groupsRoot()
+        }
+
+    fun map(userSetHomeView: DefaultFilterModel, lastUsedHomeView: HomeDisplayView): HomeDisplayViewModel =
+        when (userSetHomeView) {
+            DefaultFilterModel.LAST_USED -> map(lastUsedHomeView)
+            DefaultFilterModel.ALL_ITEMS -> HomeDisplayViewModel.AllItems
+            DefaultFilterModel.FAVOURITES -> HomeDisplayViewModel.Favourites
+            DefaultFilterModel.RECENTLY_MODIFIED -> HomeDisplayViewModel.RecentlyModified
+            DefaultFilterModel.SHARED_WITH_ME -> HomeDisplayViewModel.SharedWithMe
+            DefaultFilterModel.OWNED_BY_ME -> HomeDisplayViewModel.OwnedByMe
+            DefaultFilterModel.FOLDERS -> HomeDisplayViewModel.folderRoot()
+            DefaultFilterModel.TAGS -> HomeDisplayViewModel.tagsRoot()
+            DefaultFilterModel.GROUPS -> HomeDisplayViewModel.groupsRoot()
         }
 }

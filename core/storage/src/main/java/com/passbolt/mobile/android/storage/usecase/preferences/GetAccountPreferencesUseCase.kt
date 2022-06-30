@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.storage.paths.AccountPreferencesFileName
 import com.passbolt.mobile.android.storage.usecase.KEY_LAST_USED_HOME_VIEW
 import com.passbolt.mobile.android.storage.usecase.KEY_USER_SET_HOME_VIEW
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.DefaultFilterModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -47,9 +48,9 @@ class GetAccountPreferencesUseCase(
 
             val userSetHomeViewOrdinal = getInt(KEY_USER_SET_HOME_VIEW, -1)
             val userSetHomeView = if (userSetHomeViewOrdinal != -1) {
-                HomeDisplayView.values()[userSetHomeViewOrdinal]
+                DefaultFilterModel.values()[userSetHomeViewOrdinal]
             } else {
-                lastUsedHomeView
+                DefaultFilterModel.LAST_USED
             }
 
             Output(
@@ -61,7 +62,7 @@ class GetAccountPreferencesUseCase(
 
     data class Output(
         val lastUsedHomeView: HomeDisplayView,
-        val userSetHomeView: HomeDisplayView
+        val userSetHomeView: DefaultFilterModel
     )
 
     private companion object {

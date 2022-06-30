@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.storage.paths.AccountPreferencesFileName
 import com.passbolt.mobile.android.storage.usecase.KEY_LAST_USED_HOME_VIEW
 import com.passbolt.mobile.android.storage.usecase.KEY_USER_SET_HOME_VIEW
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.DefaultFilterModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -50,6 +51,6 @@ class UpdateAccountPreferencesUseCase(
 
     data class Input(
         val lastUsedHomeView: HomeDisplayView? = null,
-        val userSetHomeView: HomeDisplayView? = null
+        val userSetHomeView: DefaultFilterModel? = null
     )
 }

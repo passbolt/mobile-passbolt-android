@@ -26,6 +26,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.AuthBiometricCall
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
 import com.passbolt.mobile.android.feature.settings.R
 import com.passbolt.mobile.android.feature.settings.databinding.FragmentSettingsBinding
+import com.passbolt.mobile.android.ui.DefaultFilterModel
 import org.koin.android.ext.android.inject
 import java.util.concurrent.Executor
 import javax.crypto.Cipher
@@ -101,6 +102,9 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
             autofillSetting.setDebouncingOnClick {
                 presenter.autofillClick()
             }
+            defaultFilterSetting.setDebouncingOnClick {
+                presenter.defaultFilterClick()
+            }
             manageAccountsSetting.setDebouncingOnClick {
                 presenter.manageAccountsClick()
             }
@@ -152,6 +156,12 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
     override fun navigateToLicenses() {
         findNavController().navigate(
             SettingsFragmentDirections.actionSettingsToLicensesFragment()
+        )
+    }
+
+    override fun navigateToDefaultFilter(userSetHomeView: DefaultFilterModel) {
+        findNavController().navigate(
+            SettingsFragmentDirections.actionSettingsToDefaultFilterFragment(userSetHomeView)
         )
     }
 

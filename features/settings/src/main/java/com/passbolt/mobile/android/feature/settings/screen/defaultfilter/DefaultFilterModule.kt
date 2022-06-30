@@ -1,10 +1,9 @@
-package com.passbolt.mobile.android.feature.settings
+package com.passbolt.mobile.android.feature.settings.screen.defaultfilter
 
-import com.passbolt.mobile.android.feature.settings.screen.autofill.settingsAutofillModule
-import com.passbolt.mobile.android.feature.settings.screen.defaultfilter.defaultFilterModule
-import com.passbolt.mobile.android.feature.settings.screen.licenses.licensesModule
-import com.passbolt.mobile.android.feature.settings.screen.settingsModule
-import org.koin.dsl.module
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.passbolt.mobile.android.feature.settings.screen.defaultfilter.recycler.DefaultFilterItem
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,9 +28,20 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val settingsModule = module {
-    settingsModule()
-    settingsAutofillModule()
-    licensesModule()
-    defaultFilterModule()
+fun Module.defaultFilterModule() {
+    scope<DefaultFilterFragment> {
+        scoped<DefaultFilterContract.Presenter> {
+            DefaultFilterPresenter(
+                updateAccountPreferencesUseCase = get()
+            )
+        }
+        scoped<ItemAdapter<DefaultFilterItem>> {
+            ItemAdapter.items()
+        }
+        scoped {
+            FastAdapter.with(
+                get<ItemAdapter<DefaultFilterItem>>()
+            )
+        }
+    }
 }

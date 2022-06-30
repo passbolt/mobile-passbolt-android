@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.DefaultFilterModel
 import javax.crypto.Cipher
 
 /**
@@ -59,6 +60,7 @@ interface SettingsContract {
         fun disableAccessLogs()
         fun showPrivacyPolicyButton()
         fun showTermsAndConditionsButton()
+        fun navigateToDefaultFilter(userSetHomeView: DefaultFilterModel)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -81,5 +83,6 @@ interface SettingsContract {
         fun logsClick()
         fun enableDebugLogsChanged(areLogsEnabled: Boolean)
         fun viewResumed()
+        fun defaultFilterClick()
     }
 }

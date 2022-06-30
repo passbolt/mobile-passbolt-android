@@ -1,10 +1,9 @@
-package com.passbolt.mobile.android.feature.settings
+package com.passbolt.mobile.android.core.ui.menu
 
-import com.passbolt.mobile.android.feature.settings.screen.autofill.settingsAutofillModule
-import com.passbolt.mobile.android.feature.settings.screen.defaultfilter.defaultFilterModule
-import com.passbolt.mobile.android.feature.settings.screen.licenses.licensesModule
-import com.passbolt.mobile.android.feature.settings.screen.settingsModule
-import org.koin.dsl.module
+import android.content.Context
+import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatRadioButton
+import com.google.android.material.radiobutton.MaterialRadioButton
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,10 +27,24 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class SelectableSettingView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : SettingView(context, attrs, defStyle) {
 
-val settingsModule = module {
-    settingsModule()
-    settingsAutofillModule()
-    licensesModule()
-    defaultFilterModule()
+    private val radioButton: AppCompatRadioButton
+
+    init {
+        MaterialRadioButton(context).apply {
+            isClickable = false
+            radioButton = this
+            binding.root.addView(this)
+        }
+    }
+
+    override fun setSelected(isSelected: Boolean) {
+        super.setSelected(isSelected)
+        radioButton.isChecked = isSelected
+    }
 }
