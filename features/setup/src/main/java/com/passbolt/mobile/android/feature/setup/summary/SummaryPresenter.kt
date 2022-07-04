@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.setup.summary
 
 import com.passbolt.mobile.android.common.UuidProvider
-import com.passbolt.mobile.android.storage.usecase.database.SaveResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.database.SaveResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
@@ -57,8 +57,9 @@ class SummaryPresenter(
         when (val currentStatus = status) {
             is ResultStatus.AlreadyLinked -> view?.navigateToManageAccounts()
             is ResultStatus.Success -> view?.navigateToSignIn(currentStatus.userId)
-            is ResultStatus.Failure -> view?.navigateBack()
-            is ResultStatus.HttpNotSupported -> view?.navigateBack()
+            is ResultStatus.Failure -> view?.navigateToScanQr()
+            is ResultStatus.HttpNotSupported -> view?.navigateToScanQr()
+            is ResultStatus.NoNetwork -> view?.navigateToScanQr()
         }
     }
 
@@ -75,7 +76,7 @@ class SummaryPresenter(
         if (status is ResultStatus.Success) {
             view?.showLeaveConfirmationDialog()
         } else {
-            view?.navigateBack()
+            view?.navigateToScanQr()
         }
     }
 

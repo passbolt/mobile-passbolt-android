@@ -167,7 +167,7 @@ class ScanQrPresenter(
             )
         )
         // ignoring result
-        view?.navigateToSummary(ResultStatus.AlreadyLinked(userId))
+        view?.navigateToSummary(ResultStatus.AlreadyLinked())
     }
 
     private suspend fun updateTransfer(pageNumber: Int, status: Status = Status.IN_PROGRESS) {
@@ -192,6 +192,8 @@ class ScanQrPresenter(
                 } else {
                     if (response.error.isServerNotReachable) {
                         view?.showServerNotReachable(serverDomain)
+                    } else if (response.error.isNoNetworkException) {
+                        view?.navigateToSummary(ResultStatus.NoNetwork())
                     } else {
                         view?.showUpdateTransferError(response.error.headerMessage)
                     }
