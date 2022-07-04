@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.common.dialogs.encryptionErrorAlertDialog
 import com.passbolt.mobile.android.common.extension.invisible
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
@@ -192,6 +193,11 @@ class UpdateResourceFragment :
         Snackbar.make(binding.root, R.string.common_failure, Snackbar.LENGTH_SHORT).apply {
             view.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.red))
         }.show()
+    }
+
+    override fun showEncryptionError() {
+        encryptionErrorAlertDialog(requireContext())
+            .show()
     }
 
     override fun showCreateButton() {

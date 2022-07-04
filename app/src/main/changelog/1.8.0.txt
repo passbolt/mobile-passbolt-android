@@ -1,0 +1,12 @@
+# Passbolt 1.8.0-10 Android app release notes
+
+## Added
+- sharing to groups and users - resources can be shared via the 3-dot resource menu available from the resource details and home screen
+- on the "All items" home view the search also searches resources using tags (additionally to name, url, username)
+
+## Improved
+- Updated maximum account label length to 64 characters; After removing the abel totally it is replaced with a default one
+
+## Fixed
+- Back arrow back navigation on the welcome screen is working now when entering this screen via manage accounts
+- Fixed short blinking of settings & 3-dot resource menu dynamic menu items
