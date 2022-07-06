@@ -30,6 +30,8 @@ dependencies {
     implementation project(':commongroups')
     implementation project(':users')
     implementation project(':data')
+    implementation project(':data')
+    implementation project(':gopenpgp')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

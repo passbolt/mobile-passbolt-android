@@ -5,6 +5,8 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
@@ -45,24 +47,26 @@ class DecryptSecretUseCase(
         val account = UserIdInput(
             requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         )
-
-        return try {
-            val potentialPassphrase = passphraseMemoryCache.get()
-            if (potentialPassphrase is PotentialPassphrase.Passphrase) {
-                val passphraseCopy = potentialPassphrase.passphrase.copyOf()
-                val decrypted = gopenPgp.decryptMessageArmored(
-                    getPrivateKeyUseCase.execute(account).privateKey,
-                    passphraseCopy,
-                    input.encryptedSecret
-                )
-                passphraseCopy.erase()
-                Output.DecryptedSecret(decrypted)
-            } else {
-                Output.Unauthorized(AuthenticationState.Unauthenticated.Reason.Passphrase)
+        val potentialPassphrase = passphraseMemoryCache.get()
+        return if (potentialPassphrase is PotentialPassphrase.Passphrase) {
+            val passphraseCopy = potentialPassphrase.passphrase.copyOf()
+            val decrypted = gopenPgp.decryptMessageArmored(
+                getPrivateKeyUseCase.execute(account).privateKey,
+                passphraseCopy,
+                input.encryptedSecret
+            )
+            when (decrypted) {
+                is OpenPgpResult.Error -> {
+                    Timber.e(decrypted.error.message)
+                    Output.Failure(decrypted.error)
+                }
+                is OpenPgpResult.Result -> {
+                    passphraseCopy.erase()
+                    Output.DecryptedSecret(decrypted.result)
+                }
             }
-        } catch (exception: Exception) {
-            Timber.e(exception)
-            Output.Failure(exception)
+        } else {
+            Output.Unauthorized(AuthenticationState.Unauthenticated.Reason.Passphrase)
         }
     }
 
@@ -74,7 +78,7 @@ class DecryptSecretUseCase(
 
         data class Unauthorized(val reason: UnauthenticatedReason) : Output()
 
-        data class Failure(val exception: Exception) : Output()
+        data class Failure(val exception: OpenPgpError) : Output()
 
         data class DecryptedSecret(val decryptedSecret: ByteArray) : Output() {
             override fun equals(other: Any?): Boolean {

@@ -43,9 +43,9 @@ fun permissionDeletionConfirmationAlertDialog(context: Context, confirmAction: (
         .setNegativeButton(R.string.cancel) { _, _ -> }
         .create()
 
-fun encryptionErrorAlertDialog(context: Context): AlertDialog =
+fun encryptionErrorAlertDialog(context: Context, message: String): AlertDialog =
     AlertDialog.Builder(context)
         .setTitle(R.string.dialog_encryption_error_title)
-        .setMessage(R.string.dialog_encryption_error_message)
+        .setMessage(context.getString(R.string.dialog_encryption_error_message, message))
         .setPositiveButton(R.string.ok) { _, _ -> }
         .create()

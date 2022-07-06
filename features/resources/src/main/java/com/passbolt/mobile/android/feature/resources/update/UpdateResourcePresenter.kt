@@ -255,7 +255,7 @@ class UpdateResourcePresenter(
             is CreateResourceUseCase.Output.PasswordExpired -> {
                 /* will not happen in BaseAuthenticatedPresenter */
             }
-            is CreateResourceUseCase.Output.OpenPgpError -> view?.showEncryptionError()
+            is CreateResourceUseCase.Output.OpenPgpError -> view?.showEncryptionError(result.message)
         }
     }
 
@@ -281,7 +281,8 @@ class UpdateResourcePresenter(
                     is UpdateResourceUseCase.Output.PasswordExpired -> {
                         /* will not happen in BaseAuthenticatedPresenter */
                     }
-                    is UpdateResourceUseCase.Output.OpenPgpError -> view?.showEncryptionError()
+                    is UpdateResourceUseCase.Output.OpenPgpError ->
+                        view?.showEncryptionError(editResourceResult.message)
                 }
             }
             is FetchUsersUseCase.Output.Failure<*> -> {

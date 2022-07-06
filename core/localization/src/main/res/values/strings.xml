@@ -359,7 +359,7 @@
     <string name="main_update_downloaded_install">Install</string>
 
     <string name="dialog_encryption_error_title">There was an encryption error</string>
-    <string name="dialog_encryption_error_message">There was an encryption error. Please try again.</string>
+    <string name="dialog_encryption_error_message">There was an encryption error (%s). Please try again.</string>
 
     <!--
     arrays can be inconsistent when in other languages

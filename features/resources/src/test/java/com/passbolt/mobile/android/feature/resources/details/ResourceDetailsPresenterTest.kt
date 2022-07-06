@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -199,7 +200,11 @@ class ResourceDetailsPresenterTest : KoinTest {
     @Test
     fun `view should show decrypt error correct`() {
         mockSecretInterActor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.DecryptFailure(RuntimeException()))
+            onBlocking { fetchAndDecrypt(ID) }.doReturn(
+                SecretInteractor.Output.DecryptFailure(
+                    OpenPgpError("errorMessage")
+                )
+            )
         }
 
         presenter.argsReceived(

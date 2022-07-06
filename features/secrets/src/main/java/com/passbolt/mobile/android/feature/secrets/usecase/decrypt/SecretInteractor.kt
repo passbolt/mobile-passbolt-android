@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.secrets.usecase.decrypt
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import retrofit2.HttpException
 import java.net.HttpURLConnection
 
@@ -61,7 +62,7 @@ class SecretInteractor(
 
         data class FetchFailure(val exception: Exception) : Output()
 
-        data class DecryptFailure(val exception: Exception) : Output()
+        data class DecryptFailure(val error: OpenPgpError) : Output()
 
         data class Unauthorized(val reason: UnauthenticatedReason) : Output()
 

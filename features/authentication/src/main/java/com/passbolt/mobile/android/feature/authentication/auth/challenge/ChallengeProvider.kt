@@ -6,9 +6,9 @@ import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.dto.request.ChallengeDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
-import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -53,18 +53,18 @@ class ChallengeProvider(
         val challengeJson = ChallengeDto(CHALLENGE_VERSION, domain, uuidProvider.get(), tokenExpiry)
             .run { gson.toJson(this) }
 
-        return try {
+        return when (
             val encryptedChallenge = openPgp.encryptSignMessageArmored(
                 publicKey = serverPublicKey,
                 privateKey = privateKey,
                 passphrase = passphraseCopy,
                 message = challengeJson
-            )
-            passphraseCopy.erase()
-            Output.Success(encryptedChallenge)
-        } catch (e: Exception) {
-            Timber.e(e, "Error during challenge preparation")
-            Output.WrongPassphrase
+            )) {
+            is OpenPgpResult.Result -> {
+                passphraseCopy.erase()
+                Output.Success(encryptedChallenge.result)
+            }
+            is OpenPgpResult.Error -> Output.WrongPassphrase
         }
     }
 
