@@ -1,9 +1,5 @@
 package com.passbolt.mobile.android.feature.setup.summary
 
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.reset
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
 import com.passbolt.mobile.android.feature.setup.di.testModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -13,6 +9,10 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
 
 /**
  * Passbolt - Open source password manager for teams
@@ -58,7 +58,7 @@ class ScanQrPresenterTest : KoinTest {
         presenter.start(ResultStatus.Failure(""))
         reset(view)
         presenter.buttonClick()
-        verify(view).navigateBack()
+        verify(view).navigateToScanQr()
         verifyNoMoreInteractions(view)
     }
 

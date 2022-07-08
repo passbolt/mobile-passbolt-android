@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.networking
 
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 /**
  * Passbolt - Open source password manager for teams
@@ -47,6 +48,9 @@ sealed class NetworkResult<T : Any> {
 
         val isServerNotReachable: Boolean
             get() = exception is SocketTimeoutException
+
+        val isNoNetworkException: Boolean
+            get() = exception is UnknownHostException
 
         class ServerError<T : Any>(
             exception: Exception,

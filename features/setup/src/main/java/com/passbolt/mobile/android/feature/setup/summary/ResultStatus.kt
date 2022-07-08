@@ -48,15 +48,19 @@ sealed class ResultStatus(
         R.string.try_again
     )
 
+    class NoNetwork : ResultStatus(
+        R.drawable.ic_failed,
+        R.string.scan_qr_summary_no_network_title,
+        R.string.try_again
+    )
+
     class HttpNotSupported : ResultStatus(
         R.drawable.ic_failed,
         R.string.scan_qr_summary_http_not_supported_title,
         R.string.try_again
     )
 
-    class AlreadyLinked(
-        val userId: String
-    ) : ResultStatus(
+    class AlreadyLinked : ResultStatus(
         R.drawable.ic_already_connected,
         R.string.scan_qr_summary_already_linked_title,
         R.string.continue_label
