@@ -27,46 +27,44 @@ import kotlinx.parcelize.Parcelize
  * @since v1.0
  */
 
-sealed class HomeDisplayView : Parcelable {
+sealed class HomeDisplayViewModel : Parcelable {
 
     @Parcelize
-    object AllItems : HomeDisplayView(), Parcelable
+    object AllItems : HomeDisplayViewModel(), Parcelable
 
     @Parcelize
-    object Favourites : HomeDisplayView(), Parcelable
+    object Favourites : HomeDisplayViewModel(), Parcelable
 
     @Parcelize
-    object RecentlyModified : HomeDisplayView(), Parcelable
+    object RecentlyModified : HomeDisplayViewModel(), Parcelable
 
     @Parcelize
-    object SharedWithMe : HomeDisplayView(), Parcelable
+    object SharedWithMe : HomeDisplayViewModel(), Parcelable
 
     @Parcelize
-    object OwnedByMe : HomeDisplayView(), Parcelable
+    object OwnedByMe : HomeDisplayViewModel(), Parcelable
 
     @Parcelize
     data class Folders(
         val activeFolder: Folder,
         val activeFolderName: String? = null,
         val isActiveFolderShared: Boolean? = null
-    ) : HomeDisplayView(), Parcelable
+    ) : HomeDisplayViewModel(), Parcelable
 
     @Parcelize
     data class Tags(
         val activeTagId: String? = null,
         val activeTagName: String? = null,
         val isActiveTagShared: Boolean? = null
-    ) : HomeDisplayView(), Parcelable
+    ) : HomeDisplayViewModel(), Parcelable
 
     @Parcelize
     data class Groups(
         val activeGroupId: String? = null,
         val activeGroupName: String? = null
-    ) : HomeDisplayView(), Parcelable
+    ) : HomeDisplayViewModel(), Parcelable
 
     companion object {
-
-        fun default() = AllItems
 
         fun folderRoot() = Folders(Folder.Root)
 

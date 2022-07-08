@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.database.impl.resources
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -56,7 +56,7 @@ class GetLocalResourcesUseCase(
     }
 
     data class Input(
-        val homeDisplayView: HomeDisplayView = HomeDisplayView.AllItems
+        val homeDisplayView: HomeDisplayViewModel = HomeDisplayViewModel.AllItems
     )
 
     data class Output(val resources: List<ResourceModel>)

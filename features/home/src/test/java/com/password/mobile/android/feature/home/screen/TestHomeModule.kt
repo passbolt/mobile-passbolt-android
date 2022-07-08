@@ -21,8 +21,10 @@ import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
+import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetAccountPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.password.mobile.android.feature.home.TestCoroutineLaunchContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -48,6 +50,7 @@ internal val mockGetLocalResourcesWithTagsUseCase = mock<GetLocalResourcesWithTa
 internal val mockGetLocalGroupsWithItemCountUseCase = mock<GetLocalGroupsWithShareItemsCountUseCase>()
 internal val mockGetLocalResourcesWithGroupsUseCase = mock<GetLocalResourcesWithGroupUseCase>()
 internal val mockGetLocalResourcesFilteredByTagUseCase = mock<GetLocalResourcesFilteredByTagUseCase>()
+internal val mockAccountPreferencesUseCase = mock<GetAccountPreferencesUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -60,6 +63,7 @@ val testHomeModule = module {
     factory { mockSecretParser }
     factory { mockResourceTypeFactory }
     factory { resourceMenuModelMapper }
+    factory { HomeDisplayViewMapper() }
     factory<HomeContract.Presenter> {
         HomePresenter(
             coroutineLaunchContext = get(),
@@ -78,7 +82,9 @@ val testHomeModule = module {
             getLocalResourcesWithTagUseCase = mockGetLocalResourcesWithTagsUseCase,
             getLocalGroupsWithShareItemsCountUseCase = mockGetLocalGroupsWithItemCountUseCase,
             getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase,
-            getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase
+            getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase,
+            getAccountPreferencesUseCase = mockAccountPreferencesUseCase,
+            homeModelMapper = get()
         )
     }
 }

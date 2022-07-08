@@ -106,5 +106,14 @@ interface FiltersMenuContract {
          * as soon as possible
          */
         fun creatingView()
+
+        fun allItemsClick()
+        fun favouritesClick()
+        fun recentlyModifiedClick()
+        fun sharedWithMeClick()
+        fun ownedByMeClick()
+        fun foldersClick()
+        fun tagsClick()
+        fun groupsClick()
     }
 }

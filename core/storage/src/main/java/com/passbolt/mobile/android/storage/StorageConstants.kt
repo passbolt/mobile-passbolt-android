@@ -44,3 +44,5 @@ internal const val GLOBAL_PREFERENCES_FILE_NAME = "preferences"
 internal const val KEY_DEBUG_LOGS_ENABLED = "KEY_DEBUG_LOGS_ENABLED"
 internal const val RESOURCE_DATABASE_ALIAS = "current_url" // TODO bug in the file name - migrate to separate prefs file
 internal const val PASSPHRASE_KEY = "passphrase_key"
+internal const val KEY_LAST_USED_HOME_VIEW = "LAST_USED_HOME_VIEW"
+internal const val KEY_USER_SET_HOME_VIEW = "USER_SET_HOME_VIEW"

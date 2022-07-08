@@ -1,8 +1,10 @@
 package com.passbolt.mobile.android.feature.home.filtersmenu
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
+import com.passbolt.mobile.android.entity.home.HomeDisplayView
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.UpdateAccountPreferencesUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -11,6 +13,7 @@ import kotlinx.coroutines.launch
 
 class FiltersMenuPresenter(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
+    private val updateAccountPreferencesUseCase: UpdateAccountPreferencesUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : FiltersMenuContract.Presenter {
 
@@ -32,14 +35,14 @@ class FiltersMenuPresenter(
         view?.apply {
             unselectAll()
             when (menuModel.activeDisplayView) {
-                is HomeDisplayView.AllItems -> selectAllItemsItem()
-                is HomeDisplayView.Favourites -> selectFavouritesItem()
-                is HomeDisplayView.RecentlyModified -> selectRecentlyModifiedItem()
-                is HomeDisplayView.SharedWithMe -> selectSharedWithMeItem()
-                is HomeDisplayView.OwnedByMe -> selectOwnedByMeItem()
-                is HomeDisplayView.Folders -> selectFoldersMenuItem()
-                is HomeDisplayView.Tags -> selectTagsMenuItem()
-                is HomeDisplayView.Groups -> selectGroupsMenuItem()
+                is HomeDisplayViewModel.AllItems -> selectAllItemsItem()
+                is HomeDisplayViewModel.Favourites -> selectFavouritesItem()
+                is HomeDisplayViewModel.RecentlyModified -> selectRecentlyModifiedItem()
+                is HomeDisplayViewModel.SharedWithMe -> selectSharedWithMeItem()
+                is HomeDisplayViewModel.OwnedByMe -> selectOwnedByMeItem()
+                is HomeDisplayViewModel.Folders -> selectFoldersMenuItem()
+                is HomeDisplayViewModel.Tags -> selectTagsMenuItem()
+                is HomeDisplayViewModel.Groups -> selectGroupsMenuItem()
             }
         }
     }
@@ -54,6 +57,45 @@ class FiltersMenuPresenter(
                 view?.showTagsMenuItem()
             }
         }
+    }
+
+    private fun saveLastUsedHomeView(lastUsedHomeView: HomeDisplayView) {
+        updateAccountPreferencesUseCase.execute(
+            UpdateAccountPreferencesUseCase.Input(lastUsedHomeView = lastUsedHomeView)
+        )
+    }
+
+    // TODO move home view filters to recycler view - replace click methods with one taking in model - MOB-492
+    override fun allItemsClick() {
+        saveLastUsedHomeView(HomeDisplayView.ALL_ITEMS)
+    }
+
+    override fun favouritesClick() {
+        saveLastUsedHomeView(HomeDisplayView.FAVOURITES)
+    }
+
+    override fun recentlyModifiedClick() {
+        saveLastUsedHomeView(HomeDisplayView.RECENTLY_MODIFIED)
+    }
+
+    override fun sharedWithMeClick() {
+        saveLastUsedHomeView(HomeDisplayView.SHARED_WITH_ME)
+    }
+
+    override fun ownedByMeClick() {
+        saveLastUsedHomeView(HomeDisplayView.OWNED_BY_ME)
+    }
+
+    override fun foldersClick() {
+        saveLastUsedHomeView(HomeDisplayView.FOLDERS)
+    }
+
+    override fun tagsClick() {
+        saveLastUsedHomeView(HomeDisplayView.TAGS)
+    }
+
+    override fun groupsClick() {
+        saveLastUsedHomeView(HomeDisplayView.GROUPS)
     }
 
     override fun detach() {

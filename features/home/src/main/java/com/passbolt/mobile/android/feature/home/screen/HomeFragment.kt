@@ -43,7 +43,7 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayView
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
@@ -466,7 +466,7 @@ class HomeFragment :
         )
     }
 
-    override fun showFiltersMenu(activeDisplayView: HomeDisplayView) {
+    override fun showFiltersMenu(activeDisplayView: HomeDisplayViewModel) {
         FiltersMenuFragment.newInstance(FiltersMenuModel(activeDisplayView))
             .show(childFragmentManager, FiltersMenuFragment::class.java.name)
     }
@@ -511,37 +511,37 @@ class HomeFragment :
         binding.searchEditText.hint = getString(R.string.default_home_search_hint)
     }
 
-    override fun showHomeScreenTitle(view: HomeDisplayView) {
+    override fun showHomeScreenTitle(view: HomeDisplayViewModel) {
         when (view) {
-            is HomeDisplayView.AllItems -> showScreenTitleWithStartIcon(
+            is HomeDisplayViewModel.AllItems -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_all_items,
                 R.drawable.ic_list
             )
-            is HomeDisplayView.Favourites -> showScreenTitleWithStartIcon(
+            is HomeDisplayViewModel.Favourites -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_favourites,
                 R.drawable.ic_star
             )
-            is HomeDisplayView.RecentlyModified -> showScreenTitleWithStartIcon(
+            is HomeDisplayViewModel.RecentlyModified -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_recently_modified,
                 R.drawable.ic_clock
             )
-            is HomeDisplayView.SharedWithMe -> showScreenTitleWithStartIcon(
+            is HomeDisplayViewModel.SharedWithMe -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_shared_with_me,
                 R.drawable.ic_share
             )
-            is HomeDisplayView.OwnedByMe -> showScreenTitleWithStartIcon(
+            is HomeDisplayViewModel.OwnedByMe -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_owned_by_me,
                 R.drawable.ic_person
             )
-            is HomeDisplayView.Folders -> showScreenTitleWithStartIcon(
+            is HomeDisplayViewModel.Folders -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_folders,
                 R.drawable.ic_folder
             )
-            is HomeDisplayView.Tags -> showScreenTitleWithStartIcon(
+            is HomeDisplayViewModel.Tags -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_tags,
                 R.drawable.ic_tag
             )
-            is HomeDisplayView.Groups -> showScreenTitleWithStartIcon(
+            is HomeDisplayViewModel.Groups -> showScreenTitleWithStartIcon(
                 R.string.filters_menu_groups,
                 R.drawable.ic_group
             )
@@ -577,19 +577,19 @@ class HomeFragment :
         }
     }
 
-    override fun navigateToChild(homeView: HomeDisplayView) {
+    override fun navigateToChild(homeView: HomeDisplayViewModel) {
         navController.navigate(
             HomeFragmentDirections.actionHomeToHomeChild(homeView)
         )
     }
 
-    override fun navigateToRootHomeFromChildHome(homeView: HomeDisplayView) {
+    override fun navigateToRootHomeFromChildHome(homeView: HomeDisplayViewModel) {
         navController.navigate(
             HomeFragmentDirections.actionHomeChildToHome(homeView)
         )
     }
 
-    override fun navigateRootHomeFromRootHome(homeView: HomeDisplayView) {
+    override fun navigateRootHomeFromRootHome(homeView: HomeDisplayViewModel) {
         navController.navigate(
             HomeFragmentDirections.actionHomeToHome(homeView)
         )

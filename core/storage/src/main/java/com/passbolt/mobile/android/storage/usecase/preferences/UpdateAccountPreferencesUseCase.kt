@@ -1,11 +1,12 @@
-package com.passbolt.mobile.android.database.impl.resourceandtagcrossref
+package com.passbolt.mobile.android.storage.usecase.preferences
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.entity.home.HomeDisplayView
+import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.paths.AccountPreferencesFileName
+import com.passbolt.mobile.android.storage.usecase.KEY_LAST_USED_HOME_VIEW
+import com.passbolt.mobile.android.storage.usecase.KEY_USER_SET_HOME_VIEW
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,25 +30,26 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetLocalResourcesWithTagUseCase(
-    private val databaseProvider: DatabaseProvider,
-    private val resourceModelMapper: ResourceModelMapper,
+
+class UpdateAccountPreferencesUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<GetLocalResourcesWithTagUseCase.Input, GetLocalResourcesWithTagUseCase.Output> {
+) : UseCase<UpdateAccountPreferencesUseCase.Input, Unit> {
 
-    override suspend fun execute(input: Input): Output {
+    override fun execute(input: Input) {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val resources = databaseProvider
-            .get(userId)
-            .resourcesDao()
-            .getResourcesWithTag(requireNotNull(input.tag.activeTagId))
+        val fileName = AccountPreferencesFileName(userId).name
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
 
-        return Output(resources.map { resourceModelMapper.map(it) })
+        with(sharedPreferences.edit()) {
+            input.lastUsedHomeView?.let { putInt(KEY_LAST_USED_HOME_VIEW, it.ordinal) }
+            input.userSetHomeView?.let { putInt(KEY_USER_SET_HOME_VIEW, it.ordinal) }
+            apply()
+        }
     }
 
     data class Input(
-        val tag: HomeDisplayViewModel.Tags
+        val lastUsedHomeView: HomeDisplayView? = null,
+        val userSetHomeView: HomeDisplayView? = null
     )
-
-    data class Output(val resources: List<ResourceModel>)
 }
