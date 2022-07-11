@@ -246,7 +246,7 @@ class ResourceDetailsPresenter(
     }
 
     override fun menuLaunchWebsiteClick() {
-        if (resourceModel.url.isNullOrEmpty()) {
+        if (!resourceModel.url.isNullOrEmpty()) {
             view?.openWebsite(resourceModel.url.orEmpty())
         }
     }
