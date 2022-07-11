@@ -41,7 +41,7 @@ class StartUpPresenter(
     override fun accountSetupDataRetrieved(accountSetupDataModel: AccountSetupDataModel?) {
         scope.launch {
             val accounts = getAccountsUseCase.execute(Unit).users
-            if (accounts.isEmpty()) {
+            if (accounts.isEmpty() || accountSetupDataModel != null) {
                 view?.navigateToSetup(accountSetupDataModel)
             } else {
                 view?.navigateToSignIn()
