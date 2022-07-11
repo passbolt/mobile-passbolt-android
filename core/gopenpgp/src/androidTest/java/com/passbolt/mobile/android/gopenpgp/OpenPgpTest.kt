@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.gopenpgp
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.Gopenpgp.test.R
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpException
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -65,13 +65,17 @@ class OpenPgpTest : KoinTest {
             GRACE_KEY_CORRECT_PASSPHRASE,
             PLAIN_MESSAGE
         )
+
+        assertIsOpenPgpSuccessResult(encrypted)
         val decrypted = openPgp.decryptVerifyMessageArmored(
             gracePublicKey,
             String(gracePrivateKey),
             GRACE_KEY_CORRECT_PASSPHRASE,
-            encrypted
+            (encrypted as OpenPgpResult.Result).result
         )
-        assertThat(String(decrypted)).isEqualTo(PLAIN_MESSAGE)
+
+        assertIsOpenPgpSuccessResult(decrypted)
+        assertThat(String((decrypted as OpenPgpResult.Result).result)).isEqualTo(PLAIN_MESSAGE)
     }
 
     @Test
@@ -82,31 +86,28 @@ class OpenPgpTest : KoinTest {
             GRACE_KEY_CORRECT_PASSPHRASE,
             PLAIN_MESSAGE
         )
+        assertIsOpenPgpSuccessResult(encrypted)
 
-        try {
-            val ignored = openPgp.decryptVerifyMessageArmored(
-                gracePublicKey,
-                String(gracePrivateKey),
-                GRACE_KEY_WRONG_PASSPHRASE,
-                encrypted
-            )
-        } catch (exception: Exception) {
-            assertThat(exception).isInstanceOf(OpenPgpException::class.java)
-        }
+        val result = openPgp.decryptVerifyMessageArmored(
+            gracePublicKey,
+            String(gracePrivateKey),
+            GRACE_KEY_WRONG_PASSPHRASE,
+            (encrypted as OpenPgpResult.Result).result
+        )
+
+        assertIsOpenPgpErrorResult(result)
     }
 
     @Test
     fun test_messageEncryptionWithIncorrectPassphraseFailsWithCorrectException() = runBlocking {
-        try {
-            val ignored = openPgp.encryptSignMessageArmored(
-                gracePublicKey,
-                String(gracePrivateKey),
-                GRACE_KEY_WRONG_PASSPHRASE,
-                PLAIN_MESSAGE
-            )
-        } catch (exception: Exception) {
-            assertThat(exception).isInstanceOf(OpenPgpException::class.java)
-        }
+        val result = openPgp.encryptSignMessageArmored(
+            gracePublicKey,
+            String(gracePrivateKey),
+            GRACE_KEY_WRONG_PASSPHRASE,
+            PLAIN_MESSAGE
+        )
+
+        assertIsOpenPgpErrorResult(result)
     }
 
     @Test
@@ -115,19 +116,26 @@ class OpenPgpTest : KoinTest {
             String(gracePrivateKey),
             GRACE_KEY_CORRECT_PASSPHRASE
         )
-        assertTrue(isUnlocked)
+        assertIsOpenPgpSuccessResult(isUnlocked)
+        assertTrue((isUnlocked as OpenPgpResult.Result).result)
     }
 
     @Test
     fun test_keyShouldNotBeUnlockedWithWrongPassphrase() = runBlocking {
-        try {
-            val ignored = openPgp.unlockKey(
-                String(gracePrivateKey),
-                GRACE_KEY_WRONG_PASSPHRASE
-            )
-        } catch (exception: Exception) {
-            assertThat(exception).isInstanceOf(OpenPgpException::class.java)
-        }
+        val result = openPgp.unlockKey(
+            String(gracePrivateKey),
+            GRACE_KEY_WRONG_PASSPHRASE
+        )
+
+        assertIsOpenPgpErrorResult(result)
+    }
+
+    private fun <T> assertIsOpenPgpSuccessResult(value: OpenPgpResult<T>) {
+        assertThat(value).isInstanceOf(OpenPgpResult.Result::class.java)
+    }
+
+    private fun <T> assertIsOpenPgpErrorResult(result: OpenPgpResult<T>) {
+        assertThat(result).isInstanceOf(OpenPgpResult.Error::class.java)
     }
 
     private companion object {

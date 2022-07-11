@@ -7,17 +7,17 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.users.GetLocalUserUseCase
-import com.passbolt.mobile.android.dto.request.EncryptedSharedSecret
 import com.passbolt.mobile.android.dto.response.ShareRecipientDto
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpException
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.mappers.SharePermissionsModelMapper
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import retrofit2.HttpException
 import timber.log.Timber
@@ -93,8 +93,8 @@ class ShareInteractor(
     ): Output {
         return when (val secretOutput = secretInteractor.fetchAndDecrypt(resourceId)) {
             is SecretInteractor.Output.DecryptFailure -> {
-                Timber.e(secretOutput.exception, "Secret decrypt failure")
-                Output.SecretDecryptFailure(secretOutput.exception)
+                Timber.e("Secret decrypt failure: %s", secretOutput.error.message)
+                Output.SecretDecryptFailure(secretOutput.error.message)
             }
             is SecretInteractor.Output.FetchFailure -> {
                 Timber.e(secretOutput.exception, "Secret fetch failure")
@@ -114,9 +114,15 @@ class ShareInteractor(
                     val secretsData = prepareEncryptedSecretsData(
                         passphrase.passphrase, resourceId, secretOutput.decryptedSecret, newUsers
                     )
+                    if (secretsData.any { it is EncryptedSecretOrError.Error }) {
+                        return Output.SecretEncryptFailure(
+                            secretsData.filterIsInstance<EncryptedSecretOrError.Error>().first().message
+                        )
+                    }
+                    val secrets = secretsData.filterIsInstance<EncryptedSecretOrError.EncryptedSecret>()
                     Timber.d("Executing share request")
                     when (val shareOutput = shareResourceUseCase.execute(
-                        ShareResourceUseCase.Input(resourceId, sharePermissions, secretsData)
+                        ShareResourceUseCase.Input(resourceId, sharePermissions, secrets)
                     )) {
                         is ShareResourceUseCase.Output.Failure<*> -> {
                             Timber.e(
@@ -144,34 +150,31 @@ class ShareInteractor(
         resourceId: String,
         decryptedSecret: ByteArray,
         addedUsers: List<ShareRecipientDto>
-    ): List<EncryptedSharedSecret> {
-        val encryptedSecretsForAddedUsers = mutableListOf<EncryptedSharedSecret>()
+    ): List<EncryptedSecretOrError> {
+        val encryptedSecretsForAddedUsers = mutableListOf<EncryptedSecretOrError>()
         addedUsers
             .map { getLocalUserUseCase.execute(GetLocalUserUseCase.Input(it.user.id)).user }
             .forEach { user ->
-                try {
-                    val currentUserId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-                    val privateKey = getPrivateKeyUseCase.execute(UserIdInput(currentUserId)).privateKey
-                    val publicKey = user.gpgKey.armoredKey
+                val currentUserId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+                val privateKey = getPrivateKeyUseCase.execute(UserIdInput(currentUserId)).privateKey
+                val publicKey = user.gpgKey.armoredKey
 
-                    val encryptedSecret = openPgp.encryptSignMessageArmored(
-                        publicKey,
-                        privateKey,
-                        passphrase,
-                        String(decryptedSecret)
-                    )
+                val encryptedSecret = openPgp.encryptSignMessageArmored(
+                    publicKey,
+                    privateKey,
+                    passphrase,
+                    String(decryptedSecret)
+                )
 
-                    encryptedSecretsForAddedUsers.add(
-                        EncryptedSharedSecret(
-                            resourceId,
+                encryptedSecretsForAddedUsers.add(
+                    when (encryptedSecret) {
+                        is OpenPgpResult.Error -> EncryptedSecretOrError.Error(encryptedSecret.error.message)
+                        is OpenPgpResult.Result -> EncryptedSecretOrError.EncryptedSecret(
                             user.id,
-                            encryptedSecret
+                            encryptedSecret.result
                         )
-                    )
-                } catch (exception: OpenPgpException) {
-                    Timber.e(exception, "Exception during secret encryption")
-                    Output.SecretEncryptFailure(exception)
-                }
+                    }
+                )
             }
         return encryptedSecretsForAddedUsers
     }
@@ -197,9 +200,9 @@ class ShareInteractor(
 
         data class SecretFetchFailure(val exception: Exception) : Output()
 
-        data class SecretDecryptFailure(val exception: Exception) : Output()
+        data class SecretDecryptFailure(val message: String) : Output()
 
-        data class SecretEncryptFailure(val exception: OpenPgpException) : Output()
+        data class SecretEncryptFailure(val message: String) : Output()
 
         data class ShareFailure(val exception: Exception) : Output()
 

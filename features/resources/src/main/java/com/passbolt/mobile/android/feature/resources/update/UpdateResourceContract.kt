@@ -69,7 +69,7 @@ interface UpdateResourceContract {
         fun closeWithEditSuccessResult(name: String)
         fun hideScrollView()
         fun showScrollView()
-        fun showEncryptionError()
+        fun showEncryptionError(message: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

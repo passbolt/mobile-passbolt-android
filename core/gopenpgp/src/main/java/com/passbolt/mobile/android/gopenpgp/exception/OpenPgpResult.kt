@@ -22,4 +22,13 @@ package com.passbolt.mobile.android.gopenpgp.exception
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-open class OpenPgpException(message: String = "") : Exception(message)
+sealed class OpenPgpResult<out T> {
+
+    data class Result<T>(
+        val result: T
+    ) : OpenPgpResult<T>()
+
+    data class Error(
+        val error: OpenPgpError
+    ) : OpenPgpResult<Nothing>()
+}

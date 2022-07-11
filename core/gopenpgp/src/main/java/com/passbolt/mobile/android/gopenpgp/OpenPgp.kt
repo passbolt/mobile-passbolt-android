@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.gopenpgp
 
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpException
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.proton.Gopenpgp.crypto.Crypto
 import com.proton.Gopenpgp.crypto.Key
 import com.proton.Gopenpgp.helper.Helper
@@ -34,13 +34,12 @@ import timber.log.Timber
  */
 class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
 
-    @Throws(OpenPgpException::class)
     suspend fun encryptSignMessageArmored(
         publicKey: String,
         privateKey: String,
         passphrase: ByteArray,
         message: String
-    ): String {
+    ): OpenPgpResult<String> {
         return try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
@@ -50,23 +49,22 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
                 )
                 passphraseCopy.erase()
 
-                encrypted
+                OpenPgpResult.Result(encrypted)
             }
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during encryptSignMessageArmored")
-            throw gopenPgpExceptionParser.parseGopenPgpException(exception)
+            OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             Helper.freeOSMemory()
         }
     }
 
-    @Throws(OpenPgpException::class)
     suspend fun decryptVerifyMessageArmored(
         publicKey: String,
         privateKey: String,
         passphrase: ByteArray,
         cipherText: String
-    ): ByteArray {
+    ): OpenPgpResult<ByteArray> {
         return try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
@@ -78,21 +76,20 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
 
                 passphraseCopy.erase()
 
-                decryptedOutput
+                OpenPgpResult.Result(decryptedOutput)
             }
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during decryptVerifyMessageArmored")
-            throw gopenPgpExceptionParser.parseGopenPgpException(exception)
+            OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             Helper.freeOSMemory()
         }
     }
 
-    @Throws(OpenPgpException::class)
     suspend fun unlockKey(
         privateKey: String?,
         passphrase: ByteArray
-    ): Boolean {
+    ): OpenPgpResult<Boolean> {
         return try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
@@ -102,22 +99,21 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
 
                 passphraseCopy.erase()
 
-                unlockedKey.isUnlocked
+                OpenPgpResult.Result(unlockedKey.isUnlocked)
             }
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during unlockKey")
-            throw gopenPgpExceptionParser.parseGopenPgpException(exception)
+            OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             Helper.freeOSMemory()
         }
     }
 
-    @Throws(OpenPgpException::class)
     suspend fun decryptMessageArmored(
         privateKey: String,
         passphrase: ByteArray,
         cipherText: String
-    ): ByteArray {
+    ): OpenPgpResult<ByteArray> {
         return try {
             withContext(Dispatchers.IO) {
                 val passphraseCopy = passphrase.copyOf()
@@ -129,27 +125,28 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
 
                 passphraseCopy.erase()
 
-                decryptedOutput
+                OpenPgpResult.Result(decryptedOutput)
             }
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during decryptMessageArmored")
-            throw gopenPgpExceptionParser.parseGopenPgpException(exception)
+            OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             Helper.freeOSMemory()
         }
     }
 
-    @Throws(OpenPgpException::class)
     suspend fun generatePublicKey(
         privateKey: String
-    ): String {
+    ): OpenPgpResult<String> {
         return try {
             withContext(Dispatchers.IO) {
-                Crypto.newKeyFromArmored(privateKey).armoredPublicKey
+                OpenPgpResult.Result(
+                    Crypto.newKeyFromArmored(privateKey).armoredPublicKey
+                )
             }
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during generatePublicKey")
-            throw gopenPgpExceptionParser.parseGopenPgpException(exception)
+            OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             Helper.freeOSMemory()
         }

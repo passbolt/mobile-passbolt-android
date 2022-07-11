@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.dto.request.EncryptedSharedSecret
 import com.passbolt.mobile.android.dto.request.SharePermission
 import com.passbolt.mobile.android.dto.request.ShareRequest
 import com.passbolt.mobile.android.passboltapi.share.ShareRepository
+import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,7 +40,9 @@ class ShareResourceUseCase(
     override suspend fun execute(input: Input) =
         when (val response = shareRepository.shareResource(
             input.resourceId,
-            ShareRequest(input.sharePermissions, input.encryptedSecrets)
+            ShareRequest(
+                input.sharePermissions,
+                input.encryptedSecrets.map { EncryptedSharedSecret(input.resourceId, it.userId, it.data) })
         )) {
             is NetworkResult.Failure -> Output.Failure(response)
             is NetworkResult.Success -> Output.Success
@@ -71,6 +74,6 @@ class ShareResourceUseCase(
     data class Input(
         val resourceId: String,
         val sharePermissions: List<SharePermission>,
-        val encryptedSecrets: List<EncryptedSharedSecret>
+        val encryptedSecrets: List<EncryptedSecretOrError.EncryptedSecret>
     )
 }

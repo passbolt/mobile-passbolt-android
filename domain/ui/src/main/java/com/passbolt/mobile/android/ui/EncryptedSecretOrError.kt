@@ -1,9 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.enterpassphrase
-
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.gopenpgp.OpenPgp
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
-import timber.log.Timber
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,26 +22,15 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class VerifyPassphraseUseCase(
-    private val openPgp: OpenPgp
-) : AsyncUseCase<VerifyPassphraseUseCase.Input, VerifyPassphraseUseCase.Output> {
 
-    override suspend fun execute(input: Input): Output {
-        return when (val isKeyUnlocked = openPgp.unlockKey(input.privateKey, input.passphrase)) {
-            is OpenPgpResult.Error -> {
-                Timber.e(isKeyUnlocked.error.message)
-                Output(false)
-            }
-            is OpenPgpResult.Result -> Output(isKeyUnlocked.result)
-        }
-    }
+sealed class EncryptedSecretOrError {
 
-    class Input(
-        val privateKey: String,
-        val passphrase: ByteArray
-    )
+    data class Error(
+        val message: String
+    ) : EncryptedSecretOrError()
 
-    data class Output(
-        val isCorrect: Boolean
-    )
+    data class EncryptedSecret(
+        val userId: String,
+        val data: String
+    ) : EncryptedSecretOrError()
 }

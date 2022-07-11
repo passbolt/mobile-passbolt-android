@@ -4,10 +4,9 @@ import com.google.gson.Gson
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpException
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
-import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -42,20 +41,26 @@ class ChallengeDecryptor(
         passphrase: ByteArray,
         userId: String,
         challenge: String
-    ): Output = try {
+    ): Output {
         val passphraseCopy = passphrase.copyOf()
         val privateKey = getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
-        val decryptedChallenge = openPgp.decryptVerifyMessageArmored(
+        return when (val decryptedChallenge = openPgp.decryptVerifyMessageArmored(
             publicKey = serverPublicKey,
             privateKey = privateKey,
             passphrase = passphrase,
             cipherText = challenge
-        )
-        passphraseCopy.erase()
-        Output.DecryptedChallenge(gson.fromJson(String(decryptedChallenge), ChallengeResponseDto::class.java))
-    } catch (exception: OpenPgpException) {
-        Timber.e(exception)
-        Output.DecryptionError(exception.message)
+        )) {
+            is OpenPgpResult.Error -> Output.DecryptionError(decryptedChallenge.error.message)
+            is OpenPgpResult.Result -> {
+                passphraseCopy.erase()
+                Output.DecryptedChallenge(
+                    gson.fromJson(
+                        String(decryptedChallenge.result),
+                        ChallengeResponseDto::class.java
+                    )
+                )
+            }
+        }
     }
 
     sealed class Output {

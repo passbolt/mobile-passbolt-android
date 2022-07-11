@@ -195,8 +195,8 @@ class UpdateResourceFragment :
         }.show()
     }
 
-    override fun showEncryptionError() {
-        encryptionErrorAlertDialog(requireContext())
+    override fun showEncryptionError(message: String) {
+        encryptionErrorAlertDialog(requireContext(), message)
             .show()
     }
 

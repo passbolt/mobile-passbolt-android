@@ -4,7 +4,8 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.feature.authentication.challengeTestModule
 import com.passbolt.mobile.android.feature.authentication.getPrivateKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.openPgp
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpException
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -36,7 +37,7 @@ class ChallengeDecryptorTest : KoinTest {
                 " access_token: \"access_token\", refresh_token: \"refresh_token\"}"
         whenever(getPrivateKeyUseCase.execute(any())).thenReturn(GetPrivateKeyUseCase.Output(privateKey))
         whenever(openPgp.decryptVerifyMessageArmored(eq(publicKey), eq(privateKey), any(), any())).thenReturn(
-            challenge.toByteArray()
+            OpenPgpResult.Result(challenge.toByteArray())
         )
 
 
@@ -56,10 +57,10 @@ class ChallengeDecryptorTest : KoinTest {
     fun `challenge value is correct when decryption failure`() = runBlockingTest {
         val privateKey = "private_key"
         val publicKey = "public_key"
-        val exceptionMessage = "message"
+        val errorMessage = "message"
         whenever(getPrivateKeyUseCase.execute(any())).thenReturn(GetPrivateKeyUseCase.Output(privateKey))
         whenever(openPgp.decryptVerifyMessageArmored(any(), any(), any(), any()))
-            .thenThrow(OpenPgpException(exceptionMessage))
+            .thenReturn(OpenPgpResult.Error(OpenPgpError(errorMessage)))
 
 
         val result = challengeDecryptor.decrypt(
@@ -67,7 +68,7 @@ class ChallengeDecryptorTest : KoinTest {
         )
         assertThat(result).isInstanceOf(ChallengeDecryptor.Output.DecryptionError::class.java)
         val decryptionError = (result as ChallengeDecryptor.Output.DecryptionError)
-        assertThat(decryptionError.message).isEqualTo(exceptionMessage)
+        assertThat(decryptionError.message).isEqualTo(errorMessage)
     }
 
 }

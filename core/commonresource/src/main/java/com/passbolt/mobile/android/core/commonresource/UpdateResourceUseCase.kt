@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.request.EncryptedSecret
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpException
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
@@ -16,9 +16,9 @@ import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.UserModel
-import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -60,16 +60,17 @@ class UpdateResourceUseCase(
             }
             is PotentialPassphrase.PassphraseNotPresent -> return Output.PasswordExpired
         }
-        val secrets = createSecret(input, passphrase)
-        return if (secrets == null) {
-            Output.OpenPgpError
+        val secretsResult = createSecrets(input, passphrase)
+        return if (secretsResult.any { it is EncryptedSecretOrError.Error }) {
+            Output.OpenPgpError(secretsResult.filterIsInstance<EncryptedSecretOrError.Error>().first().message)
         } else {
+            val secrets = secretsResult.filterIsInstance<EncryptedSecretOrError.EncryptedSecret>()
             when (val response = resourceRepository.updateResource(
                 input.resourceId,
                 CreateResourceDto(
                     name = input.name,
                     resourceTypeId = input.resourceTypeId,
-                    secrets = secrets,
+                    secrets = secrets.map { EncryptedSecret(it.userId, it.data) },
                     username = input.username,
                     uri = input.uri,
                     description = createDescription(input),
@@ -88,22 +89,19 @@ class UpdateResourceUseCase(
             ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> null
         }
 
-    private suspend fun createSecret(
+    private suspend fun createSecrets(
         input: Input,
         passphrase: ByteArray
-    ): List<EncryptedSecret>? {
-        return try {
-            input.users.mapTo(mutableListOf()) {
-                val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-                val privateKey = getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
-                val publicKey = it.gpgKey.armoredKey
-                val secret = updateResourceMapper.map(input.resourceTypeId, input.password, input.description)
-                val encryptedSecret = openPgp.encryptSignMessageArmored(publicKey, privateKey, passphrase, secret)
-                EncryptedSecret(it.id, encryptedSecret)
+    ): List<EncryptedSecretOrError> {
+        return input.users.mapTo(mutableListOf()) {
+            val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+            val privateKey = getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
+            val publicKey = it.gpgKey.armoredKey
+            val secret = updateResourceMapper.map(input.resourceTypeId, input.password, input.description)
+            when (val encryptedSecret = openPgp.encryptSignMessageArmored(publicKey, privateKey, passphrase, secret)) {
+                is OpenPgpResult.Error -> EncryptedSecretOrError.Error(encryptedSecret.error.message)
+                is OpenPgpResult.Result -> EncryptedSecretOrError.EncryptedSecret(it.id, encryptedSecret.result)
             }
-        } catch (exception: OpenPgpException) {
-            Timber.e(exception, "Error during secret encryption")
-            null
         }
     }
 
@@ -136,7 +134,7 @@ class UpdateResourceUseCase(
 
         object PasswordExpired : Output()
 
-        object OpenPgpError : Output()
+        data class OpenPgpError(val message: String) : Output()
     }
 
     data class Input(
