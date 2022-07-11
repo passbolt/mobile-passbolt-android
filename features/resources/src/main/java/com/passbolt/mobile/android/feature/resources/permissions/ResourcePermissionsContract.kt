@@ -57,12 +57,14 @@ interface ResourcePermissionsContract {
         fun showProgress()
         fun hideProgress()
         fun closeWithShareSuccessResult()
+        fun showEditButton()
+        fun navigateToSelfWithMode(resourceId: String, mode: ResourcePermissionsMode)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun argsReceived(resourceId: String, mode: ResourcePermissionsMode)
         fun permissionClick(permission: PermissionModelUi)
-        fun saveClick()
+        fun actionButtonClick()
         fun addPermissionClick()
         fun shareRecipientsAdded(shareRecipients: ArrayList<PermissionModelUi>?)
         fun userPermissionModified(permission: PermissionModelUi.UserPermissionModel)

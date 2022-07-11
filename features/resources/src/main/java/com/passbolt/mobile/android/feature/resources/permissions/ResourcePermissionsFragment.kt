@@ -108,8 +108,8 @@ class ResourcePermissionsFragment :
 
     private fun setListeners() {
         with(binding) {
-            saveButton.setDebouncingOnClick {
-                presenter.saveClick()
+            actionButton.setDebouncingOnClick {
+                presenter.actionButtonClick()
             }
             addPermissionButton.setDebouncingOnClick {
                 presenter.addPermissionClick()
@@ -180,16 +180,34 @@ class ResourcePermissionsFragment :
         )
     }
 
+    override fun navigateToSelfWithMode(resourceId: String, mode: ResourcePermissionsMode) {
+        findNavController().navigate(
+            ResourcePermissionsFragmentDirections.actionResourcePermissionsFragmentSelf(
+                resourceId, mode, args.navigationOrigin
+            )
+        )
+    }
+
     override fun showPermissions(permissions: List<PermissionModelUi>) {
         FastAdapterDiffUtil.calculateDiff(permissionsItemAdapter, permissions.map { PermissionItem(it) })
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
     override fun showSaveButton() {
+        showActionButtonLayout()
+        binding.actionButton.text = getString(R.string.save)
+    }
+
+    private fun showActionButtonLayout() {
         with(binding) {
-            saveLayout.visible()
             permissionsRecycler.updatePadding(bottom = resources.getDimension(R.dimen.dp_96).toInt())
+            actionButtonLayout.visible()
         }
+    }
+
+    override fun showEditButton() {
+        showActionButtonLayout()
+        binding.actionButton.text = getString(R.string.resource_permissions_edit_permissions)
     }
 
     override fun showOneOwnerSnackbar() {

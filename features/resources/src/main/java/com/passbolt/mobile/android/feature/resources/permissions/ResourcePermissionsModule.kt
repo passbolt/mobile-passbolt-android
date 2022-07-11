@@ -39,7 +39,8 @@ fun Module.permissionsModule() {
                 permissionModelUiComparator = get(),
                 shareInteractor = get(),
                 coroutineLaunchContext = get(),
-                homeDataInteractor = get()
+                homeDataInteractor = get(),
+                getLocalResourceUseCase = get()
             )
         }
         scoped<ItemAdapter<PermissionItem>>(named(PERMISSIONS_ITEM_ADAPTER)) {

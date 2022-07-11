@@ -338,6 +338,7 @@
     <string name="resource_permissions_secret_fetch_failure">There was an error during secret fetching</string>
     <string name="resource_permissions_secret_encrypt_failure">There was an error during secret encryption</string>
     <string name="resource_permissions_secret_decrypt_failure">There was an error during secret decryption</string>
+    <string name="resource_permissions_edit_permissions">Edit permissions</string>
 
     <string name="group_permission_permission">Permission</string>
     <string name="group_permission_group_members">Group members</string>
