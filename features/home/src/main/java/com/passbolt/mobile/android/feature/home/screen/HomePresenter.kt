@@ -127,7 +127,11 @@ class HomePresenter(
     }
 
     override fun argsRetrieved(homeDisplayView: HomeDisplayViewModel?, hasPreviousEntry: Boolean) {
-        homeView = homeDisplayView ?: homeModelMapper.map(getAccountPreferencesUseCase.execute(Unit).userSetHomeView)
+        val filterPreferences = getAccountPreferencesUseCase.execute(Unit)
+        homeView = homeDisplayView ?: homeModelMapper.map(
+            filterPreferences.userSetHomeView,
+            filterPreferences.lastUsedHomeView
+        )
         hasPreviousBackEntry = hasPreviousEntry
 
         view?.apply {

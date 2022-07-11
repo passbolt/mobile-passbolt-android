@@ -16,6 +16,7 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetAccountPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -41,6 +42,7 @@ class SettingsPresenter(
     private val saveGlobalPreferencesUseCase: SaveGlobalPreferencesUseCase,
     private val fileLoggingTree: FileLoggingTree,
     private val biometryInteractor: BiometryInteractor,
+    private val getAccountPreferencesUseCase: GetAccountPreferencesUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : SettingsContract.Presenter {
 
@@ -208,6 +210,12 @@ class SettingsPresenter(
 
     override fun logsClick() {
         view?.navigateToLogs()
+    }
+
+    override fun defaultFilterClick() {
+        view?.navigateToDefaultFilter(
+            getAccountPreferencesUseCase.execute(Unit).userSetHomeView
+        )
     }
 
     override fun detach() {

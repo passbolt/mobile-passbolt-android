@@ -31,6 +31,13 @@
         app:name="@string/settings_autofill" />
 
     <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+        android:id="@+id/defaultFilterSetting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/ic_filter"
+        app:name="@string/settings_default_filter" />
+
+    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
         android:id="@+id/manageAccountsSetting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

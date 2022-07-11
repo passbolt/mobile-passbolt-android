@@ -41,7 +41,7 @@ open class SettingView @JvmOverloads constructor(
 
     protected val binding = ViewSettingBinding.inflate(LayoutInflater.from(context), this, true)
 
-    private var icon: Drawable? = null
+    var icon: Drawable? = null
         set(value) {
             field = value
             with(binding.iconImage) {
@@ -50,7 +50,7 @@ open class SettingView @JvmOverloads constructor(
             }
         }
 
-    private var name: String = ""
+    var name: String = ""
         set(value) {
             field = value
             binding.nameLabel.text = value

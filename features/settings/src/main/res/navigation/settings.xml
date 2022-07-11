@@ -32,6 +32,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settings_to_defaultFilterFragment"
+            app:destination="@id/defaultFilterFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -50,5 +57,13 @@
         android:name="com.passbolt.mobile.android.core.logger.logs.LogsFragment"
         android:label="LogsFragment"
         tools:layout="@layout/fragment_logs" />
+    <fragment
+        android:id="@+id/defaultFilterFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.defaultfilter.DefaultFilterFragment"
+        android:label="DefaultFilterFragment">
+        <argument
+            android:name="selectedFilter"
+            app:argType="com.passbolt.mobile.android.ui.DefaultFilterModel" />
+    </fragment>
 
 </navigation>
