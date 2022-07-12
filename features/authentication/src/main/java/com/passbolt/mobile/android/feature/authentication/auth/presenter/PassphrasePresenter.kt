@@ -38,7 +38,7 @@ import javax.crypto.Cipher
 // presenter for sign in view used for just obtaining the passphrase in the cache without performing API sign in
 // handles storing passphrase in cache after sign in button clicked
 class PassphrasePresenter(
-    private val passphraseMemoryCache: PassphraseMemoryCache,
+    passphraseMemoryCache: PassphraseMemoryCache,
     getPrivateKeyUseCase: GetPrivateKeyUseCase,
     verifyPassphraseUseCase: VerifyPassphraseUseCase,
     getAccountDataUseCase: GetAccountDataUseCase,
@@ -64,7 +64,6 @@ class PassphrasePresenter(
 ) {
 
     override fun onPassphraseVerified(passphrase: ByteArray) {
-        passphraseMemoryCache.set(passphrase)
         runtimeAuthenticatedFlag.isAuthenticated = true
         passphrase.erase()
         view?.apply {
