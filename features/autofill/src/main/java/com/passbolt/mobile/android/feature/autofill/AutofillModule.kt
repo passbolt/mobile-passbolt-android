@@ -15,7 +15,6 @@ import com.passbolt.mobile.android.feature.autofill.autofill.RemoteViewsFactory
 import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.accessibilityAutofillModule
 import com.passbolt.mobile.android.feature.autofill.encourage.autofill.encourageAutofillModule
 import com.passbolt.mobile.android.feature.autofill.encourage.tutorial.SettingsNavigator
-import com.passbolt.mobile.android.feature.autofill.resources.DomainProvider
 import com.passbolt.mobile.android.feature.autofill.resources.autofillResourcesModule
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -64,9 +63,6 @@ val autofillModule = module {
     }
     single {
         SettingsNavigator()
-    }
-    single {
-        DomainProvider()
     }
     single {
         androidApplication().getSystemService(Context.POWER_SERVICE) as PowerManager

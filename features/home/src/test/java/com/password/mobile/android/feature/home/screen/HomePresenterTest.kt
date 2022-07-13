@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
+import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
@@ -97,6 +98,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -112,6 +114,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -136,6 +139,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -147,7 +151,7 @@ class HomePresenterTest : KoinTest {
         verify(view).hideAddButton()
         verify(view).hideProgress()
         verify(view).showAddButton()
-        verify(view).showItems(any(), any(), any(), any(), any(), any(), any())
+        verify(view).showItems(any(), any(), any(), any(), any(), any(), any(), any())
         verify(view).displaySearchAvatar(null)
         verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
@@ -172,6 +176,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -182,7 +187,7 @@ class HomePresenterTest : KoinTest {
         verify(view).performRefreshUsingRefreshExecutor()
         verify(view, times(2)).hideAddButton()
         verify(view).hideRefreshProgress()
-        verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any())
+        verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
         verify(view).showAddButton()
     }
 
@@ -200,6 +205,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -223,6 +229,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -253,6 +260,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -288,6 +296,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -326,6 +335,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -361,6 +371,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -383,6 +394,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -404,6 +416,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -425,6 +438,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -454,6 +468,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -478,6 +493,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -511,6 +527,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false
         )
@@ -533,6 +550,7 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "child name", isActiveFolderShared = false),
             hasPreviousEntry = false
         )
@@ -548,22 +566,40 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = false
         )
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Tags("id", "tag name", isActiveTagShared = false),
             hasPreviousEntry = false
         )
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Groups("id", "group name"),
             hasPreviousEntry = false
         )
-        presenter.argsRetrieved(HomeDisplayViewModel.RecentlyModified, hasPreviousEntry = false)
-        presenter.argsRetrieved(HomeDisplayViewModel.SharedWithMe, hasPreviousEntry = false)
-        presenter.argsRetrieved(HomeDisplayViewModel.OwnedByMe, hasPreviousEntry = false)
-        presenter.argsRetrieved(HomeDisplayViewModel.Favourites, hasPreviousEntry = false)
-        presenter.argsRetrieved(HomeDisplayViewModel.AllItems, hasPreviousEntry = false)
+        presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
+            HomeDisplayViewModel.RecentlyModified, hasPreviousEntry = false
+        )
+        presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
+            HomeDisplayViewModel.SharedWithMe, hasPreviousEntry = false
+        )
+        presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
+            HomeDisplayViewModel.OwnedByMe, hasPreviousEntry = false
+        )
+        presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
+            HomeDisplayViewModel.Favourites, hasPreviousEntry = false
+        )
+        presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
+            HomeDisplayViewModel.AllItems, hasPreviousEntry = false
+        )
 
         verify(view).showChildFolderTitle("folder name", isShared = false)
         verify(view).showTagTitle("tag name", isShared = false)
@@ -579,14 +615,17 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = true
         )
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Tags("id", "tag name", isActiveTagShared = false),
             hasPreviousEntry = true
         )
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Groups("id", "group name"),
             hasPreviousEntry = true
         )
@@ -602,11 +641,13 @@ class HomePresenterTest : KoinTest {
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = true
         )
         presenter.tagsClick()
         presenter.argsRetrieved(
+            ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.tagsRoot(),
             hasPreviousEntry = false
         )
@@ -631,6 +672,7 @@ class HomePresenterTest : KoinTest {
         presenter.attach(view)
         presenter.argsRetrieved(
             homeDisplayView = null,
+            showSuggestedModel = ShowSuggestedModel.DoNotShow,
             hasPreviousEntry = false
         )
 

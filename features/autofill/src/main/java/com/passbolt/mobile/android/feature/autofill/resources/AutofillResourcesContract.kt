@@ -2,9 +2,11 @@ package com.passbolt.mobile.android.feature.autofill.resources
 
 import android.app.assist.AssistStructure
 import android.content.Intent
-import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
+import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategy
 import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,41 +30,31 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
 interface AutofillResourcesContract {
-    interface View : BaseAuthenticatedContract.View {
-        fun navigateBack()
-        fun showResources(resources: List<ResourceListUiModel>)
-        fun showGeneralError()
+
+    interface View : BaseAuthenticatedContract.View, ResourceHandlingStrategy {
         fun navigateToAuth()
-        fun showSearchEmptyList()
-        fun showFullScreenError()
-        fun showEmptyList()
-        fun showProgress()
-        fun displaySearchAvatar(url: String?)
-        fun navigateToManageAccount()
-        fun displaySearchClearIcon()
-        fun clearSearchInput()
         fun navigateToSetup()
         fun navigateToHome()
+        fun navigateToAutofillHome()
         fun finishAutofill()
         fun getAutofillStructure(): AssistStructure
         fun autofillReturn(username: String, password: String, uri: String?)
         fun setResultAndFinish(result: Int, resultIntent: Intent)
-        fun showUpdateButton()
-        fun hideUpdateButton()
-        fun showResourceAddedSnackbar()
-        fun scrollResourcesToPosition(index: Int)
+        fun showProgress()
+        fun hideProgress()
+        fun showError(message: String?)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun itemClick(resourceModel: ResourceModel)
+        val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished>
+
         fun argsReceived(uri: String?)
-        fun refreshSwipe()
         fun userAuthenticated()
-        fun searchTextChange(text: String)
-        fun searchAvatarClick()
-        fun searchClearClick()
         fun closeClick()
-        fun newResourceCreated(newResourceId: String?)
+        fun performFullDataRefresh()
+        fun itemClick(resourceModel: ResourceModel)
+        fun newResourceCreated(resourceId: String)
     }
 }

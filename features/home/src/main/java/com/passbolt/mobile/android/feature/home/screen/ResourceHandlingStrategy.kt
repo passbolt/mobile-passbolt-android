@@ -1,6 +1,6 @@
-package com.passbolt.mobile.android.common
+package com.passbolt.mobile.android.feature.home.screen
 
-import org.koin.dsl.module
+import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,12 +24,22 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface ResourceHandlingStrategy {
 
-val commonModule = module {
-    single {
-        FingerprintFormatter()
-    }
-    single {
-        DomainProvider()
-    }
+    fun resourceItemClick(resourceModel: ResourceModel)
+
+    fun shouldShowResourceMoreMenu(): Boolean
+
+    fun showSuggestedModel(): ShowSuggestedModel
+
+    fun resourcePostCreateAction(resourceId: String)
+}
+
+sealed class ShowSuggestedModel {
+
+    object DoNotShow : ShowSuggestedModel()
+
+    data class Show(
+        val suggestedUri: String
+    ) : ShowSuggestedModel()
 }

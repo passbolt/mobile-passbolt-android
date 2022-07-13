@@ -46,11 +46,13 @@ class PassboltAutofillService : AutofillService(), KoinComponent {
     private val remoteViewsFactory: RemoteViewsFactory by inject()
 
     override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback) {
-        Timber.e("Received fill request")
+        Timber.d("Received fill request")
         runCatching {
             val parsedAutofillStructures = assistStructureParser.parse(
                 request.fillContexts.last().structure
-            )
+            ).also {
+                Timber.d("Parsed domain: ${it.domain}")
+            }
 
             val autofillableViews = arrayOf(
                 findAutofillableView(AutofillField.USERNAME, parsedAutofillStructures.structures),

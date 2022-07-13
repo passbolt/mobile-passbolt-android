@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.gaelmarhic.quadrant.Autofill
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -34,7 +35,9 @@ import com.passbolt.mobile.android.core.commonresource.FolderItem
 import com.passbolt.mobile.android.core.commonresource.GroupWithCountItem
 import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
+import com.passbolt.mobile.android.core.commonresource.PasswordHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
+import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.commonresource.TagWithCountItem
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
@@ -85,6 +88,13 @@ class HomeFragment :
     FiltersMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
+    private val suggestedHeaderItemAdapter: ItemAdapter<PasswordHeaderItem> by inject(
+        named(SUGGESTED_HEADER_ITEM_ADAPTER)
+    )
+    private val suggestedItemsItemAdapter: ItemAdapter<PasswordItem> by inject(named(SUGGESTED_ITEMS_ITEM_ADAPTER))
+    private val otherItemsItemAdapter: ItemAdapter<PasswordHeaderItem> by inject(
+        named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)
+    )
     private val passwordItemAdapter: ItemAdapter<PasswordItem> by inject(named(RESOURCE_ITEM_ADAPTER))
     private val childrenPasswordItemAdapter: ItemAdapter<PasswordItem> by inject(named(SUB_RESOURCE_ITEM_ADAPTER))
     private val folderItemAdapter: ItemAdapter<FolderItem> by inject(named(FOLDER_ITEM_ADAPTER))
@@ -104,6 +114,15 @@ class HomeFragment :
     private val arguments: HomeFragmentArgs by navArgs()
     private val navController by lifecycleAwareLazy { findNavController() }
 
+    // home fragment is used both here and in autofill resources activity
+    private val resourceHandlingStrategy: ResourceHandlingStrategy by lifecycleAwareLazy {
+        if (requireActivity().javaClass.name == Autofill.AUTOFILL_RESOURCES_ACTIVITY) {
+            requireActivity() as ResourceHandlingStrategy
+        } else {
+            this
+        }
+    }
+
     private val authenticationResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
@@ -122,7 +141,8 @@ class HomeFragment :
                 presenter.resourceEdited(name.orEmpty())
             }
             if (it.resultCode == ResourceActivity.RESULT_RESOURCE_CREATED) {
-                presenter.newResourceCreated()
+                val resourceId = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_ID)
+                presenter.newResourceCreated(resourceId)
             }
             if (it.resultCode == ResourceActivity.RESULT_RESOURCE_SHARED) {
                 presenter.resourceShared()
@@ -140,7 +160,11 @@ class HomeFragment :
         setListeners()
         val hasPreviousEntry = navController.previousBackStackEntry != null
         presenter.attach(this)
-        presenter.argsRetrieved(arguments.homeView, hasPreviousEntry)
+        presenter.argsRetrieved(
+            resourceHandlingStrategy.showSuggestedModel(),
+            arguments.homeView,
+            hasPreviousEntry
+        )
     }
 
     override fun onDestroyView() {
@@ -185,7 +209,7 @@ class HomeFragment :
         }
         fastAdapter.addEventHooks(listOf(
             PasswordItem.ItemClick {
-                presenter.itemClick(it)
+                resourceHandlingStrategy.resourceItemClick(it)
             },
             PasswordItem.MoreClick {
                 presenter.moreClick(it)
@@ -200,6 +224,19 @@ class HomeFragment :
                 presenter.groupItemClick(it)
             }
         ))
+    }
+
+    override fun resourceItemClick(resourceModel: ResourceModel) {
+        presenter.itemClick(resourceModel)
+    }
+
+    override fun shouldShowResourceMoreMenu() = true
+
+    override fun showSuggestedModel() =
+        ShowSuggestedModel.DoNotShow
+
+    override fun resourcePostCreateAction(resourceId: String) {
+        resourceHandlingStrategy.resourcePostCreateAction(resourceId)
     }
 
     private fun setState(state: State) {
@@ -245,6 +282,7 @@ class HomeFragment :
     }
 
     override fun showItems(
+        suggestedResources: List<ResourceModel>,
         resourceList: List<ResourceModel>,
         foldersList: List<FolderWithCount>,
         tagsList: List<TagWithCount>,
@@ -254,6 +292,29 @@ class HomeFragment :
         sectionsConfiguration: HeaderSectionConfiguration
     ) {
         setState(State.SUCCESS)
+        // suggested header
+        FastAdapterDiffUtil.calculateDiff(
+            suggestedHeaderItemAdapter,
+            if (sectionsConfiguration.isSuggestedSectionVisible) {
+                listOf(PasswordHeaderItem(ResourceListUiModel.Header(getString(R.string.suggested))))
+            } else {
+                emptyList()
+            }
+        )
+        // suggested items
+        FastAdapterDiffUtil.calculateDiff(
+            suggestedItemsItemAdapter,
+            suggestedResources.map { PasswordItem(it, resourceHandlingStrategy.shouldShowResourceMoreMenu()) }
+        )
+        // other items header
+        FastAdapterDiffUtil.calculateDiff(
+            otherItemsItemAdapter,
+            if (sectionsConfiguration.isOtherItemsSectionVisible) {
+                listOf(PasswordHeaderItem(ResourceListUiModel.Header(getString(R.string.other))))
+            } else {
+                emptyList()
+            }
+        )
         // "in current folder" header
         FastAdapterDiffUtil.calculateDiff(
             inCurrentFoldersHeaderItemAdapter,
@@ -266,7 +327,9 @@ class HomeFragment :
         // groups
         FastAdapterDiffUtil.calculateDiff(groupsItemAdapter, groupsList.map { GroupWithCountItem(it) })
         // current folder resources
-        FastAdapterDiffUtil.calculateDiff(passwordItemAdapter, resourceList.map { PasswordItem(it) })
+        FastAdapterDiffUtil.calculateDiff(
+            passwordItemAdapter,
+            resourceList.map { PasswordItem(it, dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()) })
         // "in sub-folders" header
         FastAdapterDiffUtil.calculateDiff(
             inSubFoldersHeaderItemAdapter,
@@ -277,7 +340,12 @@ class HomeFragment :
         // sub-folders resources
         FastAdapterDiffUtil.calculateDiff(
             childrenPasswordItemAdapter,
-            filteredSubFolderResourceList.map { PasswordItem(it) })
+            filteredSubFolderResourceList.map {
+                PasswordItem(
+                    it,
+                    dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()
+                )
+            })
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
@@ -637,6 +705,8 @@ class HomeFragment :
     data class HeaderSectionConfiguration(
         val isInCurrentFolderSectionVisible: Boolean,
         val isInSubFoldersSectionVisible: Boolean,
-        val currentFolderName: String? = null
+        val currentFolderName: String? = null,
+        val isSuggestedSectionVisible: Boolean,
+        val isOtherItemsSectionVisible: Boolean
     )
 }

@@ -1,5 +1,6 @@
 package com.password.mobile.android.feature.home.screen
 
+import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
@@ -64,6 +65,7 @@ val testHomeModule = module {
     factory { mockResourceTypeFactory }
     factory { resourceMenuModelMapper }
     factory { HomeDisplayViewMapper() }
+    factory { DomainProvider() }
     factory<HomeContract.Presenter> {
         HomePresenter(
             coroutineLaunchContext = get(),
@@ -83,8 +85,9 @@ val testHomeModule = module {
             getLocalGroupsWithShareItemsCountUseCase = mockGetLocalGroupsWithItemCountUseCase,
             getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase,
             getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase,
-            getHomeDisaplyViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
-            homeModelMapper = get()
+            getHomeDisplayViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
+            homeModelMapper = get(),
+            domainProvider = get()
         )
     }
 }

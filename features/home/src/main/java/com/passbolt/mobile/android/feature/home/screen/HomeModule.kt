@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.core.commonresource.FolderItem
 import com.passbolt.mobile.android.core.commonresource.GroupWithCountItem
 import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
+import com.passbolt.mobile.android.core.commonresource.PasswordHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.TagWithCountItem
 import org.koin.core.module.Module
@@ -36,6 +37,9 @@ import org.koin.dsl.ScopeDSL
  * @since v1.0
  */
 
+internal const val SUGGESTED_HEADER_ITEM_ADAPTER = "SUGGESTED_HEADER_ITEM_ADAPTER"
+internal const val SUGGESTED_ITEMS_ITEM_ADAPTER = "SUGGESTED_ITEMS_ITEM_ADAPTER"
+internal const val OTHER_ITEMS_HEADER_ITEM_ADAPTER = "OTHER_ITEMS_HEADER_ITEM_ADAPTER"
 internal const val RESOURCE_ITEM_ADAPTER = "RESOURCE_ITEM_ADAPTER"
 internal const val SUB_RESOURCE_ITEM_ADAPTER = "SUB_RESOURCE_ITEM_ADAPTER"
 internal const val FOLDER_ITEM_ADAPTER = "FOLDER_ITEM_ADAPTER"
@@ -67,13 +71,17 @@ fun Module.homeModule() {
                 getLocalResourcesWithGroupsUseCase = get(),
                 getLocalResourcesFilteredByTag = get(),
                 homeModelMapper = get(),
-                getHomeDisaplyViewPrefsUseCase = get()
+                getHomeDisplayViewPrefsUseCase = get(),
+                domainProvider = get()
             )
         }
         declareHomeListAdapters()
         scoped {
             FastAdapter.with(
                 listOf(
+                    get<ItemAdapter<PasswordHeaderItem>>(named(SUGGESTED_HEADER_ITEM_ADAPTER)),
+                    get<ItemAdapter<PasswordItem>>(named(SUGGESTED_ITEMS_ITEM_ADAPTER)),
+                    get<ItemAdapter<PasswordHeaderItem>>(named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)),
                     get<ItemAdapter<InCurrentFoldersHeaderItem>>(named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)),
                     get<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)),
                     get<ItemAdapter<TagWithCountItem>>(named(TAGS_ITEM_ADAPTER)),
@@ -89,6 +97,15 @@ fun Module.homeModule() {
 }
 
 fun ScopeDSL.declareHomeListAdapters() {
+    scoped<ItemAdapter<PasswordHeaderItem>>(named(SUGGESTED_HEADER_ITEM_ADAPTER)) {
+        ItemAdapter.items()
+    }
+    scoped<ItemAdapter<PasswordItem>>(named(SUGGESTED_ITEMS_ITEM_ADAPTER)) {
+        ItemAdapter.items()
+    }
+    scoped<ItemAdapter<PasswordHeaderItem>>(named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)) {
+        ItemAdapter.items()
+    }
     scoped<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)) {
         ItemAdapter.items()
     }

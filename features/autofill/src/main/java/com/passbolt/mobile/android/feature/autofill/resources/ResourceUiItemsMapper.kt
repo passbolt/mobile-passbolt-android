@@ -28,6 +28,7 @@ import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
  * @since v1.0
  */
 class ResourceUiItemsMapper {
+
     fun mapModelToItem(model: ResourceListUiModel): GenericItem =
         when (model) {
             is ResourceListUiModel.Data -> PasswordItem(model.resourceModel, false)
