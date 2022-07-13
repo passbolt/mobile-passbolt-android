@@ -6,9 +6,11 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.data.interactor.ShareInteractor
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.resources.permissions.validation.HasOneOwnerPermission
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -39,6 +41,7 @@ import kotlinx.coroutines.launch
 
 class ResourcePermissionsPresenter(
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
+    private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val permissionModelUiComparator: PermissionModelUiComparator,
     private val shareInteractor: ShareInteractor,
     private val homeDataInteractor: HomeDataInteractor,
@@ -83,10 +86,21 @@ class ResourcePermissionsPresenter(
     }
 
     private fun processItemsVisibility(mode: ResourcePermissionsMode) {
-        if (mode == ResourcePermissionsMode.EDIT) {
-            view?.apply {
-                showAddUserButton()
-                showSaveButton()
+        when (mode) {
+            ResourcePermissionsMode.VIEW -> {
+                scope.launch {
+                    val isOwner = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId))
+                        .resource.permission == ResourcePermission.OWNER
+                    if (isOwner) {
+                        view?.showEditButton()
+                    }
+                }
+            }
+            ResourcePermissionsMode.EDIT -> {
+                view?.apply {
+                    showAddUserButton()
+                    showSaveButton()
+                }
             }
         }
     }
@@ -100,7 +114,14 @@ class ResourcePermissionsPresenter(
         }
     }
 
-    override fun saveClick() {
+    override fun actionButtonClick() {
+        when (mode) {
+            ResourcePermissionsMode.VIEW -> view?.navigateToSelfWithMode(resourceId, ResourcePermissionsMode.EDIT)
+            ResourcePermissionsMode.EDIT -> validatePermissions()
+        }
+    }
+
+    private fun validatePermissions() {
         validation {
             of(recipients) {
                 withRules(HasOneOwnerPermission) {

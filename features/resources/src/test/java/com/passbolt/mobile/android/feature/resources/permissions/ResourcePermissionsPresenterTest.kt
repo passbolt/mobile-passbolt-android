@@ -4,8 +4,10 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.data.interactor.ShareInteractor
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserWithAvatar
 import org.junit.Before
@@ -22,6 +24,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -59,15 +62,31 @@ class ResourcePermissionsPresenterTest : KoinTest {
 
     @Before
     fun setup() {
+        mockGetLocalResourceUseCase.stub {
+            onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_ID)) }
+                .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL))
+        }
         presenter.attach(view)
     }
 
     @Test
-    fun `save button and add user button should be showed in edit mode`() {
+    fun `save button and add user button should be shown in edit mode`() {
         presenter.argsReceived(RESOURCE_ID, ResourcePermissionsMode.EDIT)
 
         verify(view).showSaveButton()
         verify(view).showAddUserButton()
+    }
+
+    @Test
+    fun `edit button should be shown in view mode and if owner`() {
+        mockGetLocalResourceUseCase.stub {
+            onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_MODEL.resourceId)) }
+                .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL.copy(permission = ResourcePermission.OWNER)))
+        }
+
+        presenter.argsReceived(RESOURCE_ID, ResourcePermissionsMode.VIEW)
+
+        verify(view).showEditButton()
     }
 
     @Test
@@ -103,8 +122,8 @@ class ResourcePermissionsPresenterTest : KoinTest {
                 .doReturn(GetLocalResourcePermissionsUseCase.Output(mockPermissions))
         }
 
-        presenter.argsReceived(RESOURCE_ID, ResourcePermissionsMode.VIEW)
-        presenter.saveClick()
+        presenter.argsReceived(RESOURCE_ID, ResourcePermissionsMode.EDIT)
+        presenter.actionButtonClick()
 
         verify(view).showOneOwnerSnackbar()
     }
@@ -199,8 +218,8 @@ class ResourcePermissionsPresenterTest : KoinTest {
                 .doReturn(HomeDataInteractor.Output.Success)
         }
 
-        presenter.argsReceived(RESOURCE_ID, ResourcePermissionsMode.VIEW)
-        presenter.saveClick()
+        presenter.argsReceived(RESOURCE_ID, ResourcePermissionsMode.EDIT)
+        presenter.actionButtonClick()
 
         verify(view).showProgress()
         verifyBlocking(mockHomeDataInteractor) { refreshAllHomeScreenData() }
@@ -223,6 +242,28 @@ class ResourcePermissionsPresenterTest : KoinTest {
                 "userPermId",
                 UserWithAvatar("userId", "first", "last", "userName", "avartUrl")
             )
+        )
+
+        private const val NAME = "name"
+        private const val USERNAME = "username"
+        private const val INITIALS = "NN"
+        private const val URL = "https://www.passbolt.com"
+        private const val DESCRIPTION = "desc"
+        private const val RESOURCE_TYPE_ID = "resTypeId"
+        private const val FOLDER_ID_ID = "folderId"
+        private val RESOURCE_MODEL = ResourceModel(
+            RESOURCE_ID,
+            RESOURCE_TYPE_ID,
+            FOLDER_ID_ID,
+            NAME,
+            USERNAME,
+            null,
+            INITIALS,
+            URL,
+            DESCRIPTION,
+            ResourcePermission.READ,
+            false,
+            ZonedDateTime.now()
         )
     }
 }

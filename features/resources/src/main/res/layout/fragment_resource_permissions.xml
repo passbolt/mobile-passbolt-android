@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -19,7 +20,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?android:attr/actionBarSize"
-        android:paddingBottom="@dimen/dp_96"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
@@ -57,7 +57,7 @@
         app:tint="@color/white" />
 
     <LinearLayout
-        android:id="@+id/saveLayout"
+        android:id="@+id/actionButtonLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_96"
         android:layout_gravity="bottom"
@@ -66,14 +66,14 @@
         android:visibility="gone">
 
         <Button
-            android:id="@+id/saveButton"
+            android:id="@+id/actionButton"
             style="@style/PrimaryBlueButton"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_56"
             android:layout_gravity="bottom"
             android:layout_marginHorizontal="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_16"
-            android:text="@string/save" />
+            tools:text="@string/save" />
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
