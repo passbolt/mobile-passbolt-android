@@ -185,6 +185,7 @@ abstract class AuthBasePresenter(
             val isPassphraseCorrect =
                 verifyPassphraseUseCase.execute(VerifyPassphraseUseCase.Input(privateKey, passphrase)).isCorrect
             if (isPassphraseCorrect) {
+                passphraseMemoryCache.set(passphrase)
                 onPassphraseVerified(passphrase)
             } else {
                 view?.showWrongPassphrase()

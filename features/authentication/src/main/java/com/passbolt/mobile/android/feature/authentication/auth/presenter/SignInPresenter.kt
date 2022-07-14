@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
-import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
@@ -170,7 +169,6 @@ open class SignInPresenter(
             loginState = LoginState(
                 accessToken = it.accessToken,
                 refreshToken = it.refreshToken,
-                passphrase = passphrase,
                 fingerprint = fingerprint,
                 mfaToken = it.mfaToken
             )
@@ -237,8 +235,6 @@ open class SignInPresenter(
                     mfaToken = loginState?.mfaToken
                 )
             )
-            passphraseMemoryCache.set(currentLoginState.passphrase)
-            currentLoginState.passphrase.erase()
         }
         saveServerFingerprintUseCase.execute(
             SaveServerFingerprintUseCase.Input(
@@ -247,7 +243,6 @@ open class SignInPresenter(
             )
         )
         saveSelectedAccountUseCase.execute(UserIdInput(userId))
-        loginState?.passphrase?.erase()
         loginState = null
         fetchFeatureFlags()
     }
@@ -309,7 +304,6 @@ open class SignInPresenter(
     private class LoginState(
         val accessToken: String,
         val refreshToken: String,
-        val passphrase: ByteArray,
         val fingerprint: String,
         var mfaToken: String? = null
     )

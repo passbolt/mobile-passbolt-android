@@ -97,7 +97,6 @@ class RefreshSessionPresenter(
             view?.hideProgress()
             when (refreshSessionResult) {
                 is RefreshSessionUseCase.Output.Success -> {
-                    passphraseMemoryCache.set(passphrase)
                     runtimeAuthenticatedFlag.isAuthenticated = true
                     view?.authSuccess()
                 }
