@@ -1,12 +1,19 @@
-FROM openjdk:oraclelinux8
+FROM openjdk:18.0.1-slim-bullseye
 
 ENV ANDROID_HOME="/usr/local/android-sdk" \
     ANDROID_SDK_ROOT="/usr/local/android-sdk" \
     ANDROID_VERSION=31 \
     ANDROID_BUILD_TOOLS_VERSION="30.0.2" \
-    ANDROID_SDK_TOOLS_VERSION="8092744" \
+    ANDROID_SDK_TOOLS_VERSION="8092744"
 
-RUN microdnf install -y wget tar unzip libstdc++ findutils python3.9 python3-pip
+# install required tools
+RUN apt-get --quiet update --yes \
+    && apt-get -y install gnupg \
+    && apt-get --quiet install --yes wget unzip lib32stdc++6 lib32z1 tar \
+    && apt-get --quiet install --yes software-properties-common > /dev/null \
+    && apt-add-repository --yes ppa:deadsnakes/ppa > /dev/null \
+    && apt-get --quiet install --yes python3.9 > /dev/null \
+    && apt-get --quiet install --yes python3-pip > /dev/null
 
 # setup android home path for moving the downloaded sdk into it
 RUN install -d $ANDROID_HOME
