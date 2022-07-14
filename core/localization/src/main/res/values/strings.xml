@@ -207,7 +207,7 @@
     <string name="switch_account_title">Switch account</string>
     <string name="filters_menu_title">Filter view by</string>
     <string name="filters_menu_all_items">All items</string>
-    <string name="filters_menu_last_used">Last used(default)</string>
+    <string name="filters_menu_last_used">Last used (default)</string>
     <string name="filters_menu_favourites">Favourites</string>
     <string name="filters_menu_recently_modified">Recently modified</string>
     <string name="filters_menu_shared_with_me">Shared with me</string>
