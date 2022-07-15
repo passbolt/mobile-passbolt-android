@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.data.interactor.ShareInteractor
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.feature.resources.permissions.validation.HasOneOwnerPermission
+import com.passbolt.mobile.android.feature.resources.permissions.validation.HasAtLeastOneOwnerPermission
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.CoroutineScope
@@ -124,7 +124,7 @@ class ResourcePermissionsPresenter(
     private fun validatePermissions() {
         validation {
             of(recipients) {
-                withRules(HasOneOwnerPermission) {
+                withRules(HasAtLeastOneOwnerPermission) {
                     onInvalid { view?.showOneOwnerSnackbar() }
                 }
             }
