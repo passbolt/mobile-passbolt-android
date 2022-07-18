@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.featureflags.usecase
+package com.passbolt.mobile.android.storage.paths
 
 class FeatureFlagsFileName(userId: String) {
 

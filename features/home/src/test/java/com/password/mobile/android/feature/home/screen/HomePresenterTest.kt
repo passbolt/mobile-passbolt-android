@@ -19,7 +19,7 @@ import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewMode
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetAccountPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
@@ -619,8 +619,8 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `view root should user selected filter by default`() {
         val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        whenever(mockAccountPreferencesUseCase.execute(any())).doReturn(
-            GetAccountPreferencesUseCase.Output(
+        whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
+            GetHomeDisaplyViewPrefsUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
                 userSetHomeView = DefaultFilterModel.FOLDERS
             )

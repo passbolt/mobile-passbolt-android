@@ -1,7 +1,4 @@
-package com.passbolt.mobile.android.featureflags.usecase
-
-import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.storage.usecase.featureflags.SaveFeatureFlagsUseCase
+package com.passbolt.mobile.android.storage.usecase.featureflags
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,29 +23,10 @@ import com.passbolt.mobile.android.storage.usecase.featureflags.SaveFeatureFlags
  * @since v1.0
  */
 
-class FeatureFlagsInteractor(
-    private val fetchFeatureFlagsUseCase: FetchFeatureFlagsUseCase,
-    private val saveFeatureFlagsUseCase: SaveFeatureFlagsUseCase
-) {
-
-    suspend fun fetchAndSaveFeatureFlags(): Output {
-        return when (val response = fetchFeatureFlagsUseCase.execute(Unit)) {
-            is FetchFeatureFlagsUseCase.Output.Success ->
-                saveFeatureFlags(response.featureFlags)
-            is FetchFeatureFlagsUseCase.Output.Failure<*> ->
-                Output.Failure
-        }
-    }
-
-    private suspend fun saveFeatureFlags(featureFlags: FeatureFlagsModel): Output {
-        saveFeatureFlagsUseCase.execute(SaveFeatureFlagsUseCase.Input(featureFlags))
-        return Output.Success(featureFlags)
-    }
-
-    sealed class Output {
-
-        data class Success(val featureFlags: FeatureFlagsModel) : Output()
-
-        object Failure : Output()
-    }
+object Constants {
+    const val PRIVACY_POLICY_KEY = "PRIVACY_POLICY_KEY"
+    const val TERMS_AND_CONDITIONS_KEY = "TERMS_AND_CONDITIONS_KEY"
+    const val PREVIEW_PASSWORD_KEY = "PREVIEW_PASSWORD_KEY"
+    const val FOLDERS_KEY = "FOLDERS_KEY"
+    const val TAGS_KEY = "TAGS_KEY"
 }

@@ -24,7 +24,7 @@ import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.Secret
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetAccountPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.password.mobile.android.feature.home.TestCoroutineLaunchContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,7 +50,7 @@ internal val mockGetLocalResourcesWithTagsUseCase = mock<GetLocalResourcesWithTa
 internal val mockGetLocalGroupsWithItemCountUseCase = mock<GetLocalGroupsWithShareItemsCountUseCase>()
 internal val mockGetLocalResourcesWithGroupsUseCase = mock<GetLocalResourcesWithGroupUseCase>()
 internal val mockGetLocalResourcesFilteredByTagUseCase = mock<GetLocalResourcesFilteredByTagUseCase>()
-internal val mockAccountPreferencesUseCase = mock<GetAccountPreferencesUseCase>()
+internal val mockGetHomeDisplayPrefsUseCase = mock<GetHomeDisaplyViewPrefsUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -83,7 +83,7 @@ val testHomeModule = module {
             getLocalGroupsWithShareItemsCountUseCase = mockGetLocalGroupsWithItemCountUseCase,
             getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase,
             getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase,
-            getAccountPreferencesUseCase = mockAccountPreferencesUseCase,
+            getHomeDisaplyViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
             homeModelMapper = get()
         )
     }

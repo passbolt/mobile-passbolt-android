@@ -48,7 +48,7 @@ fun Module.settingsModule() {
                 fileLoggingTree = get(),
                 biometryInteractor = get(),
                 coroutineLaunchContext = get(),
-                getAccountPreferencesUseCase = get()
+                getHomeDisplayViewPrefsUseCase = get()
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }

@@ -29,12 +29,13 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
 interface DefaultFilterContract {
 
     interface View : BaseContract.View {
-        fun showFiltersList(filters: Array<DefaultFilterModel>)
+        fun showFiltersList(filters: List<DefaultFilterModel>)
         fun selectFilterSilently(selectedFilter: DefaultFilterModel)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun defaultFilterSelectionChanged(filterModel: DefaultFilterModel, isSelected: Boolean)
         fun argsRetrieved(selectedFilter: DefaultFilterModel)
+        fun viewResume()
     }
 }

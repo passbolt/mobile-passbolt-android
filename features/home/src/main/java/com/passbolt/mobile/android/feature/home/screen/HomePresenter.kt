@@ -26,7 +26,7 @@ import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.Secret
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetAccountPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyViewPrefsUseCase
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
@@ -92,7 +92,7 @@ class HomePresenter(
     private val getLocalResourcesWithTagUseCase: GetLocalResourcesWithTagUseCase,
     private val getLocalGroupsWithShareItemsCountUseCase: GetLocalGroupsWithShareItemsCountUseCase,
     private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase,
-    private val getAccountPreferencesUseCase: GetAccountPreferencesUseCase,
+    private val getHomeDisaplyViewPrefsUseCase: GetHomeDisaplyViewPrefsUseCase,
     private val homeModelMapper: HomeDisplayViewMapper
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinComponent {
 
@@ -127,7 +127,7 @@ class HomePresenter(
     }
 
     override fun argsRetrieved(homeDisplayView: HomeDisplayViewModel?, hasPreviousEntry: Boolean) {
-        val filterPreferences = getAccountPreferencesUseCase.execute(Unit)
+        val filterPreferences = getHomeDisaplyViewPrefsUseCase.execute(Unit)
         homeView = homeDisplayView ?: homeModelMapper.map(
             filterPreferences.userSetHomeView,
             filterPreferences.lastUsedHomeView

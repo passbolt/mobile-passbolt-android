@@ -1,13 +1,15 @@
-package com.passbolt.mobile.android.storage.usecase.preferences
+package com.passbolt.mobile.android.storage.usecase.featureflags
 
-import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.entity.home.HomeDisplayView
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
-import com.passbolt.mobile.android.storage.paths.AccountPreferencesFileName
-import com.passbolt.mobile.android.storage.usecase.KEY_LAST_USED_HOME_VIEW
-import com.passbolt.mobile.android.storage.usecase.KEY_USER_SET_HOME_VIEW
+import com.passbolt.mobile.android.storage.paths.FeatureFlagsFileName
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.FOLDERS_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PREVIEW_PASSWORD_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PRIVACY_POLICY_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TAGS_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.DefaultFilterModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,26 +33,24 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-class UpdateAccountPreferencesUseCase(
+class SaveFeatureFlagsUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : UseCase<UpdateAccountPreferencesUseCase.Input, Unit> {
+) : AsyncUseCase<SaveFeatureFlagsUseCase.Input, Unit> {
 
-    override fun execute(input: Input) {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val fileName = AccountPreferencesFileName(userId).name
+    override suspend fun execute(input: Input) {
+        val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        val fileName = FeatureFlagsFileName(selectedAccount).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
-
         with(sharedPreferences.edit()) {
-            input.lastUsedHomeView?.let { putInt(KEY_LAST_USED_HOME_VIEW, it.ordinal) }
-            input.userSetHomeView?.let { putInt(KEY_USER_SET_HOME_VIEW, it.ordinal) }
+            putString(PRIVACY_POLICY_KEY, input.featureFlags.privacyPolicyUrl)
+            putString(TERMS_AND_CONDITIONS_KEY, input.featureFlags.termsAndConditionsUrl)
+            putBoolean(PREVIEW_PASSWORD_KEY, input.featureFlags.isPreviewPasswordAvailable)
+            putBoolean(FOLDERS_KEY, input.featureFlags.areFoldersAvailable)
+            putBoolean(TAGS_KEY, input.featureFlags.areTagsAvailable)
             apply()
         }
     }
 
-    data class Input(
-        val lastUsedHomeView: HomeDisplayView? = null,
-        val userSetHomeView: DefaultFilterModel? = null
-    )
+    data class Input(val featureFlags: FeatureFlagsModel)
 }

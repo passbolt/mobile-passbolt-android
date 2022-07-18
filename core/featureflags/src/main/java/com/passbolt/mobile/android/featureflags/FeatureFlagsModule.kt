@@ -1,10 +1,8 @@
 package com.passbolt.mobile.android.featureflags
 
-import com.passbolt.mobile.android.featureflags.mapper.FeatureFlagsMapper
+import com.passbolt.mobile.android.mappers.FeatureFlagsMapper
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.featureflags.usecase.FetchFeatureFlagsUseCase
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.featureflags.usecase.SaveFeatureFlagsUseCase
 import org.koin.dsl.module
 
 /**
@@ -38,18 +36,6 @@ val featureFlagsModule = module {
         )
     }
     single { FeatureFlagsMapper() }
-    single {
-        GetFeatureFlagsUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        SaveFeatureFlagsUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
     single {
         FeatureFlagsInteractor(
             fetchFeatureFlagsUseCase = get(),

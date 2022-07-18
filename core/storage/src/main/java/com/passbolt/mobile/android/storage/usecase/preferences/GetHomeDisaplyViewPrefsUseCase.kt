@@ -1,0 +1,74 @@
+package com.passbolt.mobile.android.storage.usecase.preferences
+
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.entity.home.HomeDisplayView
+import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.paths.AccountPreferencesFileName
+import com.passbolt.mobile.android.storage.usecase.KEY_LAST_USED_HOME_VIEW
+import com.passbolt.mobile.android.storage.usecase.KEY_USER_SET_HOME_VIEW
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.DefaultFilterModel
+
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
+class GetHomeDisaplyViewPrefsUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val homeDisplayViewPrefsValidator: HomeDisplayViewPrefsValidator
+) : UseCase<Unit, GetHomeDisaplyViewPrefsUseCase.Output> {
+
+    override fun execute(input: Unit): Output {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        val fileName = AccountPreferencesFileName(userId).name
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
+
+        with(sharedPreferences) {
+            val lastUsedHomeViewOrdinal = getInt(KEY_LAST_USED_HOME_VIEW, DEFAULT_LAST_USED_FILTER_ORDINAL)
+            val lastUsedHomeView = HomeDisplayView.values()[lastUsedHomeViewOrdinal]
+
+            val userSetHomeViewOrdinal = getInt(KEY_USER_SET_HOME_VIEW, -1)
+            val userSetHomeView = if (userSetHomeViewOrdinal != -1) {
+                DefaultFilterModel.values()[userSetHomeViewOrdinal]
+            } else {
+                DefaultFilterModel.LAST_USED
+            }
+
+            return homeDisplayViewPrefsValidator.validated(
+                Output(
+                    lastUsedHomeView = lastUsedHomeView,
+                    userSetHomeView = userSetHomeView
+                )
+            )
+        }
+    }
+
+    data class Output(
+        val lastUsedHomeView: HomeDisplayView,
+        val userSetHomeView: DefaultFilterModel
+    )
+
+    private companion object {
+        private val DEFAULT_LAST_USED_FILTER_ORDINAL = HomeDisplayView.ALL_ITEMS.ordinal
+    }
+}

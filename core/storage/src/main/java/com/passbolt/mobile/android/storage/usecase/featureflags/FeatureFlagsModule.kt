@@ -1,8 +1,6 @@
-package com.passbolt.mobile.android.featureflags.mapper
+package com.passbolt.mobile.android.storage.usecase.featureflags
 
-import com.passbolt.mobile.android.dto.response.SettingsResponseDto
-import com.passbolt.mobile.android.featureflags.Defaults
-import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,19 +24,18 @@ import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class FeatureFlagsMapper {
 
-    fun map(settingsResponseDto: SettingsResponseDto): FeatureFlagsModel =
-        settingsResponseDto.passboltSettings.let {
-            return FeatureFlagsModel(
-                it.legalSettings.privacyPolicyUrl.url,
-                it.legalSettings.termsAndConditionsUrl.url,
-                isPreviewPasswordAvailable = it.plugins.previewPassword?.enabled
-                    ?: Defaults.IS_PREVIEW_PASSWORD_AVAILABLE,
-                areFoldersAvailable = it.plugins.folders?.enabled
-                    ?: Defaults.ARE_FOLDERS_AVAILABLE,
-                areTagsAvailable = it.plugins.tags?.enabled
-                    ?: Defaults.ARE_TAGS_AVAILABLE
-            )
-        }
+fun Module.featureFlagsModule() {
+    single {
+        GetFeatureFlagsUseCase(
+            encryptedSharedPreferencesFactory = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
+    single {
+        SaveFeatureFlagsUseCase(
+            encryptedSharedPreferencesFactory = get(),
+            getSelectedAccountUseCase = get()
+        )
+    }
 }
