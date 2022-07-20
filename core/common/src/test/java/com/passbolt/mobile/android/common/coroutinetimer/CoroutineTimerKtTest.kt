@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.common.coroutinetimer
 
 import app.cash.turbine.test
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.time.ExperimentalTime
@@ -29,7 +28,6 @@ import kotlin.time.ExperimentalTime
  * @since v1.0
  */
 @ExperimentalTime
-@ExperimentalCoroutinesApi
 class CoroutineTimerKtTest {
 
     @Test

@@ -64,9 +64,12 @@ class SummaryPresenter(
     }
 
     override fun authenticationSucceeded() {
-        when (val currentStatus = status) {
-            is ResultStatus.Success -> saveAccountUseCase.execute(UserIdInput(currentStatus.userId))
+        status.let {
+            if (it is ResultStatus.Success) {
+                saveAccountUseCase.execute(UserIdInput(it.userId))
+            }
         }
+
         val pass = uuidProvider.get()
         saveResourcesDatabasePassphraseUseCase.execute(SaveResourcesDatabasePassphraseUseCase.Input(pass))
         view?.navigateToFingerprintSetup()

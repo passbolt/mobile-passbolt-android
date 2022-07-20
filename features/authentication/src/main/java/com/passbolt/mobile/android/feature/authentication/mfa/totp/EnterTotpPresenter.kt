@@ -48,6 +48,7 @@ class EnterTotpPresenter(
                 verifyTotpUseCase.execute(VerifyTotpUseCase.Input(otp, authToken, rememberMeChecked))
             ) {
                 is VerifyTotpUseCase.Output.Failure<*> -> genericError()
+                is VerifyTotpUseCase.Output.NetworkFailure -> networkError()
                 is VerifyTotpUseCase.Output.Success -> otpSuccess(result.mfaHeader)
                 is VerifyTotpUseCase.Output.WrongCode -> totpError()
                 is VerifyTotpUseCase.Output.Unauthorized -> {
@@ -84,6 +85,11 @@ class EnterTotpPresenter(
     private fun genericError() {
         view?.clearInput()
         view?.showError()
+    }
+
+    private fun networkError() {
+        view?.clearInput()
+        view?.showNetworkError()
     }
 
     private fun totpError() {

@@ -12,7 +12,8 @@ import com.passbolt.mobile.android.storage.dummy.TestActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -59,6 +60,7 @@ class PassphraseMemoryCacheTest : KoinTest {
     @get:Rule
     val activityScenarioRule = ActivityScenarioRule(TestActivity::class.java)
 
+
     @Before
     fun setup() {
         val scenario = activityScenarioRule.scenario
@@ -66,11 +68,11 @@ class PassphraseMemoryCacheTest : KoinTest {
     }
 
     @Test
-    fun test_passphraseIsCachedForSetDuration() = runBlockingTest {
+    fun test_passphraseIsCachedForSetDuration() = runTest(testCoroutineLaunchContext.ui) {
         passphraseMemoryCache.set(TEST_PASSPHRASE)
 
         // advance time on the timer thread to just before cache expiration
-        testCoroutineLaunchContext.ui.advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
+        advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
 
         assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.Passphrase::class.java)
         assertThat((passphraseMemoryCache.get() as PotentialPassphrase.Passphrase).passphrase)
@@ -78,11 +80,11 @@ class PassphraseMemoryCacheTest : KoinTest {
     }
 
     @Test
-    fun test_cacheIsClearedAfterSetDuration() = runBlockingTest {
+    fun test_cacheIsClearedAfterSetDuration() = runTest(testCoroutineLaunchContext.ui) {
         passphraseMemoryCache.set(TEST_PASSPHRASE)
 
         // advance time on the timer thread to just after cache expiration
-        testCoroutineLaunchContext.ui.advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS + 1)
+        advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS + 1)
 
         assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.PassphraseNotPresent::class.java)
     }
@@ -111,17 +113,17 @@ class PassphraseMemoryCacheTest : KoinTest {
     }
 
     @Test
-    fun test_CacheTimeoutIsRenewedAfterNewPassphraseValueIsSet() = runBlocking {
+    fun test_CacheTimeoutIsRenewedAfterNewPassphraseValueIsSet() = runTest(testCoroutineLaunchContext.ui) {
         passphraseMemoryCache.set(TEST_PASSPHRASE)
 
         // advance time on the timer thread to just before cache expiration
-        testCoroutineLaunchContext.ui.advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
+        advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
+
         // set new passphrase
         passphraseMemoryCache.set(TEST_PASSPHRASE)
         // advance time on the timer thread to just before cache expiration
-        testCoroutineLaunchContext.ui.advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
+        advanceTimeBy(PassphraseMemoryCache.CACHE_EXPIRATION_MILLIS - 1)
 
-        delay(LIFECYCLE_OBSERVATION_TIMEOUT_MILLIS)
         assertThat(passphraseMemoryCache.get()).isInstanceOf(PotentialPassphrase.Passphrase::class.java)
     }
 

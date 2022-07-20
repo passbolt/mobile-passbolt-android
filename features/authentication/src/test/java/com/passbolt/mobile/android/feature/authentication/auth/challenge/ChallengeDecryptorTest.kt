@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.koin.test.KoinTest
@@ -30,7 +30,7 @@ class ChallengeDecryptorTest : KoinTest {
     }
 
     @Test
-    fun `challenge properly decrypted`() = runBlockingTest {
+    fun `challenge properly decrypted`() = runTest {
         val privateKey = "private_key"
         val publicKey = "public_key"
         val challenge = "{version: \"1.0\", domain: \"domain\", verify_token: \"verify_token\"," +
@@ -54,7 +54,7 @@ class ChallengeDecryptorTest : KoinTest {
     }
 
     @Test
-    fun `challenge value is correct when decryption failure`() = runBlockingTest {
+    fun `challenge value is correct when decryption failure`() = runTest {
         val privateKey = "private_key"
         val publicKey = "public_key"
         val errorMessage = "message"

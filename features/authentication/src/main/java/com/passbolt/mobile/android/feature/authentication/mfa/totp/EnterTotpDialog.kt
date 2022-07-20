@@ -129,7 +129,12 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     }
 
     override fun showError() {
-        Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_LONG)
+        Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_SHORT)
+            .show()
+    }
+
+    override fun showNetworkError() {
+        Snackbar.make(binding.root, R.string.common_network_failure, Snackbar.LENGTH_SHORT)
             .show()
     }
 

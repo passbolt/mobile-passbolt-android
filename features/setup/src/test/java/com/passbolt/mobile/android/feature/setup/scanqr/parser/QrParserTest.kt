@@ -10,7 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -58,7 +58,7 @@ class QrParserTest : KoinTest {
     }
 
     @Test
-    fun `parser should parse user resolvable states correct`() = runBlockingTest {
+    fun `parser should parse user resolvable states correct`() = runTest {
         scanningJob = launch {
             scanQrParser.startParsing(mockScanningFlow)
         }
@@ -96,7 +96,7 @@ class QrParserTest : KoinTest {
     }
 
     @Test
-    fun `parser should parse passbolt qr correct`() = runBlockingTest {
+    fun `parser should parse passbolt qr correct`() = runTest {
         scanningJob = launch {
             scanQrParser.startParsing(mockScanningFlow)
         }
@@ -116,7 +116,7 @@ class QrParserTest : KoinTest {
     }
 
     @Test
-    fun `parser should not react to already parsed first page qr`() = runBlockingTest {
+    fun `parser should not react to already parsed first page qr`() = runTest {
         scanningJob = launch {
             scanQrParser.startParsing(mockScanningFlow)
         }
@@ -139,7 +139,7 @@ class QrParserTest : KoinTest {
     }
 
     @Test
-    fun `parser should not react to already parsed subsequent page qr`() = runBlockingTest {
+    fun `parser should not react to already parsed subsequent page qr`() = runTest {
         scanningJob = launch {
             scanQrParser.startParsing(mockScanningFlow)
         }
@@ -163,7 +163,7 @@ class QrParserTest : KoinTest {
     }
 
     @Test
-    fun `parser should report error when subsequent page scaned without first page`() = runBlockingTest {
+    fun `parser should report error when subsequent page scaned without first page`() = runTest {
         scanningJob = launch {
             scanQrParser.startParsing(mockScanningFlow)
         }
@@ -194,7 +194,7 @@ class QrParserTest : KoinTest {
     }
 
     @Test
-    fun `parser should handle exceptions correct`() = runBlockingTest {
+    fun `parser should handle exceptions correct`() = runTest {
         scanningJob = launch {
             scanQrParser.startParsing(mockScanningFlow)
         }

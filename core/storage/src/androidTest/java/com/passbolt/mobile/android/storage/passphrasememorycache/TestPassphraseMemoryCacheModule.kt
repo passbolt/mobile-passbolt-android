@@ -39,7 +39,7 @@ internal val testPassphraseMemoryCacheModule = module {
             lifecycleOwner = get(named<ProcessLifecycleOwner>())
         )
     }
-    single<CoroutineLaunchContext> {
+    factory<CoroutineLaunchContext> {
         testCoroutineLaunchContext
     }
     factory(named<ProcessLifecycleOwner>()) {

@@ -29,7 +29,7 @@ import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -86,7 +86,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `user avatar should be displayed when provided`() = runBlockingTest {
+    fun `user avatar should be displayed when provided`() = runTest {
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
         )
@@ -126,7 +126,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `all fetched resources should be displayed when empty search text`() = runBlockingTest {
+    fun `all fetched resources should be displayed when empty search text`() = runTest {
         val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
@@ -158,7 +158,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `refresh swiped should reload data with filter applied when search text entered`() = runBlockingTest {
+    fun `refresh swiped should reload data with filter applied when search text entered`() = runTest {
         mockResourcesList()
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
@@ -192,7 +192,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `empty view should be displayed when search is empty`() = runBlockingTest {
+    fun `empty view should be displayed when search is empty`() = runTest {
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
         )
@@ -217,7 +217,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `empty view should be displayed when there are no resources`() = runBlockingTest {
+    fun `empty view should be displayed when there are no resources`() = runTest {
         val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
@@ -248,7 +248,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `error should be displayed when request failures`() = runBlockingTest {
+    fun `error should be displayed when request failures`() = runTest {
         val refreshFlow = flowOf(
             DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated))
         )
@@ -279,7 +279,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `error during refresh clicked should show correct ui`() = runBlockingTest {
+    fun `error during refresh clicked should show correct ui`() = runTest {
         val refreshFlow =
             MutableStateFlow(DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)))
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -312,7 +312,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `item clicked should open details screen`() = runBlockingTest {
+    fun `item clicked should open details screen`() = runTest {
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
@@ -346,7 +346,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `3 dots clicked should open more screen`() = runBlockingTest {
+    fun `3 dots clicked should open more screen`() = runTest {
         val model = ResourceModel(
             resourceId = "id",
             resourceTypeId = "resTypeId",
@@ -449,7 +449,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should copy secret after successful decrypt`() = runBlockingTest {
+    fun `view should copy secret after successful decrypt`() = runTest {
         mockAccountData(null)
         mockSecretInteractor.stub {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(
@@ -479,7 +479,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `delete resource should show confirmation dialog, delete and show snackbar`() = runBlockingTest {
+    fun `delete resource should show confirmation dialog, delete and show snackbar`() = runTest {
         mockAccountData(null)
         whenever(mockDeleteResourceUseCase.execute(any()))
             .thenReturn(DeleteResourceUseCase.Output.Success)
@@ -506,7 +506,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `delete resource should show error when there is deletion error`() = runBlockingTest {
+    fun `delete resource should show error when there is deletion error`() = runTest {
         mockAccountData(null)
         whenever(mockDeleteResourceUseCase.execute(any()))
             .thenReturn(

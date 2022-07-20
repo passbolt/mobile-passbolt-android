@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.feature.authentication.uuidProvider
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.koin.test.KoinTest
@@ -31,7 +31,7 @@ class ChallengeProviderTest : KoinTest {
     }
 
     @Test
-    fun `challenge properly provided`() = runBlockingTest {
+    fun `challenge properly provided`() = runTest {
         val publicKey = "public_key"
         val privateKey = "private_key"
         val domain = "domain"
