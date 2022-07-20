@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.core.commonfolders.usecase
 
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 
 /**
  * Passbolt - Open source password manager for teams

@@ -6,13 +6,13 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceType
 import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
+import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel

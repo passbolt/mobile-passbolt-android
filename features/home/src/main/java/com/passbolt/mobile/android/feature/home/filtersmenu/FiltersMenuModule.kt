@@ -31,7 +31,7 @@ fun Module.filtersMenuModule() {
             FiltersMenuPresenter(
                 getFeatureFlagsUseCase = get(),
                 coroutineLaunchContext = get(),
-                updateAccountPreferencesUseCase = get()
+                updateHomeDisplayViewPrefsUseCase = get()
             )
         }
     }

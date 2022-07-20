@@ -4,20 +4,20 @@ import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.core.logger.FileLoggingTree
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
-import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
+import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetAccountPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -42,7 +42,7 @@ class SettingsPresenter(
     private val saveGlobalPreferencesUseCase: SaveGlobalPreferencesUseCase,
     private val fileLoggingTree: FileLoggingTree,
     private val biometryInteractor: BiometryInteractor,
-    private val getAccountPreferencesUseCase: GetAccountPreferencesUseCase,
+    private val getHomeDisplayViewPrefsUseCase: GetHomeDisaplyViewPrefsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : SettingsContract.Presenter {
 
@@ -214,7 +214,7 @@ class SettingsPresenter(
 
     override fun defaultFilterClick() {
         view?.navigateToDefaultFilter(
-            getAccountPreferencesUseCase.execute(Unit).userSetHomeView
+            getHomeDisplayViewPrefsUseCase.execute(Unit).userSetHomeView
         )
     }
 

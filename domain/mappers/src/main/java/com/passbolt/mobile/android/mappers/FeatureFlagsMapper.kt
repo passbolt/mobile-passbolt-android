@@ -1,4 +1,8 @@
-package com.passbolt.mobile.android.featureflags
+package com.passbolt.mobile.android.mappers
+
+import com.passbolt.mobile.android.dto.response.SettingsResponseDto
+import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
+import com.passbolt.mobile.android.storage.usecase.featureflags.Defaults
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,11 +26,19 @@ package com.passbolt.mobile.android.featureflags
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class FeatureFlagsMapper {
 
-data class FeatureFlagsModel(
-    val privacyPolicyUrl: String?,
-    val termsAndConditionsUrl: String?,
-    val isPreviewPasswordAvailable: Boolean,
-    val areFoldersAvailable: Boolean,
-    val areTagsAvailable: Boolean
-)
+    fun map(settingsResponseDto: SettingsResponseDto): FeatureFlagsModel =
+        settingsResponseDto.passboltSettings.let {
+            return FeatureFlagsModel(
+                it.legalSettings.privacyPolicyUrl.url,
+                it.legalSettings.termsAndConditionsUrl.url,
+                isPreviewPasswordAvailable = it.plugins.previewPassword?.enabled
+                    ?: Defaults.IS_PREVIEW_PASSWORD_AVAILABLE,
+                areFoldersAvailable = it.plugins.folders?.enabled
+                    ?: Defaults.ARE_FOLDERS_AVAILABLE,
+                areTagsAvailable = it.plugins.tags?.enabled
+                    ?: Defaults.ARE_TAGS_AVAILABLE
+            )
+        }
+}

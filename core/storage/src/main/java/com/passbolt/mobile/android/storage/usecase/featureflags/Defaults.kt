@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.featureflags
+package com.passbolt.mobile.android.storage.usecase.featureflags
 
 /**
  * Passbolt - Open source password manager for teams
@@ -23,10 +23,8 @@ package com.passbolt.mobile.android.featureflags
  * @since v1.0
  */
 
-object Constants {
-    const val PRIVACY_POLICY_KEY = "PRIVACY_POLICY_KEY"
-    const val TERMS_AND_CONDITIONS_KEY = "TERMS_AND_CONDITIONS_KEY"
-    const val PREVIEW_PASSWORD_KEY = "PREVIEW_PASSWORD_KEY"
-    const val FOLDERS_KEY = "FOLDERS_KEY"
-    const val TAGS_KEY = "TAGS_KEY"
+object Defaults {
+    const val IS_PREVIEW_PASSWORD_AVAILABLE = true
+    const val ARE_FOLDERS_AVAILABLE = false
+    const val ARE_TAGS_AVAILABLE = false
 }

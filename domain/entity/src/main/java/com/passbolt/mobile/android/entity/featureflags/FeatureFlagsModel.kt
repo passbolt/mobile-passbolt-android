@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.featureflags
+package com.passbolt.mobile.android.entity.featureflags
 
 /**
  * Passbolt - Open source password manager for teams
@@ -23,8 +23,10 @@ package com.passbolt.mobile.android.featureflags
  * @since v1.0
  */
 
-object Defaults {
-    const val IS_PREVIEW_PASSWORD_AVAILABLE = true
-    const val ARE_FOLDERS_AVAILABLE = false
-    const val ARE_TAGS_AVAILABLE = false
-}
+data class FeatureFlagsModel(
+    val privacyPolicyUrl: String?,
+    val termsAndConditionsUrl: String?,
+    val isPreviewPasswordAvailable: Boolean,
+    val areFoldersAvailable: Boolean,
+    val areTagsAvailable: Boolean
+)

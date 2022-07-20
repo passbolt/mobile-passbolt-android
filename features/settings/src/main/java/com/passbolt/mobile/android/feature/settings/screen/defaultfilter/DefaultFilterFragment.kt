@@ -61,6 +61,11 @@ class DefaultFilterFragment :
         presenter.argsRetrieved(args.selectedFilter)
     }
 
+    override fun onResume() {
+        super.onResume()
+        presenter.viewResume()
+    }
+
     override fun onDestroyView() {
         fastAdapter.getSelectExtension().selectionListener = null
         super.onDestroyView()
@@ -86,13 +91,14 @@ class DefaultFilterFragment :
     override fun selectFilterSilently(selectedFilter: DefaultFilterModel) {
         with(fastAdapter.getSelectExtension()) {
             selectionListener = null
+            deselect()
             val selectPosition = itemAdapter.adapterItems.indexOfFirst { it.filterModel == selectedFilter }
             select(selectPosition)
             selectionListener = defalutFilterSelectedListener
         }
     }
 
-    override fun showFiltersList(filters: Array<DefaultFilterModel>) {
+    override fun showFiltersList(filters: List<DefaultFilterModel>) {
         FastAdapterDiffUtil.calculateDiff(itemAdapter, filters.map { DefaultFilterItem(it) })
         fastAdapter.notifyAdapterDataSetChanged()
     }

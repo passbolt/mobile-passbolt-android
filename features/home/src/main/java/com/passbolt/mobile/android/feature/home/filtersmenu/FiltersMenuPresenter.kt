@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.feature.home.filtersmenu
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.UpdateAccountPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.UpdateHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class FiltersMenuPresenter(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
-    private val updateAccountPreferencesUseCase: UpdateAccountPreferencesUseCase,
+    private val updateHomeDisplayViewPrefsUseCase: UpdateHomeDisplayViewPrefsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : FiltersMenuContract.Presenter {
 
@@ -60,8 +60,8 @@ class FiltersMenuPresenter(
     }
 
     private fun saveLastUsedHomeView(lastUsedHomeView: HomeDisplayView) {
-        updateAccountPreferencesUseCase.execute(
-            UpdateAccountPreferencesUseCase.Input(lastUsedHomeView = lastUsedHomeView)
+        updateHomeDisplayViewPrefsUseCase.execute(
+            UpdateHomeDisplayViewPrefsUseCase.Input(lastUsedHomeView = lastUsedHomeView)
         )
     }
 

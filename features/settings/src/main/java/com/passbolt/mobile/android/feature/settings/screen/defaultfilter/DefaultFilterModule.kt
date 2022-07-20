@@ -32,7 +32,9 @@ fun Module.defaultFilterModule() {
     scope<DefaultFilterFragment> {
         scoped<DefaultFilterContract.Presenter> {
             DefaultFilterPresenter(
-                updateAccountPreferencesUseCase = get()
+                updateHomeDisplayViewPrefsUseCase = get(),
+                homeDisplayViewPrefsValidator = get(),
+                getHomeDisaplyViewPrefsUseCase = get()
             )
         }
         scoped<ItemAdapter<DefaultFilterItem>> {

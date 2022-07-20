@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.feature.settings
 
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
-import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
+import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase

@@ -67,7 +67,7 @@ fun Module.homeModule() {
                 getLocalResourcesWithGroupsUseCase = get(),
                 getLocalResourcesFilteredByTag = get(),
                 homeModelMapper = get(),
-                getAccountPreferencesUseCase = get()
+                getHomeDisaplyViewPrefsUseCase = get()
             )
         }
         declareHomeListAdapters()

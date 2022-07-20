@@ -12,6 +12,7 @@ dependencies {
     implementation project(':dto')
     implementation project(':mvp')
     implementation project(':coreui')
+    implementation project(':entity')
 
     implementation libs.di.koin
     implementation libs.di.koinExt

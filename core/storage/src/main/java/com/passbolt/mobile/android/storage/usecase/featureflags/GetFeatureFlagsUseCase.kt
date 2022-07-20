@@ -1,13 +1,14 @@
-package com.passbolt.mobile.android.featureflags.usecase
+package com.passbolt.mobile.android.storage.usecase.featureflags
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.featureflags.Constants.FOLDERS_KEY
-import com.passbolt.mobile.android.featureflags.Constants.PREVIEW_PASSWORD_KEY
-import com.passbolt.mobile.android.featureflags.Constants.PRIVACY_POLICY_KEY
-import com.passbolt.mobile.android.featureflags.Constants.TAGS_KEY
-import com.passbolt.mobile.android.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
-import com.passbolt.mobile.android.featureflags.FeatureFlagsModel
+import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
+import com.passbolt.mobile.android.storage.paths.FeatureFlagsFileName
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.FOLDERS_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PREVIEW_PASSWORD_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PRIVACY_POLICY_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TAGS_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 
 /**
@@ -32,24 +33,27 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SaveFeatureFlagsUseCase(
+class GetFeatureFlagsUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<SaveFeatureFlagsUseCase.Input, Unit> {
+) : AsyncUseCase<Unit, GetFeatureFlagsUseCase.Output> {
 
-    override suspend fun execute(input: Input) {
+    override suspend fun execute(input: Unit): Output {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         val fileName = FeatureFlagsFileName(selectedAccount).name
-        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
-        with(sharedPreferences.edit()) {
-            putString(PRIVACY_POLICY_KEY, input.featureFlags.privacyPolicyUrl)
-            putString(TERMS_AND_CONDITIONS_KEY, input.featureFlags.termsAndConditionsUrl)
-            putBoolean(PREVIEW_PASSWORD_KEY, input.featureFlags.isPreviewPasswordAvailable)
-            putBoolean(FOLDERS_KEY, input.featureFlags.areFoldersAvailable)
-            putBoolean(TAGS_KEY, input.featureFlags.areTagsAvailable)
-            apply()
+        encryptedSharedPreferencesFactory.get("$fileName.xml").let {
+            val privacyPolicyUrl = it.getString(PRIVACY_POLICY_KEY, null)
+            val termsUrl = it.getString(TERMS_AND_CONDITIONS_KEY, null)
+            val previewPasswordAvailable = it.getBoolean(PREVIEW_PASSWORD_KEY, Defaults.IS_PREVIEW_PASSWORD_AVAILABLE)
+            val areFoldersAvailable = it.getBoolean(FOLDERS_KEY, Defaults.ARE_FOLDERS_AVAILABLE)
+            val areTagsAvailable = it.getBoolean(TAGS_KEY, Defaults.ARE_TAGS_AVAILABLE)
+            return Output(
+                FeatureFlagsModel(
+                    privacyPolicyUrl, termsUrl, previewPasswordAvailable, areFoldersAvailable, areTagsAvailable
+                )
+            )
         }
     }
 
-    data class Input(val featureFlags: FeatureFlagsModel)
+    data class Output(val featureFlags: FeatureFlagsModel)
 }

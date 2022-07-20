@@ -32,40 +32,25 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
  * @since v1.0
  */
 
-class GetAccountPreferencesUseCase(
+class UpdateHomeDisplayViewPrefsUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : UseCase<Unit, GetAccountPreferencesUseCase.Output> {
+) : UseCase<UpdateHomeDisplayViewPrefsUseCase.Input, Unit> {
 
-    override fun execute(input: Unit): Output {
+    override fun execute(input: Input) {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         val fileName = AccountPreferencesFileName(userId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
 
-        return with(sharedPreferences) {
-            val lastUsedHomeViewOrdinal = getInt(KEY_LAST_USED_HOME_VIEW, DEFAULT_LAST_USED_FILTER_ORDINAL)
-            val lastUsedHomeView = HomeDisplayView.values()[lastUsedHomeViewOrdinal]
-
-            val userSetHomeViewOrdinal = getInt(KEY_USER_SET_HOME_VIEW, -1)
-            val userSetHomeView = if (userSetHomeViewOrdinal != -1) {
-                DefaultFilterModel.values()[userSetHomeViewOrdinal]
-            } else {
-                DefaultFilterModel.LAST_USED
-            }
-
-            Output(
-                lastUsedHomeView = lastUsedHomeView,
-                userSetHomeView = userSetHomeView
-            )
+        with(sharedPreferences.edit()) {
+            input.lastUsedHomeView?.let { putInt(KEY_LAST_USED_HOME_VIEW, it.ordinal) }
+            input.userSetHomeView?.let { putInt(KEY_USER_SET_HOME_VIEW, it.ordinal) }
+            apply()
         }
     }
 
-    data class Output(
-        val lastUsedHomeView: HomeDisplayView,
-        val userSetHomeView: DefaultFilterModel
+    data class Input(
+        val lastUsedHomeView: HomeDisplayView? = null,
+        val userSetHomeView: DefaultFilterModel? = null
     )
-
-    private companion object {
-        private val DEFAULT_LAST_USED_FILTER_ORDINAL = HomeDisplayView.ALL_ITEMS.ordinal
-    }
 }
