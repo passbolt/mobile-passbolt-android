@@ -1,11 +1,7 @@
-package com.passbolt.mobile.android.core.logger
+package com.passbolt.mobile.android.core.logger.exceptionhandler
 
-import android.content.Context
 import timber.log.Timber
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.lang.Thread.UncaughtExceptionHandler
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,34 +25,13 @@ import java.util.Locale
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LogFilesManager(
-    private val appContext: Context
-) {
 
-    fun initializeLogFile(): String {
-        val directory = File(appContext.filesDir, LOG_DIR_NAME).apply { mkdir() }
-        return File(directory, logFileName()).apply {
-            if (!exists()) createNewFile()
-        }.absolutePath
-    }
+class LoggingExceptionHandler(
+    private val defaultExceptionHandler: UncaughtExceptionHandler
+) : UncaughtExceptionHandler {
 
-    fun clearIrrelevantLogFiles(relevantLogAbsoluteFilePath: String) {
-        File(appContext.filesDir, LOG_DIR_NAME)
-            .listFiles { dir, fileName -> File(dir, fileName).absolutePath != relevantLogAbsoluteFilePath }
-            .orEmpty()
-            .forEach {
-                Timber.d("Deleting older log file: ${it.absolutePath}")
-                it.delete()
-            }
-    }
-
-    companion object {
-        const val LOG_DIR_NAME = "logs"
-
-        private const val HOUR_PATTERN = "dd-MM-yyy HH"
-        private val LOG_FILE_NAME_FORMAT = SimpleDateFormat(HOUR_PATTERN, Locale.US)
-
-        fun logFileName() =
-            LOG_FILE_NAME_FORMAT.format(Date())
+    override fun uncaughtException(thread: Thread, throwable: Throwable) {
+        Timber.e(throwable, "Uncaught exception in thread: ${thread.name}")
+        defaultExceptionHandler.uncaughtException(thread, throwable)
     }
 }

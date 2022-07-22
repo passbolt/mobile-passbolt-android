@@ -43,6 +43,9 @@
             <meta-data
                 android:name="com.passbolt.mobile.android.initializers.TimberInitializer"
                 android:value="androidx.startup" />
+            <meta-data
+                android:name="com.passbolt.mobile.android.initializers.LoggingExceptionHandlerInitializer"
+                android:value="androidx.startup" />
         </provider>
     </application>
 
