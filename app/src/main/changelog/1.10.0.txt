@@ -1,0 +1,16 @@
+# Passbolt 1.10.0-12 Android app release notes
+
+## Added
+- Filters on autofill! Now you can browse during autofill similarly to home screen.
+
+## Improved
+-
+
+## Fixed
+-
+
+## Security
+-
+
+## Maintenance
+- Big dependencies update - libraries, Android target SDK, etc.
