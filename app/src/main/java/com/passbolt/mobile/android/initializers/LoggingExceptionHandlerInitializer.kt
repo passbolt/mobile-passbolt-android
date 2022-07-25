@@ -1,11 +1,11 @@
-package com.passbolt.mobile.android.core.logger
+package com.passbolt.mobile.android.initializers
 
 import android.content.Context
-import timber.log.Timber
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import androidx.startup.Initializer
+import com.passbolt.mobile.android.core.logger.exceptionhandler.LoggingExceptionHandler
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.parameter.parametersOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,34 +29,21 @@ import java.util.Locale
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class LogFilesManager(
-    private val appContext: Context
-) {
 
-    fun initializeLogFile(): String {
-        val directory = File(appContext.filesDir, LOG_DIR_NAME).apply { mkdir() }
-        return File(directory, logFileName()).apply {
-            if (!exists()) createNewFile()
-        }.absolutePath
+/**
+ * Initializes the uncaught exception handler which logs exception to internal log file.
+ *
+ */
+class LoggingExceptionHandlerInitializer : Initializer<Unit>, KoinComponent {
+
+    private val loggingExceptionHandler: LoggingExceptionHandler by inject {
+        parametersOf(Thread.getDefaultUncaughtExceptionHandler())
     }
 
-    fun clearIrrelevantLogFiles(relevantLogAbsoluteFilePath: String) {
-        File(appContext.filesDir, LOG_DIR_NAME)
-            .listFiles { dir, fileName -> File(dir, fileName).absolutePath != relevantLogAbsoluteFilePath }
-            .orEmpty()
-            .forEach {
-                Timber.d("Deleting older log file: ${it.absolutePath}")
-                it.delete()
-            }
+    override fun create(context: Context) {
+        Thread.setDefaultUncaughtExceptionHandler(loggingExceptionHandler)
     }
 
-    companion object {
-        const val LOG_DIR_NAME = "logs"
-
-        private const val HOUR_PATTERN = "dd-MM-yyy HH"
-        private val LOG_FILE_NAME_FORMAT = SimpleDateFormat(HOUR_PATTERN, Locale.US)
-
-        fun logFileName() =
-            LOG_FILE_NAME_FORMAT.format(Date())
-    }
+    override fun dependencies(): MutableList<Class<out Initializer<*>>> =
+        mutableListOf(TimberInitializer::class.java, KoinInitializer::class.java)
 }
