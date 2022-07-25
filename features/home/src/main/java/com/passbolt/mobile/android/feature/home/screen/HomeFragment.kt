@@ -236,7 +236,7 @@ class HomeFragment :
         ShowSuggestedModel.DoNotShow
 
     override fun resourcePostCreateAction(resourceId: String) {
-        resourceHandlingStrategy.resourcePostCreateAction(resourceId)
+        // nothing more to do after creating resource on home fragment
     }
 
     private fun setState(state: State) {
