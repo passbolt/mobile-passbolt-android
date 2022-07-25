@@ -40,17 +40,13 @@ fun Module.autofillResourcesModule() {
     scope<AutofillResourcesActivity> {
         scoped<AutofillResourcesContract.Presenter> {
             AutofillResourcesPresenter(
-                coroutineLaunchContext = get(),
-                getLocalResourcesUse = get(),
-                getLocalResourcesFilteredByTag = get(),
-                domainProvider = get(),
                 homeDataInteractor = get(),
-                resourceSearch = get(),
-                secretInteractor = get(),
-                getSelectedAccountDataUseCase = get(),
+                getAccountsUseCase = get(),
+                coroutineLaunchContext = get(),
                 resourceTypeFactory = get(),
+                secretInteractor = get(),
                 secretParser = get(),
-                getAccountsUseCase = get()
+                getLocalResourceUseCase = get()
             )
         }
         scoped { (accountUiItemsMapper: ResourceUiItemsMapper) ->

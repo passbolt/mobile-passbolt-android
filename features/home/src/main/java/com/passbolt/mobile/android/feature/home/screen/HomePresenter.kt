@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import androidx.annotation.VisibleForTesting
+import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
@@ -92,8 +93,9 @@ class HomePresenter(
     private val getLocalResourcesWithTagUseCase: GetLocalResourcesWithTagUseCase,
     private val getLocalGroupsWithShareItemsCountUseCase: GetLocalGroupsWithShareItemsCountUseCase,
     private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase,
-    private val getHomeDisaplyViewPrefsUseCase: GetHomeDisaplyViewPrefsUseCase,
-    private val homeModelMapper: HomeDisplayViewMapper
+    private val getHomeDisplayViewPrefsUseCase: GetHomeDisaplyViewPrefsUseCase,
+    private val homeModelMapper: HomeDisplayViewMapper,
+    private val domainProvider: DomainProvider
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinComponent {
 
     override var view: HomeContract.View? = null
@@ -103,12 +105,14 @@ class HomePresenter(
     private val dataRefreshScope = CoroutineScope(dataRefreshJob + coroutineLaunchContext.ui)
     private val filteringJob = SupervisorJob()
     private val filteringScope = CoroutineScope(filteringJob + coroutineLaunchContext.ui)
-
     private lateinit var dataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>
+
     private lateinit var homeView: HomeDisplayViewModel
     private var currentSearchText = MutableStateFlow("")
     private var hasPreviousBackEntry = false
+    private lateinit var showSuggestedModel: ShowSuggestedModel
 
+    private var suggestedResourceList: List<ResourceModel> = emptyList()
     private var resourceList: List<ResourceModel> = emptyList()
     private var foldersList: List<FolderWithCount> = emptyList()
     private var tagsList: List<TagWithCount> = emptyList()
@@ -126,12 +130,17 @@ class HomePresenter(
         dataRefreshStatusFlow = fullDataRefreshStatusFlow
     }
 
-    override fun argsRetrieved(homeDisplayView: HomeDisplayViewModel?, hasPreviousEntry: Boolean) {
-        val filterPreferences = getHomeDisaplyViewPrefsUseCase.execute(Unit)
+    override fun argsRetrieved(
+        showSuggestedModel: ShowSuggestedModel,
+        homeDisplayView: HomeDisplayViewModel?,
+        hasPreviousEntry: Boolean
+    ) {
+        val filterPreferences = getHomeDisplayViewPrefsUseCase.execute(Unit)
         homeView = homeDisplayView ?: homeModelMapper.map(
             filterPreferences.userSetHomeView,
             filterPreferences.lastUsedHomeView
         )
+        this.showSuggestedModel = showSuggestedModel
         hasPreviousBackEntry = hasPreviousEntry
 
         view?.apply {
@@ -252,7 +261,19 @@ class HomePresenter(
     }
 
     private suspend fun showActiveHomeView() {
-        when (val currentHomeView = homeView) {
+        suggestedResourceList = getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input())
+            .resources
+            .filter {
+                val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
+                val itemUrl = it.url
+                if (autofillUrl != null && itemUrl != null) {
+                    domainProvider.getHost(itemUrl) == domainProvider.getHost(autofillUrl)
+                } else {
+                    false
+                }
+            }
+        when (
+            val currentHomeView = homeView) {
             is HomeDisplayViewModel.Folders -> showResourcesAndFoldersFromDatabase(currentHomeView)
             is HomeDisplayViewModel.Tags -> showTagsFromDatabase(currentHomeView)
             is HomeDisplayViewModel.Groups -> showGroupsFromDatabase(currentHomeView)
@@ -354,6 +375,7 @@ class HomePresenter(
         } else {
             if (currentSearchText.value.isEmpty()) {
                 view?.showItems(
+                    suggestedResourceList,
                     resourceList,
                     foldersList,
                     tagsList,
@@ -361,7 +383,10 @@ class HomePresenter(
                     filteredSubFolders,
                     filteredSubFolderResources,
                     HomeFragment.HeaderSectionConfiguration(
-                        isInCurrentFolderSectionVisible = false, isInSubFoldersSectionVisible = false
+                        isInCurrentFolderSectionVisible = false,
+                        isInSubFoldersSectionVisible = false,
+                        isOtherItemsSectionVisible = suggestedResourceList.isNotEmpty(),
+                        isSuggestedSectionVisible = suggestedResourceList.isNotEmpty()
                     )
                 )
             } else {
@@ -403,6 +428,7 @@ class HomePresenter(
             view?.showSearchEmptyList()
         } else {
             view?.showItems(
+                emptyList(),
                 filteredResources,
                 filteredFolders,
                 filteredTags,
@@ -417,7 +443,9 @@ class HomePresenter(
                         filteredSubFolderResources,
                         filteredSubFolders
                     ),
-                    (homeView as? HomeDisplayViewModel.Folders)?.activeFolderName
+                    (homeView as? HomeDisplayViewModel.Folders)?.activeFolderName,
+                    isSuggestedSectionVisible = false,
+                    isOtherItemsSectionVisible = false
                 )
             )
         }
@@ -580,9 +608,14 @@ class HomePresenter(
         view?.showResourceSharedSnackbar()
     }
 
-    override fun newResourceCreated() {
-        initRefresh()
-        view?.showResourceAddedSnackbar()
+    override fun newResourceCreated(resourceId: String?) {
+        resourceId?.let {
+            initRefresh()
+            view?.apply {
+                showResourceAddedSnackbar()
+                resourcePostCreateAction(resourceId)
+            }
+        }
     }
 
     private fun initRefresh() {

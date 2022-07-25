@@ -23,6 +23,7 @@ dependencies {
     implementation project(':home')
     implementation project(':security')
     implementation project(':data')
+    implementation project(':gopenpgp')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

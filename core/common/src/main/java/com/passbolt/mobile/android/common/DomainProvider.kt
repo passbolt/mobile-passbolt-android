@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.autofill.resources
+package com.passbolt.mobile.android.common
 
 import java.net.URL
 

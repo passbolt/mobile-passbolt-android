@@ -21,8 +21,11 @@
     <string name="save">Save</string>
     <string name="apply">Apply</string>
     <string name="confirm">Confirm</string>
+    <string name="suggested">Suggested</string>
+    <string name="other">Other</string>
 
     <string name="common_failure">Something went wrong!</string>
+    <string name="common_failure_format">Something went wrong![%s]</string>
     <string name="common_refresh">Refresh</string>
     <string name="common_sign_out">Sign out</string>
 

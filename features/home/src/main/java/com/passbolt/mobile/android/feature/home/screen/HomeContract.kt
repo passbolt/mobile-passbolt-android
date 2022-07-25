@@ -31,11 +31,12 @@ import kotlinx.coroutines.flow.Flow
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Suppress("TooManyFunctions") // TODO MOB-321
+@Suppress("TooManyFunctions", "LongParameterList") // TODO MOB-321
 interface HomeContract {
 
-    interface View : BaseAuthenticatedContract.View {
+    interface View : BaseAuthenticatedContract.View, ResourceHandlingStrategy {
         fun showItems(
+            suggestedResources: List<ResourceModel>,
             resourceList: List<ResourceModel>,
             foldersList: List<FolderWithCount>,
             tagsList: List<TagWithCount>,
@@ -102,7 +103,7 @@ interface HomeContract {
         fun userAuthenticated()
         fun searchClearClick()
         fun menuCopyDescriptionClick()
-        fun newResourceCreated()
+        fun newResourceCreated(resourceId: String?)
         fun menuDeleteClick()
         fun resourceDeleted(resourceName: String)
         fun menuEditClick()
@@ -116,7 +117,12 @@ interface HomeContract {
         fun sharedWithMeClick()
         fun ownedByMeClick()
         fun foldersClick()
-        fun argsRetrieved(homeDisplayView: HomeDisplayViewModel?, hasPreviousEntry: Boolean)
+        fun argsRetrieved(
+            showSuggestedModel: ShowSuggestedModel,
+            homeDisplayView: HomeDisplayViewModel?,
+            hasPreviousEntry: Boolean
+        )
+
         fun folderItemClick(folderModel: FolderWithCount)
         fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>)
         fun createResourceClick()
