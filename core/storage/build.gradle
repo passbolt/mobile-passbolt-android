@@ -22,7 +22,6 @@ dependencies {
     androidTestImplementation libs.test.coroutinesTest
     androidTestImplementation libs.test.androidTestsRunner
     androidTestImplementation libs.test.androidTestRules
-    androidTestImplementation libs.test.androidTest
 }
 
 android {

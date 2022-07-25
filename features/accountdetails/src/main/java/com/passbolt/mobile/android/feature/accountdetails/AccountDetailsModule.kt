@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.accountdetails
 
-import com.passbolt.mobile.android.feature.accountdetails.screen.accountDetailsScreenModule
+import com.passbolt.mobile.android.feature.accountdetails.screen.accountDetailsModule
 import org.koin.dsl.module
 
 /**
@@ -27,5 +27,5 @@ import org.koin.dsl.module
  */
 
 val accountDetailsModule = module {
-    accountDetailsScreenModule()
+    accountDetailsModule()
 }

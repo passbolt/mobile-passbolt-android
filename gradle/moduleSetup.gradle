@@ -30,16 +30,6 @@ def setupModule(isAndroid, isAndroidComponent) {
                 }
             }
 
-            compileOptions {
-                coreLibraryDesugaringEnabled true
-                sourceCompatibility JavaVersion.VERSION_1_8
-                targetCompatibility JavaVersion.VERSION_1_8
-            }
-
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_1_8.toString()
-            }
-
             lintOptions {
                 abortOnError true
                 checkReleaseBuilds false
@@ -59,9 +49,6 @@ def setupModule(isAndroid, isAndroidComponent) {
                 }
             }
         }
-    } else {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
 

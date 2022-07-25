@@ -132,6 +132,10 @@ class AutofillResourcesPresenter(
             is SecretInteractor.Output.DecryptFailure -> errorAction.invoke(output.error.message)
             is SecretInteractor.Output.FetchFailure -> errorAction.invoke(output.exception.message)
             is SecretInteractor.Output.Success -> successAction(output.decryptedSecret)
+            is SecretInteractor.Output.Unauthorized -> {
+                // can be ignored - runAuthenticatedOperation handles it
+                Timber.d("Unauthorized during decrypting secret")
+            }
         }
     }
 

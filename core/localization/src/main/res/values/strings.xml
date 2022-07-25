@@ -25,6 +25,7 @@
     <string name="other">Other</string>
 
     <string name="common_failure">Something went wrong!</string>
+    <string name="common_network_failure">There was a connection issue</string>
     <string name="common_failure_format">Something went wrong![%s]</string>
     <string name="common_refresh">Refresh</string>
     <string name="common_sign_out">Sign out</string>

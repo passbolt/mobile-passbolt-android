@@ -19,7 +19,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserWithAvatar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -198,7 +198,7 @@ class ResourceDetailsPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should show decrypt error correct`() {
+    fun `view should show decrypt error correct`() = runTest {
         mockSecretInterActor.stub {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(
                 SecretInteractor.Output.DecryptFailure(
@@ -279,7 +279,7 @@ class ResourceDetailsPresenterTest : KoinTest {
     }
 
     @Test
-    fun `delete resource should show confirmation dialog, delete and close details`() = runBlockingTest {
+    fun `delete resource should show confirmation dialog, delete and close details`() = runTest {
         whenever(mockDeleteResourceUseCase.execute(any()))
             .thenReturn(DeleteResourceUseCase.Output.Success)
 
@@ -298,7 +298,7 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `delete resource should show error when there is deletion error`() = runBlockingTest {
+    fun `delete resource should show error when there is deletion error`() = runTest {
         whenever(mockDeleteResourceUseCase.execute(any()))
             .thenReturn(
                 DeleteResourceUseCase.Output.Failure<String>(
@@ -324,7 +324,7 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `resource permissions should be displayed`() = runBlockingTest {
+    fun `resource permissions should be displayed`() = runTest {
         presenter.argsReceived(
             RESOURCE_MODEL.resourceId,
             100,

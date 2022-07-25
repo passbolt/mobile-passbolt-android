@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -67,40 +67,38 @@ class AuthenticationMainPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should be initialized with no account list if on setup`() =
-        runBlockingTest {
-            whenever(mockGetSelectedAccountUseCase.execute(Unit))
-                .doReturn(GetSelectedAccountUseCase.Output(null))
+    fun `view should be initialized with no account list if on setup`() = runTest {
+        whenever(mockGetSelectedAccountUseCase.execute(Unit))
+            .doReturn(GetSelectedAccountUseCase.Output(null))
 
-            presenter.bundleRetrieved(ActivityIntents.AuthConfig.Setup, USER_ID)
+        presenter.bundleRetrieved(ActivityIntents.AuthConfig.Setup, USER_ID)
 
-            verify(mockView).initNavWithoutAccountList(USER_ID)
+        verify(mockView).initNavWithoutAccountList(USER_ID)
+        verifyNoMoreInteractions(mockView)
+    }
+
+    @Test
+    fun `view should be initialized with account list if not on setup`() = runTest {
+        whenever(mockGetSelectedAccountUseCase.execute(Unit))
+            .doReturn(GetSelectedAccountUseCase.Output(null))
+
+        val testForConfigurationValue: (config: ActivityIntents.AuthConfig) -> Unit = {
+            reset(mockView)
+            presenter.bundleRetrieved(it, null)
+            verify(mockView).initNavWithAccountList()
             verifyNoMoreInteractions(mockView)
         }
 
-    @Test
-    fun `view should be initialized with account list if not on setup`() =
-        runBlockingTest {
-            whenever(mockGetSelectedAccountUseCase.execute(Unit))
-                .doReturn(GetSelectedAccountUseCase.Output(null))
-
-            val testForConfigurationValue: (config: ActivityIntents.AuthConfig) -> Unit = {
-                reset(mockView)
-                presenter.bundleRetrieved(it, null)
-                verify(mockView).initNavWithAccountList()
-                verifyNoMoreInteractions(mockView)
-            }
-
-            ActivityIntents.AuthConfig::class.nestedClasses
-                .filter { it.objectInstance != null }
-                .map { it.objectInstance as ActivityIntents.AuthConfig }
-                .filter { it !is ActivityIntents.AuthConfig.Setup }
-                .forEach { testForConfigurationValue(it) }
-        }
+        ActivityIntents.AuthConfig::class.nestedClasses
+            .filter { it.objectInstance != null }
+            .map { it.objectInstance as ActivityIntents.AuthConfig }
+            .filter { it !is ActivityIntents.AuthConfig.Setup }
+            .forEach { testForConfigurationValue(it) }
+    }
 
     @Test
     fun `view should be initialized with account list and navigate to auth if selected account during auth`() =
-        runBlockingTest {
+        runTest {
             whenever(mockGetSelectedAccountUseCase.execute(Unit))
                 .doReturn(GetSelectedAccountUseCase.Output(USER_ID))
             whenever(mockGetAccountDataUseCase.execute(any()))

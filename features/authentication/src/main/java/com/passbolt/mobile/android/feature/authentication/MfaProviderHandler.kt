@@ -32,27 +32,27 @@ class MfaProviderHandler {
         totpAction: (Boolean) -> Unit,
         unknownProviderAction: () -> Unit
     ) {
-        val firstProvider = reason.providers?.firstOrNull {
-            it == Reason.Mfa.MfaProvider.YUBIKEY ||
-                    it == Reason.Mfa.MfaProvider.TOTP
-        }
-
-        if (firstProvider != null) {
-            when (reason.providers?.first()) {
-                Reason.Mfa.MfaProvider.YUBIKEY ->
-                    yubikeyAction.invoke(
-                        reason.providers?.contains(
-                            Reason.Mfa.MfaProvider.TOTP
-                        ) ?: false
-                    )
-                Reason.Mfa.MfaProvider.TOTP -> totpAction.invoke(
-                    reason.providers?.contains(
-                        Reason.Mfa.MfaProvider.YUBIKEY
-                    ) ?: false
-                )
+        reason
+            .providers
+            ?.firstOrNull {
+                it == Reason.Mfa.MfaProvider.YUBIKEY || it == Reason.Mfa.MfaProvider.TOTP
             }
-        } else {
-            unknownProviderAction.invoke()
-        }
+            ?.let { firstProvider ->
+                when (firstProvider) {
+                    Reason.Mfa.MfaProvider.YUBIKEY ->
+                        yubikeyAction.invoke(
+                            reason.providers?.contains(
+                                Reason.Mfa.MfaProvider.TOTP
+                            ) ?: false
+                        )
+                    Reason.Mfa.MfaProvider.TOTP ->
+                        totpAction.invoke(
+                            reason.providers?.contains(
+                                Reason.Mfa.MfaProvider.YUBIKEY
+                            ) ?: false
+                        )
+                }
+            }
+            ?: run { unknownProviderAction() }
     }
 }

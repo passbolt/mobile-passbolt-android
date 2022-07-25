@@ -38,7 +38,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
@@ -567,6 +566,10 @@ class HomePresenter(
             is SecretInteractor.Output.FetchFailure -> view?.showFetchFailure()
             is SecretInteractor.Output.Success -> {
                 action(output.decryptedSecret)
+            }
+            is SecretInteractor.Output.Unauthorized -> {
+                // can be ignored - runAuthenticatedOperation handles it
+                Timber.d("Unauthorized during decrypting secret")
             }
         }
     }

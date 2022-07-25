@@ -7,7 +7,6 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -58,7 +57,6 @@ class SortByModifiedDateTest {
         db.close()
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun testSortingWithNoTimeZones() = runBlocking {
     resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3))
@@ -71,7 +69,6 @@ class SortByModifiedDateTest {
             .isInOrder(compareByDescending<Long> { it })
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun testSortingWithTimeZones() = runBlocking {
         resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_1_ZONE_MINUS, RESOURCE_1_ZONE_PLUS))

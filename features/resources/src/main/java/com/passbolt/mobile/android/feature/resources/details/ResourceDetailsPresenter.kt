@@ -207,6 +207,10 @@ class ResourceDetailsPresenter(
                 is SecretInteractor.Output.Success -> {
                     action(output.decryptedSecret)
                 }
+                is SecretInteractor.Output.Unauthorized -> {
+                    // can be ignored - runAuthenticatedOperation handles it
+                    Timber.d("Unauthorized during decrypting secret")
+                }
             }
         }
     }

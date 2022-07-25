@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.challengeTestModule
 import com.passbolt.mobile.android.feature.base.readFromFile
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.koin.test.KoinTest
@@ -28,7 +28,7 @@ class ChallengeVerifierTest : KoinTest {
     }
 
     @Test
-    fun `challenge not verified when token expired`() = runBlockingTest {
+    fun `challenge not verified when token expired`() = runTest {
         val challengeResponseDto = ChallengeResponseDto(
             "", "", "", accessToken, "", null
         )
@@ -37,7 +37,7 @@ class ChallengeVerifierTest : KoinTest {
     }
 
     @Test
-    fun `challenge not verified when wrong access token`() = runBlockingTest {
+    fun `challenge not verified when wrong access token`() = runTest {
         val challengeResponseDto = ChallengeResponseDto(
             "", "", "", "wrong access", "", null
         )
@@ -46,7 +46,7 @@ class ChallengeVerifierTest : KoinTest {
     }
 
     @Test
-    fun `challenge not verified when wrong public key`() = runBlockingTest {
+    fun `challenge not verified when wrong public key`() = runTest {
         val challengeResponseDto = ChallengeResponseDto(
             "", "", "", accessToken, "", null
         )

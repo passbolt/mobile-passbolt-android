@@ -21,6 +21,7 @@ interface EnterTotpContract {
         fun notifyLoginSucceeded()
         fun setTotpInputRed()
         fun setTotpInputBlack()
+        fun showNetworkError()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

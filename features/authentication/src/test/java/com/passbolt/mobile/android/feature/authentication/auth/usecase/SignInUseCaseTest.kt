@@ -1,12 +1,9 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
 import com.google.common.truth.Truth.assertThat
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.stub
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Rule
@@ -15,6 +12,9 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 import retrofit2.HttpException
 import retrofit2.Response
 import java.net.HttpURLConnection
@@ -54,7 +54,7 @@ class SignInUseCaseTest : KoinTest {
     }
 
     @Test
-    fun `test account not found should be mapped correct`() = runBlockingTest {
+    fun `test account not found should be mapped correct`() = runTest {
         mockAuthRepository.stub {
             onBlocking { signIn(any(), any()) }.doReturn(
                 NetworkResult.Failure.ServerError(

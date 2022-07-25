@@ -1,16 +1,16 @@
 package com.password.mobile.android.feature.home.switchaccount
 
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountContract
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 class SwitchAccountTest : KoinTest {
@@ -25,7 +25,7 @@ class SwitchAccountTest : KoinTest {
     }
 
     @Test
-    fun `sign out click should sign out the user`() = runBlockingTest {
+    fun `sign out click should sign out the user`() = runTest {
         presenter.attach(view)
         presenter.signOutClick()
         presenter.signOutConfirmed()

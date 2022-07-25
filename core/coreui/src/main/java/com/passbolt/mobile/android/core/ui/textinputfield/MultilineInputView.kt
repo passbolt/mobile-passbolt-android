@@ -66,7 +66,7 @@ class MultilineInputView @JvmOverloads constructor(
 
     private fun showIconTooltip() {
         binding.icon.showAlignLeft(createBalloon(context) {
-            setArrowOrientation(ArrowOrientation.RIGHT)
+            setArrowOrientation(ArrowOrientation.END)
             setTextResource(R.string.password_description_encrypted)
             paddingBottom = TOOLTIP_PADDING
             paddingLeft = TOOLTIP_PADDING

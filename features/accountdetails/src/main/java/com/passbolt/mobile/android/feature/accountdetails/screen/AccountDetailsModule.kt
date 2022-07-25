@@ -25,7 +25,7 @@ import org.koin.core.module.Module
  * @since v1.0
  */
 
-fun Module.accountDetailsScreenModule() {
+fun Module.accountDetailsModule() {
     scope<AccountDetailsFragment> {
         scoped<AccountDetailsContract.Presenter> {
             AccountDetailsPresenter(

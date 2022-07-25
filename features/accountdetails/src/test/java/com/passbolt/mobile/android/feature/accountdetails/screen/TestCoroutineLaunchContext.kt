@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.accountdetails.screen
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -30,7 +30,7 @@ import kotlin.coroutines.CoroutineContext
 
 @ExperimentalCoroutinesApi
 class TestCoroutineLaunchContext : CoroutineLaunchContext {
-    override val ui: CoroutineContext = TestCoroutineDispatcher()
-    override val default = TestCoroutineDispatcher()
-    override val io = TestCoroutineDispatcher()
+    override val ui: CoroutineContext = UnconfinedTestDispatcher()
+    override val default = UnconfinedTestDispatcher()
+    override val io = UnconfinedTestDispatcher()
 }
