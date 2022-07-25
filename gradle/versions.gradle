@@ -25,7 +25,7 @@ ext {
             coroutinesTest: "1.6.4",
             androidTestsRunner: "1.4.0",
             androidTestRules: "1.4.0",
-            androidTest: "3.1.0"
+            androidTestKtx: "1.4.0"
         ],
         quality: [
             ktlint: "0.36.0",
@@ -117,6 +117,7 @@ ext {
             coroutinesTest: "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.test.coroutinesTest}",
             androidTestsRunner: "androidx.test:runner:${versions.test.androidTestsRunner}",
             androidTestRules: "androidx.test:rules:${versions.test.androidTestRules}",
+            androidTestKtx: "androidx.test:core-ktx:${versions.test.androidTestKtx}"
         ],
         quality: [
             ktlint: "com.pinterest:ktlint:${versions.quality.ktlint}",

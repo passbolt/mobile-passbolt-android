@@ -31,6 +31,8 @@ dependencies {
     implementation libs.fastAdapter.binding
     implementation libs.fastAdapter.core
     implementation libs.fastAdapter.diff
+
+    testImplementation project(':commontest')
 }
 
 android {

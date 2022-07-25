@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.resources.userspermissiondetails
 
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.users.GetLocalUserUseCase
-import com.passbolt.mobile.android.feature.resources.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.feature.resources.userpermissionsdetails.UserPermissionsContract
 import com.passbolt.mobile.android.feature.resources.userpermissionsdetails.UserPermissionsPresenter
 import org.koin.dsl.module
