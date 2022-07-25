@@ -7,6 +7,7 @@
     <application>
         <service
             android:name=".autofill.PassboltAutofillService"
+            android:exported="false"
             android:label="@string/autofill_service_name"
             android:permission="android.permission.BIND_AUTOFILL_SERVICE">
             <intent-filter>
@@ -18,6 +19,7 @@
         </service>
         <service
             android:name=".accessibility.AccessibilityService"
+            android:exported="false"
             android:label="@string/autofill_service_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
