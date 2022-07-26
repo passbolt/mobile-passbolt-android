@@ -4,7 +4,7 @@ ext {
 
     projectCompileSdk = 31
     projectMinSdk = 29
-    projectTargetSdk = 30
+    projectTargetSdk = 31
 
     versions = [
         androidGradlePlugin: '7.2.1',

@@ -3,8 +3,8 @@ FROM openjdk:18.0.1-slim-bullseye
 ENV ANDROID_HOME="/usr/local/android-sdk" \
     ANDROID_SDK_ROOT="/usr/local/android-sdk" \
     ANDROID_VERSION=31 \
-    ANDROID_BUILD_TOOLS_VERSION="30.0.2" \
-    ANDROID_SDK_TOOLS_VERSION="8092744"
+    ANDROID_BUILD_TOOLS_VERSION="33.0.0" \
+    ANDROID_SDK_TOOLS_VERSION="8512546"
 
 # install required tools
 RUN apt-get --quiet update --yes \

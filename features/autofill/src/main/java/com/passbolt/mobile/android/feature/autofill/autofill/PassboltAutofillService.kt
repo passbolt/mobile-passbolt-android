@@ -94,7 +94,7 @@ class PassboltAutofillService : AutofillService(), KoinComponent {
         applicationContext,
         AUTOFILL_RESOURCES_REQUEST_CODE,
         ActivityIntents.autofill(this, AutofillMode.AUTOFILL.name, uri),
-        PendingIntent.FLAG_CANCEL_CURRENT
+        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
     )
 
     private companion object {
