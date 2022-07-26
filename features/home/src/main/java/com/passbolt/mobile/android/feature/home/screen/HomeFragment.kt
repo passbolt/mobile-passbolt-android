@@ -42,6 +42,7 @@ import com.passbolt.mobile.android.core.commonresource.TagWithCountItem
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
@@ -89,6 +90,7 @@ class HomeFragment :
     FiltersMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
+    override val appContext = AppContext.APP
     private val suggestedHeaderItemAdapter: ItemAdapter<PasswordHeaderItem> by inject(
         named(SUGGESTED_HEADER_ITEM_ADAPTER)
     )
@@ -127,7 +129,16 @@ class HomeFragment :
     private val authenticationResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
-                presenter.userAuthenticated()
+                // reinitialize for the switched account
+                presenter.detach()
+                val hasPreviousEntry = navController.previousBackStackEntry != null
+                presenter.attach(this)
+                presenter.argsRetrieved(
+                    resourceHandlingStrategy.showSuggestedModel(),
+                    homeDisplayView = null,
+                    hasPreviousEntry,
+                    resourceHandlingStrategy.shouldShowCloseButton()
+                )
             }
         }
 
@@ -475,7 +486,7 @@ class HomeFragment :
     }
 
     override fun navigateToSwitchAccount() {
-        SwitchAccountBottomSheetFragment()
+        SwitchAccountBottomSheetFragment.newInstance(resourceHandlingStrategy.appContext)
             .show(childFragmentManager, SwitchAccountBottomSheetFragment::class.java.name)
     }
 
@@ -540,11 +551,32 @@ class HomeFragment :
         presenter.switchAccountManageAccountClick()
     }
 
+    override fun switchAccountClick(userId: String) {
+        presenter.switchAccountClick(userId)
+    }
+
     override fun navigateToManageAccounts() {
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
                 ActivityIntents.AuthConfig.ManageAccount
+            )
+        )
+    }
+
+    override fun navigateToSwitchedAccountAuth(userId: String) {
+        if (resourceHandlingStrategy.appContext == AppContext.APP) {
+            requireActivity().finishAffinity()
+        }
+        authenticationResult.launch(
+            ActivityIntents.authentication(
+                requireContext(),
+                when (resourceHandlingStrategy.appContext) {
+                    AppContext.APP -> ActivityIntents.AuthConfig.Startup
+                    AppContext.AUTOFILL -> ActivityIntents.AuthConfig.RefreshSession
+                },
+                userId = userId,
+                appContext = resourceHandlingStrategy.appContext
             )
         )
     }

@@ -641,6 +641,10 @@ class HomePresenter(
         view?.navigateToManageAccounts()
     }
 
+    override fun switchAccountClick(userId: String) {
+        view?.navigateToSwitchedAccountAuth(userId)
+    }
+
     override fun filtersClick() {
         view?.showFiltersMenu(homeView)
     }

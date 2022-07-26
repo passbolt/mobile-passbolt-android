@@ -1,5 +1,6 @@
 package com.password.mobile.android.feature.home.switchaccount
 
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountContract
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -39,9 +40,11 @@ class SwitchAccountTest : KoinTest {
 
     @Test
     fun `account list should be shown on ui`() {
-        val uiMapped = switchAccountModelMapper.map(accountsList)
+        val appContext = AppContext.APP
+        val uiMapped = switchAccountModelMapper.map(accountsList, appContext)
 
         presenter.attach(view)
+        presenter.argsRetrieved(appContext)
 
         verify(view).showAccountsList(uiMapped)
     }

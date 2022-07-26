@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.mappers
 
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.entity.account.Account
 import com.passbolt.mobile.android.mappers.comparator.SwitchAccountUiModelComparator
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -32,7 +33,7 @@ class SwitchAccountModelMapper(
     private val comparator: SwitchAccountUiModelComparator
 ) {
 
-    fun map(accounts: List<Account>): List<SwitchAccountUiModel> {
+    fun map(accounts: List<Account>, appContext: AppContext): List<SwitchAccountUiModel> {
         val currentAccount = selectedAccountUseCase.execute(Unit).selectedAccount
         return accounts
             .map {
@@ -51,7 +52,13 @@ class SwitchAccountModelMapper(
                     )
                 }
             }
-            .plus(SwitchAccountUiModel.ManageAccountsItem)
+            .let {
+                if (appContext == AppContext.APP) {
+                    it + SwitchAccountUiModel.ManageAccountsItem
+                } else {
+                    it
+                }
+            }
             .sortedWith(comparator)
     }
 
