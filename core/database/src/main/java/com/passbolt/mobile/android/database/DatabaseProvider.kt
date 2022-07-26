@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.database.migrations.Migration5to6
 import com.passbolt.mobile.android.database.migrations.Migration6to7
 import com.passbolt.mobile.android.database.migrations.Migration7to8
 import com.passbolt.mobile.android.database.migrations.Migration8to9
+import com.passbolt.mobile.android.database.migrations.Migration9to10
 import com.passbolt.mobile.android.storage.usecase.database.GetResourcesDatabasePassphraseUseCase
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SupportFactory
@@ -58,7 +59,7 @@ class DatabaseProvider(
         )
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
-                Migration6to7, Migration7to8, Migration8to9
+                Migration6to7, Migration7to8, Migration8to9, Migration9to10
             )
             .openHelperFactory(factory)
             .build()

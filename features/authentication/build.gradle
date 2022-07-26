@@ -37,7 +37,6 @@ dependencies {
     implementation libs.fastAdapter.utils
     implementation libs.fastAdapter.diff
     implementation libs.di.koin
-    implementation libs.di.koinExt
     implementation libs.coil.core
     implementation libs.coil.base
     implementation libs.gson

@@ -45,7 +45,7 @@ class ResourceModelMapper(
             url = resource.uri,
             description = resource.description,
             permission = permissionsModelMapper.map(resource.permission.type),
-            isFavourite = resource.favorite != null,
+            favouriteId = resource.favorite?.id,
             modified = ZonedDateTime.parse(resource.modified)
         )
 
@@ -59,7 +59,7 @@ class ResourceModelMapper(
             url = resourceModel.url,
             username = resourceModel.username,
             resourceTypeId = resourceModel.resourceTypeId,
-            isFavourite = resourceModel.isFavourite,
+            favouriteId = resourceModel.favouriteId,
             modified = resourceModel.modified
         )
 
@@ -75,7 +75,7 @@ class ResourceModelMapper(
             url = resourceEntity.url,
             description = resourceEntity.description,
             permission = permissionsModelMapper.map(resourceEntity.resourcePermission),
-            isFavourite = resourceEntity.isFavourite,
+            favouriteId = resourceEntity.favouriteId,
             modified = resourceEntity.modified
         )
 }

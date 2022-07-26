@@ -66,6 +66,9 @@ interface ResourceDetailsContract {
         fun navigateToResourcePermissions(resourceId: String, mode: ResourcePermissionsMode)
         fun setResourceEditedResult(resourceName: String)
         fun showResourceSharedSnackbar()
+        fun showAddToFavouritesFailure()
+        fun showFavouriteStar()
+        fun hideFavouriteStar()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -89,5 +92,6 @@ interface ResourceDetailsContract {
         fun sharedWithClick()
         fun menuShareClick()
         fun resourceShared()
+        fun favouriteClick(option: ResourceMoreMenuModel.FavouriteOption)
     }
 }

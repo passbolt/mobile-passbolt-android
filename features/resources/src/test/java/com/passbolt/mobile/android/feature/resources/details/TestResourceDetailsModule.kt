@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.resources.details
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.commonresource.FavouritesInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -60,22 +61,25 @@ internal val resourceMenuModelMapper = ResourceMenuModelMapper()
 internal val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
 internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
+internal val mockFavouritesInteractor = mock<FavouritesInteractor>()
 
 internal val testResourceDetailsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
     factory<ResourceDetailsContract.Presenter> {
         ResourceDetailsPresenter(
             secretInteractor = mockSecretInterActor,
-            coroutineLaunchContext = get(),
             databaseProvider = mockDatabaseProvider,
             getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
-            secretParser = mockSecretParser,
             resourceTypeFactory = mockResourceTypeFactory,
+            secretParser = mockSecretParser,
             getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
             resourceMenuModelMapper = resourceMenuModelMapper,
             deleteResourceUseCase = mockDeleteResourceUseCase,
             getLocalResourceUseCase = mockGetLocalResourceUseCase,
-            getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase
+            getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
+            coroutineLaunchContext = get(),
+            favouritesInteractor = mockFavouritesInteractor
+
         )
     }
 }

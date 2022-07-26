@@ -336,7 +336,7 @@ class HomePresenterTest : KoinTest {
             "",
             "",
             ResourcePermission.READ,
-            false,
+            null,
             ZonedDateTime.now()
         )
         mockAccountData(null)
@@ -367,7 +367,7 @@ class HomePresenterTest : KoinTest {
             url = "",
             description = "desc",
             permission = ResourcePermission.READ,
-            isFavourite = false,
+            favouriteId = null,
             modified = ZonedDateTime.now()
         )
         val menuModel = resourceMenuModelMapper.map(model)
@@ -720,7 +720,7 @@ class HomePresenterTest : KoinTest {
             initials = "",
             description = "desc",
             permission = ResourcePermission.READ,
-            isFavourite = false,
+            favouriteId = null,
             modified = ZonedDateTime.now()
         ), ResourceModel(
             resourceId = "id2",
@@ -733,7 +733,7 @@ class HomePresenterTest : KoinTest {
             initials = "",
             description = "desc",
             permission = ResourcePermission.READ,
-            isFavourite = false,
+            favouriteId = null,
             modified = ZonedDateTime.now()
         )
     )
@@ -774,7 +774,7 @@ class HomePresenterTest : KoinTest {
             URL,
             DESCRIPTION,
             ResourcePermission.READ,
-            false,
+            null,
             ZonedDateTime.now()
         )
         private val DECRYPTED_SECRET = "secret".toByteArray()

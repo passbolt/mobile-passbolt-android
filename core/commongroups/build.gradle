@@ -21,7 +21,6 @@ dependencies {
     implementation project(':coreui')
 
     implementation libs.di.koin
-    implementation libs.di.koinExt
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
     implementation libs.fastAdapter.core

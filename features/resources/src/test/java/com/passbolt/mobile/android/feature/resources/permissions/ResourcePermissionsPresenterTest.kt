@@ -262,7 +262,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
             URL,
             DESCRIPTION,
             ResourcePermission.READ,
-            false,
+            null,
             ZonedDateTime.now()
         )
     }

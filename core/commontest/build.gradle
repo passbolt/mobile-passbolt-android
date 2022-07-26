@@ -7,6 +7,5 @@ dependencies {
     implementation project(":mvp")
 
     implementation libs.di.koin
-    implementation libs.di.koinExt
     implementation libs.test.coroutinesTest
 }

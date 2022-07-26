@@ -40,15 +40,18 @@ data class ResourceModel(
     val url: String?,
     val description: String?,
     val permission: ResourcePermission,
-    val isFavourite: Boolean,
+    val favouriteId: String?,
     val modified: ZonedDateTime,
     var loaderVisible: Boolean = false,
     var clickable: Boolean = true,
     override val searchCriteria: String = "$name$username$url"
 ) : Parcelable, Searchable
 
-data class ResourceModelWithTagsAndPermissions(
+fun ResourceModel.isFavourite() = favouriteId != null
+
+data class ResourceModelWithAttributes(
     val resourceModel: ResourceModel,
     val resourceTags: List<TagModel>,
-    val resourcePermissions: List<PermissionModel>
+    val resourcePermissions: List<PermissionModel>,
+    val favouriteId: String?
 )

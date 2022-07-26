@@ -28,5 +28,7 @@ interface HomeDataRefreshExecutor {
 
     fun performFullDataRefresh()
 
+    fun performLocalDataRefresh()
+
     fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished>
 }

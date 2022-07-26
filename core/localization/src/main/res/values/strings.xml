@@ -23,6 +23,7 @@
     <string name="confirm">Confirm</string>
     <string name="suggested">Suggested</string>
     <string name="other">Other</string>
+    <string name="favourites_failure">Could not modify favourite</string>
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_network_failure">There was a connection issue</string>
@@ -59,6 +60,8 @@
     <string name="more_edit">Edit password</string>
     <string name="more_delete">Delete password</string>
     <string name="more_share">Share password</string>
+    <string name="more_add_to_favourite">Add to favourite</string>
+    <string name="more_remove_from_favourite">Remove from favourite</string>
 
     <string name="dialog_server_not_reachable_title">Server was not reachable!</string>
     <string name="dialog_server_not_reachable_message">%s cannot be reached. Please try again</string>

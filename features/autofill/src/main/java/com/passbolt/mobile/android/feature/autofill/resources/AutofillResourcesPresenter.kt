@@ -97,6 +97,12 @@ class AutofillResourcesPresenter(
         }
     }
 
+    override fun performLocalDataRefresh() {
+        scope.launch {
+            _dataRefreshStatusFlow.emit(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        }
+    }
+
     override fun itemClick(resourceModel: ResourceModel) {
         view?.showProgress()
         scope.launch {

@@ -12,7 +12,6 @@ dependencies {
     implementation project(":common")
 
     implementation libs.di.koin
-    implementation libs.di.koinExt
 
     androidTestImplementation(name: "Gopenpgp", ext: "aar")
     androidTestImplementation libs.di.koinTest

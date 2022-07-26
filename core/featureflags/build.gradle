@@ -15,7 +15,6 @@ dependencies {
     implementation project(':entity')
 
     implementation libs.di.koin
-    implementation libs.di.koinExt
 }
 
 android {

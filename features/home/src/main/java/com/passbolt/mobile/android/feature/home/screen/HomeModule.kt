@@ -62,6 +62,7 @@ fun Module.homeModule() {
                 resourceMenuModelMapper = get(),
                 deleteResourceUseCase = get(),
                 getLocalResourcesUseCase = get(),
+                getLocalResourcesFilteredByTag = get(),
                 getLocalSubFoldersForFolderUseCase = get(),
                 getLocalResourcesAndFoldersUseCase = get(),
                 getLocalResourcesFiltered = get(),
@@ -69,10 +70,10 @@ fun Module.homeModule() {
                 getLocalResourcesWithTagUseCase = get(),
                 getLocalGroupsWithShareItemsCountUseCase = get(),
                 getLocalResourcesWithGroupsUseCase = get(),
-                getLocalResourcesFilteredByTag = get(),
-                homeModelMapper = get(),
                 getHomeDisplayViewPrefsUseCase = get(),
-                domainProvider = get()
+                homeModelMapper = get(),
+                domainProvider = get(),
+                favouritesInteractor = get()
             )
         }
         declareHomeListAdapters()

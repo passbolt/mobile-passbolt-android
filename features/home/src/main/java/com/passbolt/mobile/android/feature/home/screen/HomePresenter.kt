@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.commonresource.FavouritesInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
@@ -32,6 +33,9 @@ import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
 import com.passbolt.mobile.android.ui.TagWithCount
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -73,7 +77,7 @@ import timber.log.Timber
  * shared with me, etc.) the reload is done from the database only. To refresh from backend again users can do the
  * swipe to refresh gesture.
  */
-@Suppress("TooManyFunctions") // TODO MOB-321
+@Suppress("TooManyFunctions", "LargeClass") // TODO MOB-321
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
@@ -94,7 +98,8 @@ class HomePresenter(
     private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase,
     private val getHomeDisplayViewPrefsUseCase: GetHomeDisaplyViewPrefsUseCase,
     private val homeModelMapper: HomeDisplayViewMapper,
-    private val domainProvider: DomainProvider
+    private val domainProvider: DomainProvider,
+    private val favouritesInteractor: FavouritesInteractor
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinComponent {
 
     override var view: HomeContract.View? = null
@@ -750,6 +755,30 @@ class HomePresenter(
 
     override fun closeClick() {
         view?.navigateToHome()
+    }
+
+    override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
+        view?.showProgress()
+        scope.launch {
+            val output = when (option) {
+                ADD_TO_FAVOURITES ->
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        favouritesInteractor.addToFavouritesAndUpdateLocal(currentMoreMenuResource!!)
+                    }
+                REMOVE_FROM_FAVOURITES ->
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        favouritesInteractor.removeFromFavouritesAndUpdateLocal(currentMoreMenuResource!!)
+                    }
+            }
+            view?.hideProgress()
+            when (output) {
+                is FavouritesInteractor.Output.Failure -> view?.showAddToFavouritesFailure()
+                is FavouritesInteractor.Output.Success -> {
+                    Timber.d("Added to favourites")
+                    view?.performLocalRefresh()
+                }
+            }
+        }
     }
 
     companion object {

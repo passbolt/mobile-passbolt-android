@@ -51,6 +51,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageView
+                android:id="@+id/favouriteIcon"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_marginTop="-12dp"
+                android:layout_marginEnd="-12dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_favourite_star_filled"
+                app:layout_constraintEnd_toEndOf="@id/icon"
+                app:layout_constraintTop_toTopOf="@id/icon" />
+
             <TextView
                 android:id="@+id/name"
                 style="@style/Heading1Text"

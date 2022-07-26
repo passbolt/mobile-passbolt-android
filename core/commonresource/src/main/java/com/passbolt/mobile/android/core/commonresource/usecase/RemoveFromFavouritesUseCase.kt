@@ -1,13 +1,11 @@
-package com.passbolt.mobile.android.core.commonresource
+package com.passbolt.mobile.android.core.commonresource.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
-import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.passboltapi.favourites.FavouritesRepository
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,15 +29,14 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetResourcesUseCase(
-    private val resourceRepository: ResourceRepository,
-    private val mapper: ResourceModelMapper
-) : AsyncUseCase<Unit, GetResourcesUseCase.Output> {
+class RemoveFromFavouritesUseCase(
+    private val favouritesRepository: FavouritesRepository
+) : AsyncUseCase<RemoveFromFavouritesUseCase.Input, RemoveFromFavouritesUseCase.Output> {
 
-    override suspend fun execute(input: Unit): Output =
-        when (val response = resourceRepository.getResources()) {
+    override suspend fun execute(input: Input) =
+        when (val response = favouritesRepository.removeFromFavourites(input.favouriteId)) {
             is NetworkResult.Failure -> Output.Failure(response)
-            is NetworkResult.Success -> Output.Success(response.value.body.map { mapper.map(it) })
+            is NetworkResult.Success -> Output.Success
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {
@@ -60,10 +57,12 @@ class GetResourcesUseCase(
                 }
             }
 
-        data class Success(
-            val resources: List<ResourceModel>
-        ) : Output()
+        object Success : Output()
 
         data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }
+
+    data class Input(
+        val favouriteId: String
+    )
 }

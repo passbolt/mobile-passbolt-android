@@ -12,7 +12,7 @@ ext {
         desugarJdkLibs: "1.0.9",
         kotlin: "1.7.10",
         coroutines: "1.6.4",
-        koin: "3.0.2",
+        koin: "3.2.0",
         quadrant: "1.7",
         test: [
             junit: "4.13.2",
@@ -91,9 +91,8 @@ ext {
         licensee: "app.cash.licensee:licensee-gradle-plugin:${versions.licensee}",
         dokka: "org.jetbrains.dokka:dokka-gradle-plugin:${versions.dokka}",
         di: [
-            koin: "io.insert-koin:koin-core:${versions.koin}",
-            koinExt: "io.insert-koin:koin-android-ext:${versions.koin}",
-            koinTest: "io.insert-koin:koin-android-ext:${versions.koin}",
+            koin: "io.insert-koin:koin-android:${versions.koin}",
+            koinTest: "io.insert-koin:koin-test:${versions.koin}",
             koinTestJUnit: "io.insert-koin:koin-test-junit4:${versions.koin}"
         ],
         quadrant: "gradle.plugin.com.gaelmarhic:quadrant:${versions.quadrant}",

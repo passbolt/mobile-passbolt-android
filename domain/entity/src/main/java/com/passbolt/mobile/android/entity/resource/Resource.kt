@@ -38,7 +38,7 @@ data class Resource(
     val username: String?,
     val description: String?,
     val resourceTypeId: String,
-    val isFavourite: Boolean,
+    val favouriteId: String?,
     val modified: ZonedDateTime
 )
 

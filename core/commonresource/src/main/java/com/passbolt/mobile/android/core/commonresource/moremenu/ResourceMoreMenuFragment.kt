@@ -5,13 +5,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.commonresource.R
 import com.passbolt.mobile.android.commonresource.databinding.ViewPasswordBottomsheetBinding
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
 
@@ -45,9 +48,7 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
     private lateinit var binding: ViewPasswordBottomsheetBinding
     private var listener: Listener? = null
     private val menuModel: ResourceMoreMenuModel by lifecycleAwareLazy {
-        requireNotNull(
-            requireArguments().getParcelable(EXTRA_RESOURCE_MENU_MODEL)
-        )
+        requireNotNull(requireArguments().getParcelable(EXTRA_RESOURCE_MENU_MODEL))
     }
 
     override fun onCreateView(
@@ -87,10 +88,35 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
             setDebouncingOnClickAndDismiss(copyUrl) { listener?.menuCopyUrlClick() }
             setDebouncingOnClickAndDismiss(copyUsername) { listener?.menuCopyUsernameClick() }
             setDebouncingOnClickAndDismiss(launchWebsite) { listener?.menuLaunchWebsiteClick() }
+            setDebouncingOnClickAndDismiss(favourite) { listener?.menuFavouriteClick(menuModel.favouriteOption) }
             setDebouncingOnClickAndDismiss(share) { listener?.menuShareClick() }
             setDebouncingOnClickAndDismiss(delete) { listener?.menuDeleteClick() }
             setDebouncingOnClickAndDismiss(edit) { listener?.menuEditClick() }
             setDebouncingOnClickAndDismiss(close)
+        }
+    }
+
+    override fun showAddToFavouritesButton() {
+        with(binding.favourite) {
+            text = getString(R.string.more_add_to_favourite)
+            setCompoundDrawablesRelativeWithIntrinsicBounds(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_to_favourite),
+                null,
+                null,
+                null
+            )
+        }
+    }
+
+    override fun showRemoveFromFavouritesButton() {
+        with(binding.favourite) {
+            text = getString(R.string.more_remove_from_favourite)
+            setCompoundDrawablesRelativeWithIntrinsicBounds(
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_remove_favourite),
+                null,
+                null,
+                null
+            )
         }
     }
 
@@ -130,6 +156,7 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
             }
     }
 
+    // TODO MOB-544 - create abstract handler for these actions to reduce duplication in presenters
     interface Listener {
         fun menuCopyPasswordClick()
         fun menuCopyDescriptionClick()
@@ -139,5 +166,6 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
         fun menuDeleteClick()
         fun menuEditClick()
         fun menuShareClick()
+        fun menuFavouriteClick(option: FavouriteOption)
     }
 }

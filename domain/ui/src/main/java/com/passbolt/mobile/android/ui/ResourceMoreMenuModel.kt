@@ -8,5 +8,12 @@ data class ResourceMoreMenuModel(
     val title: String,
     val canDelete: Boolean,
     val canEdit: Boolean,
-    val canShare: Boolean
-) : Parcelable
+    val canShare: Boolean,
+    val favouriteOption: FavouriteOption
+) : Parcelable {
+
+    enum class FavouriteOption {
+        ADD_TO_FAVOURITES,
+        REMOVE_FROM_FAVOURITES
+    }
+}

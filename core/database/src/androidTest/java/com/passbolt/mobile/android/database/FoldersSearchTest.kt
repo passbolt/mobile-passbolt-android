@@ -124,7 +124,7 @@ class FoldersSearchTest {
             null,
             null,
             "1",
-            false,
+            null,
             ZonedDateTime.now()
         )
         val RESOURCE_2 = Resource(
@@ -136,7 +136,7 @@ class FoldersSearchTest {
             null,
             null,
             "1",
-            false,
+            null,
             ZonedDateTime.now()
         )
         val RESOURCE_3 = Resource(
@@ -148,7 +148,7 @@ class FoldersSearchTest {
             null,
             null,
             "1",
-            false,
+            null,
             ZonedDateTime.now()
         )
         val RESOURCE_4 = Resource(
@@ -160,7 +160,7 @@ class FoldersSearchTest {
             null,
             null,
             "1",
-            false,
+            null,
             ZonedDateTime.now()
         )
         val RESOURCE_5 = Resource(
@@ -172,7 +172,7 @@ class FoldersSearchTest {
             null,
             null,
             "1",
-            false,
+            null,
             ZonedDateTime.now()
         )
 

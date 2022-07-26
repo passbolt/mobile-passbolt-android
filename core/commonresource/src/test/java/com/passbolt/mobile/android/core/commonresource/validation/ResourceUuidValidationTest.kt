@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import org.junit.Test
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.UUID
 import kotlin.test.assertTrue
 
 /**
@@ -63,7 +63,7 @@ class ResourceUuidValidationTest {
         private val dummyResourceModel = ResourceModel(
             "", "","folderid", "",
             "", "", "", "",
-            "", ResourcePermission.OWNER, false, ZonedDateTime.now()
+            "", ResourcePermission.OWNER, null, ZonedDateTime.now()
         )
     }
 }

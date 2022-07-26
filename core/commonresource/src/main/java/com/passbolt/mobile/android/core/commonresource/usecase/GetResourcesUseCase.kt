@@ -9,7 +9,7 @@ import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.mappers.TagsModelMapper
 import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
-import com.passbolt.mobile.android.ui.ResourceModelWithTagsAndPermissions
+import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,10 +45,11 @@ class GetResourcesUseCase(
             is NetworkResult.Failure -> Output.Failure(response)
             is NetworkResult.Success -> Output.Success(
                 response.value.body.map {
-                    ResourceModelWithTagsAndPermissions(
+                    ResourceModelWithAttributes(
                         resourceModelMapper.map(it),
                         it.tags?.map { tag -> tagModelMapper.map(tag) }.orEmpty(),
-                        it.permissions?.map { permission -> permissionsModelMapper.map(permission) }.orEmpty()
+                        it.permissions?.map { permission -> permissionsModelMapper.map(permission) }.orEmpty(),
+                        it.favorite?.id
                     )
                 }
             )
@@ -73,7 +74,7 @@ class GetResourcesUseCase(
             }
 
         data class Success(
-            val resources: List<ResourceModelWithTagsAndPermissions>
+            val resources: List<ResourceModelWithAttributes>
         ) : Output()
 
         class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()

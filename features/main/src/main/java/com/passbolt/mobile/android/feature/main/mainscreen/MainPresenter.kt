@@ -51,4 +51,10 @@ class MainPresenter(
             _dataRefreshStatusFlow.emit(DataRefreshStatus.Finished(output))
         }
     }
+
+    override fun performLocalDataRefresh() {
+        scope.launch {
+            _dataRefreshStatusFlow.emit(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        }
+    }
 }

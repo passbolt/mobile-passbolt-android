@@ -67,7 +67,7 @@ import com.passbolt.mobile.android.entity.user.User
         UsersAndGroupCrossRef::class,
         ResourceAndUsersCrossRef::class
     ],
-    version = 9
+    version = 10
 )
 @TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {

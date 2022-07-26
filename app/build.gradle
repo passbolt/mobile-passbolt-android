@@ -132,7 +132,6 @@ dependencies {
     implementation libs.coil.core
     implementation libs.coil.base
     implementation libs.di.koin
-    implementation libs.di.koinExt
     implementation libs.gson
     implementation libs.androidx.appStartUp
 

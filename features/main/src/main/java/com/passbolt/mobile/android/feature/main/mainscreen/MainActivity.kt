@@ -105,6 +105,9 @@ class MainActivity :
     override fun performFullDataRefresh() =
         presenter.performFullDataRefresh()
 
+    override fun performLocalDataRefresh() =
+        presenter.performLocalDataRefresh()
+
     override fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished> =
         presenter.dataRefreshFinishedStatusFlow
 

@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resources.details
 
+import com.passbolt.mobile.android.core.commonresource.FavouritesInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
@@ -93,17 +94,22 @@ class ResourceDetailsPresenterTest : KoinTest {
                 )
             )
         }
+        mockFavouritesInteractor.stub {
+            onBlocking { addToFavouritesAndUpdateLocal(any()) }.doReturn(FavouritesInteractor.Output.Success)
+            onBlocking { removeFromFavouritesAndUpdateLocal(any()) }.doReturn(FavouritesInteractor.Output.Success)
+        }
         presenter.attach(view)
     }
 
     @Test
-    fun `constant password details should be shown correct`() {
+    fun `password details should be shown correct`() {
         presenter.argsReceived(
             RESOURCE_MODEL.resourceId,
             100,
             20f
         )
 
+        verify(view).showFavouriteStar()
         verify(view).displayTitle(NAME)
         verify(view).displayUsername(USERNAME)
         verify(view).displayInitialsIcon(NAME, INITIALS)
@@ -354,7 +360,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             URL,
             DESCRIPTION,
             ResourcePermission.READ,
-            false,
+            "fav-id",
             ZonedDateTime.now()
         )
         private val DECRYPTED_SECRET = "decrypted".toByteArray()

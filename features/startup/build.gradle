@@ -17,7 +17,6 @@ dependencies {
     implementation libs.androidx.fragment
     implementation libs.androidx.activity
     implementation libs.di.koin
-    implementation libs.di.koinExt
     implementation libs.androidx.splashScreen
 }
 

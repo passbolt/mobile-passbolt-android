@@ -25,7 +25,6 @@ dependencies {
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
     implementation libs.di.koin
-    implementation libs.di.koinExt
     implementation libs.androidx.biometric
     implementation libs.gson
     implementation libs.fastAdapter.binding
