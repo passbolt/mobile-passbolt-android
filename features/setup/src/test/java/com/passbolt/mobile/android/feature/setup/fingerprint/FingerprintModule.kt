@@ -55,12 +55,11 @@ val fingerprintModule = module {
     factory<FingerprintContract.Presenter> {
         FingerprintPresenter(
             fingerprintInformationProvider = get(),
-            passphraseMemoryCache = get(),
             autofillInformationProvider = get(),
+            passphraseMemoryCache = get(),
             savePassphraseUseCase = savePassphraseUseCase,
             biometricCipher = biometricCipher,
             saveBiometricKeyIvUseCase = saveBiometricKayIvUseCase,
-            removeBiometricKeyUseCase = removeBiometricKeyUseCase,
             biometryInteractor = mockBiometryInteractor
         )
     }

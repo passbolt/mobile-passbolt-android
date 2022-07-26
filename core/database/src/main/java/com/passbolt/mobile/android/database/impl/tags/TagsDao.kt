@@ -33,10 +33,6 @@ import com.passbolt.mobile.android.entity.resource.TagWithTaggedItemsCount
 interface TagsDao : BaseDao<Tag> {
 
     @Transaction
-    @Query("SELECT * FROM Tag")
-    suspend fun getAll(): List<Tag>
-
-    @Transaction
     @Query(
         "SELECT id, slug, isShared, " +
                 "(SELECT" +

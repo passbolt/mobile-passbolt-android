@@ -43,6 +43,7 @@ import timber.log.Timber
  * @property fileLoggingTree a logger instance that stores logs in a file
  * @property getGlobalPreferencesUseCase a use case for reading global application preferences
  */
+@Suppress("unused")
 class TimberInitializer : Initializer<Unit>, KoinComponent {
 
     private val fileLoggingTree: FileLoggingTree by inject()

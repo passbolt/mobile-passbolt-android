@@ -28,7 +28,7 @@ internal val mockGetAllAccountsDataUseCase = mock<GetAllAccountsDataUseCase> {
     on { execute(Unit) }.doReturn(GetAllAccountsDataUseCase.Output(accountsList))
 }
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
-internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>() {
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase> {
     on { execute(any()) }.doReturn(GetSelectedAccountUseCase.Output("selected"))
 }
 internal val switchAccountModelMapper = SwitchAccountModelMapper(

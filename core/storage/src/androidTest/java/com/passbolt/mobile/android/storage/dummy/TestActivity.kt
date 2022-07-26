@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.storage.dummy
 
 import android.app.Activity
-import androidx.appcompat.app.AppCompatActivity
 
 /**
  * Passbolt - Open source password manager for teams

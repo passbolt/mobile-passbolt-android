@@ -58,7 +58,7 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
         setStyle(STYLE_NO_TITLE, R.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DialogAccessibilityEncourageAutofillBinding.inflate(inflater)
         setupListeners()
         return binding.root

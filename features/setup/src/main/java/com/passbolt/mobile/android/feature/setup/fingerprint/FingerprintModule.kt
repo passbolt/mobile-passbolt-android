@@ -34,12 +34,11 @@ fun Module.fingerprintModule() {
         scoped<FingerprintContract.Presenter> {
             FingerprintPresenter(
                 fingerprintInformationProvider = get(),
-                passphraseMemoryCache = get(),
                 autofillInformationProvider = get(),
+                passphraseMemoryCache = get(),
                 savePassphraseUseCase = get(),
                 biometricCipher = get(),
                 saveBiometricKeyIvUseCase = get(),
-                removeBiometricKeyUseCase = get(),
                 biometryInteractor = get()
             )
         }

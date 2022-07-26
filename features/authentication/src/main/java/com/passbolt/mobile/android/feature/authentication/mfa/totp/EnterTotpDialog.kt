@@ -81,7 +81,7 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         presenter.viewCreated(bundledHasYubikeyProvider)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DialogEnterTotpBinding.inflate(inflater)
         return binding.root
     }

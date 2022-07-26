@@ -5,7 +5,6 @@ import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import okio.Buffer
@@ -96,7 +95,7 @@ class ScanQrParser(
         }
 
     suspend fun verifyScannedKey() = withContext(coroutineLaunchContext.io) {
-            try {
+        try {
             if (scannedBytes.sha512().hex() == hash) {
                 val assembledKey = keyAssembler.assemblePrivateKey(scannedBytes)
                 _pareResultFlow.tryEmit(ParseResult.FinishedWithSuccess(assembledKey))

@@ -28,7 +28,6 @@ object AuthPaths {
     const val AUTH_SIGN_IN = "/auth/jwt/login.json"
     const val AUTH_SIGN_OUT = "/auth/jwt/logout.json"
     const val AUTH_JWT_REFRESH = "/auth/jwt/refresh.json"
-    const val SETTINGS = "/settings.json"
     const val MFA_VERIFICATION_TOTP = "/mfa/verify/totp.json"
     const val MFA_VERIFICATION_YUBIKEY = "/mfa/verify/yubikey.json"
     const val AVATAR_PATH = "/img/avatar/"

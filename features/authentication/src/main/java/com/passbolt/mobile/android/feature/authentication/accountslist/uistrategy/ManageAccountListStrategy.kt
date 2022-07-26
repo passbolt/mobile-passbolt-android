@@ -30,7 +30,7 @@ class ManageAccountListStrategy(
     override var accountListFragment: AccountsListFragment?
 ) : AccountListStrategy {
 
-    override fun getTitleRes(): Int? = R.string.accounts_list_manage_accounts
+    override fun getTitleRes(): Int = R.string.accounts_list_manage_accounts
 
     override fun logoVisibility() = View.GONE
 

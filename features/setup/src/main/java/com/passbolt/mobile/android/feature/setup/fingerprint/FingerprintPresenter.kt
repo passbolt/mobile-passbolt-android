@@ -7,7 +7,6 @@ import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
-import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import org.koin.core.component.KoinComponent
@@ -43,7 +42,6 @@ class FingerprintPresenter(
     private val savePassphraseUseCase: SavePassphraseUseCase,
     private val biometricCipher: BiometricCipher,
     private val saveBiometricKeyIvUseCase: SaveBiometricKeyIvUseCase,
-    private val removeBiometricKeyUseCase: RemoveBiometricKeyUseCase,
     private val biometryInteractor: BiometryInteractor
 ) : FingerprintContract.Presenter, KoinComponent {
 

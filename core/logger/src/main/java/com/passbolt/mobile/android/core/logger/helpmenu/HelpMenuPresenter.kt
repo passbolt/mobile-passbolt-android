@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.core.logger.helpmenu
 
 import com.passbolt.mobile.android.core.logger.FileLoggingTree
-import com.passbolt.mobile.android.core.logger.LogFilesManager
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
 import timber.log.Timber
@@ -9,8 +8,7 @@ import timber.log.Timber
 class HelpMenuPresenter(
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
     private val saveGlobalPreferencesUseCase: SaveGlobalPreferencesUseCase,
-    private val fileLoggingTree: FileLoggingTree,
-    private val logFilesManager: LogFilesManager
+    private val fileLoggingTree: FileLoggingTree
 ) : HelpMenuContract.Presenter {
 
     override var view: HelpMenuContract.View? = null

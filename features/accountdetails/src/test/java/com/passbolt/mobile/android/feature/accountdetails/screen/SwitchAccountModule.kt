@@ -47,7 +47,7 @@ internal val mockGetSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseC
         GetSelectedAccountDataUseCase.Output(FIRST_NAME, LAST_NAME, EMAIL, AVATAR_URL, SERVER_URL, SERVER_ID, LABEL)
     )
 }
-internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>() {
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase> {
     on { execute(Unit) }.doReturn(GetSelectedAccountUseCase.Output(SELECTED_ACCOUNT_ID))
 }
 internal val mockUpdateAccountDataUseCase = mock<UpdateAccountDataUseCase>()

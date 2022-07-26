@@ -36,10 +36,6 @@ interface UsersDao : BaseDao<User> {
     suspend fun get(userId: String): User
 
     @Transaction
-    @Query("SELECT * FROM User")
-    suspend fun getAll(): List<User>
-
-    @Transaction
     @Query("SELECT * FROM User WHERE id NOT IN (:ids)")
     suspend fun getAllExcluding(ids: List<String>): List<User>
 

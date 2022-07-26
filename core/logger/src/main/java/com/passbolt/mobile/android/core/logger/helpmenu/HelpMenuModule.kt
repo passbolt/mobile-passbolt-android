@@ -31,8 +31,7 @@ fun Module.helpMenuModule() {
             HelpMenuPresenter(
                 getGlobalPreferencesUseCase = get(),
                 saveGlobalPreferencesUseCase = get(),
-                fileLoggingTree = get(),
-                logFilesManager = get()
+                fileLoggingTree = get()
             )
         }
     }

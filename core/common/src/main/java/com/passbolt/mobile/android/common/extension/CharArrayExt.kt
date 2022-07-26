@@ -37,9 +37,3 @@ fun CharArray.erase() {
         this[i] = '\u0000'
     }
 }
-
-fun List<CharArray>.eraseItemArrays() {
-    this.forEach {
-        it.erase()
-    }
-}
