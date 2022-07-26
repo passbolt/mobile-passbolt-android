@@ -132,7 +132,8 @@ class HomePresenter(
     override fun argsRetrieved(
         showSuggestedModel: ShowSuggestedModel,
         homeDisplayView: HomeDisplayViewModel?,
-        hasPreviousEntry: Boolean
+        hasPreviousEntry: Boolean,
+        shouldShowCloseButton: Boolean
     ) {
         val filterPreferences = getHomeDisplayViewPrefsUseCase.execute(Unit)
         homeView = homeDisplayView ?: homeModelMapper.map(
@@ -149,10 +150,17 @@ class HomePresenter(
             showProgress()
         }
 
+        handleCloseVisibility(shouldShowCloseButton)
         handleBackArrowVisibility()
         loadUserAvatar()
         collectDataRefreshStatus()
         collectFilteringRefreshes()
+    }
+
+    private fun handleCloseVisibility(shouldShowCloseButton: Boolean) {
+        if (shouldShowCloseButton) {
+            view?.showCloseButton()
+        }
     }
 
     private fun processSearchHint(view: HomeContract.View) {
@@ -260,17 +268,21 @@ class HomePresenter(
     }
 
     private suspend fun showActiveHomeView() {
-        suggestedResourceList = getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input())
-            .resources
-            .filter {
-                val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
-                val itemUrl = it.url
-                if (!autofillUrl.isNullOrBlank() && !itemUrl.isNullOrBlank()) {
-                    domainProvider.getHost(itemUrl) == domainProvider.getHost(autofillUrl)
-                } else {
-                    false
+        suggestedResourceList = if (shouldShowSuggested()) {
+            getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input())
+                .resources
+                .filter {
+                    val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
+                    val itemUrl = it.url
+                    if (!autofillUrl.isNullOrBlank() && !itemUrl.isNullOrBlank()) {
+                        domainProvider.getHost(itemUrl) == domainProvider.getHost(autofillUrl)
+                    } else {
+                        false
+                    }
                 }
-            }
+        } else {
+            emptyList()
+        }
         when (
             val currentHomeView = homeView) {
             is HomeDisplayViewModel.Folders -> showResourcesAndFoldersFromDatabase(currentHomeView)
@@ -278,6 +290,20 @@ class HomePresenter(
             is HomeDisplayViewModel.Groups -> showGroupsFromDatabase(currentHomeView)
             else -> showResourcesFromDatabase()
         }
+    }
+
+    private fun shouldShowSuggested() = when (val activeHomeView = homeView) {
+        is HomeDisplayViewModel.AllItems -> true
+        is HomeDisplayViewModel.Favourites -> true
+        is HomeDisplayViewModel.Folders -> when (activeHomeView.activeFolder) {
+            is Folder.Child -> false
+            is Folder.Root -> true
+        }
+        is HomeDisplayViewModel.Groups -> activeHomeView.activeGroupId == null // groups root
+        is HomeDisplayViewModel.OwnedByMe -> true
+        is HomeDisplayViewModel.RecentlyModified -> true
+        is HomeDisplayViewModel.SharedWithMe -> true
+        is HomeDisplayViewModel.Tags -> activeHomeView.activeTagId == null // tags root
     }
 
     override fun userAuthenticated() {
@@ -369,7 +395,7 @@ class HomePresenter(
     }
 
     private fun displayHomeData() {
-        if (areListsEmpty(resourceList, foldersList, tagsList, groupsList)) {
+        if (areListsEmpty(resourceList, foldersList, tagsList, groupsList, suggestedResourceList)) {
             view?.showEmptyList()
         } else {
             if (currentSearchText.value.isEmpty()) {
@@ -384,7 +410,14 @@ class HomePresenter(
                     HomeFragment.HeaderSectionConfiguration(
                         isInCurrentFolderSectionVisible = false,
                         isInSubFoldersSectionVisible = false,
-                        isOtherItemsSectionVisible = suggestedResourceList.isNotEmpty(),
+                        isOtherItemsSectionVisible = !areListsEmpty(
+                            resourceList,
+                            foldersList,
+                            tagsList,
+                            groupsList,
+                            filteredSubFolders,
+                            filteredSubFolderResources
+                        ) && showSuggestedModel is ShowSuggestedModel.Show,
                         isSuggestedSectionVisible = suggestedResourceList.isNotEmpty()
                     )
                 )
@@ -416,18 +449,14 @@ class HomePresenter(
         }
 
         if (areListsEmpty(
-                filteredResources,
-                filteredFolders,
-                filteredTags,
-                filteredGroups,
-                filteredSubFolders,
-                filteredSubFolderResources
+                filteredResources, filteredFolders, filteredTags, filteredGroups,
+                filteredSubFolders, filteredSubFolderResources
             )
         ) {
             view?.showSearchEmptyList()
         } else {
             view?.showItems(
-                emptyList(),
+                suggestedResources = emptyList(),
                 filteredResources,
                 filteredFolders,
                 filteredTags,
@@ -582,8 +611,8 @@ class HomePresenter(
         view?.showProgress()
         scope.launch {
             currentMoreMenuResource?.let { sadResource ->
-                when (val response = deleteResourceUseCase
-                    .execute(DeleteResourceUseCase.Input(sadResource.resourceId))) {
+                when (val response =
+                    deleteResourceUseCase.execute(DeleteResourceUseCase.Input(sadResource.resourceId))) {
                     is DeleteResourceUseCase.Output.Success -> {
                         resourceDeleted(sadResource.name)
                     }
@@ -689,7 +718,9 @@ class HomePresenter(
     override fun folderItemClick(folderModel: FolderWithCount) {
         view?.navigateToChild(
             HomeDisplayViewModel.Folders(
-                Folder.Child(folderModel.folderId),
+                Folder.Child(
+                    folderModel.folderId
+                ),
                 folderModel.name,
                 folderModel.isShared
             )
@@ -698,20 +729,13 @@ class HomePresenter(
 
     override fun tagItemClick(tag: TagWithCount) {
         view?.navigateToChild(
-            HomeDisplayViewModel.Tags(
-                tag.id,
-                tag.slug,
-                tag.isShared
-            )
+            HomeDisplayViewModel.Tags(tag.id, tag.slug, tag.isShared)
         )
     }
 
     override fun groupItemClick(group: GroupWithCount) {
         view?.navigateToChild(
-            HomeDisplayViewModel.Groups(
-                group.groupId,
-                group.groupName
-            )
+            HomeDisplayViewModel.Groups(group.groupId, group.groupName)
         )
     }
 
@@ -722,6 +746,10 @@ class HomePresenter(
                 else -> null
             }
         )
+    }
+
+    override fun closeClick() {
+        view?.navigateToHome()
     }
 
     companion object {

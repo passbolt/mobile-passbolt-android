@@ -41,6 +41,18 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:tint="@color/text_primary" />
 
+                    <ImageView
+                        android:id="@+id/closeButton"
+                        android:layout_width="@dimen/dp_24"
+                        android:layout_height="@dimen/dp_24"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_close"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                     <TextView
                         android:id="@+id/screenTitleLabel"
                         android:layout_width="wrap_content"

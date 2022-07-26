@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.autofill.AutofillManager.EXTRA_ASSIST_STRUCTURE
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.snackbar.Snackbar
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -17,7 +16,7 @@ import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
 import com.passbolt.mobile.android.feature.autofill.R
-import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResources2Binding
+import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
 import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
@@ -52,8 +51,8 @@ import org.koin.core.qualifier.named
  */
 
 class AutofillResourcesActivity :
-    BindingScopedAuthenticatedActivity<ActivityAutofillResources2Binding, AutofillResourcesContract.View>(
-        ActivityAutofillResources2Binding::inflate
+    BindingScopedAuthenticatedActivity<ActivityAutofillResourcesBinding, AutofillResourcesContract.View>(
+        ActivityAutofillResourcesBinding::inflate
     ), AutofillResourcesContract.View, HomeDataRefreshExecutor {
 
     override val presenter: AutofillResourcesContract.Presenter by inject()
@@ -80,7 +79,6 @@ class AutofillResourcesActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         returnAutofillDatasetStrategy = scope.get(named(bundledAutofillMode)) { parametersOf(this) }
-        setListeners()
         presenter.attach(this)
         presenter.argsReceived(bundledAutofillUri)
     }
@@ -111,24 +109,12 @@ class AutofillResourcesActivity :
         )
     }
 
-    private fun setListeners() = with(binding) {
-        closeButton.setDebouncingOnClick {
-            presenter.closeClick()
-        }
-    }
-
     override fun finishAutofill() {
         finishAffinity()
     }
 
     override fun navigateToSetup() {
         startActivity(ActivityIntents.start(this))
-        finish()
-    }
-
-    override fun navigateToHome() {
-        startActivity(ActivityIntents.home(this))
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
     }
 
@@ -149,6 +135,8 @@ class AutofillResourcesActivity :
     }
 
     override fun shouldShowResourceMoreMenu() = false
+
+    override fun shouldShowCloseButton() = true
 
     override fun showSuggestedModel() =
         bundledAutofillUri?.let {

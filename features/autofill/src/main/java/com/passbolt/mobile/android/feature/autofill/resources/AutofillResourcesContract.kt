@@ -36,7 +36,6 @@ interface AutofillResourcesContract {
     interface View : BaseAuthenticatedContract.View, ResourceHandlingStrategy {
         fun navigateToAuth()
         fun navigateToSetup()
-        fun navigateToHome()
         fun navigateToAutofillHome()
         fun finishAutofill()
         fun getAutofillStructure(): AssistStructure
@@ -52,7 +51,6 @@ interface AutofillResourcesContract {
 
         fun argsReceived(uri: String?)
         fun userAuthenticated()
-        fun closeClick()
         fun performFullDataRefresh()
         fun itemClick(resourceModel: ResourceModel)
         fun newResourceCreated(resourceId: String)

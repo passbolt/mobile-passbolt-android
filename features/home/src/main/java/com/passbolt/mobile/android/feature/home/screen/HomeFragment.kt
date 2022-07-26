@@ -163,7 +163,8 @@ class HomeFragment :
         presenter.argsRetrieved(
             resourceHandlingStrategy.showSuggestedModel(),
             arguments.homeView,
-            hasPreviousEntry
+            hasPreviousEntry,
+            resourceHandlingStrategy.shouldShowCloseButton()
         )
     }
 
@@ -239,6 +240,8 @@ class HomeFragment :
         // nothing more to do after creating resource on home fragment
     }
 
+    override fun shouldShowCloseButton() = false
+
     private fun setState(state: State) {
         with(binding) {
             recyclerView.isVisible = state.listVisible
@@ -246,6 +249,10 @@ class HomeFragment :
             errorContainer.isVisible = state.errorVisible
             progress.isVisible = state.progressVisible
         }
+    }
+
+    override fun showCloseButton() {
+        binding.closeButton.visible()
     }
 
     override fun showEmptyList() {
@@ -269,14 +276,17 @@ class HomeFragment :
             searchEditText.doAfterTextChanged {
                 presenter.searchTextChange(it.toString())
             }
-            updateButton.setOnClickListener {
+            updateButton.setDebouncingOnClick {
                 presenter.createResourceClick()
             }
             searchTextInput.setStartIconOnClickListener {
                 presenter.filtersClick()
             }
-            backButton.setOnClickListener {
+            backButton.setDebouncingOnClick {
                 navController.popBackStack()
+            }
+            closeButton.setDebouncingOnClick {
+                presenter.closeClick()
             }
         }
     }
@@ -683,6 +693,14 @@ class HomeFragment :
                 parentFolderId
             )
         )
+    }
+
+    override fun navigateToHome() {
+        startActivity(ActivityIntents.home(requireContext()))
+        with(requireActivity()) {
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            finish()
+        }
     }
 
     companion object {
