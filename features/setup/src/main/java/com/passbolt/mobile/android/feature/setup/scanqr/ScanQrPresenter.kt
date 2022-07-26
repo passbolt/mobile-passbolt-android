@@ -16,7 +16,6 @@ import com.passbolt.mobile.android.ui.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.properties.Delegates
@@ -118,7 +117,7 @@ class ScanQrPresenter(
         val userExistsResult = checkAccountExistsUseCase.execute(CheckAccountExistsUseCase.Input(userId))
         if (userExistsResult.exist) {
             currentPage = totalPages - 1
-            updateTransferAlreadyLinked(currentPage, requireNotNull(userExistsResult.userId))
+            updateTransferAlreadyLinked(currentPage)
         } else if (!httpsVerifier.isHttps(firstPage.content.domain)) {
             view?.navigateToSummary(ResultStatus.HttpNotSupported())
         } else {
@@ -157,7 +156,7 @@ class ScanQrPresenter(
         }
     }
 
-    private suspend fun updateTransferAlreadyLinked(pageNumber: Int, userId: String) {
+    private suspend fun updateTransferAlreadyLinked(pageNumber: Int) {
         updateTransferUseCase.execute(
             UpdateTransferUseCase.Input(
                 uuid = transferUuid,

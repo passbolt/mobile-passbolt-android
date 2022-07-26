@@ -45,6 +45,8 @@ dependencies {
     implementation libs.fastAdapter.diff
     implementation libs.coil.core
     implementation libs.coil.base
+
+    testImplementation project(':commontest')
 }
 
 android {

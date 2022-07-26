@@ -36,25 +36,22 @@ dependencies {
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
     implementation libs.androidx.swiperefresh
-
     implementation libs.di.koin
     implementation libs.di.koinExt
-
     implementation libs.fastAdapter.core
     implementation libs.fastAdapter.binding
     implementation libs.fastAdapter.diff
-
     implementation libs.textDrawable
-
     implementation libs.coil.core
     implementation libs.coil.base
-
     implementation libs.room.core
     implementation libs.room.runtime
     implementation libs.room.cipher
-    testImplementation project(':ui')
-    ksp libs.room.compiler
     implementation libs.room.sqlite
+    ksp libs.room.compiler
+
+    testImplementation project(':ui')
+    testImplementation project(':commontest')
 }
 
 android {

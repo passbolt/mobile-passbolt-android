@@ -1,13 +1,13 @@
 package com.passbolt.mobile.android.feature.authentication
 
-import org.mockito.kotlin.mock
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.storage.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveCurrentApiUrlUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
+import org.mockito.kotlin.mock
 
 /**
  * Passbolt - Open source password manager for teams

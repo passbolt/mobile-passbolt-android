@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.resources.grouppermissiondetails
 
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.groups.GetGroupWithUsersUseCase
-import com.passbolt.mobile.android.feature.resources.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.GroupPermissionsContract
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.GroupPermissionsPresenter
 import org.koin.dsl.module

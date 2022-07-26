@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.base
+package com.passbolt.mobile.android.commontest
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi

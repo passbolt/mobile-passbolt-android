@@ -34,7 +34,7 @@ android {
                 serviceCredentialsFile findProperty("serviceKey") ?: ""
                 groups "qa"
             }
-            testCoverageEnabled = true
+            testCoverageEnabled = false
         }
         qa {
             initWith debug
@@ -50,7 +50,6 @@ android {
                 serviceCredentialsFile findProperty("serviceKey") ?: ""
                 groups "qa"
             }
-            testCoverageEnabled = true
         }
         release {
             debuggable false
@@ -141,6 +140,7 @@ dependencies {
     androidTestImplementation libs.test.androidTestsRunner
     androidTestImplementation libs.test.androidTestRules
     androidTestImplementation libs.test.espressoCore
+    androidTestImplementation libs.test.androidTestKtx
     androidTestImplementation libs.di.koinTest
     androidTestImplementation libs.di.koinTestJUnit
 }

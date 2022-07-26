@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.feature.resources.userspermissiondetails
 
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsUseCase
 import com.passbolt.mobile.android.database.impl.users.GetLocalUsersUseCase
-import com.passbolt.mobile.android.feature.resources.base.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.feature.resources.permissionrecipients.PermissionRecipientsContract
 import com.passbolt.mobile.android.feature.resources.permissionrecipients.PermissionRecipientsPresenter
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
