@@ -87,10 +87,6 @@ class AutofillResourcesPresenter(
         performFullDataRefresh()
     }
 
-    override fun closeClick() {
-        view?.navigateToHome()
-    }
-
     override fun performFullDataRefresh() {
         scope.launch {
             Timber.d("Full data refresh initiated")

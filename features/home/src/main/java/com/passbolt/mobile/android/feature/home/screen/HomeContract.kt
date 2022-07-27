@@ -87,6 +87,8 @@ interface HomeContract {
         fun showResourceSharedSnackbar()
         fun showAllItemsSearchHint()
         fun showDefaultSearchHint()
+        fun showCloseButton()
+        fun navigateToHome()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -120,7 +122,8 @@ interface HomeContract {
         fun argsRetrieved(
             showSuggestedModel: ShowSuggestedModel,
             homeDisplayView: HomeDisplayViewModel?,
-            hasPreviousEntry: Boolean
+            hasPreviousEntry: Boolean,
+            shouldShowCloseButton: Boolean
         )
 
         fun folderItemClick(folderModel: FolderWithCount)
@@ -132,5 +135,6 @@ interface HomeContract {
         fun groupItemClick(group: GroupWithCount)
         fun menuShareClick()
         fun resourceShared()
+        fun closeClick()
     }
 }

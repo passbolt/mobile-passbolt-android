@@ -30,6 +30,8 @@ interface ResourceHandlingStrategy {
 
     fun shouldShowResourceMoreMenu(): Boolean
 
+    fun shouldShowCloseButton(): Boolean
+
     fun showSuggestedModel(): ShowSuggestedModel
 
     fun resourcePostCreateAction(resourceId: String)
