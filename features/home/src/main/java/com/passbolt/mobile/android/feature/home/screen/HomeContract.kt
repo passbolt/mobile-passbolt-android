@@ -89,7 +89,7 @@ interface HomeContract {
         fun showDefaultSearchHint()
         fun showCloseButton()
         fun navigateToHome()
-        fun showAddToFavouritesFailure()
+        fun showToggleFavouriteFailure()
         fun performLocalRefresh()
     }
 

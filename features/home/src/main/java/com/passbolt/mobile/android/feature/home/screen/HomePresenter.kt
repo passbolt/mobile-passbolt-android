@@ -1,13 +1,9 @@
 package com.passbolt.mobile.android.feature.home.screen
 
-import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.commonresource.FavouritesInteractor
-import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
-import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
@@ -20,11 +16,10 @@ import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.GetLocal
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.database.impl.tags.GetLocalTagsUseCase
-import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
-import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
+import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -34,8 +29,6 @@ import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
 import com.passbolt.mobile.android.ui.TagWithCount
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -45,7 +38,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.createScope
+import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
+import org.koin.core.scope.Scope
 import timber.log.Timber
 
 /**
@@ -77,16 +74,12 @@ import timber.log.Timber
  * shared with me, etc.) the reload is done from the database only. To refresh from backend again users can do the
  * swipe to refresh gesture.
  */
-@Suppress("TooManyFunctions", "LargeClass") // TODO MOB-321
+@Suppress("TooManyFunctions") // TODO MOB-321
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
-    private val secretInteractor: SecretInteractor,
     private val searchableMatcher: SearchableMatcher,
-    private val resourceTypeFactory: ResourceTypeFactory,
-    private val secretParser: SecretParser,
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
-    private val deleteResourceUseCase: DeleteResourceUseCase,
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
     private val getLocalResourcesFilteredByTag: GetLocalResourcesFilteredByTagUseCase,
     private val getLocalSubFoldersForFolderUseCase: GetLocalSubFoldersForFolderUseCase,
@@ -98,37 +91,44 @@ class HomePresenter(
     private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase,
     private val getHomeDisplayViewPrefsUseCase: GetHomeDisaplyViewPrefsUseCase,
     private val homeModelMapper: HomeDisplayViewMapper,
-    private val domainProvider: DomainProvider,
-    private val favouritesInteractor: FavouritesInteractor
-) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinComponent {
+    private val domainProvider: DomainProvider
+) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinScopeComponent {
 
     override var view: HomeContract.View? = null
     private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
     private val dataRefreshJob = SupervisorJob()
     private val dataRefreshScope = CoroutineScope(dataRefreshJob + coroutineLaunchContext.ui)
     private val filteringJob = SupervisorJob()
     private val filteringScope = CoroutineScope(filteringJob + coroutineLaunchContext.ui)
     private lateinit var dataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>
-
+    override val scope: Scope by lazy { createScope(this) }
     private lateinit var homeView: HomeDisplayViewModel
+
     private var currentSearchText = MutableStateFlow("")
     private var hasPreviousBackEntry = false
     private lateinit var showSuggestedModel: ShowSuggestedModel
-
     private var suggestedResourceList: List<ResourceModel> = emptyList()
+
     private var resourceList: List<ResourceModel> = emptyList()
     private var foldersList: List<FolderWithCount> = emptyList()
     private var tagsList: List<TagWithCount> = emptyList()
     private var groupsList: List<GroupWithCount> = emptyList()
-
     private var filteredSubFolderResources: List<ResourceModel> = emptyList()
-    private var filteredSubFolders: List<FolderWithCount> = emptyList()
 
+    private var filteredSubFolders: List<FolderWithCount> = emptyList()
     private var currentMoreMenuResource: ResourceModel? = null
+
     private var userAvatarUrl: String? = null
     private val searchInputEndIconMode
         get() = if (currentSearchText.value.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
+
+    private val resourceActionsInteractor: ResourceActionsInteractor
+        get() = get { parametersOf(requireNotNull(currentMoreMenuResource)) }
+    private val resourceAuthenticatedActionsInteractor: ResourceAuthenticatedActionsInteractor
+        get() = get {
+            parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
+        }
 
     override fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>) {
         dataRefreshStatusFlow = fullDataRefreshStatusFlow
@@ -318,7 +318,8 @@ class HomePresenter(
     override fun detach() {
         dataRefreshScope.coroutineContext.cancelChildren()
         filteringScope.coroutineContext.cancelChildren()
-        scope.coroutineContext.cancelChildren()
+        coroutineScope.coroutineContext.cancelChildren()
+        scope.close()
         super<BaseAuthenticatedPresenter>.detach()
     }
 
@@ -539,49 +540,44 @@ class HomePresenter(
     }
 
     override fun menuLaunchWebsiteClick() {
-        currentMoreMenuResource?.let {
-            if (!it.url.isNullOrEmpty()) {
-                view?.openWebsite(it.url!!)
+        resourceActionsInteractor
+            .provideWebsiteUrl { _, url ->
+                view?.openWebsite(url)
             }
-        }
     }
 
     override fun menuCopyUsernameClick() {
-        currentMoreMenuResource?.let {
-            view?.addToClipboard(USERNAME_LABEL, it.username.orEmpty())
-        }
+        resourceActionsInteractor
+            .provideUsername { label, username ->
+                view?.addToClipboard(label, username)
+            }
     }
 
     override fun menuCopyUrlClick() {
-        currentMoreMenuResource?.let {
-            view?.addToClipboard(URL_LABEL, it.url.orEmpty())
-        }
+        resourceActionsInteractor
+            .provideWebsiteUrl { label, url ->
+                view?.addToClipboard(label, url)
+            }
     }
 
     override fun menuCopyPasswordClick() {
-        scope.launch {
-            val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(currentMoreMenuResource!!.resourceTypeId)
-            doAfterFetchAndDecrypt { decryptedSecret ->
-                val password = secretParser.extractPassword(resourceTypeEnum, decryptedSecret)
-                view?.addToClipboard(SECRET_LABEL, password)
+        coroutineScope.launch {
+            resourceAuthenticatedActionsInteractor.providePassword(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { label, password ->
+                view?.addToClipboard(label, password)
             }
         }
     }
 
     override fun menuCopyDescriptionClick() {
-        scope.launch {
-            when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(
-                currentMoreMenuResource!!.resourceTypeId
-            )) {
-                ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> {
-                    view?.addToClipboard(DESCRIPTION_LABEL, currentMoreMenuResource!!.description.orEmpty())
-                }
-                ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> {
-                    doAfterFetchAndDecrypt { decryptedSecret ->
-                        val description = secretParser.extractDescription(resourceTypeEnum, decryptedSecret)
-                        view?.addToClipboard(DESCRIPTION_LABEL, description)
-                    }
-                }
+        coroutineScope.launch {
+            resourceAuthenticatedActionsInteractor.provideDescription(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { label, description ->
+                view?.addToClipboard(label, description)
             }
         }
     }
@@ -590,42 +586,17 @@ class HomePresenter(
         view?.navigateToSwitchAccount()
     }
 
-    private suspend fun doAfterFetchAndDecrypt(action: (ByteArray) -> Unit) {
-        when (val output =
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                secretInteractor.fetchAndDecrypt(requireNotNull(currentMoreMenuResource?.resourceId))
-            }
-        ) {
-            is SecretInteractor.Output.DecryptFailure -> view?.showDecryptionFailure()
-            is SecretInteractor.Output.FetchFailure -> view?.showFetchFailure()
-            is SecretInteractor.Output.Success -> {
-                action(output.decryptedSecret)
-            }
-            is SecretInteractor.Output.Unauthorized -> {
-                // can be ignored - runAuthenticatedOperation handles it
-                Timber.d("Unauthorized during decrypting secret")
-            }
-        }
-    }
-
     override fun menuDeleteClick() {
         view?.showDeleteConfirmationDialog()
     }
 
     override fun deleteResourceConfirmed() {
         view?.showProgress()
-        scope.launch {
-            currentMoreMenuResource?.let { sadResource ->
-                when (val response =
-                    deleteResourceUseCase.execute(DeleteResourceUseCase.Input(sadResource.resourceId))) {
-                    is DeleteResourceUseCase.Output.Success -> {
-                        resourceDeleted(sadResource.name)
-                    }
-                    is DeleteResourceUseCase.Output.Failure<*> -> {
-                        Timber.e(response.response.exception)
-                        view?.showGeneralError()
-                    }
-                }
+        coroutineScope.launch {
+            resourceAuthenticatedActionsInteractor.deleteResource(
+                failure = { view?.showGeneralError() }
+            ) {
+                resourceDeleted(it)
             }
         }
     }
@@ -759,34 +730,13 @@ class HomePresenter(
 
     override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
         view?.showProgress()
-        scope.launch {
-            val output = when (option) {
-                ADD_TO_FAVOURITES ->
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                        favouritesInteractor.addToFavouritesAndUpdateLocal(currentMoreMenuResource!!)
-                    }
-                REMOVE_FROM_FAVOURITES ->
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                        favouritesInteractor.removeFromFavouritesAndUpdateLocal(currentMoreMenuResource!!)
-                    }
-            }
-            view?.hideProgress()
-            when (output) {
-                is FavouritesInteractor.Output.Failure -> view?.showAddToFavouritesFailure()
-                is FavouritesInteractor.Output.Success -> {
-                    Timber.d("Added to favourites")
-                    view?.performLocalRefresh()
-                }
+        coroutineScope.launch {
+            resourceAuthenticatedActionsInteractor.toggleFavourite(
+                option,
+                failure = { view?.showToggleFavouriteFailure() }
+            ) {
+                view?.performLocalRefresh()
             }
         }
-    }
-
-    companion object {
-        @VisibleForTesting
-        const val SECRET_LABEL = "Secret"
-        const val DESCRIPTION_LABEL = "Description"
-
-        private const val USERNAME_LABEL = "Username"
-        private const val URL_LABEL = "Url"
     }
 }

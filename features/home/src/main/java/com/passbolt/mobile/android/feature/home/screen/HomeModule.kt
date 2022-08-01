@@ -10,6 +10,12 @@ import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.TagWithCountItem
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.ScopeDSL
@@ -55,12 +61,8 @@ fun Module.homeModule() {
             HomePresenter(
                 coroutineLaunchContext = get(),
                 getSelectedAccountDataUseCase = get(),
-                secretInteractor = get(),
                 searchableMatcher = SearchableMatcher(),
-                resourceTypeFactory = get(),
-                secretParser = get(),
                 resourceMenuModelMapper = get(),
-                deleteResourceUseCase = get(),
                 getLocalResourcesUseCase = get(),
                 getLocalResourcesFilteredByTag = get(),
                 getLocalSubFoldersForFolderUseCase = get(),
@@ -72,28 +74,56 @@ fun Module.homeModule() {
                 getLocalResourcesWithGroupsUseCase = get(),
                 getHomeDisplayViewPrefsUseCase = get(),
                 homeModelMapper = get(),
-                domainProvider = get(),
-                favouritesInteractor = get()
+                domainProvider = get()
             )
         }
         declareHomeListAdapters()
-        scoped {
-            FastAdapter.with(
-                listOf(
-                    get<ItemAdapter<PasswordHeaderItem>>(named(SUGGESTED_HEADER_ITEM_ADAPTER)),
-                    get<ItemAdapter<PasswordItem>>(named(SUGGESTED_ITEMS_ITEM_ADAPTER)),
-                    get<ItemAdapter<PasswordHeaderItem>>(named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)),
-                    get<ItemAdapter<InCurrentFoldersHeaderItem>>(named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)),
-                    get<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)),
-                    get<ItemAdapter<TagWithCountItem>>(named(TAGS_ITEM_ADAPTER)),
-                    get<ItemAdapter<GroupWithCountItem>>(named(GROUPS_ITEM_ADAPTER)),
-                    get<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)),
-                    get<ItemAdapter<InSubFoldersHeaderItem>>(named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)),
-                    get<ItemAdapter<FolderItem>>(named(SUB_FOLDER_ITEM_ADAPTER)),
-                    get<ItemAdapter<PasswordItem>>(named(SUB_RESOURCE_ITEM_ADAPTER))
-                )
+        declareHomeListItemAdapters()
+        declareResourceActionsInteractors()
+    }
+}
+
+private fun Module.declareResourceActionsInteractors() {
+    scope<HomePresenter> {
+        factory { (resource: ResourceModel) ->
+            ResourceActionsInteractor(resource)
+        }
+        factory { (
+                      resource: ResourceModel,
+                      needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                      sessionRefreshedFlow: StateFlow<Unit?>
+                  ) ->
+            ResourceAuthenticatedActionsInteractor(
+                needSessionRefreshFlow,
+                sessionRefreshedFlow,
+                resource,
+                resourceTypeFactory = get(),
+                secretParser = get(),
+                secretInteractor = get(),
+                favouritesInteractor = get(),
+                deleteResourceUseCase = get()
             )
         }
+    }
+}
+
+private fun ScopeDSL.declareHomeListItemAdapters() {
+    scoped {
+        FastAdapter.with(
+            listOf(
+                get<ItemAdapter<PasswordHeaderItem>>(named(SUGGESTED_HEADER_ITEM_ADAPTER)),
+                get<ItemAdapter<PasswordItem>>(named(SUGGESTED_ITEMS_ITEM_ADAPTER)),
+                get<ItemAdapter<PasswordHeaderItem>>(named(OTHER_ITEMS_HEADER_ITEM_ADAPTER)),
+                get<ItemAdapter<InCurrentFoldersHeaderItem>>(named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)),
+                get<ItemAdapter<FolderItem>>(named(FOLDER_ITEM_ADAPTER)),
+                get<ItemAdapter<TagWithCountItem>>(named(TAGS_ITEM_ADAPTER)),
+                get<ItemAdapter<GroupWithCountItem>>(named(GROUPS_ITEM_ADAPTER)),
+                get<ItemAdapter<PasswordItem>>(named(RESOURCE_ITEM_ADAPTER)),
+                get<ItemAdapter<InSubFoldersHeaderItem>>(named(IN_SUB_FOLDERS_HEADER_ITEM_ADAPTER)),
+                get<ItemAdapter<FolderItem>>(named(SUB_FOLDER_ITEM_ADAPTER)),
+                get<ItemAdapter<PasswordItem>>(named(SUB_RESOURCE_ITEM_ADAPTER))
+            )
+        )
     }
 }
 

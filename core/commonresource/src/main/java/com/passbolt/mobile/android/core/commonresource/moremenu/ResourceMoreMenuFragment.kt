@@ -156,7 +156,6 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
             }
     }
 
-    // TODO MOB-544 - create abstract handler for these actions to reduce duplication in presenters
     interface Listener {
         fun menuCopyPasswordClick()
         fun menuCopyDescriptionClick()

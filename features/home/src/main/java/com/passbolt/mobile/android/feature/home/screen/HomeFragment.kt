@@ -712,7 +712,7 @@ class HomeFragment :
         (activity as HomeDataRefreshExecutor).performLocalDataRefresh()
     }
 
-    override fun showAddToFavouritesFailure() {
+    override fun showToggleFavouriteFailure() {
         showSnackbar(R.string.favourites_failure)
     }
 

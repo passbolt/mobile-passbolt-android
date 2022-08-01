@@ -148,12 +148,12 @@ class ResourceDetailsFragment :
         with(binding) {
             usernameCopyFields.forEach { it.setDebouncingOnClick { presenter.usernameCopyClick() } }
             passwordIcon.setDebouncingOnClick { presenter.secretIconClick() }
-            passwordCopyField.forEach { it.setDebouncingOnClick { presenter.menuCopyPasswordClick() } }
+            passwordCopyField.forEach { it.setDebouncingOnClick { presenter.copyPasswordClick() } }
             urlCopyFields.forEach { it.setDebouncingOnClick { presenter.urlCopyClick() } }
             backArrow.setDebouncingOnClick { presenter.backArrowClick() }
             moreIcon.setDebouncingOnClick { presenter.moreClick() }
             seeDescriptionButton.setDebouncingOnClick { presenter.seeDescriptionButtonClick() }
-            descriptionHeader.setDebouncingOnClick { presenter.menuCopyDescriptionClick() }
+            descriptionHeader.setDebouncingOnClick { presenter.copyDescriptionClick() }
             sharedWithFields.forEach { it.setDebouncingOnClick { presenter.sharedWithClick() } }
             fastAdapter.onClickListener = { _, _, _, _ ->
                 presenter.sharedWithClick()
@@ -279,38 +279,38 @@ class ResourceDetailsFragment :
     }
 
     override fun menuCopyPasswordClick() {
-        presenter.menuCopyPasswordClick()
+        presenter.copyPasswordClick()
     }
 
     override fun menuCopyDescriptionClick() {
-        presenter.menuCopyDescriptionClick()
+        presenter.copyDescriptionClick()
     }
 
     override fun menuCopyUrlClick() {
-        presenter.menuCopyUrlClick()
+        presenter.urlCopyClick()
     }
 
     override fun menuCopyUsernameClick() {
-        presenter.menuCopyUsernameClick()
+        presenter.usernameCopyClick()
     }
 
     override fun menuLaunchWebsiteClick() {
-        presenter.menuLaunchWebsiteClick()
+        presenter.launchWebsiteClick()
     }
 
     override fun menuDeleteClick() {
-        presenter.menuDeleteClick()
+        presenter.deleteClick()
     }
 
     override fun menuEditClick() {
-        presenter.menuEditClick()
+        presenter.editClick()
     }
 
     override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
         presenter.favouriteClick(option)
     }
 
-    override fun showAddToFavouritesFailure() {
+    override fun showToggleFavouriteFailure() {
         showSnackbar(R.string.favourites_failure)
     }
 
@@ -323,7 +323,7 @@ class ResourceDetailsFragment :
     }
 
     override fun menuShareClick() {
-        presenter.menuShareClick()
+        presenter.shareClick()
     }
 
     override fun openWebsite(url: String) {
