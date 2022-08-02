@@ -344,8 +344,8 @@
     </string-array>
 
     <string-array name="dialog_encourage_autofill_setup_steps">
-        <item>&lt;b>Turn on Autofill&lt;/b> settings</item>
-        <item>Choose &lt;b>Passbolt!&lt;/b></item>
+        <item>&lt;b>Einschalten der Autofill&lt;/b> Einstellung</item>
+        <item>Wähle &lt;b>Passbolt!&lt;/b></item>
     </string-array>
 
     <string-array name="transfer_details_steps_array">
