@@ -40,7 +40,6 @@ fun Module.detailsModule() {
         scoped<ResourceDetailsContract.Presenter> {
             ResourceDetailsPresenter(
                 secretInteractor = get(),
-                coroutineLaunchContext = get(),
                 databaseProvider = get(),
                 getSelectedAccountUseCase = get(),
                 resourceTypeFactory = get(),
@@ -49,7 +48,9 @@ fun Module.detailsModule() {
                 resourceMenuModelMapper = get(),
                 deleteResourceUseCase = get(),
                 getLocalResourceUseCase = get(),
-                getLocalResourcePermissionsUseCase = get()
+                getLocalResourcePermissionsUseCase = get(),
+                favouritesInteractor = get(),
+                coroutineLaunchContext = get()
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {

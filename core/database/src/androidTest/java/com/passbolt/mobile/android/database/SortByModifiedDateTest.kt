@@ -83,23 +83,23 @@ class SortByModifiedDateTest {
 
     private companion object {
         private val RESOURCE_1 = Resource(
-            "1", "folderid", "", Permission.READ, null, null, null, "1", false,
+            "1", "folderid", "", Permission.READ, null, null, null, "1", null,
             ZonedDateTime.now()
         )
         private val RESOURCE_2 = Resource(
-            "2", "folderid", "", Permission.READ, null, null, null, "1", false,
+            "2", "folderid", "", Permission.READ, null, null, null, "1", null,
             ZonedDateTime.now().plusDays(1)
         )
         private val RESOURCE_3 = Resource(
-            "3", "folderid", "", Permission.READ, null, null, null, "1", false,
+            "3", "folderid", "", Permission.READ, null, null, null, "1", null,
             ZonedDateTime.now().plusDays(2)
         )
         private val RESOURCE_1_ZONE_MINUS = Resource(
-            "4", "folderid", "", Permission.READ, null, null, null, "1", false,
+            "4", "folderid", "", Permission.READ, null, null, null, "1", null,
             LocalDateTime.now().atZone(ZoneOffset.of("-08:00"))
         )
         private val RESOURCE_1_ZONE_PLUS = Resource(
-            "5", "folderid", "", Permission.READ, null, null, null, "1", false,
+            "5", "folderid", "", Permission.READ, null, null, null, "1", null,
             LocalDateTime.now().atZone(ZoneOffset.of("+08:00"))
         )
     }

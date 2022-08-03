@@ -2,15 +2,18 @@ package com.passbolt.mobile.android.core.commonresource
 
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.commonresource.moremenu.resourceMoreMenuModule
+import com.passbolt.mobile.android.core.commonresource.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourcePermissionsTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildTagsTablesUseCase
+import com.passbolt.mobile.android.core.commonresource.usecase.RemoveFromFavouritesUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.ShareResourceUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.SimulateShareResourceUseCase
 import com.passbolt.mobile.android.core.commonresource.validation.resourceValidationModule
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 /**
@@ -38,103 +41,22 @@ import org.koin.dsl.module
 val commonResourceModule = module {
     resourceMoreMenuModule()
     resourceValidationModule()
-    single {
-        GetResourcesUseCase(
-            resourceRepository = get(),
-            resourceModelMapper = get(),
-            tagModelMapper = get(),
-            permissionsModelMapper = get()
-        )
-    }
-    single {
-        GetResourceTypesUseCase(
-            resourceTypesRepository = get()
-        )
-    }
-    single {
-        ResourceInteractor(
-            getResourceTypesUseCase = get(),
-            getResourcesUseCase = get(),
-            addLocalResourceTypesUseCase = get(),
-            resourceValidationRunner = get(),
-            rebuildResourceTablesUseCase = get(),
-            rebuildTagsTablesUseCase = get(),
-            rebuildResourcePermissionsTablesUseCase = get()
-        )
-    }
-    single {
-        CreateResourceUseCase(
-            resourceRepository = get(),
-            openPgp = get(),
-            createResourceMapper = get(),
-            getPrivateKeyUseCase = get(),
-            getSelectedAccountUseCase = get(),
-            resourceModelMapper = get(),
-            passphraseMemoryCache = get()
-        )
-    }
 
-    factory {
-        SearchableMatcher()
-    }
-    factory {
-        ResourceTypeFactory(
-            databaseProvider = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    factory {
-        DeleteResourceUseCase(
-            resourceRepository = get()
-        )
-    }
-    single {
-        UpdateResourceUseCase(
-            resourceRepository = get(),
-            openPgp = get(),
-            getPrivateKeyUseCase = get(),
-            getSelectedAccountUseCase = get(),
-            resourceModelMapper = get(),
-            passphraseMemoryCache = get(),
-            updateResourceMapper = get(),
-            resourceTypeFactory = get()
-        )
-    }
-    single {
-        UpdateResourceMapper(
-            gson = get(),
-            resourceTypeFactory = get()
-        )
-    }
-    single {
-        RebuildResourceTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalResourcesUseCase = get(),
-            addLocalResourcesUseCase = get()
-        )
-    }
-    single {
-        RebuildTagsTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalTagsUseCase = get(),
-            addLocalTagsUseCase = get()
-        )
-    }
-    single {
-        RebuildResourcePermissionsTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalResourcePermissionsUseCase = get(),
-            addLocalResourcePermissionsUseCase = get()
-        )
-    }
-    single {
-        SimulateShareResourceUseCase(
-            shareRepository = get()
-        )
-    }
-    single {
-        ShareResourceUseCase(
-            shareRepository = get()
-        )
-    }
+    singleOf(::GetResourcesUseCase)
+    singleOf(::GetResourceTypesUseCase)
+    singleOf(::ResourceInteractor)
+    singleOf(::CreateResourceUseCase)
+    singleOf(::SearchableMatcher)
+    singleOf(::ResourceTypeFactory)
+    singleOf(::DeleteResourceUseCase)
+    singleOf(::UpdateResourceUseCase)
+    singleOf(::UpdateResourceMapper)
+    singleOf(::RebuildResourceTablesUseCase)
+    singleOf(::RebuildTagsTablesUseCase)
+    singleOf(::RebuildResourcePermissionsTablesUseCase)
+    singleOf(::SimulateShareResourceUseCase)
+    singleOf(::ShareResourceUseCase)
+    singleOf(::AddToFavouritesUseCase)
+    singleOf(::RemoveFromFavouritesUseCase)
+    singleOf(::FavouritesInteractor)
 }

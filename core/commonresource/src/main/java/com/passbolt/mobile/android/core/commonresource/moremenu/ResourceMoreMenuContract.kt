@@ -33,6 +33,8 @@ interface ResourceMoreMenuContract {
         fun showDeleteButton()
         fun showEditButton()
         fun showShareButton()
+        fun showAddToFavouritesButton()
+        fun showRemoveFromFavouritesButton()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

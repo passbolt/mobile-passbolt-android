@@ -6,7 +6,7 @@ import com.passbolt.mobile.android.entity.group.ResourceAndGroupsCrossRef
 import com.passbolt.mobile.android.entity.user.ResourceAndUsersCrossRef
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.ui.PermissionModel
-import com.passbolt.mobile.android.ui.ResourceModelWithTagsAndPermissions
+import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 
 /**
  * Passbolt - Open source password manager for teams
@@ -70,7 +70,7 @@ class AddLocalResourcePermissionsUseCase(
     }
 
     data class Input(
-        val resourcesWithTagsModelAndGroups: List<ResourceModelWithTagsAndPermissions>,
+        val resourcesWithTagsModelAndGroups: List<ResourceModelWithAttributes>,
         val userId: String
     )
 }

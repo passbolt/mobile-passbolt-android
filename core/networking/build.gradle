@@ -15,7 +15,6 @@ dependencies {
     implementation libs.networking.retrofitGsonConverter
 
     implementation libs.di.koin
-    implementation libs.di.koinExt
 
     implementation libs.gson
     implementation libs.coil.core

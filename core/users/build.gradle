@@ -14,5 +14,4 @@ dependencies {
     implementation project(':database')
 
     implementation libs.di.koin
-    implementation libs.di.koinExt
 }

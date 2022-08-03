@@ -11,7 +11,6 @@ dependencies {
     implementation project(':localization')
 
     implementation libs.di.koin
-    implementation libs.di.koinExt
     implementation libs.material
     implementation libs.androidx.core
     implementation libs.fastAdapter.binding

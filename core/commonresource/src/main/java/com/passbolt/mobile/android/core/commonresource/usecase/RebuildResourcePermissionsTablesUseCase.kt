@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.database.impl.resources.AddLocalResourcePermi
 import com.passbolt.mobile.android.database.impl.resources.RemoveLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.ResourceModelWithTagsAndPermissions
+import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 
 /**
  * Passbolt - Open source password manager for teams
@@ -43,5 +43,5 @@ class RebuildResourcePermissionsTablesUseCase(
         )
     }
 
-    data class Input(val resourcesWithTagsAndPermissions: List<ResourceModelWithTagsAndPermissions>)
+    data class Input(val resourcesWithTagsAndPermissions: List<ResourceModelWithAttributes>)
 }

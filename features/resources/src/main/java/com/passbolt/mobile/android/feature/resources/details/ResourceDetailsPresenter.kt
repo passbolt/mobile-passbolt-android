@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resources.details
 
+import com.passbolt.mobile.android.core.commonresource.FavouritesInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
@@ -12,10 +13,12 @@ import com.passbolt.mobile.android.feature.resources.permissionavatarlist.Permis
 import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
-import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
+import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.isFavourite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -55,6 +58,7 @@ class ResourceDetailsPresenter(
     private val deleteResourceUseCase: DeleteResourceUseCase,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
+    private val favouritesInteractor: FavouritesInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter {
@@ -86,6 +90,11 @@ class ResourceDetailsPresenter(
                     displayUsername(resourceModel.username.orEmpty())
                     displayInitialsIcon(resourceModel.name, resourceModel.initials)
                     displayUrl(resourceModel.url.orEmpty())
+                    if (resourceModel.isFavourite()) {
+                        view?.showFavouriteStar()
+                    } else {
+                        view?.hideFavouriteStar()
+                    }
                     showPasswordHidden()
                     showPasswordHiddenIcon()
                     handleDescriptionField(resourceModel)
@@ -309,6 +318,31 @@ class ResourceDetailsPresenter(
 
     override fun resourceShared() {
         view?.showResourceSharedSnackbar()
+    }
+
+    override fun favouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
+        view?.showProgress()
+        scope.launch {
+            val output = when (option) {
+                ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES ->
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        favouritesInteractor.addToFavouritesAndUpdateLocal(resourceModel)
+                    }
+                ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES ->
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        favouritesInteractor.removeFromFavouritesAndUpdateLocal(resourceModel)
+                    }
+            }
+            view?.hideProgress()
+            when (output) {
+                is FavouritesInteractor.Output.Failure -> view?.showAddToFavouritesFailure()
+                is FavouritesInteractor.Output.Success -> {
+                    Timber.d("Added to favourites")
+                    view?.setResourceEditedResult(resourceModel.name)
+                }
+            }
+            getResourcesAndPermissions(resourceModel.resourceId)
+        }
     }
 
     companion object {

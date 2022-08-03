@@ -38,5 +38,6 @@ interface MainContract {
         val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished>
         fun performFullDataRefresh()
         fun appUpdateDownloaded()
+        fun performLocalDataRefresh()
     }
 }

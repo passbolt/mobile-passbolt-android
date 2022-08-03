@@ -39,7 +39,7 @@ interface ResourcesDao : BaseDao<Resource> {
     suspend fun getAllOrderedByName(): List<Resource>
 
     @Transaction
-    @Query("SELECT * FROM Resource WHERE isFavourite==1 ORDER BY modified DESC")
+    @Query("SELECT * FROM Resource WHERE favouriteId IS NOT NULL ORDER BY modified DESC")
     suspend fun getFavourites(): List<Resource>
 
     @Transaction

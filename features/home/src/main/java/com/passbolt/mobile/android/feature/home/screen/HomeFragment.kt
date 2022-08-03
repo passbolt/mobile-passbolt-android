@@ -55,6 +55,7 @@ import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
 import com.passbolt.mobile.android.ui.TagWithCount
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -496,6 +497,10 @@ class HomeFragment :
         presenter.menuEditClick()
     }
 
+    override fun menuFavouriteClick(option: FavouriteOption) {
+        presenter.menuFavouriteClick(option)
+    }
+
     override fun navigateToEdit(resourceModel: ResourceModel) {
         resourceDetailsResult.launch(
             ResourceActivity.newInstance(
@@ -701,6 +706,14 @@ class HomeFragment :
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish()
         }
+    }
+
+    override fun performLocalRefresh() {
+        (activity as HomeDataRefreshExecutor).performLocalDataRefresh()
+    }
+
+    override fun showAddToFavouritesFailure() {
+        showSnackbar(R.string.favourites_failure)
     }
 
     companion object {

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.passboltapi
 
 import com.passbolt.mobile.android.passboltapi.auth.authApiModule
+import com.passbolt.mobile.android.passboltapi.favourites.favouritesApiModule
 import com.passbolt.mobile.android.passboltapi.folders.foldersApiModule
 import com.passbolt.mobile.android.passboltapi.groups.groupsApiModule
 import com.passbolt.mobile.android.passboltapi.mfa.mfaApiModule
@@ -47,4 +48,5 @@ val passboltApiModule = module {
     usersApiModule()
     settingsApiModule()
     shareApiModule()
+    favouritesApiModule()
 }

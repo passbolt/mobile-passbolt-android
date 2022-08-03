@@ -38,7 +38,6 @@ dependencies {
     implementation libs.androidx.cameraXLifecycle
     implementation libs.gson
     implementation libs.di.koin
-    implementation libs.di.koinExt
     implementation libs.coil.core
     implementation libs.coil.base
     implementation libs.kotlin.serializationJson

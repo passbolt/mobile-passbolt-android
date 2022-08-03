@@ -10,7 +10,6 @@ dependencies {
     implementation libs.androidx.core
     implementation libs.androidx.appcompat
     implementation libs.di.koin
-    implementation libs.di.koinExt
     implementation libs.rootbeer
 }
 

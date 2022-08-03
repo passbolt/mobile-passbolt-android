@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
+import com.passbolt.mobile.android.core.commonresource.FavouritesInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
@@ -52,6 +53,7 @@ internal val mockGetLocalGroupsWithItemCountUseCase = mock<GetLocalGroupsWithSha
 internal val mockGetLocalResourcesWithGroupsUseCase = mock<GetLocalResourcesWithGroupUseCase>()
 internal val mockGetLocalResourcesFilteredByTagUseCase = mock<GetLocalResourcesFilteredByTagUseCase>()
 internal val mockGetHomeDisplayPrefsUseCase = mock<GetHomeDisaplyViewPrefsUseCase>()
+internal val mockFavouritesInteractor = mock<FavouritesInteractor>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -77,6 +79,7 @@ val testHomeModule = module {
             resourceMenuModelMapper = get(),
             deleteResourceUseCase = mockDeleteResourceUseCase,
             getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
+            getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase,
             getLocalSubFoldersForFolderUseCase = mockGetSubFoldersUseCase,
             getLocalResourcesAndFoldersUseCase = mockGetLocalResourcesAndFoldersUseCase,
             getLocalResourcesFiltered = mockGetSubFoldersResourcesUseCase,
@@ -84,10 +87,10 @@ val testHomeModule = module {
             getLocalResourcesWithTagUseCase = mockGetLocalResourcesWithTagsUseCase,
             getLocalGroupsWithShareItemsCountUseCase = mockGetLocalGroupsWithItemCountUseCase,
             getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase,
-            getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase,
             getHomeDisplayViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
             homeModelMapper = get(),
-            domainProvider = get()
+            domainProvider = get(),
+            favouritesInteractor = mockFavouritesInteractor
         )
     }
 }

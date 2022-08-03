@@ -306,6 +306,22 @@ class ResourceDetailsFragment :
         presenter.menuEditClick()
     }
 
+    override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
+        presenter.favouriteClick(option)
+    }
+
+    override fun showAddToFavouritesFailure() {
+        showSnackbar(R.string.favourites_failure)
+    }
+
+    override fun showFavouriteStar() {
+        binding.favouriteIcon.visible()
+    }
+
+    override fun hideFavouriteStar() {
+        binding.favouriteIcon.gone()
+    }
+
     override fun menuShareClick() {
         presenter.menuShareClick()
     }

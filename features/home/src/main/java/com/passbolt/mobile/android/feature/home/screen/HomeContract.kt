@@ -89,6 +89,8 @@ interface HomeContract {
         fun showDefaultSearchHint()
         fun showCloseButton()
         fun navigateToHome()
+        fun showAddToFavouritesFailure()
+        fun performLocalRefresh()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -136,5 +138,6 @@ interface HomeContract {
         fun menuShareClick()
         fun resourceShared()
         fun closeClick()
+        fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption)
     }
 }
