@@ -14,7 +14,7 @@ class AccountItemClick(
     private val removeAccountClickListener: (AccountModelUi.AccountModel) -> Unit
 ) : ClickEventHook<AccountItem>() {
 
-    override fun onBindMany(viewHolder: RecyclerView.ViewHolder): List<View>? {
+    override fun onBindMany(viewHolder: RecyclerView.ViewHolder): List<View> {
         viewHolder.asBinding<ItemAccountBinding> {
             return listOf(it.itemAccount, it.trashImage)
         }

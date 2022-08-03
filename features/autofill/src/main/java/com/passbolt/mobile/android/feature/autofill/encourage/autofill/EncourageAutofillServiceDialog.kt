@@ -60,7 +60,7 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
         setStyle(STYLE_NO_TITLE, R.style.FullscreenDialogTheme)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = DialogEncourageAutofillBinding.inflate(inflater)
         setupListeners(binding)
         setupSteps(binding)

@@ -38,6 +38,7 @@ import org.koin.core.component.inject
  *
  * @property imageLoader an image loading service
  */
+@Suppress("unused")
 class CoilInitializer : Initializer<Unit>, KoinComponent {
 
     private val imageLoader: ImageLoader by inject()

@@ -107,7 +107,7 @@ class PasswordGeneratorTest {
     )
 
     // Hangul digits - https://en.wikipedia.org/wiki/Korean_numerals
-    val koreanDigits: Set<Char> = setOf(
+    private val koreanDigits: Set<Char> = setOf(
         '영', '령', '공',  // 0
         '일',
         '이',

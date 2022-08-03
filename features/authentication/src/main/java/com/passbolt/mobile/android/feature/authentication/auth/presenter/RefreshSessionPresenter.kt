@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
 // presenter for sign in view used for refreshing the session using dedicated endpoint
 class RefreshSessionPresenter(
     private val refreshSessionUseCase: RefreshSessionUseCase,
-    private val passphraseMemoryCache: PassphraseMemoryCache,
+    passphraseMemoryCache: PassphraseMemoryCache,
     saveSessionUseCase: SaveSessionUseCase,
     saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     getAccountDataUseCase: GetAccountDataUseCase,

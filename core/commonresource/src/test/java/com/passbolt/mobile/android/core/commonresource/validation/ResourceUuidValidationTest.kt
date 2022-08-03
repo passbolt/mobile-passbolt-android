@@ -55,7 +55,7 @@ class ResourceUuidValidationTest {
             "a_word"
         ).map { dummyResourceModel.copy(resourceId = it) }
 
-        assertThat(invalidUuids.map { it to uuidValidation.invoke(it) }.toMap().values)
+        assertThat(invalidUuids.associateWith { uuidValidation.invoke(it) }.values)
             .doesNotContain(true)
     }
 

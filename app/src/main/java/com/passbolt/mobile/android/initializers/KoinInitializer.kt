@@ -61,6 +61,7 @@ import org.koin.core.context.startKoin
 /**
  * Initializes the dependency injection framework.
  */
+@Suppress("unused")
 class KoinInitializer : Initializer<Unit> {
 
     override fun create(context: Context) {

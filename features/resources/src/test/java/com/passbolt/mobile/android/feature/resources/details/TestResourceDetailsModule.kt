@@ -50,7 +50,7 @@ internal val mockResourceDatabase = mock<ResourceDatabase> {
 internal val mockDatabaseProvider = mock<DatabaseProvider> {
     on { get(any()) }.doReturn(mockResourceDatabase)
 }
-internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>() {
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase> {
     on { execute(Unit) }.doReturn(GetSelectedAccountUseCase.Output("userId"))
 }
 internal val mockSecretParser = mock<SecretParser>()

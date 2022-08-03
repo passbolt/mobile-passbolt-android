@@ -26,7 +26,6 @@ package com.passbolt.mobile.android.dto.response
 class HeaderResponse(
     val id: String,
     val status: StatusResponse,
-    val servertime: Long,
     val action: String,
     val message: String,
     val url: String,
