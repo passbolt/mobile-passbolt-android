@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 import com.passbolt.mobile.android.ui.UserProfileModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -53,6 +54,7 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
     private val presenter: GroupPermissionsContract.Presenter by inject()
     private val view: GroupPermissionsContract.View = mock()
 
+    @ExperimentalCoroutinesApi
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)

@@ -56,6 +56,7 @@ class AutofillResourcesActivity :
     ), AutofillResourcesContract.View, HomeDataRefreshExecutor {
 
     override val presenter: AutofillResourcesContract.Presenter by inject()
+    override val appContext = AppContext.AUTOFILL
 
     private val bundledAutofillUri by lifecycleAwareLazy {
         intent.getStringExtra(ActivityIntents.EXTRA_AUTOFILL_URI)

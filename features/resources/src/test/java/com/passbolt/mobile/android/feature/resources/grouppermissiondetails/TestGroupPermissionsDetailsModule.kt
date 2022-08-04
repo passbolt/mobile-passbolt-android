@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.database.impl.groups.GetGroupWithUsersUseCase
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.GroupPermissionsContract
 import com.passbolt.mobile.android.feature.resources.grouppermissionsdetails.GroupPermissionsPresenter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
@@ -33,6 +34,7 @@ import org.mockito.kotlin.mock
 
 internal val mockGetGroupWithUsersUseCase = mock<GetGroupWithUsersUseCase>()
 
+@ExperimentalCoroutinesApi
 internal val testGroupPermissionsDetailsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
     factory<GroupPermissionsContract.Presenter> {

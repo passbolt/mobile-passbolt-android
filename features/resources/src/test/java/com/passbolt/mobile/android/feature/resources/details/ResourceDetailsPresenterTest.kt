@@ -67,6 +67,7 @@ class ResourceDetailsPresenterTest : KoinTest {
     private val presenter: ResourceDetailsContract.Presenter by inject()
     private val view: ResourceDetailsContract.View = mock()
 
+    @ExperimentalCoroutinesApi
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
@@ -204,6 +205,7 @@ class ResourceDetailsPresenterTest : KoinTest {
     }
 
     @Test
+    @ExperimentalCoroutinesApi
     fun `view should show decrypt error correct`() = runTest {
         mockSecretInteractor.stub {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(
@@ -284,6 +286,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view).hidePasswordEyeIcon()
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun `delete resource should show confirmation dialog, delete and close details`() = runTest {
         whenever(mockDeleteResourceUseCase.execute(any()))

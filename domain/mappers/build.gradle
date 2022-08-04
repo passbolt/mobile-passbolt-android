@@ -9,6 +9,7 @@ dependencies {
     implementation project(':common')
     implementation project(':storage')
     implementation project(':ui')
+    implementation project(':navigation')
 
     implementation libs.di.koin
     implementation libs.gson

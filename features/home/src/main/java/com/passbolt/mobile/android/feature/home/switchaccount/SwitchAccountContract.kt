@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.home.switchaccount
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 
 /**
@@ -34,6 +35,7 @@ interface SwitchAccountContract {
         fun signOutConfirmed()
         fun switchAccountClick(account: SwitchAccountUiModel.AccountItem)
         fun viewResumed()
+        fun argsRetrieved(appContext: AppContext)
     }
 
     interface View : BaseContract.View {

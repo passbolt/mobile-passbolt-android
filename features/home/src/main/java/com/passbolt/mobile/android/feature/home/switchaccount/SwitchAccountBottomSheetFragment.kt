@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mikepenz.fastadapter.FastAdapter
@@ -13,8 +14,10 @@ import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.dialogs.signOutAlertDialog
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
@@ -41,6 +44,9 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
     private val listDivider: DrawableListDivider by inject()
     private var listener: Listener? = null
     private val switchAccountUiModelMapper: SwitchAccountUiItemsMapper by inject()
+    private val bundledAppContext: AppContext by lifecycleAwareLazy {
+        requireNotNull(requireArguments().getSerializable(EXTRA_APP_CONTEXT) as AppContext)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,6 +61,7 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
+        presenter.argsRetrieved(bundledAppContext)
     }
 
     override fun onAttach(context: Context) {
@@ -128,14 +135,7 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
 
     override fun navigateToSignInForAccount(userId: String) {
         dismiss()
-        requireActivity().finishAffinity()
-        startActivity(
-            ActivityIntents.authentication(
-                requireContext(),
-                ActivityIntents.AuthConfig.Startup,
-                userId = userId
-            )
-        )
+        listener?.switchAccountClick(userId)
     }
 
     override fun showProgress() {
@@ -152,5 +152,17 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
 
     interface Listener {
         fun switchAccountManageAccountClick()
+        fun switchAccountClick(userId: String)
+    }
+
+    companion object {
+        private const val EXTRA_APP_CONTEXT = "APP_CONTEXT"
+
+        fun newInstance(appContext: AppContext) = SwitchAccountBottomSheetFragment()
+            .apply {
+                arguments = bundleOf(
+                    EXTRA_APP_CONTEXT to appContext
+                )
+            }
     }
 }

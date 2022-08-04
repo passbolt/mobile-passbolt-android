@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.home.switchaccount
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
@@ -43,10 +44,11 @@ class SwitchAccountPresenter(
     override var view: SwitchAccountContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private lateinit var appContext: AppContext
 
-    override fun attach(view: SwitchAccountContract.View) {
-        super.attach(view)
-        view.showAccountsList(
+    override fun argsRetrieved(appContext: AppContext) {
+        this.appContext = appContext
+        view?.showAccountsList(
             prepareAccountList()
         )
     }
@@ -64,7 +66,7 @@ class SwitchAccountPresenter(
 
     private fun prepareAccountList(): List<SwitchAccountUiModel> =
         switchAccountModelMapper
-            .map(getAllAccountsDataUseCase.execute(Unit).accounts)
+            .map(getAllAccountsDataUseCase.execute(Unit).accounts, appContext)
 
     override fun signOutClick() {
         view?.showSignOutDialog()

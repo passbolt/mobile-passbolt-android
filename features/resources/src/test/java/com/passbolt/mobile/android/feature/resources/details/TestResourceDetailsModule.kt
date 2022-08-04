@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.dsl.module
@@ -69,6 +70,7 @@ internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
 internal val mockFavouritesInteractor = mock<FavouritesInteractor>()
 
+@ExperimentalCoroutinesApi
 internal val testResourceDetailsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
     factory<ResourceDetailsContract.Presenter> {
@@ -80,7 +82,6 @@ internal val testResourceDetailsModule = module {
             getLocalResourceUseCase = mockGetLocalResourceUseCase,
             getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
             coroutineLaunchContext = get()
-
         )
     }
     scope<ResourceDetailsPresenter> {

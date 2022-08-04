@@ -91,6 +91,7 @@ interface HomeContract {
         fun navigateToHome()
         fun showToggleFavouriteFailure()
         fun performLocalRefresh()
+        fun navigateToSwitchedAccountAuth(userId: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -139,5 +140,6 @@ interface HomeContract {
         fun resourceShared()
         fun closeClick()
         fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption)
+        fun switchAccountClick(userId: String)
     }
 }
