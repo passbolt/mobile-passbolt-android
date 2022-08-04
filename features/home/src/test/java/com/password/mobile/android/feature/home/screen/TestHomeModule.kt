@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFolderResourcesFilteredUseCase
@@ -22,6 +23,8 @@ import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseC
 import com.passbolt.mobile.android.database.impl.tags.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
+import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
@@ -29,7 +32,10 @@ import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
@@ -72,12 +78,8 @@ val testHomeModule = module {
         HomePresenter(
             coroutineLaunchContext = get(),
             getSelectedAccountDataUseCase = get(),
-            secretInteractor = mockSecretInteractor,
             searchableMatcher = get(),
-            resourceTypeFactory = get(),
-            secretParser = get(),
             resourceMenuModelMapper = get(),
-            deleteResourceUseCase = mockDeleteResourceUseCase,
             getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
             getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase,
             getLocalSubFoldersForFolderUseCase = mockGetSubFoldersUseCase,
@@ -89,8 +91,28 @@ val testHomeModule = module {
             getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase,
             getHomeDisplayViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
             homeModelMapper = get(),
-            domainProvider = get(),
-            favouritesInteractor = mockFavouritesInteractor
+            domainProvider = get()
         )
+    }
+    scope<HomePresenter> {
+        factory { (resource: ResourceModel) ->
+            ResourceActionsInteractor(resource)
+        }
+        factory { (
+                      resource: ResourceModel,
+                      needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                      sessionRefreshedFlow: StateFlow<Unit?>
+                  ) ->
+            ResourceAuthenticatedActionsInteractor(
+                needSessionRefreshFlow,
+                sessionRefreshedFlow,
+                resource,
+                resourceTypeFactory = mockResourceTypeFactory,
+                secretParser = mockSecretParser,
+                secretInteractor = mockSecretInteractor,
+                favouritesInteractor = mockFavouritesInteractor,
+                deleteResourceUseCase = mockDeleteResourceUseCase
+            )
+        }
     }
 }

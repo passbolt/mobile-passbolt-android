@@ -2,11 +2,19 @@ package com.passbolt.mobile.android.feature.resources.details
 
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.GroupItem
 import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.UserItem
 import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
+import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,22 +45,7 @@ internal const val COUNTER_ITEM_ADAPTER = "COUNTER_ITEM_ADAPTER"
 
 fun Module.detailsModule() {
     scope<ResourceDetailsFragment> {
-        scoped<ResourceDetailsContract.Presenter> {
-            ResourceDetailsPresenter(
-                secretInteractor = get(),
-                databaseProvider = get(),
-                getSelectedAccountUseCase = get(),
-                resourceTypeFactory = get(),
-                secretParser = get(),
-                getFeatureFlagsUseCase = get(),
-                resourceMenuModelMapper = get(),
-                deleteResourceUseCase = get(),
-                getLocalResourceUseCase = get(),
-                getLocalResourcePermissionsUseCase = get(),
-                favouritesInteractor = get(),
-                coroutineLaunchContext = get()
-            )
-        }
+        scopedOf(::ResourceDetailsPresenter) bind ResourceDetailsContract.Presenter::class
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {
             ItemAdapter.items()
         }
@@ -69,6 +62,31 @@ fun Module.detailsModule() {
                     get<ItemAdapter<UserItem>>(named(USER_ITEM_ADAPTER)),
                     get<ItemAdapter<CounterItem>>(named(COUNTER_ITEM_ADAPTER))
                 )
+            )
+        }
+    }
+    declareResourceActionsInteractors()
+}
+
+private fun Module.declareResourceActionsInteractors() {
+    scope<ResourceDetailsPresenter> {
+        factory { (resource: ResourceModel) ->
+            ResourceActionsInteractor(resource)
+        }
+        factory { (
+                      resource: ResourceModel,
+                      needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                      sessionRefreshedFlow: StateFlow<Unit?>
+                  ) ->
+            ResourceAuthenticatedActionsInteractor(
+                needSessionRefreshFlow,
+                sessionRefreshedFlow,
+                resource,
+                resourceTypeFactory = get(),
+                secretParser = get(),
+                secretInteractor = get(),
+                favouritesInteractor = get(),
+                deleteResourceUseCase = get()
             )
         }
     }

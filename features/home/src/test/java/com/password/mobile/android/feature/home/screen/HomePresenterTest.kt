@@ -14,9 +14,9 @@ import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseC
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
-import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -489,7 +489,7 @@ class HomePresenterTest : KoinTest {
         presenter.moreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
-        verify(view).addToClipboard(HomePresenter.SECRET_LABEL, String(DECRYPTED_SECRET))
+        verify(view).addToClipboard(ResourceAuthenticatedActionsInteractor.SECRET_LABEL, String(DECRYPTED_SECRET))
     }
 
     @Test

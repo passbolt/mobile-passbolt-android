@@ -1,18 +1,14 @@
 package com.passbolt.mobile.android.feature.resources.details
 
-import com.passbolt.mobile.android.core.commonresource.FavouritesInteractor
-import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
-import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
-import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.feature.resources.permissionavatarlist.PermissionsDatasetCreator
 import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
-import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -23,7 +19,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.createScope
+import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
+import org.koin.core.scope.Scope
 
 /**
  * Passbolt - Open source password manager for teams
@@ -48,28 +48,27 @@ import timber.log.Timber
  * @since v1.0
  */
 class ResourceDetailsPresenter(
-    private val secretInteractor: SecretInteractor,
     private val databaseProvider: DatabaseProvider,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val resourceTypeFactory: ResourceTypeFactory,
-    private val secretParser: SecretParser,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
-    private val deleteResourceUseCase: DeleteResourceUseCase,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
-    private val favouritesInteractor: FavouritesInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
-    ResourceDetailsContract.Presenter {
+    ResourceDetailsContract.Presenter, KoinScopeComponent {
 
     override var view: ResourceDetailsContract.View? = null
     private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
+    override val scope: Scope by lazy { createScope(this) }
 
     private lateinit var resourceModel: ResourceModel
+    private lateinit var resourceActionsInteractor: ResourceActionsInteractor
+    private lateinit var resourceAuthenticatedActionsInteractor: ResourceAuthenticatedActionsInteractor
     private var isPasswordVisible = false
     private var permissionsListWidth: Int = -1
+
     private var permissionItemWidth: Float = -1f
 
     // TODO consider resource types - for now only description can be both encrypted and unencrypted
@@ -82,9 +81,13 @@ class ResourceDetailsPresenter(
     }
 
     private fun getResourcesAndPermissions(resourceId: String) {
-        scope.launch {
+        coroutineScope.launch {
             launch { // get and display resource
                 resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
+                resourceActionsInteractor = get { parametersOf(resourceModel) }
+                resourceAuthenticatedActionsInteractor = get {
+                    parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
+                }
                 view?.apply {
                     displayTitle(resourceModel.name)
                     displayUsername(resourceModel.username.orEmpty())
@@ -126,7 +129,7 @@ class ResourceDetailsPresenter(
     }
 
     private fun handleDescriptionField(resourceModel: ResourceModel) {
-        scope.launch {
+        coroutineScope.launch {
             val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
             val resourceWithFields = databaseProvider
                 .get(userId)
@@ -151,12 +154,10 @@ class ResourceDetailsPresenter(
         }
     }
 
-    override fun usernameCopyClick() {
-        view?.addToClipboard(USERNAME_LABEL, resourceModel.username.orEmpty())
-    }
-
-    override fun urlCopyClick() {
-        view?.addToClipboard(WEBSITE_LABEL, resourceModel.url.orEmpty())
+    override fun detach() {
+        coroutineScope.coroutineContext.cancelChildren()
+        scope.close()
+        super<BaseAuthenticatedPresenter>.detach()
     }
 
     override fun moreClick() {
@@ -169,12 +170,13 @@ class ResourceDetailsPresenter(
 
     override fun secretIconClick() {
         if (!isPasswordVisible) {
-            scope.launch {
-                val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)
-                doAfterFetchAndDecrypt { decryptedSecret ->
+            coroutineScope.launch {
+                resourceAuthenticatedActionsInteractor.providePassword(
+                    decryptionFailure = { view?.showDecryptionFailure() },
+                    fetchFailure = { view?.showFetchFailure() }
+                ) { _, password ->
                     view?.apply {
                         showPasswordVisibleIcon()
-                        val password = secretParser.extractPassword(resourceTypeEnum, decryptedSecret)
                         showPassword(password)
                     }
                 }
@@ -191,104 +193,68 @@ class ResourceDetailsPresenter(
     }
 
     override fun seeDescriptionButtonClick() {
-        scope.launch {
-            val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)
-            doAfterFetchAndDecrypt { decryptedSecret ->
-                view?.apply {
-                    val description = secretParser.extractDescription(resourceTypeEnum, decryptedSecret)
-                    showDescription(description, useSecretFont = true)
-                }
+        coroutineScope.launch {
+            resourceAuthenticatedActionsInteractor.provideDescription(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { _, description ->
+                view?.showDescription(description, useSecretFont = true)
             }
         }
     }
 
-    private fun doAfterFetchAndDecrypt(action: (ByteArray) -> Unit) {
-        scope.launch {
-            when (val output =
-                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    secretInteractor.fetchAndDecrypt(
-                        resourceModel.resourceId
-                    )
-                }
-            ) {
-                is SecretInteractor.Output.DecryptFailure -> view?.showDecryptionFailure()
-                is SecretInteractor.Output.FetchFailure -> view?.showFetchFailure()
-                is SecretInteractor.Output.Success -> {
-                    action(output.decryptedSecret)
-                }
-                is SecretInteractor.Output.Unauthorized -> {
-                    // can be ignored - runAuthenticatedOperation handles it
-                    Timber.d("Unauthorized during decrypting secret")
-                }
+    override fun usernameCopyClick() {
+        resourceActionsInteractor.provideUsername { label, ussername ->
+            view?.addToClipboard(label, ussername)
+        }
+    }
+
+    override fun urlCopyClick() {
+        resourceActionsInteractor.provideWebsiteUrl { label, url ->
+            view?.addToClipboard(label, url)
+        }
+    }
+
+    override fun copyPasswordClick() {
+        coroutineScope.launch {
+            resourceAuthenticatedActionsInteractor.providePassword(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { label, password ->
+                view?.addToClipboard(label, password)
             }
         }
     }
 
-    override fun menuCopyPasswordClick() {
-        scope.launch {
-            val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)
-            doAfterFetchAndDecrypt { decryptedSecret ->
-                val password = secretParser.extractPassword(resourceTypeEnum, decryptedSecret)
-                view?.addToClipboard(SECRET_LABEL, password)
+    override fun copyDescriptionClick() {
+        coroutineScope.launch {
+            resourceAuthenticatedActionsInteractor.provideDescription(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { label, description ->
+                view?.addToClipboard(label, description)
             }
         }
     }
 
-    override fun menuCopyDescriptionClick() {
-        scope.launch {
-            when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
-                ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> {
-                    view?.addToClipboard(DESCRIPTION_LABEL, resourceModel.description.orEmpty())
-                }
-                ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> {
-                    doAfterFetchAndDecrypt { decryptedSecret ->
-                        val description = secretParser.extractDescription(resourceTypeEnum, decryptedSecret)
-                        view?.addToClipboard(DESCRIPTION_LABEL, description)
-                    }
-                }
-            }
+    override fun launchWebsiteClick() {
+        resourceActionsInteractor.provideWebsiteUrl { _, url ->
+            view?.openWebsite(url)
         }
     }
 
-    override fun menuCopyUrlClick() {
-        view?.addToClipboard(URL_LABEL, resourceModel.url.orEmpty())
-    }
-
-    override fun menuCopyUsernameClick() {
-        view?.addToClipboard(USERNAME_LABEL, resourceModel.username.orEmpty())
-    }
-
-    override fun menuLaunchWebsiteClick() {
-        if (!resourceModel.url.isNullOrEmpty()) {
-            view?.openWebsite(resourceModel.url.orEmpty())
-        }
-    }
-
-    override fun menuDeleteClick() {
+    override fun deleteClick() {
         view?.showDeleteConfirmationDialog()
     }
 
     override fun deleteResourceConfirmed() {
-        runWhileShowingListProgress {
-            when (val response = deleteResourceUseCase
-                .execute(DeleteResourceUseCase.Input(resourceModel.resourceId))) {
-                is DeleteResourceUseCase.Output.Success -> {
-                    view?.closeWithDeleteSuccessResult(resourceModel.name)
-                }
-                is DeleteResourceUseCase.Output.Failure<*> -> {
-                    Timber.e(response.response.exception)
-                    view?.showGeneralError()
-                }
+        runWhileShowingProgress {
+            resourceAuthenticatedActionsInteractor.deleteResource(
+                failure = { view?.showGeneralError() }
+            ) {
+                view?.closeWithDeleteSuccessResult(resourceModel.name)
             }
         }
-    }
-
-    override fun menuEditClick() {
-        view?.navigateToEditResource(resourceModel)
-    }
-
-    override fun menuShareClick() {
-        view?.navigateToResourcePermissions(resourceModel.resourceId, ResourcePermissionsMode.EDIT)
     }
 
     override fun resourceEdited(resourceName: String) {
@@ -299,57 +265,40 @@ class ResourceDetailsPresenter(
         }
     }
 
-    private fun runWhileShowingListProgress(action: suspend () -> Unit) {
-        scope.launch {
+    private fun runWhileShowingProgress(action: suspend () -> Unit) {
+        coroutineScope.launch {
             view?.showProgress()
             action()
             view?.hideProgress()
         }
     }
 
-    override fun sharedWithClick() {
-        view?.navigateToResourcePermissions(resourceModel.resourceId, ResourcePermissionsMode.VIEW)
-    }
-
-    override fun detach() {
-        scope.coroutineContext.cancelChildren()
-        super<BaseAuthenticatedPresenter>.detach()
-    }
-
     override fun resourceShared() {
         view?.showResourceSharedSnackbar()
     }
 
+    override fun editClick() {
+        view?.navigateToEditResource(resourceModel)
+    }
+
+    override fun shareClick() {
+        view?.navigateToResourcePermissions(resourceModel.resourceId, ResourcePermissionsMode.EDIT)
+    }
+
+    override fun sharedWithClick() {
+        view?.navigateToResourcePermissions(resourceModel.resourceId, ResourcePermissionsMode.VIEW)
+    }
+
     override fun favouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
-        view?.showProgress()
-        scope.launch {
-            val output = when (option) {
-                ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES ->
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                        favouritesInteractor.addToFavouritesAndUpdateLocal(resourceModel)
-                    }
-                ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES ->
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                        favouritesInteractor.removeFromFavouritesAndUpdateLocal(resourceModel)
-                    }
-            }
-            view?.hideProgress()
-            when (output) {
-                is FavouritesInteractor.Output.Failure -> view?.showAddToFavouritesFailure()
-                is FavouritesInteractor.Output.Success -> {
-                    Timber.d("Added to favourites")
-                    view?.setResourceEditedResult(resourceModel.name)
-                }
+        runWhileShowingProgress {
+            resourceAuthenticatedActionsInteractor.toggleFavourite(
+                favouriteOption = option,
+                failure = {
+                    view?.showToggleFavouriteFailure()
+                }) {
+                view?.setResourceEditedResult(resourceModel.name)
             }
             getResourcesAndPermissions(resourceModel.resourceId)
         }
-    }
-
-    companion object {
-        private const val WEBSITE_LABEL = "Website"
-        private const val USERNAME_LABEL = "Username"
-        private const val SECRET_LABEL = "Secret"
-        private const val DESCRIPTION_LABEL = "Description"
-        private const val URL_LABEL = "Url"
     }
 }

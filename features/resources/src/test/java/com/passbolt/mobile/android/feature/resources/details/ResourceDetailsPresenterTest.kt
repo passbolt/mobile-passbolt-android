@@ -178,7 +178,7 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     fun `eye icon should react to password visibility change correct`() {
-        mockSecretInterActor.stub {
+        mockSecretInteractor.stub {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.Success(DECRYPTED_SECRET))
         }
         mockResourceTypeFactory.stub {
@@ -205,7 +205,7 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     fun `view should show decrypt error correct`() = runTest {
-        mockSecretInterActor.stub {
+        mockSecretInteractor.stub {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(
                 SecretInteractor.Output.DecryptFailure(
                     OpenPgpError("errorMessage")
@@ -225,7 +225,7 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     fun `view should show fetch error correct`() {
-        mockSecretInterActor.stub {
+        mockSecretInteractor.stub {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.FetchFailure(RuntimeException()))
         }
 
@@ -241,7 +241,7 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     fun `view should show auth when passphrase not in cache`() {
-        mockSecretInterActor.stub {
+        mockSecretInteractor.stub {
             onBlocking { fetchAndDecrypt(ID) }.doReturn(
                 SecretInteractor.Output.Unauthorized(
                     AuthenticationState.Unauthenticated.Reason.Session
@@ -295,7 +295,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             20f
         )
         presenter.moreClick()
-        presenter.menuDeleteClick()
+        presenter.deleteClick()
         presenter.deleteResourceConfirmed()
 
         verify(view).showDeleteConfirmationDialog()
@@ -321,7 +321,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             20f
         )
         presenter.moreClick()
-        presenter.menuDeleteClick()
+        presenter.deleteClick()
         presenter.deleteResourceConfirmed()
 
         verify(view).showDeleteConfirmationDialog()

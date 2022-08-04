@@ -4,17 +4,23 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.commonresource.FavouritesInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.ResourceDatabase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceTypesDao
+import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.dsl.module
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -43,7 +49,7 @@ import org.mockito.kotlin.mock
  * @since v1.0
  */
 
-internal val mockSecretInterActor = mock<SecretInteractor>()
+internal val mockSecretInteractor = mock<SecretInteractor>()
 internal val mockResourceTypesDao = mock<ResourceTypesDao>()
 internal val mockResourceDatabase = mock<ResourceDatabase> {
     on { resourceTypesDao() }.doReturn(mockResourceTypesDao)
@@ -67,19 +73,35 @@ internal val testResourceDetailsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
     factory<ResourceDetailsContract.Presenter> {
         ResourceDetailsPresenter(
-            secretInteractor = mockSecretInterActor,
             databaseProvider = mockDatabaseProvider,
             getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
-            resourceTypeFactory = mockResourceTypeFactory,
-            secretParser = mockSecretParser,
             getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
             resourceMenuModelMapper = resourceMenuModelMapper,
-            deleteResourceUseCase = mockDeleteResourceUseCase,
             getLocalResourceUseCase = mockGetLocalResourceUseCase,
             getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
-            coroutineLaunchContext = get(),
-            favouritesInteractor = mockFavouritesInteractor
+            coroutineLaunchContext = get()
 
         )
+    }
+    scope<ResourceDetailsPresenter> {
+        factory { (resource: ResourceModel) ->
+            ResourceActionsInteractor(resource)
+        }
+        factory { (
+                      resource: ResourceModel,
+                      needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                      sessionRefreshedFlow: StateFlow<Unit?>
+                  ) ->
+            ResourceAuthenticatedActionsInteractor(
+                needSessionRefreshFlow,
+                sessionRefreshedFlow,
+                resource,
+                resourceTypeFactory = mockResourceTypeFactory,
+                secretParser = mockSecretParser,
+                secretInteractor = mockSecretInteractor,
+                favouritesInteractor = mockFavouritesInteractor,
+                deleteResourceUseCase = mockDeleteResourceUseCase
+            )
+        }
     }
 }
