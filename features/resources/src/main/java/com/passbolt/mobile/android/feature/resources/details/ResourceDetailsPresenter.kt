@@ -20,8 +20,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinScopeComponent
-import org.koin.core.component.createScope
 import org.koin.core.component.get
+import org.koin.core.component.getOrCreateScope
 import org.koin.core.parameter.parametersOf
 import org.koin.core.scope.Scope
 
@@ -61,7 +61,8 @@ class ResourceDetailsPresenter(
     override var view: ResourceDetailsContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
-    override val scope: Scope by lazy { createScope(this) }
+    override val scope: Scope
+        get() = getOrCreateScope().value
 
     private lateinit var resourceModel: ResourceModel
     private lateinit var resourceActionsInteractor: ResourceActionsInteractor

@@ -30,17 +30,13 @@ class ResourceActionsInteractor(
 
     fun provideWebsiteUrl(onUrlReady: (ClipboardLabel, String) -> Unit) {
         resource.url?.let {
-            if (it.isNotBlank()) {
-                onUrlReady(URL_LABEL, it)
-            }
+            onUrlReady(URL_LABEL, it)
         }
     }
 
     fun provideUsername(onUsernameReady: (ClipboardLabel, String) -> Unit) {
         resource.url?.let {
-            if (it.isNotBlank()) {
-                onUsernameReady(USERNAME_LABEL, it)
-            }
+            onUsernameReady(USERNAME_LABEL, it)
         }
     }
 

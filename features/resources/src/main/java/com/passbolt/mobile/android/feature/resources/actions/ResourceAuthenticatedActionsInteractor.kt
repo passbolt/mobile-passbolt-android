@@ -60,9 +60,7 @@ class ResourceAuthenticatedActionsInteractor(
             ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> {
                 fetchAndDecrypt(decryptionFailure, fetchFailure) {
                     val description = secretParser.extractDescription(resourceTypeEnum, it)
-                    if (description.isNotBlank()) {
-                        success(DESCRIPTION_LABEL, description)
-                    }
+                    success(DESCRIPTION_LABEL, description)
                 }
             }
         }

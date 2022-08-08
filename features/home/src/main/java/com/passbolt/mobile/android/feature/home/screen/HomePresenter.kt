@@ -39,8 +39,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinScopeComponent
-import org.koin.core.component.createScope
 import org.koin.core.component.get
+import org.koin.core.component.getOrCreateScope
 import org.koin.core.parameter.parametersOf
 import org.koin.core.scope.Scope
 import timber.log.Timber
@@ -102,7 +102,8 @@ class HomePresenter(
     private val filteringJob = SupervisorJob()
     private val filteringScope = CoroutineScope(filteringJob + coroutineLaunchContext.ui)
     private lateinit var dataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>
-    override val scope: Scope by lazy { createScope(this) }
+    override val scope: Scope
+        get() = getOrCreateScope().value
     private lateinit var homeView: HomeDisplayViewModel
 
     private var currentSearchText = MutableStateFlow("")
