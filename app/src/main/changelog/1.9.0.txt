@@ -5,6 +5,7 @@
 
 ## Improved
 - Resized resource menu icons to common dimensions
+- Add uncaught exception handling - now they will be logged to file (if debug logs are enabled)
 
 ## Fixed
 - Expanded search app bar when search has empty results (there was a scenario when empty state could be shown while search bar

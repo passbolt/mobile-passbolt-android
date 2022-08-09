@@ -61,6 +61,7 @@ class TimberInitializer : Initializer<Unit>, KoinComponent {
             !Timber.forest().contains(fileLoggingTree)
         ) {
             Timber.plant(fileLoggingTree)
+            Timber.d("File logging tree planted")
         }
     }
 
