@@ -1,7 +1,13 @@
-package com.passbolt.mobile.android.database.impl.resources
+package com.passbolt.mobile.android.feature.resources.tags
 
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.GroupItem
+import com.passbolt.mobile.android.feature.resources.tags.tagsrecycler.TagItem
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.scopedOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +32,20 @@ import org.koin.core.module.dsl.singleOf
  * @since v1.0
  */
 
-internal fun Module.resourcesModule() {
-    singleOf(::AddLocalResourcesUseCase)
-    singleOf(::AddLocalResourceUseCase)
-    singleOf(::GetLocalResourcesUseCase)
-    singleOf(::RemoveLocalResourcesUseCase)
-    singleOf(::GetLocalResourceUseCase)
-    singleOf(::UpdateLocalResourceUseCase)
-    singleOf(::AddLocalResourcePermissionsUseCase)
-    singleOf(::RemoveLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcesFilteredByTagUseCase)
-    singleOf(::GetLocalResourceTagsUseCase)
+internal const val TAGS_ITEM_ADAPTER = "TAGS_ITEM_ADAPTER"
+internal const val TAGS_ADAPTER = "TAGS_ADAPTER"
+
+fun Module.resourceTagsModule() {
+    scope<ResourceTagsFragment> {
+        scopedOf(::ResourceTagsPresenter) bind ResourceTagsContract.Presenter::class
+
+        scoped<ItemAdapter<TagItem>>(named(TAGS_ITEM_ADAPTER)) {
+            ItemAdapter.items()
+        }
+        scoped(named(TAGS_ADAPTER)) {
+            FastAdapter.with(
+                get<ItemAdapter<GroupItem>>(named(TAGS_ITEM_ADAPTER))
+            )
+        }
+    }
 }

@@ -230,6 +230,7 @@
     <string name="resource_details_password_header">Password</string>
     <string name="resource_details_url_header">Website URL</string>
     <string name="resource_details_description_header">Description</string>
+    <string name="resource_details_tags_header">Tags</string>
     <string name="resource_details_hide_password">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">Description is encrypted</string>
     <string name="resource_details_see_description">See description</string>
@@ -370,6 +371,8 @@
 
     <string name="dialog_encryption_error_title">There was an encryption error</string>
     <string name="dialog_encryption_error_message">There was an encryption error (%s). Please try again.</string>
+
+    <string name="resource_tags_section">Tags</string>
 
     <!--
     arrays can be inconsistent when in other languages

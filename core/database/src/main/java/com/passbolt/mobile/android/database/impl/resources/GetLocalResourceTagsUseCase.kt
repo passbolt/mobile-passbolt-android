@@ -1,7 +1,10 @@
 package com.passbolt.mobile.android.database.impl.resources
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.TagsModelMapper
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.TagModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,17 +28,28 @@ import org.koin.core.module.dsl.singleOf
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GetLocalResourceTagsUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val tagsModelMapper: TagsModelMapper,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : AsyncUseCase<GetLocalResourceTagsUseCase.Input, GetLocalResourceTagsUseCase.Output> {
 
-internal fun Module.resourcesModule() {
-    singleOf(::AddLocalResourcesUseCase)
-    singleOf(::AddLocalResourceUseCase)
-    singleOf(::GetLocalResourcesUseCase)
-    singleOf(::RemoveLocalResourcesUseCase)
-    singleOf(::GetLocalResourceUseCase)
-    singleOf(::UpdateLocalResourceUseCase)
-    singleOf(::AddLocalResourcePermissionsUseCase)
-    singleOf(::RemoveLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcesFilteredByTagUseCase)
-    singleOf(::GetLocalResourceTagsUseCase)
+    override suspend fun execute(input: Input): Output {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        return Output(
+            databaseProvider
+                .get(userId)
+                .tagsDao()
+                .getResourceTags(input.resourceId)
+                .map(tagsModelMapper::map)
+        )
+    }
+
+    data class Input(
+        val resourceId: String
+    )
+
+    data class Output(
+        val tags: List<TagModel>
+    )
 }

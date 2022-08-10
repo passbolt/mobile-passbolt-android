@@ -3,21 +3,20 @@ package com.passbolt.mobile.android.feature.resources.details
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.graphics.Color
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.ColorUtils
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.amulyakhare.textdrawable.TextDrawable
-import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -29,9 +28,11 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
+import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
+import com.passbolt.mobile.android.core.ui.span.RoundedBackgroundSpan
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
@@ -77,6 +78,7 @@ class ResourceDetailsFragment :
 
     override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
+    private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val bundledResourceModel: ResourceModel by lifecycleAwareLazy {
         requireNotNull(
             requireActivity().intent.getParcelableExtra(ResourceActivity.EXTRA_RESOURCE_MODEL)
@@ -99,6 +101,9 @@ class ResourceDetailsFragment :
 
     private val sharedWithFields
         get() = listOf(binding.sharedWithLabel, binding.sharedWithRecyclerClickableArea, binding.sharedWithNavIcon)
+
+    private val tagsFields
+        get() = listOf(binding.tagsHeader, binding.tagsClickableArea, binding.tagsNavIcon)
 
     private val websiteOpener: WebsiteOpener by inject()
 
@@ -155,6 +160,7 @@ class ResourceDetailsFragment :
             seeDescriptionButton.setDebouncingOnClick { presenter.seeDescriptionButtonClick() }
             descriptionHeader.setDebouncingOnClick { presenter.copyDescriptionClick() }
             sharedWithFields.forEach { it.setDebouncingOnClick { presenter.sharedWithClick() } }
+            tagsFields.forEach { it.setDebouncingOnClick { presenter.tagsClick() } }
             fastAdapter.onClickListener = { _, _, _, _ ->
                 presenter.sharedWithClick()
                 true
@@ -198,16 +204,8 @@ class ResourceDetailsFragment :
     }
 
     override fun displayInitialsIcon(name: String, initials: String) {
-        val generator = ColorGenerator.MATERIAL
-        val generatedColor = generator.getColor(name)
-        val color = ColorUtils.blendARGB(generatedColor, Color.WHITE, LIGHT_RATIO)
         binding.icon.setImageDrawable(
-            TextDrawable.builder()
-                .beginConfig()
-                .textColor(ColorUtils.blendARGB(color, generatedColor, DARK_RATIO))
-                .useFont(ResourcesCompat.getFont(requireContext(), R.font.inter_medium))
-                .endConfig()
-                .buildRoundRect(initials, color, ICON_RADIUS)
+            initialsIconGenerator.generate(name, initials)
         )
     }
 
@@ -366,6 +364,12 @@ class ResourceDetailsFragment :
         )
     }
 
+    override fun navigateToResourceTags(resourceId: String, mode: ResourcePermissionsMode) {
+        findNavController().navigate(
+            ResourceDetailsFragmentDirections.actionResourceDetailsToResourceTagsFragment(resourceId, mode)
+        )
+    }
+
     override fun showResourceEditedSnackbar(resourceName: String) {
         showSnackbar(R.string.common_message_resource_edited, resourceName)
     }
@@ -413,9 +417,20 @@ class ResourceDetailsFragment :
             .show()
     }
 
-    companion object {
-        private const val LIGHT_RATIO = 0.5f
-        private const val DARK_RATIO = 0.88f
-        private const val ICON_RADIUS = 4
+    override fun showTags(tags: List<String>) {
+        val builder = SpannableStringBuilder()
+        tags.forEach {
+            builder.append(it)
+            builder.setSpan(
+                RoundedBackgroundSpan(
+                    ContextCompat.getColor(requireContext(), R.color.divider),
+                    ContextCompat.getColor(requireContext(), R.color.text_primary)
+                ),
+                builder.length - it.length,
+                builder.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        binding.tagsValue.text = builder
     }
 }

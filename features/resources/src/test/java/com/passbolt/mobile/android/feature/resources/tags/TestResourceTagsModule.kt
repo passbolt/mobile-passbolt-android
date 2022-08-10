@@ -1,7 +1,12 @@
-package com.passbolt.mobile.android.database.impl.resources
+package com.passbolt.mobile.android.feature.resources.tags
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.dsl.module
+import org.mockito.kotlin.mock
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +31,17 @@ import org.koin.core.module.dsl.singleOf
  * @since v1.0
  */
 
-internal fun Module.resourcesModule() {
-    singleOf(::AddLocalResourcesUseCase)
-    singleOf(::AddLocalResourceUseCase)
-    singleOf(::GetLocalResourcesUseCase)
-    singleOf(::RemoveLocalResourcesUseCase)
-    singleOf(::GetLocalResourceUseCase)
-    singleOf(::UpdateLocalResourceUseCase)
-    singleOf(::AddLocalResourcePermissionsUseCase)
-    singleOf(::RemoveLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcesFilteredByTagUseCase)
-    singleOf(::GetLocalResourceTagsUseCase)
+internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
+internal val mockResourceTagsUseCase = mock<GetLocalResourceTagsUseCase>()
+
+@ExperimentalCoroutinesApi
+internal val testResourceTagsModule = module {
+    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+    factory<ResourceTagsContract.Presenter> {
+        ResourceTagsPresenter(
+            getLocalResourceUseCase = mockGetLocalResourceUseCase,
+            coroutineLaunchContext = get(),
+            getLocalResourceTags = mockResourceTagsUseCase
+        )
+    }
 }

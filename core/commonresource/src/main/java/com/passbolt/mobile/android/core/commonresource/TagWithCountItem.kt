@@ -39,7 +39,7 @@ class TagWithCountItem(
 ) : AbstractBindingItem<ItemTagWithCountBinding>() {
 
     override val type: Int
-        get() = R.id.itemTag
+        get() = R.id.itemTagWithCount
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemTagWithCountBinding =
         ItemTagWithCountBinding.inflate(inflater, parent, false)
@@ -65,7 +65,7 @@ class TagWithCountItem(
 
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
             return viewHolder.asBinding<ItemTagWithCountBinding> {
-                it.itemTag
+                it.itemTagWithCount
             }
         }
 

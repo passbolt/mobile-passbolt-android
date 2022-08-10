@@ -27,12 +27,19 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" >
+            app:popExitAnim="@anim/slide_out_right">
             <argument
                 android:name="navigationOrigin"
                 android:defaultValue="RESOURCE_DETAILS_SCREEN"
                 app:argType="com.passbolt.mobile.android.feature.resources.permissions.NavigationOrigin" />
         </action>
+        <action
+            android:id="@+id/action_resourceDetails_to_resourceTagsFragment"
+            app:destination="@id/resourceTagsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -73,12 +80,12 @@
         <action
             android:id="@+id/action_resourcePermissionsFragment_self"
             app:destination="@id/resourcePermissionsFragment"
-            app:popUpTo="@id/resourcePermissionsFragment"
-            app:popUpToInclusive="true"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/resourcePermissionsFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -135,5 +142,18 @@
             android:defaultValue="HOME_RESOURCE_MORE_MENU"
             app:argType="com.passbolt.mobile.android.feature.resources.permissions.NavigationOrigin" />
     </action>
+
+    <fragment
+        android:id="@+id/resourceTagsFragment"
+        android:name="com.passbolt.mobile.android.feature.resources.tags.ResourceTagsFragment"
+        android:label="ResourceTagsFragment"
+        tools:layout="@layout/fragment_resource_tags">
+        <argument
+            android:name="resourceId"
+            app:argType="string" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode" />
+    </fragment>
 
 </navigation>

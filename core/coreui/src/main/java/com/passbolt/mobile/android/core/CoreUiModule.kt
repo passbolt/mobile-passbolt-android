@@ -1,7 +1,10 @@
-package com.passbolt.mobile.android.database.impl.resources
+package com.passbolt.mobile.android.core.ui
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import com.passbolt.mobile.android.core.font.Font
+import com.passbolt.mobile.android.core.font.fontModule
+import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +29,12 @@ import org.koin.core.module.dsl.singleOf
  * @since v1.0
  */
 
-internal fun Module.resourcesModule() {
-    singleOf(::AddLocalResourcesUseCase)
-    singleOf(::AddLocalResourceUseCase)
-    singleOf(::GetLocalResourcesUseCase)
-    singleOf(::RemoveLocalResourcesUseCase)
-    singleOf(::GetLocalResourceUseCase)
-    singleOf(::UpdateLocalResourceUseCase)
-    singleOf(::AddLocalResourcePermissionsUseCase)
-    singleOf(::RemoveLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcesFilteredByTagUseCase)
-    singleOf(::GetLocalResourceTagsUseCase)
+val coreUiModule = module {
+    fontModule()
+
+    factory {
+        InitialsIconGenerator(
+            font = get(named<Font.InterMedium>())
+        )
+    }
 }

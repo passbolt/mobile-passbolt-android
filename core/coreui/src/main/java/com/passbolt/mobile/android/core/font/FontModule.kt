@@ -1,7 +1,11 @@
-package com.passbolt.mobile.android.database.impl.resources
+@file:Suppress("MatchingDeclarationName")
 
+package com.passbolt.mobile.android.core.font
+
+import android.content.res.Resources
+import com.passbolt.mobile.android.core.ui.R
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,16 +30,12 @@ import org.koin.core.module.dsl.singleOf
  * @since v1.0
  */
 
-internal fun Module.resourcesModule() {
-    singleOf(::AddLocalResourcesUseCase)
-    singleOf(::AddLocalResourceUseCase)
-    singleOf(::GetLocalResourcesUseCase)
-    singleOf(::RemoveLocalResourcesUseCase)
-    singleOf(::GetLocalResourceUseCase)
-    singleOf(::UpdateLocalResourceUseCase)
-    singleOf(::AddLocalResourcePermissionsUseCase)
-    singleOf(::RemoveLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcesFilteredByTagUseCase)
-    singleOf(::GetLocalResourceTagsUseCase)
+sealed class Font {
+    object InterMedium : Font()
+}
+
+internal fun Module.fontModule() {
+    factory(named<Font.InterMedium>()) {
+        get<Resources>().getFont(R.font.inter_medium)
+    }
 }

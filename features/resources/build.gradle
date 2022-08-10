@@ -33,7 +33,6 @@ dependencies {
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
     implementation libs.di.koin
-    implementation libs.textDrawable
     implementation libs.room.core
     implementation libs.room.runtime
     implementation libs.room.cipher
