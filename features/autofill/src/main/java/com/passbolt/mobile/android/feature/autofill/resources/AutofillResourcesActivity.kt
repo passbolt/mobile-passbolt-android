@@ -140,6 +140,8 @@ class AutofillResourcesActivity :
 
     override fun shouldShowResourceMoreMenu() = false
 
+    override fun shouldShowFolderMoreMenu() = false
+
     override fun shouldShowCloseButton() = true
 
     override fun showSuggestedModel() =

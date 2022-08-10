@@ -18,6 +18,7 @@ dependencies {
     implementation project(':featureflags')
 
     implementation libs.di.koin
+    implementation libs.material
 }
 
 android {

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismiss
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.commonresource.R
@@ -117,13 +117,6 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
                 null,
                 null
             )
-        }
-    }
-
-    private fun setDebouncingOnClickAndDismiss(view: View, action: () -> Unit = {}) {
-        view.setDebouncingOnClick {
-            action()
-            dismiss()
         }
     }
 

@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.common.px
+import com.passbolt.mobile.android.core.commonfolders.moremenu.FolderMoreMenuFragment
 import com.passbolt.mobile.android.core.commonresource.FolderItem
 import com.passbolt.mobile.android.core.commonresource.GroupWithCountItem
 import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderItem
@@ -52,6 +53,8 @@ import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBotto
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.ui.FiltersMenuModel
+import com.passbolt.mobile.android.ui.Folder
+import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -87,7 +90,7 @@ import org.koin.core.qualifier.named
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
     HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener,
-    FiltersMenuFragment.Listener {
+    FiltersMenuFragment.Listener, FolderMoreMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
     override val appContext = AppContext.APP
@@ -137,7 +140,8 @@ class HomeFragment :
                     resourceHandlingStrategy.showSuggestedModel(),
                     homeDisplayView = null,
                     hasPreviousEntry,
-                    resourceHandlingStrategy.shouldShowCloseButton()
+                    resourceHandlingStrategy.shouldShowCloseButton(),
+                    resourceHandlingStrategy.shouldShowResourceMoreMenu()
                 )
             }
         }
@@ -176,7 +180,8 @@ class HomeFragment :
             resourceHandlingStrategy.showSuggestedModel(),
             arguments.homeView,
             hasPreviousEntry,
-            resourceHandlingStrategy.shouldShowCloseButton()
+            resourceHandlingStrategy.shouldShowCloseButton(),
+            resourceHandlingStrategy.shouldShowResourceMoreMenu()
         )
     }
 
@@ -225,7 +230,7 @@ class HomeFragment :
                 resourceHandlingStrategy.resourceItemClick(it)
             },
             PasswordItem.MoreClick {
-                presenter.moreClick(it)
+                presenter.resourceMoreClick(it)
             },
             FolderItem.ItemClick {
                 presenter.folderItemClick(it)
@@ -244,6 +249,8 @@ class HomeFragment :
     }
 
     override fun shouldShowResourceMoreMenu() = true
+
+    override fun shouldShowFolderMoreMenu() = true
 
     override fun showSuggestedModel() =
         ShowSuggestedModel.DoNotShow
@@ -293,6 +300,9 @@ class HomeFragment :
             }
             searchTextInput.setStartIconOnClickListener {
                 presenter.filtersClick()
+            }
+            moreButton.setDebouncingOnClick {
+                presenter.moreClick()
             }
             backButton.setDebouncingOnClick {
                 navController.popBackStack()
@@ -746,6 +756,27 @@ class HomeFragment :
 
     override fun showToggleFavouriteFailure() {
         showSnackbar(R.string.favourites_failure)
+    }
+
+    override fun showFolderMoreMenuIcon() {
+        binding.moreButton.visible()
+    }
+
+    override fun hideFolderMoreMenuIcon() {
+        binding.moreButton.gone()
+    }
+
+    override fun menuSeeFolderDetailsClick() {
+        presenter.seeFolderDetailsClick()
+    }
+
+    override fun navigateToFolderMoreMenu(folderMoreMenuModel: FolderMoreMenuModel) {
+        FolderMoreMenuFragment.newInstance(folderMoreMenuModel)
+            .show(childFragmentManager, FolderMoreMenuModel::class.java.name)
+    }
+
+    override fun navigateToFolderDetails(folderId: Folder) {
+        // TODO("Not yet implemented")
     }
 
     companion object {

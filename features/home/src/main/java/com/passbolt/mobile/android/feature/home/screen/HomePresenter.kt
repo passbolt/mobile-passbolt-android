@@ -25,6 +25,7 @@ import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyViewPrefsUseCase
 import com.passbolt.mobile.android.ui.Folder
+import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -74,7 +75,7 @@ import timber.log.Timber
  * shared with me, etc.) the reload is done from the database only. To refresh from backend again users can do the
  * swipe to refresh gesture.
  */
-@Suppress("TooManyFunctions") // TODO MOB-321
+@Suppress("TooManyFunctions", "LargeClass") // TODO MOB-321
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
@@ -139,7 +140,8 @@ class HomePresenter(
         showSuggestedModel: ShowSuggestedModel,
         homeDisplayView: HomeDisplayViewModel?,
         hasPreviousEntry: Boolean,
-        shouldShowCloseButton: Boolean
+        shouldShowCloseButton: Boolean,
+        shouldShowResourceMoreMenu: Boolean
     ) {
         val filterPreferences = getHomeDisplayViewPrefsUseCase.execute(Unit)
         homeView = homeDisplayView ?: homeModelMapper.map(
@@ -158,9 +160,18 @@ class HomePresenter(
 
         handleCloseVisibility(shouldShowCloseButton)
         handleBackArrowVisibility()
+        handleMoreMenuIconVisibility(shouldShowResourceMoreMenu)
         loadUserAvatar()
         collectDataRefreshStatus()
         collectFilteringRefreshes()
+    }
+
+    private fun handleMoreMenuIconVisibility(shouldShowResourceMoreMenu: Boolean) {
+        if (shouldShowResourceMoreMenu && homeView is HomeDisplayViewModel.Folders) {
+            view?.showFolderMoreMenuIcon()
+        } else {
+            view?.hideFolderMoreMenuIcon()
+        }
     }
 
     private fun handleCloseVisibility(shouldShowCloseButton: Boolean) {
@@ -531,7 +542,7 @@ class HomePresenter(
         view?.performRefreshUsingRefreshExecutor()
     }
 
-    override fun moreClick(resourceModel: ResourceModel) {
+    override fun resourceMoreClick(resourceModel: ResourceModel) {
         currentMoreMenuResource = resourceModel
         view?.navigateToMore(resourceMenuModelMapper.map(resourceModel))
     }
@@ -743,5 +754,21 @@ class HomePresenter(
                 view?.performLocalRefresh()
             }
         }
+    }
+
+    override fun moreClick() {
+        when (val currentHomeView = homeView) {
+            is HomeDisplayViewModel.Folders -> view?.navigateToFolderMoreMenu(
+                FolderMoreMenuModel(currentHomeView.activeFolderName)
+            )
+            else -> {
+                // more is present on folders only for now
+            }
+        }
+    }
+
+    override fun seeFolderDetailsClick() {
+        val currentHomeView = homeView as HomeDisplayViewModel.Folders
+        view?.navigateToFolderDetails(currentHomeView.activeFolder)
     }
 }

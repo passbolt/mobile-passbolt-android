@@ -53,21 +53,33 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <ImageView
+                        android:id="@+id/moreButton"
+                        android:layout_width="@dimen/dp_24"
+                        android:layout_height="@dimen/dp_24"
+                        android:layout_marginEnd="@dimen/dp_8"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_more"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/closeButton"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                     <TextView
                         android:id="@+id/screenTitleLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingHorizontal="@dimen/dp_24"
+                        android:layout_marginHorizontal="@dimen/dp_8"
                         android:drawablePadding="@dimen/dp_4"
                         android:ellipsize="middle"
                         android:maxLines="1"
+                        android:paddingHorizontal="@dimen/dp_24"
                         android:paddingVertical="@dimen/dp_16"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/closeButton"
+                        app:layout_constraintEnd_toStartOf="@id/moreButton"
                         app:layout_constraintStart_toEndOf="@id/backButton"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:layout_marginHorizontal="@dimen/dp_8"
                         tools:drawableStart="@drawable/ic_list"
                         tools:text="All items" />
                 </androidx.constraintlayout.widget.ConstraintLayout>

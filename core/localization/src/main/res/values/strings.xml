@@ -63,6 +63,8 @@
     <string name="more_add_to_favourite">Add to favourite</string>
     <string name="more_remove_from_favourite">Remove from favourite</string>
 
+    <string name="folder_more_see_details">See details</string>
+
     <string name="dialog_server_not_reachable_title">Server was not reachable!</string>
     <string name="dialog_server_not_reachable_message">%s cannot be reached. Please try again</string>
     <string name="dialog_server_not_reachable_got_it">Got it</string>
