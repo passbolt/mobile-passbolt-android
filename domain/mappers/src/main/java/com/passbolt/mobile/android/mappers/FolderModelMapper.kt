@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.dto.response.FolderResponseDto
 import com.passbolt.mobile.android.entity.folder.Folder
 import com.passbolt.mobile.android.entity.folder.FolderWithChildItemsCount
 import com.passbolt.mobile.android.ui.FolderModel
+import com.passbolt.mobile.android.ui.FolderModelWithAttributes
 import com.passbolt.mobile.android.ui.FolderWithCount
 
 /**
@@ -32,13 +33,16 @@ class FolderModelMapper(
     private val permissionsModelMapper: PermissionsModelMapper
 ) {
 
-    fun map(folder: FolderResponseDto): FolderModel =
-        FolderModel(
-            folderId = folder.id,
-            parentFolderId = folder.folderParentId,
-            name = folder.name.orEmpty(),
-            isShared = folder.personal == false,
-            permission = permissionsModelMapper.map(folder.permission.type)
+    fun map(folder: FolderResponseDto): FolderModelWithAttributes =
+        FolderModelWithAttributes(
+            FolderModel(
+                folderId = folder.id,
+                parentFolderId = folder.folderParentId,
+                name = folder.name.orEmpty(),
+                isShared = folder.personal == false,
+                permission = permissionsModelMapper.map(folder.permission.type)
+            ),
+            folder.permissions.map(permissionsModelMapper::map)
         )
 
     fun map(folderModel: FolderModel): Folder =

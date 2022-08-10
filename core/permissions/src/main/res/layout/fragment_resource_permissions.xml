@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/dp_8"
+        app:layout_constraintTop_toTopOf="parent"
+        app:toolbarTitle="@string/shared_with" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/permissionsRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <TextView
+        android:id="@+id/emptyState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        android:background="@color/background"
+        android:drawablePadding="@dimen/dp_24"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/dp_80"
+        android:paddingBottom="@dimen/dp_96"
+        android:text="@string/resource_permissions_one_owner"
+        android:textColor="@color/text_primary"
+        android:textFontWeight="600"
+        android:textSize="@dimen/sp_24"
+        android:visibility="gone"
+        app:drawableBottomCompat="@drawable/ic_empty_state"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addPermissionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:layout_marginBottom="@dimen/dp_116"
+        android:visibility="gone"
+        app:backgroundTint="@color/primary"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+        app:srcCompat="@drawable/ic_plus"
+        app:tint="@color/white" />
+
+    <LinearLayout
+        android:id="@+id/actionButtonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_96"
+        android:layout_gravity="bottom"
+        android:background="@color/background"
+        android:elevation="@dimen/dp_24"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/actionButton"
+            style="@style/PrimaryBlueButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_gravity="bottom"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_16"
+            tools:text="@string/save" />
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

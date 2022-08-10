@@ -4,10 +4,10 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.passbolt.mobile.android.database.impl.base.BaseDao
+import com.passbolt.mobile.android.entity.permission.GroupPermission
+import com.passbolt.mobile.android.entity.permission.UserPermission
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
-import com.passbolt.mobile.android.entity.resource.ResourceGroupPermission
-import com.passbolt.mobile.android.entity.resource.ResourceUserPermission
 
 /**
  * Passbolt - Open source password manager for teams
@@ -99,7 +99,7 @@ interface ResourcesDao : BaseDao<Resource> {
                 "ON u.id = rUCR.userId " +
                 "WHERE r.resourceId = :resourceId"
     )
-    suspend fun getResourceUsersPermissions(resourceId: String): List<ResourceUserPermission>
+    suspend fun getResourceUsersPermissions(resourceId: String): List<UserPermission>
 
     @Transaction
     @Query(
@@ -110,7 +110,7 @@ interface ResourcesDao : BaseDao<Resource> {
                 "ON ug.groupId = rGCR.groupId " +
                 "where r.resourceId = :resourceId"
     )
-    suspend fun getResourceGroupsPermissions(resourceId: String): List<ResourceGroupPermission>
+    suspend fun getResourceGroupsPermissions(resourceId: String): List<GroupPermission>
 
     @Transaction
     @Query(

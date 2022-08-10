@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.database.impl.folders
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,38 +27,12 @@ import org.koin.core.module.Module
  */
 
 internal fun Module.foldersModule() {
-    single {
-        AddLocalFoldersUseCase(
-            databaseProvider = get(),
-            folderModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        RemoveLocalFoldersUseCase(
-            databaseProvider = get()
-        )
-    }
-    single {
-        GetLocalResourcesAndFoldersUseCase(
-            databaseProvider = get(),
-            folderModelMapper = get(),
-            resourceModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetLocalSubFoldersForFolderUseCase(
-            databaseProvider = get(),
-            folderModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetLocalSubFolderResourcesFilteredUseCase(
-            databaseProvider = get(),
-            resourceModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
+    singleOf(::AddLocalFoldersUseCase)
+    singleOf(::RemoveLocalFoldersUseCase)
+    singleOf(::GetLocalResourcesAndFoldersUseCase)
+    singleOf(::GetLocalSubFoldersForFolderUseCase)
+    singleOf(::GetLocalSubFolderResourcesFilteredUseCase)
+    singleOf(::GetLocalFolderDetailsUseCase)
+    singleOf(::GetLocalFolderLocationUseCase)
+    singleOf(::GetLocalFolderPermissionsUseCase)
 }

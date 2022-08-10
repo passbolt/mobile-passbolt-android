@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.resources.details
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -15,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.setFragmentResultListener
+import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -28,6 +30,14 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
+import com.passbolt.mobile.android.core.navigation.ActivityResults
+import com.passbolt.mobile.android.core.permissions.CounterItem
+import com.passbolt.mobile.android.core.permissions.GroupItem
+import com.passbolt.mobile.android.core.permissions.UserItem
+import com.passbolt.mobile.android.core.permissions.permissions.NavigationOrigin
+import com.passbolt.mobile.android.core.permissions.permissions.PermissionsItem
+import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsFragment
+import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -38,11 +48,6 @@ import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
-import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.GroupItem
-import com.passbolt.mobile.android.feature.resources.details.permissionsrecycler.UserItem
-import com.passbolt.mobile.android.feature.resources.permissionavatarlist.CounterItem
-import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsFragment
-import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -114,7 +119,7 @@ class ResourceDetailsFragment :
 
     private val resourceUpdateResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == ResourceActivity.RESULT_RESOURCE_EDITED) {
+            if (it.resultCode == ActivityResults.RESULT_RESOURCE_EDITED) {
                 val name = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_NAME)
                 presenter.resourceEdited(name.orEmpty())
             }
@@ -335,7 +340,7 @@ class ResourceDetailsFragment :
     override fun closeWithDeleteSuccessResult(name: String) {
         with(requireActivity()) {
             setResult(
-                ResourceActivity.RESULT_RESOURCE_DELETED,
+                ActivityResults.RESULT_RESOURCE_DELETED,
                 ResourceActivity.resourceNameResultIntent(name)
             )
             finish()
@@ -344,7 +349,7 @@ class ResourceDetailsFragment :
 
     override fun setResourceEditedResult(resourceName: String) {
         requireActivity().setResult(
-            ResourceActivity.RESULT_RESOURCE_EDITED,
+            ActivityResults.RESULT_RESOURCE_EDITED,
             ResourceActivity.resourceNameResultIntent(resourceName)
         )
     }
@@ -403,9 +408,18 @@ class ResourceDetailsFragment :
             ResourcePermissionsFragment.REQUEST_UPDATE_PERMISSIONS,
             resourceShareResult
         )
-        findNavController().navigate(
-            ResourceDetailsFragmentDirections.actionResourceDetailsToResourcePermissionsFragment(resourceId, mode)
-        )
+        val request = NavDeepLinkRequest.Builder
+            .fromUri(
+                Uri.Builder()
+                    .scheme("passbolt")
+                    .authority("permissions")
+                    .appendPath(PermissionsItem.RESOURCE.name)
+                    .appendPath(resourceId)
+                    .appendQueryParameter("mode", mode.name)
+                    .appendQueryParameter("navigationOrigin", NavigationOrigin.RESOURCE_DETAILS_SCREEN.name)
+                    .build()
+            ).build()
+        findNavController().navigate(request)
     }
 
     override fun showResourceSharedSnackbar() {

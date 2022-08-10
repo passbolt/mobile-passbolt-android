@@ -2,14 +2,14 @@ package com.passbolt.mobile.android.feature.resources.details
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.permissions.PermissionsDatasetCreator
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
-import com.passbolt.mobile.android.feature.resources.permissionavatarlist.PermissionsDatasetCreator
-import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
+import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -71,7 +71,6 @@ class ResourceDetailsPresenter(
     private lateinit var resourceAuthenticatedActionsInteractor: ResourceAuthenticatedActionsInteractor
     private var isPasswordVisible = false
     private var permissionsListWidth: Int = -1
-
     private var permissionItemWidth: Float = -1f
 
     // TODO consider resource types - for now only description can be both encrypted and unencrypted
@@ -112,7 +111,10 @@ class ResourceDetailsPresenter(
                     GetLocalResourcePermissionsUseCase.Input(resourceId)
                 ).permissions
 
-                val permissionsDisplayDataset = PermissionsDatasetCreator(permissionsListWidth, permissionItemWidth)
+                val permissionsDisplayDataset = PermissionsDatasetCreator(
+                    permissionsListWidth,
+                    permissionItemWidth
+                )
                     .prepareDataset(permissions)
 
                 view?.showPermissions(

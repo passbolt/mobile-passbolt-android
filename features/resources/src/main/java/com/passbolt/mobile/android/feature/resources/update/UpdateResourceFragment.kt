@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
@@ -170,14 +171,14 @@ class UpdateResourceFragment :
 
     override fun closeWithCreateSuccessResult(name: String, id: String) {
         closeWithOperationSuccess(
-            ResourceActivity.RESULT_RESOURCE_CREATED,
+            ActivityResults.RESULT_RESOURCE_CREATED,
             ResourceActivity.resourceNameAndIdIntent(name, id)
         )
     }
 
     override fun closeWithEditSuccessResult(name: String) {
         closeWithOperationSuccess(
-            ResourceActivity.RESULT_RESOURCE_EDITED,
+            ActivityResults.RESULT_RESOURCE_EDITED,
             ResourceActivity.resourceNameResultIntent(name)
         )
     }

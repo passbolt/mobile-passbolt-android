@@ -1,6 +1,9 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.request.SharePermission
+import com.passbolt.mobile.android.mappers.PermissionsConstants.ACO_RESOURCE
+import com.passbolt.mobile.android.mappers.PermissionsConstants.ARO_GROUP
+import com.passbolt.mobile.android.mappers.PermissionsConstants.ARO_USER
 import com.passbolt.mobile.android.ui.PermissionModelUi
 
 /**
@@ -156,9 +159,5 @@ class SharePermissionsModelMapper(
 
     companion object {
         const val TEMPORARY_NEW_PERMISSION_ID = "TEMPORARY_PERMISSION_ID"
-
-        private const val ARO_GROUP = "Group"
-        private const val ARO_USER = "User"
-        private const val ACO_RESOURCE = "Resource"
     }
 }

@@ -3,6 +3,8 @@ package com.passbolt.mobile.android.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.passbolt.mobile.android.database.impl.folderandgroupscrossref.FolderAndGroupsCrossRefDao
+import com.passbolt.mobile.android.database.impl.folderanduserscrossref.FoldersAndUsersCrossRefDao
 import com.passbolt.mobile.android.database.impl.folders.FoldersDao
 import com.passbolt.mobile.android.database.impl.groups.GroupsDao
 import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.ResourceAndGroupsCrossRefDao
@@ -17,6 +19,8 @@ import com.passbolt.mobile.android.database.impl.users.UsersDao
 import com.passbolt.mobile.android.database.impl.usersandgroupscrossref.UsersAndGroupsCrossRefDao
 import com.passbolt.mobile.android.database.typeconverters.Converters
 import com.passbolt.mobile.android.entity.folder.Folder
+import com.passbolt.mobile.android.entity.folder.FolderAndUsersCrossRef
+import com.passbolt.mobile.android.entity.group.FolderAndGroupsCrossRef
 import com.passbolt.mobile.android.entity.group.ResourceAndGroupsCrossRef
 import com.passbolt.mobile.android.entity.group.UsersAndGroupCrossRef
 import com.passbolt.mobile.android.entity.group.UsersGroup
@@ -65,9 +69,11 @@ import com.passbolt.mobile.android.entity.user.User
         ResourceAndGroupsCrossRef::class,
         User::class,
         UsersAndGroupCrossRef::class,
-        ResourceAndUsersCrossRef::class
+        ResourceAndUsersCrossRef::class,
+        FolderAndUsersCrossRef::class,
+        FolderAndGroupsCrossRef::class
     ],
-    version = 10
+    version = 11
 )
 @TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {
@@ -95,4 +101,8 @@ abstract class ResourceDatabase : RoomDatabase() {
     abstract fun usersAndGroupsCrossRefDao(): UsersAndGroupsCrossRefDao
 
     abstract fun resourcesAndUsersCrossRefDao(): ResourcesAndUsersCrossRefDao
+
+    abstract fun folderAndGroupsCrossRefDao(): FolderAndGroupsCrossRefDao
+
+    abstract fun folderAndUsersCrossRefDao(): FoldersAndUsersCrossRefDao
 }

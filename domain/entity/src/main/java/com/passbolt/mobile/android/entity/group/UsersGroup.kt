@@ -68,3 +68,11 @@ data class GroupWithUsers(
     )
     val users: List<User>
 )
+
+@Entity(primaryKeys = ["folderId", "groupId"])
+data class FolderAndGroupsCrossRef(
+    val folderId: String,
+    val groupId: String,
+    val permission: Permission,
+    val permissionId: String
+)

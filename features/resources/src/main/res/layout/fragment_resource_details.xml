@@ -314,7 +314,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_8"
                 android:layout_marginTop="@dimen/dp_32"
-                android:text="@string/resource_details_shared_with"
+                android:text="@string/shared_with"
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/sp_12"
                 app:layout_constraintStart_toStartOf="parent"

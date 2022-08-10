@@ -167,7 +167,7 @@ class HomePresenter(
     }
 
     private fun handleMoreMenuIconVisibility(shouldShowResourceMoreMenu: Boolean) {
-        if (shouldShowResourceMoreMenu && homeView is HomeDisplayViewModel.Folders) {
+        if (shouldShowFolderMoreMenu(shouldShowResourceMoreMenu)) {
             view?.showFolderMoreMenuIcon()
         } else {
             view?.hideFolderMoreMenuIcon()
@@ -271,6 +271,12 @@ class HomePresenter(
         return true
     }
 
+    // show in child folders only
+    private fun shouldShowFolderMoreMenu(shouldShowResourceMoreMenu: Boolean) =
+        shouldShowResourceMoreMenu && homeView.let {
+            it is HomeDisplayViewModel.Folders && it.activeFolder is Folder.Child
+        }
+
     private fun handleBackArrowVisibility() {
         if (hasPreviousBackEntry) {
             view?.showBackArrow()
@@ -284,7 +290,9 @@ class HomePresenter(
             .also { view?.displaySearchAvatar(it) }
     }
 
-    private suspend fun showActiveHomeView() {
+    private suspend
+
+    fun showActiveHomeView() {
         suggestedResourceList = if (shouldShowSuggested()) {
             getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input())
                 .resources
@@ -769,6 +777,7 @@ class HomePresenter(
 
     override fun seeFolderDetailsClick() {
         val currentHomeView = homeView as HomeDisplayViewModel.Folders
-        view?.navigateToFolderDetails(currentHomeView.activeFolder)
+        require(currentHomeView.activeFolder is Folder.Child)
+        view?.navigateToFolderDetails(currentHomeView.activeFolder as Folder.Child)
     }
 }

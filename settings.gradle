@@ -21,6 +21,7 @@ coreModule "commonfolders"
 coreModule "commongroups"
 coreModule "data"
 coreModule "commontest"
+coreModule "permissions"
 
 featureModule "startup"
 featureModule "setup"

@@ -11,8 +11,10 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,6 +45,7 @@ import com.passbolt.mobile.android.core.commonresource.TagWithCountItem
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
@@ -148,19 +151,19 @@ class HomeFragment :
 
     private val resourceDetailsResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == ResourceActivity.RESULT_RESOURCE_DELETED) {
+            if (it.resultCode == ActivityResults.RESULT_RESOURCE_DELETED) {
                 val name = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_NAME)
                 presenter.resourceDeleted(name.orEmpty())
             }
-            if (it.resultCode == ResourceActivity.RESULT_RESOURCE_EDITED) {
+            if (it.resultCode == ActivityResults.RESULT_RESOURCE_EDITED) {
                 val name = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_NAME)
                 presenter.resourceEdited(name.orEmpty())
             }
-            if (it.resultCode == ResourceActivity.RESULT_RESOURCE_CREATED) {
+            if (it.resultCode == ActivityResults.RESULT_RESOURCE_CREATED) {
                 val resourceId = it.data?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_ID)
                 presenter.newResourceCreated(resourceId)
             }
-            if (it.resultCode == ResourceActivity.RESULT_RESOURCE_SHARED) {
+            if (it.resultCode == ActivityResults.RESULT_RESOURCE_SHARED) {
                 presenter.resourceShared()
             }
         }
@@ -775,8 +778,12 @@ class HomeFragment :
             .show(childFragmentManager, FolderMoreMenuModel::class.java.name)
     }
 
-    override fun navigateToFolderDetails(folderId: Folder) {
-        // TODO("Not yet implemented")
+    override fun navigateToFolderDetails(childFolder: Folder.Child) {
+        val f = childFolder as Folder.Child
+        val request = NavDeepLinkRequest.Builder
+            .fromUri("passbolt://folders/${f.folderId}".toUri())
+            .build()
+        findNavController().navigate(request)
     }
 
     companion object {

@@ -1,12 +1,12 @@
 package com.passbolt.mobile.android.data.interactor
 
-import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
 import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.plus
 import com.passbolt.mobile.android.core.users.UsersInteractor
+import com.passbolt.mobile.android.data.folders.FoldersInteractor
 
 /**
  * Passbolt - Open source password manager for teams

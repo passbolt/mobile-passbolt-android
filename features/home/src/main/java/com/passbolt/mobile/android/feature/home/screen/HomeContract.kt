@@ -97,7 +97,7 @@ interface HomeContract {
         fun navigateToFolderMoreMenu(folderMoreMenuModel: FolderMoreMenuModel)
         fun showFolderMoreMenuIcon()
         fun hideFolderMoreMenuIcon()
-        fun navigateToFolderDetails(folderId: Folder)
+        fun navigateToFolderDetails(childFolder: Folder.Child)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

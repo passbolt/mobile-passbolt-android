@@ -33,12 +33,15 @@ internal interface FoldersApi {
     @GET(FOLDERS)
     suspend fun getFolders(
         // always return index with current user permission
-        @Query(QUERY_CONTAIN_PERMISSION) containingPermission: Int? = 1
+        @Query(QUERY_CONTAIN_PERMISSION) containingPermission: Int? = 1,
+        // always return index with all users and groups
+        @Query(QUERY_CONTAIN_PERMISSIONS) containingPermissions: Int? = 1
     ): BaseResponse<List<FolderResponseDto>>
 
     private companion object {
         private const val FOLDERS = "folders.json"
 
         private const val QUERY_CONTAIN_PERMISSION = "contain[permission]"
+        private const val QUERY_CONTAIN_PERMISSIONS = "contain[permissions.group]"
     }
 }

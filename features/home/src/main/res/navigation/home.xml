@@ -75,4 +75,6 @@
             android:name="HomeView"
             app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel" />
     </action>
+
+    <include app:graph="@navigation/folder_details"/>
 </navigation>

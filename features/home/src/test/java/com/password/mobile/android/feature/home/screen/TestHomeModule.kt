@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
-import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
+import com.passbolt.mobile.android.data.folders.FoldersInteractor
 import com.passbolt.mobile.android.core.commonresource.FavouritesInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
