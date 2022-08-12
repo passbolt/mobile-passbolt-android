@@ -35,7 +35,7 @@ class ResourceActionsInteractor(
     }
 
     fun provideUsername(onUsernameReady: (ClipboardLabel, String) -> Unit) {
-        resource.url?.let {
+        resource.username?.let {
             onUsernameReady(USERNAME_LABEL, it)
         }
     }
