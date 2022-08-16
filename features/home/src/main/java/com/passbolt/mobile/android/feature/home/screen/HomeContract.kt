@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.Folder
+import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -92,10 +94,14 @@ interface HomeContract {
         fun showToggleFavouriteFailure()
         fun performLocalRefresh()
         fun navigateToSwitchedAccountAuth(userId: String)
+        fun navigateToFolderMoreMenu(folderMoreMenuModel: FolderMoreMenuModel)
+        fun showFolderMoreMenuIcon()
+        fun hideFolderMoreMenuIcon()
+        fun navigateToFolderDetails(folderId: Folder)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun moreClick(resourceModel: ResourceModel)
+        fun resourceMoreClick(resourceModel: ResourceModel)
         fun itemClick(resourceModel: ResourceModel)
         fun refreshSwipe()
         fun refreshClick()
@@ -126,7 +132,8 @@ interface HomeContract {
             showSuggestedModel: ShowSuggestedModel,
             homeDisplayView: HomeDisplayViewModel?,
             hasPreviousEntry: Boolean,
-            shouldShowCloseButton: Boolean
+            shouldShowCloseButton: Boolean,
+            shouldShowResourceMoreMenu: Boolean
         )
 
         fun folderItemClick(folderModel: FolderWithCount)
@@ -141,5 +148,7 @@ interface HomeContract {
         fun closeClick()
         fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption)
         fun switchAccountClick(userId: String)
+        fun moreClick()
+        fun seeFolderDetailsClick()
     }
 }

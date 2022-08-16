@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.core.commonfolders.moremenu
 
-import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.ui.ResourceModel
+import org.koin.core.module.Module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,27 +24,11 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface ResourceHandlingStrategy {
-    val appContext: AppContext
 
-    fun resourceItemClick(resourceModel: ResourceModel)
-
-    fun shouldShowResourceMoreMenu(): Boolean
-
-    fun shouldShowCloseButton(): Boolean
-
-    fun showSuggestedModel(): ShowSuggestedModel
-
-    fun resourcePostCreateAction(resourceId: String)
-
-    fun shouldShowFolderMoreMenu(): Boolean
-}
-
-sealed class ShowSuggestedModel {
-
-    object DoNotShow : ShowSuggestedModel()
-
-    data class Show(
-        val suggestedUri: String
-    ) : ShowSuggestedModel()
+fun Module.folderMoreMenuModule() {
+    scope<FolderMoreMenuFragment> {
+        scoped<FolderMoreMenuContract.Presenter> {
+            FolderMoreMenuPresenter()
+        }
+    }
 }

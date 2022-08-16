@@ -1,8 +1,10 @@
 package com.passbolt.mobile.android.core.commonfolders
 
+import com.passbolt.mobile.android.core.commonfolders.moremenu.folderMoreMenuModule
 import com.passbolt.mobile.android.core.commonfolders.usecase.FetchUserFoldersUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
 import com.passbolt.mobile.android.core.commonfolders.usecase.RebuildFoldersTablesUseCase
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 /**
@@ -29,24 +31,9 @@ import org.koin.dsl.module
  */
 
 val commonFoldersModule = module {
-    single {
-        FetchUserFoldersUseCase(
-            foldersRepository = get(),
-            folderModelMapper = get()
-        )
-    }
-    single {
-        FoldersInteractor(
-            fetchUserFoldersUseCase = get(),
-            rebuildLocalFoldersUseCase = get(),
-            getFeatureFlagsUseCase = get()
-        )
-    }
-    single {
-        RebuildFoldersTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalFoldersUseCase = get(),
-            addLocalFoldersUseCase = get()
-        )
-    }
+    folderMoreMenuModule()
+
+    singleOf(::FetchUserFoldersUseCase)
+    singleOf(::FoldersInteractor)
+    singleOf(::RebuildFoldersTablesUseCase)
 }

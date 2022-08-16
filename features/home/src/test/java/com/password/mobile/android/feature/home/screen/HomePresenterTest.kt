@@ -101,7 +101,8 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         verify(view).displaySearchAvatar(eq(url))
     }
@@ -118,7 +119,8 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         presenter.searchTextChange("abc")
         presenter.searchTextChange("")
@@ -144,7 +146,8 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
 
         verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
@@ -157,6 +160,7 @@ class HomePresenterTest : KoinTest {
         verify(view).showItems(any(), any(), any(), any(), any(), any(), any(), any())
         verify(view).displaySearchAvatar(null)
         verify(view).hideRefreshProgress()
+        verify(view).hideFolderMoreMenuIcon()
         verifyNoMoreInteractions(view)
     }
 
@@ -182,7 +186,8 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         presenter.searchTextChange("second")
         presenter.refreshSwipe()
@@ -212,7 +217,8 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         presenter.searchTextChange("empty search")
 
@@ -237,20 +243,11 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
 
-        verify(view).hideBackArrow()
-        verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
-        verify(view).showAllItemsSearchHint()
-        verify(view).showProgress()
-        verify(view).hideProgress()
-        verify(view).hideRefreshProgress()
-        verify(view).hideAddButton()
         verify(view).showEmptyList()
-        verify(view).showAddButton()
-        verify(view).displaySearchAvatar(null)
-        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -269,7 +266,8 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
 
         verify(view).hideBackArrow()
@@ -281,8 +279,8 @@ class HomePresenterTest : KoinTest {
         verify(view).hideRefreshProgress()
         verify(view).showError()
         verify(view).displaySearchAvatar(null)
+        verify(view).hideFolderMoreMenuIcon()
         verify(view, never()).showAddButton()
-        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -306,7 +304,8 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         presenter.refreshClick()
 
@@ -346,7 +345,8 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         reset(view)
         presenter.itemClick(model)
@@ -383,10 +383,11 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         reset(view)
-        presenter.moreClick(model)
+        presenter.resourceMoreClick(model)
 
         verify(view).navigateToMore(menuModel)
         verifyNoMoreInteractions(view)
@@ -407,9 +408,10 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
-        presenter.moreClick(RESOURCE_MODEL)
+        presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
         verify(view).showDecryptionFailure()
@@ -430,9 +432,10 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
-        presenter.moreClick(RESOURCE_MODEL)
+        presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
         verify(view).showFetchFailure()
@@ -453,9 +456,10 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
-        presenter.moreClick(RESOURCE_MODEL)
+        presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
         verify(view).showAuth(AuthenticationState.Unauthenticated.Reason.Passphrase)
@@ -484,9 +488,10 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
-        presenter.moreClick(RESOURCE_MODEL)
+        presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
         verify(view).addToClipboard(ResourceAuthenticatedActionsInteractor.SECRET_LABEL, String(DECRYPTED_SECRET))
@@ -510,9 +515,10 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
-        presenter.moreClick(RESOURCE_MODEL)
+        presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
         presenter.deleteResourceConfirmed()
 
@@ -545,9 +551,10 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
-        presenter.moreClick(RESOURCE_MODEL)
+        presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
         presenter.deleteResourceConfirmed()
 
@@ -569,7 +576,8 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "child name", isActiveFolderShared = false),
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
 
         verify(view).navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
@@ -586,39 +594,42 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Tags("id", "tag name", isActiveTagShared = false),
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Groups("id", "group name"),
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.RecentlyModified, hasPreviousEntry = false, false
+            HomeDisplayViewModel.RecentlyModified, hasPreviousEntry = false, false, shouldShowResourceMoreMenu = false
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.SharedWithMe, hasPreviousEntry = false, false
+            HomeDisplayViewModel.SharedWithMe, hasPreviousEntry = false, false, shouldShowResourceMoreMenu = false
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.OwnedByMe, hasPreviousEntry = false, false
+            HomeDisplayViewModel.OwnedByMe, hasPreviousEntry = false, false, shouldShowResourceMoreMenu = false
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.Favourites, hasPreviousEntry = false, false
+            HomeDisplayViewModel.Favourites, hasPreviousEntry = false, false, shouldShowResourceMoreMenu = false
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems, hasPreviousEntry = false, false
+            HomeDisplayViewModel.AllItems, hasPreviousEntry = false, false, shouldShowResourceMoreMenu = false
         )
 
         verify(view).showChildFolderTitle("folder name", isShared = false)
@@ -638,19 +649,22 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = true,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Tags("id", "tag name", isActiveTagShared = false),
             hasPreviousEntry = true,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Groups("id", "group name"),
             hasPreviousEntry = true,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
 
         verify(view, times(3)).showBackArrow()
@@ -667,14 +681,16 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.Folders(Folder.Child("childId"), "folder name", isActiveFolderShared = false),
             hasPreviousEntry = true,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         presenter.tagsClick()
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.tagsRoot(),
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
         presenter.foldersClick()
 
@@ -699,13 +715,50 @@ class HomePresenterTest : KoinTest {
             showSuggestedModel = ShowSuggestedModel.DoNotShow,
             homeDisplayView = null,
             hasPreviousEntry = false,
-            shouldShowCloseButton = false
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
         )
 
         argumentCaptor<HomeDisplayViewModel> {
             verify(view).showHomeScreenTitle(capture())
             assertThat(firstValue).isInstanceOf(HomeDisplayViewModel.Folders::class.java)
         }
+    }
+
+    @Test
+    fun `view should apply visibility settings corrfect`() {
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
+            GetHomeDisaplyViewPrefsUseCase.Output(
+                lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
+                userSetHomeView = DefaultFilterModel.FOLDERS
+            )
+        )
+        mockAccountData(null)
+
+        presenter.viewCreate(refreshFlow)
+        presenter.attach(view)
+        presenter.argsRetrieved(
+            showSuggestedModel = ShowSuggestedModel.DoNotShow,
+            homeDisplayView = null,
+            hasPreviousEntry = false,
+            shouldShowCloseButton = false,
+            shouldShowResourceMoreMenu = false
+        )
+
+        verify(view, never()).showCloseButton()
+        verify(view, never()).showFolderMoreMenuIcon()
+
+        presenter.argsRetrieved(
+            showSuggestedModel = ShowSuggestedModel.DoNotShow,
+            homeDisplayView = HomeDisplayViewModel.Folders(Folder.Root),
+            hasPreviousEntry = false,
+            shouldShowCloseButton = true,
+            shouldShowResourceMoreMenu = true
+        )
+
+        verify(view).showCloseButton()
+        verify(view).showFolderMoreMenuIcon()
     }
 
     private fun mockResourcesList() = listOf(
