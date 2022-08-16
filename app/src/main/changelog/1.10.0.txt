@@ -2,15 +2,10 @@
 
 ## Added
 - Filters on autofill! Now you can browse during autofill similarly to home screen.
+- Initial Crowdin (translations) configuration
 
-## Improved
--
-
-## Fixed
--
-
-## Security
--
-
-## Maintenance
+## Maintenance & tech debt
 - Big dependencies update - libraries, Android target SDK, etc.
+- Extracted all resource menu actions logic to common class
+- Fixed some Lint warnings
+- Extracted common testing module
