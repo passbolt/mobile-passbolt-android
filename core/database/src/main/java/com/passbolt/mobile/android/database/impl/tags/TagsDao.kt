@@ -45,6 +45,14 @@ interface TagsDao : BaseDao<Tag> {
     suspend fun getAllWithTaggedItemsCount(): List<TagWithTaggedItemsCount>
 
     @Transaction
+    @Query(
+        "SELECT * FROM Tag t " +
+                "WHERE t.id IN " +
+                "(select distinct tagId from resourceandtagscrossref rTCR where rTCR.resourceId is :resourceId)"
+    )
+    suspend fun getResourceTags(resourceId: String): List<Tag>
+
+    @Transaction
     @Query("DELETE FROM Tag")
     suspend fun deleteAll()
 }

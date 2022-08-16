@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.database.impl.resources
+package com.passbolt.mobile.android.feature.resources.tags
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
+import com.passbolt.mobile.android.ui.TagModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,17 +26,16 @@ import org.koin.core.module.dsl.singleOf
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface ResourceTagsContract {
 
-internal fun Module.resourcesModule() {
-    singleOf(::AddLocalResourcesUseCase)
-    singleOf(::AddLocalResourceUseCase)
-    singleOf(::GetLocalResourcesUseCase)
-    singleOf(::RemoveLocalResourcesUseCase)
-    singleOf(::GetLocalResourceUseCase)
-    singleOf(::UpdateLocalResourceUseCase)
-    singleOf(::AddLocalResourcePermissionsUseCase)
-    singleOf(::RemoveLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcesFilteredByTagUseCase)
-    singleOf(::GetLocalResourceTagsUseCase)
+    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+        fun argsRetrieved(resourceId: String, mode: ResourcePermissionsMode)
+    }
+
+    interface View : BaseAuthenticatedContract.View {
+        fun displayTitle(name: String)
+        fun displayInitialsIcon(name: String, initials: String)
+        fun showFavouriteStar()
+        fun showTags(tags: List<TagModel>)
+    }
 }

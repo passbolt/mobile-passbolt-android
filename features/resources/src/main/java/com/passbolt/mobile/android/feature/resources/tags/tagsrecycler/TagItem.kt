@@ -1,7 +1,11 @@
-package com.passbolt.mobile.android.database.impl.resources
+package com.passbolt.mobile.android.feature.resources.tags.tagsrecycler
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.passbolt.mobile.android.feature.resources.R
+import com.passbolt.mobile.android.feature.resources.databinding.ItemTagBinding
+import com.passbolt.mobile.android.ui.TagModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,17 +29,27 @@ import org.koin.core.module.dsl.singleOf
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class TagItem(
+    private val tagModel: TagModel
+) : AbstractBindingItem<ItemTagBinding>() {
 
-internal fun Module.resourcesModule() {
-    singleOf(::AddLocalResourcesUseCase)
-    singleOf(::AddLocalResourceUseCase)
-    singleOf(::GetLocalResourcesUseCase)
-    singleOf(::RemoveLocalResourcesUseCase)
-    singleOf(::GetLocalResourceUseCase)
-    singleOf(::UpdateLocalResourceUseCase)
-    singleOf(::AddLocalResourcePermissionsUseCase)
-    singleOf(::RemoveLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcePermissionsUseCase)
-    singleOf(::GetLocalResourcesFilteredByTagUseCase)
-    singleOf(::GetLocalResourceTagsUseCase)
+    override val type: Int
+        get() = R.id.itemTag
+
+    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemTagBinding =
+        ItemTagBinding.inflate(inflater, parent, false)
+
+    override fun bindView(binding: ItemTagBinding, payloads: List<Any>) {
+        super.bindView(binding, payloads)
+        with(binding) {
+            name.text = tagModel.slug
+            icon.setImageResource(
+                if (tagModel.isShared) {
+                    R.drawable.ic_filled_shared_tag_with_bg
+                } else {
+                    R.drawable.ic_filled_tag_with_bg
+                }
+            )
+        }
+    }
 }

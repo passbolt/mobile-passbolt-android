@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPres
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
@@ -54,6 +55,7 @@ class ResourceDetailsPresenter(
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
+    private val getLocalResourceTagsUseCase: GetLocalResourceTagsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter, KoinScopeComponent {
@@ -106,8 +108,9 @@ class ResourceDetailsPresenter(
                 }
             }
             launch { // get and display permissions
-                val permissions = getLocalResourcePermissionsUseCase
-                    .execute(GetLocalResourcePermissionsUseCase.Input(resourceId)).permissions
+                val permissions = getLocalResourcePermissionsUseCase.execute(
+                    GetLocalResourcePermissionsUseCase.Input(resourceId)
+                ).permissions
 
                 val permissionsDisplayDataset = PermissionsDatasetCreator(permissionsListWidth, permissionItemWidth)
                     .prepareDataset(permissions)
@@ -118,6 +121,12 @@ class ResourceDetailsPresenter(
                     permissionsDisplayDataset.counterValue,
                     permissionsDisplayDataset.overlap
                 )
+            }
+            launch { // get and display tags
+                getLocalResourceTagsUseCase.execute(GetLocalResourceTagsUseCase.Input(resourceId))
+                    .tags
+                    .map { it.slug }
+                    .let { view?.showTags(it) }
             }
         }
     }
@@ -288,6 +297,10 @@ class ResourceDetailsPresenter(
 
     override fun sharedWithClick() {
         view?.navigateToResourcePermissions(resourceModel.resourceId, ResourcePermissionsMode.VIEW)
+    }
+
+    override fun tagsClick() {
+        view?.navigateToResourceTags(resourceModel.resourceId, ResourcePermissionsMode.VIEW)
     }
 
     override fun favouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {

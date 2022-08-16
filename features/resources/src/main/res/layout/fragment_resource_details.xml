@@ -57,8 +57,8 @@
                 android:layout_height="@dimen/dp_24"
                 android:layout_marginTop="-12dp"
                 android:layout_marginEnd="-12dp"
-                android:visibility="gone"
                 android:src="@drawable/ic_favourite_star_filled"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@id/icon"
                 app:layout_constraintTop_toTopOf="@id/icon" />
 
@@ -254,6 +254,60 @@
                 app:layout_constraintTop_toBottomOf="@+id/descriptionValue" />
 
             <TextView
+                android:id="@+id/tagsHeader"
+                style="@style/Heading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:text="@string/resource_details_tags_header"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/sp_12"
+                app:drawableTint="@color/icon_tint"
+                app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/seeDescriptionButton" />
+
+            <TextView
+                android:id="@+id/tagsValue"
+                style="@style/ValueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_8"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:ellipsize="middle"
+                android:maxLines="1"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/sp_14"
+                app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/tagsHeader"
+                tools:text="Tag, Tag2" />
+
+            <ImageView
+                android:id="@+id/tagsNavIcon"
+                android:layout_width="@dimen/dp_8"
+                android:layout_height="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_12"
+                android:background="?selectableItemBackgroundBorderless"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_arrow_right"
+                app:layout_constraintBottom_toBottomOf="@id/tagsValue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tagsHeader"
+                app:tint="@color/icon_tint" />
+
+            <View
+                android:id="@+id/tagsClickableArea"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="@dimen/dp_8"
+                app:layout_constraintBottom_toBottomOf="@id/tagsValue"
+                app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
+                app:layout_constraintStart_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/tagsHeader" />
+
+            <TextView
                 android:id="@+id/sharedWithLabel"
                 style="@style/Heading"
                 android:layout_width="wrap_content"
@@ -264,7 +318,7 @@
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/sp_12"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/seeDescriptionButton" />
+                app:layout_constraintTop_toBottomOf="@+id/tagsValue" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/sharedWithRecycler"
@@ -282,6 +336,7 @@
                 android:layout_height="@dimen/dp_40"
                 android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_8"
+                app:layout_constraintBottom_toBottomOf="@id/sharedWithRecyclerClickableArea"
                 app:layout_constraintEnd_toStartOf="@id/sharedWithNavIcon"
                 app:layout_constraintStart_toStartOf="@id/guideline"
                 app:layout_constraintTop_toBottomOf="@id/sharedWithLabel" />
@@ -309,6 +364,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

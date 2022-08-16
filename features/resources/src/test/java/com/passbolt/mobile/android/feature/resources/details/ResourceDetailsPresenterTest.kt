@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUse
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.entity.resource.ResourceField
@@ -18,6 +19,7 @@ import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.ui.TagModel
 import com.passbolt.mobile.android.ui.UserWithAvatar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -99,6 +101,9 @@ class ResourceDetailsPresenterTest : KoinTest {
             onBlocking { addToFavouritesAndUpdateLocal(any()) }.doReturn(FavouritesInteractor.Output.Success)
             onBlocking { removeFromFavouritesAndUpdateLocal(any()) }.doReturn(FavouritesInteractor.Output.Success)
         }
+        mockResourceTagsUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(GetLocalResourceTagsUseCase.Output(RESOURCE_TAGS))
+        }
         presenter.attach(view)
     }
 
@@ -118,6 +123,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view).showPasswordHidden()
         verify(view).showPasswordHiddenIcon()
         verify(view).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view).showTags(RESOURCE_TAGS.map { it.slug })
         verifyNoMoreInteractions(view)
     }
 
@@ -374,6 +380,10 @@ class ResourceDetailsPresenterTest : KoinTest {
             ResourcePermission.OWNER,
             "permId2",
             UserWithAvatar("usId", "first", "last", "uName", null)
+        )
+        private val RESOURCE_TAGS = listOf(
+            TagModel("id1", "tag1", false),
+            TagModel("id2", "tag2", false)
         )
     }
 }

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/itemTagWithCount"
+    android:id="@+id/itemTag"
     android:layout_width="match_parent"
     android:layout_height="@dimen/dp_64"
     android:background="?selectableItemBackground">
@@ -30,32 +30,9 @@
         android:maxLines="1"
         android:textColor="@color/text_primary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/taggedItemsCount"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Tag 1" />
-
-    <TextView
-        android:id="@+id/taggedItemsCount"
-        style="@style/Heading4Text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/dp_8"
-        android:textColor="@color/text_primary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/navigationChevronImage"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="2" />
-
-    <ImageView
-        android:id="@+id/navigationChevronImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/dp_16"
-        android:contentDescription="@null"
-        android:src="@drawable/ic_chevron_right"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

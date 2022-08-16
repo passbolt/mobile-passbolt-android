@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.core.networking.networkingModule
 import com.passbolt.mobile.android.core.qrscan.barcodeScanModule
 import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
 import com.passbolt.mobile.android.core.security.securityModule
+import com.passbolt.mobile.android.core.ui.coreUiModule
 import com.passbolt.mobile.android.core.users.usersModule
 import com.passbolt.mobile.android.data.dataModule
 import com.passbolt.mobile.android.database.databaseModule
@@ -97,7 +98,8 @@ class KoinInitializer : Initializer<Unit> {
                 mainModule,
                 commonGroupsModule,
                 commonModule,
-                dataModule
+                dataModule,
+                coreUiModule
             )
         }
     }

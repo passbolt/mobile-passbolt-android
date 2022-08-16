@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.ResourceDatabase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceTypesDao
 import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
@@ -69,6 +70,7 @@ internal val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
 internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
 internal val mockFavouritesInteractor = mock<FavouritesInteractor>()
+internal val mockResourceTagsUseCase = mock<GetLocalResourceTagsUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule = module {
@@ -81,7 +83,8 @@ internal val testResourceDetailsModule = module {
             resourceMenuModelMapper = resourceMenuModelMapper,
             getLocalResourceUseCase = mockGetLocalResourceUseCase,
             getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            getLocalResourceTagsUseCase = mockResourceTagsUseCase
         )
     }
     scope<ResourceDetailsPresenter> {

@@ -69,6 +69,8 @@ interface ResourceDetailsContract {
         fun showToggleFavouriteFailure()
         fun showFavouriteStar()
         fun hideFavouriteStar()
+        fun showTags(tags: List<String>)
+        fun navigateToResourceTags(resourceId: String, mode: ResourcePermissionsMode)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -91,5 +93,6 @@ interface ResourceDetailsContract {
         fun deleteClick()
         fun editClick()
         fun shareClick()
+        fun tagsClick()
     }
 }
