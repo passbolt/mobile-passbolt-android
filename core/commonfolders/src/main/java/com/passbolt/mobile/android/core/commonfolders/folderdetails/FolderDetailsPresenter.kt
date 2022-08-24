@@ -2,11 +2,11 @@ package com.passbolt.mobile.android.core.commonfolders.folderdetails
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.permissions.PermissionsDatasetCreator
-import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsUseCase
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -75,7 +75,10 @@ class FolderDetailsPresenter(
                 GetLocalFolderPermissionsUseCase.Input(folderId)
             ).permissions
 
-            val permissionsDisplayDataset = PermissionsDatasetCreator(permissionsListWidth, permissionItemWidth)
+            val permissionsDisplayDataset = PermissionsDatasetCreator(
+                permissionsListWidth,
+                permissionItemWidth
+            )
                 .prepareDataset(permissions)
 
             view?.showPermissions(
@@ -88,6 +91,6 @@ class FolderDetailsPresenter(
     }
 
     override fun sharedWithClick() {
-        view?.navigateToFolderPermissions(folderId, ResourcePermissionsMode.VIEW)
+        view?.navigateToFolderPermissions(folderId, PermissionsMode.VIEW)
     }
 }

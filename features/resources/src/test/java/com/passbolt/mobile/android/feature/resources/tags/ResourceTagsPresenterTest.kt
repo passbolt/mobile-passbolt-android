@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.resources.tags
 
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.TagModel
@@ -73,7 +73,7 @@ class ResourceTagsPresenterTest : KoinTest {
     fun `resource header and tags list should be shown correct`() {
         presenter.argsRetrieved(
             RESOURCE_MODEL.resourceId,
-            ResourcePermissionsMode.VIEW
+            PermissionsMode.VIEW
         )
 
         verify(view).showFavouriteStar()

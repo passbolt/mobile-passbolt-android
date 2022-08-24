@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.resources.tags
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.TagModel
 
 /**
@@ -29,7 +29,7 @@ import com.passbolt.mobile.android.ui.TagModel
 interface ResourceTagsContract {
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsRetrieved(resourceId: String, mode: ResourcePermissionsMode)
+        fun argsRetrieved(resourceId: String, mode: PermissionsMode)
     }
 
     interface View : BaseAuthenticatedContract.View {

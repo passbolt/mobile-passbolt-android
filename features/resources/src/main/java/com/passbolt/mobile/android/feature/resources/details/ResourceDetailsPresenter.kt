@@ -2,15 +2,15 @@ package com.passbolt.mobile.android.feature.resources.details
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.permissions.PermissionsDatasetCreator
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
-import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -294,15 +294,15 @@ class ResourceDetailsPresenter(
     }
 
     override fun shareClick() {
-        view?.navigateToResourcePermissions(resourceModel.resourceId, ResourcePermissionsMode.EDIT)
+        view?.navigateToResourcePermissions(resourceModel.resourceId, PermissionsMode.EDIT)
     }
 
     override fun sharedWithClick() {
-        view?.navigateToResourcePermissions(resourceModel.resourceId, ResourcePermissionsMode.VIEW)
+        view?.navigateToResourcePermissions(resourceModel.resourceId, PermissionsMode.VIEW)
     }
 
     override fun tagsClick() {
-        view?.navigateToResourceTags(resourceModel.resourceId, ResourcePermissionsMode.VIEW)
+        view?.navigateToResourceTags(resourceModel.resourceId, PermissionsMode.VIEW)
     }
 
     override fun favouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {

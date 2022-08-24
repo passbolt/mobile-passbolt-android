@@ -33,7 +33,7 @@
             app:argType="string" />
         <argument
             android:name="mode"
-            app:argType="com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode" />
+            app:argType="com.passbolt.mobile.android.permissions.permissions.PermissionsMode" />
     </fragment>
 
     <include app:graph="@navigation/permissions" />

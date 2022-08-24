@@ -31,13 +31,6 @@ import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.navigation.ActivityResults
-import com.passbolt.mobile.android.core.permissions.CounterItem
-import com.passbolt.mobile.android.core.permissions.GroupItem
-import com.passbolt.mobile.android.core.permissions.UserItem
-import com.passbolt.mobile.android.core.permissions.permissions.NavigationOrigin
-import com.passbolt.mobile.android.core.permissions.permissions.PermissionsItem
-import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsFragment
-import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -48,6 +41,13 @@ import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
+import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
+import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
+import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.permissions.recycler.CounterItem
+import com.passbolt.mobile.android.permissions.recycler.GroupItem
+import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -369,7 +369,7 @@ class ResourceDetailsFragment :
         )
     }
 
-    override fun navigateToResourceTags(resourceId: String, mode: ResourcePermissionsMode) {
+    override fun navigateToResourceTags(resourceId: String, mode: PermissionsMode) {
         findNavController().navigate(
             ResourceDetailsFragmentDirections.actionResourceDetailsToResourceTagsFragment(resourceId, mode)
         )
@@ -403,9 +403,9 @@ class ResourceDetailsFragment :
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
-    override fun navigateToResourcePermissions(resourceId: String, mode: ResourcePermissionsMode) {
+    override fun navigateToResourcePermissions(resourceId: String, mode: PermissionsMode) {
         setFragmentResultListener(
-            ResourcePermissionsFragment.REQUEST_UPDATE_PERMISSIONS,
+            PermissionsFragment.REQUEST_UPDATE_PERMISSIONS,
             resourceShareResult
         )
         val request = NavDeepLinkRequest.Builder

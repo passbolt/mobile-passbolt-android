@@ -16,14 +16,14 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.commonfolders.R
 import com.passbolt.mobile.android.commonfolders.databinding.FragmentFolderDetailsBinding
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
-import com.passbolt.mobile.android.core.permissions.CounterItem
-import com.passbolt.mobile.android.core.permissions.GroupItem
-import com.passbolt.mobile.android.core.permissions.UserItem
-import com.passbolt.mobile.android.core.permissions.permissions.NavigationOrigin
-import com.passbolt.mobile.android.core.permissions.permissions.PermissionsItem
-import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
+import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.permissions.recycler.CounterItem
+import com.passbolt.mobile.android.permissions.recycler.GroupItem
+import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -132,7 +132,7 @@ class FolderDetailsFragment :
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
-    override fun navigateToFolderPermissions(folderId: String, mode: ResourcePermissionsMode) {
+    override fun navigateToFolderPermissions(folderId: String, mode: PermissionsMode) {
         val request = NavDeepLinkRequest.Builder
             .fromUri(
                 Uri.Builder()

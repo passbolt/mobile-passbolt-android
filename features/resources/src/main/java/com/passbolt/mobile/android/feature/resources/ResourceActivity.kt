@@ -9,12 +9,12 @@ import androidx.navigation.fragment.NavHostFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
-import com.passbolt.mobile.android.core.permissions.permissions.NavigationOrigin
-import com.passbolt.mobile.android.core.permissions.permissions.PermissionsItem
-import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.resources.databinding.ActivityResourcesBinding
+import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
+import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 
@@ -81,7 +81,7 @@ class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResou
                     .authority("permissions")
                     .appendPath(PermissionsItem.RESOURCE.name)
                     .appendPath(resourceId)
-                    .appendQueryParameter("mode", ResourcePermissionsMode.EDIT.name)
+                    .appendQueryParameter("mode", PermissionsMode.EDIT.name)
                     .appendQueryParameter("navigationOrigin", NavigationOrigin.HOME_RESOURCE_MORE_MENU.name)
                     .build()
             ).build()

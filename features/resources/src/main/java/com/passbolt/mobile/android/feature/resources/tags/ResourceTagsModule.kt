@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.feature.resources.tags
 
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.core.permissions.GroupItem
 import com.passbolt.mobile.android.feature.resources.tags.tagsrecycler.TagItem
+import com.passbolt.mobile.android.permissions.recycler.GroupItem
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named

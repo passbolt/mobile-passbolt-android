@@ -3,11 +3,11 @@ package com.passbolt.mobile.android.feature.resources.details
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
-import com.passbolt.mobile.android.core.permissions.CounterItem
-import com.passbolt.mobile.android.core.permissions.GroupItem
-import com.passbolt.mobile.android.core.permissions.UserItem
 import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.permissions.recycler.CounterItem
+import com.passbolt.mobile.android.permissions.recycler.GroupItem
+import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

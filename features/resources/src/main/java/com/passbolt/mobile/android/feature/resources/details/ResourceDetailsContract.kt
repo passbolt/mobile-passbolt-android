@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.resources.details
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -63,14 +63,14 @@ interface ResourceDetailsContract {
             overlapOffset: Int
         )
 
-        fun navigateToResourcePermissions(resourceId: String, mode: ResourcePermissionsMode)
+        fun navigateToResourcePermissions(resourceId: String, mode: PermissionsMode)
         fun setResourceEditedResult(resourceName: String)
         fun showResourceSharedSnackbar()
         fun showToggleFavouriteFailure()
         fun showFavouriteStar()
         fun hideFavouriteStar()
         fun showTags(tags: List<String>)
-        fun navigateToResourceTags(resourceId: String, mode: ResourcePermissionsMode)
+        fun navigateToResourceTags(resourceId: String, mode: PermissionsMode)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

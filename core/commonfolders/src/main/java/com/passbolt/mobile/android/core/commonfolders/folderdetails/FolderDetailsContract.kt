@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.core.commonfolders.folderdetails
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
+import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.PermissionModelUi
 
 /**
@@ -41,7 +41,7 @@ interface FolderDetailsContract {
             overlap: Int
         )
 
-        fun navigateToFolderPermissions(folderId: String, mode: ResourcePermissionsMode)
+        fun navigateToFolderPermissions(folderId: String, mode: PermissionsMode)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
