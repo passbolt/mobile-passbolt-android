@@ -14,7 +14,6 @@ android {
 }
 
 dependencies {
-    implementation project(':commonfolders')
     implementation project(':commonresource')
     implementation project(':commongroups')
     implementation project(':users')
@@ -28,6 +27,9 @@ dependencies {
     implementation project(':dto')
     implementation project(':networking')
     implementation project(':common')
+    implementation project(':entity')
+    implementation project(':passboltapi')
 
     implementation libs.di.koin
+    implementation libs.room.core
 }

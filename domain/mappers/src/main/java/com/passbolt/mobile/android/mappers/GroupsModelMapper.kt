@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.dto.response.GroupsResponseDto
 import com.passbolt.mobile.android.dto.response.PermissionGroupDto
 import com.passbolt.mobile.android.entity.group.UsersGroup
 import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
-import com.passbolt.mobile.android.entity.resource.ResourceGroupPermission
+import com.passbolt.mobile.android.entity.permission.GroupPermission
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.GroupModelWithUsers
 import com.passbolt.mobile.android.ui.GroupUser
@@ -62,7 +62,7 @@ class GroupsModelMapper {
             permission.name
         )
 
-    fun map(groupPermission: ResourceGroupPermission) =
+    fun map(groupPermission: GroupPermission) =
         GroupModel(
             groupPermission.groupId,
             groupPermission.groupName

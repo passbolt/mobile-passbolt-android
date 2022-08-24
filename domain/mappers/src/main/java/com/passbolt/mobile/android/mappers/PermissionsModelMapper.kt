@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.response.PermissionWithGroupDto
+import com.passbolt.mobile.android.entity.permission.GroupPermission
+import com.passbolt.mobile.android.entity.permission.UserPermission
 import com.passbolt.mobile.android.entity.resource.Permission
-import com.passbolt.mobile.android.entity.resource.ResourceGroupPermission
-import com.passbolt.mobile.android.entity.resource.ResourceUserPermission
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
@@ -82,8 +82,8 @@ class PermissionsModelMapper(
         }
 
     fun map(
-        groupsPermissions: List<ResourceGroupPermission>,
-        usersPermissions: List<ResourceUserPermission>
+        groupsPermissions: List<GroupPermission>,
+        usersPermissions: List<UserPermission>
     ) =
         mutableListOf<PermissionModelUi>()
             .apply {
@@ -108,6 +108,7 @@ class PermissionsModelMapper(
                     )
                 }
             }
+            .toList()
 
     fun map(model: GroupModel, permission: ResourcePermission, permissionId: String) =
         PermissionModelUi.GroupPermissionModel(permission, permissionId, model)

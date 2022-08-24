@@ -6,6 +6,8 @@ import androidx.room.Transaction
 import com.passbolt.mobile.android.database.impl.base.BaseDao
 import com.passbolt.mobile.android.entity.folder.Folder
 import com.passbolt.mobile.android.entity.folder.FolderWithChildItemsCount
+import com.passbolt.mobile.android.entity.permission.GroupPermission
+import com.passbolt.mobile.android.entity.permission.UserPermission
 
 /**
  * Passbolt - Open source password manager for teams
@@ -92,4 +94,51 @@ interface FoldersDao : BaseDao<Folder> {
     @Transaction
     @Query("DELETE FROM Folder")
     suspend fun deleteAll()
+
+    @Transaction
+    @Query("SELECT * FROM Folder WHERE folderId IS :folderId")
+    suspend fun get(folderId: String): Folder
+
+    @Transaction
+    @Query(
+        "WITH RECURSIVE ancestor(folderId, name, permission, parentId, isShared, level) as (" +
+                "SELECT folderId, name, permission, parentId, isShared, 0 " +
+                "from Folder " +
+                "WHERE folderId = :folderId " +
+                "" +
+                "UNION ALL " +
+                "" +
+                "SELECT f.folderId, f.name, f.permission, f.parentId, f.isShared, a.level - 1 " +
+                "FROM Folder f " +
+                "JOIN ancestor a on f.folderId = a.parentId " +
+                ") " +
+                "SELECT folderId, name, permission, parentId, isShared " +
+                "FROM ancestor a " +
+                "ORDER BY level"
+    )
+    suspend fun getFolderLocation(folderId: String): List<Folder>
+
+    @Transaction
+    @Query(
+        "SELECT fUCR.userId, fUCR.permission, fUCR.permissionId, " +
+                "u.firstName, u.lastName, u.avatarUrl, u.userName, u.fingerprint " +
+                "FROM Folder f " +
+                "INNER JOIN FolderAndUsersCrossRef fUCR " +
+                "ON fUCR.folderId = f.folderId " +
+                "INNER JOIN User u " +
+                "ON u.id = fUCR.userId " +
+                "WHERE f.folderId = :folderId"
+    )
+    suspend fun getFolderUsersPermissions(folderId: String): List<UserPermission>
+
+    @Transaction
+    @Query(
+        "SELECT fGCR.groupId, fGCR.permission, fGCR.permissionId ,ug.name as groupName from Folder f " +
+                "INNER JOIN FolderAndGroupsCrossRef fGCR " +
+                "ON fGCR.folderId = f.folderId " +
+                "INNER JOIN UsersGroup ug " +
+                "ON ug.groupId = fGCR.groupId " +
+                "where f.folderId = :folderId"
+    )
+    suspend fun getFolderGroupsPermissions(folderId: String): List<GroupPermission>
 }

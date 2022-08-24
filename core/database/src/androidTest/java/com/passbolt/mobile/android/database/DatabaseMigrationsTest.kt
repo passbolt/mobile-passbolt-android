@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.database.migrations.Migration10to11
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
@@ -181,6 +182,16 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate10To11() {
+        helper.runMigrationsAndValidate(TEST_DB, 11, true, Migration10to11)
+            .apply {
+                execSQL("INSERT INTO FolderAndUsersCrossRef VALUES('folderId','userId','READ','permId1')")
+                execSQL("INSERT INTO FolderAndGroupsCrossRef VALUES('folderId','groupId','READ','permId2')")
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -193,7 +204,7 @@ class DatabaseMigrationsTest {
         )
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
-                Migration6to7, Migration7to8, Migration8to9, Migration9to10
+                Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11
             )
             .build().apply {
                 openHelper.writableDatabase

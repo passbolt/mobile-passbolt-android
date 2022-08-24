@@ -2,15 +2,19 @@ package com.passbolt.mobile.android.feature.resources
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.NavHostFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.core.permissions.permissions.NavigationOrigin
+import com.passbolt.mobile.android.core.permissions.permissions.PermissionsItem
+import com.passbolt.mobile.android.core.permissions.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.resources.databinding.ActivityResourcesBinding
-import com.passbolt.mobile.android.feature.resources.permissions.ResourcePermissionsMode
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 
@@ -70,16 +74,21 @@ class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResou
 
     private fun navigateToResourcePermissions(navHostFragment: NavHostFragment) {
         val resourceId = requireNotNull(intent.getParcelableExtra<ResourceModel>(EXTRA_RESOURCE_MODEL)).resourceId
-        navHostFragment.navController.navigate(
-            ResourcesDetailsDirections.actionGlobalResourcePermissionsFragment(resourceId, ResourcePermissionsMode.EDIT)
-        )
+        val request = NavDeepLinkRequest.Builder
+            .fromUri(
+                Uri.Builder()
+                    .scheme("passbolt")
+                    .authority("permissions")
+                    .appendPath(PermissionsItem.RESOURCE.name)
+                    .appendPath(resourceId)
+                    .appendQueryParameter("mode", ResourcePermissionsMode.EDIT.name)
+                    .appendQueryParameter("navigationOrigin", NavigationOrigin.HOME_RESOURCE_MORE_MENU.name)
+                    .build()
+            ).build()
+        navHostFragment.navController.navigate(request)
     }
 
     companion object {
-        const val RESULT_RESOURCE_DELETED = 8000
-        const val RESULT_RESOURCE_EDITED = 8001
-        const val RESULT_RESOURCE_CREATED = 8002
-        const val RESULT_RESOURCE_SHARED = 8003
         const val EXTRA_RESOURCE_MODEL = "RESOURCE_MODEL"
         const val EXTRA_RESOURCE_MODE = "RESOURCE_MODE"
 

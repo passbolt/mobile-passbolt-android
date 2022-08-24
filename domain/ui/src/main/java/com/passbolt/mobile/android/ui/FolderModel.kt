@@ -43,3 +43,8 @@ data class FolderWithCount(
     val subItemsCount: Int,
     override val searchCriteria: String = name
 ) : Searchable
+
+data class FolderModelWithAttributes(
+    val folderModel: FolderModel,
+    val folderPermissions: List<PermissionModel>
+)

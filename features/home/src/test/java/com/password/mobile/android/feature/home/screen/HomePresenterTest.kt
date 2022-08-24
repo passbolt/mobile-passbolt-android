@@ -1,12 +1,12 @@
 package com.password.mobile.android.feature.home.screen
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
 import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.data.folders.FoldersInteractor
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
@@ -726,7 +726,7 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should apply visibility settings corrfect`() {
+    fun `view should apply visibility settings correct`() {
         val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
             GetHomeDisaplyViewPrefsUseCase.Output(
@@ -758,7 +758,6 @@ class HomePresenterTest : KoinTest {
         )
 
         verify(view).showCloseButton()
-        verify(view).showFolderMoreMenuIcon()
     }
 
     private fun mockResourcesList() = listOf(
