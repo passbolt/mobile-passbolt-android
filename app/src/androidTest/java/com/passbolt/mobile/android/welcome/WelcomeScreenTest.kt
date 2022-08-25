@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.welcome
 
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isClickable
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -77,5 +79,21 @@ class WelcomeScreenTest : KoinTest {
         onView(withId(R.id.noAccountButton)).check(matches(isDisplayed()))
         //    And       I see a "Help" side action
         onView(withId(R.id.helpButton)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun asAMobileUserICanSeeAnExplanationWhyICannotCreateAnAccountOnTheMobileApp() {
+        //      Given   the welcome screen is displayed
+        //      When    the user click on the "I don't have an account" button
+        onView(withId(R.id.noAccountButton)).perform(click())
+        //      Then    a dialog explaining why I can’t create an account is presented
+        onView(withId(R.id.alertTitle)).check(matches(isDisplayed()))
+        //      And     the message says "I need to create an account first using the web"
+        onView(withId(android.R.id.message)).check(matches(isDisplayed()))
+        //      And     a “Got it” button to close the dialog is presented
+        //      And     a “Got it” button is clickable
+        onView(withId(android.R.id.button1))
+            .check(matches(isDisplayed()))
+            .check(matches(isClickable()))
     }
 }
