@@ -29,9 +29,6 @@ import androidx.room.Relation
  * @since v1.0
  */
 
-const val RESOURCE_TYPE_ID = "resourceTypeId"
-const val RESOURCE_FIELD_ID = "resourceFieldId"
-
 @Entity
 data class ResourceType(
     @PrimaryKey
@@ -51,17 +48,11 @@ data class ResourceField(
     val type: String
 )
 
-@Entity(primaryKeys = [RESOURCE_TYPE_ID, RESOURCE_FIELD_ID])
-data class ResourceTypesAndFieldsCrossRef(
-    val resourceTypeId: String,
-    val resourceFieldId: Long
-)
-
 data class ResourceTypeIdWithFields(
     @Embedded val resourceType: ResourceType,
     @Relation(
-        parentColumn = RESOURCE_TYPE_ID,
-        entityColumn = RESOURCE_FIELD_ID,
+        parentColumn = "resourceTypeId",
+        entityColumn = "resourceFieldId",
         associateBy = Junction(ResourceTypesAndFieldsCrossRef::class)
     )
     val resourceFields: List<ResourceField>
