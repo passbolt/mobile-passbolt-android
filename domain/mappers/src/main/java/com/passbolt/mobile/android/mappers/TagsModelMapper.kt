@@ -37,12 +37,14 @@ class TagsModelMapper {
             isShared = tag.isShared
         )
 
-    fun map(tagModel: TagModel): Tag =
-        Tag(
-            id = tagModel.id,
-            slug = tagModel.slug,
-            isShared = tagModel.isShared
-        )
+    fun map(tagModels: List<TagModel>) =
+        tagModels.map {
+            Tag(
+                id = it.id,
+                slug = it.slug,
+                isShared = it.isShared
+            )
+        }
 
     fun map(tagEntity: Tag): TagModel =
         TagModel(

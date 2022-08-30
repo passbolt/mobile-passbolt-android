@@ -42,14 +42,17 @@ class AddLocalTagsUseCase(
             .get(input.userId)
             .resourcesAndTagsCrossRefDao()
 
-        input.resourcesWithTagsModelAndGroups
-            .map { it.resourceModel.resourceId to it.resourceTags }
-            .forEach { (resourceId, tags) ->
-                tags.forEach {
-                    tagsDao.insert(tagModelMapper.map(it))
-                    tagsAndResourcesCrossRefDao.insert(ResourceAndTagsCrossRef(it.id, resourceId))
+        input.resourcesWithTagsModelAndGroups.apply {
+            val tags = flatMap { it.resourceTags }
+            val resourceAndTagCrossRefs = map { it.resourceModel.resourceId to it.resourceTags.map { tag -> tag.id } }
+                .flatMap { (resourceId, resourceTagsIds) ->
+                    resourceTagsIds.map { tagId ->
+                        ResourceAndTagsCrossRef(tagId, resourceId)
+                    }
                 }
-            }
+            tagsDao.insertAll(tagModelMapper.map(tags))
+            tagsAndResourcesCrossRefDao.insertAll(resourceAndTagCrossRefs)
+        }
     }
 
     data class Input(

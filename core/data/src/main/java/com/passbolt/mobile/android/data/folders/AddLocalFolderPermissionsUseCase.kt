@@ -40,33 +40,44 @@ class AddLocalFolderPermissionsUseCase(
         val foldersAndGroupsCrossRefDao = db.folderAndGroupsCrossRefDao()
         val foldersAndUsersCrossRefDao = db.folderAndUsersCrossRefDao()
 
-        input.foldersWithAttributes
-            .map { it.folderModel.folderId to it.folderPermissions }
-            .forEach { (folderId, permissions) ->
-                permissions.forEach { permission ->
-                    when (permission) {
-                        is PermissionModel.GroupPermissionModel ->
-                            foldersAndGroupsCrossRefDao.insert(
-                                FolderAndGroupsCrossRef(
-                                    folderId,
-                                    permission.group.groupId,
-                                    permissionsModelMapper.map(permission.permission),
-                                    permission.permissionId
-                                )
-                            )
-                        is PermissionModel.UserPermissionModel -> {
-                            foldersAndUsersCrossRefDao.insert(
-                                FolderAndUsersCrossRef(
-                                    folderId,
-                                    permission.userId,
-                                    permissionsModelMapper.map(permission.permission),
-                                    permission.permissionId
-                                )
-                            )
-                        }
+        input.foldersWithAttributes.apply {
+            val folderGroupsPermissions = map {
+                it.folderModel.folderId to it.folderPermissions
+                    .filterIsInstance<PermissionModel.GroupPermissionModel>()
+            }
+
+            val folderUsersPermissions = map {
+                it.folderModel.folderId to it.folderPermissions
+                    .filterIsInstance<PermissionModel.UserPermissionModel>()
+            }
+
+            val folderAndGroupCrossRefs = folderGroupsPermissions
+                .flatMap { (folderId, groupPermissions) ->
+                    groupPermissions.map { groupPermission ->
+                        FolderAndGroupsCrossRef(
+                            folderId,
+                            groupPermission.group.groupId,
+                            permissionsModelMapper.map(groupPermission.permission),
+                            groupPermission.permissionId
+                        )
                     }
                 }
-            }
+
+            val folderAndUsersCrossRefs = folderUsersPermissions
+                .flatMap { (folderId, userPermissions) ->
+                    userPermissions.map { userPermission ->
+                        FolderAndUsersCrossRef(
+                            folderId,
+                            userPermission.userId,
+                            permissionsModelMapper.map(userPermission.permission),
+                            userPermission.permissionId
+                        )
+                    }
+                }
+
+            foldersAndGroupsCrossRefDao.insertAll(folderAndGroupCrossRefs)
+            foldersAndUsersCrossRefDao.insertAll(folderAndUsersCrossRefs)
+        }
     }
 
     data class Input(
