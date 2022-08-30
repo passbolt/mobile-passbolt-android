@@ -211,6 +211,8 @@
     <string name="home_create">Create</string>
     <string name="home_in_sub_folders">in subfolders:</string>
     <string name="home_in_current_folder">in \"%s\":</string>
+    <string name="home_speed_dial_add_password">Add password</string>
+    <string name="home_speed_dial_add_folder">Add folder</string>
 
     <string name="switch_account_see_details">See details</string>
     <string name="switch_account_sign_out">Sign out</string>

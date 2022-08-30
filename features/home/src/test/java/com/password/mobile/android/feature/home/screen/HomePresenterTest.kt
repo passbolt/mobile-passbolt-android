@@ -163,6 +163,7 @@ class HomePresenterTest : KoinTest {
         verify(view).displaySearchAvatar(null)
         verify(view).hideRefreshProgress()
         verify(view).hideFolderMoreMenuIcon()
+        verify(view).initSpeedDialFab(HomeDisplayViewModel.AllItems)
         verifyNoMoreInteractions(view)
     }
 

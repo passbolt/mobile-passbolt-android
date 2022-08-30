@@ -48,6 +48,7 @@ dependencies {
     implementation libs.room.cipher
     implementation libs.room.sqlite
     ksp libs.room.compiler
+    implementation libs.fabSpeedDial
 
     testImplementation project(':ui')
     testImplementation project(':commontest')

@@ -204,19 +204,6 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/updateButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="@dimen/dp_16"
-        android:contentDescription="@string/home_create"
-        android:text="@string/home_create"
-        app:backgroundTint="@color/primary"
-        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-        app:srcCompat="@drawable/ic_plus"
-        app:tint="@color/white" />
-
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress"
         android:layout_width="@dimen/dp_40"
@@ -224,5 +211,11 @@
         android:layout_gravity="center"
         android:indeterminate="true"
         app:indicatorColor="@color/primary" />
+
+    <com.leinardi.android.speeddial.SpeedDialOverlayLayout
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
