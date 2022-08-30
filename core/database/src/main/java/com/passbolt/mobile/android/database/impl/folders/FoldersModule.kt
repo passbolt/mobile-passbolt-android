@@ -35,4 +35,5 @@ internal fun Module.foldersModule() {
     singleOf(::GetLocalFolderDetailsUseCase)
     singleOf(::GetLocalFolderLocationUseCase)
     singleOf(::GetLocalFolderPermissionsUseCase)
+    singleOf(::GetLocalFolderPermissionsToCopyAsNewUseCase)
 }

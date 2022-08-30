@@ -7,6 +7,8 @@ import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.NewF
 import com.passbolt.mobile.android.feature.resources.update.fieldsgenerator.ResourceFieldsComparator
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.scopedOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -48,37 +50,19 @@ fun Module.updateResourceModule() {
                 editFieldsModelCreator = get(),
                 newFieldsModelCreator = get(),
                 secretInteractor = get(),
-                fieldNamesMapper = get()
+                fieldNamesMapper = get(),
+                shareInteractor = get(),
+                getLocalFolderPermissionsToCopyAsNew = get()
             )
         }
-        scoped {
-            ViewProvider()
-        }
-        scoped {
-            PasswordGenerator()
-        }
-        scoped {
-            EntropyViewMapper()
-        }
+
+        scopedOf(::EntropyViewMapper)
+        scopedOf(::PasswordGenerator)
+        scopedOf(::ViewProvider)
     }
-    factory {
-        NewFieldsModelCreator(
-            getResourceTypeWithFieldsBySlugUseCase = get(),
-            resourceFieldsComparator = get()
-        )
-    }
-    factory {
-        ResourceFieldsComparator()
-    }
-    factory {
-        EditFieldsModelCreator(
-            getResourceTypeWithFieldsByIdUseCase = get(),
-            secretParser = get(),
-            resourceTypeEnumFactory = get(),
-            resourceFieldsComparator = get()
-        )
-    }
-    factory {
-        FieldNamesMapper(androidContext())
-    }
+
+    factoryOf(::NewFieldsModelCreator)
+    factoryOf(::ResourceFieldsComparator)
+    factoryOf(::EditFieldsModelCreator)
+    factory { FieldNamesMapper(androidContext()) }
 }

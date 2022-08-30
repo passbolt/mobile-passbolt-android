@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.data.folders.FoldersInteractor
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
+import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
@@ -24,6 +25,7 @@ import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyVie
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
+import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -567,6 +569,11 @@ class HomePresenterTest : KoinTest {
         mockGetLocalResourcesAndFoldersUseCase.stub {
             onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output.Failure
         }
+        mockGetLocalFolderUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalFolderDetailsUseCase.Output(
+                FolderModel("childId", "root", "child folder", false, ResourcePermission.UPDATE)
+            )
+        }
         val refreshFlow = flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         mockAccountData(null)
 
@@ -581,6 +588,7 @@ class HomePresenterTest : KoinTest {
         )
 
         verify(view).navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
+        verify(view).showAddButton()
     }
 
     @Test

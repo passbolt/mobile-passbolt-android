@@ -70,6 +70,11 @@ interface UpdateResourceContract {
         fun hideScrollView()
         fun showScrollView()
         fun showEncryptionError(message: String)
+        fun showShareSimulationFailure()
+        fun showShareFailure()
+        fun showSecretFetchFailure()
+        fun showSecretEncryptFailure()
+        fun showSecretDecryptFailure()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

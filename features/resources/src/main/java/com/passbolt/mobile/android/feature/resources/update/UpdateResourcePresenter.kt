@@ -12,6 +12,8 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPres
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.core.users.FetchUsersUseCase
+import com.passbolt.mobile.android.data.interactor.ShareInteractor
+import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsToCopyAsNewUseCase
 import com.passbolt.mobile.android.database.impl.resources.AddLocalResourceUseCase
 import com.passbolt.mobile.android.database.impl.resources.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsBySlugUseCase
@@ -34,7 +36,6 @@ import com.passbolt.mobile.android.ui.UserModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 import timber.log.Timber
 
 /**
@@ -73,9 +74,11 @@ class UpdateResourcePresenter(
     private val editFieldsModelCreator: EditFieldsModelCreator,
     private val newFieldsModelCreator: NewFieldsModelCreator,
     private val secretInteractor: SecretInteractor,
-    private val fieldNamesMapper: FieldNamesMapper
+    private val fieldNamesMapper: FieldNamesMapper,
+    private val shareInteractor: ShareInteractor,
+    private val getLocalFolderPermissionsToCopyAsNew: GetLocalFolderPermissionsToCopyAsNewUseCase
 ) : BaseAuthenticatedPresenter<UpdateResourceContract.View>(coroutineLaunchContext),
-    UpdateResourceContract.Presenter, KoinComponent {
+    UpdateResourceContract.Presenter {
 
     override var view: UpdateResourceContract.View? = null
 
@@ -89,8 +92,8 @@ class UpdateResourcePresenter(
 
     override fun argsRetrieved(mode: ResourceMode, resource: ResourceModel?, resourceParentFolderId: String?) {
         this.resourceParentFolderId = resourceParentFolderId
-        resourceUpdateType = ResourceUpdateType.from(mode)
-        existingResource = resource
+        this.resourceUpdateType = ResourceUpdateType.from(mode)
+        this.existingResource = resource
 
         setupUi()
 
@@ -247,15 +250,44 @@ class UpdateResourcePresenter(
         when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
             createResourceUseCase.execute(createResourceInput())
         }) {
-            is CreateResourceUseCase.Output.Success -> {
-                addLocalResourceUseCase.execute(AddLocalResourceUseCase.Input(result.resource))
-                view?.closeWithCreateSuccessResult(result.resource.name, result.resource.resourceId)
-            }
             is CreateResourceUseCase.Output.Failure<*> -> view?.showError()
+            is CreateResourceUseCase.Output.OpenPgpError -> view?.showEncryptionError(result.message)
             is CreateResourceUseCase.Output.PasswordExpired -> {
                 /* will not happen in BaseAuthenticatedPresenter */
             }
-            is CreateResourceUseCase.Output.OpenPgpError -> view?.showEncryptionError(result.message)
+            is CreateResourceUseCase.Output.Success -> {
+                addLocalResourceUseCase.execute(AddLocalResourceUseCase.Input(result.resource))
+                resourceParentFolderId?.let {
+                    applyFolderPermissionsToCreatedResource(result.resource, it)
+                } ?: run {
+                    view?.closeWithCreateSuccessResult(result.resource.name, result.resource.resourceId)
+                }
+            }
+        }
+    }
+
+    private suspend fun applyFolderPermissionsToCreatedResource(
+        resource: ResourceModel,
+        resourceParentFolderId: String
+    ) {
+        val newPermissionsToApply = getLocalFolderPermissionsToCopyAsNew.execute(
+            GetLocalFolderPermissionsToCopyAsNewUseCase.Input(resourceParentFolderId)
+        ).permissions
+
+        when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+            shareInteractor.simulateAndShare(resource.resourceId, newPermissionsToApply)
+        }) {
+            is ShareInteractor.Output.SecretDecryptFailure -> view?.showSecretDecryptFailure()
+            is ShareInteractor.Output.SecretEncryptFailure -> view?.showSecretEncryptFailure()
+            is ShareInteractor.Output.SecretFetchFailure -> view?.showSecretFetchFailure()
+            is ShareInteractor.Output.ShareFailure -> view?.showShareFailure()
+            is ShareInteractor.Output.SimulateShareFailure -> view?.showShareSimulationFailure()
+            is ShareInteractor.Output.Success -> {
+                view?.closeWithCreateSuccessResult(resource.name, resource.resourceId)
+            }
+            is ShareInteractor.Output.Unauthorized -> {
+                // handled automatically in runAuthenticatedOperation
+            }
         }
     }
 
