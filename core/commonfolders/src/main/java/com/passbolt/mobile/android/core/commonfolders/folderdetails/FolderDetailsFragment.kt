@@ -64,6 +64,8 @@ class FolderDetailsFragment :
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val sharedWithFields
         get() = listOf(binding.sharedWithLabel, binding.sharedWithRecyclerClickableArea, binding.sharedWithNavIcon)
+    private val locationFields
+        get() = listOf(binding.locationHeader, binding.locationValue, binding.locationNavIcon)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,6 +84,7 @@ class FolderDetailsFragment :
 
     private fun initListeners() {
         sharedWithFields.forEach { it.setDebouncingOnClick { presenter.sharedWithClick() } }
+        locationFields.forEach { it.setDebouncingOnClick { presenter.locationClick() } }
         fastAdapter.onClickListener = { _, _, _, _ ->
             presenter.sharedWithClick()
             true
@@ -145,5 +148,11 @@ class FolderDetailsFragment :
                     .build()
             ).build()
         findNavController().navigate(request)
+    }
+
+    override fun navigateToFolderLocation(folderId: String) {
+        findNavController().navigate(
+            FolderDetailsFragmentDirections.actionFolderDetailsFragmentToFolderLocationDetailsFragment(folderId)
+        )
     }
 }

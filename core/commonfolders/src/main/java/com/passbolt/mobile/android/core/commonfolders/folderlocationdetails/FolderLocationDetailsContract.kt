@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.database.impl.folders
+package com.passbolt.mobile.android.core.commonfolders.folderlocationdetails
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.mappers.FolderModelMapper
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.ui.FolderModel
 
 /**
@@ -28,27 +25,17 @@ import com.passbolt.mobile.android.ui.FolderModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetLocalFolderLocationUseCase(
-    private val databaseProvider: DatabaseProvider,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
-    private val folderModelMapper: FolderModelMapper
-) : AsyncUseCase<GetLocalFolderLocationUseCase.Input, GetLocalFolderLocationUseCase.Output> {
 
-    override suspend fun execute(input: Input): Output {
-        val currentAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        return databaseProvider
-            .get(currentAccount)
-            .foldersDao()
-            .getFolderLocation(input.folderId)
-            .map(folderModelMapper::map)
-            .let { Output(it) }
+interface FolderLocationDetailsContract {
+
+    interface View : BaseAuthenticatedContract.View {
+        fun showFolderName(name: String)
+        fun showFolderSharedIcon()
+        fun showFolderIcon()
+        fun showFolderLocation(parentFolders: List<FolderModel>)
     }
 
-    data class Input(
-        val folderId: String
-    )
-
-    data class Output(
-        val parentFolders: List<FolderModel>
-    )
+    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+        fun argsRetrieved(folderId: String)
+    }
 }

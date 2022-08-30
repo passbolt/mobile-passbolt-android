@@ -17,8 +17,25 @@
         <argument
             android:name="folderId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_folderDetailsFragment_to_folderLocationDetailsFragment"
+            app:destination="@id/folderLocationDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <include app:graph="@navigation/permissions" />
+
+    <fragment
+        android:id="@+id/folderLocationDetailsFragment"
+        android:name="com.passbolt.mobile.android.core.commonfolders.folderlocationdetails.FolderLocationDetailsFragment"
+        android:label="FolderLocationDetailsFragment"
+        tools:layout="@layout/fragment_folder_location_details" >
+        <argument
+            android:name="folderId"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.core.commonfolders
 
 import com.passbolt.mobile.android.core.commonfolders.folderdetails.folderDetailsModule
+import com.passbolt.mobile.android.core.commonfolders.folderlocationdetails.folderLocationDetailsModule
 import com.passbolt.mobile.android.core.commonfolders.moremenu.folderMoreMenuModule
 import org.koin.dsl.module
 
@@ -30,4 +31,5 @@ import org.koin.dsl.module
 val commonFoldersModule = module {
     folderMoreMenuModule()
     folderDetailsModule()
+    folderLocationDetailsModule()
 }
