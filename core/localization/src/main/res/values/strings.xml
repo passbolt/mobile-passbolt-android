@@ -36,6 +36,7 @@
     <string name="common_message_resource_edited">%s password was successfully edited.</string>
     <string name="common_message_resource_deleted">%s password was deleted.</string>
     <string name="common_message_resource_shared">The resource permissions were updated.</string>
+    <string name="common_message_folder_created">New folder %s has been created!</string>
 
     <string name="fingerprint_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Biometric authorization has been blocked due to too many attempts.</string>
@@ -381,6 +382,12 @@
     <string name="folder_details_name_header">Folder name</string>
     <string name="folder_details_location_separator"
         translatable="false">›</string>
+
+    <string name="create_folder_title">Create folder</string>
+    <string name="create_folder_name">Name</string>
+    <string name="create_folder_name_validation">Folder name cannot be empty</string>
+    <string name="create_folder_error_format">Could not create folder. %s</string>
+    <string name="share_folder_error_format">Could not share folder. %s</string>
 
     <!--
     arrays can be inconsistent when in other languages

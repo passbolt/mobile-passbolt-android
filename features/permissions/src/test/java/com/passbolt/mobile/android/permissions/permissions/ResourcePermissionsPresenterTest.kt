@@ -2,17 +2,15 @@ package com.passbolt.mobile.android.permissions.permissions
 
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
-import com.passbolt.mobile.android.data.interactor.ShareInteractor
+import com.passbolt.mobile.android.data.interactor.ResourceShareInteractor
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
-import com.passbolt.mobile.android.permissions.permissions.PermissionsContract
-import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
-import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserWithAvatar
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -57,6 +55,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
     private val presenter: PermissionsContract.Presenter by inject()
     private val view: PermissionsContract.View = mock()
 
+    @ExperimentalCoroutinesApi
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
@@ -212,9 +211,9 @@ class ResourcePermissionsPresenterTest : KoinTest {
             onBlocking { execute(GetLocalResourcePermissionsUseCase.Input(RESOURCE_ID)) }
                 .doReturn(GetLocalResourcePermissionsUseCase.Output(mockPermissions))
         }
-        mockShareInteractor.stub {
-            onBlocking { simulateAndShare(any(), any()) }
-                .doReturn(ShareInteractor.Output.Success)
+        mockResourceShareInteractor.stub {
+            onBlocking { simulateAndShareResource(any(), any()) }
+                .doReturn(ResourceShareInteractor.Output.Success)
         }
         mockHomeDataInteractor.stub {
             onBlocking { refreshAllHomeScreenData() }

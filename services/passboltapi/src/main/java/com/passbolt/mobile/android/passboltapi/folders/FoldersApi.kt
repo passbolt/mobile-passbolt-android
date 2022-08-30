@@ -1,8 +1,12 @@
 package com.passbolt.mobile.android.passboltapi.folders
 
+import com.passbolt.mobile.android.dto.request.CreateFolderRequestDto
 import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.CreateFolderResponseDto
 import com.passbolt.mobile.android.dto.response.FolderResponseDto
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 /**
@@ -37,6 +41,13 @@ internal interface FoldersApi {
         // always return index with all users and groups
         @Query(QUERY_CONTAIN_PERMISSIONS) containingPermissions: Int? = 1
     ): BaseResponse<List<FolderResponseDto>>
+
+    @POST(FOLDERS)
+    suspend fun createFolder(
+        @Body createFolderRequestDto: CreateFolderRequestDto,
+        // always return index with current user permission
+        @Query(QUERY_CONTAIN_PERMISSION) containingPermission: Int? = 1
+    ): BaseResponse<CreateFolderResponseDto>
 
     private companion object {
         private const val FOLDERS = "folders.json"

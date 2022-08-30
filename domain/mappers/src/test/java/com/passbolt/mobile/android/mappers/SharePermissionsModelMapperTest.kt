@@ -50,8 +50,16 @@ class SharePermissionsModelMapperTest : KoinTest {
     fun `share and simulate permissions should be mapped correct for not changed recipients`() {
         val recipients = EXISTING_PERMISSIONS
 
-        val resultForShare = mapper.mapForShare(RESOURCE_ID, recipients, EXISTING_PERMISSIONS)
-        val resultForSimulation = mapper.mapForSimulation(RESOURCE_ID, recipients, EXISTING_PERMISSIONS)
+        val resultForShare = mapper.mapForShare(
+            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+            recipients,
+            EXISTING_PERMISSIONS
+        )
+        val resultForSimulation = mapper.mapForSimulation(
+            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+            recipients,
+            EXISTING_PERMISSIONS
+        )
 
         assertThat(resultForShare).isEmpty()
         assertThat(resultForSimulation).isEmpty()
@@ -61,8 +69,16 @@ class SharePermissionsModelMapperTest : KoinTest {
     fun `share and simulate permissions should be mapped correct for deleted recipient`() {
         val recipients = EXISTING_PERMISSIONS - EXISTING_PERMISSIONS[0]
 
-        val resultForShare = mapper.mapForShare(RESOURCE_ID, recipients, EXISTING_PERMISSIONS)
-        val resultForSimulation = mapper.mapForSimulation(RESOURCE_ID, recipients, EXISTING_PERMISSIONS)
+        val resultForShare = mapper.mapForShare(
+            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+            recipients,
+            EXISTING_PERMISSIONS
+        )
+        val resultForSimulation = mapper.mapForSimulation(
+            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+            recipients,
+            EXISTING_PERMISSIONS
+        )
 
         assertThat(resultForShare).hasSize(1)
         assertThat(resultForShare[0]).isInstanceOf(SharePermission.DeletedSharePermission::class.java)
@@ -84,8 +100,16 @@ class SharePermissionsModelMapperTest : KoinTest {
         )
         val recipients = EXISTING_PERMISSIONS + newRecipient
 
-        val resultForShare = mapper.mapForShare(RESOURCE_ID, recipients, EXISTING_PERMISSIONS)
-        val resultForSimulation = mapper.mapForSimulation(RESOURCE_ID, recipients, EXISTING_PERMISSIONS)
+        val resultForShare = mapper.mapForShare(
+            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+            recipients,
+            EXISTING_PERMISSIONS
+        )
+        val resultForSimulation = mapper.mapForSimulation(
+            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+            recipients,
+            EXISTING_PERMISSIONS
+        )
 
         assertThat(resultForShare).hasSize(1)
         assertThat(resultForShare[0]).isInstanceOf(SharePermission.NewSharePermission::class.java)
@@ -113,8 +137,16 @@ class SharePermissionsModelMapperTest : KoinTest {
             }
         }
 
-        val resultForShare = mapper.mapForShare(RESOURCE_ID, recipients, EXISTING_PERMISSIONS)
-        val resultForSimulation = mapper.mapForSimulation(RESOURCE_ID, recipients, EXISTING_PERMISSIONS)
+        val resultForShare = mapper.mapForShare(
+            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+            recipients,
+            EXISTING_PERMISSIONS
+        )
+        val resultForSimulation = mapper.mapForSimulation(
+            SharePermissionsModelMapper.ShareItem.Resource(RESOURCE_ID),
+            recipients,
+            EXISTING_PERMISSIONS
+        )
 
         assertThat(resultForShare).hasSize(1)
         assertThat(resultForShare[0]).isInstanceOf(SharePermission.UpdatedSharePermission::class.java)

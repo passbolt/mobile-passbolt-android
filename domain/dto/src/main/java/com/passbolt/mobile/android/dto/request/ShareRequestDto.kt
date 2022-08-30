@@ -28,9 +28,13 @@ data class SimulateShareRequest(
     val permissions: List<SharePermission>
 )
 
-data class ShareRequest(
+data class ResourceShareRequest(
     val permissions: List<SharePermission>,
     val secrets: List<EncryptedSharedSecret>
+)
+
+data class FolderShareRequest(
+    val permissions: List<SharePermission>
 )
 
 data class EncryptedSharedSecret(

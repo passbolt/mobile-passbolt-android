@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.core.commonresource.PasswordHeaderItem
 import com.passbolt.mobile.android.core.commonresource.PasswordItem
 import com.passbolt.mobile.android.core.commonresource.TagWithCountItem
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.mvp.progress.ProgressStackSynchronizer
 import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -80,6 +81,7 @@ fun Module.homeModule() {
             )
         }
         scopedOf(::SpeedDialFabFactory)
+        scopedOf(::ProgressStackSynchronizer)
         declareHomeListAdapters()
         declareHomeListItemAdapters()
         declareResourceActionsInteractors()

@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.core.commonfolders
 
 import com.passbolt.mobile.android.core.commonfolders.folderdetails.folderDetailsModule
 import com.passbolt.mobile.android.core.commonfolders.moremenu.folderMoreMenuModule
+import com.passbolt.mobile.android.core.commonfolders.usecase.CreateFolderUseCase
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 /**
@@ -30,4 +32,7 @@ import org.koin.dsl.module
 val commonFoldersModule = module {
     folderMoreMenuModule()
     folderDetailsModule()
+
+    // TODO module refactor pending MOB-604
+    factoryOf(::CreateFolderUseCase)
 }

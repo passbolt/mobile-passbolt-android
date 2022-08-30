@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.data.interactor
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,26 +27,7 @@ import org.koin.core.module.Module
  */
 
 fun Module.interactorModule() {
-    single {
-        HomeDataInteractor(
-            foldersInteractor = get(),
-            resourcesInteractor = get(),
-            groupsInteractor = get(),
-            usersInteractor = get()
-        )
-    }
-    single {
-        ShareInteractor(
-            getLocalResourcePermissionsUseCase = get(),
-            getLocalUserUseCase = get(),
-            simulateShareUseCase = get(),
-            shareResourceUseCase = get(),
-            getSelectedAccountUseCase = get(),
-            getPrivateKeyUseCase = get(),
-            secretInteractor = get(),
-            openPgp = get(),
-            passphraseMemoryCache = get(),
-            sharePermissionsModelMapper = get()
-        )
-    }
+    singleOf(::HomeDataInteractor)
+    singleOf(::ResourceShareInteractor)
+    singleOf(::FolderShareInteractor)
 }

@@ -45,7 +45,7 @@ import java.net.HttpURLConnection
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ShareInteractor(
+class ResourceShareInteractor(
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
     private val getLocalUserUseCase: GetLocalUserUseCase,
     private val simulateShareUseCase: SimulateShareResourceUseCase,
@@ -58,13 +58,17 @@ class ShareInteractor(
     private val sharePermissionsModelMapper: SharePermissionsModelMapper
 ) {
 
-    suspend fun simulateAndShare(resourceId: String, recipients: List<PermissionModelUi>): Output {
+    suspend fun simulateAndShareResource(resourceId: String, recipients: List<PermissionModelUi>): Output {
         val existingResourcePermissions = getLocalResourcePermissionsUseCase
             .execute(GetLocalResourcePermissionsUseCase.Input(resourceId))
             .permissions
 
         val simulateSharePermissions = sharePermissionsModelMapper
-            .mapForSimulation(resourceId, recipients, existingResourcePermissions)
+            .mapForSimulation(
+                SharePermissionsModelMapper.ShareItem.Resource(resourceId),
+                recipients,
+                existingResourcePermissions
+            )
 
         Timber.d("Starting share simulation")
         return when (val simulateShareOutput = simulateShareUseCase.execute(
@@ -110,9 +114,13 @@ class ShareInteractor(
                 if (passphrase is PotentialPassphrase.Passphrase) {
                     Timber.d("Using passphrase from cache")
                     val sharePermissions = sharePermissionsModelMapper
-                        .mapForShare(resourceId, recipients, existingPermissions)
+                        .mapForShare(
+                            SharePermissionsModelMapper.ShareItem.Resource(resourceId),
+                            recipients,
+                            existingPermissions
+                        )
                     val secretsData = prepareEncryptedSecretsData(
-                        passphrase.passphrase, resourceId, secretOutput.decryptedSecret, newUsers
+                        passphrase.passphrase, secretOutput.decryptedSecret, newUsers
                     )
                     if (secretsData.any { it is EncryptedSecretOrError.Error }) {
                         return Output.SecretEncryptFailure(
@@ -147,7 +155,6 @@ class ShareInteractor(
 
     private suspend fun prepareEncryptedSecretsData(
         passphrase: ByteArray,
-        resourceId: String,
         decryptedSecret: ByteArray,
         addedUsers: List<ShareRecipientDto>
     ): List<EncryptedSecretOrError> {

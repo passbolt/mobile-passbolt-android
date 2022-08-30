@@ -3,14 +3,12 @@ package com.passbolt.mobile.android.permissions.permissions
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
-import com.passbolt.mobile.android.data.interactor.ShareInteractor
+import com.passbolt.mobile.android.data.interactor.ResourceShareInteractor
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
-import com.passbolt.mobile.android.permissions.permissions.PermissionModelUiComparator
-import com.passbolt.mobile.android.permissions.permissions.PermissionsContract
-import com.passbolt.mobile.android.permissions.permissions.PermissionsPresenter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
@@ -38,13 +36,13 @@ import org.mockito.kotlin.mock
  */
 
 internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
-internal val mockShareInteractor = mock<ShareInteractor>()
+internal val mockResourceShareInteractor = mock<ResourceShareInteractor>()
 internal val mockHomeDataInteractor = mock<HomeDataInteractor>()
 internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockGetLocalFolderPermissionsUseCase = mock<GetLocalFolderPermissionsUseCase>()
 internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()
 
-
+@ExperimentalCoroutinesApi
 internal val testResourcePermissionsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
     factory { PermissionModelUiComparator() }
@@ -55,7 +53,7 @@ internal val testResourcePermissionsModule = module {
             getLocalFolderPermissionsUseCase = mockGetLocalFolderPermissionsUseCase,
             permissionModelUiComparator = get(),
             getLocalFolderUseCase = mockGetLocalFolderUseCase,
-            shareInteractor = mockShareInteractor,
+            resourceShareInteractor = mockResourceShareInteractor,
             homeDataInteractor = mockHomeDataInteractor,
             coroutineLaunchContext = get()
         )

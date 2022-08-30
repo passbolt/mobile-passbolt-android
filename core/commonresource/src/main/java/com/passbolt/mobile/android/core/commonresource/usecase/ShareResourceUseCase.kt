@@ -7,7 +7,7 @@ import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.request.EncryptedSharedSecret
 import com.passbolt.mobile.android.dto.request.SharePermission
-import com.passbolt.mobile.android.dto.request.ShareRequest
+import com.passbolt.mobile.android.dto.request.ResourceShareRequest
 import com.passbolt.mobile.android.passboltapi.share.ShareRepository
 import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 
@@ -40,7 +40,7 @@ class ShareResourceUseCase(
     override suspend fun execute(input: Input) =
         when (val response = shareRepository.shareResource(
             input.resourceId,
-            ShareRequest(
+            ResourceShareRequest(
                 input.sharePermissions,
                 input.encryptedSecrets.map { EncryptedSharedSecret(input.resourceId, it.userId, it.data) })
         )) {

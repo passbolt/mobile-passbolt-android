@@ -34,6 +34,7 @@ featureModule "secrets"
 featureModule "accountdetails"
 featureModule "permissions"
 featureModule "locationdetails"
+featureModule "createfolder"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"

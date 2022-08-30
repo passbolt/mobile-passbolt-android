@@ -126,6 +126,7 @@ dependencies {
     implementation project(':coreui')
     implementation project(':data')
     implementation project(':locationdetails')
+    implementation project(':createfolder')
 
     debugImplementation libs.quality.leakcanary
 

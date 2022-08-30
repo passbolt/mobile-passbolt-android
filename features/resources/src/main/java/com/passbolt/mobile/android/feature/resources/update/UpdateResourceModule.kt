@@ -51,7 +51,7 @@ fun Module.updateResourceModule() {
                 newFieldsModelCreator = get(),
                 secretInteractor = get(),
                 fieldNamesMapper = get(),
-                shareInteractor = get(),
+                resourceShareInteractor = get(),
                 getLocalFolderPermissionsToCopyAsNew = get()
             )
         }

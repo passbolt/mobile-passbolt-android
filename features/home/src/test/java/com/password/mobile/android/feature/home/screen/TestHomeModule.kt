@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUse
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.progress.ProgressStackSynchronizer
 import com.passbolt.mobile.android.data.folders.FoldersInteractor
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
@@ -76,6 +77,7 @@ val testHomeModule = module {
     factory { resourceMenuModelMapper }
     factory { HomeDisplayViewMapper() }
     factory { DomainProvider() }
+    factory { ProgressStackSynchronizer() }
     factory<HomeContract.Presenter> {
         HomePresenter(
             coroutineLaunchContext = get(),

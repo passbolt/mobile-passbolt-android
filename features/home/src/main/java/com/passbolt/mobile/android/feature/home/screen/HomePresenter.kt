@@ -159,7 +159,7 @@ class HomePresenter(
             hideAddButton()
             processSearchHint(this)
             processScreenTitle(this)
-            showProgress()
+            showSynchronizedProgress()
         }
 
         handleCloseVisibility(shouldShowCloseButton)
@@ -243,7 +243,7 @@ class HomePresenter(
                     }
                 }
                 view?.apply {
-                    hideProgress()
+                    hideSynchronizedProgress()
                     hideRefreshProgress()
                 }
             }
@@ -621,7 +621,7 @@ class HomePresenter(
     }
 
     override fun deleteResourceConfirmed() {
-        view?.showProgress()
+        view?.showSynchronizedProgress()
         coroutineScope.launch {
             resourceAuthenticatedActionsInteractor.deleteResource(
                 failure = { view?.showGeneralError() }
@@ -658,7 +658,7 @@ class HomePresenter(
 
     private fun initRefresh() {
         view?.apply {
-            showProgress()
+            showSynchronizedProgress()
             performRefreshUsingRefreshExecutor()
         }
     }
@@ -763,7 +763,7 @@ class HomePresenter(
     }
 
     override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
-        view?.showProgress()
+        view?.showSynchronizedProgress()
         coroutineScope.launch {
             resourceAuthenticatedActionsInteractor.toggleFavourite(
                 option,
@@ -789,5 +789,18 @@ class HomePresenter(
         val currentHomeView = homeView as HomeDisplayViewModel.Folders
         require(currentHomeView.activeFolder is Folder.Child)
         view?.navigateToFolderDetails(currentHomeView.activeFolder as Folder.Child)
+    }
+
+    override fun createFolderClick() {
+        val currentHomeView = homeView as? HomeDisplayViewModel.Folders
+        requireNotNull(currentHomeView) {
+            "Create folder accessed not from folder context (${currentHomeView?.javaClass?.name})"
+        }
+        view?.navigateToCreateFolder(currentHomeView.activeFolder.folderId)
+    }
+
+    override fun folderCreated(name: String) {
+        initRefresh()
+        view?.showFolderCreated(name)
     }
 }

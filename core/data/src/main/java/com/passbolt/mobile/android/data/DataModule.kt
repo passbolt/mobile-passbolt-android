@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.data.folders.FoldersInteractor
 import com.passbolt.mobile.android.data.folders.RebuildFolderPermissionsTablesUseCase
 import com.passbolt.mobile.android.data.folders.RebuildFoldersTablesUseCase
 import com.passbolt.mobile.android.data.folders.RemoveLocalFolderPermissionsUseCase
+import com.passbolt.mobile.android.data.folders.ShareFolderUseCase
 import com.passbolt.mobile.android.data.interactor.interactorModule
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -41,4 +42,5 @@ val dataModule = module {
     singleOf(::RemoveLocalFolderPermissionsUseCase)
     singleOf(::AddLocalFolderPermissionsUseCase)
     singleOf(::RebuildFolderPermissionsTablesUseCase)
+    singleOf(::ShareFolderUseCase)
 }

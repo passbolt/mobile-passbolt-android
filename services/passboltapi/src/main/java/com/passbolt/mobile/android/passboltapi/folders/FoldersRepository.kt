@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.passboltapi.folders
 
 import com.passbolt.mobile.android.core.networking.ResponseHandler
 import com.passbolt.mobile.android.core.networking.callWithHandler
+import com.passbolt.mobile.android.dto.request.CreateFolderRequestDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,7 +31,13 @@ class FoldersRepository(
     private val responseHandler: ResponseHandler
 ) {
 
-    suspend fun getFolders() = callWithHandler(responseHandler) {
-        foldersDataSource.getFolders()
-    }
+    suspend fun getFolders() =
+        callWithHandler(responseHandler) {
+            foldersDataSource.getFolders()
+        }
+
+    suspend fun createFolder(createFolderRequestDto: CreateFolderRequestDto) =
+        callWithHandler(responseHandler) {
+            foldersDataSource.createFolder(createFolderRequestDto)
+        }
 }
