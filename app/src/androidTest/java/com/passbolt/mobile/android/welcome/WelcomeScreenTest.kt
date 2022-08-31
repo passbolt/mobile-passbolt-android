@@ -96,4 +96,19 @@ class WelcomeScreenTest : KoinTest {
             .check(matches(isDisplayed()))
             .check(matches(isClickable()))
     }
+
+    @Test
+    fun asAMobileUserICanGetHelpBeforeTheQrCodeScanningProcess() {
+        //    Given   the user is on the “Welcome” screen
+        //    When    the user clicks on the “information” icon on the top
+        onView(withId(R.id.helpButton)).perform(click())
+        //    Then    a modal with help options is presented
+        onView(withId(R.id.title)).check(matches(isDisplayed()))
+        //    And     an "Enable debug logs" switch is available (on Android only)
+        onView(withId(R.id.enableLogsSwitch)).check(matches(isDisplayed()))
+        //    And     an "Access the logs" button is available
+        onView(withId(R.id.accessLogs)).check(matches(isDisplayed()))
+        //    And     a "Visit help site" button is available
+        onView(withId(R.id.visitHelpWebsite)).check(matches(isDisplayed()))
+    }
 }
