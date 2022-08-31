@@ -1,12 +1,7 @@
-package com.passbolt.mobile.android.core.permissions.userspermissiondetails
+package com.passbolt.mobile.android
 
-import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.database.impl.users.GetLocalUserUseCase
-import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsContract
-import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsPresenter
+import com.passbolt.mobile.android.locationdetails.locationDetailsModule
 import org.koin.dsl.module
-import org.mockito.kotlin.mock
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,14 +26,6 @@ import org.mockito.kotlin.mock
  * @since v1.0
  */
 
-internal val mockGetLocalUserUseCase = mock<GetLocalUserUseCase>()
-
-internal val testUserPermissionsDetailsModule = module {
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory<UserPermissionsContract.Presenter> {
-        UserPermissionsPresenter(
-            coroutineLaunchContext = get(),
-            getLocalUserUseCase = mockGetLocalUserUseCase
-        )
-    }
+val locationDetailsModule = module {
+    locationDetailsModule()
 }

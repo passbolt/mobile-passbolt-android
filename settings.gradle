@@ -33,6 +33,7 @@ featureModule "resources"
 featureModule "secrets"
 featureModule "accountdetails"
 featureModule "permissions"
+featureModule "locationdetails"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"

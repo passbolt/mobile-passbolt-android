@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.permissions.permissions
+package com.passbolt.mobile.android.permissions.permissions
 
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor

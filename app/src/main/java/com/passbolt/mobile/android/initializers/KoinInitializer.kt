@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.feature.setup.setupModule
 import com.passbolt.mobile.android.feature.startup.di.startUpModule
 import com.passbolt.mobile.android.featureflags.featureFlagsModule
 import com.passbolt.mobile.android.gopenpgp.di.openPgpModule
+import com.passbolt.mobile.android.locationDetailsModule
 import com.passbolt.mobile.android.mappersModule
 import com.passbolt.mobile.android.passboltapi.passboltApiModule
 import com.passbolt.mobile.android.service.linksApiModule
@@ -99,7 +100,8 @@ class KoinInitializer : Initializer<Unit> {
                 commonGroupsModule,
                 commonModule,
                 dataModule,
-                coreUiModule
+                coreUiModule,
+                locationDetailsModule
             )
         }
     }

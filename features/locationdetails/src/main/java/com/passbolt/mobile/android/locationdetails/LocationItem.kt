@@ -1,8 +1,4 @@
-package com.passbolt.mobile.android.core.commonfolders
-
-import com.passbolt.mobile.android.core.commonfolders.folderdetails.folderDetailsModule
-import com.passbolt.mobile.android.core.commonfolders.moremenu.folderMoreMenuModule
-import org.koin.dsl.module
+package com.passbolt.mobile.android.locationdetails
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,8 +22,7 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-val commonFoldersModule = module {
-    folderMoreMenuModule()
-    folderDetailsModule()
+enum class LocationItem {
+    RESOURCE,
+    FOLDER
 }

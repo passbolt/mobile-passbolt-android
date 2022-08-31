@@ -308,6 +308,49 @@
                 app:layout_constraintTop_toBottomOf="@id/tagsHeader" />
 
             <TextView
+                android:id="@+id/locationHeader"
+                style="@style/Heading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:text="@string/location"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/sp_12"
+                app:layout_constraintEnd_toStartOf="@id/locationNavIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/tagsClickableArea" />
+
+            <TextView
+                android:id="@+id/locationValue"
+                style="@style/ValueText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_8"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:ellipsize="middle"
+                android:maxLines="1"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/sp_14"
+                app:layout_constraintEnd_toStartOf="@id/locationNavIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/locationHeader"
+                tools:text="Root > Private" />
+
+            <ImageView
+                android:id="@+id/locationNavIcon"
+                android:layout_width="@dimen/dp_8"
+                android:layout_height="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_12"
+                android:background="?selectableItemBackgroundBorderless"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_arrow_right"
+                app:layout_constraintBottom_toBottomOf="@id/locationValue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/locationHeader"
+                app:tint="@color/icon_tint" />
+
+            <TextView
                 android:id="@+id/sharedWithLabel"
                 style="@style/Heading"
                 android:layout_width="wrap_content"
@@ -318,7 +361,7 @@
                 android:textColor="@color/text_primary"
                 android:textSize="@dimen/sp_12"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tagsValue" />
+                app:layout_constraintTop_toBottomOf="@+id/locationValue" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/sharedWithRecycler"

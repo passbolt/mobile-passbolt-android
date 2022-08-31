@@ -41,9 +41,10 @@ import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.ResourceActivity
 import com.passbolt.mobile.android.feature.resources.ResourceMode
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
+import com.passbolt.mobile.android.locationdetails.LocationItem
 import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
-import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
+import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.CounterItem
 import com.passbolt.mobile.android.permissions.recycler.GroupItem
@@ -110,13 +111,15 @@ class ResourceDetailsFragment :
     private val tagsFields
         get() = listOf(binding.tagsHeader, binding.tagsClickableArea, binding.tagsNavIcon)
 
-    private val websiteOpener: WebsiteOpener by inject()
+    private val locationFields
+        get() = listOf(binding.locationHeader, binding.locationValue, binding.locationNavIcon)
 
+    private val websiteOpener: WebsiteOpener by inject()
     private val groupPermissionsItemAdapter: ItemAdapter<GroupItem> by inject(named(GROUP_ITEM_ADAPTER))
     private val userPermissionsItemAdapter: ItemAdapter<UserItem> by inject(named(USER_ITEM_ADAPTER))
     private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
-    private val fastAdapter: FastAdapter<GenericItem> by inject()
 
+    private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val resourceUpdateResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == ActivityResults.RESULT_RESOURCE_EDITED) {
@@ -124,6 +127,7 @@ class ResourceDetailsFragment :
                 presenter.resourceEdited(name.orEmpty())
             }
         }
+
     private val resourceShareResult = { _: String, _: Bundle ->
         presenter.resourceShared()
     }
@@ -166,6 +170,7 @@ class ResourceDetailsFragment :
             descriptionHeader.setDebouncingOnClick { presenter.copyDescriptionClick() }
             sharedWithFields.forEach { it.setDebouncingOnClick { presenter.sharedWithClick() } }
             tagsFields.forEach { it.setDebouncingOnClick { presenter.tagsClick() } }
+            locationFields.forEach { it.setDebouncingOnClick { presenter.locationClick() } }
             fastAdapter.onClickListener = { _, _, _, _ ->
                 presenter.sharedWithClick()
                 true
@@ -446,5 +451,26 @@ class ResourceDetailsFragment :
             )
         }
         binding.tagsValue.text = builder
+    }
+
+    override fun showFolderLocation(locationPathSegments: List<String>) {
+        binding.locationValue.text = locationPathSegments.let {
+            val mutable = it.toMutableList()
+            mutable.add(0, getString(R.string.folder_root))
+            mutable.joinToString(separator = " %s ".format(getString(R.string.folder_details_location_separator)))
+        }
+    }
+
+    override fun navigateToResourceLocation(resourceId: String) {
+        val request = NavDeepLinkRequest.Builder
+            .fromUri(
+                Uri.Builder()
+                    .scheme("passbolt")
+                    .authority("locationDetails")
+                    .appendPath(LocationItem.RESOURCE.name)
+                    .appendPath(resourceId)
+                    .build()
+            ).build()
+        findNavController().navigate(request)
     }
 }

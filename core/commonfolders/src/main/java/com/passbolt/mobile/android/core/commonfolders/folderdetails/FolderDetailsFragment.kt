@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.commonfolders.databinding.FragmentFolderDetai
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.locationdetails.LocationItem
 import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
@@ -151,8 +152,15 @@ class FolderDetailsFragment :
     }
 
     override fun navigateToFolderLocation(folderId: String) {
-        findNavController().navigate(
-            FolderDetailsFragmentDirections.actionFolderDetailsFragmentToFolderLocationDetailsFragment(folderId)
-        )
+        val request = NavDeepLinkRequest.Builder
+            .fromUri(
+                Uri.Builder()
+                    .scheme("passbolt")
+                    .authority("locationDetails")
+                    .appendPath(LocationItem.FOLDER.name)
+                    .appendPath(folderId)
+                    .build()
+            ).build()
+        findNavController().navigate(request)
     }
 }

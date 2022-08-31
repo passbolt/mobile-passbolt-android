@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.commonfolders.folderlocationdetails
+package com.passbolt.mobile.android.locationdetails
 
 import android.os.Bundle
 import android.view.View
@@ -8,11 +8,11 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
-import com.passbolt.mobile.android.commonfolders.R
-import com.passbolt.mobile.android.commonfolders.databinding.FragmentFolderLocationDetailsBinding
-import com.passbolt.mobile.android.core.commonfolders.folderlocationdetails.recyclerview.ExpandableFolderDatasetCreator
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.locationdetails.databinding.FragmentFolderLocationDetailsBinding
+import com.passbolt.mobile.android.locationdetails.recyclerview.ExpandableFolderDatasetCreator
 import com.passbolt.mobile.android.ui.FolderModel
 import org.koin.android.ext.android.inject
 
@@ -39,22 +39,23 @@ import org.koin.android.ext.android.inject
  * @since v1.0
  */
 
-class FolderLocationDetailsFragment :
-    BindingScopedAuthenticatedFragment<FragmentFolderLocationDetailsBinding, FolderLocationDetailsContract.View>(
+class LocationDetailsFragment :
+    BindingScopedAuthenticatedFragment<FragmentFolderLocationDetailsBinding, LocationDetailsContract.View>(
         FragmentFolderLocationDetailsBinding::inflate
-    ), FolderLocationDetailsContract.View {
+    ), LocationDetailsContract.View {
 
-    override val presenter: FolderLocationDetailsContract.Presenter by inject()
-    private val args: FolderLocationDetailsFragmentArgs by navArgs()
+    override val presenter: LocationDetailsContract.Presenter by inject()
+    private val args: LocationDetailsFragmentArgs by navArgs()
     private val fastAdapter: FastItemAdapter<GenericItem> by inject()
     private val expandableFolderDatasetCreator: ExpandableFolderDatasetCreator by inject()
+    private val initialsIconGenerator: InitialsIconGenerator by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
         initLocationDetailsRecycler(savedInstanceState)
         presenter.attach(this)
-        presenter.argsRetrieved(args.folderId)
+        presenter.argsRetrieved(args.locationItem, args.id)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -89,5 +90,11 @@ class FolderLocationDetailsFragment :
             add(expandableListModel.dataset)
             getExpandableExtension().expandAllOnPath(expandableListModel.expandToItem)
         }
+    }
+
+    override fun displayInitialsIcon(name: String, initials: String) {
+        binding.icon.setImageDrawable(
+            initialsIconGenerator.generate(name, initials)
+        )
     }
 }

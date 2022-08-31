@@ -71,6 +71,8 @@ interface ResourceDetailsContract {
         fun hideFavouriteStar()
         fun showTags(tags: List<String>)
         fun navigateToResourceTags(resourceId: String, mode: PermissionsMode)
+        fun showFolderLocation(locationPathSegments: List<String>)
+        fun navigateToResourceLocation(folderId: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -94,5 +96,6 @@ interface ResourceDetailsContract {
         fun editClick()
         fun shareClick()
         fun tagsClick()
+        fun locationClick()
     }
 }

@@ -1,11 +1,13 @@
-package com.passbolt.mobile.android.core.commonfolders.folderlocationdetails
+package com.passbolt.mobile.android.locationdetails
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
+import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 /**
@@ -31,21 +33,49 @@ import kotlinx.coroutines.launch
  * @since v1.0
  */
 
-class FolderLocationDetailsPresenter(
+class LocationDetailsPresenter(
     private val getLocalFolderDetailsUseCase: GetLocalFolderDetailsUseCase,
     private val getLocalFolderLocation: GetLocalFolderLocationUseCase,
+    private val getLocalResourceDetailsUseCase: GetLocalResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedPresenter<FolderLocationDetailsContract.View>(coroutineLaunchContext),
-    FolderLocationDetailsContract.Presenter {
+) : BaseAuthenticatedPresenter<LocationDetailsContract.View>(coroutineLaunchContext),
+    LocationDetailsContract.Presenter {
 
-    override var view: FolderLocationDetailsContract.View? = null
+    override var view: LocationDetailsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private lateinit var folderId: String
 
-    override fun argsRetrieved(folderId: String) {
-        this.folderId = folderId
-        scope.launch { // get and show details
+    override fun argsRetrieved(locationItem: LocationItem, id: String) {
+        when (locationItem) {
+            LocationItem.RESOURCE -> resourceLocation(id)
+            LocationItem.FOLDER -> folderLocation(id)
+        }
+    }
+
+    private fun resourceLocation(resourceId: String) {
+        val resourceModelDeferred = scope.async { // get and show resource details
+            getLocalResourceDetailsUseCase.execute(GetLocalResourceUseCase.Input(resourceId))
+                .resource
+                .let {
+                    view?.showFolderName(it.name)
+                    view?.displayInitialsIcon(it.name, it.initials)
+                    it
+                }
+        }
+        scope.launch { // get and show resource location
+            val resourceFolderId = resourceModelDeferred.await().folderId
+            val locationSegments = if (resourceFolderId != null) {
+                getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(resourceFolderId))
+                    .parentFolders
+            } else {
+                emptyList()
+            }
+            view?.showFolderLocation(locationSegments)
+        }
+    }
+
+    private fun folderLocation(folderId: String) {
+        scope.launch { // get and show folder details
             getLocalFolderDetailsUseCase.execute(GetLocalFolderDetailsUseCase.Input(folderId))
                 .folder
                 .let {
@@ -57,7 +87,7 @@ class FolderLocationDetailsPresenter(
                     }
                 }
         }
-        scope.launch { // get and show location
+        scope.launch { // get and show folder location
             getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(folderId))
                 .parentFolders
                 .let {

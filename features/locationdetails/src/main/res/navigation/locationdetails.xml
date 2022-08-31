@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/permissions"
+    app:startDestination="@id/folderLocationDetailsFragment">
+
+    <fragment
+        android:id="@+id/folderLocationDetailsFragment"
+        android:name="com.passbolt.mobile.android.locationdetails.LocationDetailsFragment"
+        android:label="FolderLocationDetailsFragment"
+        tools:layout="@layout/fragment_folder_location_details">
+        <argument
+            android:name="id"
+            app:argType="string" />
+        <argument
+            android:name="locationItem"
+            app:argType="com.passbolt.mobile.android.locationdetails.LocationItem" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="passbolt://locationDetails/{locationItem}/{id}" />
+    </fragment>
+
+</navigation>

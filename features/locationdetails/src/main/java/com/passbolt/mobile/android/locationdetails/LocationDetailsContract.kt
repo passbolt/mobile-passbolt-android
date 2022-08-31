@@ -1,14 +1,7 @@
-package com.passbolt.mobile.android.core.commonfolders.folderlocationdetails
+package com.passbolt.mobile.android.locationdetails
 
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.FastItemAdapter
-import com.passbolt.mobile.android.commonfolders.R
-import com.passbolt.mobile.android.core.commonfolders.folderlocationdetails.recyclerview.ExpandableFolderDatasetCreator
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.bind
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.ui.FolderModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,15 +26,17 @@ import org.koin.dsl.bind
  * @since v1.0
  */
 
-private const val ROOT_FOLDER_NAME = "ROOT_FOLDER_NAME"
+interface LocationDetailsContract {
 
-fun Module.folderLocationDetailsModule() {
-    scope<FolderLocationDetailsFragment> {
-        scopedOf(::FolderLocationDetailsPresenter) bind FolderLocationDetailsContract.Presenter::class
-        scoped(named(ROOT_FOLDER_NAME)) {
-            androidContext().getString(R.string.folder_root)
-        }
-        scoped { ExpandableFolderDatasetCreator(get(named(ROOT_FOLDER_NAME))) }
-        scoped { FastItemAdapter<GenericItem>() }
+    interface View : BaseAuthenticatedContract.View {
+        fun showFolderName(name: String)
+        fun showFolderSharedIcon()
+        fun showFolderIcon()
+        fun showFolderLocation(parentFolders: List<FolderModel>)
+        fun displayInitialsIcon(name: String, initials: String)
+    }
+
+    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+        fun argsRetrieved(locationItem: LocationItem, id: String)
     }
 }

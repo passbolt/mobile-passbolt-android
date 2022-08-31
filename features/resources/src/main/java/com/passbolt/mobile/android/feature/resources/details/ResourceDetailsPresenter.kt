@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.resources.details
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
@@ -18,6 +19,7 @@ import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.isFavourite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinScopeComponent
@@ -56,6 +58,7 @@ class ResourceDetailsPresenter(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
     private val getLocalResourceTagsUseCase: GetLocalResourceTagsUseCase,
+    private val getLocalFolderLocation: GetLocalFolderLocationUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter, KoinScopeComponent {
@@ -84,7 +87,7 @@ class ResourceDetailsPresenter(
 
     private fun getResourcesAndPermissions(resourceId: String) {
         coroutineScope.launch {
-            launch { // get and display resource
+            val resourceInitializationDeferred = async { // get and display resource
                 resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
                 resourceActionsInteractor = get { parametersOf(resourceModel) }
                 resourceAuthenticatedActionsInteractor = get {
@@ -129,6 +132,19 @@ class ResourceDetailsPresenter(
                     .tags
                     .map { it.slug }
                     .let { view?.showTags(it) }
+            }
+            launch { // get and show location
+                resourceInitializationDeferred.await()
+                val resourceLocationPathSegments = resourceModel.folderId.let {
+                    if (it != null) {
+                        getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(it))
+                            .parentFolders
+                            .map { folder -> folder.name }
+                    } else {
+                        emptyList()
+                    }
+                }
+                view?.showFolderLocation(resourceLocationPathSegments)
             }
         }
     }
@@ -316,5 +332,9 @@ class ResourceDetailsPresenter(
             }
             getResourcesAndPermissions(resourceModel.resourceId)
         }
+    }
+
+    override fun locationClick() {
+        view?.navigateToResourceLocation(resourceModel.resourceId)
     }
 }

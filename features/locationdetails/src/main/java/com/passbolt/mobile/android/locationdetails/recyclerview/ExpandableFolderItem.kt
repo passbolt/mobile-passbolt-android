@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.commonfolders.folderlocationdetails.recyclerview
+package com.passbolt.mobile.android.locationdetails.recyclerview
 
 import android.view.View
 import android.widget.ImageView
@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.ISubItem
 import com.mikepenz.fastadapter.expandable.ExpandableExtension
 import com.mikepenz.fastadapter.expandable.items.AbstractExpandableItem
-import com.passbolt.mobile.android.commonfolders.R
+import com.passbolt.mobile.android.locationdetails.R
 import com.passbolt.mobile.android.ui.FolderModel
 
 class ExpandableFolderItem(
