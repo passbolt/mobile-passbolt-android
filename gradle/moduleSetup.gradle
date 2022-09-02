@@ -35,9 +35,12 @@ def setupModule(isAndroid, isAndroidComponent) {
                 checkReleaseBuilds false
                 checkAllWarnings true
                 warningsAsErrors false
+                // MissingTranslation - it is accepted to have fallback to default locale if no translation found
+                // ExtraTranslation - enable only for this build - TODO remove after release (current translations are for develop
+                //                    but the release on done on last master
                 disable = ["GoogleAppIndexingWarning", "GradleDependency", "NewerVersionAvailable", "UnusedIds",
                            "Autofill", "PermissionImpliesUnsupportedChromeOsHardware", "WrongConstant", "RequiredSize",
-                           "Instantiatable", "InvalidPackage"]
+                           "Instantiatable", "InvalidPackage", "MissingTranslation", "ExtraTranslation"]
             }
 
             testOptions {
