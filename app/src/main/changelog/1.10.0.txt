@@ -2,7 +2,7 @@
 
 ## Added
 - Filters on autofill! Now you can browse during autofill similarly to home screen.
-- Initial Crowdin (translations) configuration
+- Crowdin (translations): German and Spanish
 
 ## Maintenance & tech debt
 - Big dependencies update - libraries, Android target SDK, etc.
