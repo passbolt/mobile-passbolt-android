@@ -1,17 +1,25 @@
 package com.passbolt.mobile.android.welcome
 
+import android.content.Intent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.espresso.matcher.ViewMatchers.isClickable
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
+import com.passbolt.mobile.android.core.logger.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
 import com.passbolt.mobile.android.instrumentationTestsModule
+import org.hamcrest.Matcher
+import org.hamcrest.core.AllOf.allOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -54,11 +62,13 @@ class WelcomeScreenTest : KoinTest {
     @BeforeTest
     fun setup() {
         loadKoinModules(instrumentationTestsModule)
+        Intents.init()
     }
 
     @AfterTest
     fun tearDown() {
         unloadKoinModules(instrumentationTestsModule)
+        Intents.release()
     }
 
     @Test
@@ -110,5 +120,19 @@ class WelcomeScreenTest : KoinTest {
         onView(withId(R.id.accessLogs)).check(matches(isDisplayed()))
         //    And     a "Visit help site" button is available
         onView(withId(R.id.visitHelpWebsite)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun asAMobileUserICanOpenHelpWebpageBeforeTheQrCodeScanningProcess() {
+        //        Given   the user is on the “Help” modal
+        onView(withId(R.id.helpButton)).perform(click())
+        //        When    the user clicks on the “Visit help site” button
+        onView(withId(R.id.visitHelpWebsite)).perform(click())
+        //        Then    a webpage with help is presented
+        val expectedIntent: Matcher<Intent> = allOf(
+            hasAction(Intent.ACTION_VIEW),
+            hasData(HelpMenuFragment.HELP_WEBSITE_URL)
+        )
+        intended(expectedIntent)
     }
 }

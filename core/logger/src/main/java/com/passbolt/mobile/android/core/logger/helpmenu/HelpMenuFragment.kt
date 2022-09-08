@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import androidx.annotation.VisibleForTesting
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.WebsiteOpener
@@ -133,7 +134,8 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
     }
 
     companion object {
-        private const val HELP_WEBSITE_URL = "https://help.passbolt.com/"
+        @VisibleForTesting
+        const val HELP_WEBSITE_URL = "https://help.passbolt.com/"
         private const val EXTRA_SHOW_QR_CODES_HELP = "SHOW_QR_CODES_HELP"
 
         fun newInstance(showQrCodesHelp: Boolean = false) = HelpMenuFragment().apply {
