@@ -1,19 +1,23 @@
 package com.passbolt.mobile.android.welcome
 
 import android.content.Intent
+import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isClickable
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
+import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.core.logger.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
@@ -28,6 +32,7 @@ import org.koin.core.context.unloadKoinModules
 import org.koin.test.KoinTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
+
 
 /**
  * Passbolt - Open source password manager for teams
@@ -134,5 +139,23 @@ class WelcomeScreenTest : KoinTest {
             hasData(HelpMenuFragment.HELP_WEBSITE_URL)
         )
         intended(expectedIntent)
+    }
+
+    @Test
+    fun asAMobileUserICanSeeAnExplanationOnHowToConnectAnExistingAccount() {
+        //        Given   the welcome screen is displayed
+        //        When    the user clicks on “connect to an existing account”
+        onView(withId(R.id.connectToAccountButton)).perform(ViewActions.click())
+        //        Then    the “Transfer account details” explanation screen is presented
+        onView(withId(R.id.header)).check(matches(isDisplayed()))
+        //        And     the screen has an arrow button on the top left to go back to the welcome screen
+        onView(isAssignableFrom(Toolbar::class.java))
+            .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
+        //        And             it has an explanation of the different steps of the setup process
+        onView(withId(R.id.steps)).check(matches(isDisplayed()))
+        //        And             it has an illustration giving some context about the process
+        onView(withId(R.id.qrCode)).check(matches(isDisplayed()))
+        //        And             it has a "Scan QR codes" primary action button
+        onView(withId(R.id.scanQrCodesButton)).check(matches(isDisplayed()))
     }
 }
