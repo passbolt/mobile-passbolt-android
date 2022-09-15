@@ -42,6 +42,8 @@ dependencies {
     implementation libs.fastAdapter.expandable
     implementation libs.fastAdapter.ui
     implementation libs.fastAdapter.animators
+
+    testImplementation project(':commontest')
 }
 
 android {
