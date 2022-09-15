@@ -1,12 +1,9 @@
-package com.passbolt.mobile.android.core.commonfolders.folderdetails
+package com.passbolt.mobile.android.core.commonfolders.folderlocationdetails
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsUseCase
-import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
-import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -34,24 +31,19 @@ import kotlinx.coroutines.launch
  * @since v1.0
  */
 
-class FolderDetailsPresenter(
+class FolderLocationDetailsPresenter(
     private val getLocalFolderDetailsUseCase: GetLocalFolderDetailsUseCase,
     private val getLocalFolderLocation: GetLocalFolderLocationUseCase,
-    private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedPresenter<FolderDetailsContract.View>(coroutineLaunchContext),
-    FolderDetailsContract.Presenter {
+) : BaseAuthenticatedPresenter<FolderLocationDetailsContract.View>(coroutineLaunchContext),
+    FolderLocationDetailsContract.Presenter {
 
-    override var view: FolderDetailsContract.View? = null
+    override var view: FolderLocationDetailsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private var permissionsListWidth: Int = -1
-    private var permissionItemWidth: Float = -1f
     private lateinit var folderId: String
 
-    override fun argsRetrieved(folderId: String, permissionsListWidth: Int, permissionItemWidth: Float) {
-        this.permissionsListWidth = permissionsListWidth
-        this.permissionItemWidth = permissionItemWidth
+    override fun argsRetrieved(folderId: String) {
         this.folderId = folderId
         scope.launch { // get and show details
             getLocalFolderDetailsUseCase.execute(GetLocalFolderDetailsUseCase.Input(folderId))
@@ -68,33 +60,9 @@ class FolderDetailsPresenter(
         scope.launch { // get and show location
             getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(folderId))
                 .parentFolders
-                .let { view?.showFolderLocation(it.map { folder -> folder.name }) }
+                .let {
+                    view?.showFolderLocation(it)
+                }
         }
-        scope.launch { // get and display permissions
-            val permissions = getLocalFolderPermissionsUseCase.execute(
-                GetLocalFolderPermissionsUseCase.Input(folderId)
-            ).permissions
-
-            val permissionsDisplayDataset = PermissionsDatasetCreator(
-                permissionsListWidth,
-                permissionItemWidth
-            )
-                .prepareDataset(permissions)
-
-            view?.showPermissions(
-                permissionsDisplayDataset.groupPermissions,
-                permissionsDisplayDataset.userPermissions,
-                permissionsDisplayDataset.counterValue,
-                permissionsDisplayDataset.overlap
-            )
-        }
-    }
-
-    override fun sharedWithClick() {
-        view?.navigateToFolderPermissions(folderId, PermissionsMode.VIEW)
-    }
-
-    override fun locationClick() {
-        view?.navigateToFolderLocation(folderId)
     }
 }

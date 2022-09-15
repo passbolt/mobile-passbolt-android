@@ -25,6 +25,7 @@
     <string name="other">Other</string>
     <string name="favourites_failure">Could not modify favourite</string>
     <string name="shared_with">Shared with</string>
+    <string name="location">Location</string>
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_network_failure">There was a connection issue</string>
@@ -376,7 +377,6 @@
     <string name="resource_tags_section">Tags</string>
 
     <string name="folder_details_name_header">Folder name</string>
-    <string name="folder_details_location_header">Location</string>
     <string name="folder_details_location_separator"
         translatable="false">›</string>
 

@@ -37,6 +37,10 @@ dependencies {
     implementation libs.fastAdapter.binding
     implementation libs.fastAdapter.core
     implementation libs.fastAdapter.diff
+    implementation libs.fastAdapter.utils
+    implementation libs.fastAdapter.expandable
+    implementation libs.fastAdapter.ui
+    implementation libs.fastAdapter.animators
 }
 
 android {

@@ -42,10 +42,12 @@ interface FolderDetailsContract {
         )
 
         fun navigateToFolderPermissions(folderId: String, mode: PermissionsMode)
+        fun navigateToFolderLocation(folderId: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun argsRetrieved(folderId: String, permissionsListWidth: Int, permissionItemWidth: Float)
         fun sharedWithClick()
+        fun locationClick()
     }
 }

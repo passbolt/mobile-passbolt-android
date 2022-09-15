@@ -61,7 +61,10 @@ ext {
         gson: "2.9.0",
         appDistribution: "3.0.2",
         coil: "2.1.0",
-        fastAdapter: "5.6.0",
+        fastAdapter: [
+            core: "5.6.0",
+            animators: "1.1.0"
+        ],
         easylauncher: "5.1.2",
         fusionauthJwt: "4.2.0",
         textDrawable: "558677ea31",
@@ -163,10 +166,13 @@ ext {
             base: "io.coil-kt:coil-base:${versions.coil}"
         ],
         fastAdapter: [
-            core: "com.mikepenz:fastadapter:${versions.fastAdapter}",
-            binding: "com.mikepenz:fastadapter-extensions-binding:${versions.fastAdapter}",
-            utils: "com.mikepenz:fastadapter-extensions-utils:${versions.fastAdapter}",
-            diff: "com.mikepenz:fastadapter-extensions-diff:${versions.fastAdapter}"
+            core: "com.mikepenz:fastadapter:${versions.fastAdapter.core}",
+            binding: "com.mikepenz:fastadapter-extensions-binding:${versions.fastAdapter.core}",
+            utils: "com.mikepenz:fastadapter-extensions-utils:${versions.fastAdapter.core}",
+            diff: "com.mikepenz:fastadapter-extensions-diff:${versions.fastAdapter.core}",
+            expandable: "com.mikepenz:fastadapter-extensions-expandable:${versions.fastAdapter.core}",
+            ui: "com.mikepenz:fastadapter-extensions-ui:${versions.fastAdapter.core}",
+            animators: "com.mikepenz:itemanimators:${versions.fastAdapter.animators}"
         ],
         easylauncher: "com.project.starter:easylauncher:${versions.easylauncher}",
         fusionauthJwt: "io.fusionauth:fusionauth-jwt:${versions.fusionauthJwt}",
