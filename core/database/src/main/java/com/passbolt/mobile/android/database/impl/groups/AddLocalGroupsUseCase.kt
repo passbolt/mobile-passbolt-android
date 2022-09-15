@@ -44,22 +44,15 @@ class AddLocalGroupsUseCase(
             .get(currentAccount)
             .usersAndGroupsCrossRefDao()
 
-        groupsDao.insertAll(
-            input.groups
-                .map { it.groupModel }
-                .map(groupsModelMapper::map)
-        )
+        groupsDao.insertAll(input.groups.map { groupsModelMapper.map(it.groupModel) })
 
-        input.groups.forEach { groupWithUsers ->
-            groupWithUsers.users.forEach { groupUser ->
-                usersAndGroupsCrossRefDao.insert(
-                    UsersAndGroupCrossRef(
-                        userId = groupUser.userId,
-                        groupId = groupWithUsers.groupModel.groupId
-                    )
-                )
+        val groupAndUsersCrossRefs = input.groups.map { it.groupModel.groupId to it.users.map { user -> user.userId } }
+            .flatMap { (groupId, groupUserIds) ->
+                groupUserIds.map { groupUserId ->
+                    UsersAndGroupCrossRef(groupUserId, groupId)
+                }
             }
-        }
+        usersAndGroupsCrossRefDao.insertAll(groupAndUsersCrossRefs)
     }
 
     data class Input(

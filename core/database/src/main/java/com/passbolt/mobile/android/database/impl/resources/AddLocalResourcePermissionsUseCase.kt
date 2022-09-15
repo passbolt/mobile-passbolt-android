@@ -40,33 +40,43 @@ class AddLocalResourcePermissionsUseCase(
         val resourcesAndGroupsCrossRefDao = db.resourcesAndGroupsCrossRefDao()
         val resourcesAndUsersCrossRefDao = db.resourcesAndUsersCrossRefDao()
 
-        input.resourcesWithTagsModelAndGroups
-            .map { it.resourceModel.resourceId to it.resourcePermissions }
-            .forEach { (resourceId, permissions) ->
-                permissions.forEach { permission ->
-                    when (permission) {
-                        is PermissionModel.GroupPermissionModel ->
-                            resourcesAndGroupsCrossRefDao.insert(
-                                ResourceAndGroupsCrossRef(
-                                    resourceId,
-                                    permission.group.groupId,
-                                    permissionsModelMapper.map(permission.permission),
-                                    permission.permissionId
-                                )
-                            )
-                        is PermissionModel.UserPermissionModel -> {
-                            resourcesAndUsersCrossRefDao.insert(
-                                ResourceAndUsersCrossRef(
-                                    resourceId,
-                                    permission.userId,
-                                    permissionsModelMapper.map(permission.permission),
-                                    permission.permissionId
-                                )
-                            )
-                        }
+        input.resourcesWithTagsModelAndGroups.apply {
+            val resourceGroupPermissions = map {
+                it.resourceModel.resourceId to it.resourcePermissions
+                    .filterIsInstance<PermissionModel.GroupPermissionModel>()
+            }
+            val resourceUserPermissions = map {
+                it.resourceModel.resourceId to it.resourcePermissions
+                    .filterIsInstance<PermissionModel.UserPermissionModel>()
+            }
+
+            val resourceAndGroupCrossRefs = resourceGroupPermissions
+                .flatMap { (resourceId, groupPermissions) ->
+                    groupPermissions.map { groupPermission ->
+                        ResourceAndGroupsCrossRef(
+                            resourceId,
+                            groupPermission.group.groupId,
+                            permissionsModelMapper.map(groupPermission.permission),
+                            groupPermission.permissionId
+                        )
                     }
                 }
-            }
+
+            val resourceAndUsersCrossRefs = resourceUserPermissions
+                .flatMap { (resourceId, userPermissions) ->
+                    userPermissions.map { userPermission ->
+                        ResourceAndUsersCrossRef(
+                            resourceId,
+                            userPermission.userId,
+                            permissionsModelMapper.map(userPermission.permission),
+                            userPermission.permissionId
+                        )
+                    }
+                }
+
+            resourcesAndGroupsCrossRefDao.insertAll(resourceAndGroupCrossRefs)
+            resourcesAndUsersCrossRefDao.insertAll(resourceAndUsersCrossRefs)
+        }
     }
 
     data class Input(
