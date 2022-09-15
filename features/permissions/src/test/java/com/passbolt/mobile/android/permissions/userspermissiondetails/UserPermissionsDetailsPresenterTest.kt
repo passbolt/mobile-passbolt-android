@@ -1,17 +1,15 @@
-package com.passbolt.mobile.android.core.permissions.grouppermissiondetails
+package com.passbolt.mobile.android.permissions.userspermissiondetails
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.database.impl.groups.GetGroupWithUsersUseCase
-import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsContract
+import com.passbolt.mobile.android.database.impl.users.GetLocalUserUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsContract
 import com.passbolt.mobile.android.ui.GpgKeyModel
-import com.passbolt.mobile.android.ui.GroupModel
-import com.passbolt.mobile.android.ui.GroupWithUsersModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 import com.passbolt.mobile.android.ui.UserProfileModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.passbolt.mobile.android.ui.UserWithAvatar
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -49,77 +47,67 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 
-class GroupPermissionsDetailsPresenterTest : KoinTest {
+class UserPermissionsDetailsPresenterTest : KoinTest {
 
-    private val presenter: GroupPermissionsContract.Presenter by inject()
-    private val view: GroupPermissionsContract.View = mock()
+    private val presenter: UserPermissionsContract.Presenter by inject()
+    private val view: UserPermissionsContract.View = mock()
 
-    @ExperimentalCoroutinesApi
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
-        modules(testGroupPermissionsDetailsModule)
+        modules(testUserPermissionsDetailsModule)
     }
 
     @Before
     fun setup() {
         presenter.attach(view)
-        mockGetGroupWithUsersUseCase.stub {
-            onBlocking { execute(GetGroupWithUsersUseCase.Input(GROUP_PERMISSION.group.groupId)) }
-                .doReturn(GetGroupWithUsersUseCase.Output(GROUP_WITH_USERS))
+        mockGetLocalUserUseCase.stub {
+            onBlocking { execute(GetLocalUserUseCase.Input(USER_WITH_AVATAR.userId)) }
+                .doReturn(GetLocalUserUseCase.Output(USER))
         }
     }
 
     @Test
     fun `read only permission should be shown in read mode`() {
         presenter.argsRetrieved(
-            GROUP_PERMISSION,
-            PermissionsMode.VIEW,
-            membersItemWidth = 10f,
-            membersRecyclerWidth = 100
+            USER_PERMISSION,
+            PermissionsMode.VIEW
         )
 
-        verify(view).showPermission(GROUP_PERMISSION.permission)
+        verify(view).showPermission(USER_PERMISSION.permission)
     }
 
     @Test
     fun `editable permission should be shown in edit mode`() {
         presenter.argsRetrieved(
-            GROUP_PERMISSION,
-            PermissionsMode.EDIT,
-            membersItemWidth = 10f,
-            membersRecyclerWidth = 100
+            USER_PERMISSION,
+            PermissionsMode.EDIT
         )
 
-        verify(view).showPermissionChoices(GROUP_PERMISSION.permission)
+        verify(view).showPermissionChoices(USER_PERMISSION.permission)
         verify(view).showSaveLayout()
     }
 
     @Test
-    fun `group details should be shown`() {
+    fun `user details should be shown`() {
         presenter.argsRetrieved(
-            GROUP_PERMISSION,
-            PermissionsMode.EDIT,
-            membersItemWidth = 10f,
-            membersRecyclerWidth = 100
+            USER_PERMISSION,
+            PermissionsMode.EDIT
         )
 
-        verify(view).showGroupName(GROUP_PERMISSION.group.groupName)
-        verify(view).showGroupUsers(GROUP_WITH_USERS.users, emptyList(), 0)
+        verify(view).showUserData(USER)
     }
 
     @Test
     fun `permission update should be handled correct`() {
         presenter.argsRetrieved(
-            GROUP_PERMISSION,
-            PermissionsMode.EDIT,
-            membersItemWidth = 10f,
-            membersRecyclerWidth = 100
+            USER_PERMISSION,
+            PermissionsMode.EDIT
         )
         presenter.onPermissionSelected(ResourcePermission.UPDATE)
-        presenter.saveButtonClick()
+        presenter.saveClick()
 
-        argumentCaptor<PermissionModelUi.GroupPermissionModel> {
+        argumentCaptor<PermissionModelUi.UserPermissionModel> {
             verify(view).setUpdatedPermissionResult(capture())
             assertThat(firstValue.permission).isEqualTo(ResourcePermission.UPDATE)
         }
@@ -129,28 +117,28 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
     @Test
     fun `permission deletion should be handled correct`() {
         presenter.argsRetrieved(
-            GROUP_PERMISSION,
-            PermissionsMode.EDIT,
-            membersItemWidth = 10f,
-            membersRecyclerWidth = 100
+            USER_PERMISSION,
+            PermissionsMode.EDIT
         )
         presenter.deletePermissionClick()
         presenter.permissionDeleteConfirmClick()
 
         verify(view).showPermissionDeleteConfirmation()
-        verify(view).setDeletePermissionResult(GROUP_PERMISSION)
+        verify(view).setDeletePermissionResult(USER_PERMISSION)
         verify(view).navigateBack()
     }
 
     private companion object {
-        private val USER = UserModel(
-            "userId",
-            "userName",
-            GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now()),
-            UserProfileModel("first", "last", "avatarUrl")
+        private val USER_WITH_AVATAR = UserWithAvatar(
+            "userId", "first", "last", "userName", "avartUrl"
         )
-        private val GROUP = GroupModel("grId", "grName")
-        private val GROUP_PERMISSION = PermissionModelUi.GroupPermissionModel(ResourcePermission.READ, "permId", GROUP)
-        private val GROUP_WITH_USERS = GroupWithUsersModel(GROUP, listOf(USER))
+        private val USER = UserModel(
+            USER_WITH_AVATAR.userId,
+            USER_WITH_AVATAR.userName,
+            GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now()),
+            UserProfileModel(USER_WITH_AVATAR.firstName, USER_WITH_AVATAR.lastName, USER_WITH_AVATAR.avatarUrl)
+        )
+        private val USER_PERMISSION =
+            PermissionModelUi.UserPermissionModel(ResourcePermission.READ, "permId", USER_WITH_AVATAR)
     }
 }

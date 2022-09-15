@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.permissions.grouppermissiondetails
+package com.passbolt.mobile.android.permissions.grouppermissiondetails
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext

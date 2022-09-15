@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.ResourceDatabase
+import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
@@ -71,6 +72,7 @@ internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
 internal val mockFavouritesInteractor = mock<FavouritesInteractor>()
 internal val mockResourceTagsUseCase = mock<GetLocalResourceTagsUseCase>()
+internal val mockGetFolderLocationUseCase = mock<GetLocalFolderLocationUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule = module {
@@ -83,8 +85,9 @@ internal val testResourceDetailsModule = module {
             resourceMenuModelMapper = resourceMenuModelMapper,
             getLocalResourceUseCase = mockGetLocalResourceUseCase,
             getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
+            getLocalResourceTagsUseCase = mockResourceTagsUseCase,
             coroutineLaunchContext = get(),
-            getLocalResourceTagsUseCase = mockResourceTagsUseCase
+            getLocalFolderLocation = mockGetFolderLocationUseCase
         )
     }
     scope<ResourceDetailsPresenter> {

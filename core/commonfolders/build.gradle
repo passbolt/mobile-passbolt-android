@@ -23,6 +23,7 @@ dependencies {
     implementation project(':coreui')
     implementation project(':database')
     implementation project(':permissions')
+    implementation project(':locationdetails')
 
     implementation libs.di.koin
     implementation libs.material

@@ -1,8 +1,13 @@
-package com.passbolt.mobile.android.core.commonfolders
+package com.passbolt.mobile.android.locationdetails
 
-import com.passbolt.mobile.android.core.commonfolders.folderdetails.folderDetailsModule
-import com.passbolt.mobile.android.core.commonfolders.moremenu.folderMoreMenuModule
-import org.koin.dsl.module
+import com.mikepenz.fastadapter.GenericItem
+import com.mikepenz.fastadapter.adapters.FastItemAdapter
+import com.passbolt.mobile.android.locationdetails.recyclerview.ExpandableFolderDatasetCreator
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,7 +32,15 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val commonFoldersModule = module {
-    folderMoreMenuModule()
-    folderDetailsModule()
+private const val ROOT_FOLDER_NAME = "ROOT_FOLDER_NAME"
+
+fun Module.locationDetailsModule() {
+    scope<LocationDetailsFragment> {
+        scopedOf(::LocationDetailsPresenter) bind LocationDetailsContract.Presenter::class
+        scoped(named(ROOT_FOLDER_NAME)) {
+            androidContext().getString(R.string.folder_root)
+        }
+        scoped { ExpandableFolderDatasetCreator(get(named(ROOT_FOLDER_NAME))) }
+        scoped { FastItemAdapter<GenericItem>() }
+    }
 }

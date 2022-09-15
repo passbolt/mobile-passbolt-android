@@ -125,6 +125,7 @@ dependencies {
     implementation project(':commongroups')
     implementation project(':coreui')
     implementation project(':data')
+    implementation project(':locationdetails')
 
     debugImplementation libs.quality.leakcanary
 

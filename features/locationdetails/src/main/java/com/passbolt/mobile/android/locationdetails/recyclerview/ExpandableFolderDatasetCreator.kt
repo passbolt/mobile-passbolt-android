@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.commonfolders.folderlocationdetails.recyclerview
+package com.passbolt.mobile.android.locationdetails.recyclerview
 
 import com.mikepenz.fastadapter.GenericItem
 import com.passbolt.mobile.android.ui.FolderModel
@@ -56,7 +56,7 @@ class ExpandableFolderDatasetCreator(
         parentFolders
             .toMutableList()
             .apply {
-                val oldestParent = parentFolders.first()
+                val oldestParent = parentFolders.firstOrNull()
                 add(
                     0,
                     FolderModel(
