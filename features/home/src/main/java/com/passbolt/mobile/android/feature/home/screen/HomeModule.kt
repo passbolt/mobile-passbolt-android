@@ -17,6 +17,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.ScopeDSL
 
@@ -78,6 +79,7 @@ fun Module.homeModule() {
                 getLocalFolderUseCase = get()
             )
         }
+        scopedOf(::SpeedDialFabFactory)
         declareHomeListAdapters()
         declareHomeListItemAdapters()
         declareResourceActionsInteractors()

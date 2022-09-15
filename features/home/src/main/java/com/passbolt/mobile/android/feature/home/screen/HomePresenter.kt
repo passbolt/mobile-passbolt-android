@@ -147,13 +147,14 @@ class HomePresenter(
         shouldShowResourceMoreMenu: Boolean
     ) {
         val filterPreferences = getHomeDisplayViewPrefsUseCase.execute(Unit)
-        homeView = homeDisplayView ?: homeModelMapper.map(
+        this.homeView = homeDisplayView ?: homeModelMapper.map(
             filterPreferences.userSetHomeView,
             filterPreferences.lastUsedHomeView
         )
         this.showSuggestedModel = showSuggestedModel
-        hasPreviousBackEntry = hasPreviousEntry
+        this.hasPreviousBackEntry = hasPreviousEntry
 
+        view?.initSpeedDialFab(homeView)
         view?.apply {
             hideAddButton()
             processSearchHint(this)

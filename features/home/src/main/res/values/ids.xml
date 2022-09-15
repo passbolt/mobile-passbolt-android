@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="speedDialViewId"
+        type="id" />
+    <item name="speedDialViewAddPasswordId"
+        type="id" />
+    <item name="speedDialViewAddFolderId"
+        type="id" />
+</resources>

@@ -122,6 +122,7 @@ class HomeFragment :
     private val websiteOpener: WebsiteOpener by inject()
     private val arguments: HomeFragmentArgs by navArgs()
     private val navController by lifecycleAwareLazy { findNavController() }
+    private val speedDialFabFactory: SpeedDialFabFactory by inject()
 
     // home fragment is used both here and in autofill resources activity
     private val resourceHandlingStrategy: ResourceHandlingStrategy by lifecycleAwareLazy {
@@ -186,6 +187,17 @@ class HomeFragment :
             resourceHandlingStrategy.shouldShowCloseButton(),
             resourceHandlingStrategy.shouldShowResourceMoreMenu()
         )
+    }
+
+    override fun initSpeedDialFab(homeView: HomeDisplayViewModel) {
+        with(speedDialFabFactory) {
+            addPasswordClick = { presenter.createResourceClick() }
+            addFolderClick = {} // TODO
+
+            binding.rootLayout.addView(
+                getSpeedDialFab(requireContext(), binding.overlay, homeView)
+            )
+        }
     }
 
     override fun onDestroyView() {
@@ -297,9 +309,6 @@ class HomeFragment :
             }
             searchEditText.doAfterTextChanged {
                 presenter.searchTextChange(it.toString())
-            }
-            updateButton.setDebouncingOnClick {
-                presenter.createResourceClick()
             }
             searchTextInput.setStartIconOnClickListener {
                 presenter.filtersClick()
@@ -513,7 +522,7 @@ class HomeFragment :
 
     private fun showSnackbar(@StringRes messageResId: Int, vararg messageArgs: String) {
         Snackbar.make(binding.root, getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
-            .setAnchorView(binding.updateButton)
+            .setAnchorView(binding.rootLayout.findViewById(R.id.speedDialViewId))
             .show()
     }
 
@@ -543,11 +552,11 @@ class HomeFragment :
     }
 
     override fun hideAddButton() {
-        binding.updateButton.hide()
+        binding.rootLayout.findViewById<View>(R.id.speedDialViewId).gone()
     }
 
     override fun showAddButton() {
-        binding.updateButton.show()
+        binding.rootLayout.findViewById<View>(R.id.speedDialViewId).visible()
     }
 
     override fun showDeleteConfirmationDialog() {

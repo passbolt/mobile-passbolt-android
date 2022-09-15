@@ -98,6 +98,7 @@ interface HomeContract {
         fun showFolderMoreMenuIcon()
         fun hideFolderMoreMenuIcon()
         fun navigateToFolderDetails(childFolder: Folder.Child)
+        fun initSpeedDialFab(homeView: HomeDisplayViewModel)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
