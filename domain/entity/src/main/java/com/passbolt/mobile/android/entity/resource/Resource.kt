@@ -1,7 +1,10 @@
 package com.passbolt.mobile.android.entity.resource
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.ForeignKey.SET_NULL
 import androidx.room.PrimaryKey
+import com.passbolt.mobile.android.entity.folder.Folder
 import java.time.ZonedDateTime
 
 /**
@@ -27,7 +30,21 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = Folder::class,
+            parentColumns = ["folderId"],
+            childColumns = ["folderId"],
+            onDelete = SET_NULL
+        ),
+        ForeignKey(
+            entity = ResourceType::class,
+            parentColumns = ["resourceTypeId"],
+            childColumns = ["resourceTypeId"]
+        )
+    ]
+)
 data class Resource(
     @PrimaryKey
     val resourceId: String,

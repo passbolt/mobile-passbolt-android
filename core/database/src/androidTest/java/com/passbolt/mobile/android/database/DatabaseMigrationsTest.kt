@@ -45,7 +45,8 @@ class DatabaseMigrationsTest {
     @get:Rule
     val helper: MigrationTestHelper = MigrationTestHelper(
         InstrumentationRegistry.getInstrumentation(),
-        ResourceDatabase::class.java.canonicalName,
+        ResourceDatabase::class.java,
+        emptyList(),
         FrameworkSQLiteOpenHelperFactory()
     )
 
@@ -116,6 +117,10 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate5To6() {
+        helper.createDatabase(TEST_DB, 5).apply {
+            close()
+        }
+
         helper.runMigrationsAndValidate(TEST_DB, 6, true, Migration5to6)
             .apply {
                 execSQL("INSERT INTO Tag VALUES('id1','tagSlug',0)")
@@ -126,6 +131,10 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate6To7() {
+        helper.createDatabase(TEST_DB, 6).apply {
+            close()
+        }
+
         helper.runMigrationsAndValidate(TEST_DB, 7, true, Migration6to7)
             .apply {
                 execSQL("INSERT INTO UsersGroup VALUES('id1','name')")
@@ -136,6 +145,11 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate7To8() {
+        helper.createDatabase(TEST_DB, 7).apply {
+            execSQL("INSERT INTO ResourceAndGroupsCrossRef VALUES('resId1','id1')")
+            close()
+        }
+
         helper.runMigrationsAndValidate(TEST_DB, 8, true, Migration7to8)
             .apply {
                 execSQL(
@@ -157,6 +171,16 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate8To9() {
+        helper.createDatabase(TEST_DB, 8).apply {
+            execSQL(
+                "INSERT INTO ResourceAndGroupsCrossRef VALUES('resourceId','groupId','READ')"
+            )
+            execSQL(
+                "INSERT INTO ResourceAndUsersCrossRef VALUES('resourceId','userId', 'OWNER')"
+            )
+            close()
+        }
+
         helper.runMigrationsAndValidate(TEST_DB, 9, true, Migration8to9)
             .apply {
                 execSQL(
@@ -171,6 +195,14 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate9To10() {
+        helper.createDatabase(TEST_DB, 9).apply {
+            execSQL(
+                "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
+                        "'typeId', '1',1644909225833)"
+            )
+            close()
+        }
+
         helper.runMigrationsAndValidate(TEST_DB, 10, true, Migration9to10)
             .apply {
                 execSQL(
@@ -183,10 +215,28 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate10To11() {
+        helper.createDatabase(TEST_DB, 10).apply {
+            close()
+        }
+
         helper.runMigrationsAndValidate(TEST_DB, 11, true, Migration10to11)
             .apply {
                 execSQL("INSERT INTO FolderAndUsersCrossRef VALUES('folderId','userId','READ','permId1')")
                 execSQL("INSERT INTO FolderAndGroupsCrossRef VALUES('folderId','groupId','READ','permId2')")
+                close()
+            }
+    }
+
+    @Test
+    fun migrate11To12() {
+        helper.createDatabase(TEST_DB, 11)
+            .apply {
+                close()
+            }
+
+        helper.runMigrationsAndValidate(TEST_DB, 12, true)
+            .apply {
+                // foreign key constraints added - nothing to test here
                 close()
             }
     }

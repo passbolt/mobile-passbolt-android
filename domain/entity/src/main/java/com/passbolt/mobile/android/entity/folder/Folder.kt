@@ -46,11 +46,3 @@ data class FolderWithChildItemsCount(
     val isShared: Boolean,
     val childItemsCount: Int
 )
-
-@Entity(primaryKeys = ["userId", "folderId"])
-data class FolderAndUsersCrossRef(
-    val folderId: String,
-    val userId: String,
-    val permission: Permission,
-    val permissionId: String
-)

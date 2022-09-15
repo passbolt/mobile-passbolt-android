@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.user.User
 
 /**
@@ -45,20 +44,6 @@ data class UsersGroupWithChildItemsCount(
     val childItemsCount: Int
 )
 
-@Entity(primaryKeys = ["resourceId", "groupId"])
-data class ResourceAndGroupsCrossRef(
-    val resourceId: String,
-    val groupId: String,
-    val permission: Permission,
-    val permissionId: String
-)
-
-@Entity(primaryKeys = ["userId", "groupId"])
-data class UsersAndGroupCrossRef(
-    val userId: String,
-    val groupId: String
-)
-
 data class GroupWithUsers(
     @Embedded val group: UsersGroup,
     @Relation(
@@ -67,12 +52,4 @@ data class GroupWithUsers(
         associateBy = Junction(UsersAndGroupCrossRef::class, parentColumn = "groupId", entityColumn = "userId")
     )
     val users: List<User>
-)
-
-@Entity(primaryKeys = ["folderId", "groupId"])
-data class FolderAndGroupsCrossRef(
-    val folderId: String,
-    val groupId: String,
-    val permission: Permission,
-    val permissionId: String
 )

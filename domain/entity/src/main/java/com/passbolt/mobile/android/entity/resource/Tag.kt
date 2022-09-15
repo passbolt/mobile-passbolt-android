@@ -26,9 +26,6 @@ import androidx.room.PrimaryKey
  * @since v1.0
  */
 
-const val TAG_ID = "tagId"
-const val RESOURCE_ID = "resourceId"
-
 @Entity
 data class Tag(
     @PrimaryKey
@@ -42,10 +39,4 @@ data class TagWithTaggedItemsCount(
     val slug: String,
     val isShared: Boolean,
     val taggedItemsCount: Int
-)
-
-@Entity(primaryKeys = [TAG_ID, RESOURCE_ID])
-data class ResourceAndTagsCrossRef(
-    val tagId: String,
-    val resourceId: String
 )
