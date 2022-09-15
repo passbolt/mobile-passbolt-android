@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
+import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFoldersForFolderUseCase
@@ -30,6 +31,7 @@ import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.TagWithCount
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -92,7 +94,8 @@ class HomePresenter(
     private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase,
     private val getHomeDisplayViewPrefsUseCase: GetHomeDisaplyViewPrefsUseCase,
     private val homeModelMapper: HomeDisplayViewMapper,
-    private val domainProvider: DomainProvider
+    private val domainProvider: DomainProvider,
+    private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase
 ) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinScopeComponent {
 
     override var view: HomeContract.View? = null
@@ -258,14 +261,20 @@ class HomePresenter(
         }
     }
 
-    // currently show add button in root folder only (and in all other views except tags and groups)
-    private fun shouldShowAddButton(): Boolean {
+    private suspend fun shouldShowAddButton(): Boolean {
         homeView.let {
+            // currently do not show add button on tags and groups
             if (it is HomeDisplayViewModel.Tags || it is HomeDisplayViewModel.Groups) {
                 return false
             }
+            // show only in folder with update permission
             if (it is HomeDisplayViewModel.Folders) {
-                return it.activeFolder is Folder.Root
+                return when (val currentFolder = it.activeFolder) {
+                    is Folder.Child ->
+                        getLocalFolderUseCase.execute(GetLocalFolderDetailsUseCase.Input(currentFolder.folderId))
+                            .folder.permission in setOf(ResourcePermission.OWNER, ResourcePermission.UPDATE)
+                    is Folder.Root -> true
+                }
             }
         }
         return true

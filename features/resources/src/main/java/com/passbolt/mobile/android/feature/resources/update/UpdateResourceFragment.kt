@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.resources.update
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.dialogs.encryptionErrorAlertDialog
@@ -223,5 +224,31 @@ class UpdateResourceFragment :
 
     override fun showScrollView() {
         binding.scrollView.visible()
+    }
+
+    override fun showShareSimulationFailure() {
+        showSnackbar(R.string.resource_permissions_share_simulation_failed)
+    }
+
+    override fun showShareFailure() {
+        showSnackbar(R.string.resource_permissions_share_failed)
+    }
+
+    override fun showSecretFetchFailure() {
+        showSnackbar(R.string.resource_permissions_secret_fetch_failure)
+    }
+
+    override fun showSecretEncryptFailure() {
+        showSnackbar(R.string.resource_permissions_secret_encrypt_failure)
+    }
+
+    override fun showSecretDecryptFailure() {
+        showSnackbar(R.string.resource_permissions_secret_decrypt_failure)
+    }
+
+    private fun showSnackbar(@StringRes messageResId: Int) {
+        Snackbar.make(requireView(), messageResId, Snackbar.LENGTH_SHORT)
+            .setAnchorView(binding.root)
+            .show()
     }
 }

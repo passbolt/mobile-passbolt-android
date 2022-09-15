@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
-import com.passbolt.mobile.android.data.folders.FoldersInteractor
 import com.passbolt.mobile.android.core.commonresource.FavouritesInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
 import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
@@ -12,6 +11,8 @@ import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUse
 import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.data.folders.FoldersInteractor
+import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFolderResourcesFilteredUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFoldersForFolderUseCase
@@ -60,6 +61,7 @@ internal val mockGetLocalResourcesWithGroupsUseCase = mock<GetLocalResourcesWith
 internal val mockGetLocalResourcesFilteredByTagUseCase = mock<GetLocalResourcesFilteredByTagUseCase>()
 internal val mockGetHomeDisplayPrefsUseCase = mock<GetHomeDisaplyViewPrefsUseCase>()
 internal val mockFavouritesInteractor = mock<FavouritesInteractor>()
+internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -91,7 +93,8 @@ val testHomeModule = module {
             getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase,
             getHomeDisplayViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
             homeModelMapper = get(),
-            domainProvider = get()
+            domainProvider = get(),
+            getLocalFolderUseCase = mockGetLocalFolderUseCase
         )
     }
     scope<HomePresenter> {

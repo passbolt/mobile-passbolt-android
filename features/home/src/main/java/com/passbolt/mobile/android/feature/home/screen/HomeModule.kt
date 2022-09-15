@@ -74,7 +74,8 @@ fun Module.homeModule() {
                 getLocalResourcesWithGroupsUseCase = get(),
                 getHomeDisplayViewPrefsUseCase = get(),
                 homeModelMapper = get(),
-                domainProvider = get()
+                domainProvider = get(),
+                getLocalFolderUseCase = get()
             )
         }
         declareHomeListAdapters()
