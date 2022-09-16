@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.commonfolders.usecase.CreateFolderUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.data.interactor.FolderShareInteractor
+import com.passbolt.mobile.android.core.commonfolders.usecase.FolderShareInteractor
 import com.passbolt.mobile.android.database.impl.folders.AddLocalFolderUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase

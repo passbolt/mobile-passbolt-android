@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tag_details">
+
+    <fragment
+        android:id="@+id/resourceTagsFragment"
+        android:name="com.passbolt.mobile.android.tagsdetails.ResourceTagsFragment"
+        android:label="ResourceTagsFragment"
+        tools:layout="@layout/fragment_resource_tags">
+        <argument
+            android:name="resourceId"
+            app:argType="string" />
+        <argument
+            android:name="mode"
+            app:argType="com.passbolt.mobile.android.permissions.permissions.PermissionsMode" />
+        <deepLink
+            android:id="@+id/deepLink2"
+            app:uri="passbolt://tagsDetails/{resourceId}?mode={mode}" />
+    </fragment>
+</navigation>

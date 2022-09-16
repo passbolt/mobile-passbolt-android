@@ -2,13 +2,12 @@ plugins {
     id "com.android.library"
     id "kotlin-android"
     id "kotlin-parcelize"
-    id "com.google.devtools.ksp" version "1.7.10-1.0.6"
 }
 
 apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
-    implementation project(':mvp')
+    implementation project(':architecture')
     implementation project(':ui')
     implementation project(':navigation')
     implementation project(':coreui')
@@ -16,23 +15,23 @@ dependencies {
     implementation project(':networking')
     implementation project(':passboltapi')
     implementation project(':mappers')
-    implementation project(':dto')
     implementation project(':storage')
     implementation project(':resources')
     implementation project(':database')
-    implementation project(':commonresource')
     implementation project(':secrets')
     implementation project(':authentication')
     implementation project(':entity')
     implementation project(':localization')
     implementation project(':featureflags')
-    implementation project(':commonfolders')
-    implementation project(':commongroups')
+    implementation project(':folderdetails')
+    implementation project(':groupdetails')
     implementation project(':users')
-    implementation project(':data')
-    implementation project(':data')
     implementation project(':gopenpgp')
     implementation project(':createfolder')
+    implementation project(':resourcemoremenu')
+    implementation project(':resourcedetails')
+    implementation project(':fulldatarefresh')
+    implementation project(':resourcetypes')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -44,14 +43,9 @@ dependencies {
     implementation libs.textDrawable
     implementation libs.coil.core
     implementation libs.coil.base
-    implementation libs.room.core
-    implementation libs.room.runtime
-    implementation libs.room.cipher
-    implementation libs.room.sqlite
-    ksp libs.room.compiler
     implementation libs.fabSpeedDial
+    implementation libs.room.core
 
-    testImplementation project(':ui')
     testImplementation project(':commontest')
 }
 

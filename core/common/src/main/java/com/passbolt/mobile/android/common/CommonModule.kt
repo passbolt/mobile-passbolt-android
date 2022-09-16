@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.common
 
+import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
 /**
@@ -31,5 +32,10 @@ val commonModule = module {
     }
     single {
         DomainProvider()
+    }
+    single {
+        ResourceDimenProvider(
+            androidApplication().resources
+        )
     }
 }

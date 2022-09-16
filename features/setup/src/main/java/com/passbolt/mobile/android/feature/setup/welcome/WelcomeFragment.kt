@@ -6,11 +6,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.logger.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.security.rootdetection.rootWarningAlertDialog
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBinding
+import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import org.koin.android.ext.android.inject
 
 /**
@@ -99,7 +99,7 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
 
     override fun menuShowLogsClick() {
         findNavController().navigate(
-            WelcomeFragmentDirections.actionWelcomeFragmentToLogsFragment()
+            WelcomeFragmentDirections.actionWelcomeFragmentToLogs()
         )
     }
 }

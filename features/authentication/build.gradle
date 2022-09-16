@@ -6,7 +6,7 @@ plugins {
 apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
-    implementation project(':mvp')
+    implementation project(':architecture')
     implementation project(':coreui')
     implementation project(':storage')
     implementation project(':common')
@@ -23,6 +23,9 @@ dependencies {
     implementation project(':logger')
     implementation project(':users')
     implementation project(':localization')
+    implementation project(':featureflagserror')
+    implementation project(':helpmenu')
+    implementation project(':logs')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -34,7 +37,6 @@ dependencies {
     implementation libs.androidx.biometric
     implementation libs.fastAdapter.core
     implementation libs.fastAdapter.binding
-    implementation libs.fastAdapter.utils
     implementation libs.fastAdapter.diff
     implementation libs.di.koin
     implementation libs.coil.core

@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.home.screen
 
-import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 
 /**
  * Passbolt - Open source password manager for teams

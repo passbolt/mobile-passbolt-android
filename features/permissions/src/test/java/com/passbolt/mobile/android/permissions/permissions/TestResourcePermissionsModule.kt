@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.permissions.permissions
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
-import com.passbolt.mobile.android.data.interactor.ResourceShareInteractor
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
+import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
@@ -36,8 +36,8 @@ import org.mockito.kotlin.mock
  */
 
 internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
-internal val mockResourceShareInteractor = mock<ResourceShareInteractor>()
-internal val mockHomeDataInteractor = mock<HomeDataInteractor>()
+internal val mockResourceShareInteractor = mock<com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor>()
+internal val mockHomeDataInteractor = mock<com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor>()
 internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockGetLocalFolderPermissionsUseCase = mock<GetLocalFolderPermissionsUseCase>()
 internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()

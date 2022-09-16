@@ -1,0 +1,25 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+android {
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    useLibrary("android.test.runner")
+    useLibrary("android.test.base")
+    useLibrary("android.test.mock")
+}
+
+dependencies {
+    implementation project(':groups')
+    implementation project(':users')
+    implementation project(':architecture')
+    implementation project(':resources')
+    implementation project(':folders')
+
+    implementation libs.di.koin
+    implementation libs.room.core
+}

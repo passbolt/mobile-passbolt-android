@@ -11,11 +11,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
-import com.passbolt.mobile.android.core.logger.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentSummaryBinding
+import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import org.koin.android.ext.android.inject
 
 /**
@@ -151,7 +151,7 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
 
     override fun menuShowLogsClick() {
         findNavController().navigate(
-            SummaryFragmentDirections.actionSummaryFragmentToLogsFragment()
+            SummaryFragmentDirections.actionSummaryFragmentToLogs()
         )
     }
 }

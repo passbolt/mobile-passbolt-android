@@ -1,0 +1,43 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+dependencies {
+    implementation project(':architecture')
+    implementation project(':coreui')
+    implementation project(':common')
+    implementation project(':navigation')
+    implementation project(':database')
+    implementation project(':storage')
+    implementation project(':networking')
+    implementation project(':ui')
+    implementation project(':mappers')
+    implementation project(':secrets')
+    implementation project(':authentication')
+    implementation project(':resources')
+    implementation project(':localization')
+    implementation project(':home')
+    implementation project(':security')
+    implementation project(':gopenpgp')
+    implementation project(':resourcetypes')
+    implementation project(':fulldatarefresh')
+    implementation project(':notifications')
+    implementation project(':autofill')
+
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+    implementation libs.androidx.fragment
+    implementation libs.androidx.activity
+    implementation libs.material
+    implementation libs.androidx.constraintLayout
+    implementation libs.di.koin
+    implementation libs.fastAdapter.core
+    implementation libs.fastAdapter.binding
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

@@ -4,9 +4,8 @@ plugins {
 }
 
 dependencies {
-    implementation project(':mvp')
+    api project(':architecture')
     implementation project(':ui')
-    implementation project(':navigation')
     implementation project(':coreui')
     implementation project(':authentication')
     implementation project(':storage')

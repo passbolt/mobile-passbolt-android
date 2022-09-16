@@ -288,7 +288,7 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
 
     override fun navigateToLogs() {
         findNavController().navigate(
-            SettingsFragmentDirections.actionSettingsToLogsFragment()
+            SettingsFragmentDirections.actionSettingsToLogs()
         )
     }
 

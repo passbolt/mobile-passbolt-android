@@ -4,13 +4,13 @@ plugins {
 }
 
 dependencies {
-    implementation project(':mvp')
+    implementation project(':architecture')
     implementation project(':ui')
     implementation project(':navigation')
     implementation project(':storage')
-    implementation project(':common')
     implementation project(':authentication')
     implementation project(':navigation')
+    implementation project(':common')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

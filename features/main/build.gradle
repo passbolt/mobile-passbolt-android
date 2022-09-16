@@ -6,9 +6,8 @@ plugins {
 apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
-    implementation project(':mvp')
+    implementation project(':architecture')
     implementation project(':ui')
-    implementation project(':navigation')
     implementation project(':coreui')
     implementation project(':home')
     implementation project(':settings')
@@ -16,7 +15,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':authentication')
     implementation project(':security')
-    implementation project(':data')
+    implementation project(':fulldatarefresh')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

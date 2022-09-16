@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
-import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
@@ -37,7 +37,7 @@ import javax.crypto.Cipher
  */
 
 internal val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
-internal val autofillInformationProvider = mock<AutofillInformationProvider>()
+internal val autofillInformationProvider = mock<com.passbolt.mobile.android.core.autofill.AutofillInformationProvider>()
 internal val passphraseMemoryCache = mock<PassphraseMemoryCache>()
 internal val savePassphraseUseCase = mock<SavePassphraseUseCase>()
 internal val mockCipher = mock<Cipher> {

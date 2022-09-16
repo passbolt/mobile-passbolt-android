@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
-import com.gaelmarhic.quadrant.Autofill
+import com.gaelmarhic.quadrant.Autofillresources
 import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -35,16 +35,6 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.common.px
-import com.passbolt.mobile.android.core.commonfolders.moremenu.FolderMoreMenuFragment
-import com.passbolt.mobile.android.core.commonresource.FolderItem
-import com.passbolt.mobile.android.core.commonresource.GroupWithCountItem
-import com.passbolt.mobile.android.core.commonresource.InCurrentFoldersHeaderItem
-import com.passbolt.mobile.android.core.commonresource.InSubFoldersHeaderItem
-import com.passbolt.mobile.android.core.commonresource.PasswordHeaderItem
-import com.passbolt.mobile.android.core.commonresource.PasswordItem
-import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
-import com.passbolt.mobile.android.core.commonresource.TagWithCountItem
-import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.mvp.progress.ProgressStackSynchronizer
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -56,14 +46,24 @@ import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.feature.home.screen.recycler.FolderItem
+import com.passbolt.mobile.android.feature.home.screen.recycler.GroupWithCountItem
+import com.passbolt.mobile.android.feature.home.screen.recycler.InCurrentFoldersHeaderItem
+import com.passbolt.mobile.android.feature.home.screen.recycler.InSubFoldersHeaderItem
+import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordHeaderItem
+import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordItem
+import com.passbolt.mobile.android.feature.home.screen.recycler.TagWithCountItem
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
-import com.passbolt.mobile.android.feature.resources.ResourceActivity
-import com.passbolt.mobile.android.feature.resources.ResourceMode
+import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
+import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
+import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
+import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCount
 import com.passbolt.mobile.android.ui.GroupWithCount
+import com.passbolt.mobile.android.ui.ResourceListUiModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
@@ -136,7 +136,7 @@ class HomeFragment :
 
     // home fragment is used both here and in autofill resources activity
     private val resourceHandlingStrategy: ResourceHandlingStrategy by lifecycleAwareLazy {
-        if (requireActivity().javaClass.name == Autofill.AUTOFILL_RESOURCES_ACTIVITY) {
+        if (requireActivity().javaClass.name == Autofillresources.AUTOFILL_RESOURCES_ACTIVITY) {
             requireActivity() as ResourceHandlingStrategy
         } else {
             this

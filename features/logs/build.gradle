@@ -1,0 +1,27 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+dependencies {
+    implementation project(':architecture')
+    implementation project(':coreui')
+    implementation project(':common')
+    implementation project(':storage')
+    implementation project(':localization')
+    implementation project(':logger')
+
+    implementation libs.di.koin
+    implementation libs.material
+    implementation libs.androidx.core
+    implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.core
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

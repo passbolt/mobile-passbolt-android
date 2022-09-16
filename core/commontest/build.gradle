@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation project(":mvp")
+    implementation project(':architecture')
 
     implementation libs.di.koin
     implementation libs.test.coroutinesTest

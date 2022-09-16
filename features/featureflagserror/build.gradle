@@ -1,0 +1,22 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+dependencies {
+    implementation project(':passboltapi')
+    implementation project(':storage')
+    implementation project(':mappers')
+    implementation project(':common')
+    implementation project(':ui')
+    implementation project(':architecture')
+    implementation project(':coreui')
+
+    implementation libs.di.koin
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

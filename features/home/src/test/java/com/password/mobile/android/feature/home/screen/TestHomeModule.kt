@@ -4,15 +4,16 @@ import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
-import com.passbolt.mobile.android.core.commonresource.FavouritesInteractor
-import com.passbolt.mobile.android.core.commonresource.ResourceInteractor
-import com.passbolt.mobile.android.core.commonresource.ResourceTypeFactory
-import com.passbolt.mobile.android.core.commonresource.usecase.DeleteResourceUseCase
-import com.passbolt.mobile.android.core.commonresource.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.progress.ProgressStackSynchronizer
-import com.passbolt.mobile.android.data.folders.FoldersInteractor
+import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
+import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesUseCase
+import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFolderResourcesFilteredUseCase
@@ -25,10 +26,8 @@ import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseC
 import com.passbolt.mobile.android.database.impl.tags.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
-import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
-import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
-import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser.SecretParser
+import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -51,7 +50,6 @@ internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val resourceMenuModelMapper = ResourceMenuModelMapper()
 internal val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
-internal val mockFoldersInteractor = mock<FoldersInteractor>()
 internal val mockGetSubFoldersUseCase = mock<GetLocalSubFoldersForFolderUseCase>()
 internal val mockGetSubFoldersResourcesUseCase = mock<GetLocalSubFolderResourcesFilteredUseCase>()
 internal val mockGetLocalResourcesAndFoldersUseCase = mock<GetLocalResourcesAndFoldersUseCase>()

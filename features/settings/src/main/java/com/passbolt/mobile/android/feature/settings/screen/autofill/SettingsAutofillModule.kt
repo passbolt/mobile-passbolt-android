@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.settings.screen.autofill
 
-import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 
@@ -35,7 +35,7 @@ fun Module.settingsAutofillModule() {
             )
         }
         factory {
-            AutofillInformationProvider(
+            com.passbolt.mobile.android.core.autofill.AutofillInformationProvider(
                 autofillManager = get(),
                 context = androidContext()
             )

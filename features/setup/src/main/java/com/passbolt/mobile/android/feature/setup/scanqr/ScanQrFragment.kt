@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
-import com.passbolt.mobile.android.core.logger.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
@@ -16,6 +15,7 @@ import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
 import com.passbolt.mobile.android.feature.setup.scanqr.di.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
+import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -207,7 +207,7 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
 
     override fun menuShowLogsClick() {
         findNavController().navigate(
-            ScanQrFragmentDirections.actionScanQrFragmentToLogsFragment()
+            ScanQrFragmentDirections.actionScanQrFragmentToLogs()
         )
     }
 

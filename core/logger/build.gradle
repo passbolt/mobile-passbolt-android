@@ -4,10 +4,6 @@ plugins {
 }
 
 dependencies {
-    implementation project(':mvp')
-    implementation project(':coreui')
-    implementation project(':common')
-    implementation project(':storage')
     implementation project(':localization')
 
     implementation libs.di.koin
