@@ -77,4 +77,6 @@
     </action>
 
     <include app:graph="@navigation/folder_details"/>
+
+    <include app:graph="@navigation/createfolder"/>
 </navigation>

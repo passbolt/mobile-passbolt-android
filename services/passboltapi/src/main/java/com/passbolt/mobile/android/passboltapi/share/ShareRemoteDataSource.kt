@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.passboltapi.share
 
-import com.passbolt.mobile.android.dto.request.ShareRequest
+import com.passbolt.mobile.android.dto.request.FolderShareRequest
+import com.passbolt.mobile.android.dto.request.ResourceShareRequest
 import com.passbolt.mobile.android.dto.request.SimulateShareRequest
 
 /**
@@ -32,6 +33,10 @@ internal class ShareRemoteDataSource(
     override suspend fun simulateShareResource(resourceId: String, request: SimulateShareRequest) =
         shareApi.simulateShareResource(resourceId, request).body
 
-    override suspend fun shareResource(resourceId: String, request: ShareRequest) =
+    override suspend fun shareResource(resourceId: String, request: ResourceShareRequest) =
         shareApi.shareResource(resourceId, request).body
+
+    override suspend fun shareFolder(folderId: String, request: FolderShareRequest) {
+        shareApi.shareFolder(folderId, request)
+    }
 }

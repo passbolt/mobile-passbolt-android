@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.core.mvp
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.AppCoroutineContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
@@ -27,5 +29,5 @@ import org.koin.dsl.module
  * @since v1.0
  */
 val mvpModule = module {
-    single<CoroutineLaunchContext> { AppCoroutineContext() }
+    singleOf(::AppCoroutineContext) bind CoroutineLaunchContext::class
 }

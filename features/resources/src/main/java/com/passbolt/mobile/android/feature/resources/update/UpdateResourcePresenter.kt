@@ -12,7 +12,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPres
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.core.users.FetchUsersUseCase
-import com.passbolt.mobile.android.data.interactor.ShareInteractor
+import com.passbolt.mobile.android.data.interactor.ResourceShareInteractor
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsToCopyAsNewUseCase
 import com.passbolt.mobile.android.database.impl.resources.AddLocalResourceUseCase
 import com.passbolt.mobile.android.database.impl.resources.UpdateLocalResourceUseCase
@@ -75,7 +75,7 @@ class UpdateResourcePresenter(
     private val newFieldsModelCreator: NewFieldsModelCreator,
     private val secretInteractor: SecretInteractor,
     private val fieldNamesMapper: FieldNamesMapper,
-    private val shareInteractor: ShareInteractor,
+    private val resourceShareInteractor: ResourceShareInteractor,
     private val getLocalFolderPermissionsToCopyAsNew: GetLocalFolderPermissionsToCopyAsNewUseCase
 ) : BaseAuthenticatedPresenter<UpdateResourceContract.View>(coroutineLaunchContext),
     UpdateResourceContract.Presenter {
@@ -275,17 +275,17 @@ class UpdateResourcePresenter(
         ).permissions
 
         when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            shareInteractor.simulateAndShare(resource.resourceId, newPermissionsToApply)
+            resourceShareInteractor.simulateAndShareResource(resource.resourceId, newPermissionsToApply)
         }) {
-            is ShareInteractor.Output.SecretDecryptFailure -> view?.showSecretDecryptFailure()
-            is ShareInteractor.Output.SecretEncryptFailure -> view?.showSecretEncryptFailure()
-            is ShareInteractor.Output.SecretFetchFailure -> view?.showSecretFetchFailure()
-            is ShareInteractor.Output.ShareFailure -> view?.showShareFailure()
-            is ShareInteractor.Output.SimulateShareFailure -> view?.showShareSimulationFailure()
-            is ShareInteractor.Output.Success -> {
+            is ResourceShareInteractor.Output.SecretDecryptFailure -> view?.showSecretDecryptFailure()
+            is ResourceShareInteractor.Output.SecretEncryptFailure -> view?.showSecretEncryptFailure()
+            is ResourceShareInteractor.Output.SecretFetchFailure -> view?.showSecretFetchFailure()
+            is ResourceShareInteractor.Output.ShareFailure -> view?.showShareFailure()
+            is ResourceShareInteractor.Output.SimulateShareFailure -> view?.showShareSimulationFailure()
+            is ResourceShareInteractor.Output.Success -> {
                 view?.closeWithCreateSuccessResult(resource.name, resource.resourceId)
             }
-            is ShareInteractor.Output.Unauthorized -> {
+            is ResourceShareInteractor.Output.Unauthorized -> {
                 // handled automatically in runAuthenticatedOperation
             }
         }

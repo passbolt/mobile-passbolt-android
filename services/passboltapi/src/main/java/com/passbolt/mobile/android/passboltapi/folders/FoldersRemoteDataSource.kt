@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.passboltapi.folders
 
+import com.passbolt.mobile.android.dto.request.CreateFolderRequestDto
 import com.passbolt.mobile.android.dto.response.FolderResponseDto
 
 /**
@@ -30,4 +31,7 @@ internal class FoldersRemoteDataSource(
 
     override suspend fun getFolders(): List<FolderResponseDto> =
         foldersApi.getFolders().body
+
+    override suspend fun createFolder(createFolderRequestDto: CreateFolderRequestDto) =
+        foldersApi.createFolder(createFolderRequestDto).body
 }

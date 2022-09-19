@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
 import com.passbolt.mobile.android.core.security.securityModule
 import com.passbolt.mobile.android.core.ui.coreUiModule
 import com.passbolt.mobile.android.core.users.usersModule
+import com.passbolt.mobile.android.createFolderModule
 import com.passbolt.mobile.android.data.dataModule
 import com.passbolt.mobile.android.database.databaseModule
 import com.passbolt.mobile.android.feature.accountdetails.accountDetailsModule
@@ -101,7 +102,8 @@ class KoinInitializer : Initializer<Unit> {
                 commonModule,
                 dataModule,
                 coreUiModule,
-                locationDetailsModule
+                locationDetailsModule,
+                createFolderModule
             )
         }
     }

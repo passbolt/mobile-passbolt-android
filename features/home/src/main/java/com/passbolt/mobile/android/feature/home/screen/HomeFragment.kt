@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.home.screen
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -14,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -44,9 +46,11 @@ import com.passbolt.mobile.android.core.commonresource.ResourceListUiModel
 import com.passbolt.mobile.android.core.commonresource.TagWithCountItem
 import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
+import com.passbolt.mobile.android.core.mvp.progress.ProgressStackSynchronizer
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.createfolder.CreateFolderFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
@@ -89,7 +93,7 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-@Suppress("TooManyFunctions") // TODO MOB-321
+@Suppress("TooManyFunctions", "LargeClass") // TODO MOB-321
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
     HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener,
@@ -123,6 +127,12 @@ class HomeFragment :
     private val arguments: HomeFragmentArgs by navArgs()
     private val navController by lifecycleAwareLazy { findNavController() }
     private val speedDialFabFactory: SpeedDialFabFactory by inject()
+    private val progressStackSynchronizer: ProgressStackSynchronizer by inject()
+
+    private val folderCreatedListener = { _: String, bundle: Bundle ->
+        val name = requireNotNull(bundle.getString(CreateFolderFragment.EXTRA_CREATED_FOLDER_NAME))
+        presenter.folderCreated(name)
+    }
 
     // home fragment is used both here and in autofill resources activity
     private val resourceHandlingStrategy: ResourceHandlingStrategy by lifecycleAwareLazy {
@@ -179,6 +189,7 @@ class HomeFragment :
         initAdapter()
         setListeners()
         val hasPreviousEntry = navController.previousBackStackEntry != null
+        progressStackSynchronizer.attach(this)
         presenter.attach(this)
         presenter.argsRetrieved(
             resourceHandlingStrategy.showSuggestedModel(),
@@ -192,7 +203,7 @@ class HomeFragment :
     override fun initSpeedDialFab(homeView: HomeDisplayViewModel) {
         with(speedDialFabFactory) {
             addPasswordClick = { presenter.createResourceClick() }
-            addFolderClick = {} // TODO
+            addFolderClick = { presenter.createFolderClick() }
 
             binding.rootLayout.addView(
                 getSpeedDialFab(requireContext(), binding.overlay, homeView)
@@ -202,6 +213,7 @@ class HomeFragment :
 
     override fun onDestroyView() {
         binding.recyclerView.adapter = null
+        progressStackSynchronizer.detach()
         presenter.detach()
         super.onDestroyView()
     }
@@ -281,7 +293,6 @@ class HomeFragment :
             recyclerView.isVisible = state.listVisible
             emptyListContainer.isVisible = state.emptyVisible
             errorContainer.isVisible = state.errorVisible
-            progress.isVisible = state.progressVisible
         }
     }
 
@@ -428,7 +439,15 @@ class HomeFragment :
     }
 
     override fun showProgress() {
-        setState(State.PROGRESS)
+        binding.progress.visible()
+    }
+
+    override fun showSynchronizedProgress() {
+        progressStackSynchronizer.showProgress()
+    }
+
+    override fun hideSynchronizedProgress() {
+        progressStackSynchronizer.hideProgress()
     }
 
     override fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel) {
@@ -788,11 +807,31 @@ class HomeFragment :
     }
 
     override fun navigateToFolderDetails(childFolder: Folder.Child) {
-        val f = childFolder as Folder.Child
         val request = NavDeepLinkRequest.Builder
-            .fromUri("passbolt://folders/${f.folderId}".toUri())
+            .fromUri("passbolt://folders/${childFolder.folderId}".toUri())
             .build()
         findNavController().navigate(request)
+    }
+
+    override fun navigateToCreateFolder(folderId: String?) {
+        setFragmentResultListener(
+            CreateFolderFragment.REQUEST_CREATE_FOLDER,
+            folderCreatedListener
+        )
+        val request = NavDeepLinkRequest.Builder
+            .fromUri(
+                Uri.Builder()
+                    .scheme("passbolt")
+                    .authority("createFolder")
+                    .apply { folderId?.let { appendQueryParameter("parentFolderId", folderId) } }
+                    .build()
+            )
+            .build()
+        findNavController().navigate(request)
+    }
+
+    override fun showFolderCreated(name: String) {
+        showSnackbar(R.string.common_message_folder_created, name)
     }
 
     companion object {
@@ -800,16 +839,14 @@ class HomeFragment :
     }
 
     enum class State(
-        val progressVisible: Boolean,
         val errorVisible: Boolean,
         val emptyVisible: Boolean,
         val listVisible: Boolean
     ) {
-        EMPTY(false, false, true, false),
-        SEARCH_EMPTY(false, false, true, false),
-        ERROR(false, true, false, false),
-        PROGRESS(true, false, false, false),
-        SUCCESS(false, false, false, true)
+        EMPTY(false, true, false),
+        SEARCH_EMPTY(false, true, false),
+        ERROR(true, false, false),
+        SUCCESS(false, false, true)
     }
 
     data class HeaderSectionConfiguration(

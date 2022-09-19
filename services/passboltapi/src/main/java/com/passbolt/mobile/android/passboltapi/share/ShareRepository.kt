@@ -2,7 +2,8 @@ package com.passbolt.mobile.android.passboltapi.share
 
 import com.passbolt.mobile.android.core.networking.ResponseHandler
 import com.passbolt.mobile.android.core.networking.callWithHandler
-import com.passbolt.mobile.android.dto.request.ShareRequest
+import com.passbolt.mobile.android.dto.request.FolderShareRequest
+import com.passbolt.mobile.android.dto.request.ResourceShareRequest
 import com.passbolt.mobile.android.dto.request.SimulateShareRequest
 
 /**
@@ -41,9 +42,14 @@ class ShareRepository(
 
     suspend fun shareResource(
         resourceId: String,
-        request: ShareRequest
+        request: ResourceShareRequest
     ) =
         callWithHandler(responseHandler) {
             shareDataSource.shareResource(resourceId, request)
+        }
+
+    suspend fun shareFolder(folderId: String, request: FolderShareRequest) =
+        callWithHandler(responseHandler) {
+            shareDataSource.shareFolder(folderId, request)
         }
 }

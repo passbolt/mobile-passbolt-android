@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.passboltapi.share
 
-import com.passbolt.mobile.android.dto.request.ShareRequest
+import com.passbolt.mobile.android.dto.request.FolderShareRequest
+import com.passbolt.mobile.android.dto.request.ResourceShareRequest
 import com.passbolt.mobile.android.dto.request.SimulateShareRequest
 import com.passbolt.mobile.android.dto.response.SimulateShareResponse
 
@@ -36,6 +37,8 @@ interface ShareDataSource {
 
     suspend fun shareResource(
         resourceId: String,
-        request: ShareRequest
+        request: ResourceShareRequest
     )
+
+    suspend fun shareFolder(folderId: String, request: FolderShareRequest)
 }

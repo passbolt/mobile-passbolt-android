@@ -26,4 +26,5 @@ object PermissionsConstants {
     const val ARO_GROUP = "Group"
     const val ARO_USER = "User"
     const val ACO_RESOURCE = "Resource"
+    const val ACO_FOLDER = "Folder"
 }

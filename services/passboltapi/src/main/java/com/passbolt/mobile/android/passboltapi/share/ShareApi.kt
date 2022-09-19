@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.passboltapi.share
 
-import com.passbolt.mobile.android.dto.request.ShareRequest
+import com.passbolt.mobile.android.dto.request.FolderShareRequest
+import com.passbolt.mobile.android.dto.request.ResourceShareRequest
 import com.passbolt.mobile.android.dto.request.SimulateShareRequest
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.SimulateShareResponse
@@ -42,13 +43,21 @@ internal interface ShareApi {
     @PUT(SHARE_RESOURCE)
     suspend fun shareResource(
         @Path(PATH_RESOURCE_ID) resourceId: String,
-        @Body request: ShareRequest
+        @Body request: ResourceShareRequest
+    ): BaseResponse<Unit>
+
+    @POST(SHARE_FOLDER)
+    suspend fun shareFolder(
+        @Path(PATH_FOLDER_ID) folderId: String,
+        @Body request: FolderShareRequest
     ): BaseResponse<Unit>
 
     private companion object {
         private const val PATH_RESOURCE_ID = "resourceId"
+        private const val PATH_FOLDER_ID = "folderId"
         private const val SHARE = "share"
         private const val SIMULATE_RESOURCE_SHARE = "$SHARE/simulate/resource/{$PATH_RESOURCE_ID}.json"
         private const val SHARE_RESOURCE = "$SHARE/resource/{$PATH_RESOURCE_ID}.json"
+        private const val SHARE_FOLDER = "$SHARE/folder/{$PATH_FOLDER_ID}.json"
     }
 }

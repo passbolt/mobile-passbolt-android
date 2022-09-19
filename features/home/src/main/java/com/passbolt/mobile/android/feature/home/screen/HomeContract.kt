@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.core.mvp.progress.SynchronizedProgressView
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
@@ -36,7 +37,7 @@ import kotlinx.coroutines.flow.Flow
 @Suppress("TooManyFunctions", "LongParameterList") // TODO MOB-321
 interface HomeContract {
 
-    interface View : BaseAuthenticatedContract.View, ResourceHandlingStrategy {
+    interface View : BaseAuthenticatedContract.View, ResourceHandlingStrategy, SynchronizedProgressView {
         fun showItems(
             suggestedResources: List<ResourceModel>,
             resourceList: List<ResourceModel>,
@@ -50,8 +51,8 @@ interface HomeContract {
 
         fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel)
         fun navigateToDetails(resourceModel: ResourceModel)
-        fun hideProgress()
-        fun showProgress()
+        override fun hideProgress()
+        override fun showProgress()
         fun hideRefreshProgress()
         fun showError()
         fun showEmptyList()
@@ -99,6 +100,10 @@ interface HomeContract {
         fun hideFolderMoreMenuIcon()
         fun navigateToFolderDetails(childFolder: Folder.Child)
         fun initSpeedDialFab(homeView: HomeDisplayViewModel)
+        fun navigateToCreateFolder(folderId: String?)
+        fun showFolderCreated(name: String)
+        fun showSynchronizedProgress()
+        fun hideSynchronizedProgress()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -151,5 +156,7 @@ interface HomeContract {
         fun switchAccountClick(userId: String)
         fun moreClick()
         fun seeFolderDetailsClick()
+        fun createFolderClick()
+        fun folderCreated(name: String)
     }
 }

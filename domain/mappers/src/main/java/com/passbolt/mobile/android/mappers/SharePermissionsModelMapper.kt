@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.request.SharePermission
+import com.passbolt.mobile.android.mappers.PermissionsConstants.ACO_FOLDER
 import com.passbolt.mobile.android.mappers.PermissionsConstants.ACO_RESOURCE
 import com.passbolt.mobile.android.mappers.PermissionsConstants.ARO_GROUP
 import com.passbolt.mobile.android.mappers.PermissionsConstants.ARO_USER
@@ -36,34 +37,34 @@ class SharePermissionsModelMapper(
      * Maps user chosen share recipients to simulate share request input.
      * During share simulation it is required to pass only new permissions and deleted ones (and not updated).
      *
-     * @param resourceId Id of the shared resource
+     * @param item Shared item data
      * @param recipients User selected share recipients
      * @param existingResourcePermissions Permissions that are already applied to the resource
      */
     fun mapForSimulation(
-        resourceId: String,
+        item: ShareItem,
         recipients: List<PermissionModelUi>,
         existingResourcePermissions: List<PermissionModelUi>
     ): List<SharePermission> =
-        extractNewPermissions(resourceId, recipients) +
-                extractDeletedPermissions(resourceId, existingResourcePermissions, recipients)
+        extractNewPermissions(item, recipients) +
+                extractDeletedPermissions(item, existingResourcePermissions, recipients)
 
     /**
      * Maps user chosen share recipients to share request input.
      * During share it is required to pass new, updated and deleted permissions.
      *
-     * @param resourceId Id of the shared resource
+     * @param item Shared item data
      * @param recipients User selected share recipients
      * @param existingResourcePermissions Permissions that are already applied to the resource
      */
     fun mapForShare(
-        resourceId: String,
+        item: ShareItem,
         recipients: List<PermissionModelUi>,
         existingResourcePermissions: List<PermissionModelUi>
     ): List<SharePermission> =
-        extractUpdatedPermissions(resourceId, existingResourcePermissions, recipients) +
-                extractNewPermissions(resourceId, recipients) +
-                extractDeletedPermissions(resourceId, existingResourcePermissions, recipients)
+        extractUpdatedPermissions(item, existingResourcePermissions, recipients) +
+                extractNewPermissions(item, recipients) +
+                extractDeletedPermissions(item, existingResourcePermissions, recipients)
 
     /**
      * Extracts permissions that had been already added to the resource but were updated by the user during sharing.
@@ -71,11 +72,11 @@ class SharePermissionsModelMapper(
      * ResourcePermission value.
      *
      * @param existingResourcePermissions Permissions that are already applied to the resource
-     * @param resourceId Id of the shared resource
+     * @param item Shared item data
      * @param recipients User selected share recipients
      */
     private fun extractUpdatedPermissions(
-        resourceId: String,
+        item: ShareItem,
         existingResourcePermissions: List<PermissionModelUi>,
         recipients: List<PermissionModelUi>
     ) = recipients
@@ -91,8 +92,8 @@ class SharePermissionsModelMapper(
             SharePermission.UpdatedSharePermission(
                 aro = aro,
                 aroForeignKey = aroId,
-                aco = ACO_RESOURCE,
-                acoForeignKey = resourceId,
+                aco = item.aco,
+                acoForeignKey = item.id,
                 type = permissionsModelMapper.mapToPermissionInt(permission.permission),
                 id = permission.permissionId
             )
@@ -103,11 +104,11 @@ class SharePermissionsModelMapper(
      * Deleted permissions are present in the existing resource permissions and not present in chosen recipients.
      *
      * @param existingResourcePermissions Permissions that are already applied to the resource
-     * @param resourceId Id of the shared resource
+     * @param item Shared item data
      * @param recipients User selected share recipients
      */
     private fun extractDeletedPermissions(
-        resourceId: String,
+        item: ShareItem,
         existingResourcePermissions: List<PermissionModelUi>,
         recipients: List<PermissionModelUi>
     ) = existingResourcePermissions
@@ -122,8 +123,8 @@ class SharePermissionsModelMapper(
                 id = permission.permissionId,
                 aro = aro,
                 aroForeignKey = aroId,
-                aco = ACO_RESOURCE,
-                acoForeignKey = resourceId,
+                aco = item.aco,
+                acoForeignKey = item.id,
                 type = permissionsModelMapper.mapToPermissionInt(permission.permission)
             )
         }
@@ -133,10 +134,10 @@ class SharePermissionsModelMapper(
      * New permission do not have IDs yet - can be filter by assigned common, constant id.
      *
      * @param recipients Recipients list
-     * @param resourceId Id of the resource
+     * @param item Shared item data
      */
     private fun extractNewPermissions(
-        resourceId: String,
+        item: ShareItem,
         recipients: List<PermissionModelUi>
     ) = recipients
         .filter { it.permissionId == TEMPORARY_NEW_PERMISSION_ID }
@@ -145,8 +146,8 @@ class SharePermissionsModelMapper(
             SharePermission.NewSharePermission(
                 aro = aro,
                 aroForeignKey = aroId,
-                aco = ACO_RESOURCE,
-                acoForeignKey = resourceId,
+                aco = item.aco,
+                acoForeignKey = item.id,
                 type = permissionsModelMapper.mapToPermissionInt(permission.permission)
             )
         }
@@ -156,6 +157,19 @@ class SharePermissionsModelMapper(
             is PermissionModelUi.GroupPermissionModel -> ARO_GROUP to permission.group.groupId
             is PermissionModelUi.UserPermissionModel -> ARO_USER to permission.user.userId
         }
+
+    sealed class ShareItem(open val id: String, open val aco: String) {
+
+        data class Folder(
+            override val id: String,
+            override val aco: String = ACO_FOLDER
+        ) : ShareItem(id, aco)
+
+        data class Resource(
+            override val id: String,
+            override val aco: String = ACO_RESOURCE
+        ) : ShareItem(id, aco)
+    }
 
     companion object {
         const val TEMPORARY_NEW_PERMISSION_ID = "TEMPORARY_PERMISSION_ID"
