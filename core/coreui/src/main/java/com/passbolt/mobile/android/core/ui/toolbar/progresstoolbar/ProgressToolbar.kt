@@ -105,6 +105,7 @@ class ProgressToolbar @JvmOverloads constructor(
             setImageResource(iconRes)
             setBackgroundResource(context.selectableBackgroundBorderlessResourceId())
             setDebouncingOnClick { clickListener.invoke() }
+            contentDescription = context.getString(R.string.help_button_description)
         }.let {
             rootLayout.addView(
                 it,

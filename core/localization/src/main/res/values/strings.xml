@@ -382,6 +382,7 @@
     <string name="folder_details_name_header">Folder name</string>
     <string name="folder_details_location_separator"
         translatable="false">›</string>
+    <string name="help_button_description">Help</string>
 
     <string name="create_folder_title">Create folder</string>
     <string name="create_folder_name">Name</string>
