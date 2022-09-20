@@ -1,10 +1,11 @@
 package com.passbolt.mobile.android.permissions.permissions
 
 import com.passbolt.mobile.android.common.validation.validation
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
-import com.passbolt.mobile.android.data.interactor.ResourceShareInteractor
+import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
+import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor.Output
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
@@ -161,13 +162,13 @@ class PermissionsPresenter(
             when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                 resourceShareInteractor.simulateAndShareResource(id, recipients)
             }) {
-                is ResourceShareInteractor.Output.SecretDecryptFailure -> view?.showSecretDecryptFailure()
-                is ResourceShareInteractor.Output.SecretEncryptFailure -> view?.showSecretEncryptFailure()
-                is ResourceShareInteractor.Output.SecretFetchFailure -> view?.showSecretFetchFailure()
-                is ResourceShareInteractor.Output.ShareFailure -> view?.showShareFailure()
-                is ResourceShareInteractor.Output.SimulateShareFailure -> view?.showShareSimulationFailure()
-                is ResourceShareInteractor.Output.Success -> shareSuccess()
-                is ResourceShareInteractor.Output.Unauthorized -> {
+                is Output.SecretDecryptFailure -> view?.showSecretDecryptFailure()
+                is Output.SecretEncryptFailure -> view?.showSecretEncryptFailure()
+                is Output.SecretFetchFailure -> view?.showSecretFetchFailure()
+                is Output.ShareFailure -> view?.showShareFailure()
+                is Output.SimulateShareFailure -> view?.showShareSimulationFailure()
+                is Output.Success -> shareSuccess()
+                is Output.Unauthorized -> {
                     /* not interested */
                 }
             }

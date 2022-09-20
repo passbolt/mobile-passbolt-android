@@ -4,35 +4,44 @@ import android.content.Context
 import androidx.startup.Initializer
 import com.passbolt.mobile.android.appModule
 import com.passbolt.mobile.android.common.commonModule
-import com.passbolt.mobile.android.core.commonfolders.commonFoldersModule
-import com.passbolt.mobile.android.core.commongroups.commonGroupsModule
-import com.passbolt.mobile.android.core.commonresource.commonResourceModule
+import com.passbolt.mobile.android.core.autofill.autofillModule
+import com.passbolt.mobile.android.core.commonfolders.foldersModule
+import com.passbolt.mobile.android.core.commongroups.groupsModule
+import com.passbolt.mobile.android.core.fulldatarefresh.fullDataRefreshModule
 import com.passbolt.mobile.android.core.logger.loggerModule
 import com.passbolt.mobile.android.core.mvp.mvpModule
 import com.passbolt.mobile.android.core.networking.networkingModule
+import com.passbolt.mobile.android.core.notifications.notificationsModule
 import com.passbolt.mobile.android.core.qrscan.barcodeScanModule
 import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
+import com.passbolt.mobile.android.core.resources.resourcesModule
+import com.passbolt.mobile.android.core.resourcetypes.resourceTypesModule
+import com.passbolt.mobile.android.core.secrets.secretsModule
 import com.passbolt.mobile.android.core.security.securityModule
 import com.passbolt.mobile.android.core.ui.coreUiModule
 import com.passbolt.mobile.android.core.users.usersModule
 import com.passbolt.mobile.android.createFolderModule
-import com.passbolt.mobile.android.data.dataModule
 import com.passbolt.mobile.android.database.databaseModule
 import com.passbolt.mobile.android.feature.accountdetails.accountDetailsModule
 import com.passbolt.mobile.android.feature.authenticationModule
-import com.passbolt.mobile.android.feature.autofill.autofillModule
+import com.passbolt.mobile.android.feature.autofill.autofillResourcesModule
 import com.passbolt.mobile.android.feature.home.homeModule
 import com.passbolt.mobile.android.feature.main.mainModule
-import com.passbolt.mobile.android.feature.resources.resourcesModule
-import com.passbolt.mobile.android.feature.secrets.secretsModule
+import com.passbolt.mobile.android.feature.resourcedetails.resourceDetailsModule
 import com.passbolt.mobile.android.feature.settings.settingsModule
 import com.passbolt.mobile.android.feature.setup.setupModule
 import com.passbolt.mobile.android.feature.startup.di.startUpModule
 import com.passbolt.mobile.android.featureflags.featureFlagsModule
+import com.passbolt.mobile.android.folderDetailsModule
 import com.passbolt.mobile.android.gopenpgp.di.openPgpModule
+import com.passbolt.mobile.android.groupDetailsModule
+import com.passbolt.mobile.android.helpMenuModule
 import com.passbolt.mobile.android.locationDetailsModule
+import com.passbolt.mobile.android.logsModule
 import com.passbolt.mobile.android.mappersModule
 import com.passbolt.mobile.android.passboltapi.passboltApiModule
+import com.passbolt.mobile.android.resourceMoreMenuModule
+import com.passbolt.mobile.android.resourceTagsModule
 import com.passbolt.mobile.android.service.linksApiModule
 import com.passbolt.mobile.android.storage.storageModule
 import org.koin.android.ext.koin.androidContext
@@ -81,7 +90,7 @@ class KoinInitializer : Initializer<Unit> {
                 cameraScanModule,
                 storageModule,
                 passboltApiModule,
-                autofillModule,
+                autofillResourcesModule,
                 authenticationModule,
                 homeModule,
                 settingsModule,
@@ -90,20 +99,29 @@ class KoinInitializer : Initializer<Unit> {
                 featureFlagsModule,
                 databaseModule,
                 secretsModule,
-                commonResourceModule,
+                resourceDetailsModule,
                 securityModule,
                 linksApiModule,
                 usersModule,
                 loggerModule,
                 accountDetailsModule,
-                commonFoldersModule,
+                foldersModule,
+                folderDetailsModule,
                 mainModule,
-                commonGroupsModule,
+                groupsModule,
                 commonModule,
-                dataModule,
                 coreUiModule,
                 locationDetailsModule,
-                createFolderModule
+                createFolderModule,
+                groupDetailsModule,
+                resourceTagsModule,
+                helpMenuModule,
+                logsModule,
+                resourceMoreMenuModule,
+                fullDataRefreshModule,
+                resourceTypesModule,
+                notificationsModule,
+                autofillModule
             )
         }
     }

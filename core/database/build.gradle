@@ -6,16 +6,12 @@ plugins {
 
 dependencies {
     implementation project(':common')
-    implementation project(':mvp')
     implementation project(':entity')
     implementation project(':storage')
     implementation project(':mappers')
     implementation project(':ui')
     implementation project(':dto')
 
-    implementation libs.androidx.core
-    implementation libs.androidx.appcompat
-    implementation libs.androidx.security
     implementation libs.di.koin
     implementation libs.androidx.lifecycleAnnotationProcessor
     implementation libs.androidx.processLifecycle

@@ -7,15 +7,14 @@ dependencies {
     implementation project(':common')
     implementation project(':storage')
     implementation project(':dto')
-    implementation project(':mvp')
+    implementation project(':architecture')
 
     api libs.networking.retrofit
     api libs.networking.okHttp
     api libs.networking.okHttpLoggingInterceptor
+
     implementation libs.networking.retrofitGsonConverter
-
     implementation libs.di.koin
-
     implementation libs.gson
     implementation libs.coil.core
 }

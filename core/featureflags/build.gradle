@@ -8,10 +8,7 @@ dependencies {
     implementation project(':storage')
     implementation project(':mappers')
     implementation project(':common')
-    implementation project(':ui')
     implementation project(':dto')
-    implementation project(':mvp')
-    implementation project(':coreui')
     implementation project(':entity')
 
     implementation libs.di.koin

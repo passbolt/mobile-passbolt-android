@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.feature.settings.screen.autofill
 
-import com.passbolt.mobile.android.feature.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 
 class SettingsAutofillPresenter(
-    private val autofillInformationProvider: AutofillInformationProvider
+    private val autofillInformationProvider: com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 ) : SettingsAutofillContract.Presenter {
 
     override var view: SettingsAutofillContract.View? = null

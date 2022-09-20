@@ -4,9 +4,9 @@ import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFolderResourcesFilteredUseCase
@@ -19,8 +19,8 @@ import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseC
 import com.passbolt.mobile.android.database.impl.tags.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
-import com.passbolt.mobile.android.feature.resources.actions.ResourceActionsInteractor
-import com.passbolt.mobile.android.feature.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase

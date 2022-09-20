@@ -1,0 +1,26 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+apply plugin: "androidx.navigation.safeargs"
+
+dependencies {
+    implementation project(':common')
+    implementation project(':architecture')
+    implementation project(':storage')
+    implementation project(':mappers')
+    implementation project(':ui')
+    implementation project(':dto')
+    implementation project(':networking')
+    implementation project(':passboltapi')
+    implementation project(':database')
+
+    implementation libs.di.koin
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

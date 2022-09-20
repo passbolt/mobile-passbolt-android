@@ -9,11 +9,10 @@ dependencies {
     implementation project(':common')
     implementation project(':ui')
     implementation project(':coreui')
-    implementation project(':mvp')
+    implementation project(':architecture')
     implementation project(':authentication')
     implementation project(':database')
-    implementation project(':commongroups')
-    implementation project(':data')
+    implementation project(':groupdetails')
     implementation project(':mappers')
     implementation project(':navigation')
 

@@ -18,7 +18,6 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.hideSoftInput
-import com.passbolt.mobile.android.core.logger.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -37,7 +36,8 @@ import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpList
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyListener
-import com.passbolt.mobile.android.featureflags.ui.FeatureFlagsFetchErrorDialog
+import com.passbolt.mobile.android.featureflagserror.FeatureFlagsFetchErrorDialog
+import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -420,7 +420,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     override fun menuShowLogsClick() {
         findNavController().navigate(
-            AuthFragmentDirections.actionAuthFragmentToLogsFragment()
+            AuthFragmentDirections.actionAuthFragmentToLogs()
         )
     }
 

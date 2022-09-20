@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.permissions.permissions
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
-import com.passbolt.mobile.android.data.interactor.ResourceShareInteractor
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
+import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.ui.GroupModel
@@ -213,11 +213,11 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
         mockResourceShareInteractor.stub {
             onBlocking { simulateAndShareResource(any(), any()) }
-                .doReturn(ResourceShareInteractor.Output.Success)
+                .doReturn(com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor.Output.Success)
         }
         mockHomeDataInteractor.stub {
             onBlocking { refreshAllHomeScreenData() }
-                .doReturn(HomeDataInteractor.Output.Success)
+                .doReturn(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success)
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.EDIT)

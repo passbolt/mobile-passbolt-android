@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import com.gaelmarhic.quadrant.Accountdetails
 import com.gaelmarhic.quadrant.Authentication
-import com.gaelmarhic.quadrant.Autofill
+import com.gaelmarhic.quadrant.Autofillresources
 import com.gaelmarhic.quadrant.Main
 import com.gaelmarhic.quadrant.Setup
 import com.gaelmarhic.quadrant.Startup
@@ -74,14 +74,14 @@ object ActivityIntents {
     // in an intent that is next set as PendingIntent payload (AutofillService)
     fun autofill(context: Context, autofillModeName: String, uri: String? = null) =
         Intent().apply {
-            setClassName(context, Autofill.AUTOFILL_RESOURCES_ACTIVITY)
+            setClassName(context, Autofillresources.AUTOFILL_RESOURCES_ACTIVITY)
             putExtra(EXTRA_AUTOFILL_MODE_NAME, autofillModeName)
             uri?.let { putExtra(EXTRA_AUTOFILL_URI, uri) }
         }
 
     fun autofillReorderToFront(context: Context) =
         Intent().apply {
-            setClassName(context, Autofill.AUTOFILL_RESOURCES_ACTIVITY)
+            setClassName(context, Autofillresources.AUTOFILL_RESOURCES_ACTIVITY)
             flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or
                     Intent.FLAG_ACTIVITY_SINGLE_TOP or
                     Intent.FLAG_ACTIVITY_CLEAR_TOP

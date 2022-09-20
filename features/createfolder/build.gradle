@@ -9,16 +9,15 @@ dependencies {
     implementation project(':common')
     implementation project(':ui')
     implementation project(':coreui')
-    implementation project(':mvp')
+    implementation project(':architecture')
     implementation project(':authentication')
     implementation project(':database')
-    implementation project(':commongroups')
-    implementation project(':data')
+    implementation project(':groupdetails')
     implementation project(':mappers')
-    implementation project(':navigation')
     implementation project(':permissions')
-    implementation project(':commonfolders')
+    implementation project(':folderdetails')
     implementation project(':networking')
+    implementation project(':folders')
 
     implementation libs.di.koin
     implementation libs.room.sqlite
@@ -33,8 +32,6 @@ dependencies {
     implementation libs.material
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
-
-    testImplementation project(':commontest')
 }
 
 android {

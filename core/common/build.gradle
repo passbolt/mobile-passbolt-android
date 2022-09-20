@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
     implementation project(':localization')
-    implementation project(':mvp')
 
     implementation libs.androidx.core
     implementation libs.androidx.appcompat
@@ -13,8 +12,6 @@ dependencies {
     implementation libs.material
     implementation libs.fastAdapter.binding
     implementation libs.fastAdapter.core
-    implementation libs.fastAdapter.diff
-
     implementation libs.networking.retrofit
     implementation libs.networking.okHttp
     implementation libs.di.koin

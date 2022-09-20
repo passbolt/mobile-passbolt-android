@@ -16,7 +16,7 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.dialogs.permissionDeletionConfirmationAlertDialog
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
-import com.passbolt.mobile.android.core.commongroups.groupmembers.GroupMembersFragment
+import com.passbolt.mobile.android.groupdetails.groupmembers.GroupMembersFragment
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment

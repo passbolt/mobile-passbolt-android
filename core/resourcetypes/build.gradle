@@ -1,0 +1,14 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':storage')
+    implementation project(':database')
+    implementation project(':entity')
+
+    implementation libs.di.koin
+    implementation libs.room.core
+}

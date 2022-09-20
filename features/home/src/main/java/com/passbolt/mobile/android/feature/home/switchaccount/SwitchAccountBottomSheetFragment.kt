@@ -15,7 +15,6 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.dialogs.signOutAlertDialog
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.core.commonresource.moremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
@@ -27,6 +26,7 @@ import com.passbolt.mobile.android.feature.home.switchaccount.recycler.HeaderSig
 import com.passbolt.mobile.android.feature.home.switchaccount.recycler.ManageAccountsClick
 import com.passbolt.mobile.android.feature.home.switchaccount.recycler.SwitchAccountClick
 import com.passbolt.mobile.android.feature.home.switchaccount.recycler.SwitchAccountUiItemsMapper
+import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent

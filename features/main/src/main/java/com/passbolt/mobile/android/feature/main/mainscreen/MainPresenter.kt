@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.main.mainscreen
 
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.data.interactor.HomeDataInteractor
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainPresenter(
-    private val homeDataInteractor: HomeDataInteractor,
+    private val homeDataInteractor: com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<MainContract.View>(coroutineLaunchContext), MainContract.Presenter {
 
