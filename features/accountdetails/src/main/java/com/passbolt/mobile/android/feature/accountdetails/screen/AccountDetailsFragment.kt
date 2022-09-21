@@ -98,7 +98,7 @@ class AccountDetailsFragment :
     override fun showLabelLengthError(labelMaxLength: Int) {
         binding.labelInput.setState(
             StatefulInput.State.Error(
-                getString(R.string.account_details_label_length_exeeded_format, labelMaxLength)
+                getString(R.string.validation_required_with_max_length, labelMaxLength)
             )
         )
     }

@@ -116,9 +116,11 @@ class CreateFolderFragment :
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
-    override fun showFolderNameIsRequired() {
+    override fun showFolderNameLenghtValidationError(folderNameMaxLength: Int) {
         binding.folderNameInput.setState(
-            StatefulInput.State.Error(getString(R.string.create_folder_name_validation))
+            StatefulInput.State.Error(
+                getString(R.string.validation_required_with_max_length, folderNameMaxLength)
+            )
         )
     }
 
