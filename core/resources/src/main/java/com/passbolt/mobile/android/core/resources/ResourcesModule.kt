@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesU
 import com.passbolt.mobile.android.core.resources.usecase.RebuildTagsTablesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RemoveFromFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
+import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.SimulateShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.UpdateResourceUseCase
@@ -59,4 +60,5 @@ val resourcesModule = module {
     singleOf(::AddToFavouritesUseCase)
     singleOf(::RemoveFromFavouritesUseCase)
     singleOf(::FavouritesInteractor)
+    singleOf(::ResourceShareInteractor)
 }
