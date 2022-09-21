@@ -727,9 +727,9 @@ class HomeFragment :
     }
 
     private fun showScreenTitleWithStartIcon(title: String, @DrawableRes iconRes: Int) {
-        with(binding.screenTitleLabel) {
-            text = title
-            setCompoundDrawablesWithIntrinsicBounds(iconRes, 0, 0, 0)
+        with(binding) {
+            screenTitleLabel.text = title
+            titleDrawable.setImageResource(iconRes)
         }
     }
 
