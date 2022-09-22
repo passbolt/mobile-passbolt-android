@@ -37,7 +37,7 @@ interface CreateFolderContract {
             overlap: Int
         )
 
-        fun showFolderNameIsRequired()
+        fun showFolderNameLenghtValidationError(folderNameMaxLength: Int)
         fun clearValidationErrors()
         fun showProgress()
         fun hideProgress()

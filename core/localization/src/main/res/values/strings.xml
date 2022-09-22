@@ -38,6 +38,8 @@
     <string name="common_message_resource_shared">The resource permissions were updated.</string>
     <string name="common_message_folder_created">New folder %s has been created!</string>
 
+    <string name="validation_required_with_max_length">Length should be between 1 and %d</string>
+
     <string name="fingerprint_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Biometric authorization has been blocked due to too many attempts.</string>
     <string name="fingerprint_biometric_error_blocked">Biometric authorization has been blocked for 30 seconds.</string>
@@ -103,7 +105,6 @@
     <string name="account_details_label_name">Name</string>
     <string name="account_details_label_email">E-mail</string>
     <string name="account_details_label_org">Organization URL</string>
-    <string name="account_details_label_length_exeeded_format">Length should be between 1 and %d</string>
     <string name="account_details_save_changes">Save changes</string>
     <string name="account_details_label_saved">Your account label was changed!</string>
 

@@ -84,7 +84,7 @@
     <string name="account_details_label_name">Name</string>
     <string name="account_details_label_email">E-Mail</string>
     <string name="account_details_label_org">URL der Organisation</string>
-    <string name="account_details_label_length_exeeded_format">Die Länge sollte zwischen 1 und %d liegen.</string>
+    <string name="validation_required_with_max_length">Die Länge sollte zwischen 1 und %d liegen.</string>
     <string name="account_details_save_changes">Änderungen speichern</string>
     <string name="account_details_label_saved">Ihr Kontobezeichung wurde geändert!</string>
     <string name="unknown_error">Unbekannter Fehler aufgetreten</string>

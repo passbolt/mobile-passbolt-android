@@ -1,11 +1,12 @@
 package com.passbolt.mobile.android.createfolder
 
+import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.commonfolders.usecase.CreateFolderUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.FolderShareInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.commonfolders.usecase.FolderShareInteractor
 import com.passbolt.mobile.android.database.impl.folders.AddLocalFolderUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
@@ -113,8 +114,8 @@ class CreateFolderPresenter(
         view?.clearValidationErrors()
         validation {
             of(folderName) {
-                withRules(StringNotBlank) {
-                    onInvalid { view?.showFolderNameIsRequired() }
+                withRules(StringNotBlank, StringMaxLength(FOLDER_NAME_MAX_LENGTH)) {
+                    onInvalid { view?.showFolderNameLenghtValidationError(FOLDER_NAME_MAX_LENGTH) }
                 }
             }
             onValid {
@@ -171,5 +172,9 @@ class CreateFolderPresenter(
                 // handled by runAuthenticatedOperation
             }
         }
+    }
+
+    private companion object {
+        private const val FOLDER_NAME_MAX_LENGTH = 256
     }
 }
