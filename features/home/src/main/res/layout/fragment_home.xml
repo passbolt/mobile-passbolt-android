@@ -13,107 +13,110 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/background"
             app:layout_scrollFlags="scroll|enterAlways">
 
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_marginStart="@dimen/dp_16"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/labelLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/labelLayout"
+                app:tint="@color/text_primary" />
+
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/labelLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginTop="@dimen/dp_8"
+                android:layout_marginBottom="@dimen/dp_16"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/dp_16"
+                app:layout_constraintEnd_toStartOf="@id/moreButton"
+                app:layout_constraintStart_toEndOf="@id/backButton"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="UseCompoundDrawables">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/titleDrawable"
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:scaleType="fitCenter"/>
 
-                    <ImageView
-                        android:id="@+id/backButton"
-                        android:layout_width="@dimen/dp_24"
-                        android:layout_height="@dimen/dp_24"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:background="?selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_back"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:tint="@color/text_primary" />
-
-                    <ImageView
-                        android:id="@+id/closeButton"
-                        android:layout_width="@dimen/dp_24"
-                        android:layout_height="@dimen/dp_24"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="?selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_close"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/moreButton"
-                        android:layout_width="@dimen/dp_24"
-                        android:layout_height="@dimen/dp_24"
-                        android:layout_marginEnd="@dimen/dp_8"
-                        android:background="?selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_more"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/closeButton"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/screenTitleLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="@dimen/dp_8"
-                        android:drawablePadding="@dimen/dp_4"
-                        android:ellipsize="middle"
-                        android:maxLines="1"
-                        android:paddingHorizontal="@dimen/dp_24"
-                        android:paddingVertical="@dimen/dp_16"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/moreButton"
-                        app:layout_constraintStart_toEndOf="@id/backButton"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:drawableStart="@drawable/ic_list"
-                        tools:text="All items" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/searchTextInput"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/screenTitleLabel"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginHorizontal="@dimen/dp_16"
-                    android:layout_marginBottom="@dimen/dp_16"
-                    app:endIconDrawable="@drawable/ic_avatar_placeholder"
-                    app:endIconTint="@android:color/transparent"
-                    app:endIconTintMode="screen"
-                    app:hintEnabled="false"
-                    app:startIconDrawable="@drawable/ic_filter"
-                    app:startIconTint="@android:color/transparent"
-                    app:startIconTintMode="screen">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/searchEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionSearch"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:textColor="@color/text_primary"
-                        tools:hint="@string/default_home_search_hint" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
+                    android:layout_marginStart="@dimen/dp_8"
+                    android:ellipsize="middle"
+                    android:maxLines="1"
+                    android:paddingVertical="@dimen/dp_16"
+                    android:textStyle="bold"
+                    tools:text="All items" />
             </LinearLayout>
 
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
+            <ImageView
+                android:id="@+id/moreButton"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_more"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/labelLayout"
+                app:layout_constraintEnd_toStartOf="@id/closeButton"
+                app:layout_constraintTop_toTopOf="@id/labelLayout" />
+
+            <ImageView
+                android:id="@+id/closeButton"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_close"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/labelLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/labelLayout" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/searchTextInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/dp_16"
+                android:layout_marginBottom="@dimen/dp_16"
+                app:endIconDrawable="@drawable/ic_avatar_placeholder"
+                app:endIconTint="@android:color/transparent"
+                app:endIconTintMode="screen"
+                app:hintEnabled="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/labelLayout"
+                app:startIconDrawable="@drawable/ic_filter"
+                app:startIconTint="@android:color/transparent"
+                app:startIconTintMode="screen">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/searchEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textColor="@color/text_primary"
+                    tools:hint="@string/default_home_search_hint" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
