@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
+import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
@@ -41,7 +42,8 @@ class SignInVerifyInteractor(
     private val getSessionUseCase: GetSessionUseCase,
     private val signInUseCase: SignInUseCase,
     private val challengeDecryptor: ChallengeDecryptor,
-    private val challengeVerifier: ChallengeVerifier
+    private val challengeVerifier: ChallengeVerifier,
+    private val inAppReviewInteractor: InAppReviewInteractor
 ) {
 
     suspend fun signInVerify(
@@ -195,6 +197,8 @@ class SignInVerifyInteractor(
             }
             is ChallengeVerifier.Output.Verified -> {
                 Timber.d("Challenge verified with success")
+                Timber.d("Increasing sign in count")
+                inAppReviewInteractor.processSuccessfulSignIn()
                 onSuccess(
                     Success(
                         challengeResponseDto,

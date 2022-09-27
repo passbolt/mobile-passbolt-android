@@ -26,6 +26,7 @@ dependencies {
     implementation project(':featureflagserror')
     implementation project(':helpmenu')
     implementation project(':logs')
+    implementation project(':inappreview')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

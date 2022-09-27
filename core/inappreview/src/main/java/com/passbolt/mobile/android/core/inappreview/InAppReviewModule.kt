@@ -1,8 +1,13 @@
-package com.passbolt.mobile.android.feature.main.mainscreen
+package com.passbolt.mobile.android.core.inappreview
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
-import kotlinx.coroutines.flow.Flow
+import com.passbolt.mobile.android.core.inappreview.storage.GetInAppReviewParametersUseCase
+import com.passbolt.mobile.android.core.inappreview.storage.GetInAppReviewShowModeUseCase
+import com.passbolt.mobile.android.core.inappreview.storage.InAppReviewShowSerializer
+import com.passbolt.mobile.android.core.inappreview.storage.SaveInAppReviewParametersUseCase
+import com.passbolt.mobile.android.core.inappreview.storage.SaveInAppShowModeUseCase
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+import java.time.Clock
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,18 +32,12 @@ import kotlinx.coroutines.flow.Flow
  * @since v1.0
  */
 
-interface MainContract {
-
-    interface View : BaseAuthenticatedContract.View {
-        fun checkForAppUpdates()
-        fun showAppUpdateDownloadedSnackbar()
-        fun tryLaunchReviewFlow()
-    }
-
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished>
-        fun performFullDataRefresh()
-        fun appUpdateDownloaded()
-        fun performLocalDataRefresh()
-    }
+val inAppReviewModule = module {
+    singleOf(::SaveInAppShowModeUseCase)
+    singleOf(::GetInAppReviewParametersUseCase)
+    singleOf(::SaveInAppReviewParametersUseCase)
+    singleOf(::GetInAppReviewShowModeUseCase)
+    singleOf(::InAppReviewShowSerializer)
+    singleOf(::InAppReviewInteractor)
+    factory { Clock.systemDefaultZone() }
 }

@@ -21,6 +21,8 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.ScopeDSL
@@ -52,97 +54,26 @@ import org.koin.dsl.ScopeDSL
 fun Module.authModule() {
     scope(named<AuthFragment>()) {
         authPresenter()
-        scoped {
-            GetServerPublicPgpKeyUseCase(
-                authRepository = get()
-            )
-        }
-        scoped {
-            GetServerPublicRsaKeyUseCase(
-                authRepository = get()
-            )
-        }
-        scoped {
-            SignInUseCase(
-                authRepository = get(),
-                signInMapper = get(),
-                cookieExtractor = get()
-            )
-        }
-        scoped {
-            ChallengeProvider(
-                gson = get(),
-                openPgp = get(),
-                privateKeyUseCase = get(),
-                timeProvider = get(),
-                uuidProvider = get()
-            )
-        }
-        scoped {
-            ChallengeDecryptor(
-                openPgp = get(),
-                getPrivateKeyUseCase = get(),
-                gson = get()
-            )
-        }
-        scoped {
-            ChallengeVerifier()
-        }
-        scoped {
-            AuthStrategyFactory()
-        }
-        scoped {
-            VerifyPassphraseUseCase(
-                openPgp = get()
-            )
-        }
+
+        scopedOf(::GetServerPublicPgpKeyUseCase)
+        scopedOf(::GetServerPublicRsaKeyUseCase)
+        scopedOf(::SignInUseCase)
+        scopedOf(::ChallengeProvider)
+        scopedOf(::ChallengeDecryptor)
+        scopedOf(::ChallengeVerifier)
+        scopedOf(::AuthStrategyFactory)
+        scopedOf(::VerifyPassphraseUseCase)
+        scopedOf(::AuthReasonMapper)
+        scopedOf(::MfaStatusProvider)
+        scopedOf(::GetAndVerifyServerKeysInteractor)
+        scopedOf(::SignInVerifyInteractor)
         scoped {
             BiometricPrompt.PromptInfo.Builder()
         }
-        scoped {
-            AuthReasonMapper()
-        }
-        scoped {
-            MfaStatusProvider()
-        }
-        scoped {
-            GetAndVerifyServerKeysInteractor(
-                getServerPublicPgpKeyUseCase = get(),
-                getServerPublicRsaKeyUseCase = get(),
-                getAccountDataUseCase = get(),
-                isServerFingerprintCorrectUseCase = get()
-            )
-        }
-        scoped {
-            SignInVerifyInteractor(
-                getAccountDataUseCase = get(),
-                challengeProvider = get(),
-                getSessionUseCase = get(),
-                signInUseCase = get(),
-                challengeDecryptor = get(),
-                challengeVerifier = get()
-            )
-        }
     }
-    single { MfaProviderHandler() }
-    single {
-        SignOutUseCase(
-            passphraseMemoryCache = get(),
-            removeSelectedAccountUseCase = get(),
-            getSelectedAccountUseCase = get(),
-            authRepository = get(),
-            signOutMapper = get(),
-            getSessionUseCase = get()
-        )
-    }
-    single {
-        BiometryInteractor(
-            checkIfPassphraseFileExistsUseCase = get(),
-            removeBiometricKeyUseCase = get(),
-            removeAllAccountsPassphrasesUseCase = get(),
-            fingerprintInfoProvider = get()
-        )
-    }
+    singleOf(::MfaProviderHandler)
+    singleOf(::SignOutUseCase)
+    singleOf(::BiometryInteractor)
 }
 
 private fun ScopeDSL.authPresenter() {
