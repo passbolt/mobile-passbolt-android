@@ -16,12 +16,15 @@ dependencies {
     implementation project(':authentication')
     implementation project(':security')
     implementation project(':fulldatarefresh')
+    implementation project(':inappreview')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
     implementation libs.di.koin
     implementation libs.inAppUpdate.core
     implementation libs.inAppUpdate.ktx
+    implementation libs.inAppReview.core
+    implementation libs.inAppReview.ktx
 }
 
 android {

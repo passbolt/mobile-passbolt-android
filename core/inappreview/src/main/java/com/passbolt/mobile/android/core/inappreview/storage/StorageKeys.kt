@@ -1,8 +1,4 @@
-package com.passbolt.mobile.android.feature.main.mainscreen
-
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
-import kotlinx.coroutines.flow.Flow
+package com.passbolt.mobile.android.core.inappreview.storage
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,18 +23,6 @@ import kotlinx.coroutines.flow.Flow
  * @since v1.0
  */
 
-interface MainContract {
-
-    interface View : BaseAuthenticatedContract.View {
-        fun checkForAppUpdates()
-        fun showAppUpdateDownloadedSnackbar()
-        fun tryLaunchReviewFlow()
-    }
-
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished>
-        fun performFullDataRefresh()
-        fun appUpdateDownloaded()
-        fun performLocalDataRefresh()
-    }
-}
+internal const val KEY_IN_APP_REVIEW_INTERVAL_START_DATE = "IN_APP_REVIEW_INTERVAL_START_DATE"
+internal const val KEY_SIGN_IN_COUNT = "SIGN_IN_COUNT"
+internal const val KEY_IN_APP_REVIEW_SHOW_MODE = "IN_APP_REVIEW_SHOW_MODE"

@@ -136,6 +136,7 @@ dependencies {
     implementation project(':resourcetypes')
     implementation project(':notifications')
     implementation project(':autofill')
+    implementation project(':inappreview')
 
     debugImplementation libs.quality.leakcanary
 

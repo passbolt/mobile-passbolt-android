@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.main.mainscreen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
+import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainPresenter(
-    private val homeDataInteractor: com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor,
+    private val homeDataInteractor: HomeDataInteractor,
+    private val inAppReviewInteractor: InAppReviewInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<MainContract.View>(coroutineLaunchContext), MainContract.Presenter {
 
@@ -31,6 +33,10 @@ class MainPresenter(
         super<BaseAuthenticatedPresenter>.attach(view)
         performFullDataRefresh()
         view.checkForAppUpdates()
+        if (inAppReviewInteractor.shouldShowInAppReviewFlow()) {
+            view.tryLaunchReviewFlow()
+            inAppReviewInteractor.inAppReviewFlowShowed()
+        }
     }
 
     override fun appUpdateDownloaded() {

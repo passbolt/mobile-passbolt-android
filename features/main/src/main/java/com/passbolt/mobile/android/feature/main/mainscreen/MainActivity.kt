@@ -10,6 +10,7 @@ import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.android.play.core.review.ReviewManager
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.extension.getRootView
@@ -43,6 +44,7 @@ class MainActivity :
             }
         }
     }
+    private val appReviewManager: ReviewManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +102,18 @@ class MainActivity :
             setAction(getString(R.string.main_update_downloaded_install)) { appUpdateManager.completeUpdate() }
             show()
         }
+    }
+
+    override fun tryLaunchReviewFlow() {
+        // review flow launch success depends on app review API quota
+        appReviewManager.requestReviewFlow()
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    it.result?.let { result -> appReviewManager.launchReviewFlow(this, result) }
+                } else {
+                    Timber.e("In app review request to start flow failed: ${it.exception?.message}")
+                }
+            }
     }
 
     override fun performFullDataRefresh() =

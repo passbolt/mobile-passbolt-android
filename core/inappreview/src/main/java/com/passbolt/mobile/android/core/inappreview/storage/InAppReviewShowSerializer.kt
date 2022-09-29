@@ -1,8 +1,6 @@
-package com.passbolt.mobile.android.feature.main.mainscreen
+package com.passbolt.mobile.android.core.inappreview.storage
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
-import kotlinx.coroutines.flow.Flow
+import com.passbolt.mobile.android.core.inappreview.InAppReviewShowMode
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,18 +25,22 @@ import kotlinx.coroutines.flow.Flow
  * @since v1.0
  */
 
-interface MainContract {
+class InAppReviewShowSerializer {
 
-    interface View : BaseAuthenticatedContract.View {
-        fun checkForAppUpdates()
-        fun showAppUpdateDownloadedSnackbar()
-        fun tryLaunchReviewFlow()
-    }
+    fun serialize(model: InAppReviewShowMode) =
+        when (model) {
+            is InAppReviewShowMode.ConsecutiveShow -> InAppReviewShowModeEnum.CONSECUTIVE_SHOW.ordinal
+            is InAppReviewShowMode.FirstShow -> InAppReviewShowModeEnum.FIRST_SHOW.ordinal
+        }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished>
-        fun performFullDataRefresh()
-        fun appUpdateDownloaded()
-        fun performLocalDataRefresh()
+    fun deserialize(ordinal: Int) =
+        when (InAppReviewShowModeEnum.values()[ordinal]) {
+            InAppReviewShowModeEnum.FIRST_SHOW -> InAppReviewShowMode.FirstShow()
+            InAppReviewShowModeEnum.CONSECUTIVE_SHOW -> InAppReviewShowMode.ConsecutiveShow()
+        }
+
+    enum class InAppReviewShowModeEnum {
+        FIRST_SHOW,
+        CONSECUTIVE_SHOW
     }
 }

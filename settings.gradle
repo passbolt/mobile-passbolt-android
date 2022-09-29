@@ -26,6 +26,7 @@ coreModule "fulldatarefresh"
 coreModule "resourcetypes"
 coreModule "notifications"
 coreModule "autofill"
+coreModule "inappreview"
 
 featureModule "startup"
 featureModule "setup"

@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
+import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
@@ -14,7 +15,6 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
-import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
@@ -194,6 +194,7 @@ class SignInPresenterTest : KoinTest {
         presenter.attach(mockView)
         presenter.signInClick(SAMPLE_PASSPHRASE)
 
+        verify(mockInAppReviewInteractor).processSuccessfulSignIn()
         verify(mockView).showProgress()
         verify(mockView).hideProgress()
         verify(mockView).authSuccess()

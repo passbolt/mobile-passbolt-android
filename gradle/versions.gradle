@@ -86,7 +86,8 @@ ext {
         dokka: "1.6.10",
         inAppUpdate: "2.0.0",
         ksp: "1.7.10-1.0.6",
-        fabSpeedDial: "3.3.0"
+        fabSpeedDial: "3.3.0",
+        inAppReview: "2.0.0"
     ]
 
     libs = [
@@ -196,6 +197,10 @@ ext {
         inAppUpdate: [
             core: "com.google.android.play:app-update:${versions.inAppUpdate}",
             ktx: "com.google.android.play:app-update-ktx:${versions.inAppUpdate}"
+        ],
+        inAppReview: [
+            core: "com.google.android.play:review:${versions.inAppReview}",
+            ktx: "com.google.android.play:review-ktx:${versions.inAppReview}"
         ],
         fabSpeedDial: "com.leinardi.android:speed-dial:${versions.fabSpeedDial}"
     ]

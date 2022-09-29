@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
@@ -119,6 +120,7 @@ internal val mockGetSessionUseCase = mock<GetSessionUseCase>()
 internal val mockRefreshSessionUseCase = mock<RefreshSessionUseCase>()
 internal val mockRootDetector = mock<RootDetector>()
 internal val mockProfileInteractor = mock<UserProfileInteractor>()
+internal val mockInAppReviewInteractor = mock<InAppReviewInteractor>()
 
 val testAuthModule = module {
     factory {
@@ -136,7 +138,8 @@ val testAuthModule = module {
             getSessionUseCase = mockGetSessionUseCase,
             signInUseCase = mockSignInUseCase,
             challengeDecryptor = mockChallengeDecryptor,
-            challengeVerifier = mockChallengeVerifier
+            challengeVerifier = mockChallengeVerifier,
+            inAppReviewInteractor = mockInAppReviewInteractor
         )
     }
     factory {

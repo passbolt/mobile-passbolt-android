@@ -1,8 +1,4 @@
-package com.passbolt.mobile.android.feature.main.mainscreen
-
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
-import kotlinx.coroutines.flow.Flow
+package com.passbolt.mobile.android.core.inappreview.storage
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,18 +23,12 @@ import kotlinx.coroutines.flow.Flow
  * @since v1.0
  */
 
-interface MainContract {
+class InAppReviewFileName(userId: String) {
 
-    interface View : BaseAuthenticatedContract.View {
-        fun checkForAppUpdates()
-        fun showAppUpdateDownloadedSnackbar()
-        fun tryLaunchReviewFlow()
-    }
+    val name = IN_APP_REVIEW_FILE_NAME_FORMAT.format(userId)
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished>
-        fun performFullDataRefresh()
-        fun appUpdateDownloaded()
-        fun performLocalDataRefresh()
+    private companion object {
+        private const val IN_APP_REVIEW_ALIAS = "inappreview"
+        private const val IN_APP_REVIEW_FILE_NAME_FORMAT = "${IN_APP_REVIEW_ALIAS}_%s"
     }
 }
