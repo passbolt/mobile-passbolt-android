@@ -104,6 +104,7 @@ interface HomeContract {
         fun showFolderCreated(name: String)
         fun showSynchronizedProgress()
         fun hideSynchronizedProgress()
+        fun showContentNotAvailableSnackbar()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

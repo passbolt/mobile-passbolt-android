@@ -26,6 +26,7 @@
     <string name="favourites_failure">Could not modify favourite</string>
     <string name="shared_with">Shared with</string>
     <string name="location">Location</string>
+    <string name="content_not_available">The content is not available anymore</string>
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_network_failure">There was a connection issue</string>
@@ -389,6 +390,7 @@
     <string name="create_folder_name">Name</string>
     <string name="create_folder_name_validation">Folder name cannot be empty</string>
     <string name="create_folder_error_format">Could not create folder. %s</string>
+
     <string name="share_folder_error_format">Could not share folder. %s</string>
 
     <!--

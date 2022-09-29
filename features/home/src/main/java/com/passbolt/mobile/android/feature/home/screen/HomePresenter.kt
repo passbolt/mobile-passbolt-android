@@ -239,7 +239,9 @@ class HomePresenter(
                         if (shouldShowAddButton()) {
                             view?.showAddButton()
                         }
-                        showActiveHomeView()
+                        runWithHandlingMissingItem({
+                            showActiveHomeView()
+                        }, resultIfActionFails = Unit)
                     }
                 }
                 view?.apply {
@@ -257,7 +259,9 @@ class HomePresenter(
                 .collectLatest {
                     Timber.d("New search text received")
                     processSearchIconChange()
-                    filterHomeData()
+                    runWithHandlingMissingItem({
+                        filterHomeData()
+                    }, resultIfActionFails = Unit)
                 }
         }
     }
@@ -272,13 +276,40 @@ class HomePresenter(
             if (it is HomeDisplayViewModel.Folders) {
                 return when (val currentFolder = it.activeFolder) {
                     is Folder.Child ->
-                        getLocalFolderUseCase.execute(GetLocalFolderDetailsUseCase.Input(currentFolder.folderId))
-                            .folder.permission in setOf(ResourcePermission.OWNER, ResourcePermission.UPDATE)
+                        runWithHandlingMissingItem({
+                            getLocalFolderUseCase.execute(GetLocalFolderDetailsUseCase.Input(currentFolder.folderId))
+                                .folder.permission in setOf(ResourcePermission.OWNER, ResourcePermission.UPDATE)
+                        }, resultIfActionFails = false)
+
                     is Folder.Root -> true
                 }
             }
         }
         return true
+    }
+
+    private suspend fun <T> runWithHandlingMissingItem(action: suspend () -> T, resultIfActionFails: T): T {
+        return try {
+            action()
+        } catch (exception: NullPointerException) {
+            // the current filtering item (tag, folder, group)
+            // was deleted from other application instance and full refresh was done while being on that item
+            // in that case navigate to selected filter root and show info message
+            navigateToHomeView(
+                when (homeView) {
+                    is HomeDisplayViewModel.AllItems -> HomeDisplayViewModel.AllItems
+                    is HomeDisplayViewModel.Favourites -> HomeDisplayViewModel.Favourites
+                    is HomeDisplayViewModel.Folders -> HomeDisplayViewModel.folderRoot()
+                    is HomeDisplayViewModel.Groups -> HomeDisplayViewModel.groupsRoot()
+                    is HomeDisplayViewModel.OwnedByMe -> HomeDisplayViewModel.OwnedByMe
+                    is HomeDisplayViewModel.RecentlyModified -> HomeDisplayViewModel.RecentlyModified
+                    is HomeDisplayViewModel.SharedWithMe -> HomeDisplayViewModel.SharedWithMe
+                    is HomeDisplayViewModel.Tags -> HomeDisplayViewModel.tagsRoot()
+                }
+            )
+            view?.showContentNotAvailableSnackbar()
+            resultIfActionFails
+        }
     }
 
     // show in child folders only
