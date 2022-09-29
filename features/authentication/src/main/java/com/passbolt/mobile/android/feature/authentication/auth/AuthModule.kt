@@ -124,7 +124,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     coroutineLaunchContext = get(),
     authReasonMapper = get(),
     rootDetector = get(),
-    runtimeAuthenticatedFlag = get()
+    runtimeAuthenticatedFlag = get(),
+    inAppReviewInteractor = get()
 )
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
@@ -148,5 +149,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     signInVerifyInteractor = get(),
     biometryInteractor = get(),
     userProfileInteractor = get(),
-    runtimeAuthenticatedFlag = get()
+    runtimeAuthenticatedFlag = get(),
+    inAppReviewInteractor = get()
 )

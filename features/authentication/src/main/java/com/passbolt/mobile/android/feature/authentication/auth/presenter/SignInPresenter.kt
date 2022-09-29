@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
@@ -63,6 +64,7 @@ open class SignInPresenter(
     private val getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysInteractor,
     private val signInVerifyInteractor: SignInVerifyInteractor,
     private val userProfileInteractor: UserProfileInteractor,
+    private val inAppReviewInteractor: InAppReviewInteractor,
     biometryInteractor: BiometryInteractor,
     getAccountDataUseCase: GetAccountDataUseCase,
     biometricCipher: BiometricCipher,
@@ -243,6 +245,8 @@ open class SignInPresenter(
             )
         )
         saveSelectedAccountUseCase.execute(UserIdInput(userId))
+        Timber.d("Increasing sign in count")
+        inAppReviewInteractor.processSuccessfulSignIn()
         loginState = null
         fetchFeatureFlags()
     }

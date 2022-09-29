@@ -138,8 +138,7 @@ val testAuthModule = module {
             getSessionUseCase = mockGetSessionUseCase,
             signInUseCase = mockSignInUseCase,
             challengeDecryptor = mockChallengeDecryptor,
-            challengeVerifier = mockChallengeVerifier,
-            inAppReviewInteractor = mockInAppReviewInteractor
+            challengeVerifier = mockChallengeVerifier
         )
     }
     factory {
@@ -175,6 +174,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     featureFlagsInteractor = mockFeatureFlagsInteractor,
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
+    userProfileInteractor = mockProfileInteractor,
+    biometryInteractor = get(),
     getAccountDataUseCase = mockGetAccountDataUseCase,
     biometricCipher = mockBiometricCipher,
     getPassphraseUseCase = mockGetPassphraseUseCase,
@@ -183,9 +184,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     coroutineLaunchContext = get(),
     authReasonMapper = authReasonMapper,
     rootDetector = mockRootDetector,
-    biometryInteractor = get(),
-    userProfileInteractor = mockProfileInteractor,
-    runtimeAuthenticatedFlag = get()
+    runtimeAuthenticatedFlag = get(),
+    inAppReviewInteractor = mockInAppReviewInteractor
 )
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(
@@ -223,5 +223,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     signInVerifyInteractor = get(),
     biometryInteractor = get(),
     userProfileInteractor = mockProfileInteractor,
-    runtimeAuthenticatedFlag = get()
+    runtimeAuthenticatedFlag = get(),
+    inAppReviewInteractor = mockInAppReviewInteractor
 )
