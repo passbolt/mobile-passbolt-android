@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.database
 import android.content.Context
 import androidx.room.Room
 import com.passbolt.mobile.android.database.migrations.Migration10to11
+import com.passbolt.mobile.android.database.migrations.Migration11to12
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
@@ -60,7 +61,8 @@ class DatabaseProvider(
         )
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
-                Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11
+                Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11,
+                Migration11to12
             )
             .openHelperFactory(factory)
             .build()

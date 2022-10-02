@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.database
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -73,12 +72,6 @@ import com.passbolt.mobile.android.entity.user.User
         ResourceAndUsersCrossRef::class,
         FolderAndUsersCrossRef::class,
         FolderAndGroupsCrossRef::class
-    ],
-    autoMigrations = [
-        AutoMigration(
-            from = 11,
-            to = 12
-        )
     ],
     version = 12
 )
