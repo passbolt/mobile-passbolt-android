@@ -1,19 +1,27 @@
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.scenarios.scanqrcode
 
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import com.passbolt.mobile.android.feature.setup.SetUpActivity
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
+import com.passbolt.mobile.android.feature.setup.R
+import com.passbolt.mobile.android.feature.startup.StartUpActivity
+import com.passbolt.mobile.android.instrumentationTestsModule
+import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.test.KoinTest
+import org.koin.test.inject
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 
@@ -42,14 +50,28 @@ import kotlin.test.BeforeTest
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-class SetupScenarioTest : KoinTest {
+class KeyTransferTest : KoinTest {
 
     @get:Rule
-    val activityRule = ActivityScenarioRule(SetUpActivity::class.java)
+    val startUpActivityRule = lazyActivityScenarioRule<StartUpActivity>(
+        koinOverrideModule = instrumentationTestsModule,
+        intentSupplier = {
+            managedAccountIntentCreator.createIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext
+            )
+        }
+    )
+
+    @get:Rule
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
+
+    private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
     @BeforeTest
     fun setup() {
         loadKoinModules(instrumentationTestsModule)
+        onView(withId(R.id.connectToAccountButton)).perform(click())
+        onView(withId(R.id.scanQrCodesButton)).perform(click())
     }
 
     @AfterTest
@@ -57,10 +79,8 @@ class SetupScenarioTest : KoinTest {
         unloadKoinModules(instrumentationTestsModule)
     }
 
-    // just a demo test
     @Test
-    fun setup_activityShouldLaunchWithCorrectUI() {
-        // check if text view with "Welcome!" is on screen
-        onView(withText("Welcome!")).check(matches(isDisplayed()))
+    fun asAMobileTesterICanInjectAccountProfileDataInsteadOfScanningQrCodes() {
+        onView(withText(R.string.scan_qr_summary_success_title)).check(matches(isDisplayed()))
     }
 }

@@ -9,4 +9,5 @@ dependencies {
     implementation libs.di.koin
     implementation libs.test.coroutinesTest
     implementation libs.test.espressoCore
+    implementation libs.test.androidTestKtx
 }

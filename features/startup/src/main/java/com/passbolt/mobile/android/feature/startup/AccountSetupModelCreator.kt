@@ -44,15 +44,15 @@ class AccountSetupModelCreator {
         }
 
     private companion object {
-        private const val ACTION_MANAGED_PROFILE = "com.passbolt.mobile.android.MANAGED_PROFILE"
+        const val ACTION_MANAGED_PROFILE = "com.passbolt.mobile.android.MANAGED_PROFILE"
 
-        private const val EXTRA_USER_ID = "USER_ID"
-        private const val EXTRA_USERNAME = "USERNAME"
-        private const val EXTRA_DOMAIN = "DOMAIN"
-        private const val EXTRA_FIRST_NAME = "FIRST_NAME"
-        private const val EXTRA_LAST_NAME = "LAST_NAME"
-        private const val EXTRA_AVATAR_URL = "AVATAR_URL"
-        private const val EXTRA_KEY_FINGERPRINT = "KEY_FINGERPRINT"
-        private const val EXTRA_ARMORED_KEY = "ARMORED_KEY"
+        const val EXTRA_USER_ID = "USER_ID"
+        const val EXTRA_USERNAME = "USERNAME"
+        const val EXTRA_DOMAIN = "DOMAIN"
+        const val EXTRA_FIRST_NAME = "FIRST_NAME"
+        const val EXTRA_LAST_NAME = "LAST_NAME"
+        const val EXTRA_AVATAR_URL = "AVATAR_URL"
+        const val EXTRA_KEY_FINGERPRINT = "KEY_FINGERPRINT"
+        const val EXTRA_ARMORED_KEY = "ARMORED_KEY"
     }
 }

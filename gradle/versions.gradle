@@ -26,7 +26,8 @@ ext {
             androidTestsRunner: "1.4.0",
             androidTestRules: "1.4.0",
             androidTestKtx: "1.4.0",
-            androidTestIntents: "3.4.0"
+            androidTestIntents: "3.4.0",
+            mockitoAndroid: "4.8.0"
         ],
         quality: [
             ktlint: "0.36.0",
@@ -115,6 +116,7 @@ ext {
             junit: "junit:junit:${versions.test.junit}",
             mockitoCore: "org.mockito:mockito-core:${versions.test.mockitoCore}",
             mockitoKotlin: "org.mockito.kotlin:mockito-kotlin:${versions.test.mockitoKotlin}",
+            mockitoAndroid: "org.mockito:mockito-android:${versions.test.mockitoAndroid}",
             truth: "com.google.truth:truth:${versions.test.truth}",
             androidxJUnit: "androidx.test.ext:junit:${versions.test.androidxJUnit}",
             espressoCore: "androidx.test.espresso:espresso-core:${versions.test.espresso}",

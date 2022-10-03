@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.welcome
+package com.passbolt.mobile.android.scenarios.scanqrcode
 
 import android.content.Intent
 import androidx.test.espresso.Espresso.onView
@@ -10,15 +10,14 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.rule.GrantPermissionRule
 import com.passbolt.mobile.android.feature.setup.R
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
 import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.instrumentationTestsModule
+import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf
 import org.junit.Rule
@@ -29,6 +28,7 @@ import org.koin.core.context.unloadKoinModules
 import org.koin.test.KoinTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -58,7 +58,9 @@ import kotlin.test.BeforeTest
 class ScanQrCodeTest : KoinTest {
 
     @get:Rule
-    val activityRule = ActivityScenarioRule(SetUpActivity::class.java)
+    val activityRule = lazyActivityScenarioRule<SetUpActivity>(
+        koinOverrideModule = instrumentationTestsModule
+    )
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)

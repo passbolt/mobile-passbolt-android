@@ -1,8 +1,6 @@
-package com.passbolt.mobile.android.feature.setup.welcome
+package com.passbolt.mobile.android.core.security.rootdetection
 
-import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
-import org.koin.dsl.module
-import org.mockito.kotlin.mock
+import com.scottyab.rootbeer.RootBeer
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,12 +24,10 @@ import org.mockito.kotlin.mock
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class RootDetectorImpl(
+    private val rootBeer: RootBeer
+) : RootDetector {
 
-internal val mockRootDetector = mock<RootDetectorImpl>()
-
-val welcomeModule = module {
-    factory<WelcomeContract.Presenter> {
-        WelcomePresenter(mockRootDetector)
-    }
+    override fun isDeviceRooted() =
+        rootBeer.isRooted
 }
-

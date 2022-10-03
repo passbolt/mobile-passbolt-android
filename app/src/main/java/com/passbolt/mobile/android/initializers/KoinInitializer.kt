@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.initializers
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.startup.Initializer
 import com.passbolt.mobile.android.appModule
 import com.passbolt.mobile.android.common.commonModule
@@ -80,54 +81,59 @@ class KoinInitializer : Initializer<Unit> {
     override fun create(context: Context) {
         startKoin {
             androidContext(context)
-            modules(
-                appModule,
-                openPgpModule,
-                setupModule,
-                mappersModule,
-                mvpModule,
-                networkingModule,
-                barcodeScanModule,
-                cameraScanModule,
-                storageModule,
-                passboltApiModule,
-                autofillResourcesModule,
-                authenticationModule,
-                homeModule,
-                settingsModule,
-                startUpModule,
-                resourcesModule,
-                featureFlagsModule,
-                databaseModule,
-                secretsModule,
-                resourceDetailsModule,
-                securityModule,
-                linksApiModule,
-                usersModule,
-                loggerModule,
-                accountDetailsModule,
-                foldersModule,
-                folderDetailsModule,
-                mainModule,
-                groupsModule,
-                commonModule,
-                coreUiModule,
-                locationDetailsModule,
-                createFolderModule,
-                groupDetailsModule,
-                resourceTagsModule,
-                helpMenuModule,
-                logsModule,
-                resourceMoreMenuModule,
-                fullDataRefreshModule,
-                resourceTypesModule,
-                notificationsModule,
-                autofillModule,
-                inAppReviewModule
-            )
+            modules(appModules)
         }
     }
 
     override fun dependencies(): MutableList<Class<out Initializer<*>>> =
         mutableListOf()
+
+    companion object {
+        @VisibleForTesting
+        val appModules = listOf(
+            appModule,
+            openPgpModule,
+            setupModule,
+            mappersModule,
+            mvpModule,
+            networkingModule,
+            barcodeScanModule,
+            cameraScanModule,
+            storageModule,
+            passboltApiModule,
+            autofillResourcesModule,
+            authenticationModule,
+            homeModule,
+            settingsModule,
+            startUpModule,
+            resourcesModule,
+            featureFlagsModule,
+            databaseModule,
+            secretsModule,
+            resourceDetailsModule,
+            securityModule,
+            linksApiModule,
+            usersModule,
+            loggerModule,
+            accountDetailsModule,
+            foldersModule,
+            folderDetailsModule,
+            mainModule,
+            groupsModule,
+            commonModule,
+            coreUiModule,
+            locationDetailsModule,
+            createFolderModule,
+            groupDetailsModule,
+            resourceTagsModule,
+            helpMenuModule,
+            logsModule,
+            resourceMoreMenuModule,
+            fullDataRefreshModule,
+            resourceTypesModule,
+            notificationsModule,
+            autofillModule,
+            inAppReviewModule
+        )
+    }
 }
