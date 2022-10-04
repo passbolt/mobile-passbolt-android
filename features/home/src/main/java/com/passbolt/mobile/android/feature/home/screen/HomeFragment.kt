@@ -834,6 +834,10 @@ class HomeFragment :
         showSnackbar(R.string.common_message_folder_created, name)
     }
 
+    override fun showContentNotAvailableSnackbar() {
+        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+    }
+
     companion object {
         private val AVATAR_SIZE = 30.px
     }
