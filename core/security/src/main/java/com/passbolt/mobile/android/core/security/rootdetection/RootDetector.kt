@@ -1,7 +1,5 @@
 package com.passbolt.mobile.android.core.security.rootdetection
 
-import com.scottyab.rootbeer.RootBeer
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -24,10 +22,6 @@ import com.scottyab.rootbeer.RootBeer
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RootDetector(
-    private val rootBeer: RootBeer
-) {
-
-    fun isDeviceRooted() =
-        rootBeer.isRooted
+interface RootDetector {
+    fun isDeviceRooted(): Boolean
 }

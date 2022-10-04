@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
@@ -118,7 +118,7 @@ internal val authReasonMapper = AuthReasonMapper()
 internal val mockMfaStatusProvider = mock<MfaStatusProvider>()
 internal val mockGetSessionUseCase = mock<GetSessionUseCase>()
 internal val mockRefreshSessionUseCase = mock<RefreshSessionUseCase>()
-internal val mockRootDetector = mock<RootDetector>()
+internal val mockRootDetector = mock<RootDetectorImpl>()
 internal val mockProfileInteractor = mock<UserProfileInteractor>()
 internal val mockInAppReviewInteractor = mock<InAppReviewInteractor>()
 

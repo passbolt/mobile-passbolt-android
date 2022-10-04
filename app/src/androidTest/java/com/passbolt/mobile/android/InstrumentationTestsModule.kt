@@ -1,6 +1,10 @@
 package com.passbolt.mobile.android
 
+import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,6 +29,14 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val instrumentationTestsModule = module(override = true) {
-    // TODO add instrumentation tests overrides here - i.e. local data sources
+/**
+ * Dependency overrides for instrumentation tests.
+ */
+val instrumentationTestsModule = module {
+    single<RootDetector> {
+        object : RootDetector {
+            override fun isDeviceRooted() = false
+        }
+    }
+    singleOf(::ManagedAccountIntentCreator)
 }

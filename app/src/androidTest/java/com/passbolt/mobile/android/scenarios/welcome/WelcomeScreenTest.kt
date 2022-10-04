@@ -1,9 +1,8 @@
-package com.passbolt.mobile.android.welcome
+package com.passbolt.mobile.android.scenarios.welcome
 
 import android.content.Intent
 import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
@@ -14,7 +13,6 @@ import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isClickable
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
@@ -22,6 +20,7 @@ import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
 import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.instrumentationTestsModule
+import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Rule
@@ -62,7 +61,9 @@ import kotlin.test.BeforeTest
 class WelcomeScreenTest : KoinTest {
 
     @get:Rule
-    val activityRule = ActivityScenarioRule(SetUpActivity::class.java)
+    val activityRule = lazyActivityScenarioRule<SetUpActivity>(
+        koinOverrideModule = instrumentationTestsModule
+    )
 
     @BeforeTest
     fun setup() {
@@ -145,7 +146,7 @@ class WelcomeScreenTest : KoinTest {
     fun asAMobileUserICanSeeAnExplanationOnHowToConnectAnExistingAccount() {
         //        Given   the welcome screen is displayed
         //        When    the user clicks on “connect to an existing account”
-        onView(withId(R.id.connectToAccountButton)).perform(ViewActions.click())
+        onView(withId(R.id.connectToAccountButton)).perform(click())
         //        Then    the “Transfer account details” explanation screen is presented
         onView(withId(R.id.header)).check(matches(isDisplayed()))
         //        And     the screen has an arrow button on the top left to go back to the welcome screen
