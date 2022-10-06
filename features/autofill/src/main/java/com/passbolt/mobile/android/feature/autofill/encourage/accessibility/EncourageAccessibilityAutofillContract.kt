@@ -39,6 +39,7 @@ interface EncourageAccessibilityAutofillContract {
         fun showAutofillEnabledDialog()
         fun navigateToOverlaySettings()
         fun navigateToServiceSettings()
+        fun showAccessibilityConsentDialog()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -48,5 +49,6 @@ interface EncourageAccessibilityAutofillContract {
         fun resume()
         fun backPressed()
         fun possibleAutofillChange()
+        fun accessibilityServiceConsentGiven()
     }
 }

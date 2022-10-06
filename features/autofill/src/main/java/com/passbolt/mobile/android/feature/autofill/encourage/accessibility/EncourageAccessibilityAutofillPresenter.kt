@@ -28,6 +28,14 @@ class EncourageAccessibilityAutofillPresenter(
     override fun serviceClick() {
         // TODO temporary disable tutorial - broken links
         // view?.navigateToServiceTutorial()
+        if (!autofillInformationProvider.isAccessibilityServiceEnabled()) {
+            view?.showAccessibilityConsentDialog()
+        } else {
+            view?.navigateToServiceSettings()
+        }
+    }
+
+    override fun accessibilityServiceConsentGiven() {
         view?.navigateToServiceSettings()
     }
 

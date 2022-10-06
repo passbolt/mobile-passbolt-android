@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import com.passbolt.mobile.android.common.dialogs.accessibilityServiceConsentDialog
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogAccessibilityEncourageAutofillBinding
@@ -166,6 +167,13 @@ class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessib
     override fun showAutofillEnabledDialog() {
         AutofillEnabledDialog.newInstance(DialogMode.Settings)
             .show(childFragmentManager, AutofillEnabledDialog::class.java.name)
+    }
+
+    override fun showAccessibilityConsentDialog() {
+        accessibilityServiceConsentDialog(requireContext()) {
+            presenter.accessibilityServiceConsentGiven()
+        }
+            .show()
     }
 
     interface Listener {
