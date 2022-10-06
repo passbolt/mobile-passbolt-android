@@ -24,6 +24,7 @@
     <string name="suggested">Suggested</string>
     <string name="other">Other</string>
     <string name="favourites_failure">Could not modify favourite</string>
+    <string name="consent">I consent</string>
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_network_failure">There was a connection issue</string>
@@ -371,6 +372,8 @@
     <string name="dialog_encryption_error_title">There was an encryption error</string>
     <string name="dialog_encryption_error_message">There was an encryption error (%s). Please try again.</string>
 
+    <string name="dialog_accessibility_consent_title">Accessibility service disclosure</string>
+    <string name="dialog_accessibility_consent_message">We use accessibility service to provide additional support for filling passwords inside web browsers that do not implement the Android native autofill or phone manufacturers who disable it. Please grant the permission if you would like to enable it.</string>
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
