@@ -66,11 +66,11 @@
     <string name="password_strength_very_strong">Muy fuerte</string>
     <string name="password_description_encrypted">La descripción está cifrada</string>
     <string name="input_default_hint">Introduzca %s</string>
-    <string name="logger_help">Ayuda</string>
-    <string name="logger_access_logs">Acceder a los registros</string>
-    <string name="logger_visit_help_website">Visitar el sitio de ayuda</string>
-    <string name="logger_why_scan_codes">¿Por qué escanear los códigos QR?</string>
-    <string name="logger_enable_debug_logs">Habilitar registros de depuración</string>
+    <string name="help_menu_help">Ayuda</string>
+    <string name="help_menu_access_logs">Acceder a los registros</string>
+    <string name="help_menu_visit_help_website">Visitar el sitio de ayuda</string>
+    <string name="help_menu_why_scan_codes">¿Por qué escanear los códigos QR?</string>
+    <string name="help_menu_enable_debug_logs">Habilitar registros de depuración</string>
     <string name="logs_share_title">Compartir registros</string>
     <string name="logs_share_email_title">Registros de Passbolt</string>
     <string name="logs_share_email">contact@passbolt.com</string>

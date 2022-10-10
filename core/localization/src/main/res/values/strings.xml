@@ -86,11 +86,12 @@
     <string name="password_description_encrypted">Description is encrypted</string>
     <string name="input_default_hint">Enter %s</string>
 
-    <string name="logger_help">Help</string>
-    <string name="logger_access_logs">Access the logs</string>
-    <string name="logger_visit_help_website">Visit help site</string>
-    <string name="logger_why_scan_codes">Why scanning QR codes?</string>
-    <string name="logger_enable_debug_logs">Enable debug logs</string>
+    <string name="help_menu_help">Help</string>
+    <string name="help_menu_access_logs">Access the logs</string>
+    <string name="help_menu_visit_help_website">Visit help site</string>
+    <string name="help_menu_why_scan_codes">Why scanning QR codes?</string>
+    <string name="help_menu_enable_debug_logs">Enable debug logs</string>
+    <string name="help_menu_import_profile_manually">Import your account manually</string>
 
     <string name="logs_share_title">Share logs</string>
     <string name="logs_share_email_title">Passbolt logs</string>
@@ -396,6 +397,15 @@
 
     <string name="dialog_accessibility_consent_title">Accessibility service disclosure</string>
     <string name="dialog_accessibility_consent_message">We use accessibility service to provide additional support for filling passwords inside web browsers that do not implement the Android native autofill or phone manufacturers who disable it. Please grant the permission if you would like to enable it.</string>
+
+    <string name="import_profile_title">Import your account</string>
+    <string name="import_profile_user_id">User ID</string>
+    <string name="import_profile_account_url">Account URL</string>
+    <string name="import_profile_private_key">Private key</string>
+    <string name="import_profile_import">Import</string>
+    <string name="import_profile_invalid_uuid">Incorrect UUID format</string>
+    <string name="import_profile_invalid_account_url">Incorrect URL format. Url must start with https://</string>
+    <string name="import_profile_invalid_private_key">Private key cannot be empty</string>
 
     <!--
     arrays can be inconsistent when in other languages

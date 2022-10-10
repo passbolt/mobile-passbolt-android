@@ -16,6 +16,7 @@ import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBindi
 import com.passbolt.mobile.android.feature.setup.scanqr.di.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
+import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -201,7 +202,7 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance(showQrCodesHelp = true)
+        HelpMenuFragment.newInstance(HelpMenuModel(shouldShowShowQrCodesHelp = true, shouldShowImportProfile = true))
             .show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 
@@ -211,7 +212,17 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
         )
     }
 
+    override fun menuImportProfileManuallyClick() {
+        presenter.importProfileClick()
+    }
+
     override fun menuWhyScanQrCodesClick() {
         showInformationDialog()
+    }
+
+    override fun navigateToImportProfile() {
+        findNavController().navigate(
+            ScanQrFragmentDirections.actionScanQrFragmentToImportProfileFragment()
+        )
     }
 }

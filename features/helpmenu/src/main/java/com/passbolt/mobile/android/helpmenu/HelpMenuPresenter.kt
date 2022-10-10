@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.helpmenu
 import com.passbolt.mobile.android.core.logger.FileLoggingTree
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
+import com.passbolt.mobile.android.ui.HelpMenuModel
 import timber.log.Timber
 
 class HelpMenuPresenter(
@@ -13,9 +14,12 @@ class HelpMenuPresenter(
 
     override var view: HelpMenuContract.View? = null
 
-    override fun argsRetrieved(scanQrCodesHelpVisible: Boolean) {
-        if (scanQrCodesHelpVisible) {
+    override fun argsRetrieved(helpMenuModel: HelpMenuModel) {
+        if (helpMenuModel.shouldShowShowQrCodesHelp) {
             view?.showScanQrCodesHelp()
+        }
+        if (helpMenuModel.shouldShowImportProfile) {
+            view?.showImportProfileHelp()
         }
         logsSettingChanged(getGlobalPreferencesUseCase.execute(Unit).areDebugLogsEnabled)
     }

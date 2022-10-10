@@ -14,6 +14,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.helpmenu.databinding.ViewHelpBottomsheetBinding
+import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
@@ -49,7 +50,7 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
     private var listener: Listener? = null
     private val websiteOpener: WebsiteOpener by inject()
     private val bundledShowQrCodesHelp by lifecycleAwareLazy {
-        requireArguments().getBoolean(EXTRA_SHOW_QR_CODES_HELP)
+        requireNotNull(requireArguments().getParcelable<HelpMenuModel>(EXTRA_HELP_MENU_MODEL))
     }
     private val presenter: HelpMenuContract.Presenter by scope.inject()
     private val enableLogsSwitchChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
@@ -90,22 +91,27 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
 
     private fun setListeners() {
         with(binding) {
-            accessLogs.setDebouncingOnClick {
+            accessLogs.setListenerWithDismiss {
                 listener?.menuShowLogsClick()
-                dismiss()
             }
-            visitHelpWebsite.setDebouncingOnClick {
+            visitHelpWebsite.setListenerWithDismiss {
                 openHelpWebsite()
-                dismiss()
             }
-            whyScanQrCodes.setDebouncingOnClick {
+            whyScanQrCodes.setListenerWithDismiss {
                 listener?.menuWhyScanQrCodesClick()
-                dismiss()
+            }
+            importProfileManually.setListenerWithDismiss {
+                listener?.menuImportProfileManuallyClick()
             }
             enableLogsSwitch.setOnCheckedChangeListener(enableLogsSwitchChangeListener)
-            close.setDebouncingOnClick {
-                dismiss()
-            }
+            close.setListenerWithDismiss { }
+        }
+    }
+
+    private fun View.setListenerWithDismiss(action: () -> Unit) {
+        setDebouncingOnClick {
+            action()
+            dismiss()
         }
     }
 
@@ -133,14 +139,18 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
         }
     }
 
+    override fun showImportProfileHelp() {
+        binding.importProfileManually.visible()
+    }
+
     companion object {
         @VisibleForTesting
         const val HELP_WEBSITE_URL = "https://help.passbolt.com/"
-        private const val EXTRA_SHOW_QR_CODES_HELP = "SHOW_QR_CODES_HELP"
+        private const val EXTRA_HELP_MENU_MODEL = "HELP_MENU_MODEL"
 
-        fun newInstance(showQrCodesHelp: Boolean = false) = HelpMenuFragment().apply {
+        fun newInstance(helpMenuModel: HelpMenuModel) = HelpMenuFragment().apply {
             arguments = bundleOf(
-                EXTRA_SHOW_QR_CODES_HELP to showQrCodesHelp
+                EXTRA_HELP_MENU_MODEL to helpMenuModel
             )
         }
     }
@@ -156,5 +166,6 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
     interface Listener {
         fun menuShowLogsClick()
         fun menuWhyScanQrCodesClick() {}
+        fun menuImportProfileManuallyClick() {}
     }
 }

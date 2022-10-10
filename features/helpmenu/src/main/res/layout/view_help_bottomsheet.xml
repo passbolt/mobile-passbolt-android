@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_16"
         android:layout_marginTop="@dimen/dp_16"
-        android:text="@string/logger_help"
+        android:text="@string/help_menu_help"
         android:textColor="@color/text_primary"
         app:layout_constraintEnd_toStartOf="@+id/close"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +48,7 @@
         android:id="@+id/whyScanQrCodes"
         style="@style/PasswordMenuItem"
         android:drawablePadding="@dimen/dp_16"
-        android:text="@string/logger_why_scan_codes"
+        android:text="@string/help_menu_why_scan_codes"
         android:visibility="gone"
         app:drawableStartCompat="@drawable/ic_camera"
         app:drawableTint="@color/icon_tint"
@@ -60,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawablePadding="@dimen/dp_16"
-        android:text="@string/logger_enable_debug_logs"
+        android:text="@string/help_menu_enable_debug_logs"
         android:thumbTint="@color/selector_primary_switch"
         android:trackTint="@color/selector_primary_track_switch"
         app:drawableStartCompat="@drawable/ic_bug"
@@ -72,18 +72,28 @@
         android:id="@+id/accessLogs"
         style="@style/PasswordMenuItem"
         android:drawablePadding="@dimen/dp_16"
-        android:text="@string/logger_access_logs"
+        android:text="@string/help_menu_access_logs"
         app:drawableStartCompat="@drawable/ic_bug"
         app:drawableTint="@color/icon_tint"
         app:layout_constraintTop_toBottomOf="@+id/enableLogsSwitch" />
 
     <TextView
+        android:id="@+id/importProfileManually"
+        style="@style/PasswordMenuItem"
+        android:drawablePadding="@dimen/dp_16"
+        android:text="@string/help_menu_import_profile_manually"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_import_profile"
+        app:drawableTint="@color/icon_tint"
+        app:layout_constraintTop_toBottomOf="@+id/accessLogs" />
+
+    <TextView
         android:id="@+id/visitHelpWebsite"
         style="@style/PasswordMenuItem"
         android:drawablePadding="@dimen/dp_16"
-        android:text="@string/logger_visit_help_website"
+        android:text="@string/help_menu_visit_help_website"
         app:drawableStartCompat="@drawable/ic_link"
         app:drawableTint="@color/icon_tint"
-        app:layout_constraintTop_toBottomOf="@+id/accessLogs" />
+        app:layout_constraintTop_toBottomOf="@+id/importProfileManually" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

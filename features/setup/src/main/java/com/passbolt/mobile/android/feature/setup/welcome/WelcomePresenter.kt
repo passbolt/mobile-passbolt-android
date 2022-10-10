@@ -28,4 +28,8 @@ class WelcomePresenter(
     override fun helpClick() {
         view?.showHelpMenu()
     }
+
+    override fun importProfileClick() {
+        view?.navigateToImportProfile()
+    }
 }

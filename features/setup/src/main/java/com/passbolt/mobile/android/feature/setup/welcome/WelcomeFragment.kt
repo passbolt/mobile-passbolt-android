@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.core.security.rootdetection.rootWarningAlertD
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBinding
 import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
+import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.android.ext.android.inject
 
 /**
@@ -93,13 +94,23 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance()
+        HelpMenuFragment.newInstance(HelpMenuModel(shouldShowShowQrCodesHelp = true, shouldShowImportProfile = true))
             .show(childFragmentManager, HelpMenuFragment::class.java.name)
+    }
+
+    override fun menuImportProfileManuallyClick() {
+        presenter.importProfileClick()
     }
 
     override fun menuShowLogsClick() {
         findNavController().navigate(
             WelcomeFragmentDirections.actionWelcomeFragmentToLogs()
+        )
+    }
+
+    override fun navigateToImportProfile() {
+        findNavController().navigate(
+            WelcomeFragmentDirections.actionWelcomeFragmentToImportProfileFragment()
         )
     }
 }

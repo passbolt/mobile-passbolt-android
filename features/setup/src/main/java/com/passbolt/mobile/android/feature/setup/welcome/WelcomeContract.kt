@@ -11,6 +11,7 @@ interface WelcomeContract {
         fun showDeviceRootedDialog()
         fun showHelpMenu()
         fun initBackNavigation()
+        fun navigateToImportProfile()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -18,5 +19,6 @@ interface WelcomeContract {
         fun connectToAccountClick()
         fun argsRetrieved(isTaskRoot: Boolean)
         fun helpClick()
+        fun importProfileClick()
     }
 }

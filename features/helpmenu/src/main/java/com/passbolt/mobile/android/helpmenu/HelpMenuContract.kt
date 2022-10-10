@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.helpmenu
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.HelpMenuModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,10 +33,11 @@ interface HelpMenuContract {
         fun disableAccessLogs()
         fun setEnableLogsSwitchOn()
         fun setEnableLogsSwitchOff()
+        fun showImportProfileHelp()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(scanQrCodesHelpVisible: Boolean)
+        fun argsRetrieved(helpMenuModel: HelpMenuModel)
         fun logsSettingChanged(areLogsEnabled: Boolean)
     }
 }
