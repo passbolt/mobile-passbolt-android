@@ -27,6 +27,7 @@
     <string name="shared_with">Shared with</string>
     <string name="location">Location</string>
     <string name="content_not_available">The content is not available anymore</string>
+    <string name="consent">I consent</string>
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_network_failure">There was a connection issue</string>
@@ -392,6 +393,9 @@
     <string name="create_folder_error_format">Could not create folder. %s</string>
 
     <string name="share_folder_error_format">Could not share folder. %s</string>
+
+    <string name="dialog_accessibility_consent_title">Accessibility service disclosure</string>
+    <string name="dialog_accessibility_consent_message">We use accessibility service to provide additional support for filling passwords inside web browsers that do not implement the Android native autofill or phone manufacturers who disable it. Please grant the permission if you would like to enable it.</string>
 
     <!--
     arrays can be inconsistent when in other languages

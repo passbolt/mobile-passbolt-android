@@ -1,5 +1,3 @@
-- Added in-app update flow - when a new version is released you will receive in-app notification and in-app update&installation process
-- Fixed scenario when both session and passphrase expired and after clicking on a secret "eye" icon there was a need of clicking twice
-to see the secret
-- uncaught exceptions will now be logged to file (if debug logs are enabled)
-- A few UI/UX fixes
+- Added filters on autofill! Now you can browse during autofill similarly to home screen.
+- Added Crowdin (translations): German and Spanish
+- Major dependencies update

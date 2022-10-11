@@ -49,3 +49,11 @@ fun encryptionErrorAlertDialog(context: Context, message: String): AlertDialog =
         .setMessage(context.getString(R.string.dialog_encryption_error_message, message))
         .setPositiveButton(R.string.ok) { _, _ -> }
         .create()
+
+fun accessibilityServiceConsentDialog(context: Context, confirmAction: () -> Unit) =
+    AlertDialog.Builder(context)
+        .setTitle(R.string.dialog_accessibility_consent_title)
+        .setMessage(R.string.dialog_accessibility_consent_message)
+        .setPositiveButton(R.string.consent) { _, _ -> confirmAction() }
+        .setNegativeButton(R.string.cancel) { _, _ -> }
+        .create()
