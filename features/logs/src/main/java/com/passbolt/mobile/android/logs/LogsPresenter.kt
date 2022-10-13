@@ -6,31 +6,20 @@ class LogsPresenter : LogsContract.Presenter {
 
     override var view: LogsContract.View? = null
     private lateinit var logLines: List<String>
+    private lateinit var logFile: File
 
-    override fun argsRetrieved(logFilePath: String, deviceName: String, osName: String, appName: String) {
-        val logFile = File(logFilePath)
-        logLines = prepareInfoLines(deviceName, osName, appName) +
-                if (logFile.exists()) logFile.readLines() else emptyList()
+    override fun argsRetrieved(logFilePath: String?) {
+        logFile = File(requireNotNull(logFilePath) { "Log file not initialized" })
+        logLines = if (logFile.exists()) logFile.readLines() else emptyList()
+
         view?.apply {
             showLogs(logLines)
             scrollLogsToPosition(logLines.size - 1)
-            showShareSheet(
-                logLines.joinToString(separator = System.lineSeparator())
-            )
+            showShareSheet(logFile)
         }
     }
 
-    private fun prepareInfoLines(deviceName: String, osName: String, appName: String) =
-        listOf(
-            "Device: %s".format(deviceName),
-            "Android %s".format(osName),
-            "Passbolt %s".format(appName),
-            System.lineSeparator()
-        )
-
     override fun shareClick() {
-        view?.showShareSheet(
-            logLines.joinToString(separator = System.lineSeparator())
-        )
+        view?.showShareSheet(logFile)
     }
 }

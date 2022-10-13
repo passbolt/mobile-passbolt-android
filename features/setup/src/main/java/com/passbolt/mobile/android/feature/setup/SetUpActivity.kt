@@ -43,7 +43,8 @@ class SetUpActivity : BindingActivity<ActivitySetupBinding>(ActivitySetupBinding
             R.id.welcomeFragment,
             R.id.transferDetailsFragment,
             R.id.scanQrFragment,
-            R.id.importProfileFragment
+            R.id.importProfileFragment,
+            R.id.logsFragment
         )
 
     override val bundledAccountSetupData: AccountSetupDataModel? by lifecycleAwareLazy {

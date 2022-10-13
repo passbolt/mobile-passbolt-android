@@ -1,11 +1,15 @@
 package com.passbolt.mobile.android.core.logger
 
 import android.content.Context
+import com.passbolt.mobile.android.core.envinfo.EnvInfoProvider
 import timber.log.Timber
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.nio.file.Files
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
+import kotlin.io.path.absolutePathString
+import kotlin.streams.toList
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,33 +34,72 @@ import java.util.Locale
  * @since v1.0
  */
 class LogFilesManager(
-    private val appContext: Context
+    private val appContext: Context,
+    private val envInfoProvider: EnvInfoProvider
 ) {
 
+    /**
+     * Initializes the log file. If no file exists a new one is created. If a log file exists, expiry time is checked -
+     * if still valid the current log file is returned, if not the current log file is deleted and a new one is created.
+     *
+     * @return Log file path
+     */
     fun initializeLogFile(): String {
-        val directory = File(appContext.filesDir, LOG_DIR_NAME).apply { mkdir() }
-        return File(directory, logFileName()).apply {
-            if (!exists()) createNewFile()
-        }.absolutePath
+        val directory = logFileDirectory().apply { mkdir() }
+        val directoryFiles = Files.list(directory.toPath()).toList()
+
+        return if (directoryFiles.isEmpty()) {
+            createNewLogFile(directory)
+        } else {
+            val logFilePath = directoryFiles.first().toAbsolutePath().toString()
+            val logFileName = directoryFiles.first().fileName.toString()
+            return try {
+                val logFileCreationTime = LocalDateTime.ofEpochSecond(logFileName.toLong(), 0, ZoneOffset.UTC)
+                if (logFileCreationTime.until(LocalDateTime.now(), ChronoUnit.HOURS) > LOG_FILE_EXPIRY_HRS) {
+                    File(logFileName).delete()
+                    createNewLogFile(directory)
+                } else {
+                    logFilePath
+                }
+            } catch (exception: Exception) {
+                // delete files with the old log format
+                Timber.d("Deleting legacy log file")
+                File(logFilePath).delete()
+                createNewLogFile(directory)
+            }
+        }
     }
 
-    fun clearIrrelevantLogFiles(relevantLogAbsoluteFilePath: String) {
+    fun logFilePath() =
+        Files.list(File(appContext.filesDir, LOG_DIR_NAME).toPath())
+            .toList()
+            .firstOrNull()
+            ?.absolutePathString()
+
+    private fun logFileDirectory() =
         File(appContext.filesDir, LOG_DIR_NAME)
-            .listFiles { dir, fileName -> File(dir, fileName).absolutePath != relevantLogAbsoluteFilePath }
-            .orEmpty()
-            .forEach {
-                Timber.d("Deleting older log file: ${it.absolutePath}")
-                it.delete()
+
+    private fun createNewLogFile(directory: File) =
+        File(directory, LocalDateTime.now().toEpochSecond(ZoneOffset.UTC).toString()).apply {
+            if (!exists()) {
+                createNewFile()
+                writeText(prepareInfoHeader())
             }
+        }.absolutePath
+
+    private fun prepareInfoHeader(): String {
+        val envInfo = envInfoProvider.provideEnvInfo()
+        return listOf(
+            "Device: %s".format(envInfo.deviceName),
+            "Android %s".format(envInfo.osName),
+            "Passbolt %s".format(envInfo.appName),
+            System.lineSeparator()
+        )
+            .joinToString(separator = System.lineSeparator())
     }
 
     companion object {
-        const val LOG_DIR_NAME = "logs"
-
-        private const val HOUR_PATTERN = "dd-MM-yyy HH"
-        private val LOG_FILE_NAME_FORMAT = SimpleDateFormat(HOUR_PATTERN, Locale.US)
-
-        fun logFileName() =
-            LOG_FILE_NAME_FORMAT.format(Date())
+        private const val LOG_DIR_NAME = "logs"
+        private const val LOG_FILE_EXPIRY_HRS = 24
     }
 }

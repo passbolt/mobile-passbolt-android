@@ -55,7 +55,6 @@ class TimberInitializer : Initializer<Unit>, KoinComponent {
             Timber.plant(Timber.DebugTree())
         }
         val logFilePath = logFilesManager.initializeLogFile()
-        logFilesManager.clearIrrelevantLogFiles(logFilePath)
         fileLoggingTree.initialize(logFilePath)
         if (getGlobalPreferencesUseCase.execute(Unit).areDebugLogsEnabled &&
             !Timber.forest().contains(fileLoggingTree)

@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.common.commonModule
 import com.passbolt.mobile.android.core.autofill.autofillModule
 import com.passbolt.mobile.android.core.commonfolders.foldersModule
 import com.passbolt.mobile.android.core.commongroups.groupsModule
+import com.passbolt.mobile.android.core.envinfo.envInfoModule
 import com.passbolt.mobile.android.core.fulldatarefresh.fullDataRefreshModule
 import com.passbolt.mobile.android.core.inappreview.inAppReviewModule
 import com.passbolt.mobile.android.core.logger.loggerModule
@@ -133,7 +134,8 @@ class KoinInitializer : Initializer<Unit> {
             resourceTypesModule,
             notificationsModule,
             autofillModule,
-            inAppReviewModule
+            inAppReviewModule,
+            envInfoModule
         )
     }
 }
