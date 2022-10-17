@@ -39,7 +39,12 @@ class SetUpActivity : BindingActivity<ActivitySetupBinding>(ActivitySetupBinding
         )
 
     override val unauthenticatedFragmentIds: List<Int>
-        get() = listOf(R.id.welcomeFragment, R.id.transferDetailsFragment, R.id.scanQrFragment)
+        get() = listOf(
+            R.id.welcomeFragment,
+            R.id.transferDetailsFragment,
+            R.id.scanQrFragment,
+            R.id.importProfileFragment
+        )
 
     override val bundledAccountSetupData: AccountSetupDataModel? by lifecycleAwareLazy {
         intent.getParcelableExtra(ActivityIntents.EXTRA_ACCOUNT_SETUP_DATA)

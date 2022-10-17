@@ -16,6 +16,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentSummaryBinding
 import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
+import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.android.ext.android.inject
 
 /**
@@ -145,7 +146,7 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance()
+        HelpMenuFragment.newInstance(HelpMenuModel(shouldShowShowQrCodesHelp = false, shouldShowImportProfile = false))
             .show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 

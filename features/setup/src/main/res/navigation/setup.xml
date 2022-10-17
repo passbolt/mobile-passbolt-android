@@ -24,6 +24,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_welcomeFragment_to_importProfileFragment"
+            app:destination="@id/importProfileFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -55,6 +62,13 @@
         <action
             android:id="@+id/action_scanQrFragment_to_logs"
             app:destination="@id/logs"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_scanQrFragment_to_importProfileFragment"
+            app:destination="@id/importProfileFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -97,11 +111,26 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+
     <fragment
         android:id="@+id/fingerprintFragment"
         android:name="com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintFragment"
         android:label="FingerprintFragment"
         tools:layout="@layout/fragment_fingerprint" />
+
+    <fragment
+        android:id="@+id/importProfileFragment"
+        android:name="com.passbolt.mobile.android.feature.setup.importprofile.ImportProfileFragment"
+        android:label="ImportProfileFragment"
+        tools:layout="@layout/fragment_import_profile" >
+        <action
+            android:id="@+id/action_importProfileFragment_to_summaryFragment"
+            app:destination="@id/summaryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
 
     <include app:graph="@navigation/logs" />
 

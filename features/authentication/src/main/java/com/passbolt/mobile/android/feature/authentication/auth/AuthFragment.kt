@@ -38,6 +38,7 @@ import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubik
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyListener
 import com.passbolt.mobile.android.featureflagserror.FeatureFlagsFetchErrorDialog
 import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
+import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -414,7 +415,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance()
+        HelpMenuFragment.newInstance(HelpMenuModel(shouldShowShowQrCodesHelp = false, shouldShowImportProfile = false))
             .show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 

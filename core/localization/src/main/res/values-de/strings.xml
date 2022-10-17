@@ -66,11 +66,11 @@
     <string name="password_strength_very_strong">Sehr stark</string>
     <string name="password_description_encrypted">Beschreibung ist entschlüsselt</string>
     <string name="input_default_hint">%s eingeben</string>
-    <string name="logger_help">Hilfe</string>
-    <string name="logger_access_logs">Zugang zu den Protokollen</string>
-    <string name="logger_visit_help_website">Hilfeseite besuchen</string>
-    <string name="logger_why_scan_codes">Warum QR-Codes scannen?</string>
-    <string name="logger_enable_debug_logs">Debug-Protokolle einschalten</string>
+    <string name="help_menu_help">Hilfe</string>
+    <string name="help_menu_access_logs">Zugang zu den Protokollen</string>
+    <string name="help_menu_visit_help_website">Hilfeseite besuchen</string>
+    <string name="help_menu_why_scan_codes">Warum QR-Codes scannen?</string>
+    <string name="help_menu_enable_debug_logs">Debug-Protokolle einschalten</string>
     <string name="logs_share_title">Protokoll teilen</string>
     <string name="logs_share_email_title">Passbolt Protokolle</string>
     <string name="logs_share_email">contact@passbolt.com</string>

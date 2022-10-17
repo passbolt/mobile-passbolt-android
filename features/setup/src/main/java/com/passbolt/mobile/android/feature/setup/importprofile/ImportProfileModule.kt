@@ -1,16 +1,9 @@
-package com.passbolt.mobile.android.feature.setup
+package com.passbolt.mobile.android.feature.setup.importprofile
 
-import android.content.Context
-import androidx.biometric.BiometricManager
-import com.passbolt.mobile.android.common.FingerprintInformationProvider
-import com.passbolt.mobile.android.feature.setup.fingerprint.di.fingerprintModule
-import com.passbolt.mobile.android.feature.setup.importprofile.importProfileModule
-import com.passbolt.mobile.android.feature.setup.scanqr.di.scanQrModule
-import com.passbolt.mobile.android.feature.setup.summary.di.summaryModule
-import com.passbolt.mobile.android.feature.setup.transferdetails.di.transferDetailsModule
-import com.passbolt.mobile.android.feature.setup.welcome.di.welcomeModule
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,20 +27,8 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val setupModule = module {
-    welcomeModule()
-    scanQrModule()
-    importProfileModule()
-    summaryModule()
-    transferDetailsModule()
-    fingerprintModule()
-    single {
-        FingerprintInformationProvider(
-            biometricManager = get()
-        )
+fun Module.importProfileModule() {
+    scope(named<ImportProfileFragment>()) {
+        scopedOf(::ImportProfilePresenter) bind ImportProfileContract.Presenter::class
     }
-    single { provideBiometricManager(androidContext()) }
 }
-
-private fun provideBiometricManager(context: Context) =
-    BiometricManager.from(context)

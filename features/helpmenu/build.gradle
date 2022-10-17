@@ -10,6 +10,7 @@ dependencies {
     implementation project(':storage')
     implementation project(':localization')
     implementation project(':logger')
+    implementation project(':ui')
 
     implementation libs.di.koin
     implementation libs.material

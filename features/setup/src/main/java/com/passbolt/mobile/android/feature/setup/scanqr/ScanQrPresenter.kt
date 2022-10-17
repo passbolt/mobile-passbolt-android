@@ -297,4 +297,8 @@ class ScanQrPresenter(
     override fun viewPaused() {
         view?.removeFlagSecure()
     }
+
+    override fun importProfileClick() {
+        view?.navigateToImportProfile()
+    }
 }
