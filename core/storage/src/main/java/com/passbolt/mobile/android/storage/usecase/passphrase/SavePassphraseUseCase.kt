@@ -7,7 +7,7 @@ import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCrypto
 import com.passbolt.mobile.android.storage.paths.EncryptedFileBaseDirectory
 import com.passbolt.mobile.android.storage.paths.PassphraseFileName
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import java.io.File
 import javax.crypto.Cipher
 
@@ -35,15 +35,13 @@ import javax.crypto.Cipher
  */
 
 class SavePassphraseUseCase(
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val biometricCrypto: BiometricCrypto,
     private val appContext: Context
-) : UseCase<SavePassphraseUseCase.Input, Unit> {
+) : UseCase<SavePassphraseUseCase.Input, Unit>, SelectedAccountUseCase {
 
     @Throws(UserNotAuthenticatedException::class)
     override fun execute(input: Input) {
-        val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        val fileName = PassphraseFileName(requireNotNull(userId)).name
+        val fileName = PassphraseFileName(selectedAccountId).name
         val file = File(EncryptedFileBaseDirectory(appContext).baseDirectory, fileName)
         val passphraseCopy = input.passphrase.copyOf()
         file.outputStream().use {

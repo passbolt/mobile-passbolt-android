@@ -33,8 +33,7 @@ internal fun Module.biometricKeyIvModule() {
     }
     factory {
         SaveBiometricKeyIvUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
+            encryptedSharedPreferencesFactory = get()
         )
     }
     factory {

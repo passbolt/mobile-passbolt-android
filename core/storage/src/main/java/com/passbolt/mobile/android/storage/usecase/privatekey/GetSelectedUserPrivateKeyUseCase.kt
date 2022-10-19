@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.storage.usecase.privatekey
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedFileFactory
 import com.passbolt.mobile.android.storage.paths.PrivateKeyFileName
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import timber.log.Timber
 import java.io.IOException
 
@@ -31,14 +31,12 @@ import java.io.IOException
  */
 
 class GetSelectedUserPrivateKeyUseCase(
-    private val encryptedFileFactory: EncryptedFileFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : UseCase<Unit, GetSelectedUserPrivateKeyUseCase.Output> {
+    private val encryptedFileFactory: EncryptedFileFactory
+) : UseCase<Unit, GetSelectedUserPrivateKeyUseCase.Output>, SelectedAccountUseCase {
 
     override fun execute(input: Unit): Output {
         return try {
-            val userId = getSelectedAccountUseCase.execute(Unit).selectedAccount
-            val name = PrivateKeyFileName(requireNotNull(userId)).name
+            val name = PrivateKeyFileName(selectedAccountId).name
             val encryptedFile = encryptedFileFactory.get(name)
             encryptedFile.openFileInput().use {
                 val bytes = it.readBytes()

@@ -17,7 +17,7 @@ import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseF
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyViewPrefsUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -42,7 +42,7 @@ class SettingsPresenter(
     private val saveGlobalPreferencesUseCase: SaveGlobalPreferencesUseCase,
     private val fileLoggingTree: FileLoggingTree,
     private val biometryInteractor: BiometryInteractor,
-    private val getHomeDisplayViewPrefsUseCase: GetHomeDisaplyViewPrefsUseCase,
+    private val getHomeDisplayViewPrefsUseCase: GetHomeDisplayViewPrefsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : SettingsContract.Presenter {
 

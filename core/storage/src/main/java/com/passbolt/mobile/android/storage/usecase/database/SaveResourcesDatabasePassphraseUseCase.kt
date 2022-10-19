@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.usecase.PASSPHRASE_KEY
 import com.passbolt.mobile.android.storage.usecase.RESOURCE_DATABASE_ALIAS
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,14 +30,12 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
  */
 
 class SaveResourcesDatabasePassphraseUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : UseCase<SaveResourcesDatabasePassphraseUseCase.Input, Unit> {
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : UseCase<SaveResourcesDatabasePassphraseUseCase.Input, Unit>, SelectedAccountUseCase {
 
     override fun execute(input: Input) {
-        val account = getSelectedAccountUseCase.execute(Unit).selectedAccount
         val sharedPreferences =
-            encryptedSharedPreferencesFactory.get("${RESOURCE_DATABASE_ALIAS}_$account.xml")
+            encryptedSharedPreferencesFactory.get("${RESOURCE_DATABASE_ALIAS}_$selectedAccountId.xml")
 
         with(sharedPreferences.edit()) {
             putString(PASSPHRASE_KEY, input.passphrase)

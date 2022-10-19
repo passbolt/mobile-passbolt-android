@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.paths.BiometricKeyIvFileName
 import com.passbolt.mobile.android.storage.usecase.IV_KEY
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,13 +30,11 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
  * @since v1.0
  */
 class SaveBiometricKeyIvUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : UseCase<SaveBiometricKeyIvUseCase.Input, Unit> {
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : UseCase<SaveBiometricKeyIvUseCase.Input, Unit>, SelectedAccountUseCase {
 
     override fun execute(input: Input) {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val fileName = BiometricKeyIvFileName(userId)
+        val fileName = BiometricKeyIvFileName(selectedAccountId)
         with(encryptedSharedPreferencesFactory.get(fileName.name).edit()) {
             val encodedIv = Base64.encodeToString(input.iv, Base64.DEFAULT)
             putString(IV_KEY, encodedIv)

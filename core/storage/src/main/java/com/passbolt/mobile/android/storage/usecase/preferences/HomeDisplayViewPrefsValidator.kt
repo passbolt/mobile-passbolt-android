@@ -32,7 +32,7 @@ class HomeDisplayViewPrefsValidator(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase
 ) {
 
-    fun validated(output: GetHomeDisaplyViewPrefsUseCase.Output): GetHomeDisaplyViewPrefsUseCase.Output {
+    fun validated(output: GetHomeDisplayViewPrefsUseCase.Output): GetHomeDisplayViewPrefsUseCase.Output {
         val featureFlags = runBlocking { getFeatureFlagsUseCase.execute(Unit).featureFlags }
         val validatedLastUsedView = output.lastUsedHomeView.mutateIf(
             { isNotAvailable(output.lastUsedHomeView, featureFlags) },

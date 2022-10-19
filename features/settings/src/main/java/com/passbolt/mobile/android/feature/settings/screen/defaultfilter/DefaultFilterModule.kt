@@ -34,7 +34,7 @@ fun Module.defaultFilterModule() {
             DefaultFilterPresenter(
                 updateHomeDisplayViewPrefsUseCase = get(),
                 homeDisplayViewPrefsValidator = get(),
-                getHomeDisaplyViewPrefsUseCase = get()
+                getHomeDisplayViewPrefsUseCase = get()
             )
         }
         scoped<ItemAdapter<DefaultFilterItem>> {
