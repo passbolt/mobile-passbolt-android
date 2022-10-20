@@ -42,7 +42,8 @@ class UserProfileInteractor(
                         userId = userId,
                         avatarUrl = result.profile.avatarUrl,
                         firstName = result.profile.firstName,
-                        lastName = result.profile.lastName
+                        lastName = result.profile.lastName,
+                        email = result.profile.username
                     )
                 )
                 Output.Success

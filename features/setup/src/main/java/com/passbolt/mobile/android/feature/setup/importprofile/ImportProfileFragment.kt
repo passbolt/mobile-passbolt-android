@@ -44,12 +44,7 @@ class ImportProfileFragment :
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
         setUpListeners()
-        setUpView()
         presenter.attach(this)
-    }
-
-    private fun setUpView() {
-        binding.privateKeyInput.enableMultiLine()
     }
 
     override fun onDestroyView() {

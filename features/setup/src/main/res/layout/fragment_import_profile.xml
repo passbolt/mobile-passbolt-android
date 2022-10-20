@@ -25,7 +25,7 @@
             android:layout_marginHorizontal="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_80"
             app:inputIsRequired="true"
-            app:inputTitle="@string/import_profile_title" />
+            app:inputTitle="@string/import_profile_user_id" />
 
         <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
             android:id="@+id/accountUrlInput"

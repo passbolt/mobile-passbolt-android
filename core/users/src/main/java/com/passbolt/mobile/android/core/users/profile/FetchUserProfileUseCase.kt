@@ -40,7 +40,7 @@ class FetchUserProfileUseCase(
             is NetworkResult.Failure.NetworkError -> Output.Failure(result.exception.message)
             is NetworkResult.Failure.ServerError -> Output.Failure(result.headerMessage)
             is NetworkResult.Success -> {
-                val profile = userProfileMapper.mapToUi(result.value.profile)
+                val profile = userProfileMapper.mapToUi(result.value.profile, result.value.username)
                 if (profile != null) {
                     Output.Success(profile)
                 } else {
