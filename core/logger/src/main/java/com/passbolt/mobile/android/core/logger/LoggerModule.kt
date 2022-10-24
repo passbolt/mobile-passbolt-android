@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.logger
 
 import com.passbolt.mobile.android.core.logger.exceptionhandler.LoggingExceptionHandler
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 /**
@@ -28,8 +29,13 @@ import org.koin.dsl.module
  */
 
 val loggerModule = module {
-    single { FileLoggingTree() }
-    single { LogFilesManager(androidContext()) }
+    singleOf(::FileLoggingTree)
+    single {
+        LogFilesManager(
+            appContext = androidContext(),
+            envInfoProvider = get()
+        )
+    }
     single { (defaultExceptionHandler: Thread.UncaughtExceptionHandler) ->
         LoggingExceptionHandler(defaultExceptionHandler)
     }

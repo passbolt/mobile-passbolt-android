@@ -27,6 +27,7 @@ coreModule "resourcetypes"
 coreModule "notifications"
 coreModule "autofill"
 coreModule "inappreview"
+coreModule "envinfo"
 
 featureModule "startup"
 featureModule "setup"

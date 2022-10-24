@@ -1,10 +1,9 @@
 package com.passbolt.mobile.android.logs
 
 import android.content.Intent
-import android.content.pm.PackageInfo
-import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.FileProvider.getUriForFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -12,7 +11,6 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.logger.LogFilesManager
-import com.passbolt.mobile.android.core.logger.LogFilesManager.Companion.LOG_DIR_NAME
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.logs.databinding.FragmentLogsBinding
 import com.passbolt.mobile.android.logs.recycler.LogItem
@@ -25,20 +23,13 @@ class LogsFragment : BindingScopedFragment<FragmentLogsBinding>(FragmentLogsBind
     private val presenter: LogsContract.Presenter by inject()
     private val modelAdapter: ItemAdapter<LogItem> by inject()
     private val fastAdapter: FastAdapter<GenericItem> by inject(named<LogItem>())
-    private val packageInfo: PackageInfo by inject()
-    private val logFilePath: String
-        get() {
-            val logsDirectory = File(requireContext().filesDir, LOG_DIR_NAME)
-            return File(logsDirectory, LogFilesManager.logFileName()).absolutePath
-        }
-    private val appName: String
-        get() = "${packageInfo.versionName}-${packageInfo.longVersionCode}"
+    private val logFileManager: LogFilesManager by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         presenter.attach(this)
-        presenter.argsRetrieved(logFilePath, deviceName, osName, appName)
+        presenter.argsRetrieved(logFileManager.logFilePath())
     }
 
     private fun setListeners() {
@@ -59,13 +50,19 @@ class LogsFragment : BindingScopedFragment<FragmentLogsBinding>(FragmentLogsBind
         modelAdapter.set(logLines.map { LogItem(it) })
     }
 
-    override fun showShareSheet(logs: String) {
+    override fun showShareSheet(logFile: File) {
+        val contentUri = getUriForFile(
+            requireContext(),
+            "com.passbolt.mobile.android.core.logger.logsfileprovider",
+            logFile
+        )
+
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, logs)
-            putExtra(Intent.EXTRA_EMAIL, getString(R.string.logs_share_email))
-            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.logs_share_email_title))
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             type = LOGS_MIME_TYPE
+
+            putExtra(Intent.EXTRA_STREAM, contentUri)
         }
 
         startActivity(
@@ -82,7 +79,5 @@ class LogsFragment : BindingScopedFragment<FragmentLogsBinding>(FragmentLogsBind
 
     private companion object {
         private const val LOGS_MIME_TYPE = "text/plain"
-        private val deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
-        private val osName = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})"
     }
 }

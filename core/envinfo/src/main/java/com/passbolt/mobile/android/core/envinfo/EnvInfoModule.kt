@@ -1,10 +1,8 @@
-package com.passbolt.mobile.android.logs
+package com.passbolt.mobile.android.core.envinfo
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.logs.recycler.LogItem
-import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,16 +27,10 @@ import org.koin.core.qualifier.named
  * @since v1.0
  */
 
-fun Module.logsModule() {
-    scope<LogsFragment> {
-        scoped<LogsContract.Presenter> {
-            LogsPresenter()
-        }
-        scoped<ItemAdapter<LogItem>> {
-            ItemAdapter.items()
-        }
-        scoped(named<LogItem>()) {
-            FastAdapter.with(get<ItemAdapter<LogItem>>())
-        }
+val envInfoModule = module {
+    factory {
+        val appContext = androidContext()
+        appContext.packageManager.getPackageInfo(appContext.packageName, 0)
     }
+    singleOf(::EnvInfoProvider)
 }
