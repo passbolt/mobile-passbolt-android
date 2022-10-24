@@ -33,8 +33,7 @@ internal fun Module.accountDataModule() {
     }
     single {
         GetSelectedAccountDataUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
+            encryptedSharedPreferencesFactory = get()
         )
     }
     factory {

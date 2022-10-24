@@ -29,8 +29,7 @@ import org.koin.core.module.Module
 internal fun Module.privateKeyModule() {
     single {
         GetSelectedUserPrivateKeyUseCase(
-            encryptedFileFactory = get(),
-            getSelectedAccountUseCase = get()
+            encryptedFileFactory = get()
         )
     }
     single {

@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.settings.screen.defaultfilter
 
-import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyViewPrefsUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.HomeDisplayViewPrefsValidator
 import com.passbolt.mobile.android.storage.usecase.preferences.UpdateHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
 class DefaultFilterPresenter(
     private val updateHomeDisplayViewPrefsUseCase: UpdateHomeDisplayViewPrefsUseCase,
     private val homeDisplayViewPrefsValidator: HomeDisplayViewPrefsValidator,
-    private val getHomeDisaplyViewPrefsUseCase: GetHomeDisaplyViewPrefsUseCase
+    private val getHomeDisplayViewPrefsUseCase: GetHomeDisplayViewPrefsUseCase
 ) : DefaultFilterContract.Presenter {
 
     override var view: DefaultFilterContract.View? = null
@@ -22,7 +22,7 @@ class DefaultFilterPresenter(
 
     override fun viewResume() {
         view?.selectFilterSilently(
-            getHomeDisaplyViewPrefsUseCase.execute(Unit).userSetHomeView
+            getHomeDisplayViewPrefsUseCase.execute(Unit).userSetHomeView
         )
     }
 

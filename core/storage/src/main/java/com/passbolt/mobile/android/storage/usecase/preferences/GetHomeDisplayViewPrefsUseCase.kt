@@ -6,7 +6,7 @@ import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesF
 import com.passbolt.mobile.android.storage.paths.AccountPreferencesFileName
 import com.passbolt.mobile.android.storage.usecase.KEY_LAST_USED_HOME_VIEW
 import com.passbolt.mobile.android.storage.usecase.KEY_USER_SET_HOME_VIEW
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 
 /**
@@ -32,15 +32,13 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
  * @since v1.0
  */
 
-class GetHomeDisaplyViewPrefsUseCase(
+class GetHomeDisplayViewPrefsUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val homeDisplayViewPrefsValidator: HomeDisplayViewPrefsValidator
-) : UseCase<Unit, GetHomeDisaplyViewPrefsUseCase.Output> {
+) : UseCase<Unit, GetHomeDisplayViewPrefsUseCase.Output>, SelectedAccountUseCase {
 
     override fun execute(input: Unit): Output {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val fileName = AccountPreferencesFileName(userId).name
+        val fileName = AccountPreferencesFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
 
         with(sharedPreferences) {

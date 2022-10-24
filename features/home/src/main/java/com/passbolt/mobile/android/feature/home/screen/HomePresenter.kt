@@ -24,7 +24,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceAuthe
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyViewPrefsUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCount
@@ -92,7 +92,7 @@ class HomePresenter(
     private val getLocalResourcesWithTagUseCase: GetLocalResourcesWithTagUseCase,
     private val getLocalGroupsWithShareItemsCountUseCase: GetLocalGroupsWithShareItemsCountUseCase,
     private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase,
-    private val getHomeDisplayViewPrefsUseCase: GetHomeDisaplyViewPrefsUseCase,
+    private val getHomeDisplayViewPrefsUseCase: GetHomeDisplayViewPrefsUseCase,
     private val homeModelMapper: HomeDisplayViewMapper,
     private val domainProvider: DomainProvider,
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase

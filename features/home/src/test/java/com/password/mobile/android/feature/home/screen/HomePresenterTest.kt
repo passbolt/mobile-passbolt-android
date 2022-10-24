@@ -19,7 +19,7 @@ import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewMode
 import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyViewPrefsUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
@@ -706,7 +706,7 @@ class HomePresenterTest : KoinTest {
     fun `view root should user selected filter by default`() {
         val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
-            GetHomeDisaplyViewPrefsUseCase.Output(
+            GetHomeDisplayViewPrefsUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
                 userSetHomeView = DefaultFilterModel.FOLDERS
             )
@@ -733,7 +733,7 @@ class HomePresenterTest : KoinTest {
     fun `view should apply visibility settings correct`() {
         val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
-            GetHomeDisaplyViewPrefsUseCase.Output(
+            GetHomeDisplayViewPrefsUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
                 userSetHomeView = DefaultFilterModel.FOLDERS
             )

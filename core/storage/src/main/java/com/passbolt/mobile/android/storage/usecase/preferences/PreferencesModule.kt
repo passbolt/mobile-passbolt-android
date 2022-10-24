@@ -37,16 +37,14 @@ internal fun Module.preferencesModule() {
         )
     }
     factory {
-        GetHomeDisaplyViewPrefsUseCase(
+        GetHomeDisplayViewPrefsUseCase(
             encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get(),
             homeDisplayViewPrefsValidator = get()
         )
     }
     factory {
         UpdateHomeDisplayViewPrefsUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
+            encryptedSharedPreferencesFactory = get()
         )
     }
     factory {

@@ -4,12 +4,12 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.paths.FeatureFlagsFileName
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.FOLDERS_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PREVIEW_PASSWORD_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PRIVACY_POLICY_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TAGS_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,13 +34,11 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
  * @since v1.0
  */
 class GetFeatureFlagsUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<Unit, GetFeatureFlagsUseCase.Output> {
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : AsyncUseCase<Unit, GetFeatureFlagsUseCase.Output>, SelectedAccountUseCase {
 
     override suspend fun execute(input: Unit): Output {
-        val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val fileName = FeatureFlagsFileName(selectedAccount).name
+        val fileName = FeatureFlagsFileName(selectedAccountId).name
         encryptedSharedPreferencesFactory.get("$fileName.xml").let {
             val privacyPolicyUrl = it.getString(PRIVACY_POLICY_KEY, null)
             val termsUrl = it.getString(TERMS_AND_CONDITIONS_KEY, null)

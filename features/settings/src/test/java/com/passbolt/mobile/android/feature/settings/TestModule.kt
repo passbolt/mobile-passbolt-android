@@ -5,7 +5,6 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
-import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
 import com.passbolt.mobile.android.feature.settings.screen.SettingsPresenter
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
@@ -17,7 +16,7 @@ import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseF
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisaplyViewPrefsUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,7 +45,7 @@ internal val getFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
 internal val mockSaveGlobalPreferencesUseCase = mock<SaveGlobalPreferencesUseCase>()
 internal val mockBiometryInteractor = mock<BiometryInteractor>()
-internal val mockGetHomeDisplayPrefsUseCase = mock<GetHomeDisaplyViewPrefsUseCase>()
+internal val mockGetHomeDisplayPrefsUseCase = mock<GetHomeDisplayViewPrefsUseCase>()
 
 @ExperimentalCoroutinesApi
 val testModule = module {

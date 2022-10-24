@@ -4,12 +4,12 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.paths.FeatureFlagsFileName
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.FOLDERS_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PREVIEW_PASSWORD_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PRIVACY_POLICY_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TAGS_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,13 +34,11 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
  * @since v1.0
  */
 class SaveFeatureFlagsUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<SaveFeatureFlagsUseCase.Input, Unit> {
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : AsyncUseCase<SaveFeatureFlagsUseCase.Input, Unit>, SelectedAccountUseCase {
 
     override suspend fun execute(input: Input) {
-        val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val fileName = FeatureFlagsFileName(selectedAccount).name
+        val fileName = FeatureFlagsFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
         with(sharedPreferences.edit()) {
             putString(PRIVACY_POLICY_KEY, input.featureFlags.privacyPolicyUrl)

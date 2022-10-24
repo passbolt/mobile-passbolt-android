@@ -28,14 +28,12 @@ import org.koin.core.module.Module
 internal fun Module.databaseModule() {
     single {
         GetResourcesDatabasePassphraseUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
+            encryptedSharedPreferencesFactory = get()
         )
     }
     single {
         SaveResourcesDatabasePassphraseUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            getSelectedAccountUseCase = get()
+            encryptedSharedPreferencesFactory = get()
         )
     }
 }
