@@ -147,7 +147,7 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
             "userId",
             "userName",
             GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now()),
-            UserProfileModel("first", "last", "avatarUrl")
+            UserProfileModel("username", "first", "last", "avatarUrl")
         )
         private val GROUP = GroupModel("grId", "grName")
         private val GROUP_PERMISSION = PermissionModelUi.GroupPermissionModel(ResourcePermission.READ, "permId", GROUP)

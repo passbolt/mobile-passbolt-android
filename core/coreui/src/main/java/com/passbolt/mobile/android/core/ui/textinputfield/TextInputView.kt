@@ -8,7 +8,6 @@ import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
@@ -160,18 +159,6 @@ open class TextInputView @JvmOverloads constructor(
 
     fun getInputBytes(): ByteArray =
         binding.input.text?.toString()?.toByteArray() ?: byteArrayOf()
-
-    fun enableMultiLine(showMinLines: Int = 6, showMaxLines: Int = 10) {
-        with(binding.textLayout) {
-            editText?.apply {
-                isSingleLine = false
-                inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                minLines = showMinLines
-                maxLines = showMaxLines
-                gravity = Gravity.TOP
-            }
-        }
-    }
 
     private companion object {
         private const val DEFAULT_REQUIRED_STATE = false

@@ -175,13 +175,18 @@ class PermissionRecipientsPresenterTest : KoinTest {
             USER_WITH_AVATAR.userId,
             USER_WITH_AVATAR.userName,
             GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now()),
-            UserProfileModel(USER_WITH_AVATAR.firstName, USER_WITH_AVATAR.lastName, USER_WITH_AVATAR.avatarUrl)
+            UserProfileModel(
+                "username",
+                USER_WITH_AVATAR.firstName,
+                USER_WITH_AVATAR.lastName,
+                USER_WITH_AVATAR.avatarUrl
+            )
         )
         private val NEW_USER = UserModel(
             "newUserId",
             "newUserName",
             GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now()),
-            UserProfileModel("newUserFirst", "newUserLast", "newUserAvatar")
+            UserProfileModel("username", "newUserFirst", "newUserLast", "newUserAvatar")
         )
     }
 }

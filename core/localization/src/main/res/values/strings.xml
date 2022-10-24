@@ -404,7 +404,7 @@
     <string name="import_profile_private_key">Private key</string>
     <string name="import_profile_import">Import</string>
     <string name="import_profile_invalid_uuid">Incorrect UUID format</string>
-    <string name="import_profile_invalid_account_url">Incorrect URL format. Url must start with https://</string>
+    <string name="import_profile_invalid_account_url">Incorrect URL format. URL must start with https://</string>
     <string name="import_profile_invalid_private_key">Private key cannot be empty</string>
 
     <!--

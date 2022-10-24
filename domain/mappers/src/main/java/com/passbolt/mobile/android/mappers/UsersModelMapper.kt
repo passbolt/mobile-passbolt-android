@@ -29,7 +29,12 @@ class UsersModelMapper {
                         usersGpgKey.type,
                         usersGpgKey.expires?.let { expires -> ZonedDateTime.parse(expires) }
                     ),
-                    UserProfileModel(it.profile?.firstName, it.profile?.lastName, it.profile?.avatar?.url?.medium)
+                    UserProfileModel(
+                        it.username,
+                        it.profile?.firstName,
+                        it.profile?.lastName,
+                        it.profile?.avatar?.url?.medium
+                    )
                 )
             }
 
@@ -67,6 +72,7 @@ class UsersModelMapper {
                 input.gpgKey.expires
             ),
             UserProfileModel(
+                input.userName,
                 input.profile.firstName,
                 input.profile.lastName,
                 input.profile.avatarUrl
