@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.feature.resourcedetails.details
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -16,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.setFragmentResultListener
-import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -30,6 +28,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.navigation.ActivityResults
+import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -369,7 +368,7 @@ class ResourceDetailsFragment :
 
     override fun navigateToEditResource(resourceModel: ResourceModel) {
         resourceUpdateResult.launch(
-            com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity.newInstance(
+            ResourceActivity.newInstance(
                 requireContext(),
                 ResourceMode.EDIT,
                 resourceModel.folderId,
@@ -379,16 +378,9 @@ class ResourceDetailsFragment :
     }
 
     override fun navigateToResourceTags(resourceId: String, mode: PermissionsMode) {
-        val request = NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme("passbolt")
-                    .authority("tagsDetails")
-                    .appendPath(resourceId)
-                    .appendQueryParameter("mode", mode.name)
-                    .build()
-            ).build()
-        findNavController().navigate(request)
+        findNavController().navigate(
+            NavDeepLinkProvider.resourceTagsDeepLinkRequest(resourceId, mode.name)
+        )
     }
 
     override fun showResourceEditedSnackbar(resourceName: String) {
@@ -424,17 +416,14 @@ class ResourceDetailsFragment :
             PermissionsFragment.REQUEST_UPDATE_PERMISSIONS,
             resourceShareResult
         )
-        val request = NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme("passbolt")
-                    .authority("permissions")
-                    .appendPath(PermissionsItem.RESOURCE.name)
-                    .appendPath(resourceId)
-                    .appendQueryParameter("mode", mode.name)
-                    .appendQueryParameter("navigationOrigin", NavigationOrigin.RESOURCE_DETAILS_SCREEN.name)
-                    .build()
-            ).build()
+
+        val request = NavDeepLinkProvider.permissionsDeepLinkRequest(
+            permissionItemName = PermissionsItem.RESOURCE.name,
+            permissionItemId = resourceId,
+            permissionsModeName = mode.name,
+            navigationOriginName = NavigationOrigin.RESOURCE_DETAILS_SCREEN.name
+        )
+
         findNavController().navigate(request)
     }
 
@@ -473,15 +462,10 @@ class ResourceDetailsFragment :
     }
 
     override fun navigateToResourceLocation(resourceId: String) {
-        val request = NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme("passbolt")
-                    .authority("locationDetails")
-                    .appendPath(LocationItem.RESOURCE.name)
-                    .appendPath(resourceId)
-                    .build()
-            ).build()
+        val request = NavDeepLinkProvider.locationDetailsDeepLinkRequest(
+            locationDetailsItemName = LocationItem.RESOURCE.name,
+            locationDetailsItemId = resourceId
+        )
         findNavController().navigate(request)
     }
 }

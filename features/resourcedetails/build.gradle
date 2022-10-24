@@ -32,6 +32,7 @@ dependencies {
     implementation project(':passwordgenerator')
     implementation project(':resourcetypes')
     implementation project(':tagsdetails')
+    implementation project(':navigation')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

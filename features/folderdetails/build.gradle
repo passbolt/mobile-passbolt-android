@@ -21,6 +21,7 @@ dependencies {
     implementation project(':database')
     implementation project(':permissions')
     implementation project(':locationdetails')
+    implementation project(':navigation')
 
     implementation libs.di.koin
     implementation libs.material

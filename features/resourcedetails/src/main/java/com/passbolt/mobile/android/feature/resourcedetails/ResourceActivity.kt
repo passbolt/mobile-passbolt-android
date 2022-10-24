@@ -2,13 +2,12 @@ package com.passbolt.mobile.android.feature.resourcedetails
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.NavHostFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.resources.R
@@ -76,17 +75,14 @@ class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResou
     private fun navigateToResourcePermissions(navHostFragment: NavHostFragment) {
         val resourceId =
             requireNotNull(intent.getParcelableExtra<ResourceModel>(EXTRA_RESOURCE_MODEL)).resourceId
-        val request = NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme("passbolt")
-                    .authority("permissions")
-                    .appendPath(PermissionsItem.RESOURCE.name)
-                    .appendPath(resourceId)
-                    .appendQueryParameter("mode", PermissionsMode.EDIT.name)
-                    .appendQueryParameter("navigationOrigin", NavigationOrigin.HOME_RESOURCE_MORE_MENU.name)
-                    .build()
-            ).build()
+
+        val request = NavDeepLinkProvider.permissionsDeepLinkRequest(
+            permissionItemName = PermissionsItem.RESOURCE.name,
+            permissionItemId = resourceId,
+            permissionsModeName = PermissionsMode.EDIT.name,
+            navigationOriginName = NavigationOrigin.HOME_RESOURCE_MORE_MENU.name
+        )
+
         navHostFragment.navController.navigate(request)
     }
 
