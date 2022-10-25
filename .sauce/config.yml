@@ -1,0 +1,25 @@
+apiVersion: v1alpha
+kind: espresso
+sauce:
+  concurrency: 1
+  metadata:
+    tags:
+      - passbolt
+      - android-instrumented-tests
+    build: Commit $CI_COMMIT_SHORT_SHA
+espresso:
+  app: app/build/outputs/apk/debug/app-debug.apk
+  testApp: app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+suites:
+  - name: "Passbolt tests"
+    # Configure run on device or emulator
+    emulators:
+      - name: "Google Pixel 6 Pro GoogleAPI Emulator"
+        platformVersions:
+          - "12.0"
+artifacts:
+  download:
+    when: always
+    match:
+      - junit.xml
+    directory: app/build/reports/saucelabs/
