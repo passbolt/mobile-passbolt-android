@@ -64,6 +64,11 @@ class ManagedAccountIntentCreator {
 
     fun getDomain(): String = accountProperties.getProperty(EXTRA_DOMAIN)
 
+    fun getArmoredPrivateKey(): String = accountProperties.getProperty(PROPERTY_ARMORED_KEY)
+
+    fun getUserServerId(): String = accountProperties.getProperty(PROPERTY_USER_ID)
+
+    fun getUserLocalId(): String = accountProperties.getProperty(PROPERTY_LOCAL_USER_UUID)
 
     private companion object {
         const val ACTION_MANAGED_PROFILE = "com.passbolt.mobile.android.MANAGED_PROFILE"
@@ -85,6 +90,7 @@ class ManagedAccountIntentCreator {
         const val PROPERTY_AVATAR_URL = "AVATAR_URL"
         const val PROPERTY_KEY_FINGERPRINT = "KEY_FINGERPRINT"
         const val PROPERTY_ARMORED_KEY = "ARMORED_KEY"
+        const val PROPERTY_LOCAL_USER_UUID = "LOCAL_USER_UUID"
 
         private const val ACCOUNT_PROPERTIES_FILENAME = "profile_hedy.properties"
     }

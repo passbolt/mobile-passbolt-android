@@ -1,8 +1,13 @@
 package com.passbolt.mobile.android
 
+import com.jakewharton.espresso.OkHttp3IdlingResource
+import com.passbolt.mobile.android.accountinit.AccountInitializer
+import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import okhttp3.OkHttpClient
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 
@@ -39,4 +44,10 @@ val instrumentationTestsModule = module {
         }
     }
     singleOf(::ManagedAccountIntentCreator)
+    singleOf(::AccountInitializer)
+
+    single {
+        val okHttpClient: OkHttpClient by inject(named(DEFAULT_HTTP_CLIENT))
+        OkHttp3IdlingResource.create(OkHttp3IdlingResource::class.java.name, okHttpClient)
+    }
 }

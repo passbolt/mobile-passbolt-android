@@ -28,6 +28,7 @@ coreModule "notifications"
 coreModule "autofill"
 coreModule "inappreview"
 coreModule "envinfo"
+coreModule "idlingresource"
 
 featureModule "startup"
 featureModule "setup"

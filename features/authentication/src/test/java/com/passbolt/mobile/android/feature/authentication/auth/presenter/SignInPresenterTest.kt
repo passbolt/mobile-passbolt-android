@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -60,6 +61,7 @@ import java.net.UnknownHostException
  * @since v1.0
  */
 
+@ExperimentalCoroutinesApi
 class SignInPresenterTest : KoinTest {
 
     private val presenter: AuthContract.Presenter by inject {

@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
+import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.AuthReasonMapper
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.PassphrasePresenter
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.RefreshSessionPresenter
@@ -74,6 +75,7 @@ fun Module.authModule() {
     singleOf(::MfaProviderHandler)
     singleOf(::SignOutUseCase)
     singleOf(::BiometryInteractor)
+    singleOf(::SignInIdlingResource)
 }
 
 private fun ScopeDSL.authPresenter() {
@@ -115,6 +117,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
     userProfileInteractor = get(),
+    inAppReviewInteractor = get(),
     biometryInteractor = get(),
     getAccountDataUseCase = get(),
     biometricCipher = get(),
@@ -125,7 +128,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
     authReasonMapper = get(),
     rootDetector = get(),
     runtimeAuthenticatedFlag = get(),
-    inAppReviewInteractor = get()
+    signInIdlingResource = get()
 )
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
@@ -150,5 +153,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     biometryInteractor = get(),
     userProfileInteractor = get(),
     runtimeAuthenticatedFlag = get(),
-    inAppReviewInteractor = get()
+    inAppReviewInteractor = get(),
+    signInIdlingResource = get()
 )

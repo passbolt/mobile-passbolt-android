@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -35,7 +36,10 @@ import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCa
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveAllAccountsPassphrasesUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.scope.Scope
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -122,6 +126,7 @@ internal val mockRootDetector = mock<RootDetectorImpl>()
 internal val mockProfileInteractor = mock<UserProfileInteractor>()
 internal val mockInAppReviewInteractor = mock<InAppReviewInteractor>()
 
+@ExperimentalCoroutinesApi
 val testAuthModule = module {
     factory {
         GetAndVerifyServerKeysInteractor(
@@ -150,6 +155,7 @@ val testAuthModule = module {
         )
     }
     single { RuntimeAuthenticatedFlag() }
+    single { SignInIdlingResource() }
     factory<AuthContract.Presenter> { (authConfig: ActivityIntents.AuthConfig) ->
         when (authConfig) {
             is ActivityIntents.AuthConfig.Startup -> signInPresenter()
@@ -161,7 +167,7 @@ val testAuthModule = module {
             is ActivityIntents.AuthConfig.RefreshSession -> refreshSessionPresenter()
         }
     }
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
 }
 
 private fun Scope.signInPresenter() = SignInPresenter(
@@ -175,6 +181,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
     userProfileInteractor = mockProfileInteractor,
+    inAppReviewInteractor = mockInAppReviewInteractor,
     biometryInteractor = get(),
     getAccountDataUseCase = mockGetAccountDataUseCase,
     biometricCipher = mockBiometricCipher,
@@ -185,7 +192,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
     authReasonMapper = authReasonMapper,
     rootDetector = mockRootDetector,
     runtimeAuthenticatedFlag = get(),
-    inAppReviewInteractor = mockInAppReviewInteractor
+    signInIdlingResource = get()
 )
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(
@@ -224,5 +231,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     biometryInteractor = get(),
     userProfileInteractor = mockProfileInteractor,
     runtimeAuthenticatedFlag = get(),
-    inAppReviewInteractor = mockInAppReviewInteractor
+    inAppReviewInteractor = mockInAppReviewInteractor,
+    signInIdlingResource = get()
 )

@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
@@ -68,7 +69,8 @@ class RefreshSessionPresenter(
     biometryInteractor: BiometryInteractor,
     userProfileInteractor: UserProfileInteractor,
     runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
-    inAppReviewInteractor: InAppReviewInteractor
+    inAppReviewInteractor: InAppReviewInteractor,
+    signInIdlingResource: SignInIdlingResource
 ) : SignInPresenter(
     saveSessionUseCase,
     saveSelectedAccountUseCase,
@@ -81,6 +83,7 @@ class RefreshSessionPresenter(
     signInVerifyInteractor,
     userProfileInteractor,
     inAppReviewInteractor,
+    signInIdlingResource,
     biometryInteractor,
     getAccountDataUseCase,
     biometricCipher,

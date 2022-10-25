@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
@@ -65,6 +66,7 @@ open class SignInPresenter(
     private val signInVerifyInteractor: SignInVerifyInteractor,
     private val userProfileInteractor: UserProfileInteractor,
     private val inAppReviewInteractor: InAppReviewInteractor,
+    private val signInIdlingResource: SignInIdlingResource,
     biometryInteractor: BiometryInteractor,
     getAccountDataUseCase: GetAccountDataUseCase,
     biometricCipher: BiometricCipher,
@@ -109,6 +111,7 @@ open class SignInPresenter(
     }
 
     protected open fun performSignIn(passphrase: ByteArray) {
+        signInIdlingResource.setIdle(false)
         view?.showProgress()
         scope.launch {
             getAndVerifyServerKeysInteractor.getAndVerifyServerKeys(userId,
@@ -277,6 +280,7 @@ open class SignInPresenter(
                 Timber.d("User profile updated successfully")
             }
         }
+        signInIdlingResource.setIdle(true)
         view?.apply {
             hideProgress()
             clearPassphraseInput()
