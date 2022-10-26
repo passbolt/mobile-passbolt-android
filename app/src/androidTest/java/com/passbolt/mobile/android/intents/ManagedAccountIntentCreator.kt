@@ -56,6 +56,14 @@ class ManagedAccountIntentCreator {
             putExtra(EXTRA_ARMORED_KEY, accountProperties.getProperty(PROPERTY_ARMORED_KEY))
         }
 
+    fun getFirstName(): String = accountProperties.getProperty(EXTRA_FIRST_NAME)
+
+    fun getLastName(): String = accountProperties.getProperty(EXTRA_LAST_NAME)
+
+    fun getUsername(): String = accountProperties.getProperty(EXTRA_USERNAME)
+
+    fun getDomain(): String = accountProperties.getProperty(EXTRA_DOMAIN)
+
 
     private companion object {
         const val ACTION_MANAGED_PROFILE = "com.passbolt.mobile.android.MANAGED_PROFILE"
