@@ -1,10 +1,8 @@
 package com.passbolt.mobile.android.folderdetails
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnLayout
-import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +12,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.folderdetails.databinding.FragmentFolderDetailsBinding
@@ -136,30 +135,20 @@ class FolderDetailsFragment :
     }
 
     override fun navigateToFolderPermissions(folderId: String, mode: PermissionsMode) {
-        val request = NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme("passbolt")
-                    .authority("permissions")
-                    .appendPath(PermissionsItem.FOLDER.name)
-                    .appendPath(folderId)
-                    .appendQueryParameter("mode", mode.name)
-                    .appendQueryParameter("navigationOrigin", NavigationOrigin.RESOURCE_DETAILS_SCREEN.name)
-                    .build()
-            ).build()
+        val request = NavDeepLinkProvider.permissionsDeepLinkRequest(
+            permissionItemName = PermissionsItem.FOLDER.name,
+            permissionItemId = folderId,
+            permissionsModeName = mode.name,
+            navigationOriginName = NavigationOrigin.RESOURCE_DETAILS_SCREEN.name
+        )
         findNavController().navigate(request)
     }
 
     override fun navigateToFolderLocation(folderId: String) {
-        val request = NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme("passbolt")
-                    .authority("locationDetails")
-                    .appendPath(LocationItem.FOLDER.name)
-                    .appendPath(folderId)
-                    .build()
-            ).build()
+        val request = NavDeepLinkProvider.locationDetailsDeepLinkRequest(
+            locationDetailsItemName = LocationItem.FOLDER.name,
+            locationDetailsItemId = folderId
+        )
         findNavController().navigate(request)
     }
 }

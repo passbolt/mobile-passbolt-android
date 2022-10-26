@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.feature.home.screen
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -12,11 +11,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.setFragmentResultListener
-import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,6 +37,7 @@ import com.passbolt.mobile.android.core.mvp.progress.ProgressStackSynchronizer
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.createfolder.CreateFolderFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
@@ -807,10 +805,9 @@ class HomeFragment :
     }
 
     override fun navigateToFolderDetails(childFolder: Folder.Child) {
-        val request = NavDeepLinkRequest.Builder
-            .fromUri("passbolt://folders/${childFolder.folderId}".toUri())
-            .build()
-        findNavController().navigate(request)
+        findNavController().navigate(
+            NavDeepLinkProvider.folderDetailsDeepLinkRequest(childFolder.folderId)
+        )
     }
 
     override fun navigateToCreateFolder(folderId: String?) {
@@ -818,16 +815,9 @@ class HomeFragment :
             CreateFolderFragment.REQUEST_CREATE_FOLDER,
             folderCreatedListener
         )
-        val request = NavDeepLinkRequest.Builder
-            .fromUri(
-                Uri.Builder()
-                    .scheme("passbolt")
-                    .authority("createFolder")
-                    .apply { folderId?.let { appendQueryParameter("parentFolderId", folderId) } }
-                    .build()
-            )
-            .build()
-        findNavController().navigate(request)
+        findNavController().navigate(
+            NavDeepLinkProvider.createFolderDeepLinkRequest(folderId)
+        )
     }
 
     override fun showFolderCreated(name: String) {
