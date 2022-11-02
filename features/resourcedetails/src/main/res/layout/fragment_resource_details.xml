@@ -379,10 +379,10 @@
                 android:layout_height="@dimen/dp_40"
                 android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_8"
-                app:layout_constraintBottom_toBottomOf="@id/sharedWithRecyclerClickableArea"
+                app:layout_constraintBottom_toBottomOf="@id/sharedWithRecycler"
                 app:layout_constraintEnd_toStartOf="@id/sharedWithNavIcon"
                 app:layout_constraintStart_toStartOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/sharedWithLabel" />
+                app:layout_constraintTop_toTopOf="@id/sharedWithLabel" />
 
             <ImageView
                 android:id="@+id/sharedWithNavIcon"
