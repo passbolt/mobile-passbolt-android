@@ -156,7 +156,7 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     }
 
     override fun setTotpInputBlack() {
-        binding.otpInput.setCustomTextColor(ContextCompat.getColor(binding.root.context, android.R.color.black))
+        binding.otpInput.setCustomTextColor(ContextCompat.getColor(binding.root.context, R.color.text_primary))
     }
 
     override fun showWrongCodeError() {
