@@ -31,4 +31,6 @@ interface HomeDataRefreshExecutor {
     fun performLocalDataRefresh()
 
     fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished>
+
+    fun cancelRefresh()
 }

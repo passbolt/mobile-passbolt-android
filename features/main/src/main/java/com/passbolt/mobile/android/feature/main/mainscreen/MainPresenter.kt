@@ -31,7 +31,6 @@ class MainPresenter(
 
     override fun attach(view: MainContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
-        performFullDataRefresh()
         view.checkForAppUpdates()
         if (inAppReviewInteractor.shouldShowInAppReviewFlow()) {
             view.tryLaunchReviewFlow()
@@ -62,5 +61,9 @@ class MainPresenter(
         scope.launch {
             _dataRefreshStatusFlow.emit(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         }
+    }
+
+    override fun cancelFullRefresh() {
+        scope.coroutineContext.cancelChildren()
     }
 }

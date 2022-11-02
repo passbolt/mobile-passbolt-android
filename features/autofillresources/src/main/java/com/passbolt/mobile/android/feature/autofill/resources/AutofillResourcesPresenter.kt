@@ -103,6 +103,10 @@ class AutofillResourcesPresenter(
         }
     }
 
+    override fun cancelFullRefresh() {
+        scope.coroutineContext.cancelChildren()
+    }
+
     override fun itemClick(resourceModel: ResourceModel) {
         view?.showProgress()
         scope.launch {
