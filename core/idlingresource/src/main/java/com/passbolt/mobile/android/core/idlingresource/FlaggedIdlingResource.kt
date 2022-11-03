@@ -1,8 +1,7 @@
-package com.passbolt.mobile.android.core.fulldatarefresh
+package com.passbolt.mobile.android.core.idlingresource
 
-import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+import androidx.test.espresso.IdlingResource
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,7 +26,28 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val fullDataRefreshModule = module {
-    singleOf(::HomeDataInteractor)
-    singleOf(::ResourcesFullRefreshIdlingResource)
+/**
+ * Base idling resource class for boolean flag resources.
+ */
+abstract class FlaggedIdlingResource : IdlingResource {
+
+    @Volatile
+    private var callback: IdlingResource.ResourceCallback? = null
+
+    private val isIdleNow = AtomicBoolean(true)
+
+    abstract override fun getName(): String
+
+    override fun isIdleNow(): Boolean = isIdleNow.get()
+
+    override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
+        this.callback = callback
+    }
+
+    fun setIdle(isIdle: Boolean) {
+        isIdleNow.set(isIdle)
+        if (isIdle) {
+            callback?.onTransitionToIdle()
+        }
+    }
 }

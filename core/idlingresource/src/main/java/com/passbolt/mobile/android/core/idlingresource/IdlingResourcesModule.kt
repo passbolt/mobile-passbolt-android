@@ -1,6 +1,5 @@
-package com.passbolt.mobile.android.core.fulldatarefresh
+package com.passbolt.mobile.android.core.idlingresource
 
-import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -27,7 +26,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val fullDataRefreshModule = module {
-    singleOf(::HomeDataInteractor)
+val idlingResourcesModule = module {
+    singleOf(::SignInIdlingResource)
     singleOf(::ResourcesFullRefreshIdlingResource)
 }

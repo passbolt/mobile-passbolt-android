@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.fulldatarefresh
 
 import com.passbolt.mobile.android.core.commonfolders.usecase.FoldersInteractor
 import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
+import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.plus
@@ -38,14 +39,17 @@ class HomeDataInteractor(
     private val foldersInteractor: FoldersInteractor,
     private val resourcesInteractor: ResourceInteractor,
     private val groupsInteractor: GroupsInteractor,
-    private val usersInteractor: UsersInteractor
+    private val usersInteractor: UsersInteractor,
+    private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource
 ) {
 
     suspend fun refreshAllHomeScreenData(): Output {
+        resourcesFullRefreshIdlingResource.setIdle(false)
         val userInteractorOutput = usersInteractor.fetchAndSaveUsers()
         val groupsRefreshOutput = groupsInteractor.fetchAndSaveGroups()
         val foldersRefreshOutput = foldersInteractor.fetchAndSaveFolders()
         val resourcesAndResourcesTypesOutput = resourcesInteractor.updateResourcesWithTypes()
+        resourcesFullRefreshIdlingResource.setIdle(true)
         return if (foldersRefreshOutput is FoldersInteractor.Output.Success &&
             resourcesAndResourcesTypesOutput is ResourceInteractor.Output.Success &&
             groupsRefreshOutput is GroupsInteractor.Output.Success &&

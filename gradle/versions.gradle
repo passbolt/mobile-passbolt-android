@@ -27,7 +27,9 @@ ext {
             androidTestRules: "1.4.0",
             androidTestKtx: "1.4.0",
             androidTestIntents: "3.4.0",
-            mockitoAndroid: "4.8.0"
+            mockitoAndroid: "4.8.0",
+            espressoOkHttpIdlingResource: "1.0.0",
+            espressoIdlingResource: "3.4.0"
         ],
         quality: [
             ktlint: "0.36.0",
@@ -125,7 +127,9 @@ ext {
             androidTestsRunner: "androidx.test:runner:${versions.test.androidTestsRunner}",
             androidTestRules: "androidx.test:rules:${versions.test.androidTestRules}",
             androidTestKtx: "androidx.test:core-ktx:${versions.test.androidTestKtx}",
-            androidTestIntents: "androidx.test.espresso:espresso-intents:${versions.test.androidTestIntents}"
+            androidTestIntents: "androidx.test.espresso:espresso-intents:${versions.test.androidTestIntents}",
+            espressoOkHttpIdlingResource: "com.jakewharton.espresso:okhttp3-idling-resource:${versions.test.espressoOkHttpIdlingResource}",
+            espressoIdlingResource: "androidx.test.espresso:espresso-idling-resource:${versions.test.espressoIdlingResource}"
         ],
         quality: [
             ktlint: "com.pinterest:ktlint:${versions.quality.ktlint}",

@@ -138,6 +138,7 @@ dependencies {
     implementation project(':autofill')
     implementation project(':inappreview')
     implementation project(':envinfo')
+    implementation project(':idlingresource')
 
     debugImplementation libs.quality.leakcanary
 
@@ -158,4 +159,5 @@ dependencies {
     androidTestImplementation libs.di.koinTestJUnit
     androidTestImplementation libs.test.androidTestIntents
     androidTestImplementation libs.test.mockitoAndroid
+    androidTestImplementation libs.test.espressoOkHttpIdlingResource
 }

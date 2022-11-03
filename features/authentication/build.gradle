@@ -27,6 +27,7 @@ dependencies {
     implementation project(':helpmenu')
     implementation project(':logs')
     implementation project(':inappreview')
+    implementation project(':idlingresource')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -48,11 +49,11 @@ dependencies {
     implementation(libs.pinentry) {
         exclude group: 'androidx.appcompat', module: 'appcompat'
     }
+    implementation libs.test.espressoIdlingResource
 
     testImplementation project(":commontest")
     testImplementation libs.di.koinTestJUnit
     testImplementation libs.kotlin.reflect
-
 }
 
 android {

@@ -1,8 +1,4 @@
-package com.passbolt.mobile.android.core.fulldatarefresh
-
-import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+package com.passbolt.mobile.android.core.idlingresource
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,8 +22,11 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class SignInIdlingResource : FlaggedIdlingResource() {
 
-val fullDataRefreshModule = module {
-    singleOf(::HomeDataInteractor)
-    singleOf(::ResourcesFullRefreshIdlingResource)
+    override fun getName(): String = SIGN_IN_IDLING_RESOURCE
+
+    private companion object {
+        private val SIGN_IN_IDLING_RESOURCE = SignInIdlingResource::class.java.name
+    }
 }

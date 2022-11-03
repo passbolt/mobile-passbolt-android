@@ -19,7 +19,9 @@ dependencies {
     implementation project(':architecture')
     implementation project(':resources')
     implementation project(':folders')
+    implementation project(':idlingresource')
 
     implementation libs.di.koin
     implementation libs.room.core
+    implementation libs.test.espressoIdlingResource
 }

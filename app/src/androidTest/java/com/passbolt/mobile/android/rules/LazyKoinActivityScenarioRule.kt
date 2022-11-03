@@ -76,8 +76,6 @@ class LazyKoinActivityScenarioRule<A : Activity> : ExternalResource, KoinCompone
         scenario = scenarioSupplier()
         scenarioLaunched = true
     }
-
-    fun getScenario(): ActivityScenario<A> = checkNotNull(scenario)
 }
 
 inline fun <reified A : Activity> lazyActivityScenarioRule(
