@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.core.commonfolders.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.FolderModelWithAttributes
 
 /**
@@ -28,16 +28,14 @@ import com.passbolt.mobile.android.ui.FolderModelWithAttributes
  * @since v1.0
  */
 class RebuildFolderPermissionsTablesUseCase(
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val removeLocalFolderPermissionsUseCase: RemoveLocalFolderPermissionsUseCase,
     private val addLocalFolderPermissionsUseCase: AddLocalFolderPermissionsUseCase
-) : AsyncUseCase<RebuildFolderPermissionsTablesUseCase.Input, Unit> {
+) : AsyncUseCase<RebuildFolderPermissionsTablesUseCase.Input, Unit>, SelectedAccountUseCase {
 
     override suspend fun execute(input: Input) {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        removeLocalFolderPermissionsUseCase.execute(UserIdInput(userId))
+        removeLocalFolderPermissionsUseCase.execute(UserIdInput(selectedAccountId))
         addLocalFolderPermissionsUseCase.execute(
-            AddLocalFolderPermissionsUseCase.Input(input.foldersWithAttributes, userId)
+            AddLocalFolderPermissionsUseCase.Input(input.foldersWithAttributes)
         )
     }
 

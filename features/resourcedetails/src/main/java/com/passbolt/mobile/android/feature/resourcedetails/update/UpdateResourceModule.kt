@@ -52,7 +52,8 @@ fun Module.updateResourceModule() {
                 secretInteractor = get(),
                 fieldNamesMapper = get(),
                 resourceShareInteractor = get(),
-                getLocalFolderPermissionsToCopyAsNew = get()
+                getLocalParentFolderPermissionsToApplyUseCase = get(),
+                addLocalResourcePermissionsUseCase = get()
             )
         }
 

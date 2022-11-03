@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.entity.group.ResourceAndGroupsCrossRef
 import com.passbolt.mobile.android.entity.user.ResourceAndUsersCrossRef
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.ui.PermissionModel
 import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 
@@ -33,10 +34,10 @@ import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 class AddLocalResourcePermissionsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val permissionsModelMapper: PermissionsModelMapper
-) : AsyncUseCase<AddLocalResourcePermissionsUseCase.Input, Unit> {
+) : AsyncUseCase<AddLocalResourcePermissionsUseCase.Input, Unit>, SelectedAccountUseCase {
 
     override suspend fun execute(input: Input) {
-        val db = databaseProvider.get(input.userId)
+        val db = databaseProvider.get(selectedAccountId)
         val resourcesAndGroupsCrossRefDao = db.resourcesAndGroupsCrossRefDao()
         val resourcesAndUsersCrossRefDao = db.resourcesAndUsersCrossRefDao()
 
@@ -80,7 +81,6 @@ class AddLocalResourcePermissionsUseCase(
     }
 
     data class Input(
-        val resourcesWithTagsModelAndGroups: List<ResourceModelWithAttributes>,
-        val userId: String
+        val resourcesWithTagsModelAndGroups: List<ResourceModelWithAttributes>
     )
 }
