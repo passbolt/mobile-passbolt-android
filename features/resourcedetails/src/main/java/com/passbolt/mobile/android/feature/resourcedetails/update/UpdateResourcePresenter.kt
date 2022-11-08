@@ -14,7 +14,9 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.users.FetchUsersUseCase
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsToCopyAsNewUseCase
+import com.passbolt.mobile.android.database.impl.folders.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
+import com.passbolt.mobile.android.database.impl.folders.ItemIdResourceId
+import com.passbolt.mobile.android.database.impl.resources.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.AddLocalResourceUseCase
 import com.passbolt.mobile.android.database.impl.resources.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsBySlugUseCase
@@ -76,7 +78,8 @@ class UpdateResourcePresenter(
     private val secretInteractor: SecretInteractor,
     private val fieldNamesMapper: FieldNamesMapper,
     private val resourceShareInteractor: ResourceShareInteractor,
-    private val getLocalFolderPermissionsToCopyAsNew: GetLocalFolderPermissionsToCopyAsNewUseCase
+    private val getLocalParentFolderPermissionsToApplyUseCase: GetLocalParentFolderPermissionsToApplyToNewItemUseCase,
+    private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase
 ) : BaseAuthenticatedPresenter<UpdateResourceContract.View>(coroutineLaunchContext),
     UpdateResourceContract.Presenter {
 
@@ -256,11 +259,17 @@ class UpdateResourcePresenter(
                 /* will not happen in BaseAuthenticatedPresenter */
             }
             is CreateResourceUseCase.Output.Success -> {
-                addLocalResourceUseCase.execute(AddLocalResourceUseCase.Input(result.resource))
+                addLocalResourceUseCase.execute(AddLocalResourceUseCase.Input(result.resource.resourceModel))
+                addLocalResourcePermissionsUseCase.execute(
+                    AddLocalResourcePermissionsUseCase.Input(listOf(result.resource))
+                )
                 resourceParentFolderId?.let {
-                    applyFolderPermissionsToCreatedResource(result.resource, it)
+                    applyFolderPermissionsToCreatedResource(result.resource.resourceModel, it)
                 } ?: run {
-                    view?.closeWithCreateSuccessResult(result.resource.name, result.resource.resourceId)
+                    view?.closeWithCreateSuccessResult(
+                        result.resource.resourceModel.name,
+                        result.resource.resourceModel.resourceId
+                    )
                 }
             }
         }
@@ -270,8 +279,11 @@ class UpdateResourcePresenter(
         resource: ResourceModel,
         resourceParentFolderId: String
     ) {
-        val newPermissionsToApply = getLocalFolderPermissionsToCopyAsNew.execute(
-            GetLocalFolderPermissionsToCopyAsNewUseCase.Input(resourceParentFolderId)
+        val newPermissionsToApply = getLocalParentFolderPermissionsToApplyUseCase.execute(
+            GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input(
+                resourceParentFolderId,
+                ItemIdResourceId(resource.resourceId)
+            )
         ).permissions
 
         when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {

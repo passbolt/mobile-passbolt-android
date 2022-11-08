@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.createfolder
 import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.validation
+import com.passbolt.mobile.android.core.commonfolders.usecase.AddLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.CreateFolderUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.FolderShareInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
@@ -10,8 +11,9 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.database.impl.folders.AddLocalFolderUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsToCopyAsNewUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsUseCase
+import com.passbolt.mobile.android.database.impl.folders.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
+import com.passbolt.mobile.android.database.impl.folders.ItemIdFolderId
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import com.passbolt.mobile.android.ui.FolderModel
@@ -47,9 +49,10 @@ class CreateFolderPresenter(
     private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase,
     private val createFolderUseCase: CreateFolderUseCase,
     private val getLocalFolderDetailsUseCase: GetLocalFolderDetailsUseCase,
-    private val getLocalFolderPermissionsToCopyAsNew: GetLocalFolderPermissionsToCopyAsNewUseCase,
+    private val getLocalFolderPermissionsToCopyAsNew: GetLocalParentFolderPermissionsToApplyToNewItemUseCase,
     private val folderShareInteractor: FolderShareInteractor,
     private val addLocalFolderUseCase: AddLocalFolderUseCase,
+    private val addLocalFolderPermissionsUseCase: AddLocalFolderPermissionsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<CreateFolderContract.View>(coroutineLaunchContext),
     CreateFolderContract.Presenter {
@@ -132,7 +135,10 @@ class CreateFolderPresenter(
             }) {
                 is CreateFolderUseCase.Output.Failure -> view?.showCreateFolderError(output.result.headerMessage)
                 is CreateFolderUseCase.Output.Success -> {
-                    addLocalFolderUseCase.execute(AddLocalFolderUseCase.Input(output.folderModel))
+                    addLocalFolderUseCase.execute(AddLocalFolderUseCase.Input(output.folderWithAttributes.folderModel))
+                    addLocalFolderPermissionsUseCase.execute(
+                        AddLocalFolderPermissionsUseCase.Input(listOf(output.folderWithAttributes))
+                    )
                     parentFolderId.let {
                         if (it == null) { // parent is root folder
                             view?.setFolderCreatedResultAndClose(folderName)
@@ -141,7 +147,7 @@ class CreateFolderPresenter(
                                 GetLocalFolderDetailsUseCase.Input(it)
                             ).folder
                             if (parentFolderDetails.isShared) {
-                                applyFolderPermissionsToCreatedFolder(output.folderModel, it)
+                                applyFolderPermissionsToCreatedFolder(output.folderWithAttributes.folderModel, it)
                             } else {
                                 view?.setFolderCreatedResultAndClose(folderName)
                             }
@@ -158,7 +164,10 @@ class CreateFolderPresenter(
         parentFolderId: String
     ) {
         val newPermissionsToApply = getLocalFolderPermissionsToCopyAsNew.execute(
-            GetLocalFolderPermissionsToCopyAsNewUseCase.Input(parentFolderId)
+            GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input(
+                parentFolderId,
+                ItemIdFolderId(folderModel.folderId)
+            )
         ).permissions
 
         when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {

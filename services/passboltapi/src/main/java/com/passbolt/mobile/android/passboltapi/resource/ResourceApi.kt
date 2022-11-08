@@ -38,10 +38,14 @@ internal interface ResourceApi {
 
     @GET(RESOURCES)
     suspend fun getResources(
-        @Query(QUERY_CONTAIN_PERMISSION) containingPermissions: Int? = 1, // always return index with permissions
-        @Query(QUERY_CONTAIN_FAVOURITE) containingFavourite: Int? = 1, // always return index with favourite info
-        @Query(QUERY_CONTAIN_TAG) containingTag: Int? = 1, // always return index with tag info
-        @Query(QUERY_CONTAIN_GROUPS) containingGroup: Int? = 1 // always return index with group info
+        // always return index with current user permission
+        @Query(QUERY_CONTAIN_PERMISSION) containingPermissions: Int? = 1,
+        // always return index with favourite info
+        @Query(QUERY_CONTAIN_FAVOURITE) containingFavourite: Int? = 1,
+        // always return index with tag info
+        @Query(QUERY_CONTAIN_TAG) containingTag: Int? = 1,
+        // always return index with all permissions
+        @Query(QUERY_CONTAIN_PERMISSIONS) containingGroup: Int? = 1
     ): BaseResponse<List<ResourceResponseDto>>
 
     @DELETE(RESOURCE_BY_ID)
@@ -51,7 +55,8 @@ internal interface ResourceApi {
 
     @POST(RESOURCES)
     suspend fun createResource(
-        @Body createResourceDto: CreateResourceDto
+        @Body createResourceDto: CreateResourceDto,
+        @Query(QUERY_CONTAIN_PERMISSION) containingPermissions: Int? = 1 // always return index with permissions
     ): BaseResponse<ResourceResponseDto>
 
     @PUT(RESOURCE_BY_ID)
@@ -66,7 +71,7 @@ internal interface ResourceApi {
         private const val QUERY_CONTAIN_PERMISSION = "contain[permission]"
         private const val QUERY_CONTAIN_FAVOURITE = "contain[favorite]"
         private const val QUERY_CONTAIN_TAG = "contain[tag]"
-        private const val QUERY_CONTAIN_GROUPS = "contain[permissions.group]"
+        private const val QUERY_CONTAIN_PERMISSIONS = "contain[permissions.group]"
         private const val RESOURCES = "resources.json"
         private const val RESOURCE_BY_ID = "$PATH_RESOURCES/{$PATH_RESOURCE_ID}.json"
     }

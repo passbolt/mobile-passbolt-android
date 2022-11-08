@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.dto.request.CreateFolderRequestDto
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.passboltapi.folders.FoldersRepository
 import com.passbolt.mobile.android.ui.FolderModel
+import com.passbolt.mobile.android.ui.FolderModelWithAttributes
 
 /**
  * Passbolt - Open source password manager for teams
@@ -42,12 +43,15 @@ class CreateFolderUseCase(
             is NetworkResult.Failure.NetworkError -> Output.Failure(result)
             is NetworkResult.Failure.ServerError -> Output.Failure(result)
             is NetworkResult.Success -> Output.Success(
-                FolderModel(
-                    result.value.id,
-                    result.value.parentFolderId,
-                    result.value.name,
-                    !result.value.personal,
-                    permissionsModelMapper.map(result.value.permission.type)
+                FolderModelWithAttributes(
+                    FolderModel(
+                        result.value.id,
+                        result.value.parentFolderId,
+                        result.value.name,
+                        !result.value.personal,
+                        permissionsModelMapper.map(result.value.permission.type)
+                    ),
+                    listOf(permissionsModelMapper.mapToUserPermission(result.value.permission))
                 )
             )
         }
@@ -75,7 +79,7 @@ class CreateFolderUseCase(
                 }
             }
 
-        data class Success(val folderModel: FolderModel) : Output()
+        data class Success(val folderWithAttributes: FolderModelWithAttributes) : Output()
 
         data class Failure(val result: NetworkResult.Failure<*>) : Output()
     }

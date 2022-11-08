@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.mappers
 
+import com.passbolt.mobile.android.dto.response.PermissionDto
 import com.passbolt.mobile.android.dto.response.PermissionWithGroupDto
 import com.passbolt.mobile.android.entity.permission.GroupPermission
 import com.passbolt.mobile.android.entity.permission.UserPermission
@@ -115,4 +116,11 @@ class PermissionsModelMapper(
 
     fun map(model: UserModel, permission: ResourcePermission, permissionId: String) =
         PermissionModelUi.UserPermissionModel(permission, permissionId, usersModelMapper.mapToUserWithAvatar(model))
+
+    fun mapToUserPermission(permission: PermissionDto): PermissionModel.UserPermissionModel =
+        PermissionModel.UserPermissionModel(
+            map(permission.type),
+            permission.id,
+            permission.aroForeignKey
+        )
 }

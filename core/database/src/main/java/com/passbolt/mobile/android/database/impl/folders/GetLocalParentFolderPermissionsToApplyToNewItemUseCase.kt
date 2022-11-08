@@ -30,17 +30,21 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetLocalFolderPermissionsToCopyAsNewUseCase(
+
+typealias ItemIdResourceId = GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input.ItemId.ResourceId
+typealias ItemIdFolderId = GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input.ItemId.FolderId
+
+class GetLocalParentFolderPermissionsToApplyToNewItemUseCase(
     private val databaseProvider: DatabaseProvider,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val permissionsModelMapper: PermissionsModelMapper,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
-) : AsyncUseCase<GetLocalFolderPermissionsToCopyAsNewUseCase.Input,
-        GetLocalFolderPermissionsToCopyAsNewUseCase.Output> {
+) : AsyncUseCase<GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input,
+        GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Output> {
 
     /**
-     * Gets folder permissions which are to be copied and applied to a newly created resource in that folder.
-     * Current user permissions needs to be filtered out to not be duplicated.
+     * Gets folder permissions which are to be copied and applied to a newly created resource or folder in that folder.
+     *
      * Permission IDs need to be replaced to a constant SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID
      */
     override suspend fun execute(input: Input): Output {
@@ -51,11 +55,33 @@ class GetLocalFolderPermissionsToCopyAsNewUseCase(
             .get(currentAccount)
             .foldersDao()
 
-        val groupsPermissions = foldersDao.getFolderGroupsPermissions(input.folderId)
+        val resourcesDao = databaseProvider
+            .get(currentAccount)
+            .resourcesDao()
+
+        val groupsPermissions = foldersDao.getFolderGroupsPermissions(input.parentFolderId)
             .map { it.copy(permissionId = SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID) }
-        val usersPermissions = foldersDao.getFolderUsersPermissions(input.folderId)
-            .filter { it.userId != currentAccountServerId }
-            .map { it.copy(permissionId = SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID) }
+        val usersPermissions = foldersDao.getFolderUsersPermissions(input.parentFolderId)
+            .map {
+                if (it.userId != currentAccountServerId) {
+                    // new permissions from parent folder to inherit
+                    it.copy(permissionId = SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID)
+                } else {
+                    // special case: permission for current user
+                    //
+                    // use permission values from parent folder to apply but overwrite the permission id
+                    val currentUserPermissions = when (val itemId = input.itemId) {
+                        is Input.ItemId.FolderId -> foldersDao.getFolderUsersPermissions(itemId.folderId)
+                        is Input.ItemId.ResourceId -> resourcesDao.getResourceUsersPermissions(itemId.resourceId)
+                    }
+
+                    require(currentUserPermissions.size == 1) {
+                        "On newly created item there should be exactly one permission" +
+                                " - only for the current user (the one who just created the item)"
+                    }
+                    it.copy(permissionId = currentUserPermissions[0].permissionId)
+                }
+            }
 
         return Output(
             permissionsModelMapper.map(
@@ -66,8 +92,17 @@ class GetLocalFolderPermissionsToCopyAsNewUseCase(
     }
 
     data class Input(
-        val folderId: String
-    )
+        val parentFolderId: String,
+        val itemId: ItemId
+    ) {
+
+        sealed class ItemId {
+
+            data class ResourceId(val resourceId: String) : ItemId()
+
+            data class FolderId(val folderId: String) : ItemId()
+        }
+    }
 
     data class Output(
         val permissions: List<PermissionModelUi>

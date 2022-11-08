@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.dto.request.EncryptedSecret
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.mappers.CreateResourceMapper
+import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
@@ -18,7 +19,7 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.EncryptedSecretOrError
-import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 
 /**
  * Passbolt - Open source password manager for teams
@@ -49,7 +50,8 @@ class CreateResourceUseCase(
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val resourceModelMapper: ResourceModelMapper,
-    private val passphraseMemoryCache: PassphraseMemoryCache
+    private val passphraseMemoryCache: PassphraseMemoryCache,
+    private val permissionsModelMapper: PermissionsModelMapper
 ) : AsyncUseCase<CreateResourceUseCase.Input, CreateResourceUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
@@ -76,7 +78,14 @@ class CreateResourceUseCase(
                     )
                 )) {
                     is NetworkResult.Failure -> Output.Failure(response)
-                    is NetworkResult.Success -> Output.Success(resourceModelMapper.map(response.value.body))
+                    is NetworkResult.Success -> Output.Success(
+                        ResourceModelWithAttributes(
+                            resourceModelMapper.map(response.value.body),
+                            emptyList(), // cannot add tags during creation
+                            listOf(permissionsModelMapper.mapToUserPermission(response.value.body.permission)),
+                            response.value.body.favorite?.id
+                        )
+                    )
                 }
             }
         }
@@ -131,7 +140,7 @@ class CreateResourceUseCase(
             }
 
         data class Success(
-            val resource: ResourceModel
+            val resource: ResourceModelWithAttributes
         ) : Output()
 
         data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
