@@ -11,8 +11,6 @@ stages:
 # run all static analysis and reporting tools
 Run verifications:
   stage: Build
-  tags:
-    - docker
   script:
     - >
       ./gradlew --no-daemon --build-cache 
@@ -43,8 +41,6 @@ Run verifications:
 # run instrumented tests on Sauce Labs
 Run instrumented tests on Sauce Labs:
   stage: Instrumented tests
-  tags:
-    - docker
   script:
     - >
       ./gradlew --no-daemon --build-cache 
@@ -62,8 +58,6 @@ Run instrumented tests on Sauce Labs:
   # build and upload QA application to Firebase App Distribution
 Deploy qa application to Firebase:
   stage: Deploy
-  tags:
-    - docker
   script:
     - echo $QA_KEY | base64 -d > "${HOME}/qa.keystore"
     - python3 -m pip install -r gradle/requirements.txt
@@ -89,8 +83,6 @@ Deploy qa application to Firebase:
 # build and upload production application to Google Play Store
 Deploy production application to Play Store:
   stage: Deploy
-  tags:
-    - docker
   script:
     - echo $PROD_KEYSTORE | base64 -d > "${HOME}/production.keystore"
     - python3 -m pip install -r gradle/requirements.txt
