@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.storage.encrypted.biometric
 
-import android.security.keystore.KeyProperties
+import android.security.keystore.KeyProperties.KEY_ALGORITHM_AES
 import org.koin.core.module.Module
 import java.security.KeyStore
 import javax.crypto.KeyGenerator
@@ -47,10 +47,10 @@ fun Module.cryptoModule() {
         }
     }
     factory {
-        KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEY_STORE)
+        KeyGenerator.getInstance(KEY_ALGORITHM_AES, ANDROID_KEY_STORE)
     }
-    factory {
-        BiometricCipher(
+    factory<BiometricCipher> {
+        BiometricCipherImpl(
             keyStoreWrapper = get(),
             getBiometricKeyIvUseCase = get()
         )

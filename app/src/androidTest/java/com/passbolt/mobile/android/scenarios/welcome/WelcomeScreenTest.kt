@@ -26,8 +26,6 @@ import org.hamcrest.core.AllOf.allOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.unloadKoinModules
 import org.koin.test.KoinTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -62,18 +60,16 @@ class WelcomeScreenTest : KoinTest {
 
     @get:Rule
     val activityRule = lazyActivityScenarioRule<SetUpActivity>(
-        koinOverrideModule = instrumentationTestsModule
+        koinOverrideModules = listOf(instrumentationTestsModule)
     )
 
     @BeforeTest
     fun setup() {
-        loadKoinModules(instrumentationTestsModule)
         Intents.init()
     }
 
     @AfterTest
     fun tearDown() {
-        unloadKoinModules(instrumentationTestsModule)
         Intents.release()
     }
 

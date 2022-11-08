@@ -22,11 +22,8 @@ import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.unloadKoinModules
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 
 
@@ -59,7 +56,7 @@ class SetupPassphraseTest : KoinTest {
 
     @get:Rule
     val startUpActivityRule = lazyActivityScenarioRule<StartUpActivity>(
-        koinOverrideModule = instrumentationTestsModule,
+        koinOverrideModules = listOf(instrumentationTestsModule),
         intentSupplier = {
             managedAccountIntentCreator.createIntent(
                 InstrumentationRegistry.getInstrumentation().targetContext
@@ -74,14 +71,8 @@ class SetupPassphraseTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        loadKoinModules(instrumentationTestsModule)
         onView(withId(R.id.connectToAccountButton)).perform(click())
         onView(withId(R.id.scanQrCodesButton)).perform(click())
-    }
-
-    @AfterTest
-    fun tearDown() {
-        unloadKoinModules(instrumentationTestsModule)
     }
 
     @Test

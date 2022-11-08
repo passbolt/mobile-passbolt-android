@@ -1,7 +1,10 @@
 package com.passbolt.mobile.android.storage.encrypted.biometric
 
-import android.security.keystore.KeyPermanentlyInvalidatedException
+import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCrypto.Companion.BIOMETRIC_KEY_ALIAS
+import com.passbolt.mobile.android.storage.usecase.biometrickey.GetBiometricKeyIvUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,10 +29,27 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 
-interface BiometricCipher {
-    @Throws(KeyPermanentlyInvalidatedException::class)
-    fun getBiometricEncryptCipher(): Cipher
+class BiometricCipherImpl(
+    private val keyStoreWrapper: KeyStoreWrapper,
+    private val getBiometricKeyIvUseCase: GetBiometricKeyIvUseCase
+) : BiometricCipher {
 
-    @Throws(KeyPermanentlyInvalidatedException::class)
-    fun getBiometricDecryptCipher(userId: String): Cipher
+    override fun getBiometricEncryptCipher(): Cipher = newSymmetricCipher().apply {
+        val biometricKey = keyStoreWrapper.getOrCreateSymmetricKey(BIOMETRIC_KEY_ALIAS)
+        init(Cipher.ENCRYPT_MODE, biometricKey)
+    }
+
+    override fun getBiometricDecryptCipher(userId: String): Cipher = newSymmetricCipher().apply {
+        val key = keyStoreWrapper.getSymmetricKey(BIOMETRIC_KEY_ALIAS)
+            ?: throw SecurityException("Unable to decrypt: No keys found")
+        val ivOutput = getBiometricKeyIvUseCase.execute(UserIdInput(userId))
+        init(Cipher.DECRYPT_MODE, key, IvParameterSpec(ivOutput.iv))
+    }
+
+    companion object {
+        private const val TRANSFORMATION_SYMMETRIC = "AES/CBC/PKCS7Padding"
+
+        private fun newSymmetricCipher() =
+            Cipher.getInstance(TRANSFORMATION_SYMMETRIC)
+    }
 }

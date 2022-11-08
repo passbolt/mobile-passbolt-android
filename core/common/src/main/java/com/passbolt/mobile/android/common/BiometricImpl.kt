@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.storage.encrypted.biometric
+package com.passbolt.mobile.android.common
 
-import android.security.keystore.KeyPermanentlyInvalidatedException
-import javax.crypto.Cipher
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,10 +27,10 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 
-interface BiometricCipher {
-    @Throws(KeyPermanentlyInvalidatedException::class)
-    fun getBiometricEncryptCipher(): Cipher
+class BiometricImpl(
+    private val biometricManager: BiometricManager
+) : Biometric {
 
-    @Throws(KeyPermanentlyInvalidatedException::class)
-    fun getBiometricDecryptCipher(userId: String): Cipher
+    override fun hasBiometricSetUp(): Boolean =
+        biometricManager.canAuthenticate(BIOMETRIC_STRONG) == BIOMETRIC_SUCCESS
 }

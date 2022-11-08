@@ -56,7 +56,7 @@ class SignInTest : KoinComponent {
 
     @get:Rule
     val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModule = instrumentationTestsModule,
+        koinOverrideModules = listOf(instrumentationTestsModule),
         intentSupplier = {
             ActivityIntents.authentication(
                 InstrumentationRegistry.getInstrumentation().targetContext,
