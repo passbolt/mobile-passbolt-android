@@ -1,7 +1,11 @@
-package com.passbolt.mobile.android.storage.encrypted.biometric
+package com.passbolt.mobile.android
 
-import android.security.keystore.KeyPermanentlyInvalidatedException
-import javax.crypto.Cipher
+import android.view.View
+import android.widget.ImageView
+import androidx.annotation.DrawableRes
+import androidx.core.graphics.drawable.toBitmap
+import org.hamcrest.Description
+import org.hamcrest.TypeSafeMatcher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,10 +30,19 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 
-interface BiometricCipher {
-    @Throws(KeyPermanentlyInvalidatedException::class)
-    fun getBiometricEncryptCipher(): Cipher
+/**
+ * HasDrawable is custom matcher method, which help us in ui test, to check if imageview displays the appropriate drawable.
+ */
 
-    @Throws(KeyPermanentlyInvalidatedException::class)
-    fun getBiometricDecryptCipher(userId: String): Cipher
+fun hasDrawable(@DrawableRes id: Int) = object : TypeSafeMatcher<View>() {
+    override fun describeTo(description: Description) {
+        description.appendText("ImageView with drawable same as drawable with id $id")
+    }
+
+    override fun matchesSafely(view: View): Boolean {
+        val context = view.context
+        val expectedBitmap = context.getDrawable(id)?.toBitmap()
+
+        return view is ImageView && view.drawable.toBitmap().sameAs(expectedBitmap)
+    }
 }

@@ -1,9 +1,5 @@
 package com.passbolt.mobile.android.common
 
-import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
-import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,10 +22,11 @@ import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
 class FingerprintInformationProvider(
-    private val biometricManager: BiometricManager
+    private val biometric: Biometric
 ) {
 
     fun hasBiometricSetUp(): Boolean =
-        biometricManager.canAuthenticate(BIOMETRIC_STRONG) == BIOMETRIC_SUCCESS
+        biometric.hasBiometricSetUp()
 }

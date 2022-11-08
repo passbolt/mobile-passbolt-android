@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.feature.setup
 
 import android.content.Context
 import androidx.biometric.BiometricManager
+import com.passbolt.mobile.android.common.Biometric
+import com.passbolt.mobile.android.common.BiometricImpl
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.feature.setup.fingerprint.di.fingerprintModule
 import com.passbolt.mobile.android.feature.setup.importprofile.importProfileModule
@@ -43,6 +45,11 @@ val setupModule = module {
     fingerprintModule()
     single {
         FingerprintInformationProvider(
+            biometric = get()
+        )
+    }
+    single<Biometric> {
+        BiometricImpl(
             biometricManager = get()
         )
     }

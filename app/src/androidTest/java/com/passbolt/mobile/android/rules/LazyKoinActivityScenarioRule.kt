@@ -19,31 +19,31 @@ class LazyKoinActivityScenarioRule<A : Activity> : ExternalResource, KoinCompone
 
     constructor(
         launchActivity: Boolean,
-        koinOverrideModule: Module? = null,
+        koinOverrideModules: List<Module>? = null,
         startActivityIntentSupplier: () -> Intent,
     ) {
         this.launchActivity = launchActivity
-        this.overrideModule = koinOverrideModule
+        this.overrideModules = koinOverrideModules
         scenarioSupplier = { ActivityScenario.launch(startActivityIntentSupplier()) }
     }
 
     constructor(
         launchActivity: Boolean,
         startActivityIntent: Intent,
-        koinOverrideModule: Module? = null,
+        koinOverrideModules: List<Module>? = null,
     ) {
         this.launchActivity = launchActivity
-        this.overrideModule = koinOverrideModule
+        this.overrideModules = koinOverrideModules
         scenarioSupplier = { ActivityScenario.launch(startActivityIntent) }
     }
 
     constructor(
         launchActivity: Boolean,
         startActivityClass: Class<A>,
-        koinOverrideModule: Module? = null,
+        koinOverrideModules: List<Module>? = null,
     ) {
         this.launchActivity = launchActivity
-        this.overrideModule = koinOverrideModule
+        this.overrideModules = koinOverrideModules
         scenarioSupplier = { ActivityScenario.launch(startActivityClass) }
     }
 
@@ -51,10 +51,10 @@ class LazyKoinActivityScenarioRule<A : Activity> : ExternalResource, KoinCompone
     private var scenarioSupplier: () -> ActivityScenario<A>
     private var scenario: ActivityScenario<A>? = null
     private var scenarioLaunched: Boolean = false
-    private var overrideModule: Module? = null
+    private var overrideModules: List<Module>? = null
 
     override fun before() {
-        overrideModule?.let { loadKoinModules(it) }
+        overrideModules?.let { loadKoinModules(it) }
         if (launchActivity) {
             launchActivity()
         }
@@ -62,7 +62,7 @@ class LazyKoinActivityScenarioRule<A : Activity> : ExternalResource, KoinCompone
 
     override fun after() {
         scenario?.close()
-        overrideModule?.let {
+        overrideModules?.let {
             unloadKoinModules(it)
             loadKoinModules(KoinInitializer.appModules)
         }
@@ -80,17 +80,17 @@ class LazyKoinActivityScenarioRule<A : Activity> : ExternalResource, KoinCompone
 
 inline fun <reified A : Activity> lazyActivityScenarioRule(
     launchActivity: Boolean = true,
-    koinOverrideModule: Module? = null,
+    koinOverrideModules: List<Module>? = null,
     noinline intentSupplier: () -> Intent,
 ): LazyKoinActivityScenarioRule<A> =
-    LazyKoinActivityScenarioRule(launchActivity, koinOverrideModule, intentSupplier)
+    LazyKoinActivityScenarioRule(launchActivity, koinOverrideModules, intentSupplier)
 
 inline fun <reified A : Activity> lazyActivityScenarioRule(
     launchActivity: Boolean = true,
     intent: Intent? = null,
-    koinOverrideModule: Module? = null,
+    koinOverrideModules: List<Module>? = null,
 ): LazyKoinActivityScenarioRule<A> = if (intent == null) {
-    LazyKoinActivityScenarioRule(launchActivity, A::class.java, koinOverrideModule)
+    LazyKoinActivityScenarioRule(launchActivity, A::class.java, koinOverrideModules)
 } else {
-    LazyKoinActivityScenarioRule(launchActivity, intent, koinOverrideModule)
+    LazyKoinActivityScenarioRule(launchActivity, intent, koinOverrideModules)
 }

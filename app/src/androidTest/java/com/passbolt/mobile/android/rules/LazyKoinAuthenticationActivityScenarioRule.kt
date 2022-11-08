@@ -19,14 +19,14 @@ import org.koin.core.module.Module
  */
 class LazyKoinAuthenticationActivityScenarioRule<A : Activity>(
     private val launchActivity: Boolean,
-    koinOverrideModule: Module? = null,
+    koinOverrideModules: List<Module>? = null,
     startActivityIntentSupplier: () -> Intent
 ) : ExternalResource(), KoinComponent {
 
     private var scenarioSupplier: () -> ActivityScenario<A>
     private var scenario: ActivityScenario<A>? = null
     private var scenarioLaunched: Boolean = false
-    private var overrideModule: Module? = koinOverrideModule
+    private var overrideModules: List<Module>? = koinOverrideModules
     private val accountInitializer: AccountInitializer by inject()
 
     init {
@@ -34,7 +34,7 @@ class LazyKoinAuthenticationActivityScenarioRule<A : Activity>(
     }
 
     override fun before() {
-        overrideModule?.let { loadKoinModules(it) }
+        overrideModules?.let { loadKoinModules(it) }
         accountInitializer.initializeAccount()
         if (launchActivity) {
             launchActivity()
@@ -43,7 +43,7 @@ class LazyKoinAuthenticationActivityScenarioRule<A : Activity>(
 
     override fun after() {
         scenario?.close()
-        overrideModule?.let {
+        overrideModules?.let {
             unloadKoinModules(it)
             loadKoinModules(KoinInitializer.appModules)
         }
@@ -61,9 +61,7 @@ class LazyKoinAuthenticationActivityScenarioRule<A : Activity>(
 
 inline fun <reified A : Activity> lazyActivitySetupScenarioRule(
     launchActivity: Boolean = true,
-    koinOverrideModule: Module? = null,
+    koinOverrideModules: List<Module>? = null,
     noinline intentSupplier: () -> Intent,
 ): LazyKoinAuthenticationActivityScenarioRule<A> =
-    LazyKoinAuthenticationActivityScenarioRule(launchActivity, koinOverrideModule, intentSupplier)
-
-
+    LazyKoinAuthenticationActivityScenarioRule(launchActivity, koinOverrideModules, intentSupplier)

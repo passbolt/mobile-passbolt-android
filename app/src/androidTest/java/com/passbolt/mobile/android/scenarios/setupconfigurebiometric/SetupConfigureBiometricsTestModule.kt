@@ -1,6 +1,9 @@
-package com.passbolt.mobile.android.storage.encrypted.biometric
+package com.passbolt.mobile.android.scenarios.setupconfigurebiometric
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
+import com.passbolt.mobile.android.common.Biometric
+import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
+import org.koin.dsl.module
 import javax.crypto.Cipher
 
 /**
@@ -26,10 +29,29 @@ import javax.crypto.Cipher
  * @since v1.0
  */
 
-interface BiometricCipher {
-    @Throws(KeyPermanentlyInvalidatedException::class)
-    fun getBiometricEncryptCipher(): Cipher
+val biometricSetupUnavailableModuleTests = module {
+    single<Biometric> {
+        object : Biometric {
+            override fun hasBiometricSetUp() = false
+        }
+    }
+}
 
-    @Throws(KeyPermanentlyInvalidatedException::class)
-    fun getBiometricDecryptCipher(userId: String): Cipher
+val biometricSetupAvailableModuleTests = module {
+    single<Biometric> {
+        object : Biometric {
+            override fun hasBiometricSetUp() = true
+        }
+    }
+    single<BiometricCipher> {
+        object : BiometricCipher {
+            override fun getBiometricEncryptCipher(): Cipher {
+                throw KeyPermanentlyInvalidatedException()
+            }
+
+            override fun getBiometricDecryptCipher(userId: String): Cipher {
+                throw KeyPermanentlyInvalidatedException()
+            }
+        }
+    }
 }
