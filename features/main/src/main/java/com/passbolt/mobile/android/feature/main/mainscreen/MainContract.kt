@@ -40,5 +40,6 @@ interface MainContract {
         fun performFullDataRefresh()
         fun appUpdateDownloaded()
         fun performLocalDataRefresh()
+        fun cancelFullRefresh()
     }
 }

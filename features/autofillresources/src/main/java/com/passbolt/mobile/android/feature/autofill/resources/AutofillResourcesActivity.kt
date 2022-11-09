@@ -100,6 +100,10 @@ class AutofillResourcesActivity :
     override fun performLocalDataRefresh() =
         presenter.performLocalDataRefresh()
 
+    override fun cancelRefresh() {
+        presenter.cancelFullRefresh()
+    }
+
     override fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished> =
         presenter.dataRefreshFinishedStatusFlow
 

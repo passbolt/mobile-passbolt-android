@@ -55,5 +55,6 @@ interface AutofillResourcesContract {
         fun itemClick(resourceModel: ResourceModel)
         fun newResourceCreated(resourceId: String)
         fun performLocalDataRefresh()
+        fun cancelFullRefresh()
     }
 }
