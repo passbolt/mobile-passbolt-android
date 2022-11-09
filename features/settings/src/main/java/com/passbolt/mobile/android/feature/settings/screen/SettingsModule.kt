@@ -44,7 +44,7 @@ fun Module.settingsModule() {
                 getFeatureFlagsUseCase = get(),
                 signOutUseCase = get(),
                 getGlobalPreferencesUseCase = get(),
-                saveGlobalPreferencesUseCase = get(),
+                updateGlobalPreferencesUseCase = get(),
                 fileLoggingTree = get(),
                 biometryInteractor = get(),
                 coroutineLaunchContext = get(),

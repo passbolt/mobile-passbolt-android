@@ -32,7 +32,7 @@ internal fun Module.preferencesModule() {
         )
     }
     factory {
-        SaveGlobalPreferencesUseCase(
+        UpdateGlobalPreferencesUseCase(
             encryptedSharedPreferencesFactory = get()
         )
     }

@@ -6,6 +6,8 @@ plugins {
 dependencies {
     implementation project(':localization')
     implementation project(':envinfo')
+    implementation project(':storage')
+    implementation project(':common')
 
     implementation libs.di.koin
     implementation libs.material

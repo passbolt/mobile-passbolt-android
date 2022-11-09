@@ -4,6 +4,9 @@ import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.usecase.GLOBAL_PREFERENCES_FILE_NAME
 import com.passbolt.mobile.android.storage.usecase.KEY_DEBUG_LOGS_ENABLED
+import com.passbolt.mobile.android.storage.usecase.KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,10 +38,14 @@ class GetGlobalPreferencesUseCase(
     override fun execute(input: Unit): Output {
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$GLOBAL_PREFERENCES_FILE_NAME.xml")
         val areDebugLogsEnabled = sharedPreferences.getBoolean(KEY_DEBUG_LOGS_ENABLED, false)
-        return Output(areDebugLogsEnabled)
+        val debugLogsCreationDateTime = sharedPreferences.getLong(KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME, -1L).let {
+            if (it == -1L) null else LocalDateTime.ofEpochSecond(it, 0, ZoneOffset.UTC)
+        }
+        return Output(areDebugLogsEnabled, debugLogsCreationDateTime)
     }
 
     data class Output(
-        val areDebugLogsEnabled: Boolean
+        val areDebugLogsEnabled: Boolean,
+        val debugLogFileCreationDateTime: LocalDateTime?
     )
 }

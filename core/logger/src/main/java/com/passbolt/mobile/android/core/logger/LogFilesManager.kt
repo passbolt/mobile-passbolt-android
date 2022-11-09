@@ -2,14 +2,11 @@ package com.passbolt.mobile.android.core.logger
 
 import android.content.Context
 import com.passbolt.mobile.android.core.envinfo.EnvInfoProvider
-import timber.log.Timber
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.UpdateGlobalPreferencesUseCase
 import java.io.File
-import java.nio.file.Files
 import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
-import kotlin.io.path.absolutePathString
-import kotlin.streams.toList
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,7 +32,9 @@ import kotlin.streams.toList
  */
 class LogFilesManager(
     private val appContext: Context,
-    private val envInfoProvider: EnvInfoProvider
+    private val envInfoProvider: EnvInfoProvider,
+    private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
+    private val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase
 ) {
 
     /**
@@ -45,47 +44,43 @@ class LogFilesManager(
      * @return Log file path
      */
     fun initializeLogFile(): String {
-        val directory = logFileDirectory().apply { mkdir() }
-        val directoryFiles = Files.list(directory.toPath()).toList()
-
-        return if (directoryFiles.isEmpty()) {
-            createNewLogFile(directory)
+        val logFileCreationDateTime = getGlobalPreferencesUseCase.execute(Unit).debugLogFileCreationDateTime
+        return if (logFileCreationDateTime == null) {
+            // log creation date is null - log file has never been created before
+            logFileDirectory().listFiles()?.forEach { it.delete() }
+            createNewLogFile()
         } else {
-            val logFilePath = directoryFiles.first().toAbsolutePath().toString()
-            val logFileName = directoryFiles.first().fileName.toString()
-            return try {
-                val logFileCreationTime = LocalDateTime.ofEpochSecond(logFileName.toLong(), 0, ZoneOffset.UTC)
-                if (logFileCreationTime.until(LocalDateTime.now(), ChronoUnit.HOURS) > LOG_FILE_EXPIRY_HRS) {
-                    File(logFileName).delete()
-                    createNewLogFile(directory)
-                } else {
-                    logFilePath
-                }
-            } catch (exception: Exception) {
-                // delete files with the old log format
-                Timber.d("Deleting legacy log file")
-                File(logFilePath).delete()
-                createNewLogFile(directory)
+            if (logFileCreationDateTime.until(LocalDateTime.now(), ChronoUnit.HOURS) > LOG_FILE_EXPIRY_HRS) {
+                // logs are expired - creation date is before { now - logs_expiry_time }
+                logFileDirectory().listFiles()?.forEach { it.delete() }
+                createNewLogFile()
+            } else {
+                // log file is still valid - creation date is in range of (now - logs_expiry_time , now)
+                logFilePath()
             }
         }
     }
 
-    fun logFilePath() =
-        Files.list(File(appContext.filesDir, LOG_DIR_NAME).toPath())
-            .toList()
-            .firstOrNull()
-            ?.absolutePathString()
+    fun logFilePath(): String =
+        File(logFileDirectory(), LOG_FILE_NAME)
+            .absolutePath
 
     private fun logFileDirectory() =
         File(appContext.filesDir, LOG_DIR_NAME)
 
-    private fun createNewLogFile(directory: File) =
-        File(directory, LocalDateTime.now().toEpochSecond(ZoneOffset.UTC).toString()).apply {
-            if (!exists()) {
-                createNewFile()
-                writeText(prepareInfoHeader())
-            }
+    private fun createNewLogFile(): String {
+        val directory = logFileDirectory().apply { mkdir() }
+        val logFilePath = File(directory, LOG_FILE_NAME).apply {
+            createNewFile()
+            writeText(prepareInfoHeader())
         }.absolutePath
+        updateGlobalPreferencesUseCase.execute(
+            UpdateGlobalPreferencesUseCase.Input(
+                debugLogFileCreationDateTime = LocalDateTime.now()
+            )
+        )
+        return logFilePath
+    }
 
     private fun prepareInfoHeader(): String {
         val envInfo = envInfoProvider.provideEnvInfo()
@@ -100,6 +95,8 @@ class LogFilesManager(
 
     companion object {
         private const val LOG_DIR_NAME = "logs"
+        private const val LOG_FILE_NAME = "logs_24hrs"
+
         private const val LOG_FILE_EXPIRY_HRS = 24
     }
 }

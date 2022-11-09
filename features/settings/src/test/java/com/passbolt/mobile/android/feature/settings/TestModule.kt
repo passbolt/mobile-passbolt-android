@@ -17,7 +17,7 @@ import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUs
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.UpdateGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
@@ -43,7 +43,7 @@ internal val fingerprintInformationProvider = mock<FingerprintInformationProvide
 internal val removeBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
 internal val getFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
-internal val mockSaveGlobalPreferencesUseCase = mock<SaveGlobalPreferencesUseCase>()
+internal val mockUpdateGlobalPreferencesUseCase = mock<UpdateGlobalPreferencesUseCase>()
 internal val mockBiometryInteractor = mock<BiometryInteractor>()
 internal val mockGetHomeDisplayPrefsUseCase = mock<GetHomeDisplayViewPrefsUseCase>()
 
@@ -74,7 +74,7 @@ val testModule = module {
             getFeatureFlagsUseCase = get(),
             signOutUseCase = get(),
             getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
-            saveGlobalPreferencesUseCase = mockSaveGlobalPreferencesUseCase,
+            updateGlobalPreferencesUseCase = mockUpdateGlobalPreferencesUseCase,
             fileLoggingTree = mock(),
             biometryInteractor = mockBiometryInteractor,
             coroutineLaunchContext = get(),
