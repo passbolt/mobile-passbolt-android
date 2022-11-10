@@ -828,6 +828,10 @@ class HomeFragment :
         Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
     }
 
+    override fun showPleaseWaitForDataRefresh() {
+        Toast.makeText(requireContext(), R.string.home_please_wait_for_refresh, Toast.LENGTH_SHORT).show()
+    }
+
     companion object {
         private val AVATAR_SIZE = 30.px
     }

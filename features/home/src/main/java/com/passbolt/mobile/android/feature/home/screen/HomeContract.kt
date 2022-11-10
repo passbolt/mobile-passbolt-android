@@ -105,6 +105,7 @@ interface HomeContract {
         fun showSynchronizedProgress()
         fun hideSynchronizedProgress()
         fun showContentNotAvailableSnackbar()
+        fun showPleaseWaitForDataRefresh()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

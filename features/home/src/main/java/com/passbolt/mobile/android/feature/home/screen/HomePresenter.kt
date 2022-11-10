@@ -135,6 +135,8 @@ class HomePresenter(
             parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
         }
 
+    private var refreshInProgress: Boolean = true
+
     override fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>) {
         dataRefreshStatusFlow = fullDataRefreshStatusFlow
     }
@@ -239,6 +241,7 @@ class HomePresenter(
                         if (shouldShowAddButton()) {
                             view?.showAddButton()
                         }
+                        refreshInProgress = false
                         runWithHandlingMissingItem({
                             showActiveHomeView()
                         }, resultIfActionFails = Unit)
@@ -587,8 +590,11 @@ class HomePresenter(
     }
 
     override fun refreshSwipe() {
-        view?.hideAddButton()
-        view?.performRefreshUsingRefreshExecutor()
+        refreshInProgress = true
+        view?.apply {
+            hideAddButton()
+            performRefreshUsingRefreshExecutor()
+        }
     }
 
     override fun resourceMoreClick(resourceModel: ResourceModel) {
@@ -644,7 +650,11 @@ class HomePresenter(
     }
 
     override fun searchAvatarClick() {
-        view?.navigateToSwitchAccount()
+        if (refreshInProgress) {
+            view?.showPleaseWaitForDataRefresh()
+        } else {
+            view?.navigateToSwitchAccount()
+        }
     }
 
     override fun menuDeleteClick() {
@@ -688,6 +698,7 @@ class HomePresenter(
     }
 
     private fun initRefresh() {
+        refreshInProgress = true
         view?.apply {
             showSynchronizedProgress()
             performRefreshUsingRefreshExecutor()
