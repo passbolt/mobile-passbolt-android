@@ -87,8 +87,7 @@ class HomePresenterTest : KoinTest {
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
         )
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         val url = "avatar_url"
 
         mockAccountData(url)
@@ -109,8 +108,7 @@ class HomePresenterTest : KoinTest {
     fun `search input end icon should switch correctly based on input`() {
         val url = "avatar_url"
         mockAccountData(url)
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
@@ -130,8 +128,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `all fetched resources should be displayed when empty search text`() = runTest {
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
         )
@@ -150,7 +147,6 @@ class HomePresenterTest : KoinTest {
             shouldShowResourceMoreMenu = false
         )
 
-        verify(view).performRefreshUsingRefreshExecutor()
         verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
         verify(view).hideBackArrow()
@@ -195,7 +191,7 @@ class HomePresenterTest : KoinTest {
         presenter.refreshSwipe()
 
 
-        verify(view, times(2)).performRefreshUsingRefreshExecutor()
+        verify(view).performRefreshUsingRefreshExecutor()
         verify(view, times(2)).hideAddButton()
         verify(view).hideRefreshProgress()
         verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
@@ -211,8 +207,7 @@ class HomePresenterTest : KoinTest {
             GetLocalResourcesUseCase.Output(mockResourcesList())
         )
         mockAccountData(null)
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
@@ -232,8 +227,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `empty view should be displayed when there are no resources`() = runTest {
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
         )
@@ -257,11 +251,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `error should be displayed when request failures`() = runTest {
         val refreshFlow = flowOf(
-            DataRefreshStatus.Finished(
-                com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Failure(
-                    AuthenticationState.Authenticated
-                )
-            )
+            DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated))
         )
         mockAccountData(null)
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -294,13 +284,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `error during refresh clicked should show correct ui`() = runTest {
         val refreshFlow =
-            MutableStateFlow(
-                DataRefreshStatus.Finished(
-                    com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Failure(
-                        AuthenticationState.Authenticated
-                    )
-                )
-            )
+            MutableStateFlow(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)))
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
             GetLocalResourcesUseCase.Output(emptyList())
         )
@@ -308,13 +292,7 @@ class HomePresenterTest : KoinTest {
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         whenever(view.performRefreshUsingRefreshExecutor()).then {
-            refreshFlow.tryEmit(
-                DataRefreshStatus.Finished(
-                    com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Failure(
-                        AuthenticationState.Authenticated
-                    )
-                )
-            )
+            refreshFlow.tryEmit(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)))
         }
         mockAccountData(null)
 
@@ -329,7 +307,7 @@ class HomePresenterTest : KoinTest {
         )
         presenter.refreshClick()
 
-        verify(view, times(2)).performRefreshUsingRefreshExecutor()
+        verify(view).performRefreshUsingRefreshExecutor()
         verify(view).hideBackArrow()
         verify(view, times(2)).showSynchronizedProgress()
         verify(view).hideAddButton()
@@ -343,8 +321,7 @@ class HomePresenterTest : KoinTest {
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         val model = ResourceModel(
             "id",
             "resTypeId",
@@ -396,8 +373,7 @@ class HomePresenterTest : KoinTest {
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         mockAccountData(null)
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
@@ -422,8 +398,7 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.DecryptFailure(OpenPgpError("message"))
             )
         }
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
@@ -447,8 +422,7 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.FetchFailure(RuntimeException())
             )
         }
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
@@ -472,8 +446,7 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.Unauthorized(AuthenticationState.Unauthenticated.Reason.Session)
             )
         }
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
@@ -505,8 +478,7 @@ class HomePresenterTest : KoinTest {
         }
         whenever(mockSecretParser.extractPassword(any(), any()))
             .doReturn(String(DECRYPTED_SECRET))
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
@@ -533,8 +505,7 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.Success(DECRYPTED_SECRET)
             )
         }
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
@@ -570,8 +541,7 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.Success(DECRYPTED_SECRET)
             )
         }
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
 
         presenter.viewCreate(refreshFlow)
         presenter.attach(view)
@@ -600,8 +570,7 @@ class HomePresenterTest : KoinTest {
                 FolderModel("childId", "root", "child folder", false, ResourcePermission.UPDATE)
             )
         }
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         mockAccountData(null)
 
         presenter.viewCreate(refreshFlow)
@@ -620,8 +589,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `view should show correct titles for child items`() {
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         mockAccountData(null)
 
         presenter.viewCreate(refreshFlow)
@@ -676,8 +644,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `view should show back arrow when in child item`() {
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         mockAccountData(null)
 
         presenter.viewCreate(refreshFlow)
@@ -709,8 +676,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `view should navigate to selected item correctly based on root or child item`() {
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         mockAccountData(null)
 
         presenter.viewCreate(refreshFlow)
@@ -738,8 +704,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `view root should user selected filter by default`() {
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
             GetHomeDisplayViewPrefsUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
@@ -766,8 +731,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `view should apply visibility settings correct`() {
-        val refreshFlow =
-            flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
         whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
             GetHomeDisplayViewPrefsUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,

@@ -604,7 +604,6 @@ class HomeFragment :
     }
 
     override fun navigateToSwitchedAccountAuth(userId: String) {
-        (activity as HomeDataRefreshExecutor).cancelRefresh()
         if (resourceHandlingStrategy.appContext == AppContext.APP) {
             requireActivity().finishAffinity()
         }

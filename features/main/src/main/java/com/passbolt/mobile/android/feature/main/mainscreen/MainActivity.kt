@@ -125,10 +125,6 @@ class MainActivity :
     override fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished> =
         presenter.dataRefreshFinishedStatusFlow
 
-    override fun cancelRefresh() {
-        presenter.cancelFullRefresh()
-    }
-
     private companion object {
         private const val REQUEST_APP_UPDATE = 8000
     }

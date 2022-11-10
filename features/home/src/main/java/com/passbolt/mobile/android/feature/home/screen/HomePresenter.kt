@@ -139,11 +139,6 @@ class HomePresenter(
         dataRefreshStatusFlow = fullDataRefreshStatusFlow
     }
 
-    override fun attach(view: HomeContract.View) {
-        super<BaseAuthenticatedPresenter>.attach(view)
-        view.performRefreshUsingRefreshExecutor()
-    }
-
     override fun argsRetrieved(
         showSuggestedModel: ShowSuggestedModel,
         homeDisplayView: HomeDisplayViewModel?,
@@ -385,7 +380,6 @@ class HomePresenter(
         dataRefreshScope.coroutineContext.cancelChildren()
         filteringScope.coroutineContext.cancelChildren()
         coroutineScope.coroutineContext.cancelChildren()
-        view?.hideSynchronizedProgress()
         scope.close()
         super<BaseAuthenticatedPresenter>.detach()
     }
