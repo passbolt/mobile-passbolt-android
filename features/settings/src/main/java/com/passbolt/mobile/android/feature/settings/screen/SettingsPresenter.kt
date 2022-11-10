@@ -18,7 +18,7 @@ import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUs
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.UpdateGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -39,7 +39,7 @@ class SettingsPresenter(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
-    private val saveGlobalPreferencesUseCase: SaveGlobalPreferencesUseCase,
+    private val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase,
     private val fileLoggingTree: FileLoggingTree,
     private val biometryInteractor: BiometryInteractor,
     private val getHomeDisplayViewPrefsUseCase: GetHomeDisplayViewPrefsUseCase,
@@ -228,7 +228,7 @@ class SettingsPresenter(
     }
 
     private fun logSettingChanged(areLogsEnabled: Boolean) {
-        saveGlobalPreferencesUseCase.execute(SaveGlobalPreferencesUseCase.Input(areLogsEnabled))
+        updateGlobalPreferencesUseCase.execute(UpdateGlobalPreferencesUseCase.Input(areLogsEnabled))
         if (areLogsEnabled) {
             view?.apply {
                 setEnableLogsSwitchOn()

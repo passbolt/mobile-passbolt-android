@@ -30,7 +30,7 @@ fun Module.helpMenuModule() {
         scoped<HelpMenuContract.Presenter> {
             HelpMenuPresenter(
                 getGlobalPreferencesUseCase = get(),
-                saveGlobalPreferencesUseCase = get(),
+                updateGlobalPreferencesUseCase = get(),
                 fileLoggingTree = get()
             )
         }

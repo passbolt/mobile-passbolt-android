@@ -87,7 +87,7 @@ class SettingsPresenterTest : KoinTest {
             )
         }
         whenever(mockGetGlobalPreferencesUseCase.execute(Unit)).thenReturn(
-            GetGlobalPreferencesUseCase.Output(areDebugLogsEnabled = false)
+            GetGlobalPreferencesUseCase.Output(areDebugLogsEnabled = false, debugLogFileCreationDateTime = null)
         )
     }
 

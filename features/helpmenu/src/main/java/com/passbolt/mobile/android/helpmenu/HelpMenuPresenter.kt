@@ -2,13 +2,13 @@ package com.passbolt.mobile.android.helpmenu
 
 import com.passbolt.mobile.android.core.logger.FileLoggingTree
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.SaveGlobalPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.UpdateGlobalPreferencesUseCase
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import timber.log.Timber
 
 class HelpMenuPresenter(
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
-    private val saveGlobalPreferencesUseCase: SaveGlobalPreferencesUseCase,
+    private val updateGlobalPreferencesUseCase: UpdateGlobalPreferencesUseCase,
     private val fileLoggingTree: FileLoggingTree
 ) : HelpMenuContract.Presenter {
 
@@ -25,7 +25,7 @@ class HelpMenuPresenter(
     }
 
     override fun logsSettingChanged(areLogsEnabled: Boolean) {
-        saveGlobalPreferencesUseCase.execute(SaveGlobalPreferencesUseCase.Input(areLogsEnabled))
+        updateGlobalPreferencesUseCase.execute(UpdateGlobalPreferencesUseCase.Input(areLogsEnabled))
         if (areLogsEnabled) {
             view?.apply {
                 setEnableLogsSwitchOn()

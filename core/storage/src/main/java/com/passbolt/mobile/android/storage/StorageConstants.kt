@@ -42,6 +42,7 @@ internal const val EMAIL_KEY = "EMAIL_KEY"
 internal const val IV_KEY = "IV"
 internal const val GLOBAL_PREFERENCES_FILE_NAME = "preferences"
 internal const val KEY_DEBUG_LOGS_ENABLED = "KEY_DEBUG_LOGS_ENABLED"
+internal const val KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME = "KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME"
 internal const val RESOURCE_DATABASE_ALIAS = "current_url" // TODO bug in the file name - migrate to separate prefs file
 internal const val PASSPHRASE_KEY = "passphrase_key"
 internal const val KEY_LAST_USED_HOME_VIEW = "LAST_USED_HOME_VIEW"
