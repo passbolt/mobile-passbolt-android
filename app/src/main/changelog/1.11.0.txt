@@ -1,0 +1,11 @@
+# Passbolt 1.11.0-14 Android app release notes
+
+## Added
+- Automated UI tests for majority of setup screens
+- Automation for running UI tests from CI
+- Solution for starting automated testes from the sign in screens (no going through setup required)
+
+## Fixed
+- Realigned permissions with the web extensions for the current user when creating folder/resource in a shared folder
+- Fixed invisible font color for dark theme when entering MFA code for the second (and subsequent) time(s)
+- Fixed wierd behaviour when switching accounts quickly while full data refresh is in progress on autofill context
