@@ -36,6 +36,6 @@ fun Module.encourageAutofillModule() {
         }
     }
     single {
-        com.passbolt.mobile.android.core.autofill.system.AssistStructureParser()
+        AssistStructureParser()
     }
 }

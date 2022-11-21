@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.settings.screen
 import android.view.autofill.AutofillManager
 import androidx.biometric.BiometricPrompt
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProviderImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 
@@ -52,8 +53,8 @@ fun Module.settingsModule() {
             )
         }
         factory { androidContext().getSystemService(AutofillManager::class.java) }
-        factory {
-            AutofillInformationProvider(
+        factory<AutofillInformationProvider> {
+            AutofillInformationProviderImpl(
                 autofillManager = get(),
                 context = androidContext()
             )

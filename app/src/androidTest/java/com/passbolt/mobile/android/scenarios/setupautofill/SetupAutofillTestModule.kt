@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android.core.autofill
+package com.passbolt.mobile.android.scenarios.setupautofill
 
-import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider
-import com.passbolt.mobile.android.core.autofill.system.AutofillHintsFactory
-import com.passbolt.mobile.android.core.autofill.system.FillableInputsFinder
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.singleOf
+import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 import org.koin.dsl.module
 
 /**
@@ -31,19 +26,34 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val autofillModule = module {
-    factoryOf(::FillableInputsFinder)
-    singleOf(::AccessibilityOperationsProvider)
-    factory {
-        AutofillHintsFactory(
-            resources = get(),
-            appContext = androidContext()
-        )
+val autofillNotConfiguredModuleTests = module {
+    single<AutofillInformationProvider> {
+        object : AutofillInformationProvider {
+            override fun isAutofillServiceSupported() = true
+
+            override fun isPassboltAutofillServiceSet() = false
+
+            override fun isAccessibilityOverlayEnabled() = true
+
+            override fun isAccessibilityServiceEnabled() = true
+
+            override fun isAccessibilityAutofillSetup() = true
+        }
     }
-    factory<AutofillInformationProvider> {
-        AutofillInformationProviderImpl(
-            autofillManager = get(),
-            context = androidContext()
-        )
+}
+
+val autofillConfiguredModuleTests = module {
+    single<AutofillInformationProvider> {
+        object : AutofillInformationProvider {
+            override fun isAutofillServiceSupported() = true
+
+            override fun isPassboltAutofillServiceSet() = true
+
+            override fun isAccessibilityOverlayEnabled() = true
+
+            override fun isAccessibilityServiceEnabled() = true
+
+            override fun isAccessibilityAutofillSetup() = true
+        }
     }
 }

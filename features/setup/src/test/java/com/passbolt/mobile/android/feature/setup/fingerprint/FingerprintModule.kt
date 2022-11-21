@@ -37,7 +37,7 @@ import javax.crypto.Cipher
  */
 
 internal val fingerprintInformationProvider = mock<FingerprintInformationProvider>()
-internal val autofillInformationProvider = mock<com.passbolt.mobile.android.core.autofill.AutofillInformationProvider>()
+internal val autofillInformationProvider = mock<AutofillInformationProvider>()
 internal val passphraseMemoryCache = mock<PassphraseMemoryCache>()
 internal val savePassphraseUseCase = mock<SavePassphraseUseCase>()
 internal val mockCipher = mock<Cipher> {

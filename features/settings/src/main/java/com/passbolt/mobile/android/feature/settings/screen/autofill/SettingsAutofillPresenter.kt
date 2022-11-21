@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.feature.settings.screen.autofill
 import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 
 class SettingsAutofillPresenter(
-    private val autofillInformationProvider: com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
+    private val autofillInformationProvider: AutofillInformationProvider
 ) : SettingsAutofillContract.Presenter {
 
     override var view: SettingsAutofillContract.View? = null
