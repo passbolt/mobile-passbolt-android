@@ -1,12 +1,9 @@
 package com.passbolt.mobile.android.core.autofill
 
-import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider
-import com.passbolt.mobile.android.core.autofill.system.AutofillHintsFactory
-import com.passbolt.mobile.android.core.autofill.system.FillableInputsFinder
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+import android.accessibilityservice.AccessibilityService
+import android.content.Context
+import android.provider.Settings
+import android.view.autofill.AutofillManager
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,19 +28,26 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val autofillModule = module {
-    factoryOf(::FillableInputsFinder)
-    singleOf(::AccessibilityOperationsProvider)
-    factory {
-        AutofillHintsFactory(
-            resources = get(),
-            appContext = androidContext()
+class AutofillInformationProviderImpl(
+    private val autofillManager: AutofillManager,
+    private val context: Context
+) : AutofillInformationProvider {
+
+    override fun isAutofillServiceSupported() = autofillManager.isAutofillSupported
+
+    override fun isPassboltAutofillServiceSet() = autofillManager.hasEnabledAutofillServices()
+
+    override fun isAccessibilityOverlayEnabled() = Settings.canDrawOverlays(context)
+
+    override fun isAccessibilityServiceEnabled(): Boolean {
+        val prefString =
+            Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+
+        return prefString != null && prefString.contains(
+            context.packageName + "/" + AccessibilityService::class.java.name
         )
     }
-    factory<AutofillInformationProvider> {
-        AutofillInformationProviderImpl(
-            autofillManager = get(),
-            context = androidContext()
-        )
-    }
+
+    override fun isAccessibilityAutofillSetup() =
+        isAccessibilityOverlayEnabled() && isAccessibilityServiceEnabled()
 }
