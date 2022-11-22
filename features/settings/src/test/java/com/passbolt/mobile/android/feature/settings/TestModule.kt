@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
 import com.passbolt.mobile.android.feature.settings.screen.SettingsPresenter
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
@@ -26,7 +27,7 @@ import org.mockito.kotlin.mock
 import javax.crypto.Cipher
 
 internal val checkIfPassphraseFileExistsUseCase = mock<CheckIfPassphraseFileExistsUseCase>()
-internal val autofillInformationProvider = mock<com.passbolt.mobile.android.core.autofill.AutofillInformationProvider>()
+internal val autofillInformationProvider = mock<AutofillInformationProvider>()
 internal val removePassphraseUseCase = mock<RemovePassphraseUseCase>()
 internal val getSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val signOutUseCase = mock<SignOutUseCase>()

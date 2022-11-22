@@ -40,10 +40,4 @@ val autofillModule = module {
             appContext = androidContext()
         )
     }
-    factory<AutofillInformationProvider> {
-        AutofillInformationProviderImpl(
-            autofillManager = get(),
-            context = androidContext()
-        )
-    }
 }

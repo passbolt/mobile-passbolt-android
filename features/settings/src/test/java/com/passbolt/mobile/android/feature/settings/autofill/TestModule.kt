@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.settings.autofill
 
-import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
 import com.passbolt.mobile.android.feature.settings.screen.autofill.SettingsAutofillContract
 import com.passbolt.mobile.android.feature.settings.screen.autofill.SettingsAutofillPresenter
 import org.koin.dsl.module

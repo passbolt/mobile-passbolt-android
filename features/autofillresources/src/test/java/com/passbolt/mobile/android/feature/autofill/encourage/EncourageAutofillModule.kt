@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.feature.autofill.encourage
 
-import org.mockito.kotlin.mock
-import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
 import com.passbolt.mobile.android.feature.autofill.encourage.autofill.EncourageAutofillContract
 import com.passbolt.mobile.android.feature.autofill.encourage.autofill.EncourageAutofillPresenter
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
 import org.koin.dsl.module
+import org.mockito.kotlin.mock
 
 internal val mockAutofillInformationProvider = mock<AutofillInformationProvider>()
 
