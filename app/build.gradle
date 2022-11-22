@@ -139,6 +139,7 @@ dependencies {
     implementation project(':inappreview')
     implementation project(':envinfo')
     implementation project(':idlingresource')
+    implementation project(':entity')
 
     debugImplementation libs.quality.leakcanary
 
