@@ -771,12 +771,8 @@ class HomeFragment :
         )
     }
 
-    override fun navigateToHome() {
-        startActivity(ActivityIntents.home(requireContext()))
-        with(requireActivity()) {
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-            finish()
-        }
+    override fun finish() {
+        requireActivity().finish()
     }
 
     override fun performLocalRefresh() {

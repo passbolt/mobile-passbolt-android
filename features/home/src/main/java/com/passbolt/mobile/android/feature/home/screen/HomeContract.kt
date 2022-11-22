@@ -91,7 +91,6 @@ interface HomeContract {
         fun showAllItemsSearchHint()
         fun showDefaultSearchHint()
         fun showCloseButton()
-        fun navigateToHome()
         fun showToggleFavouriteFailure()
         fun performLocalRefresh()
         fun navigateToSwitchedAccountAuth(userId: String)
@@ -106,6 +105,7 @@ interface HomeContract {
         fun hideSynchronizedProgress()
         fun showContentNotAvailableSnackbar()
         fun showPleaseWaitForDataRefresh()
+        fun finish()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
