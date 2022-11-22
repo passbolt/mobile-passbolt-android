@@ -801,7 +801,7 @@ class HomePresenter(
     }
 
     override fun closeClick() {
-        view?.navigateToHome()
+        view?.finish()
     }
 
     override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
