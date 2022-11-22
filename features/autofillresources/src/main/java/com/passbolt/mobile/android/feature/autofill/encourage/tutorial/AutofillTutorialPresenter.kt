@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.autofill.encourage.tutorial
 
-import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
 
 /**
  * Passbolt - Open source password manager for teams

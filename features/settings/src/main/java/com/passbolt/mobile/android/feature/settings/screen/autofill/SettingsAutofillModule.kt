@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.settings.screen.autofill
 
-import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
-import com.passbolt.mobile.android.core.autofill.AutofillInformationProviderImpl
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProviderImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 

@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.settings.screen.autofill
 
-import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
 
 class SettingsAutofillPresenter(
     private val autofillInformationProvider: AutofillInformationProvider

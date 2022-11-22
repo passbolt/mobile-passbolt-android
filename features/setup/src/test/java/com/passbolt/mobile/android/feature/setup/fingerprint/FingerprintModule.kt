@@ -2,10 +2,9 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
-import com.passbolt.mobile.android.core.autofill.AutofillInformationProvider
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
-import com.passbolt.mobile.android.storage.usecase.biometrickey.RemoveBiometricKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import org.koin.dsl.module
@@ -47,7 +46,6 @@ internal val biometricCipher = mock<BiometricCipher> {
     on { getBiometricEncryptCipher() }.doReturn(mockCipher)
 }
 internal val saveBiometricKayIvUseCase = mock<SaveBiometricKeyIvUseCase>()
-internal val removeBiometricKeyUseCase = mock<RemoveBiometricKeyUseCase>()
 internal val mockBiometryInteractor = mock<BiometryInteractor>()
 
 

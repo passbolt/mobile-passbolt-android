@@ -1,9 +1,9 @@
-package com.passbolt.mobile.android.core.autofill
+package com.passbolt.mobile.android.feature.autofill.informationprovider
 
-import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.provider.Settings
 import android.view.autofill.AutofillManager
+import com.passbolt.mobile.android.feature.autofill.accessibility.AccessibilityService
 
 /**
  * Passbolt - Open source password manager for teams
