@@ -5,7 +5,11 @@ import android.content.res.ColorStateList
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.os.IBinder
+import android.text.method.PasswordTransformationMethod
 import android.view.View
+import android.view.WindowManager
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
@@ -13,6 +17,8 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.test.espresso.Root
+import androidx.test.espresso.matcher.BoundedMatcher
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 
@@ -97,5 +103,35 @@ fun hasBackgroundColor(@ColorInt color: Int) = object : TypeSafeMatcher<View>() 
         val backgroundColor = item?.background as ColorDrawable
         val colorDrawable = item.context.getColor(color)
         return colorDrawable == backgroundColor.color
+    }
+}
+
+fun isTextHidden() = object : BoundedMatcher<View?, EditText>(EditText::class.java) {
+    override fun describeTo(description: Description) {
+        description.appendText("Text is hidden")
+    }
+
+    override fun matchesSafely(editText: EditText): Boolean {
+        // returns true if password is hidden
+        return editText.transformationMethod is PasswordTransformationMethod
+    }
+}
+
+fun hasToast() = object : TypeSafeMatcher<Root?>() {
+    override fun matchesSafely(item: Root?): Boolean {
+        val type: Int? = item?.windowLayoutParams?.get()?.type
+        if (type == WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW) {
+            val windowToken: IBinder = item.decorView.windowToken
+            val appToken: IBinder = item.decorView.applicationWindowToken
+            if (windowToken === appToken) {
+                // means this window isn't contained by any other windows.
+                return true
+            }
+        }
+        return false
+    }
+
+    override fun describeTo(description: Description?) {
+        description?.appendText("is toast")
     }
 }

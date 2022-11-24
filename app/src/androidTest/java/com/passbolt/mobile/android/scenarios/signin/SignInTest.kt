@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.scenarios.signin
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -83,6 +84,7 @@ class SignInTest : KoinComponent {
         // find passwd input
         onView(withClassName(containsString("TextInputEditText")))
             .perform(typeText(managedAccountIntentCreator.getUsername()))
+            .perform(swipeUp())
         // click sign in
         onView(withId(authR.id.authButton)).perform(click())
 

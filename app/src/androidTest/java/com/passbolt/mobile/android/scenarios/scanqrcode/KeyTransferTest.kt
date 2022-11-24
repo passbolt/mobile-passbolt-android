@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.scenarios.scanqrcode
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -67,6 +68,7 @@ class KeyTransferTest : KoinTest {
     @BeforeTest
     fun setup() {
         onView(withId(R.id.connectToAccountButton)).perform(click())
+        onView(withId(R.id.qrCode)).perform(swipeUp())
         onView(withId(R.id.scanQrCodesButton)).perform(click())
     }
 
