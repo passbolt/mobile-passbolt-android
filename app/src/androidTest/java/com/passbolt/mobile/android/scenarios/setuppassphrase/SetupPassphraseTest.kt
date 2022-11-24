@@ -3,8 +3,12 @@ package com.passbolt.mobile.android.scenarios.setuppassphrase
 import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeUp
+import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.hasTextColor
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isClickable
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -15,10 +19,13 @@ import androidx.test.rule.GrantPermissionRule
 import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.startup.StartUpActivity
+import com.passbolt.mobile.android.hasToast
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.isTextHidden
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
+import org.hamcrest.Matchers.not
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -72,38 +79,95 @@ class SetupPassphraseTest : KoinTest {
     @BeforeTest
     fun setup() {
         onView(withId(R.id.connectToAccountButton)).perform(click())
+        onView(withId(R.id.steps)).perform(swipeUp())
         onView(withId(R.id.scanQrCodesButton)).perform(click())
     }
 
     @Test
     fun asAMobileUserIShouldSeeTheEnterMyPassphraseScreenAfterISuccessfullyScannedQrCodes() {
-        //Given  the user is on the "Success feedback" screen at the end of the QR code scanning process
-        //When   the user clicks the "Continue" button
+        //    Given     the user is on the "Success feedback" screen at the end of the QR code scanning process
+        //    When      the user clicks the "Continue" button
         onView(withId(R.id.button)).perform(click())
-        //Then   an "Enter your passphrase" page is presented
+        //    Then      an "Enter your passphrase" page is presented
         onView(withText(R.string.auth_enter_passphrase)).check(matches(isDisplayed()))
-        //And    a back arrow button is presented
+        //    And       a back arrow button is presented
         onView(isAssignableFrom(Toolbar::class.java))
             .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
-        //And    current user's name is presented
+        //    And       current user's name is presented
         val firstName = managedAccountIntentCreator.getFirstName()
         val lastName = managedAccountIntentCreator.getLastName()
         onView(withText(AccountModelMapper.defaultLabel(firstName, lastName))).check(matches(isDisplayed()))
-        //And    current user's email is presented
+        //    And       current user's email is presented
         val email = managedAccountIntentCreator.getUsername()
         onView(withText(email)).check(matches(isDisplayed()))
-        //And    the url of the server is presented
+        //    And       the url of the server is presented
         val url = managedAccountIntentCreator.getDomain()
         onView(withText(url)).check(matches(isDisplayed()))
-        //And    current user's avatar or the default avatar is presented
+        //    And       current user's avatar or the default avatar is presented
         onView(withId(R.id.avatarImage)).check(matches(isDisplayed()))
-        //And    a passphrase input field is presented
+        //    And       a passphrase input field is presented
         onView(withId(R.id.input)).check(matches(isDisplayed()))
-        //And    an eye icon to toggle passphrase visibility is presented
+        //    And       an eye icon to toggle passphrase visibility is presented
         onView(withId(R.id.text_input_end_icon)).check(matches(isDisplayed()))
-        //And    a sign in the primary action button is presented
+        //    And       a sign in the primary action button is presented
         onView(withId(R.id.authButton)).check(matches(isDisplayed()))
-        //And    “I forgot my passphrase” link is presented
+        //    And       “I forgot my passphrase” link is presented
         onView(withId(R.id.forgotPasswordButton)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun asAMobileUserICanPreviewMyPassphrase() {
+        //    Given     I am on the "Enter your passphrase" page
+        onView(withId(R.id.button)).perform(click())
+        //    And       there is some <initial text> inside the passphrase field
+        onView(withId(R.id.input)).perform(typeText("SomeRandomText\n"))
+        //    When      I click the "eye" button inside the passphrase field
+        onView(withId(R.id.text_input_end_icon)).perform(click())
+        //    Then      I see the content of the passphrase field in <output format>
+        //              |initial text | output format |
+        //              |hidden text  | plain text |
+        //              |plain text   | hidden text |
+        onView(withId(R.id.input)).check(matches(not(isTextHidden())))
+        onView(withId(R.id.text_input_end_icon)).perform(click())
+        onView(withText(managedAccountIntentCreator.getUsername())).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun asAMobileUserICanSeeAFeedbackMessageIfIEnteredTheWrongPassphrase() {
+        //    Given     I am on the “Enter your passphrase" page
+        onView(withId(R.id.button)).perform(click())
+        //    When      I submit a wrong passphrase
+        onView(withId(R.id.input)).perform(typeText("wrongPass1!@\n"))
+        onView(withId(R.id.authButton)).perform(click())
+        //    Then      I see a toast notification with error message
+        //    And       the toast is at the bottom of the screen #Not automated
+        onView(withText(R.string.auth_enter_passphrase))
+            .inRoot(hasToast())
+            .check(matches(isDisplayed()))
+        //    And       the input and label are still in the same colors
+        onView(withId(R.id.titleLabel)).check(matches(hasTextColor(R.color.text_primary)))
+        onView(withId(R.id.input)).check(matches(hasTextColor(R.color.common_google_signin_btn_text_light_pressed)))
+        //    And       the message says "The passphrase is invalid"
+        // TODO: uncomment when correct message will be implemented https://app.clickup.com/t/2593179/MOB-746
+        //       onView(withText("The passphrase is invalid")).inRoot(hasToast()).check(matches(isDisplayed)))
+    }
+
+    @Test
+    fun asAMobileUserICanGetSomeHelpIfIForgotMyPassphrase() {
+        //    Given     I am on the "Enter your passphrase" page
+        onView(withId(R.id.button)).perform(click())
+        //    When      I click the "forgot my passphrase" link
+        onView(withId(R.id.forgotPasswordButton)).perform(click())
+        //    Then      I see a dialog with a help
+        onView(withId(R.id.parentPanel)).check(matches(isDisplayed()))
+        //    And       help text says the setup process can't be completed without a passphrase
+        onView(withId(R.id.alertTitle)).check(matches(isDisplayed()))
+        //    And        I see a message telling me to contact my administrator
+        onView(withId(android.R.id.message)).check(matches(isDisplayed()))
+        //    And       a “Got it” button to close the dialog is presented
+        //    And       a “Got it” button is clickable
+        onView(withId(android.R.id.button1))
+            .check(matches(isDisplayed()))
+            .check(matches(isClickable()))
     }
 }
