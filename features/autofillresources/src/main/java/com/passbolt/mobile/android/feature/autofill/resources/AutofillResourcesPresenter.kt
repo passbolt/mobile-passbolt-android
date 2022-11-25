@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -8,7 +9,6 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAccountsUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
@@ -93,13 +93,11 @@ class AutofillResourcesPresenter(
             val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                 homeDataInteractor.refreshAllHomeScreenData()
             }
-            _dataRefreshStatusFlow.emit(DataRefreshStatus.Finished(output))
-        }
-    }
-
-    override fun performLocalDataRefresh() {
-        scope.launch {
-            _dataRefreshStatusFlow.emit(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+            _dataRefreshStatusFlow.emit(
+                DataRefreshStatus.Finished(
+                    output
+                )
+            )
         }
     }
 

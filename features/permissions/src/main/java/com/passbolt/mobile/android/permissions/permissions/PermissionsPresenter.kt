@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.permissions.permissions
 
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor.Output
@@ -14,6 +14,7 @@ import com.passbolt.mobile.android.feature.authentication.session.runAuthenticat
 import com.passbolt.mobile.android.permissions.permissions.validation.HasAtLeastOneOwnerPermission
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -52,11 +53,17 @@ class PermissionsPresenter(
     private val homeDataInteractor: HomeDataInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : PermissionsContract.Presenter,
-    BaseAuthenticatedPresenter<PermissionsContract.View>(coroutineLaunchContext) {
+    DataRefreshViewReactivePresenter<PermissionsContract.View>(coroutineLaunchContext) {
 
     override var view: PermissionsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val missingItemHandler = CoroutineExceptionHandler { _, throwable ->
+        if (throwable is NullPointerException) {
+            view?.showContentNotAvailable()
+            view?.navigateToHome()
+        }
+    }
 
     private lateinit var mode: PermissionsMode
     private lateinit var permissionsItem: PermissionsItem
@@ -67,12 +74,19 @@ class PermissionsPresenter(
         this.mode = mode
         this.id = id
         this.permissionsItem = permissionsItem
+    }
+
+    override fun refreshAction() {
         processItemsVisibility(mode)
         getPermissions(permissionsItem, id)
     }
 
+    override fun refreshFailureAction() {
+        view?.showDataRefreshError()
+    }
+
     private fun getPermissions(permissionsItem: PermissionsItem, id: String) {
-        scope.launch {
+        scope.launch(missingItemHandler) {
             if (!::recipients.isInitialized) {
                 recipients = when (permissionsItem) {
                     PermissionsItem.RESOURCE ->
@@ -103,7 +117,7 @@ class PermissionsPresenter(
     private fun processItemsVisibility(mode: PermissionsMode) {
         when (mode) {
             PermissionsMode.VIEW -> {
-                scope.launch {
+                scope.launch(missingItemHandler) {
                     val isOwner = when (permissionsItem) {
                         PermissionsItem.RESOURCE ->
                             getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(id))
@@ -242,6 +256,6 @@ class PermissionsPresenter(
 
     override fun detach() {
         scope.coroutineContext.cancelChildren()
-        super<BaseAuthenticatedPresenter>.detach()
+        super<DataRefreshViewReactivePresenter>.detach()
     }
 }

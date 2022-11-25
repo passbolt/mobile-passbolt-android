@@ -1,10 +1,14 @@
 package com.passbolt.mobile.android.core.extension
 
 import android.app.Activity
+import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.core.ui.R
 
 /**
@@ -41,4 +45,24 @@ fun Fragment.hideSoftInput() {
             hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
+}
+
+fun BindingFragment<*>.showSnackbar(
+    @StringRes messageResId: Int,
+    anchorView: View?,
+    vararg messageArgs: String
+) {
+    Snackbar.make(binding.root, getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
+        .apply {
+            anchorView?.let { setAnchorView(it) }
+            show()
+        }
+}
+
+fun BindingFragment<*>.showSnackbar(
+    @StringRes messageResId: Int,
+    vararg messageArgs: String
+) {
+    Snackbar.make(binding.root, getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
+        .show()
 }

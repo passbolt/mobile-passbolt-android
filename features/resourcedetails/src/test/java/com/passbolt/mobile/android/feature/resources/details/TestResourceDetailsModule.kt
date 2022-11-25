@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.resources.details
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
@@ -8,27 +9,22 @@ import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
-import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.database.ResourceDatabase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
-import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceTypesDao
+import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsPresenter
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.dsl.module
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
 /**
@@ -55,16 +51,6 @@ import org.mockito.kotlin.mock
  */
 
 internal val mockSecretInteractor = mock<SecretInteractor>()
-internal val mockResourceTypesDao = mock<ResourceTypesDao>()
-internal val mockResourceDatabase = mock<ResourceDatabase> {
-    on { resourceTypesDao() }.doReturn(mockResourceTypesDao)
-}
-internal val mockDatabaseProvider = mock<DatabaseProvider> {
-    on { get(any()) }.doReturn(mockResourceDatabase)
-}
-internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase> {
-    on { execute(Unit) }.doReturn(GetSelectedAccountUseCase.Output("userId"))
-}
 internal val mockSecretParser = mock<SecretParser>()
 internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
@@ -75,21 +61,22 @@ internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermi
 internal val mockFavouritesInteractor = mock<FavouritesInteractor>()
 internal val mockResourceTagsUseCase = mock<GetLocalResourceTagsUseCase>()
 internal val mockGetFolderLocationUseCase = mock<GetLocalFolderLocationUseCase>()
+internal val mockGetResourceTypeWithFields = mock<GetResourceTypeWithFieldsByIdUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+    single { mock<FullDataRefreshExecutor>() }
     factory<ResourceDetailsContract.Presenter> {
         ResourceDetailsPresenter(
-            databaseProvider = mockDatabaseProvider,
-            getSelectedAccountUseCase = mockGetSelectedAccountUseCase,
             getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
             resourceMenuModelMapper = resourceMenuModelMapper,
             getLocalResourceUseCase = mockGetLocalResourceUseCase,
             getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
             getLocalResourceTagsUseCase = mockResourceTagsUseCase,
             coroutineLaunchContext = get(),
-            getLocalFolderLocation = mockGetFolderLocationUseCase
+            getLocalFolderLocation = mockGetFolderLocationUseCase,
+            getResourceTypeWithFieldsByIdUseCase = mockGetResourceTypeWithFields
         )
     }
     scope<ResourceDetailsPresenter> {

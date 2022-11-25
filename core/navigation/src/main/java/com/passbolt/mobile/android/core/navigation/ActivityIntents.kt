@@ -51,6 +51,11 @@ object ActivityIntents {
         flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
     }
 
+    fun bringHome(context: Context) = Intent().apply {
+        setClassName(context, Main.MAIN_ACTIVITY)
+        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+    }
+
     fun start(context: Context) = Intent().apply {
         setClassName(context, Startup.START_UP_ACTIVITY)
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)

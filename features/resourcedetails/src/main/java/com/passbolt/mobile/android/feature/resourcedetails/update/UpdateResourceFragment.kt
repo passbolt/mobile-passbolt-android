@@ -3,15 +3,17 @@ package com.passbolt.mobile.android.feature.resourcedetails.update
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.StringRes
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.dialogs.encryptionErrorAlertDialog
-import com.passbolt.mobile.android.common.extension.invisible
+import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -48,6 +50,8 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+@Suppress("TooManyFunctions")
 class UpdateResourceFragment :
     BindingScopedAuthenticatedFragment<FragmentUpdateResourceBinding, UpdateResourceContract.View>(
         FragmentUpdateResourceBinding::inflate
@@ -71,6 +75,16 @@ class UpdateResourceFragment :
         presenter.attach(this)
         presenter.argsRetrieved(bundledMode, bundledExistingResource, bundledResourceParentFolderId)
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.resume(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        presenter.pause()
     }
 
     private fun setListeners() {
@@ -173,14 +187,14 @@ class UpdateResourceFragment :
     override fun closeWithCreateSuccessResult(name: String, id: String) {
         closeWithOperationSuccess(
             ActivityResults.RESULT_RESOURCE_CREATED,
-            com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity.resourceNameAndIdIntent(name, id)
+            ResourceActivity.resourceNameAndIdIntent(name, id)
         )
     }
 
     override fun closeWithEditSuccessResult(name: String) {
         closeWithOperationSuccess(
             ActivityResults.RESULT_RESOURCE_EDITED,
-            com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity.resourceNameResultIntent(name)
+            ResourceActivity.resourceNameResultIntent(name)
         )
     }
 
@@ -218,14 +232,6 @@ class UpdateResourceFragment :
         binding.toolbar.toolbarTitle = getString(R.string.resource_update_edit_password_title)
     }
 
-    override fun hideScrollView() {
-        binding.scrollView.invisible()
-    }
-
-    override fun showScrollView() {
-        binding.scrollView.visible()
-    }
-
     override fun showShareSimulationFailure() {
         showSnackbar(R.string.resource_permissions_share_simulation_failed)
     }
@@ -246,9 +252,23 @@ class UpdateResourceFragment :
         showSnackbar(R.string.resource_permissions_secret_decrypt_failure)
     }
 
-    private fun showSnackbar(@StringRes messageResId: Int) {
-        Snackbar.make(requireView(), messageResId, Snackbar.LENGTH_SHORT)
-            .setAnchorView(binding.root)
-            .show()
+    override fun hideRefreshProgress() {
+        binding.fullScreenProgressLayout.gone()
+    }
+
+    override fun showRefreshProgress() {
+        binding.fullScreenProgressLayout.visible()
+    }
+
+    override fun showDataRefreshError() {
+        showSnackbar(R.string.common_data_refresh_error)
+    }
+
+    override fun showContentNotAvailable() {
+        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun navigateHome() {
+        requireActivity().startActivity(ActivityIntents.bringHome(requireContext()))
     }
 }

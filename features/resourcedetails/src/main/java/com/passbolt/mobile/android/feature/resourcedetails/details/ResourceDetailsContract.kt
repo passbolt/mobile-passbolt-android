@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.resourcedetails.details
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -31,7 +31,7 @@ import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 interface ResourceDetailsContract {
 
     @Suppress("TooManyFunctions")
-    interface View : BaseAuthenticatedContract.View {
+    interface View : DataRefreshViewReactiveContract.View {
         fun displayTitle(title: String)
         fun displayUsername(username: String)
         fun addToClipboard(label: String, value: String)
@@ -74,9 +74,11 @@ interface ResourceDetailsContract {
         fun navigateToResourceTags(resourceId: String, mode: PermissionsMode)
         fun showFolderLocation(locationPathSegments: List<String>)
         fun navigateToResourceLocation(folderId: String)
+        fun showDataRefresError()
+        fun showContentNotAvailable()
     }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun argsReceived(resourceId: String, permissionsListWidth: Int, permissionItemWidth: Float)
         fun usernameCopyClick()
         fun urlCopyClick()

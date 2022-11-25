@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.locationdetails
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.GenericItem
@@ -9,6 +10,8 @@ import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.locationdetails.databinding.FragmentFolderLocationDetailsBinding
@@ -52,15 +55,31 @@ class LocationDetailsFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.swipeRefresh.isEnabled = false
         initDefaultToolbar(binding.toolbar)
         initLocationDetailsRecycler(savedInstanceState)
         presenter.attach(this)
         presenter.argsRetrieved(args.locationItem, args.id)
     }
 
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         val withSavedSelections = fastAdapter.saveInstanceState(outState)
         super.onSaveInstanceState(withSavedSelections)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.resume(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        presenter.pause()
     }
 
     private fun initLocationDetailsRecycler(savedInstanceState: Bundle?) {
@@ -87,6 +106,7 @@ class LocationDetailsFragment :
     override fun showFolderLocation(parentFolders: List<FolderModel>) {
         val expandableListModel = expandableFolderDatasetCreator.create(parentFolders)
         with(fastAdapter) {
+            clear()
             add(expandableListModel.dataset)
             getExpandableExtension().expandAllOnPath(expandableListModel.expandToItem)
         }
@@ -96,5 +116,25 @@ class LocationDetailsFragment :
         binding.icon.setImageDrawable(
             initialsIconGenerator.generate(name, initials)
         )
+    }
+
+    override fun hideRefreshProgress() {
+        binding.swipeRefresh.isRefreshing = false
+    }
+
+    override fun showRefreshProgress() {
+        binding.swipeRefresh.isRefreshing = true
+    }
+
+    override fun showDataRefreshError() {
+        showSnackbar(R.string.common_data_refresh_error)
+    }
+
+    override fun showContentNotAvailable() {
+        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun navigateToHome() {
+        requireActivity().startActivity(ActivityIntents.bringHome(requireContext()))
     }
 }

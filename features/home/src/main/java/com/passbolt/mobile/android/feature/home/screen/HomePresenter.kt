@@ -4,8 +4,7 @@ import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
@@ -36,7 +35,6 @@ import com.passbolt.mobile.android.ui.TagWithCount
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
@@ -96,7 +94,8 @@ class HomePresenter(
     private val homeModelMapper: HomeDisplayViewMapper,
     private val domainProvider: DomainProvider,
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase
-) : BaseAuthenticatedPresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter, KoinScopeComponent {
+) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
+    KoinScopeComponent {
 
     override var view: HomeContract.View? = null
     private val job = SupervisorJob()
@@ -105,7 +104,6 @@ class HomePresenter(
     private val dataRefreshScope = CoroutineScope(dataRefreshJob + coroutineLaunchContext.ui)
     private val filteringJob = SupervisorJob()
     private val filteringScope = CoroutineScope(filteringJob + coroutineLaunchContext.ui)
-    private lateinit var dataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>
     override val scope: Scope
         get() = getOrCreateScope().value
     private lateinit var homeView: HomeDisplayViewModel
@@ -137,10 +135,6 @@ class HomePresenter(
 
     private var refreshInProgress: Boolean = true
 
-    override fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>) {
-        dataRefreshStatusFlow = fullDataRefreshStatusFlow
-    }
-
     override fun argsRetrieved(
         showSuggestedModel: ShowSuggestedModel,
         homeDisplayView: HomeDisplayViewModel?,
@@ -161,14 +155,15 @@ class HomePresenter(
             hideAddButton()
             processSearchHint(this)
             processScreenTitle(this)
-            showSynchronizedProgress()
         }
+
+        showActiveHomeView()
 
         handleCloseVisibility(shouldShowCloseButton)
         handleBackArrowVisibility()
         handleMoreMenuIconVisibility(shouldShowResourceMoreMenu)
         loadUserAvatar()
-        collectDataRefreshStatus()
+
         collectFilteringRefreshes()
     }
 
@@ -231,28 +226,18 @@ class HomePresenter(
         }
     }
 
-    private fun collectDataRefreshStatus() {
-        dataRefreshScope.launch {
-            dataRefreshStatusFlow.collect {
-                Timber.d("Received new home data")
-                when (it.output) {
-                    is HomeDataInteractor.Output.Failure -> view?.showError()
-                    is HomeDataInteractor.Output.Success -> {
-                        if (shouldShowAddButton()) {
-                            view?.showAddButton()
-                        }
-                        refreshInProgress = false
-                        runWithHandlingMissingItem({
-                            showActiveHomeView()
-                        }, resultIfActionFails = Unit)
-                    }
-                }
-                view?.apply {
-                    hideSynchronizedProgress()
-                    hideRefreshProgress()
-                }
+    override fun refreshAction() {
+        coroutineScope.launch {
+            if (shouldShowAddButton()) {
+                view?.showAddButton()
             }
+            refreshInProgress = false
+            showActiveHomeView()
         }
+    }
+
+    override fun refreshFailureAction() {
+        view?.showDataRefreshError()
     }
 
     private fun collectFilteringRefreshes() {
@@ -310,7 +295,7 @@ class HomePresenter(
                     is HomeDisplayViewModel.Tags -> HomeDisplayViewModel.tagsRoot()
                 }
             )
-            view?.showContentNotAvailableSnackbar()
+            view?.showContentNotAvailable()
             resultIfActionFails
         }
     }
@@ -334,30 +319,32 @@ class HomePresenter(
             .also { view?.displaySearchAvatar(it) }
     }
 
-    private suspend
-
-    fun showActiveHomeView() {
-        suggestedResourceList = if (shouldShowSuggested()) {
-            getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input())
-                .resources
-                .filter {
-                    val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
-                    val itemUrl = it.url
-                    if (!autofillUrl.isNullOrBlank() && !itemUrl.isNullOrBlank()) {
-                        domainProvider.getHost(itemUrl) == domainProvider.getHost(autofillUrl)
-                    } else {
-                        false
-                    }
+    private fun showActiveHomeView() {
+        coroutineScope.launch {
+            runWithHandlingMissingItem({
+                suggestedResourceList = if (shouldShowSuggested()) {
+                    getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input())
+                        .resources
+                        .filter {
+                            val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
+                            val itemUrl = it.url
+                            if (!autofillUrl.isNullOrBlank() && !itemUrl.isNullOrBlank()) {
+                                domainProvider.getHost(itemUrl) == domainProvider.getHost(autofillUrl)
+                            } else {
+                                false
+                            }
+                        }
+                } else {
+                    emptyList()
                 }
-        } else {
-            emptyList()
-        }
-        when (
-            val currentHomeView = homeView) {
-            is HomeDisplayViewModel.Folders -> showResourcesAndFoldersFromDatabase(currentHomeView)
-            is HomeDisplayViewModel.Tags -> showTagsFromDatabase(currentHomeView)
-            is HomeDisplayViewModel.Groups -> showGroupsFromDatabase(currentHomeView)
-            else -> showResourcesFromDatabase()
+                when (
+                    val currentHomeView = homeView) {
+                    is HomeDisplayViewModel.Folders -> showResourcesAndFoldersFromDatabase(currentHomeView)
+                    is HomeDisplayViewModel.Tags -> showTagsFromDatabase(currentHomeView)
+                    is HomeDisplayViewModel.Groups -> showGroupsFromDatabase(currentHomeView)
+                    else -> showResourcesFromDatabase()
+                }
+            }, resultIfActionFails = Unit)
         }
     }
 
@@ -384,7 +371,7 @@ class HomePresenter(
         filteringScope.coroutineContext.cancelChildren()
         coroutineScope.coroutineContext.cancelChildren()
         scope.close()
-        super<BaseAuthenticatedPresenter>.detach()
+        super<DataRefreshViewReactivePresenter>.detach()
     }
 
     override fun searchClearClick() {
@@ -662,10 +649,9 @@ class HomePresenter(
     }
 
     override fun deleteResourceConfirmed() {
-        view?.showSynchronizedProgress()
         coroutineScope.launch {
             resourceAuthenticatedActionsInteractor.deleteResource(
-                failure = { view?.showGeneralError() }
+                failure = { view?.showDeleteResourceFailure() }
             ) {
                 resourceDeleted(it)
             }
@@ -699,10 +685,7 @@ class HomePresenter(
 
     private fun initRefresh() {
         refreshInProgress = true
-        view?.apply {
-            showSynchronizedProgress()
-            performRefreshUsingRefreshExecutor()
-        }
+        view?.performRefreshUsingRefreshExecutor()
     }
 
     override fun menuEditClick() {
@@ -805,13 +788,12 @@ class HomePresenter(
     }
 
     override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
-        view?.showSynchronizedProgress()
         coroutineScope.launch {
             resourceAuthenticatedActionsInteractor.toggleFavourite(
                 option,
                 failure = { view?.showToggleFavouriteFailure() }
             ) {
-                view?.performLocalRefresh()
+                showActiveHomeView()
             }
         }
     }

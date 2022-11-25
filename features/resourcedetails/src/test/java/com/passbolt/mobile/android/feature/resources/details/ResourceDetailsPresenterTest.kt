@@ -1,18 +1,21 @@
 package com.passbolt.mobile.android.feature.resources.details
 
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.entity.resource.ResourceField
-import com.passbolt.mobile.android.entity.resource.ResourceType
-import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
@@ -23,6 +26,7 @@ import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.TagModel
 import com.passbolt.mobile.android.ui.UserWithAvatar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -69,6 +73,7 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     private val presenter: ResourceDetailsContract.Presenter by inject()
     private val view: ResourceDetailsContract.View = mock()
+    private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -105,6 +110,20 @@ class ResourceDetailsPresenterTest : KoinTest {
         mockResourceTagsUseCase.stub {
             onBlocking { execute(any()) }.doReturn(GetLocalResourceTagsUseCase.Output(RESOURCE_TAGS))
         }
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
+        mockGetFolderLocationUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(GetLocalFolderLocationUseCase.Output(emptyList()))
+        }
+        mockGetResourceTypeWithFields.stub {
+            onBlocking { execute(any()) }.doReturn(
+                GetResourceTypeWithFieldsByIdUseCase.Output(
+                    resourceTypeId = RESOURCE_MODEL.resourceTypeId,
+                    listOf(ResourceField(0, "description", false, null, true, "string"))
+                )
+            )
+        }
         presenter.attach(view)
     }
 
@@ -115,34 +134,30 @@ class ResourceDetailsPresenterTest : KoinTest {
             100,
             20f
         )
+        presenter.resume(view)
 
-        verify(view).showFavouriteStar()
-        verify(view).displayTitle(NAME)
-        verify(view).displayUsername(USERNAME)
-        verify(view).displayInitialsIcon(NAME, INITIALS)
-        verify(view).displayUrl(URL)
-        verify(view).showPasswordHidden()
-        verify(view).showPasswordHiddenIcon()
-        verify(view).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
-        verify(view).showTags(RESOURCE_TAGS.map { it.slug })
+        verify(view, times(2)).showFavouriteStar()
+        verify(view, times(2)).displayTitle(NAME)
+        verify(view, times(2)).displayUsername(USERNAME)
+        verify(view, times(2)).displayInitialsIcon(NAME, INITIALS)
+        verify(view, times(2)).displayUrl(URL)
+        verify(view, times(2)).showPasswordHidden()
+        verify(view, times(2)).showPasswordHiddenIcon()
+        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
+        verify(view, times(2)).showDescription(RESOURCE_MODEL.description!!, useSecretFont = false)
+        verify(view, times(2)).showFolderLocation(emptyList())
+        verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `password details description encryption state should be shown correct for simple password`() {
-        mockResourceTypesDao.stub {
-            onBlocking { getResourceTypeWithFieldsById(any()) }.doReturn(
-                ResourceTypeIdWithFields(
-                    ResourceType("id", "simple password", "slug"),
-                    listOf(
-                        ResourceField(
-                            name = "description",
-                            isSecret = false,
-                            maxLength = null,
-                            isRequired = false,
-                            type = "string"
-                        )
-                    )
+        mockGetResourceTypeWithFields.stub {
+            onBlocking { execute(any()) }.doReturn(
+                GetResourceTypeWithFieldsByIdUseCase.Output(
+                    resourceTypeId = RESOURCE_MODEL.resourceTypeId,
+                    listOf(ResourceField(0, "description", false, null, false, "string"))
                 )
             )
         }
@@ -152,25 +167,18 @@ class ResourceDetailsPresenterTest : KoinTest {
             100,
             20f
         )
+        presenter.resume(view)
 
-        verify(view).showDescription(DESCRIPTION, useSecretFont = false)
+        verify(view, times(2)).showDescription(DESCRIPTION, useSecretFont = false)
     }
 
     @Test
     fun `password details description encryption state should be shown correct for default password`() {
-        mockResourceTypesDao.stub {
-            onBlocking { getResourceTypeWithFieldsById(any()) }.doReturn(
-                ResourceTypeIdWithFields(
-                    ResourceType("id", "password", "slug"),
-                    listOf(
-                        ResourceField(
-                            name = "description",
-                            isSecret = true,
-                            maxLength = null,
-                            isRequired = false,
-                            type = "string"
-                        )
-                    )
+        mockGetResourceTypeWithFields.stub {
+            onBlocking { execute(any()) }.doReturn(
+                GetResourceTypeWithFieldsByIdUseCase.Output(
+                    resourceTypeId = RESOURCE_MODEL.resourceTypeId,
+                    listOf(ResourceField(1, name = "description", isSecret = true, null, false, "string"))
                 )
             )
         }
@@ -180,8 +188,9 @@ class ResourceDetailsPresenterTest : KoinTest {
             100,
             20f
         )
+        presenter.resume(view)
 
-        verify(view).showDescriptionIsEncrypted()
+        verify(view, times(2)).showDescriptionIsEncrypted()
     }
 
     @Test
@@ -202,13 +211,14 @@ class ResourceDetailsPresenterTest : KoinTest {
             100,
             20f
         )
+        presenter.resume(view)
         presenter.secretIconClick()
         presenter.secretIconClick()
 
         verify(view).showPasswordVisibleIcon()
         verify(view).showPassword(String(DECRYPTED_SECRET))
-        verify(view, times(2)).showPasswordHiddenIcon()
-        verify(view, times(2)).showPasswordHidden()
+        verify(view, times(3)).showPasswordHiddenIcon()
+        verify(view, times(3)).showPasswordHidden()
     }
 
     @Test
@@ -227,6 +237,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             100,
             20f
         )
+        presenter.resume(view)
         presenter.secretIconClick()
 
         verify(view).showDecryptionFailure()
@@ -243,6 +254,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             100,
             20f
         )
+        presenter.resume(view)
         presenter.secretIconClick()
 
         verify(view).showFetchFailure()
@@ -263,6 +275,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             100,
             20f
         )
+        presenter.resume(view)
         presenter.secretIconClick()
 
         verify(view).showAuth(AuthenticationState.Unauthenticated.Reason.Passphrase)
@@ -289,8 +302,9 @@ class ResourceDetailsPresenterTest : KoinTest {
             100,
             20f
         )
+        presenter.resume(view)
 
-        verify(view).hidePasswordEyeIcon()
+        verify(view, times(2)).hidePasswordEyeIcon()
     }
 
     @ExperimentalCoroutinesApi
@@ -304,6 +318,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             100,
             20f
         )
+        presenter.resume(view)
         presenter.moreClick()
         presenter.deleteClick()
         presenter.deleteResourceConfirmed()
@@ -330,6 +345,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             100,
             20f
         )
+        presenter.resume(view)
         presenter.moreClick()
         presenter.deleteClick()
         presenter.deleteResourceConfirmed()
@@ -346,8 +362,9 @@ class ResourceDetailsPresenterTest : KoinTest {
             100,
             20f
         )
+        presenter.resume(view)
 
-        verify(view).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
     }
 
     private companion object {

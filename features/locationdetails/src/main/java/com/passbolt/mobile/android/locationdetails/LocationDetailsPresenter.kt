@@ -1,13 +1,15 @@
 package com.passbolt.mobile.android.locationdetails
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 
 /**
@@ -38,22 +40,45 @@ class LocationDetailsPresenter(
     private val getLocalFolderLocation: GetLocalFolderLocationUseCase,
     private val getLocalResourceDetailsUseCase: GetLocalResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedPresenter<LocationDetailsContract.View>(coroutineLaunchContext),
+) : DataRefreshViewReactivePresenter<LocationDetailsContract.View>(coroutineLaunchContext),
     LocationDetailsContract.Presenter {
 
     override var view: LocationDetailsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-
-    override fun argsRetrieved(locationItem: LocationItem, id: String) {
-        when (locationItem) {
-            LocationItem.RESOURCE -> resourceLocation(id)
-            LocationItem.FOLDER -> folderLocation(id)
+    private val missingItemHandler = CoroutineExceptionHandler { _, throwable ->
+        if (throwable is NullPointerException) {
+            view?.showContentNotAvailable()
+            view?.navigateToHome()
         }
     }
 
+    private lateinit var locationItem: LocationItem
+    private lateinit var itemId: String
+
+    override fun argsRetrieved(locationItem: LocationItem, id: String) {
+        this.locationItem = locationItem
+        this.itemId = id
+        showItemLocation()
+    }
+
+    private fun showItemLocation() {
+        when (locationItem) {
+            LocationItem.RESOURCE -> resourceLocation(itemId)
+            LocationItem.FOLDER -> folderLocation(itemId)
+        }
+    }
+
+    override fun refreshAction() {
+        showItemLocation()
+    }
+
+    override fun refreshFailureAction() {
+        view?.showDataRefreshError()
+    }
+
     private fun resourceLocation(resourceId: String) {
-        val resourceModelDeferred = scope.async { // get and show resource details
+        val resourceModelDeferred = scope.async(missingItemHandler) { // get and show resource details
             getLocalResourceDetailsUseCase.execute(GetLocalResourceUseCase.Input(resourceId))
                 .resource
                 .let {
@@ -62,7 +87,7 @@ class LocationDetailsPresenter(
                     it
                 }
         }
-        scope.launch { // get and show resource location
+        scope.launch(missingItemHandler) { // get and show resource location
             val resourceFolderId = resourceModelDeferred.await().folderId
             val locationSegments = if (resourceFolderId != null) {
                 getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(resourceFolderId))
@@ -75,7 +100,7 @@ class LocationDetailsPresenter(
     }
 
     private fun folderLocation(folderId: String) {
-        scope.launch { // get and show folder details
+        scope.launch(missingItemHandler) { // get and show folder details
             getLocalFolderDetailsUseCase.execute(GetLocalFolderDetailsUseCase.Input(folderId))
                 .folder
                 .let {
@@ -87,12 +112,17 @@ class LocationDetailsPresenter(
                     }
                 }
         }
-        scope.launch { // get and show folder location
+        scope.launch(missingItemHandler) { // get and show folder location
             getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(folderId))
                 .parentFolders
                 .let {
                     view?.showFolderLocation(it)
                 }
         }
+    }
+
+    override fun detach() {
+        scope.coroutineContext.cancelChildren()
+        super<DataRefreshViewReactivePresenter>.detach()
     }
 }

@@ -1,8 +1,6 @@
 package com.passbolt.mobile.android.feature.main.mainscreen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
-import kotlinx.coroutines.flow.Flow
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,9 +34,6 @@ interface MainContract {
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished>
-        fun performFullDataRefresh()
         fun appUpdateDownloaded()
-        fun performLocalDataRefresh()
     }
 }

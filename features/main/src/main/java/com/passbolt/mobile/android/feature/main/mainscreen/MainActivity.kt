@@ -14,19 +14,20 @@ import com.google.android.play.core.review.ReviewManager
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.extension.getRootView
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.main.R
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
-import kotlinx.coroutines.flow.Flow
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
 class MainActivity :
     BindingScopedAuthenticatedActivity<ActivityMainBinding, MainContract.View>(ActivityMainBinding::inflate),
-    HomeDataRefreshExecutor, MainContract.View {
+    MainContract.View, HomeDataRefreshExecutor {
 
     override val presenter: MainContract.Presenter by inject()
 
@@ -45,12 +46,16 @@ class MainActivity :
         }
     }
     private val appReviewManager: ReviewManager by inject()
+    private val fullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runtimeAuthenticatedFlag.require(this)
         binding.mainNavigation.setupWithNavController(bottomNavController)
         presenter.attach(this)
+        // TODO
+        fullDataRefreshExecutor.attach(presenter as BaseAuthenticatedPresenter<BaseAuthenticatedContract.View>)
+        fullDataRefreshExecutor.performFullDataRefresh()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -64,6 +69,7 @@ class MainActivity :
 
     override fun onDestroy() {
         appUpdateManager.unregisterListener(appUpdateStatusListener)
+        fullDataRefreshExecutor.detach()
         presenter.detach()
         super.onDestroy()
     }
@@ -116,16 +122,14 @@ class MainActivity :
             }
     }
 
-    override fun performFullDataRefresh() =
-        presenter.performFullDataRefresh()
-
-    override fun performLocalDataRefresh() =
-        presenter.performLocalDataRefresh()
-
-    override fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished> =
-        presenter.dataRefreshFinishedStatusFlow
-
     private companion object {
         private const val REQUEST_APP_UPDATE = 8000
     }
+
+    override fun performFullDataRefresh() {
+        fullDataRefreshExecutor.performFullDataRefresh()
+    }
+
+    override fun supplyFullDataRefreshStatusFlow() =
+        fullDataRefreshExecutor.dataRefreshStatusFlow
 }

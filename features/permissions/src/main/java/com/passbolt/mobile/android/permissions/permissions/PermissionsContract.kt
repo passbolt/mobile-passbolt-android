@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.permissions.permissions
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.ui.PermissionModelUi
 
 /**
@@ -27,7 +27,7 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
  */
 interface PermissionsContract {
 
-    interface View : BaseAuthenticatedContract.View {
+    interface View : DataRefreshViewReactiveContract.View {
         fun showPermissions(permissions: List<PermissionModelUi>)
         fun navigateToGroupPermissionDetails(
             permission: PermissionModelUi.GroupPermissionModel,
@@ -59,9 +59,12 @@ interface PermissionsContract {
         fun closeWithShareSuccessResult()
         fun showEditButton()
         fun navigateToSelfWithMode(resourceId: String, mode: PermissionsMode)
+        fun showDataRefreshError()
+        fun showContentNotAvailable()
+        fun navigateToHome()
     }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun argsReceived(permissionsItem: PermissionsItem, id: String, mode: PermissionsMode)
         fun permissionClick(permission: PermissionModelUi)
         fun actionButtonClick()

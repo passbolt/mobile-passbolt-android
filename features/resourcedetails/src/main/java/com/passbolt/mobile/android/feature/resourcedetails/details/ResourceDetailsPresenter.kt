@@ -1,22 +1,22 @@
 package com.passbolt.mobile.android.feature.resourcedetails.details
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.isFavourite
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
@@ -51,16 +51,15 @@ import org.koin.core.scope.Scope
  * @since v1.0
  */
 class ResourceDetailsPresenter(
-    private val databaseProvider: DatabaseProvider,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
     private val getLocalResourceTagsUseCase: GetLocalResourceTagsUseCase,
     private val getLocalFolderLocation: GetLocalFolderLocationUseCase,
+    private val getResourceTypeWithFieldsByIdUseCase: GetResourceTypeWithFieldsByIdUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedPresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
+) : DataRefreshViewReactivePresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter, KoinScopeComponent {
 
     override var view: ResourceDetailsContract.View? = null
@@ -68,13 +67,20 @@ class ResourceDetailsPresenter(
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
     override val scope: Scope
         get() = getOrCreateScope().value
-
     private lateinit var resourceModel: ResourceModel
+
     private lateinit var resourceActionsInteractor: ResourceActionsInteractor
     private lateinit var resourceAuthenticatedActionsInteractor: ResourceAuthenticatedActionsInteractor
     private var isPasswordVisible = false
     private var permissionsListWidth: Int = -1
     private var permissionItemWidth: Float = -1f
+    private lateinit var resourceId: String
+    private val missingItemExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        if (throwable is NullPointerException) {
+            view?.showContentNotAvailable()
+            view?.navigateBack()
+        }
+    }
 
     // TODO consider resource types - for now only description can be both encrypted and unencrypted
     // TODO for future draw and set encrypted properties dynamically based on database input
@@ -82,11 +88,20 @@ class ResourceDetailsPresenter(
     override fun argsReceived(resourceId: String, permissionsListWidth: Int, permissionItemWidth: Float) {
         this.permissionsListWidth = permissionsListWidth
         this.permissionItemWidth = permissionItemWidth
+        this.resourceId = resourceId
         getResourcesAndPermissions(resourceId)
     }
 
+    override fun refreshAction() {
+        getResourcesAndPermissions(resourceId)
+    }
+
+    override fun refreshFailureAction() {
+        view?.showDataRefresError()
+    }
+
     private fun getResourcesAndPermissions(resourceId: String) {
-        coroutineScope.launch {
+        coroutineScope.launch(missingItemExceptionHandler) {
             val resourceInitializationDeferred = async { // get and display resource
                 resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
                 resourceActionsInteractor = get { parametersOf(resourceModel) }
@@ -155,12 +170,10 @@ class ResourceDetailsPresenter(
 
     private fun handleDescriptionField(resourceModel: ResourceModel) {
         coroutineScope.launch {
-            val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-            val resourceWithFields = databaseProvider
-                .get(userId)
-                .resourceTypesDao()
-                .getResourceTypeWithFieldsById(resourceModel.resourceTypeId)
-            val isDescriptionSecret = resourceWithFields.resourceFields
+            val resourceTypeFields = getResourceTypeWithFieldsByIdUseCase.execute(
+                GetResourceTypeWithFieldsByIdUseCase.Input(resourceModel.resourceTypeId)
+            ).fields
+            val isDescriptionSecret = resourceTypeFields
                 .find { it.name == "description" }
                 ?.isSecret ?: false
             if (isDescriptionSecret) {
@@ -182,7 +195,7 @@ class ResourceDetailsPresenter(
     override fun detach() {
         coroutineScope.coroutineContext.cancelChildren()
         scope.close()
-        super<BaseAuthenticatedPresenter>.detach()
+        super<DataRefreshViewReactivePresenter>.detach()
     }
 
     override fun moreClick() {

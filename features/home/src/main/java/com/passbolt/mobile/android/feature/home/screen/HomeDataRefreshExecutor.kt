@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.home.screen
 
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -28,7 +29,5 @@ interface HomeDataRefreshExecutor {
 
     fun performFullDataRefresh()
 
-    fun performLocalDataRefresh()
-
-    fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished>
+    fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus>
 }

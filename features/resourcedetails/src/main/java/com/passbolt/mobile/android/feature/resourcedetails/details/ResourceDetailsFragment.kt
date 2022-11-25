@@ -9,7 +9,6 @@ import android.text.SpannableStringBuilder
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -17,7 +16,6 @@ import androidx.core.view.doOnLayout
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -27,6 +25,7 @@ import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
@@ -134,6 +133,7 @@ class ResourceDetailsFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.swipeRefresh.isEnabled = false
         setListeners()
         setUpPermissionsRecycler()
         presenter.attach(this)
@@ -144,6 +144,16 @@ class ResourceDetailsFragment :
                 resources.getDimension(R.dimen.dp_40)
             )
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.resume(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        presenter.pause()
     }
 
     override fun onStop() {
@@ -349,7 +359,7 @@ class ResourceDetailsFragment :
         with(requireActivity()) {
             setResult(
                 ActivityResults.RESULT_RESOURCE_DELETED,
-                com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity.resourceNameResultIntent(name)
+                ResourceActivity.resourceNameResultIntent(name)
             )
             finish()
         }
@@ -358,7 +368,7 @@ class ResourceDetailsFragment :
     override fun setResourceEditedResult(resourceName: String) {
         requireActivity().setResult(
             ActivityResults.RESULT_RESOURCE_EDITED,
-            com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity.resourceNameResultIntent(resourceName)
+            ResourceActivity.resourceNameResultIntent(resourceName)
         )
     }
 
@@ -431,11 +441,6 @@ class ResourceDetailsFragment :
         showSnackbar(R.string.common_message_resource_shared)
     }
 
-    private fun showSnackbar(@StringRes messageResId: Int, vararg messageArgs: String) {
-        Snackbar.make(binding.root, getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
-            .show()
-    }
-
     override fun showTags(tags: List<String>) {
         val builder = SpannableStringBuilder()
         tags.forEach {
@@ -467,5 +472,21 @@ class ResourceDetailsFragment :
             locationDetailsItemId = resourceId
         )
         findNavController().navigate(request)
+    }
+
+    override fun hideRefreshProgress() {
+        binding.swipeRefresh.isRefreshing = false
+    }
+
+    override fun showRefreshProgress() {
+        binding.swipeRefresh.isRefreshing = true
+    }
+
+    override fun showDataRefresError() {
+        showSnackbar(R.string.common_data_refresh_error)
+    }
+
+    override fun showContentNotAvailable() {
+        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
     }
 }

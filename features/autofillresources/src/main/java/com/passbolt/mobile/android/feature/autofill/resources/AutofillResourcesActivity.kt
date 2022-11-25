@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.AutofillMode
@@ -18,7 +19,6 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -96,9 +96,6 @@ class AutofillResourcesActivity :
 
     override fun performFullDataRefresh() =
         presenter.performFullDataRefresh()
-
-    override fun performLocalDataRefresh() =
-        presenter.performLocalDataRefresh()
 
     override fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished> =
         presenter.dataRefreshFinishedStatusFlow

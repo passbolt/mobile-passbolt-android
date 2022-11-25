@@ -20,6 +20,7 @@ dependencies {
     implementation project(':resources')
     implementation project(':folders')
     implementation project(':idlingresource')
+    implementation project(':authentication')
 
     implementation libs.di.koin
     implementation libs.room.core

@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -29,7 +29,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
  */
 interface UpdateResourceContract {
 
-    interface View : BaseAuthenticatedContract.View {
+    interface View : DataRefreshViewReactiveContract.View {
         fun addTextInput(
             name: String,
             isSecret: Boolean,
@@ -67,17 +67,18 @@ interface UpdateResourceContract {
         fun showEditTitle()
         fun closeWithCreateSuccessResult(name: String, id: String)
         fun closeWithEditSuccessResult(name: String)
-        fun hideScrollView()
-        fun showScrollView()
         fun showEncryptionError(message: String)
         fun showShareSimulationFailure()
         fun showShareFailure()
         fun showSecretFetchFailure()
         fun showSecretEncryptFailure()
         fun showSecretDecryptFailure()
+        fun showDataRefreshError()
+        fun showContentNotAvailable()
+        fun navigateHome()
     }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun updateClick()
         fun passwordGenerateClick(tag: String)
         fun passwordTextChanged(tag: String, password: String)
