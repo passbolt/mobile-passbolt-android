@@ -152,6 +152,7 @@ dependencies {
 
     androidTestImplementation project(':commontest')
     androidTestImplementation libs.androidx.appcompat
+    androidTestImplementation libs.material
     androidTestImplementation libs.test.androidTestsRunner
     androidTestImplementation libs.test.androidTestRules
     androidTestImplementation libs.test.espressoCore

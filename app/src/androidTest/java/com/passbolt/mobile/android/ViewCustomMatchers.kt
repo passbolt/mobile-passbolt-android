@@ -17,9 +17,11 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Root
 import androidx.test.espresso.matcher.BoundedMatcher
 import org.hamcrest.Description
+import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 
 /**
@@ -135,3 +137,17 @@ fun hasToast() = object : TypeSafeMatcher<Root?>() {
         description?.appendText("is toast")
     }
 }
+
+fun atPosition(position: Int, itemMatcher: Matcher<View?>) =
+    object : BoundedMatcher<View?, RecyclerView>(RecyclerView::class.java) {
+        override fun describeTo(description: Description?) {
+            description?.appendText("has item at position $position: ")
+            itemMatcher.describeTo(description)
+        }
+
+        override fun matchesSafely(recyclerView: RecyclerView?): Boolean {
+            val viewHolder: RecyclerView.ViewHolder =
+                recyclerView?.findViewHolderForAdapterPosition(position) ?: return false // has no item on such position
+            return itemMatcher.matches(viewHolder.itemView)
+        }
+    }
