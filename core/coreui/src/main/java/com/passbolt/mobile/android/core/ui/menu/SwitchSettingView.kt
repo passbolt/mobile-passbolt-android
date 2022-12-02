@@ -34,7 +34,9 @@ class SwitchSettingView @JvmOverloads constructor(
 
     var onChanged: ((Boolean) -> Unit)? = null
 
-    private val switch = SwitchMaterial(context)
+    private val switch = SwitchMaterial(context).apply {
+        tag = name
+    }
     private var silentCheckChangedModeOn = false
 
     init {
