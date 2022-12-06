@@ -149,6 +149,7 @@ dependencies {
     implementation libs.di.koin
     implementation libs.gson
     implementation libs.androidx.appStartUp
+    implementation libs.test.espressoOkHttpIdlingResource
 
     androidTestImplementation project(':commontest')
     androidTestImplementation libs.androidx.appcompat
@@ -161,5 +162,4 @@ dependencies {
     androidTestImplementation libs.di.koinTestJUnit
     androidTestImplementation libs.test.androidTestIntents
     androidTestImplementation libs.test.mockitoAndroid
-    androidTestImplementation libs.test.espressoOkHttpIdlingResource
 }
