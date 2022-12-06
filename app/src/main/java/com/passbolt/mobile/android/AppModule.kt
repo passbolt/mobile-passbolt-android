@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ProcessLifecycleOwner
 import coil.ImageLoader
 import com.google.gson.GsonBuilder
+import com.jakewharton.espresso.OkHttp3IdlingResource
 import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.TimeProvider
@@ -13,6 +14,8 @@ import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
 import com.passbolt.mobile.android.core.networking.COIL_HTTP_CLIENT
+import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
+import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -68,4 +71,8 @@ internal val appModule = module {
     }
     factory { androidContext().resources }
     single { androidContext() as PassboltApplication }
+    single {
+        val okHttpClient: OkHttpClient by inject(named(DEFAULT_HTTP_CLIENT))
+        OkHttp3IdlingResource.create(OkHttp3IdlingResource::class.java.name, okHttpClient)
+    }
 }
