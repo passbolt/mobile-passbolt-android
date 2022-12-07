@@ -91,6 +91,10 @@ class AccountDetailsPresenter(
         }
     }
 
+    override fun transferAccountClick() {
+        // TODO navigation will be added in task nr: MOB-798
+    }
+
     private fun updateAccountData() {
         updateAccountDataUseCase.execute(
             UpdateAccountDataUseCase.Input(

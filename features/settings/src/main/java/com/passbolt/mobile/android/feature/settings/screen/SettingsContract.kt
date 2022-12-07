@@ -68,6 +68,7 @@ interface SettingsContract {
         fun termsClick()
         fun signOutClick()
         fun manageAccountsClick()
+        fun transferAccountClick()
         fun autofillClick()
         fun fingerprintSettingChanged(isEnabled: Boolean)
         fun disableFingerprintConfirmed()

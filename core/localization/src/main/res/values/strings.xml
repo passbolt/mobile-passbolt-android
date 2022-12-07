@@ -276,6 +276,7 @@
     <string name="settings_autofill">Autofill</string>
     <string name="settings_default_filter">Default filter</string>
     <string name="settings_manage_accounts">Manage accounts</string>
+    <string name="settings_transfer_account">Transfer account to another device</string>
     <string name="settings_terms">Terms &amp; Conditions</string>
     <string name="settings_privacy_policy">Privacy policy</string>
     <string name="settings_logs">Access the logs</string>
