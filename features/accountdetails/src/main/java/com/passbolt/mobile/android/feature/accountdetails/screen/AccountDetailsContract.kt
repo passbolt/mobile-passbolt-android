@@ -30,6 +30,7 @@ interface AccountDetailsContract {
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun labelInputChanged(label: String)
         fun saveClick()
+        fun transferAccountClick()
     }
 
     interface View : BaseAuthenticatedContract.View {

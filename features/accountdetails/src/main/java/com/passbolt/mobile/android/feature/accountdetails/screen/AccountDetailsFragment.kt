@@ -64,6 +64,9 @@ class AccountDetailsFragment :
             saveButton.setDebouncingOnClick {
                 presenter.saveClick()
             }
+            transferAccountButton.setDebouncingOnClick {
+                presenter.transferAccountClick()
+            }
         }
     }
 
