@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.folderdetails
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.PermissionModelUi
 
@@ -29,7 +29,7 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
 
 interface FolderDetailsContract {
 
-    interface View : BaseAuthenticatedContract.View {
+    interface View : DataRefreshViewReactiveContract.View {
         fun showFolderName(name: String)
         fun showFolderSharedIcon()
         fun showFolderIcon()
@@ -43,9 +43,12 @@ interface FolderDetailsContract {
 
         fun navigateToFolderPermissions(folderId: String, mode: PermissionsMode)
         fun navigateToFolderLocation(folderId: String)
+        fun showDataRefreshError()
+        fun showContentNotAvailable()
+        fun navigateToHome()
     }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun argsRetrieved(folderId: String, permissionsListWidth: Int, permissionItemWidth: Float)
         fun sharedWithClick()
         fun locationClick()

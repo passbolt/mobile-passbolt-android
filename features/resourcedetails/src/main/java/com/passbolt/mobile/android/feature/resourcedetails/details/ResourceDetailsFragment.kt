@@ -148,12 +148,15 @@ class ResourceDetailsFragment :
 
     override fun onResume() {
         super.onResume()
-        presenter.resume(this)
+        // has to be invoked using post to make sure binding.sharedWithRecycler.doOnLayout has finished
+        binding.sharedWithRecycler.post {
+            presenter.resume(this)
+        }
     }
 
     override fun onPause() {
-        super.onPause()
         presenter.pause()
+        super.onPause()
     }
 
     override fun onStop() {

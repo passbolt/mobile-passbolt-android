@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
-import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
@@ -14,9 +14,6 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -43,12 +40,12 @@ import timber.log.Timber
  * @since v1.0
  */
 class AutofillResourcesPresenter(
-    private val homeDataInteractor: HomeDataInteractor,
     private val getAccountsUseCase: GetAccountsUseCase,
     private val resourceTypeFactory: ResourceTypeFactory,
     private val secretParser: SecretParser,
     private val secretInteractor: SecretInteractor,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
+    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<AutofillResourcesContract.View>(coroutineLaunchContext),
     AutofillResourcesContract.Presenter {
@@ -59,10 +56,6 @@ class AutofillResourcesPresenter(
 
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-
-    private val _dataRefreshStatusFlow = MutableSharedFlow<DataRefreshStatus>(replay = 1)
-    override val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished> = _dataRefreshStatusFlow
-        .filterIsInstance()
 
     override fun attach(view: AutofillResourcesContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
@@ -88,16 +81,9 @@ class AutofillResourcesPresenter(
     }
 
     override fun performFullDataRefresh() {
-        scope.launch {
-            Timber.d("Full data refresh initiated")
-            val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                homeDataInteractor.refreshAllHomeScreenData()
-            }
-            _dataRefreshStatusFlow.emit(
-                DataRefreshStatus.Finished(
-                    output
-                )
-            )
+        with(fullDataRefreshExecutor) {
+            this.attach(this@AutofillResourcesPresenter as BaseAuthenticatedPresenter<BaseAuthenticatedContract.View>)
+            this.performFullDataRefresh()
         }
     }
 

@@ -78,8 +78,8 @@ class LocationDetailsFragment :
     }
 
     override fun onPause() {
-        super.onPause()
         presenter.pause()
+        super.onPause()
     }
 
     private fun initLocationDetailsRecycler(savedInstanceState: Bundle?) {

@@ -34,7 +34,7 @@ abstract class BindingFragment<T : ViewBinding>(private val viewInflater: (Layou
     Fragment() {
 
     private var _binding: T? = null
-    val binding: T
+    protected val binding: T
         get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

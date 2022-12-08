@@ -206,8 +206,8 @@ class HomeFragment :
     }
 
     override fun onPause() {
-        super.onPause()
         presenter.pause()
+        super.onPause()
     }
 
     override fun initSpeedDialFab(homeView: HomeDisplayViewModel) {

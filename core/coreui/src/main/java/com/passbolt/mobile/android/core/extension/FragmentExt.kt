@@ -8,7 +8,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
 import com.passbolt.mobile.android.core.ui.R
 
 /**
@@ -47,22 +46,22 @@ fun Fragment.hideSoftInput() {
     }
 }
 
-fun BindingFragment<*>.showSnackbar(
+fun Fragment.showSnackbar(
     @StringRes messageResId: Int,
     anchorView: View?,
     vararg messageArgs: String
 ) {
-    Snackbar.make(binding.root, getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
+    Snackbar.make(requireView(), getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
         .apply {
             anchorView?.let { setAnchorView(it) }
             show()
         }
 }
 
-fun BindingFragment<*>.showSnackbar(
+fun Fragment.showSnackbar(
     @StringRes messageResId: Int,
     vararg messageArgs: String
 ) {
-    Snackbar.make(binding.root, getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
+    Snackbar.make(requireView(), getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
         .show()
 }

@@ -6,7 +6,6 @@ plugins {
 dependencies {
     implementation project(':common')
     implementation project(':localization')
-    implementation project(':architecture')
 
     implementation libs.androidx.core
     implementation libs.androidx.appcompat

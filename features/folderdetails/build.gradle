@@ -22,6 +22,7 @@ dependencies {
     implementation project(':permissions')
     implementation project(':locationdetails')
     implementation project(':navigation')
+    implementation project(':fulldatarefresh')
 
     implementation libs.di.koin
     implementation libs.material
@@ -32,6 +33,7 @@ dependencies {
     implementation libs.fastAdapter.core
     implementation libs.fastAdapter.diff
     implementation libs.room.core
+    implementation libs.androidx.swiperefresh
 
     testImplementation project(':commontest')
 }

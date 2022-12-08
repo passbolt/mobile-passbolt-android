@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.core.resources.usecase.CreateResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.UpdateResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
@@ -67,7 +68,7 @@ import java.net.HttpURLConnection.HTTP_NOT_FOUND
  */
 class UpdateResourcePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
-    private val passwordGenerator: com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator,
+    private val passwordGenerator: PasswordGenerator,
     private val entropyViewMapper: EntropyViewMapper,
     private val createResourceUseCase: CreateResourceUseCase,
     private val addLocalResourceUseCase: AddLocalResourceUseCase,
@@ -75,7 +76,7 @@ class UpdateResourcePresenter(
     private val updateResourceUseCase: UpdateResourceUseCase,
     private val fetchUsersUseCase: FetchUsersUseCase,
     private val getResourceTypeWithFieldsBySlugUseCase: GetResourceTypeWithFieldsBySlugUseCase,
-    private val resourceTypeFactory: com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory,
+    private val resourceTypeFactory: ResourceTypeFactory,
     private val editFieldsModelCreator: EditFieldsModelCreator,
     private val newFieldsModelCreator: NewFieldsModelCreator,
     private val secretInteractor: SecretInteractor,

@@ -35,5 +35,6 @@ interface MainContract {
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun appUpdateDownloaded()
+        fun performFullDataRefresh()
     }
 }
