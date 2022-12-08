@@ -130,12 +130,18 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
 
     override fun showError() {
         Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_SHORT)
-            .show()
+            .apply {
+                view.setBackgroundColor(context.getColor(R.color.red))
+                show()
+            }
     }
 
     override fun showNetworkError() {
         Snackbar.make(binding.root, R.string.common_network_failure, Snackbar.LENGTH_SHORT)
-            .show()
+            .apply {
+                view.setBackgroundColor(context.getColor(R.color.red))
+                show()
+            }
     }
 
     override fun notifyLoginSucceeded() {
@@ -160,9 +166,11 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     }
 
     override fun showWrongCodeError() {
-        Snackbar.make(binding.root, R.string.dialog_mfa_wrong_code, Snackbar.LENGTH_LONG).apply {
-            view.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.red))
-        }.show()
+        Snackbar.make(binding.root, R.string.dialog_mfa_wrong_code, Snackbar.LENGTH_LONG)
+            .apply {
+                view.setBackgroundColor(context.getColor(R.color.red))
+                show()
+            }
     }
 
     override fun pasteOtp(otp: String) {

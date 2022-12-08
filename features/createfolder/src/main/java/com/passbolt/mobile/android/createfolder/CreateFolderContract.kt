@@ -43,7 +43,7 @@ interface CreateFolderContract {
         fun hideProgress()
         fun showCreateFolderError(errorMessage: String)
         fun setFolderCreatedResultAndClose(folderName: String)
-        fun showShareFailure(orEmpty: String)
+        fun showShareFailure(errorMessage: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

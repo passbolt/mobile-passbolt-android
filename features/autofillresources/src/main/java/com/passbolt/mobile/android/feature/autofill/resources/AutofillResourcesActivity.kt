@@ -155,6 +155,9 @@ class AutofillResourcesActivity :
 
     override fun showError(message: String?) {
         Snackbar.make(binding.root, getString(R.string.common_failure_format, message), Snackbar.LENGTH_LONG)
-            .show()
+            .apply {
+                view.setBackgroundColor(context.getColor(R.color.red))
+                show()
+            }
     }
 }

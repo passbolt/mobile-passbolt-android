@@ -35,6 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_16"
                 android:orientation="vertical"
+                android:animateLayoutChanges="true"
                 app:layout_constraintBottom_toTopOf="@+id/updateButton"
                 app:layout_constraintTop_toBottomOf="@+id/backArrow" />
 

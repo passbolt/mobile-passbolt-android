@@ -508,19 +508,37 @@ class HomeFragment :
     }
 
     override fun showGeneralError() {
-        showSnackbar(R.string.common_failure, snackbarAnchorView)
+        showSnackbar(
+            R.string.common_failure,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showResourceDeletedSnackbar(name: String) {
-        showSnackbar(R.string.common_message_resource_deleted, snackbarAnchorView, name)
+        showSnackbar(
+            messageResId = R.string.common_message_resource_deleted,
+            messageArgs = arrayOf(name),
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.green
+        )
     }
 
     override fun showResourceEditedSnackbar(resourceName: String) {
-        showSnackbar(R.string.common_message_resource_edited, snackbarAnchorView, resourceName)
+        showSnackbar(
+            messageResId = R.string.common_message_resource_edited,
+            messageArgs = arrayOf(resourceName),
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.green
+        )
     }
 
     override fun showResourceSharedSnackbar() {
-        showSnackbar(R.string.common_message_resource_shared, snackbarAnchorView)
+        showSnackbar(
+            R.string.common_message_resource_shared,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.green
+        )
     }
 
     override fun navigateToSwitchAccount() {
@@ -533,7 +551,11 @@ class HomeFragment :
     }
 
     override fun showResourceAddedSnackbar() {
-        showSnackbar(R.string.resource_update_create_success, snackbarAnchorView)
+        showSnackbar(
+            R.string.resource_update_create_success,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.green
+        )
     }
 
     override fun menuEditClick() {
@@ -769,11 +791,19 @@ class HomeFragment :
     }
 
     override fun showToggleFavouriteFailure() {
-        showSnackbar(R.string.favourites_failure, snackbarAnchorView)
+        showSnackbar(
+            R.string.favourites_failure,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showDeleteResourceFailure() {
-        showSnackbar(R.string.delete_failure, snackbarAnchorView)
+        showSnackbar(
+            R.string.delete_failure,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showFolderMoreMenuIcon() {
@@ -810,7 +840,12 @@ class HomeFragment :
     }
 
     override fun showFolderCreated(name: String) {
-        showSnackbar(R.string.common_message_folder_created, snackbarAnchorView, name)
+        showSnackbar(
+            messageResId = R.string.common_message_folder_created,
+            messageArgs = arrayOf(name),
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.green
+        )
     }
 
     override fun showContentNotAvailable() {
@@ -822,7 +857,11 @@ class HomeFragment :
     }
 
     override fun showDataRefreshError() {
-        showSnackbar(R.string.common_data_refresh_error, snackbarAnchorView)
+        showSnackbar(
+            R.string.common_data_refresh_error,
+            anchorView = snackbarAnchorView,
+            backgroundColor = R.color.red
+        )
     }
 
     companion object {

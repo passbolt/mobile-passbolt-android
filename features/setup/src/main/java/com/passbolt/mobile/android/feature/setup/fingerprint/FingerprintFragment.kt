@@ -6,11 +6,12 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
-import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
@@ -137,9 +138,11 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
         biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingerprintEncryptionCipher))
     }
 
-    override fun showAuthenticationError(errorMessage: Int) {
-        Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG)
-            .show()
+    override fun showAuthenticationError(@StringRes errorMessage: Int) {
+        showSnackbar(
+            errorMessage,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun autofillSetupClosed() {
@@ -164,8 +167,10 @@ class FingerprintFragment : BindingScopedFragment<FragmentFingerprintBinding>(Fr
     }
 
     override fun showGenericError() {
-        Snackbar.make(binding.root, R.string.common_failure, Snackbar.LENGTH_SHORT)
-            .show()
+        showSnackbar(
+            R.string.common_failure,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showKeyChangesDetected() {

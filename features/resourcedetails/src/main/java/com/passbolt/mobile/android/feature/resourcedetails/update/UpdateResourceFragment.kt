@@ -4,8 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.dialogs.encryptionErrorAlertDialog
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
@@ -206,9 +204,10 @@ class UpdateResourceFragment :
     }
 
     override fun showError() {
-        Snackbar.make(binding.root, R.string.common_failure, Snackbar.LENGTH_SHORT).apply {
-            view.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.red))
-        }.show()
+        showSnackbar(
+            R.string.common_failure,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showEncryptionError(message: String) {
@@ -233,23 +232,38 @@ class UpdateResourceFragment :
     }
 
     override fun showShareSimulationFailure() {
-        showSnackbar(R.string.resource_permissions_share_simulation_failed)
+        showSnackbar(
+            R.string.resource_permissions_share_simulation_failed,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showShareFailure() {
-        showSnackbar(R.string.resource_permissions_share_failed)
+        showSnackbar(
+            R.string.resource_permissions_share_failed,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showSecretFetchFailure() {
-        showSnackbar(R.string.resource_permissions_secret_fetch_failure)
+        showSnackbar(
+            R.string.resource_permissions_secret_fetch_failure,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showSecretEncryptFailure() {
-        showSnackbar(R.string.resource_permissions_secret_encrypt_failure)
+        showSnackbar(
+            R.string.resource_permissions_secret_encrypt_failure,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showSecretDecryptFailure() {
-        showSnackbar(R.string.resource_permissions_secret_decrypt_failure)
+        showSnackbar(
+            R.string.resource_permissions_secret_decrypt_failure,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun hideRefreshProgress() {
@@ -261,7 +275,10 @@ class UpdateResourceFragment :
     }
 
     override fun showDataRefreshError() {
-        showSnackbar(R.string.common_data_refresh_error)
+        showSnackbar(
+            R.string.common_data_refresh_error,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showContentNotAvailable() {
