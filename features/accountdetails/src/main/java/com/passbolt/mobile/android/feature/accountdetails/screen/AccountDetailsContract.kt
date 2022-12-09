@@ -43,5 +43,6 @@ interface AccountDetailsContract {
         fun showLabelLengthError(labelMaxLength: Int)
         fun showLabelChanged()
         fun setLabel(label: String)
+        fun navigateToTransferAccountOnboarding()
     }
 }

@@ -61,6 +61,7 @@ interface SettingsContract {
         fun showPrivacyPolicyButton()
         fun showTermsAndConditionsButton()
         fun navigateToDefaultFilter(userSetHomeView: DefaultFilterModel)
+        fun navigateToTransferAccountOnboarding()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

@@ -49,6 +49,7 @@ featureModule "featureflagserror"
 featureModule "helpmenu"
 featureModule "logs"
 featureModule "resourcemoremenu"
+featureModule "transferaccounttoanotherdevice"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"

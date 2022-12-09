@@ -187,6 +187,12 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         startActivity(ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.ManageAccount))
     }
 
+    override fun navigateToTransferAccountOnboarding() {
+        findNavController().navigate(
+            SettingsFragmentDirections.actionSettingsToTransferAccountOnboardingFragment()
+        )
+    }
+
     override fun navigateToSignInWithLogout() {
         startActivity(
             ActivityIntents.authentication(

@@ -92,7 +92,7 @@ class AccountDetailsPresenter(
     }
 
     override fun transferAccountClick() {
-        // TODO navigation will be added in task nr: MOB-798
+        view?.navigateToTransferAccountOnboarding()
     }
 
     private fun updateAccountData() {

@@ -1,11 +1,4 @@
-package com.passbolt.mobile.android.feature.settings
-
-import com.passbolt.mobile.android.feature.settings.screen.autofill.settingsAutofillModule
-import com.passbolt.mobile.android.feature.settings.screen.defaultfilter.defaultFilterModule
-import com.passbolt.mobile.android.feature.settings.screen.licenses.licensesModule
-import com.passbolt.mobile.android.feature.settings.screen.settingsModule
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.transferAccountOnboardingModule
-import org.koin.dsl.module
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,10 +23,11 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val settingsModule = module {
-    settingsModule()
-    settingsAutofillModule()
-    licensesModule()
-    defaultFilterModule()
-    transferAccountOnboardingModule()
+class TransferAccountOnboardingPresenter : TransferAccountOnboardingContract.Presenter {
+
+    override var view: TransferAccountOnboardingContract.View? = null
+
+    override fun startTransferButtonClick() {
+        view?.navigateToTransferAccount()
+    }
 }

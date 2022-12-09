@@ -314,7 +314,9 @@
     <string name="welcome_create_account_dialog_message">It is currently not possible to create an account using the mobile app. First you will need create an account using your desktop browser extension.</string>
 
     <string name="transfer_details_header">Scan QR codes to transfer your account details</string>
+    <string name="transfer_account_onboarding_header">Show QR codes to transfer your account details</string>
     <string name="transfer_details_scan_button">Scan QR codes</string>
+    <string name="transfer_account_onboarding_transfer_button">Start Transfer</string>
     <string name="transfer_details_title">Transfer account details</string>
     <string name="transfer_details_camera_access_dialog_title">Camera access required</string>
     <string name="transfer_details_camera_required_dialog_title">Camera required</string>
@@ -442,6 +444,13 @@
         <item>Sign in using the browser extension</item>
         <item>Go to the &lt;b>Profile&lt;/b> page</item>
         <item>Go to the &lt;b>Mobile&lt;/b> section</item>
+        <item>Scan the qr codes sequence</item>
+    </string-array>
+
+    <string-array name="transfer_account_onboarding_steps_array">
+        <item>Install the app on another mobile</item>
+        <item>Launch the app</item>
+        <item>Select \"Connect to an existing account\"</item>
         <item>Scan the qr codes sequence</item>
     </string-array>
 </resources>

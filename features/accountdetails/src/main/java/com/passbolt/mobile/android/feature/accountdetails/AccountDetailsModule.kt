@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.accountdetails
 
 import com.passbolt.mobile.android.feature.accountdetails.screen.accountDetailsModule
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.transferAccountOnboardingModule
 import org.koin.dsl.module
 
 /**
@@ -28,4 +29,5 @@ import org.koin.dsl.module
 
 val accountDetailsModule = module {
     accountDetailsModule()
+    transferAccountOnboardingModule()
 }
