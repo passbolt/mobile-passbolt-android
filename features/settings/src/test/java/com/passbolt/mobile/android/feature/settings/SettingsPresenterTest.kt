@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.feature.settings
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
+import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
@@ -259,6 +259,14 @@ class SettingsPresenterTest : KoinTest {
 
         verify(view).showPrivacyPolicyButton()
         verify(view).showTermsAndConditionsButton()
+    }
+
+    @Test
+    fun `transfer account to another device clicked should navigate to transfer account onboarding`() {
+        presenter.attach(view)
+        presenter.transferAccountClick()
+
+        verify(view).navigateToTransferAccountOnboarding()
     }
 
     private companion object {

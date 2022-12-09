@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.accountdetails.screen
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
@@ -109,6 +110,12 @@ class AccountDetailsFragment :
     override fun showLabelChanged() {
         Snackbar.make(requireView(), R.string.account_details_label_saved, Snackbar.LENGTH_SHORT)
             .show()
+    }
+
+    override fun navigateToTransferAccountOnboarding() {
+        findNavController().navigate(
+            AccountDetailsFragmentDirections.actionAccountDetailsFragmentToTransferAccountOnboardingFragment()
+        )
     }
 
     override fun setLabel(label: String) {

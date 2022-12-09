@@ -10,5 +10,18 @@
         android:id="@+id/accountDetailsFragment"
         android:name="com.passbolt.mobile.android.feature.accountdetails.screen.AccountDetailsFragment"
         android:label="AccountDetailsFragment"
-        tools:layout="@layout/fragment_account_details" />
+        tools:layout="@layout/fragment_account_details">
+        <action
+            android:id="@+id/action_accountDetailsFragment_to_transferAccountOnboardingFragment"
+            app:destination="@id/transferAccountOnboardingFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/transferAccountOnboardingFragment"
+        android:name="com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingFragment"
+        android:label="TransferAccountOnboardingFragment"
+        tools:layout="@layout/fragment_transfer_account_onboarding" />
 </navigation>

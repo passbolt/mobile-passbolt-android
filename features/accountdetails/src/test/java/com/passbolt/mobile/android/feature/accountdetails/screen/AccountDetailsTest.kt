@@ -75,4 +75,12 @@ class AccountDetailsTest : KoinTest {
         )
         verify(view).showLabelChanged()
     }
+
+    @Test
+    fun `transfer account to another device clicked should navigate to transfer account onboarding`() {
+        presenter.attach(view)
+        presenter.transferAccountClick()
+
+        verify(view).navigateToTransferAccountOnboarding()
+    }
 }

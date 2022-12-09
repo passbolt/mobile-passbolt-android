@@ -126,7 +126,7 @@ class SettingsPresenter(
     }
 
     override fun transferAccountClick() {
-        // TODO navigation will be added in task nr: MOB-798
+        view?.navigateToTransferAccountOnboarding()
     }
 
     override fun autofillClick() {

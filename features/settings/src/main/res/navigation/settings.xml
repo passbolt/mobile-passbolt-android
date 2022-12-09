@@ -39,6 +39,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_settings_to_transferAccountOnboardingFragment"
+            app:destination="@id/transferAccountOnboardingFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -63,5 +70,11 @@
     </fragment>
 
     <include app:graph="@navigation/logs" />
+
+    <fragment
+        android:id="@+id/transferAccountOnboardingFragment"
+        android:name="com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingFragment"
+        android:label="TransferAccountOnboardingFragment"
+        tools:layout="@layout/fragment_transfer_account_onboarding" />
 
 </navigation>

@@ -1,98 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/settingsRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/settingsTitle"
-        style="@style/Heading"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_32"
-        android:gravity="center"
-        android:text="@string/settings_title"
-        android:textSize="@dimen/sp_16" />
+        android:orientation="vertical">
 
-    <com.passbolt.mobile.android.core.ui.menu.SwitchSettingView
-        android:id="@+id/fingerprintSetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_40"
-        app:icon="@drawable/ic_fingerprint"
-        app:name="@string/settings_fingerprint" />
+        <TextView
+            android:id="@+id/settingsTitle"
+            style="@style/Heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_32"
+            android:gravity="center"
+            android:text="@string/settings_title"
+            android:textSize="@dimen/sp_16" />
 
-    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-        android:id="@+id/autofillSetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_key"
-        app:name="@string/settings_autofill" />
+        <com.passbolt.mobile.android.core.ui.menu.SwitchSettingView
+            android:id="@+id/fingerprintSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_40"
+            app:icon="@drawable/ic_fingerprint"
+            app:name="@string/settings_fingerprint" />
 
-    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-        android:id="@+id/defaultFilterSetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_filter"
-        app:name="@string/settings_default_filter" />
+        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+            android:id="@+id/autofillSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_key"
+            app:name="@string/settings_autofill" />
 
-    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-        android:id="@+id/manageAccountsSetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_manage_accounts"
-        app:name="@string/settings_manage_accounts" />
+        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+            android:id="@+id/defaultFilterSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_filter"
+            app:name="@string/settings_default_filter" />
 
-    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-        android:id="@+id/transferAccountSetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_transfer_account"
-        app:name="@string/settings_transfer_account" />
+        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+            android:id="@+id/manageAccountsSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_manage_accounts"
+            app:name="@string/settings_manage_accounts" />
 
-    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-        android:id="@+id/termsSetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_terms"
-        app:name="@string/settings_terms" />
+        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+            android:id="@+id/transferAccountSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_transfer_account"
+            app:name="@string/settings_transfer_account" />
 
-    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-        android:id="@+id/privacySetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_lock"
-        app:name="@string/settings_privacy_policy" />
+        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+            android:id="@+id/termsSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_terms"
+            app:name="@string/settings_terms" />
 
-    <com.passbolt.mobile.android.core.ui.menu.SwitchSettingView
-        android:id="@+id/enableLogsSetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_bug"
-        app:name="@string/settings_enable_logs" />
+        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+            android:id="@+id/privacySetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_lock"
+            app:name="@string/settings_privacy_policy" />
 
-    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-        android:id="@+id/logsSetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_bug"
-        app:name="@string/settings_logs" />
+        <com.passbolt.mobile.android.core.ui.menu.SwitchSettingView
+            android:id="@+id/enableLogsSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_bug"
+            app:name="@string/settings_enable_logs" />
 
-    <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-        android:id="@+id/licensesSetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_licenses"
-        app:name="@string/settings_licenses" />
+        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+            android:id="@+id/logsSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_bug"
+            app:name="@string/settings_logs" />
 
-    <com.passbolt.mobile.android.core.ui.menu.SettingView
-        android:id="@+id/signOutSetting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:icon="@drawable/ic_sign_out"
-        app:name="@string/settings_sign_out" />
+        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+            android:id="@+id/licensesSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_licenses"
+            app:name="@string/settings_licenses" />
 
-</LinearLayout>
+        <com.passbolt.mobile.android.core.ui.menu.SettingView
+            android:id="@+id/signOutSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_sign_out"
+            app:name="@string/settings_sign_out" />
+
+    </LinearLayout>
+</ScrollView>
