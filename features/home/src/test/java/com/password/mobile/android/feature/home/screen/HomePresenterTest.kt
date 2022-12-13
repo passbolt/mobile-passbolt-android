@@ -1,6 +1,9 @@
 package com.password.mobile.android.feature.home.screen
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
@@ -12,7 +15,6 @@ import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFol
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
@@ -57,6 +59,7 @@ class HomePresenterTest : KoinTest {
 
     private val presenter: HomeContract.Presenter by inject()
     private val view: HomeContract.View = mock()
+    private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
@@ -87,12 +90,13 @@ class HomePresenterTest : KoinTest {
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
         )
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         val url = "avatar_url"
 
         mockAccountData(url)
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -101,6 +105,8 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
+
         verify(view).displaySearchAvatar(eq(url))
     }
 
@@ -108,9 +114,10 @@ class HomePresenterTest : KoinTest {
     fun `search input end icon should switch correctly based on input`() {
         val url = "avatar_url"
         mockAccountData(url)
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -119,6 +126,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         presenter.searchTextChange("abc")
         presenter.searchTextChange("")
 
@@ -128,7 +136,9 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `all fetched resources should be displayed when empty search text`() = runTest {
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
         )
@@ -137,7 +147,6 @@ class HomePresenterTest : KoinTest {
         )
 
         mockAccountData(null)
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -146,15 +155,14 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
 
         verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
         verify(view).hideBackArrow()
-        verify(view).showSynchronizedProgress()
         verify(view).hideAddButton()
-        verify(view).hideSynchronizedProgress()
         verify(view).showAddButton()
-        verify(view).showItems(any(), any(), any(), any(), any(), any(), any(), any())
+        verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
         verify(view).displaySearchAvatar(null)
         verify(view).hideRefreshProgress()
         verify(view).hideFolderMoreMenuIcon()
@@ -172,13 +180,23 @@ class HomePresenterTest : KoinTest {
             GetLocalResourcesUseCase.Output(mockResourcesList())
         )
         mockAccountData(null)
-        val refreshFlow =
-            MutableStateFlow(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
+        val refreshFlow = MutableStateFlow(
+            DataRefreshStatus.Finished(
+                HomeDataInteractor.Output.Success
+            )
+        )
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(refreshFlow)
         whenever(view.performRefreshUsingRefreshExecutor()).then {
-            refreshFlow.tryEmit(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+            refreshFlow.tryEmit(
+                DataRefreshStatus.Finished(
+                    HomeDataInteractor.Output.Success
+                )
+            )
         }
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -187,6 +205,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         presenter.searchTextChange("second")
         presenter.refreshSwipe()
 
@@ -194,8 +213,8 @@ class HomePresenterTest : KoinTest {
         verify(view).performRefreshUsingRefreshExecutor()
         verify(view, times(2)).hideAddButton()
         verify(view).hideRefreshProgress()
-        verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
-        verify(view).showAddButton()
+        verify(view, times(3)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
+        verify(view, times(1)).showAddButton()
     }
 
     @Test
@@ -207,9 +226,10 @@ class HomePresenterTest : KoinTest {
             GetLocalResourcesUseCase.Output(mockResourcesList())
         )
         mockAccountData(null)
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -218,6 +238,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         presenter.searchTextChange("empty search")
 
         verify(view).hideAddButton()
@@ -227,7 +248,9 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `empty view should be displayed when there are no resources`() = runTest {
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Success
         )
@@ -235,7 +258,7 @@ class HomePresenterTest : KoinTest {
             GetLocalResourcesUseCase.Output(emptyList())
         )
         mockAccountData(null)
-        presenter.viewCreate(refreshFlow)
+
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -244,21 +267,21 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
 
-        verify(view).showEmptyList()
+        verify(view, times(2)).showEmptyList()
     }
 
     @Test
     fun `error should be displayed when request failures`() = runTest {
-        val refreshFlow = flowOf(
-            DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)))
         )
         mockAccountData(null)
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
             GetLocalResourcesUseCase.Output(emptyList())
         )
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -267,15 +290,14 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
 
         verify(view).hideBackArrow()
         verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
-        verify(view).showSynchronizedProgress()
         verify(view).hideAddButton()
-        verify(view).hideSynchronizedProgress()
         verify(view).hideRefreshProgress()
-        verify(view).showError()
+        verify(view).showDataRefreshError()
         verify(view).displaySearchAvatar(null)
         verify(view).hideFolderMoreMenuIcon()
         verify(view, never()).showAddButton()
@@ -284,7 +306,12 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `error during refresh clicked should show correct ui`() = runTest {
         val refreshFlow =
-            MutableStateFlow(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)))
+            MutableStateFlow(
+                DataRefreshStatus.Finished(
+                    HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)
+                )
+            )
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(refreshFlow)
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
             GetLocalResourcesUseCase.Output(emptyList())
         )
@@ -292,11 +319,14 @@ class HomePresenterTest : KoinTest {
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         whenever(view.performRefreshUsingRefreshExecutor()).then {
-            refreshFlow.tryEmit(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)))
+            refreshFlow.tryEmit(
+                DataRefreshStatus.Finished(
+                    HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)
+                )
+            )
         }
         mockAccountData(null)
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -306,14 +336,13 @@ class HomePresenterTest : KoinTest {
             shouldShowResourceMoreMenu = false
         )
         presenter.refreshClick()
+        presenter.resume(view)
 
         verify(view).performRefreshUsingRefreshExecutor()
         verify(view).hideBackArrow()
-        verify(view, times(2)).showSynchronizedProgress()
         verify(view).hideAddButton()
-        verify(view, times(2)).hideSynchronizedProgress()
-        verify(view, times(2)).hideRefreshProgress()
-        verify(view, times(2)).showError()
+        verify(view).hideRefreshProgress()
+        verify(view).showDataRefreshError()
     }
 
     @Test
@@ -321,7 +350,9 @@ class HomePresenterTest : KoinTest {
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         val model = ResourceModel(
             "id",
             "resTypeId",
@@ -337,7 +368,6 @@ class HomePresenterTest : KoinTest {
             ZonedDateTime.now()
         )
         mockAccountData(null)
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -346,6 +376,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         reset(view)
         presenter.itemClick(model)
         verify(view).navigateToDetails(model)
@@ -373,9 +404,10 @@ class HomePresenterTest : KoinTest {
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         mockAccountData(null)
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -384,6 +416,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         reset(view)
         presenter.resourceMoreClick(model)
 
@@ -398,9 +431,11 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.DecryptFailure(OpenPgpError("message"))
             )
         }
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
+        mockAccountData(null)
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -409,6 +444,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -422,9 +458,11 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.FetchFailure(RuntimeException())
             )
         }
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
+        mockAccountData(null)
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -433,6 +471,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -446,9 +485,11 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.Unauthorized(AuthenticationState.Unauthenticated.Reason.Session)
             )
         }
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
+        mockAccountData(null)
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -457,6 +498,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -478,9 +520,10 @@ class HomePresenterTest : KoinTest {
         }
         whenever(mockSecretParser.extractPassword(any(), any()))
             .doReturn(String(DECRYPTED_SECRET))
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -489,6 +532,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
@@ -505,9 +549,10 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.Success(DECRYPTED_SECRET)
             )
         }
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -516,6 +561,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
         presenter.deleteResourceConfirmed()
@@ -541,9 +587,10 @@ class HomePresenterTest : KoinTest {
                 SecretInteractor.Output.Success(DECRYPTED_SECRET)
             )
         }
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -552,12 +599,13 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuDeleteClick()
         presenter.deleteResourceConfirmed()
 
         verify(view).showDeleteConfirmationDialog()
-        verify(view).showGeneralError()
+        verify(view).showDeleteResourceFailure()
     }
 
     @Test
@@ -570,10 +618,11 @@ class HomePresenterTest : KoinTest {
                 FolderModel("childId", "root", "child folder", false, ResourcePermission.UPDATE)
             )
         }
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         mockAccountData(null)
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -582,17 +631,19 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
 
-        verify(view).navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
+        verify(view, times(2)).navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
         verify(view).showAddButton()
     }
 
     @Test
     fun `view should show correct titles for child items`() {
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         mockAccountData(null)
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -635,6 +686,7 @@ class HomePresenterTest : KoinTest {
             ShowSuggestedModel.DoNotShow,
             HomeDisplayViewModel.AllItems, hasPreviousEntry = false, false, shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
 
         verify(view).showChildFolderTitle("folder name", isShared = false)
         verify(view).showTagTitle("tag name", isShared = false)
@@ -644,10 +696,11 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `view should show back arrow when in child item`() {
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         mockAccountData(null)
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -670,16 +723,18 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
 
         verify(view, times(3)).showBackArrow()
     }
 
     @Test
     fun `view should navigate to selected item correctly based on root or child item`() {
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         mockAccountData(null)
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             ShowSuggestedModel.DoNotShow,
@@ -696,6 +751,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
         presenter.foldersClick()
 
         verify(view).navigateToRootHomeFromChildHome(HomeDisplayViewModel.tagsRoot())
@@ -704,7 +760,9 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `view root should user selected filter by default`() {
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
             GetHomeDisplayViewPrefsUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
@@ -713,7 +771,6 @@ class HomePresenterTest : KoinTest {
         )
         mockAccountData(null)
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             showSuggestedModel = ShowSuggestedModel.DoNotShow,
@@ -722,6 +779,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
 
         argumentCaptor<HomeDisplayViewModel> {
             verify(view).showHomeScreenTitle(capture())
@@ -731,7 +789,9 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `view should apply visibility settings correct`() {
-        val refreshFlow = flowOf(DataRefreshStatus.Finished(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success))
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         whenever(mockGetHomeDisplayPrefsUseCase.execute(any())).doReturn(
             GetHomeDisplayViewPrefsUseCase.Output(
                 lastUsedHomeView = HomeDisplayView.ALL_ITEMS,
@@ -740,7 +800,6 @@ class HomePresenterTest : KoinTest {
         )
         mockAccountData(null)
 
-        presenter.viewCreate(refreshFlow)
         presenter.attach(view)
         presenter.argsRetrieved(
             showSuggestedModel = ShowSuggestedModel.DoNotShow,
@@ -749,6 +808,7 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
+        presenter.resume(view)
 
         verify(view, never()).showCloseButton()
         verify(view, never()).showFolderMoreMenuIcon()

@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.home.screen
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.core.mvp.progress.SynchronizedProgressView
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
@@ -10,7 +9,6 @@ import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.TagWithCount
-import kotlinx.coroutines.flow.Flow
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,7 +35,7 @@ import kotlinx.coroutines.flow.Flow
 @Suppress("TooManyFunctions", "LongParameterList") // TODO MOB-321
 interface HomeContract {
 
-    interface View : BaseAuthenticatedContract.View, ResourceHandlingStrategy, SynchronizedProgressView {
+    interface View : DataRefreshViewReactiveContract.View, ResourceHandlingStrategy {
         fun showItems(
             suggestedResources: List<ResourceModel>,
             resourceList: List<ResourceModel>,
@@ -51,9 +49,6 @@ interface HomeContract {
 
         fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel)
         fun navigateToDetails(resourceModel: ResourceModel)
-        override fun hideProgress()
-        override fun showProgress()
-        fun hideRefreshProgress()
         fun showError()
         fun showEmptyList()
         fun showSearchEmptyList()
@@ -92,7 +87,6 @@ interface HomeContract {
         fun showDefaultSearchHint()
         fun showCloseButton()
         fun showToggleFavouriteFailure()
-        fun performLocalRefresh()
         fun navigateToSwitchedAccountAuth(userId: String)
         fun navigateToFolderMoreMenu(folderMoreMenuModel: FolderMoreMenuModel)
         fun showFolderMoreMenuIcon()
@@ -101,14 +95,14 @@ interface HomeContract {
         fun initSpeedDialFab(homeView: HomeDisplayViewModel)
         fun navigateToCreateFolder(folderId: String?)
         fun showFolderCreated(name: String)
-        fun showSynchronizedProgress()
-        fun hideSynchronizedProgress()
-        fun showContentNotAvailableSnackbar()
+        fun showContentNotAvailable()
         fun showPleaseWaitForDataRefresh()
         fun finish()
+        fun showDataRefreshError()
+        fun showDeleteResourceFailure()
     }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun resourceMoreClick(resourceModel: ResourceModel)
         fun itemClick(resourceModel: ResourceModel)
         fun refreshSwipe()
@@ -145,7 +139,6 @@ interface HomeContract {
         )
 
         fun folderItemClick(folderModel: FolderWithCount)
-        fun viewCreate(fullDataRefreshStatusFlow: Flow<DataRefreshStatus.Finished>)
         fun createResourceClick()
         fun tagsClick()
         fun tagItemClick(tag: TagWithCount)

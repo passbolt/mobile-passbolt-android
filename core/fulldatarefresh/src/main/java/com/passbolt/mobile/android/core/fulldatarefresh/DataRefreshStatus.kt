@@ -1,6 +1,4 @@
-package com.passbolt.mobile.android.core.mvp.progress
-
-import java.util.concurrent.atomic.AtomicInteger
+package com.passbolt.mobile.android.core.fulldatarefresh
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,28 +22,15 @@ import java.util.concurrent.atomic.AtomicInteger
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ProgressStackSynchronizer {
 
-    private var view: SynchronizedProgressView? = null
-    private val invocationsCount = AtomicInteger(0)
+/**
+ * Class representing status of all home data refresh.
+ */
+sealed class DataRefreshStatus {
 
-    fun attach(view: SynchronizedProgressView) {
-        this.view = view
-    }
+    object InProgress : DataRefreshStatus()
 
-    fun detach() {
-        view = null
-    }
-
-    fun showProgress() {
-        invocationsCount.incrementAndGet()
-        view?.showProgress()
-    }
-
-    fun hideProgress() {
-        if (invocationsCount.decrementAndGet() <= 0) {
-            invocationsCount.set(0)
-            view?.hideProgress()
-        }
-    }
+    data class Finished(
+        val output: HomeDataInteractor.Output
+    ) : DataRefreshStatus()
 }

@@ -25,6 +25,8 @@ dependencies {
     implementation project(':gopenpgp')
     implementation project(':permissions')
     implementation project(':locationdetails')
+    implementation project(':fulldatarefresh')
+    implementation project(':navigation')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -33,6 +35,7 @@ dependencies {
     implementation libs.fastAdapter.core
     implementation libs.fastAdapter.diff
     implementation libs.room.core
+    implementation libs.androidx.swiperefresh
 
     testImplementation project(':commontest')
 }

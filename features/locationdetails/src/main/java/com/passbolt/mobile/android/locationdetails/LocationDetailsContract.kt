@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.locationdetails
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.ui.FolderModel
 
 /**
@@ -28,15 +28,18 @@ import com.passbolt.mobile.android.ui.FolderModel
 
 interface LocationDetailsContract {
 
-    interface View : BaseAuthenticatedContract.View {
+    interface View : DataRefreshViewReactiveContract.View {
         fun showFolderName(name: String)
         fun showFolderSharedIcon()
         fun showFolderIcon()
         fun showFolderLocation(parentFolders: List<FolderModel>)
         fun displayInitialsIcon(name: String, initials: String)
+        fun showDataRefreshError()
+        fun showContentNotAvailable()
+        fun navigateToHome()
     }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun argsRetrieved(locationItem: LocationItem, id: String)
     }
 }

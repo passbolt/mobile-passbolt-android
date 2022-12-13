@@ -3,10 +3,8 @@ package com.passbolt.mobile.android.feature.autofill.resources
 import android.app.assist.AssistStructure
 import android.content.Intent
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.ResourceHandlingStrategy
 import com.passbolt.mobile.android.ui.ResourceModel
-import kotlinx.coroutines.flow.Flow
 
 /**
  * Passbolt - Open source password manager for teams
@@ -47,13 +45,10 @@ interface AutofillResourcesContract {
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        val dataRefreshFinishedStatusFlow: Flow<DataRefreshStatus.Finished>
-
         fun argsReceived(uri: String?)
         fun userAuthenticated()
         fun performFullDataRefresh()
         fun itemClick(resourceModel: ResourceModel)
         fun newResourceCreated(resourceId: String)
-        fun performLocalDataRefresh()
     }
 }

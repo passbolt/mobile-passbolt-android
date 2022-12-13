@@ -1,8 +1,9 @@
 package com.passbolt.mobile.android.permissions.permissions
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
-import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.ui.GroupModel
@@ -11,6 +12,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserWithAvatar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -25,6 +27,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 
 /**
@@ -54,6 +57,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
 
     private val presenter: PermissionsContract.Presenter by inject()
     private val view: PermissionsContract.View = mock()
+    private val mockFullDataRefreshExecutor : FullDataRefreshExecutor by inject()
 
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -68,12 +72,16 @@ class ResourcePermissionsPresenterTest : KoinTest {
             onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_ID)) }
                 .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL))
         }
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         presenter.attach(view)
     }
 
     @Test
     fun `save button and add user button should be shown in edit mode`() {
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.EDIT)
+        presenter.resume(view)
 
         verify(view).showSaveButton()
         verify(view).showAddUserButton()
@@ -87,6 +95,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
+        presenter.resume(view)
 
         verify(view).showEditButton()
     }
@@ -99,6 +108,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
+        presenter.resume(view)
 
         verify(view).showEmptyState()
     }
@@ -112,6 +122,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
+        presenter.resume(view)
 
         verify(view).showPermissions(mockPermissions)
     }
@@ -125,6 +136,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.EDIT)
+        presenter.resume(view)
         presenter.actionButtonClick()
 
         verify(view).showOneOwnerSnackbar()
@@ -139,6 +151,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
+        presenter.resume(view)
         presenter.userPermissionDeleted(USER_PERMISSIONS[0])
 
         verify(view).showPermissions(GROUP_PERMISSIONS)
@@ -153,6 +166,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
+        presenter.resume(view)
         presenter.groupPermissionDeleted(GROUP_PERMISSIONS[0])
 
         verify(view).showPermissions(USER_PERMISSIONS)
@@ -167,6 +181,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
+        presenter.resume(view)
         val modifiedPermission = PermissionModelUi.UserPermissionModel(
             ResourcePermission.OWNER, "permId", USER_PERMISSIONS[0].user.copy()
         )
@@ -190,6 +205,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
+        presenter.resume(view)
         val modifiedPermission = PermissionModelUi.GroupPermissionModel(
             ResourcePermission.OWNER, "permId", GROUP_PERMISSIONS[0].group.copy()
         )
@@ -217,10 +233,11 @@ class ResourcePermissionsPresenterTest : KoinTest {
         }
         mockHomeDataInteractor.stub {
             onBlocking { refreshAllHomeScreenData() }
-                .doReturn(com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor.Output.Success)
+                .doReturn(HomeDataInteractor.Output.Success)
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.EDIT)
+        presenter.resume(view)
         presenter.actionButtonClick()
 
         verify(view).showProgress()

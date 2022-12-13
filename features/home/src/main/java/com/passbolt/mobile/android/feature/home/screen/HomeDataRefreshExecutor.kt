@@ -1,7 +1,5 @@
 package com.passbolt.mobile.android.feature.home.screen
 
-import kotlinx.coroutines.flow.Flow
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,8 +25,4 @@ import kotlinx.coroutines.flow.Flow
 interface HomeDataRefreshExecutor {
 
     fun performFullDataRefresh()
-
-    fun performLocalDataRefresh()
-
-    fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished>
 }

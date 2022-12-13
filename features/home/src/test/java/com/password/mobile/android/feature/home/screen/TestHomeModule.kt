@@ -4,9 +4,9 @@ import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.mvp.progress.ProgressStackSynchronizer
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesUseCase
@@ -75,7 +75,7 @@ val testHomeModule = module {
     factory { resourceMenuModelMapper }
     factory { HomeDisplayViewMapper() }
     factory { DomainProvider() }
-    factory { ProgressStackSynchronizer() }
+    single { mock<FullDataRefreshExecutor>() }
     factory<HomeContract.Presenter> {
         HomePresenter(
             coroutineLaunchContext = get(),

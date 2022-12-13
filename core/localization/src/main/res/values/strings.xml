@@ -24,6 +24,7 @@
     <string name="suggested">Suggested</string>
     <string name="other">Other</string>
     <string name="favourites_failure">Could not modify favourite</string>
+    <string name="delete_failure">Could not delete resource</string>
     <string name="shared_with">Shared with</string>
     <string name="location">Location</string>
     <string name="content_not_available">The content is not available anymore</string>
@@ -34,6 +35,7 @@
     <string name="common_failure_format">Something went wrong![%s]</string>
     <string name="common_refresh">Refresh</string>
     <string name="common_sign_out">Sign out</string>
+    <string name="common_data_refresh_error">There was an error during data refresh</string>
 
     <string name="common_message_resource_edited">%s password was successfully edited.</string>
     <string name="common_message_resource_deleted">%s password was deleted.</string>

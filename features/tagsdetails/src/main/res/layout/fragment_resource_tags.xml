@@ -12,74 +12,83 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ScrollView
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-            <ImageView
-                android:id="@+id/icon"
-                android:layout_width="@dimen/dp_60"
-                android:layout_height="@dimen/dp_60"
-                android:layout_marginTop="@dimen/dp_16"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/favouriteIcon"
-                android:layout_width="@dimen/dp_24"
-                android:layout_height="@dimen/dp_24"
-                android:layout_marginTop="-12dp"
-                android:layout_marginEnd="-12dp"
-                android:src="@drawable/ic_favourite_star_filled"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@id/icon"
-                app:layout_constraintTop_toTopOf="@id/icon" />
-
-            <TextView
-                android:id="@+id/name"
-                style="@style/Heading1Text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
-                android:layout_marginTop="@dimen/dp_8"
-                android:gravity="center"
-                android:textColor="@color/text_primary"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/icon"
-                tools:text="DD" />
-
-            <TextView
-                android:id="@+id/tagsLabel"
-                style="@style/Heading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginTop="@dimen/dp_32"
-                android:text="@string/resource_tags_section"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/sp_12"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/name" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/tagsRecycler"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginTop="@dimen/dp_4"
-                app:layout_constraintTop_toBottomOf="@id/tagsLabel" />
+                android:layout_height="wrap_content">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/icon"
+                    android:layout_width="@dimen/dp_60"
+                    android:layout_height="@dimen/dp_60"
+                    android:layout_marginTop="@dimen/dp_16"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-    </ScrollView>
+                <ImageView
+                    android:id="@+id/favouriteIcon"
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_marginTop="-12dp"
+                    android:layout_marginEnd="-12dp"
+                    android:src="@drawable/ic_favourite_star_filled"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="@id/icon"
+                    app:layout_constraintTop_toTopOf="@id/icon" />
+
+                <TextView
+                    android:id="@+id/name"
+                    style="@style/Heading1Text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:gravity="center"
+                    android:textColor="@color/text_primary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/icon"
+                    tools:text="DD" />
+
+                <TextView
+                    android:id="@+id/tagsLabel"
+                    style="@style/Heading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginTop="@dimen/dp_32"
+                    android:text="@string/resource_tags_section"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/sp_12"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/name" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tagsRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="@dimen/dp_4"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tagsLabel" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

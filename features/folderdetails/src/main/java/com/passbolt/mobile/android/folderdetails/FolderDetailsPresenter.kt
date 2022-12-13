@@ -1,12 +1,13 @@
 package com.passbolt.mobile.android.folderdetails
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -39,7 +40,7 @@ class FolderDetailsPresenter(
     private val getLocalFolderLocation: GetLocalFolderLocationUseCase,
     private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedPresenter<FolderDetailsContract.View>(coroutineLaunchContext),
+) : DataRefreshViewReactivePresenter<FolderDetailsContract.View>(coroutineLaunchContext),
     FolderDetailsContract.Presenter {
 
     override var view: FolderDetailsContract.View? = null
@@ -49,11 +50,30 @@ class FolderDetailsPresenter(
     private var permissionItemWidth: Float = -1f
     private lateinit var folderId: String
 
+    private val missingItemHandler = CoroutineExceptionHandler { _, throwable ->
+        if (throwable is NullPointerException) {
+            view?.showContentNotAvailable()
+            view?.navigateToHome()
+        }
+    }
+
     override fun argsRetrieved(folderId: String, permissionsListWidth: Int, permissionItemWidth: Float) {
         this.permissionsListWidth = permissionsListWidth
         this.permissionItemWidth = permissionItemWidth
         this.folderId = folderId
-        scope.launch { // get and show details
+        showFolderDetails()
+    }
+
+    override fun refreshAction() {
+        showFolderDetails()
+    }
+
+    override fun refreshFailureAction() {
+        view?.showDataRefreshError()
+    }
+
+    private fun showFolderDetails() {
+        scope.launch(missingItemHandler) { // get and show details
             getLocalFolderDetailsUseCase.execute(GetLocalFolderDetailsUseCase.Input(folderId))
                 .folder
                 .let {
@@ -65,12 +85,12 @@ class FolderDetailsPresenter(
                     }
                 }
         }
-        scope.launch { // get and show location
+        scope.launch(missingItemHandler) { // get and show location
             getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(folderId))
                 .parentFolders
                 .let { view?.showFolderLocation(it.map { folder -> folder.name }) }
         }
-        scope.launch { // get and display permissions
+        scope.launch(missingItemHandler) { // get and display permissions
             val permissions = getLocalFolderPermissionsUseCase.execute(
                 GetLocalFolderPermissionsUseCase.Input(folderId)
             ).permissions

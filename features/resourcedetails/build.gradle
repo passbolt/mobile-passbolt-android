@@ -33,9 +33,11 @@ dependencies {
     implementation project(':resourcetypes')
     implementation project(':tagsdetails')
     implementation project(':navigation')
+    implementation project(':fulldatarefresh')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
+    implementation libs.androidx.swiperefresh
     implementation libs.di.koin
     implementation libs.fastAdapter.binding
     implementation libs.fastAdapter.core

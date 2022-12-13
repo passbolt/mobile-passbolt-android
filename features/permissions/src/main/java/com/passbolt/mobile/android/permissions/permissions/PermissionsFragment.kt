@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.permissions.permissions
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.StringRes
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
 import androidx.fragment.app.setFragmentResult
@@ -10,7 +10,6 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -19,6 +18,8 @@ import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -56,6 +57,7 @@ import org.koin.core.qualifier.named
  * @since v1.0
  */
 
+@Suppress("TooManyFunctions")
 class PermissionsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourcePermissionsBinding, PermissionsContract.View>(
         FragmentResourcePermissionsBinding::inflate
@@ -65,6 +67,8 @@ class PermissionsFragment :
     private val permissionsItemAdapter: ItemAdapter<PermissionItem> by inject(named(PERMISSIONS_ITEM_ADAPTER))
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val args: PermissionsFragmentArgs by navArgs()
+    private val snackbarAnchorView: View
+        get() = binding.addPermissionButton
     private val newRecipientsAddedListener = { _: String, bundle: Bundle ->
         presenter.shareRecipientsAdded(
             bundle.getParcelableArrayList(PermissionRecipientsFragment.EXTRA_NEW_PERMISSIONS)
@@ -104,6 +108,16 @@ class PermissionsFragment :
         initPermissionsRecycler()
         presenter.attach(this)
         presenter.argsReceived(args.permissionsItem, args.id, args.mode)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.resume(this)
+    }
+
+    override fun onPause() {
+        presenter.pause()
+        super.onPause()
     }
 
     private fun setListeners() {
@@ -211,13 +225,7 @@ class PermissionsFragment :
     }
 
     override fun showOneOwnerSnackbar() {
-        showSnackbar(R.string.resource_permissions_one_owner)
-    }
-
-    private fun showSnackbar(@StringRes messageResId: Int) {
-        Snackbar.make(requireView(), messageResId, Snackbar.LENGTH_SHORT)
-            .setAnchorView(binding.addPermissionButton)
-            .show()
+        showSnackbar(R.string.resource_permissions_one_owner, snackbarAnchorView)
     }
 
     override fun showAddUserButton() {
@@ -233,23 +241,23 @@ class PermissionsFragment :
     }
 
     override fun showShareSimulationFailure() {
-        showSnackbar(R.string.resource_permissions_share_simulation_failed)
+        showSnackbar(R.string.resource_permissions_share_simulation_failed, snackbarAnchorView)
     }
 
     override fun showShareFailure() {
-        showSnackbar(R.string.resource_permissions_share_failed)
+        showSnackbar(R.string.resource_permissions_share_failed, snackbarAnchorView)
     }
 
     override fun showSecretFetchFailure() {
-        showSnackbar(R.string.resource_permissions_secret_fetch_failure)
+        showSnackbar(R.string.resource_permissions_secret_fetch_failure, snackbarAnchorView)
     }
 
     override fun showSecretEncryptFailure() {
-        showSnackbar(R.string.resource_permissions_secret_encrypt_failure)
+        showSnackbar(R.string.resource_permissions_secret_encrypt_failure, snackbarAnchorView)
     }
 
     override fun showSecretDecryptFailure() {
-        showSnackbar(R.string.resource_permissions_secret_decrypt_failure)
+        showSnackbar(R.string.resource_permissions_secret_decrypt_failure, snackbarAnchorView)
     }
 
     override fun showProgress() {
@@ -273,6 +281,26 @@ class PermissionsFragment :
                 }
             }
         }
+    }
+
+    override fun showDataRefreshError() {
+        showSnackbar(R.string.common_data_refresh_error, snackbarAnchorView)
+    }
+
+    override fun hideRefreshProgress() {
+        binding.fullScreenProgressLayout.gone()
+    }
+
+    override fun showRefreshProgress() {
+        binding.fullScreenProgressLayout.visible()
+    }
+
+    override fun showContentNotAvailable() {
+        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun navigateToHome() {
+        requireActivity().startActivity(ActivityIntents.bringHome(requireContext()))
     }
 
     companion object {

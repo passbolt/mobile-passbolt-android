@@ -15,6 +15,7 @@ dependencies {
     implementation project(':groupdetails')
     implementation project(':mappers')
     implementation project(':navigation')
+    implementation project(':fulldatarefresh')
 
     implementation libs.di.koin
     implementation libs.room.sqlite
@@ -29,6 +30,7 @@ dependencies {
     implementation libs.material
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
+    implementation libs.androidx.swiperefresh
 
     testImplementation project(':commontest')
 }

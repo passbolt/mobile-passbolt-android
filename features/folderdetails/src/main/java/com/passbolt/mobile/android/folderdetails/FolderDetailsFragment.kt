@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.folderdetails
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.doOnLayout
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -12,6 +13,8 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
@@ -68,6 +71,7 @@ class FolderDetailsFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.swipeRefresh.isEnabled = false
         initDefaultToolbar(binding.toolbar)
         initSharedWithRecycler()
         initListeners()
@@ -79,6 +83,19 @@ class FolderDetailsFragment :
                 resources.getDimension(R.dimen.dp_40)
             )
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // has to be invoked using post to make sure binding.sharedWithRecycler.doOnLayout has finished
+        binding.sharedWithRecycler.post {
+            presenter.resume(this)
+        }
+    }
+
+    override fun onPause() {
+        presenter.pause()
+        super.onPause()
     }
 
     private fun initListeners() {
@@ -150,5 +167,25 @@ class FolderDetailsFragment :
             locationDetailsItemId = folderId
         )
         findNavController().navigate(request)
+    }
+
+    override fun hideRefreshProgress() {
+        binding.swipeRefresh.isRefreshing = false
+    }
+
+    override fun showRefreshProgress() {
+        binding.swipeRefresh.isRefreshing = true
+    }
+
+    override fun showDataRefreshError() {
+        showSnackbar(R.string.common_data_refresh_error)
+    }
+
+    override fun showContentNotAvailable() {
+        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun navigateToHome() {
+        requireActivity().startActivity(ActivityIntents.bringHome(requireContext()))
     }
 }

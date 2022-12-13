@@ -1,6 +1,6 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.core.fulldatarefresh.base
 
-import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,13 +24,17 @@ import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface DataRefreshViewReactiveContract {
 
-/**
- * Class representing status of all home data refresh.
- */
-sealed class DataRefreshStatus {
+    interface View : BaseAuthenticatedContract.View {
+        fun hideRefreshProgress()
+        fun showRefreshProgress()
+    }
 
-    object NotInitialized : DataRefreshStatus()
-
-    data class Finished(val output: HomeDataInteractor.Output) : DataRefreshStatus()
+    interface Presenter<T : View> : BaseAuthenticatedContract.Presenter<T> {
+        fun resume(view: T)
+        fun pause()
+        fun refreshAction()
+        fun refreshFailureAction()
+    }
 }

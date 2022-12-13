@@ -16,17 +16,15 @@ import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.extension.getRootView
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.main.R
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
-import kotlinx.coroutines.flow.Flow
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
 class MainActivity :
     BindingScopedAuthenticatedActivity<ActivityMainBinding, MainContract.View>(ActivityMainBinding::inflate),
-    HomeDataRefreshExecutor, MainContract.View {
+    MainContract.View, HomeDataRefreshExecutor {
 
     override val presenter: MainContract.Presenter by inject()
 
@@ -116,16 +114,11 @@ class MainActivity :
             }
     }
 
-    override fun performFullDataRefresh() =
-        presenter.performFullDataRefresh()
-
-    override fun performLocalDataRefresh() =
-        presenter.performLocalDataRefresh()
-
-    override fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished> =
-        presenter.dataRefreshFinishedStatusFlow
-
     private companion object {
         private const val REQUEST_APP_UPDATE = 8000
+    }
+
+    override fun performFullDataRefresh() {
+        presenter.performFullDataRefresh()
     }
 }

@@ -18,11 +18,9 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
-import com.passbolt.mobile.android.feature.home.screen.DataRefreshStatus
 import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.ui.ResourceModel
-import kotlinx.coroutines.flow.Flow
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
@@ -96,12 +94,6 @@ class AutofillResourcesActivity :
 
     override fun performFullDataRefresh() =
         presenter.performFullDataRefresh()
-
-    override fun performLocalDataRefresh() =
-        presenter.performLocalDataRefresh()
-
-    override fun supplyFullDataRefreshStatusFlow(): Flow<DataRefreshStatus.Finished> =
-        presenter.dataRefreshFinishedStatusFlow
 
     override fun navigateToAuth() {
         initialAuthenticationResult.launch(

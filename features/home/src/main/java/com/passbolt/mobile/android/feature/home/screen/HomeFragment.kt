@@ -21,7 +21,6 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.gaelmarhic.quadrant.Autofillresources
-import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -33,7 +32,7 @@ import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
-import com.passbolt.mobile.android.core.mvp.progress.ProgressStackSynchronizer
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -118,6 +117,16 @@ class HomeFragment :
     private val inCurrentFoldersHeaderItemAdapter: ItemAdapter<InCurrentFoldersHeaderItem> by inject(
         named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)
     )
+
+    private val snackbarAnchorView: View?
+        get() {
+            val speedDialView: View = binding.rootLayout.findViewById(R.id.speedDialViewId)
+            return if (speedDialView.isVisible) {
+                speedDialView
+            } else {
+                null
+            }
+        }
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val imageLoader: ImageLoader by inject()
     private val clipboardManager: ClipboardManager? by inject()
@@ -125,7 +134,6 @@ class HomeFragment :
     private val arguments: HomeFragmentArgs by navArgs()
     private val navController by lifecycleAwareLazy { findNavController() }
     private val speedDialFabFactory: SpeedDialFabFactory by inject()
-    private val progressStackSynchronizer: ProgressStackSynchronizer by inject()
 
     private val folderCreatedListener = { _: String, bundle: Bundle ->
         val name = requireNotNull(bundle.getString(CreateFolderFragment.EXTRA_CREATED_FOLDER_NAME))
@@ -177,17 +185,11 @@ class HomeFragment :
             }
         }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        presenter.viewCreate((activity as HomeDataRefreshExecutor).supplyFullDataRefreshStatusFlow())
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
         setListeners()
         val hasPreviousEntry = navController.previousBackStackEntry != null
-        progressStackSynchronizer.attach(this)
         presenter.attach(this)
         presenter.argsRetrieved(
             resourceHandlingStrategy.showSuggestedModel(),
@@ -196,6 +198,16 @@ class HomeFragment :
             resourceHandlingStrategy.shouldShowCloseButton(),
             resourceHandlingStrategy.shouldShowResourceMoreMenu()
         )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.resume(this)
+    }
+
+    override fun onPause() {
+        presenter.pause()
+        super.onPause()
     }
 
     override fun initSpeedDialFab(homeView: HomeDisplayViewModel) {
@@ -211,7 +223,6 @@ class HomeFragment :
 
     override fun onDestroyView() {
         binding.recyclerView.adapter = null
-        progressStackSynchronizer.detach()
         presenter.detach()
         super.onDestroyView()
     }
@@ -423,29 +434,17 @@ class HomeFragment :
             emptyList()
         }
 
-    override fun hideProgress() {
-        binding.progress.gone()
-    }
-
     override fun hideRefreshProgress() {
         binding.swipeRefresh.isRefreshing = false
+    }
+
+    override fun showRefreshProgress() {
+        binding.swipeRefresh.isRefreshing = true
     }
 
     override fun showError() {
         setState(State.ERROR)
         binding.appBar.setExpanded(true)
-    }
-
-    override fun showProgress() {
-        binding.progress.visible()
-    }
-
-    override fun showSynchronizedProgress() {
-        progressStackSynchronizer.showProgress()
-    }
-
-    override fun hideSynchronizedProgress() {
-        progressStackSynchronizer.hideProgress()
     }
 
     override fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel) {
@@ -509,19 +508,19 @@ class HomeFragment :
     }
 
     override fun showGeneralError() {
-        showSnackbar(R.string.common_failure)
+        showSnackbar(R.string.common_failure, snackbarAnchorView)
     }
 
     override fun showResourceDeletedSnackbar(name: String) {
-        showSnackbar(R.string.common_message_resource_deleted, name)
+        showSnackbar(R.string.common_message_resource_deleted, snackbarAnchorView, name)
     }
 
     override fun showResourceEditedSnackbar(resourceName: String) {
-        showSnackbar(R.string.common_message_resource_edited, resourceName)
+        showSnackbar(R.string.common_message_resource_edited, snackbarAnchorView, resourceName)
     }
 
     override fun showResourceSharedSnackbar() {
-        showSnackbar(R.string.common_message_resource_shared)
+        showSnackbar(R.string.common_message_resource_shared, snackbarAnchorView)
     }
 
     override fun navigateToSwitchAccount() {
@@ -534,13 +533,7 @@ class HomeFragment :
     }
 
     override fun showResourceAddedSnackbar() {
-        showSnackbar(R.string.resource_update_create_success)
-    }
-
-    private fun showSnackbar(@StringRes messageResId: Int, vararg messageArgs: String) {
-        Snackbar.make(binding.root, getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
-            .setAnchorView(binding.rootLayout.findViewById(R.id.speedDialViewId))
-            .show()
+        showSnackbar(R.string.resource_update_create_success, snackbarAnchorView)
     }
 
     override fun menuEditClick() {
@@ -775,12 +768,12 @@ class HomeFragment :
         requireActivity().finish()
     }
 
-    override fun performLocalRefresh() {
-        (activity as HomeDataRefreshExecutor).performLocalDataRefresh()
+    override fun showToggleFavouriteFailure() {
+        showSnackbar(R.string.favourites_failure, snackbarAnchorView)
     }
 
-    override fun showToggleFavouriteFailure() {
-        showSnackbar(R.string.favourites_failure)
+    override fun showDeleteResourceFailure() {
+        showSnackbar(R.string.delete_failure, snackbarAnchorView)
     }
 
     override fun showFolderMoreMenuIcon() {
@@ -817,15 +810,19 @@ class HomeFragment :
     }
 
     override fun showFolderCreated(name: String) {
-        showSnackbar(R.string.common_message_folder_created, name)
+        showSnackbar(R.string.common_message_folder_created, snackbarAnchorView, name)
     }
 
-    override fun showContentNotAvailableSnackbar() {
+    override fun showContentNotAvailable() {
         Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
     }
 
     override fun showPleaseWaitForDataRefresh() {
         Toast.makeText(requireContext(), R.string.home_please_wait_for_refresh, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun showDataRefreshError() {
+        showSnackbar(R.string.common_data_refresh_error, snackbarAnchorView)
     }
 
     companion object {

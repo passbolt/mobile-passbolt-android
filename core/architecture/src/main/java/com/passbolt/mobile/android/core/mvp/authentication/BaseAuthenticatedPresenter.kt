@@ -42,10 +42,10 @@ abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
 ) : BaseAuthenticatedContract.Presenter<T> {
 
     private var _sessionRefreshFlow = MutableStateFlow<Unit?>(null)
-    protected val sessionRefreshedFlow
+    val sessionRefreshedFlow
         get() = _sessionRefreshFlow.asStateFlow()
 
-    protected lateinit var needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>
+    lateinit var needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 

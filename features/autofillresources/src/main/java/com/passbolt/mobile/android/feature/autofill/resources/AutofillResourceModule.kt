@@ -3,15 +3,17 @@ package com.passbolt.mobile.android.feature.autofill.resources
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-import com.passbolt.mobile.android.ui.ResourceListUiModel
 import com.passbolt.mobile.android.core.navigation.AutofillMode
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAccessibilityDataset
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDataset
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
+import com.passbolt.mobile.android.ui.ResourceListUiModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,21 +40,12 @@ import org.koin.core.qualifier.named
 
 fun Module.autofillResourcesModule() {
     scope<AutofillResourcesActivity> {
-        scoped<AutofillResourcesContract.Presenter> {
-            AutofillResourcesPresenter(
-                homeDataInteractor = get(),
-                getAccountsUseCase = get(),
-                coroutineLaunchContext = get(),
-                resourceTypeFactory = get(),
-                secretInteractor = get(),
-                secretParser = get(),
-                getLocalResourceUseCase = get()
-            )
-        }
+        scopedOf(::AutofillResourcesPresenter) bind AutofillResourcesContract.Presenter::class
+        scopedOf(::ResourceUiItemsMapper)
+
         scoped { (accountUiItemsMapper: ResourceUiItemsMapper) ->
             ModelAdapter(accountUiItemsMapper::mapModelToItem)
         }
-        scoped { ResourceUiItemsMapper() }
         scoped(named<ResourceListUiModel>()) {
             FastAdapter.with(get<ModelAdapter<ResourceListUiModel, GenericItem>> {
                 parametersOf(get<ResourceUiItemsMapper>())

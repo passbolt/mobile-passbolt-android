@@ -30,4 +30,5 @@ import org.koin.dsl.module
 val fullDataRefreshModule = module {
     singleOf(::HomeDataInteractor)
     singleOf(::ResourcesFullRefreshIdlingResource)
+    singleOf(::FullDataRefreshExecutor)
 }

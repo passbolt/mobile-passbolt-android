@@ -5,11 +5,13 @@ import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.Validation
 import com.passbolt.mobile.android.common.validation.validation
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.core.resources.usecase.CreateResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.UpdateResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
@@ -38,7 +40,9 @@ import com.passbolt.mobile.android.ui.UserModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import timber.log.Timber
+import java.net.HttpURLConnection.HTTP_NOT_FOUND
 
 /**
  * Passbolt - Open source password manager for teams
@@ -64,7 +68,7 @@ import timber.log.Timber
  */
 class UpdateResourcePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
-    private val passwordGenerator: com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator,
+    private val passwordGenerator: PasswordGenerator,
     private val entropyViewMapper: EntropyViewMapper,
     private val createResourceUseCase: CreateResourceUseCase,
     private val addLocalResourceUseCase: AddLocalResourceUseCase,
@@ -72,7 +76,7 @@ class UpdateResourcePresenter(
     private val updateResourceUseCase: UpdateResourceUseCase,
     private val fetchUsersUseCase: FetchUsersUseCase,
     private val getResourceTypeWithFieldsBySlugUseCase: GetResourceTypeWithFieldsBySlugUseCase,
-    private val resourceTypeFactory: com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory,
+    private val resourceTypeFactory: ResourceTypeFactory,
     private val editFieldsModelCreator: EditFieldsModelCreator,
     private val newFieldsModelCreator: NewFieldsModelCreator,
     private val secretInteractor: SecretInteractor,
@@ -80,7 +84,7 @@ class UpdateResourcePresenter(
     private val resourceShareInteractor: ResourceShareInteractor,
     private val getLocalParentFolderPermissionsToApplyUseCase: GetLocalParentFolderPermissionsToApplyToNewItemUseCase,
     private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase
-) : BaseAuthenticatedPresenter<UpdateResourceContract.View>(coroutineLaunchContext),
+) : DataRefreshViewReactivePresenter<UpdateResourceContract.View>(coroutineLaunchContext),
     UpdateResourceContract.Presenter {
 
     override var view: UpdateResourceContract.View? = null
@@ -99,26 +103,34 @@ class UpdateResourcePresenter(
         this.existingResource = resource
 
         setupUi()
+    }
 
-        runWhileShowingProgress {
-            view?.hideScrollView()
+    override fun refreshAction() {
+        scope.launch {
             when (resourceUpdateType) {
                 ResourceUpdateType.CREATE -> createInputFields()
                 ResourceUpdateType.EDIT -> {
                     val existingResource = requireNotNull(existingResource)
                     doAfterFetchAndDecrypt(existingResource.resourceId,
                         action = {
-                            createInputFields(resource, it)
+                            createInputFields(existingResource, it)
                         },
-                        errorAction = {
+                        itemMissingErrorAction = {
+                            view?.showContentNotAvailable()
+                            view?.navigateHome()
+                        },
+                        genericErrorAction = {
                             Timber.e("Error during secret fetching")
                             view?.showError()
                         }
                     )
                 }
             }
-            view?.showScrollView()
         }
+    }
+
+    override fun refreshFailureAction() {
+        view?.showDataRefreshError()
     }
 
     private fun setupUi() {
@@ -183,7 +195,8 @@ class UpdateResourcePresenter(
     private suspend fun doAfterFetchAndDecrypt(
         resourceId: String,
         action: suspend (ByteArray) -> Unit,
-        errorAction: () -> Unit
+        genericErrorAction: () -> Unit,
+        itemMissingErrorAction: () -> Unit = genericErrorAction
     ) {
         when (val output =
             runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
@@ -193,12 +206,19 @@ class UpdateResourcePresenter(
             is SecretInteractor.Output.Success -> {
                 action(output.decryptedSecret)
             }
-            else -> errorAction.invoke()
+            is SecretInteractor.Output.FetchFailure -> {
+                if ((output.exception as? HttpException)?.code() == HTTP_NOT_FOUND) {
+                    itemMissingErrorAction()
+                } else {
+                    genericErrorAction()
+                }
+            }
+            else -> genericErrorAction.invoke()
         }
     }
 
     private fun handlePasswordInput(it: ResourceValue) {
-        val initialValueEntropy = com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.Entropy.parse(
+        val initialValueEntropy = PasswordGenerator.Entropy.parse(
             it.value?.let {
                 passwordGenerator.getEntropy(it)
             } ?: 0.0
@@ -233,18 +253,12 @@ class UpdateResourcePresenter(
     }
 
     private fun updateResource() {
-        runWhileShowingProgress {
+        view?.showProgress()
+        scope.launch {
             when (resourceUpdateType) {
                 ResourceUpdateType.CREATE -> createResource()
                 ResourceUpdateType.EDIT -> editResource()
             }
-        }
-    }
-
-    private fun runWhileShowingProgress(action: suspend () -> Unit) {
-        view?.showProgress()
-        scope.launch {
-            action()
             view?.hideProgress()
         }
     }
@@ -403,7 +417,7 @@ class UpdateResourcePresenter(
         fields.find {
             it.field.name == PASSWORD_FIELD || it.field.name == SECRET_FIELD
         }?.value = password
-        val entropy = com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.Entropy.parse(
+        val entropy = PasswordGenerator.Entropy.parse(
             passwordGenerator.getEntropy(password)
         )
         view?.showPasswordStrength(tag, entropyViewMapper.map(entropy))
@@ -422,7 +436,6 @@ class UpdateResourcePresenter(
 
     // TODO add support for fully dynamic request model
     companion object {
-        private val DEFAULT_ENTROPY =
-            com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.Entropy.VERY_STRONG
+        private val DEFAULT_ENTROPY = PasswordGenerator.Entropy.VERY_STRONG
     }
 }

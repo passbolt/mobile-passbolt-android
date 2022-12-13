@@ -1,13 +1,15 @@
 package com.passbolt.mobile.android.tagsdetails
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.isFavourite
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 
 /**
@@ -36,15 +38,28 @@ class ResourceTagsPresenter(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     val getLocalResourceTags: GetLocalResourceTagsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedPresenter<ResourceTagsContract.View>(coroutineLaunchContext),
+) : DataRefreshViewReactivePresenter<ResourceTagsContract.View>(coroutineLaunchContext),
     ResourceTagsContract.Presenter {
 
     override var view: ResourceTagsContract.View? = null
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val missingItemHandler = CoroutineExceptionHandler { _, throwable ->
+        if (throwable is NullPointerException) {
+            view?.showContentNotAvailable()
+            view?.navigateToHome()
+        }
+    }
+
+    private lateinit var resourceId: String
 
     override fun argsRetrieved(resourceId: String, mode: PermissionsMode) {
-        scope.launch {
+        this.resourceId = resourceId
+        showTags()
+    }
+
+    private fun showTags() {
+        scope.launch(missingItemHandler) {
             launch { // get and display resource
                 val resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
                 view?.apply {
@@ -61,5 +76,18 @@ class ResourceTagsPresenter(
                     .let { view?.showTags(it) }
             }
         }
+    }
+
+    override fun refreshAction() {
+        showTags()
+    }
+
+    override fun refreshFailureAction() {
+        view?.showDataRefreshError()
+    }
+
+    override fun detach() {
+        scope.coroutineContext.cancelChildren()
+        super<DataRefreshViewReactivePresenter>.detach()
     }
 }
