@@ -1,6 +1,8 @@
-package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding
+package com.passbolt.mobile.android.feature.transferaccounttodevice.transferaccountonboarding
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingContract
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingPresenter
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +27,8 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface TransferAccountOnboardingContract {
-
-    interface View : BaseContract.View {
-        fun navigateToTransferAccount()
-        fun navigateToRefreshPassphrase()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun startTransferButtonClick()
-        fun authenticationSucceeded()
+val transferAccountOnboardingModule = module {
+    factory<TransferAccountOnboardingContract.Presenter> {
+        TransferAccountOnboardingPresenter()
     }
 }

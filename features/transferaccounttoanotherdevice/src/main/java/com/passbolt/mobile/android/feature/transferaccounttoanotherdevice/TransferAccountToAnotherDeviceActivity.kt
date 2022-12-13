@@ -1,6 +1,10 @@
-package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import android.os.Bundle
+import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.databinding.ActivityTransferAccountToAnotherDeviceBinding
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +29,15 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface TransferAccountOnboardingContract {
+class TransferAccountToAnotherDeviceActivity :
+    BindingActivity<ActivityTransferAccountToAnotherDeviceBinding>(
+        ActivityTransferAccountToAnotherDeviceBinding::inflate
+    ) {
 
-    interface View : BaseContract.View {
-        fun navigateToTransferAccount()
-        fun navigateToRefreshPassphrase()
-    }
+    private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun startTransferButtonClick()
-        fun authenticationSucceeded()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        runtimeAuthenticatedFlag.require(this)
     }
 }

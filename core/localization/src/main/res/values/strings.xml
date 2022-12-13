@@ -316,10 +316,7 @@
     <string name="welcome_create_account_dialog_message">It is currently not possible to create an account using the mobile app. First you will need create an account using your desktop browser extension.</string>
 
     <string name="transfer_details_header">Scan QR codes to transfer your account details</string>
-    <string name="transfer_account_onboarding_header">Show QR codes to transfer your account details</string>
     <string name="transfer_details_scan_button">Scan QR codes</string>
-    <string name="transfer_account_onboarding_transfer_button">Start Transfer</string>
-    <string name="transfer_details_title">Transfer account details</string>
     <string name="transfer_details_camera_access_dialog_title">Camera access required</string>
     <string name="transfer_details_camera_required_dialog_title">Camera required</string>
     <string name="transfer_details_camera_required_dialog_message">Sorry, you need a device with a camera to continue, as the key transfer is done using QR codes.</string>
@@ -412,6 +409,13 @@
     <string name="import_profile_invalid_uuid">Incorrect UUID format</string>
     <string name="import_profile_invalid_account_url">Incorrect URL format. URL must start with https://</string>
     <string name="import_profile_invalid_private_key">Private key cannot be empty</string>
+
+    <string name="transfer_account_onboarding_header">Show QR codes to transfer your account details</string>
+    <string name="transfer_account_onboarding_transfer_button">Start Transfer</string>
+    <string name="transfer_account_cancel_button">Cancel transfer</string>
+    <string name="transfer_account_stop_button">Stop transfer</string>
+    <string name="transfer_details_title">Transfer account details</string>
+    <string name="transfer_account_stop_confirmation_dialog_message">If you leave, you will need to scan QR codes again.</string>
 
     <!--
     arrays can be inconsistent when in other languages

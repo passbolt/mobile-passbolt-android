@@ -3,16 +3,25 @@ plugins {
     id "kotlin-android"
 }
 
+apply plugin: "androidx.navigation.safeargs"
+
 dependencies {
     implementation project(':architecture')
     implementation project(':coreui')
     implementation project(':common')
+    implementation project(':authentication')
+    implementation project(':navigation')
+    implementation project(':security')
 
     implementation libs.di.koin
     implementation libs.androidx.fragment
     implementation libs.androidx.activity
     implementation libs.androidx.constraintLayout
     implementation libs.material
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+
+    testImplementation project(':commontest')
 }
 
 android {

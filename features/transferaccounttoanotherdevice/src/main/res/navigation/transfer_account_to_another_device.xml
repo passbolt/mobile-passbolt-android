@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/transferAccountNav"
+    app:startDestination="@id/transferAccountOnboardingFragment">
+
+    <fragment
+        android:id="@+id/transferAccount"
+        android:name="com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountFragment"
+        android:label="TransferAccount"
+        tools:layout="@layout/fragment_transfer_account" />
+    <fragment
+        android:id="@+id/transferAccountOnboardingFragment"
+        android:name="com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingFragment"
+        android:label="TransferAccountOnboardingFragment"
+        tools:layout="@layout/fragment_transfer_account_onboarding">
+        <action
+            android:id="@+id/action_transferAccountOnboardingFragment_to_transferAccount"
+            app:destination="@id/transferAccount"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+</navigation>

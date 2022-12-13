@@ -8,6 +8,7 @@ import com.gaelmarhic.quadrant.Autofillresources
 import com.gaelmarhic.quadrant.Main
 import com.gaelmarhic.quadrant.Setup
 import com.gaelmarhic.quadrant.Startup
+import com.gaelmarhic.quadrant.Transferaccounttoanotherdevice
 import java.io.Serializable
 
 /**
@@ -95,6 +96,11 @@ object ActivityIntents {
     fun accountDetails(context: Context) =
         Intent().apply {
             setClassName(context, Accountdetails.ACCOUNT_DETAILS_ACTIVITY)
+        }
+
+    fun transferAccountToAnotherDevice(context: Context) =
+        Intent().apply {
+            setClassName(context, Transferaccounttoanotherdevice.TRANSFER_ACCOUNT_TO_ANOTHER_DEVICE_ACTIVITY)
         }
 
     sealed class AuthConfig : Serializable {
