@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.feature.settings.screen.autofill
 
 import android.os.Bundle
 import android.view.View
-import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.dialog.showDialog
 import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialog
@@ -74,8 +74,10 @@ class SettingsAutofillFragment :
     }
 
     override fun showAutofillServiceNotSupported() {
-        Snackbar.make(requireView(), R.string.settings_autofill_autofill_service_not_supported, Snackbar.LENGTH_SHORT)
-            .show()
+        showSnackbar(
+            R.string.settings_autofill_autofill_service_not_supported,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun setAutofillSwitchOff() {

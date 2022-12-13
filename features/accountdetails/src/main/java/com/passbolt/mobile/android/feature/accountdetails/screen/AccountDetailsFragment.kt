@@ -5,9 +5,9 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import coil.load
 import coil.transform.CircleCropTransformation
-import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.feature.accountdetails.R
 import com.passbolt.mobile.android.feature.accountdetails.databinding.FragmentAccountDetailsBinding
@@ -108,8 +108,10 @@ class AccountDetailsFragment :
     }
 
     override fun showLabelChanged() {
-        Snackbar.make(requireView(), R.string.account_details_label_saved, Snackbar.LENGTH_SHORT)
-            .show()
+        showSnackbar(
+            R.string.account_details_label_saved,
+            backgroundColor = R.color.green
+        )
     }
 
     override fun navigateToTransferAccountOnboarding() {

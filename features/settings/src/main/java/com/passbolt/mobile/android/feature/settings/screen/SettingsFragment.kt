@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
@@ -18,6 +19,7 @@ import com.passbolt.mobile.android.common.dialogs.signOutAlertDialog
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
@@ -236,14 +238,20 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
         biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingerprintEncryptionCipher))
     }
 
-    override fun showAuthenticationError(errorMessage: Int) {
-        Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_LONG)
-            .show()
+    override fun showAuthenticationError(@StringRes errorMessage: Int) {
+        showSnackbar(
+            R.string.common_failure,
+            backgroundColor = R.color.red,
+            length = Snackbar.LENGTH_LONG
+        )
     }
 
     override fun showGenericError() {
-        Snackbar.make(binding.root, R.string.common_failure, Snackbar.LENGTH_SHORT)
-            .show()
+
+        showSnackbar(
+            R.string.common_failure,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showConfigureFingerprintFirst() {

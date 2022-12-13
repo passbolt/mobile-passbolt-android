@@ -145,7 +145,10 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
 
     override fun showEmptyScannedOtp() {
         Snackbar.make(requireView(), R.string.dialog_mfa_scan_empty_otp, Snackbar.LENGTH_SHORT)
-            .show()
+            .apply {
+                view.setBackgroundColor(context.getColor(R.color.red))
+                show()
+            }
     }
 
     override fun navigateToTotp() {
@@ -181,7 +184,10 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
 
     override fun showError() {
         Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_LONG)
-            .show()
+            .apply {
+                view.setBackgroundColor(context.getColor(R.color.red))
+                show()
+            }
     }
 
     companion object {

@@ -213,10 +213,10 @@ class ResourceDetailsFragment :
     }
 
     override fun navigateToMore(menuModel: ResourceMoreMenuModel) {
-        com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment.newInstance(menuModel)
+        ResourceMoreMenuFragment.newInstance(menuModel)
             .show(
                 childFragmentManager,
-                com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment::class.java.name
+                ResourceMoreMenuFragment::class.java.name
             )
     }
 
@@ -335,7 +335,10 @@ class ResourceDetailsFragment :
     }
 
     override fun showToggleFavouriteFailure() {
-        showSnackbar(R.string.favourites_failure)
+        showSnackbar(
+            R.string.favourites_failure,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showFavouriteStar() {
@@ -376,7 +379,10 @@ class ResourceDetailsFragment :
     }
 
     override fun showGeneralError() {
-        showSnackbar(R.string.common_failure)
+        showSnackbar(
+            R.string.common_failure,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun navigateToEditResource(resourceModel: ResourceModel) {
@@ -397,7 +403,11 @@ class ResourceDetailsFragment :
     }
 
     override fun showResourceEditedSnackbar(resourceName: String) {
-        showSnackbar(R.string.common_message_resource_edited, resourceName)
+        showSnackbar(
+            messageResId = R.string.common_message_resource_edited,
+            messageArgs = arrayOf(resourceName),
+            backgroundColor = R.color.green
+        )
     }
 
     override fun showDeleteConfirmationDialog() {
@@ -441,7 +451,10 @@ class ResourceDetailsFragment :
     }
 
     override fun showResourceSharedSnackbar() {
-        showSnackbar(R.string.common_message_resource_shared)
+        showSnackbar(
+            R.string.common_message_resource_shared,
+            backgroundColor = R.color.green
+        )
     }
 
     override fun showTags(tags: List<String>) {
@@ -486,7 +499,10 @@ class ResourceDetailsFragment :
     }
 
     override fun showDataRefresError() {
-        showSnackbar(R.string.common_data_refresh_error)
+        showSnackbar(
+            R.string.common_data_refresh_error,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showContentNotAvailable() {

@@ -102,6 +102,7 @@ class UpdateResourcePresenter(
         this.resourceUpdateType = ResourceUpdateType.from(mode)
         this.existingResource = resource
 
+        view?.showProgress()
         setupUi()
     }
 
@@ -126,6 +127,7 @@ class UpdateResourcePresenter(
                     )
                 }
             }
+            view?.hideProgress()
         }
     }
 

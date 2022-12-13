@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.extension
 import android.app.Activity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -48,20 +49,25 @@ fun Fragment.hideSoftInput() {
 
 fun Fragment.showSnackbar(
     @StringRes messageResId: Int,
-    anchorView: View?,
+    anchorView: View? = null,
+    length: Int = Snackbar.LENGTH_SHORT,
+    @ColorRes backgroundColor: Int = R.color.background_gray_dark,
     vararg messageArgs: String
 ) {
-    Snackbar.make(requireView(), getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
-        .apply {
-            anchorView?.let { setAnchorView(it) }
-            show()
-        }
+    showSnackbar(getString(messageResId, *messageArgs), anchorView, length, backgroundColor, *messageArgs)
 }
 
 fun Fragment.showSnackbar(
-    @StringRes messageResId: Int,
+    message: String,
+    anchorView: View? = null,
+    length: Int = Snackbar.LENGTH_SHORT,
+    @ColorRes backgroundColor: Int = R.color.background_gray_dark,
     vararg messageArgs: String
 ) {
-    Snackbar.make(requireView(), getString(messageResId, *messageArgs), Snackbar.LENGTH_SHORT)
-        .show()
+    Snackbar.make(requireView(), message.format(messageArgs), length)
+        .apply {
+            view.setBackgroundColor(context.getColor(backgroundColor))
+            anchorView?.let { setAnchorView(it) }
+            show()
+        }
 }

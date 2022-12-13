@@ -90,7 +90,10 @@ class ResourceTagsFragment :
     }
 
     override fun showDataRefreshError() {
-        showSnackbar(R.string.common_data_refresh_error)
+        showSnackbar(
+            R.string.common_data_refresh_error,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showContentNotAvailable() {

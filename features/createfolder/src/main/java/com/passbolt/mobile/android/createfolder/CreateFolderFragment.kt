@@ -15,6 +15,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
@@ -137,13 +138,21 @@ class CreateFolderFragment :
     }
 
     override fun showCreateFolderError(errorMessage: String) {
-        Snackbar.make(binding.root, getString(R.string.create_folder_error_format, errorMessage), Snackbar.LENGTH_LONG)
-            .show()
+        showSnackbar(
+            messageResId = R.string.create_folder_error_format,
+            messageArgs = arrayOf(errorMessage),
+            backgroundColor = R.color.red,
+            length = Snackbar.LENGTH_LONG
+        )
     }
 
     override fun showShareFailure(errorMessage: String) {
-        Snackbar.make(binding.root, getString(R.string.share_folder_error_format, errorMessage), Snackbar.LENGTH_LONG)
-            .show()
+        showSnackbar(
+            messageResId = R.string.share_folder_error_format,
+            messageArgs = arrayOf(errorMessage),
+            backgroundColor = R.color.red,
+            length = Snackbar.LENGTH_LONG
+        )
     }
 
     override fun setFolderCreatedResultAndClose(folderName: String) {

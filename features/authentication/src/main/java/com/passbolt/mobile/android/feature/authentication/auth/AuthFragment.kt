@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.hideSoftInput
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -194,27 +195,51 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showAuthenticationError(@StringRes errorMessage: Int) {
-        showLongSnackbar(getString(errorMessage))
+        showSnackbar(
+            errorMessage,
+            length = Snackbar.LENGTH_LONG,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showWrongPassphrase() {
-        showLongSnackbar(getString(R.string.auth_incorrect_passphrase))
+        showSnackbar(
+            R.string.auth_incorrect_passphrase,
+            length = Snackbar.LENGTH_LONG,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showGenericError() {
-        showLongSnackbar(getString(R.string.common_failure))
+        showSnackbar(
+            R.string.common_failure,
+            length = Snackbar.LENGTH_LONG,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showChallengeInvalidSignature() {
-        showLongSnackbar(getString(R.string.auth_error_invalid_signature))
+        showSnackbar(
+            R.string.auth_error_invalid_signature,
+            length = Snackbar.LENGTH_LONG,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showChallengeTokenExpired() {
-        showLongSnackbar(getString(R.string.auth_error_token_expired))
+        showSnackbar(
+            R.string.auth_error_token_expired,
+            length = Snackbar.LENGTH_LONG,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showChallengeVerificationFailure() {
-        showLongSnackbar(getString(R.string.auth_error_challenge_verification_failure))
+        showSnackbar(
+            R.string.auth_error_challenge_verification_failure,
+            length = Snackbar.LENGTH_LONG,
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showFailedToFetchUserProfile(message: String?) {
@@ -226,12 +251,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showError(message: String) {
-        showLongSnackbar(message)
-    }
-
-    private fun showLongSnackbar(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
-            .show()
+        showSnackbar(message, length = Snackbar.LENGTH_LONG, backgroundColor = R.color.red)
     }
 
     override fun showFingerprintChangedError() {
