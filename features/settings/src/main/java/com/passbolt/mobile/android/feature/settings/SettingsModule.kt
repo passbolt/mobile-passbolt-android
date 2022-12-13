@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.feature.settings.screen.autofill.settingsAuto
 import com.passbolt.mobile.android.feature.settings.screen.defaultfilter.defaultFilterModule
 import com.passbolt.mobile.android.feature.settings.screen.licenses.licensesModule
 import com.passbolt.mobile.android.feature.settings.screen.settingsModule
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.transferAccountOnboardingModule
 import org.koin.dsl.module
 
 /**
@@ -35,5 +34,4 @@ val settingsModule = module {
     settingsAutofillModule()
     licensesModule()
     defaultFilterModule()
-    transferAccountOnboardingModule()
 }

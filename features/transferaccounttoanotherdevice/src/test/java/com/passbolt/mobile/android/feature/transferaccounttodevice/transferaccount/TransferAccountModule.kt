@@ -1,6 +1,11 @@
-package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding
+package com.passbolt.mobile.android.feature.transferaccounttodevice.transferaccount
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountContract
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountPresenter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +30,12 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface TransferAccountOnboardingContract {
-
-    interface View : BaseContract.View {
-        fun navigateToTransferAccount()
-        fun navigateToRefreshPassphrase()
+@ExperimentalCoroutinesApi
+val transferAccountModule = module {
+    factory<TransferAccountContract.Presenter> {
+        TransferAccountPresenter(
+            coroutineLaunchContext = get()
+        )
     }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun startTransferButtonClick()
-        fun authenticationSucceeded()
-    }
+    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
 }

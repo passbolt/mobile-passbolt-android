@@ -1,6 +1,7 @@
-package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +26,18 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface TransferAccountOnboardingContract {
+class TransferAccountPresenter(
+    coroutineLaunchContext: CoroutineLaunchContext
+) : TransferAccountContract.Presenter,
+    BaseAuthenticatedPresenter<TransferAccountContract.View>(coroutineLaunchContext) {
 
-    interface View : BaseContract.View {
-        fun navigateToTransferAccount()
-        fun navigateToRefreshPassphrase()
+    override var view: TransferAccountContract.View? = null
+
+    override fun cancelTransferButtonClick() {
+        view?.showCancelTransferDialog()
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun startTransferButtonClick()
-        fun authenticationSucceeded()
+    override fun stopTransferClick() {
+        view?.finish()
     }
 }

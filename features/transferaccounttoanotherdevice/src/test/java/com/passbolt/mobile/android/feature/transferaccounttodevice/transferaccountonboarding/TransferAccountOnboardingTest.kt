@@ -1,6 +1,14 @@
-package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding
+package com.passbolt.mobile.android.feature.transferaccounttodevice.transferaccountonboarding
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingContract
+import org.junit.Rule
+import org.junit.Test
+import org.koin.core.logger.Level
+import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
+import org.koin.test.inject
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,15 +33,24 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
  * @since v1.0
  */
 
-interface TransferAccountOnboardingContract {
+class TransferAccountOnboardingTest : KoinTest {
 
-    interface View : BaseContract.View {
-        fun navigateToTransferAccount()
-        fun navigateToRefreshPassphrase()
+    private val presenter: TransferAccountOnboardingContract.Presenter by inject()
+    private val view: TransferAccountOnboardingContract.View = mock()
+
+    @get:Rule
+    val koinTestRule = KoinTestRule.create {
+        printLogger(Level.ERROR)
+        modules(transferAccountOnboardingModule)
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun startTransferButtonClick()
-        fun authenticationSucceeded()
+    @Test
+    fun `start transfer clicked should authenticate and then navigate to transfer account`() {
+        presenter.attach(view)
+        presenter.startTransferButtonClick()
+        presenter.authenticationSucceeded()
+
+        verify(view).navigateToRefreshPassphrase()
+        verify(view).navigateToTransferAccount()
     }
 }

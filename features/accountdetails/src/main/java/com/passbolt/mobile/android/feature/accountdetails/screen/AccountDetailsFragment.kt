@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.accountdetails.screen
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.navigation.fragment.findNavController
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.feature.accountdetails.R
 import com.passbolt.mobile.android.feature.accountdetails.databinding.FragmentAccountDetailsBinding
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.TransferAccountToAnotherDeviceActivity
 import org.koin.android.ext.android.inject
 
 /**
@@ -115,9 +116,7 @@ class AccountDetailsFragment :
     }
 
     override fun navigateToTransferAccountOnboarding() {
-        findNavController().navigate(
-            AccountDetailsFragmentDirections.actionAccountDetailsFragmentToTransferAccountOnboardingFragment()
-        )
+        startActivity(Intent(requireContext(), TransferAccountToAnotherDeviceActivity::class.java))
     }
 
     override fun setLabel(label: String) {

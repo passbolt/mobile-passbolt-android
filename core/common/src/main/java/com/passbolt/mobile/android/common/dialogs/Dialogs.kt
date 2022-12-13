@@ -57,3 +57,11 @@ fun accessibilityServiceConsentDialog(context: Context, confirmAction: () -> Uni
         .setPositiveButton(R.string.consent) { _, _ -> confirmAction() }
         .setNegativeButton(R.string.cancel) { _, _ -> }
         .create()
+
+fun cancelTransferAccountAlertDialog(context: Context, confirmAction: () -> Unit): AlertDialog =
+    AlertDialog.Builder(context)
+        .setTitle(R.string.are_you_sure)
+        .setMessage(R.string.transfer_account_stop_confirmation_dialog_message)
+        .setPositiveButton(R.string.transfer_account_stop_button) { _, _ -> confirmAction() }
+        .setNegativeButton(R.string.cancel) { _, _ -> }
+        .create()

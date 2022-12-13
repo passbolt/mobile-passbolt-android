@@ -35,6 +35,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.resourceDetailsModule
 import com.passbolt.mobile.android.feature.settings.settingsModule
 import com.passbolt.mobile.android.feature.setup.setupModule
 import com.passbolt.mobile.android.feature.startup.di.startUpModule
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferAccountToAnotherDeviceModule
 import com.passbolt.mobile.android.featureflags.featureFlagsModule
 import com.passbolt.mobile.android.folderDetailsModule
 import com.passbolt.mobile.android.gopenpgp.di.openPgpModule
@@ -137,7 +138,8 @@ class KoinInitializer : Initializer<Unit> {
             autofillModule,
             inAppReviewModule,
             envInfoModule,
-            idlingResourcesModule
+            idlingResourcesModule,
+            transferAccountToAnotherDeviceModule
         )
     }
 }

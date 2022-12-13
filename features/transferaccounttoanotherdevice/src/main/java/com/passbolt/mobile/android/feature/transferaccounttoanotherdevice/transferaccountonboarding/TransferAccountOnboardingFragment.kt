@@ -1,11 +1,15 @@
 package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.databinding.FragmentTransferAccountOnboardingBinding
@@ -39,6 +43,11 @@ class TransferAccountOnboardingFragment : BindingScopedFragment<FragmentTransfer
 ), TransferAccountOnboardingContract.View {
 
     private val presenter: TransferAccountOnboardingContract.Presenter by inject()
+    private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            presenter.authenticationSucceeded()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,13 +63,25 @@ class TransferAccountOnboardingFragment : BindingScopedFragment<FragmentTransfer
     }
 
     override fun navigateToTransferAccount() {
-        // TODO navigation will be added in task nr: MOB-799
+        findNavController().navigate(
+            TransferAccountOnboardingFragmentDirections.actionTransferAccountOnboardingFragmentToTransferAccount()
+        )
+    }
+
+    override fun navigateToRefreshPassphrase() {
+        authenticationResult.launch(
+            ActivityIntents.authentication(
+                requireContext(),
+                ActivityIntents.AuthConfig.RefreshPassphrase
+            )
+        )
     }
 
     private fun setListeners() {
         binding.startTransferButton.setDebouncingOnClick {
             presenter.startTransferButtonClick()
         }
+        binding.toolbar.setNavigationOnClickListener { requireActivity().finish() }
     }
 
     private fun addSteps() {

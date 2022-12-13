@@ -28,6 +28,10 @@ class TransferAccountOnboardingPresenter : TransferAccountOnboardingContract.Pre
     override var view: TransferAccountOnboardingContract.View? = null
 
     override fun startTransferButtonClick() {
+        view?.navigateToRefreshPassphrase()
+    }
+
+    override fun authenticationSucceeded() {
         view?.navigateToTransferAccount()
     }
 }
