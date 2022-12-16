@@ -7,14 +7,6 @@ licensee {
     allowUrl "https://developer.android.com/studio/terms.html"
     allowUrl "https://api.github.com/licenses/mit"
     allowUrl "https://developers.google.com/ml-kit/terms"
-    allowUrl "http://www.apache.org/license/LICENSE-2.0.txt"
     allowUrl "https://developer.android.com/guide/playcore/license"
     allowUrl "https://github.com/leinardi/FloatingActionButtonSpeedDial/blob/release/LICENSE"
-
-    allowDependency('io.coil-kt', 'coil-base', '1.2.1') {
-        because 'The Apache License, Version 2.0 - allowed license, but wrond SPDX id used'
-    }
-    allowDependency('io.coil-kt', 'coil', '1.2.1') {
-        because 'The Apache License, Version 2.0 - allowed license, but wrond SPDX id used'
-    }
 }
