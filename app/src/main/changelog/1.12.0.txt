@@ -13,9 +13,3 @@
 
 ## Fixed
 - accessibility service overlay logo image color on dark theme
-
-## Security
--
-
-## Maintenance
--

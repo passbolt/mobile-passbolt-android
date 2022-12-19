@@ -1,3 +1,7 @@
-- Added filters on autofill! Now you can browse during autofill similarly to home screen.
-- Added Crowdin (translations): German and Spanish
-- Major dependencies update
+- resources are loaded from local storage while full networking refresh is in progress
+- indicator when full refresh is in progress
+- error message snackbars are colored now
+- updated dependencies
+- added more instrumented tests
+- fixed accessibility service overlay logo image color on dark theme
+- close the app on autofill context when close icon is clicked (instead of returning to regular app)
