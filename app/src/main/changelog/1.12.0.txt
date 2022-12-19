@@ -1,0 +1,21 @@
+# Passbolt 1.12.0-15 Android app release notes
+
+## Added
+- showing resources from local db storage while full refresh is in progress
+- automatically refreshing screens after full refresh is in progress
+- indicator when full refresh is in progress
+- close the app on autofill context when close icon is clicked (instead of returning to regular app)
+
+## Improved
+- updated dependencies
+- error message snackbars are colored now
+- added more instrumented tests
+
+## Fixed
+- accessibility service overlay logo image color on dark theme
+
+## Security
+-
+
+## Maintenance
+-
