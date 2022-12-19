@@ -110,9 +110,6 @@ class SettingsFragment : BindingScopedFragment<FragmentSettingsBinding>(Fragment
             manageAccountsSetting.setDebouncingOnClick {
                 presenter.manageAccountsClick()
             }
-            transferAccountSetting.setDebouncingOnClick {
-                presenter.transferAccountClick()
-            }
             termsSetting.setDebouncingOnClick {
                 presenter.termsClick()
             }

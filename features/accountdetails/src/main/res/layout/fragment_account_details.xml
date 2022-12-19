@@ -107,16 +107,6 @@
                 android:layout_marginBottom="@dimen/dp_24"
                 android:text="@string/account_details_save_changes" />
 
-            <TextView
-                android:id="@+id/transferAccountButton"
-                style="@style/ButtonBigText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/dp_64"
-                android:layout_marginBottom="@dimen/dp_24"
-                android:fontFamily="@font/inter"
-                android:gravity="center"
-                android:text="@string/settings_transfer_account" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

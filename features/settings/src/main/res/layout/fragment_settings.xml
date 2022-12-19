@@ -52,13 +52,6 @@
             app:name="@string/settings_manage_accounts" />
 
         <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-            android:id="@+id/transferAccountSetting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_transfer_account"
-            app:name="@string/settings_transfer_account" />
-
-        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
             android:id="@+id/termsSetting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
