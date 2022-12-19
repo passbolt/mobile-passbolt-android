@@ -47,7 +47,7 @@ class AccessibilityOperationsProvider(
     }
 
     private fun isEditText(node: AccessibilityNodeInfo): Boolean =
-        node.className.contains("EditText")
+        (node.className != null) && node.className.contains("EditText")
 
     fun getAllNodes(
         node: AccessibilityNodeInfo,
