@@ -102,11 +102,12 @@ class UpdateResourcePresenter(
         this.resourceUpdateType = ResourceUpdateType.from(mode)
         this.existingResource = resource
 
-        view?.showProgress()
         setupUi()
     }
 
     override fun refreshAction() {
+        view?.showProgress()
+        view?.clearInputFields()
         scope.launch {
             when (resourceUpdateType) {
                 ResourceUpdateType.CREATE -> createInputFields()

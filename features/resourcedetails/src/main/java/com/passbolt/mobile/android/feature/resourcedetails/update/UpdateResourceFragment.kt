@@ -288,4 +288,8 @@ class UpdateResourceFragment :
     override fun navigateHome() {
         requireActivity().startActivity(ActivityIntents.bringHome(requireContext()))
     }
+
+    override fun clearInputFields() {
+        binding.container.removeAllViews()
+    }
 }
