@@ -35,5 +35,8 @@ enum class StatusRequest {
     COMPLETE,
 
     @SerializedName("cancel")
-    CANCEL
+    CANCEL,
+
+    @SerializedName("start")
+    START
 }

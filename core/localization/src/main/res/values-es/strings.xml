@@ -266,7 +266,7 @@
     <string name="welcome_create_account_dialog_message">Actualmente no es posible crear una cuenta usando la aplicación móvil. Primero necesitará crear una cuenta usando la extensión de su navegador de escritorio.</string>
     <string name="transfer_details_header">Escanee los códigos QR para transferir los datos de su cuenta</string>
     <string name="transfer_details_scan_button">Escanear códigos QR</string>
-    <string name="transfer_details_title">Transferir detalles de la cuenta</string>
+    <string name="transfer_account_title">Transferir detalles de la cuenta</string>
     <string name="transfer_details_camera_access_dialog_title">Se requiere acceso a la cámara</string>
     <string name="transfer_details_camera_required_dialog_title">Cámara obligatoria</string>
     <string name="transfer_details_camera_required_dialog_message">Lo sentimos, se necesita un dispositivo con una cámara para continuar, ya que la transferencia de claves se realiza usando códigos QR.</string>

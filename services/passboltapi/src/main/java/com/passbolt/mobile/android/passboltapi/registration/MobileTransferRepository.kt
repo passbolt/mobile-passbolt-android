@@ -1,4 +1,9 @@
-package com.passbolt.mobile.android.dto.response.qrcode
+package com.passbolt.mobile.android.passboltapi.registration
+
+import com.passbolt.mobile.android.core.networking.ResponseHandler
+import com.passbolt.mobile.android.core.networking.callWithHandler
+import com.passbolt.mobile.android.dto.request.CreateTransferRequestDto
+import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,12 +27,26 @@ package com.passbolt.mobile.android.dto.response.qrcode
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-data class ReservedBytesDto(
-    val version: Int,
-    val page: Int
+class MobileTransferRepository(
+    private val mobileTransferDataSource: MobileTransferDataSource,
+    private val responseHandler: ResponseHandler
 ) {
+    suspend fun turnPage(
+        uuid: String,
+        authToken: String,
+        pageRequestDto: UpdateTransferRequestDto,
+        userProfile: String?
+    ) = callWithHandler(responseHandler) {
+        mobileTransferDataSource.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
+    }
 
-    fun encodeToString() =
-        version.toString() + "%02x".format(page)
+    suspend fun createTransfer(createTransferRequest: CreateTransferRequestDto) =
+        callWithHandler(responseHandler) {
+            mobileTransferDataSource.createTransfer(createTransferRequest)
+        }
+
+    suspend fun viewTransfer(authToken: String, uuid: String) =
+        callWithHandler(responseHandler) {
+            mobileTransferDataSource.viewTransfer(authToken, uuid)
+        }
 }

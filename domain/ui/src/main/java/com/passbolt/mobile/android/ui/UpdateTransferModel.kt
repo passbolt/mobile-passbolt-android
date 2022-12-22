@@ -1,6 +1,4 @@
-package com.passbolt.mobile.android.dto.response
-
-import com.google.gson.annotations.SerializedName
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,14 +22,10 @@ import com.google.gson.annotations.SerializedName
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class UpdateTransferResponseDto(
+data class UpdateTransferModel(
     val id: String,
-    val status: StatusResponse,
-    val user: UserResponseDto?
-)
-
-data class UserResponseDto(
-    @SerializedName("username")
-    val email: String?,
-    val profile: UserProfileResponseDto?
+    val firstName: String?,
+    val lastName: String?,
+    val avatarUrl: String?,
+    val email: String?
 )

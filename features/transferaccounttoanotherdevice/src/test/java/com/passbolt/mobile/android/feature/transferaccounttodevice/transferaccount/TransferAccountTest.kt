@@ -1,6 +1,11 @@
 package com.passbolt.mobile.android.feature.transferaccounttodevice.transferaccount
 
+import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountStatus
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountContract
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.data.CreateTransferInputParametersGenerator
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.usecase.CreateTransferUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
@@ -8,8 +13,13 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
+import java.io.IOException
 
 /**
  * Passbolt - Open source password manager for teams
@@ -61,6 +71,48 @@ class TransferAccountTest : KoinTest {
         presenter.stopTransferClick()
 
         verify(view).showCancelTransferDialog()
-        verify(view).finish()
+        argumentCaptor<TransferAccountStatus> {
+            verify(view).navigateToResult(capture())
+            assertThat(firstValue).isInstanceOf(TransferAccountStatus.Canceled::class.java)
+        }
+    }
+
+    @Test
+    fun `error during create transfer input parameters should be reflected on ui`() {
+        mockCreateTransferInputParametersGenerator.stub {
+            onBlocking { calculateCreateTransferParameters() }.doReturn(
+                CreateTransferInputParametersGenerator.Output.Error
+            )
+        }
+        presenter.attach(view)
+
+        verify(view).showCouldNotInitializeTransferParameters()
+    }
+
+    @Test
+    fun `error during create transfer should be reflected on ui`() {
+        val errorMessage = "Error during create transfer"
+        mockCreateTransferUseCase.stub {
+            onBlocking { execute(any()) }.doReturn(
+                CreateTransferUseCase.Output.Failure(
+                    NetworkResult.Failure.ServerError(
+                        IOException(),
+                        headerMessage = errorMessage
+                    )
+                )
+            )
+        }
+        mockCreateTransferInputParametersGenerator.stub {
+            onBlocking { calculateCreateTransferParameters() }.doReturn(
+                CreateTransferInputParametersGenerator.Output.Parameters(
+                    keyJson = "",
+                    totalPagesCount = 10,
+                    pagesDataHash = ""
+                )
+            )
+        }
+        presenter.attach(view)
+
+        verify(view).showCouldNotCreateTransfer(errorMessage)
     }
 }

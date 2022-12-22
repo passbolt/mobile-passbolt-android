@@ -1,4 +1,6 @@
-package com.passbolt.mobile.android.dto.response.qrcode
+package com.passbolt.mobile.android.dto.request
+
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,12 +24,8 @@ package com.passbolt.mobile.android.dto.response.qrcode
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-data class ReservedBytesDto(
-    val version: Int,
-    val page: Int
-) {
-
-    fun encodeToString() =
-        version.toString() + "%02x".format(page)
-}
+data class CreateTransferRequestDto(
+    @SerializedName("total_pages")
+    val totalPages: Int,
+    val hash: String
+)

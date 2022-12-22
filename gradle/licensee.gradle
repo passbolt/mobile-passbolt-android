@@ -9,4 +9,5 @@ licensee {
     allowUrl "https://developers.google.com/ml-kit/terms"
     allowUrl "https://developer.android.com/guide/playcore/license"
     allowUrl "https://github.com/leinardi/FloatingActionButtonSpeedDial/blob/release/LICENSE"
+    allowUrl "https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING" // it's Apache-2.0
 }

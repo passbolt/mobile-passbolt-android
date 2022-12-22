@@ -1,4 +1,8 @@
-package com.passbolt.mobile.android.dto.response.qrcode
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary
+
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import com.passbolt.mobile.android.core.mvp.BaseContract
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,12 +26,22 @@ package com.passbolt.mobile.android.dto.response.qrcode
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+interface TransferAccountSummaryContract {
 
-data class ReservedBytesDto(
-    val version: Int,
-    val page: Int
-) {
+    interface View : BaseContract.View {
+        fun setTitle(@StringRes title: Int)
+        fun setDescription(message: String)
+        fun setButtonLabel(@StringRes text: Int)
+        fun setIcon(@DrawableRes icon: Int)
+        fun finish()
+        fun showTryAgain()
+        fun navigateToTransferAccountStart()
+    }
 
-    fun encodeToString() =
-        version.toString() + "%02x".format(page)
+    interface Presenter : BaseContract.Presenter<View> {
+        fun argsRetrieved(status: TransferAccountStatus)
+        fun buttonClick()
+        fun backClick()
+        fun tryAgainClick()
+    }
 }

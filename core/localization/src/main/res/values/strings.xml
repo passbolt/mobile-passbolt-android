@@ -412,10 +412,19 @@
 
     <string name="transfer_account_onboarding_header">Show QR codes to transfer your account details</string>
     <string name="transfer_account_onboarding_transfer_button">Start Transfer</string>
+
     <string name="transfer_account_cancel_button">Cancel transfer</string>
     <string name="transfer_account_stop_button">Stop transfer</string>
-    <string name="transfer_details_title">Transfer account details</string>
+    <string name="transfer_account_title">Transfer account details</string>
     <string name="transfer_account_stop_confirmation_dialog_message">If you leave, you will need to scan QR codes again.</string>
+    <string name="transfer_account_could_not_initialize_parameters">Could not initialize transfer parameters</string>
+    <string name="transfer_account_could_not_create_transfer_format">Could not create transfer. %s </string>
+    <string name="transfer_account_could_not_initialize_qr_code_page_data">Could not initialize QR code page data</string>
+    <string name="transfer_account_error_during_fetch_transfer_format">Could not fetch transfer details. %s</string>
+
+    <string name="transfer_account_summary_success">Your information has been transferred!</string>
+    <string name="transfer_account_summary_cancelled">Transfer cancelled</string>
+    <string name="transfer_account_summary_go_back">Go back to my account</string>
 
     <!--
     arrays can be inconsistent when in other languages

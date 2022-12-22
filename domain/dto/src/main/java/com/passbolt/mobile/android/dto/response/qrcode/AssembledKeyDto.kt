@@ -1,5 +1,8 @@
 package com.passbolt.mobile.android.dto.response.qrcode
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,11 +26,11 @@ package com.passbolt.mobile.android.dto.response.qrcode
  * @since v1.0
  */
 
-data class ReservedBytesDto(
-    val version: Int,
-    val page: Int
-) {
-
-    fun encodeToString() =
-        version.toString() + "%02x".format(page)
-}
+@Serializable
+class AssembledKeyDto(
+    @SerialName("armored_key")
+    val armoredKey: String,
+    @SerialName("user_id")
+    val userId: String,
+    val fingerprint: String
+)

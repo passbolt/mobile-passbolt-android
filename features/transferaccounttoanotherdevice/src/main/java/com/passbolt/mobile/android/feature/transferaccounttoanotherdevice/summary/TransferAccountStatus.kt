@@ -1,4 +1,9 @@
-package com.passbolt.mobile.android.dto.response.qrcode
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary
+
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R
+import java.io.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,12 +27,29 @@ package com.passbolt.mobile.android.dto.response.qrcode
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+sealed class TransferAccountStatus(
+    @DrawableRes val icon: Int,
+    @StringRes val title: Int,
+    @StringRes val buttonText: Int
+) : Serializable {
 
-data class ReservedBytesDto(
-    val version: Int,
-    val page: Int
-) {
+    class Success : TransferAccountStatus(
+        R.drawable.ic_success,
+        R.string.transfer_account_summary_success,
+        R.string.transfer_account_summary_go_back
+    )
 
-    fun encodeToString() =
-        version.toString() + "%02x".format(page)
+    class Failure(
+        val message: String
+    ) : TransferAccountStatus(
+        R.drawable.ic_failed,
+        R.string.common_failure,
+        R.string.transfer_account_summary_go_back
+    )
+
+    class Canceled : TransferAccountStatus(
+        R.drawable.ic_failed,
+        R.string.transfer_account_summary_cancelled,
+        R.string.transfer_account_summary_go_back
+    )
 }

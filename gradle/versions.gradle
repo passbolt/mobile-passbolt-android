@@ -61,6 +61,7 @@ ext {
         ],
         timber: "5.0.1",
         mlkit: "17.0.2",
+        zxing: "4.3.0",
         gson: "2.9.0",
         appDistribution: "3.0.2",
         coil: "2.1.0",
@@ -89,7 +90,8 @@ ext {
         dokka: "1.6.10",
         inAppUpdate: "2.0.0",
         fabSpeedDial: "3.3.0",
-        inAppReview: "2.0.0"
+        inAppReview: "2.0.0",
+        okio: "3.2.0"
     ]
 
     libs = [
@@ -166,6 +168,7 @@ ext {
         ],
         timber: "com.jakewharton.timber:timber:${versions.timber}",
         qrScan: "com.google.mlkit:barcode-scanning:${versions.mlkit}",
+        qrGeneration: "com.journeyapps:zxing-android-embedded:${versions.zxing}",
         gson: "com.google.code.gson:gson:${versions.gson}",
         appDistribution: "com.google.firebase:firebase-appdistribution-gradle:${versions.appDistribution}",
         coil: [
@@ -207,6 +210,7 @@ ext {
             core: "com.google.android.play:review:${versions.inAppReview}",
             ktx: "com.google.android.play:review-ktx:${versions.inAppReview}"
         ],
-        fabSpeedDial: "com.leinardi.android:speed-dial:${versions.fabSpeedDial}"
+        fabSpeedDial: "com.leinardi.android:speed-dial:${versions.fabSpeedDial}",
+        okio: "com.squareup.okio:okio:${versions.okio}",
     ]
 }

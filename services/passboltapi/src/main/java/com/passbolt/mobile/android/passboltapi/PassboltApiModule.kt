@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.passboltapi.favourites.favouritesApiModule
 import com.passbolt.mobile.android.passboltapi.folders.foldersApiModule
 import com.passbolt.mobile.android.passboltapi.groups.groupsApiModule
 import com.passbolt.mobile.android.passboltapi.mfa.mfaApiModule
-import com.passbolt.mobile.android.passboltapi.registration.registrationApiModule
+import com.passbolt.mobile.android.passboltapi.registration.mobileTransferApiModule
 import com.passbolt.mobile.android.passboltapi.resource.resourceApiModule
 import com.passbolt.mobile.android.passboltapi.resourcetypes.resourceTypesApiModule
 import com.passbolt.mobile.android.passboltapi.secrets.secretsApiModule
@@ -37,7 +37,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 val passboltApiModule = module {
-    registrationApiModule()
+    mobileTransferApiModule()
     authApiModule()
     mfaApiModule()
     secretsApiModule()

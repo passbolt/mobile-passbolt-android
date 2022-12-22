@@ -2,12 +2,20 @@ package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.trans
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.passbolt.mobile.android.common.dialogs.cancelTransferAccountAlertDialog
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.databinding.FragmentTransferAccountBinding
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountStatus
 import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,6 +46,8 @@ class TransferAccountFragment :
     ), TransferAccountContract.View {
 
     override val presenter: TransferAccountContract.Presenter by inject()
+    private val barcodeEncoder: BarcodeEncoder by inject()
+    private val qrCodeGenHints: HashMap<EncodeHintType, Any> by inject(named(QR_CODE_GEN_HINTS))
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,7 +73,54 @@ class TransferAccountFragment :
         }.show()
     }
 
-    override fun finish() {
-        requireActivity().finish()
+    override fun showQrCodeForData(qrCodeContent: String) {
+        val bitmap = barcodeEncoder.encodeBitmap(
+            qrCodeContent,
+            BarcodeFormat.QR_CODE,
+            QR_SQUARE_DIM_PX,
+            QR_SQUARE_DIM_PX,
+            qrCodeGenHints
+        )
+        binding.qrCode.setImageBitmap(bitmap)
+    }
+
+    override fun showCouldNotInitializeTransferParameters() {
+        showSnackbar(
+            R.string.transfer_account_could_not_initialize_parameters,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showCouldNotCreateTransfer(message: String) {
+        showSnackbar(
+            R.string.transfer_account_could_not_create_transfer_format,
+            backgroundColor = R.color.red,
+            messageArgs = arrayOf(message)
+        )
+    }
+
+    override fun showCouldNotGenerateQrTransferData() {
+        showSnackbar(
+            R.string.transfer_account_could_not_initialize_qr_code_page_data,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showErrorDuringTransferDetailsFetch(message: String) {
+        showSnackbar(
+            R.string.transfer_account_error_during_fetch_transfer_format,
+            backgroundColor = R.color.red,
+            messageArgs = arrayOf(message)
+        )
+    }
+
+    override fun navigateToResult(result: TransferAccountStatus) {
+        findNavController().navigate(
+            TransferAccountFragmentDirections.actionTransferAccountToTransferAccountSummaryFragment(result)
+        )
+    }
+
+    private companion object {
+        private const val QR_SQUARE_DIM_PX = 399
     }
 }

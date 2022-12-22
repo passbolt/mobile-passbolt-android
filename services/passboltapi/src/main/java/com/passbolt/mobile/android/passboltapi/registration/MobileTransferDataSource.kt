@@ -1,4 +1,10 @@
-package com.passbolt.mobile.android.dto.response.qrcode
+package com.passbolt.mobile.android.passboltapi.registration
+
+import com.passbolt.mobile.android.dto.request.CreateTransferRequestDto
+import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.CreateTransferResponseDto
+import com.passbolt.mobile.android.dto.response.TransferResponseDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -23,11 +29,20 @@ package com.passbolt.mobile.android.dto.response.qrcode
  * @since v1.0
  */
 
-data class ReservedBytesDto(
-    val version: Int,
-    val page: Int
-) {
+interface MobileTransferDataSource {
+    suspend fun updateTransfer(
+        uuid: String,
+        authToken: String,
+        pageRequestDto: UpdateTransferRequestDto,
+        userProfile: String?
+    ): BaseResponse<TransferResponseDto>
 
-    fun encodeToString() =
-        version.toString() + "%02x".format(page)
+    suspend fun createTransfer(
+        createTransferRequest: CreateTransferRequestDto
+    ): CreateTransferResponseDto
+
+    suspend fun viewTransfer(
+        authToken: String,
+        uuid: String
+    ): TransferResponseDto
 }

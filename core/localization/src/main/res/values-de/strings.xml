@@ -266,7 +266,7 @@
     <string name="welcome_create_account_dialog_message">Es ist derzeit nicht möglich, ein Konto über die mobile App zu erstellen. Zunächst müssen Sie ein Konto über Ihre Desktop-Browser-Erweiterung erstellen.</string>
     <string name="transfer_details_header">QR-Codes scannen, um Ihre Kontodaten zu übertragen</string>
     <string name="transfer_details_scan_button">QR-Codes scannen</string>
-    <string name="transfer_details_title">Kontodaten übertragen</string>
+    <string name="transfer_account_title">Kontodaten übertragen</string>
     <string name="transfer_details_camera_access_dialog_title">Zugang zur Kamera erforderlich</string>
     <string name="transfer_details_camera_required_dialog_title">Kamera erforderlich</string>
     <string name="transfer_details_camera_required_dialog_message">Leider benötigen Sie ein Gerät mit einer Kamera, um fortzufahren, da die Schlüsselübertragung über QR-Codes erfolgt.</string>
