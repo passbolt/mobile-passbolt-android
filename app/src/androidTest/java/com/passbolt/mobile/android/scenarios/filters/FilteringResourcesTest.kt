@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.pressKey
+import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -12,12 +13,13 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.setup.R
-import com.passbolt.mobile.android.hasBackgroundColor
+import com.passbolt.mobile.android.feature.setup.R.id.titleDrawable
 import com.passbolt.mobile.android.hasDrawable
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
@@ -29,6 +31,7 @@ import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
+import kotlin.test.AfterTest
 
 /**
  * Passbolt - Open source password manager for teams
@@ -55,7 +58,7 @@ import kotlin.test.BeforeTest
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
-class FilterDrawerTest : KoinTest {
+class FilteringResourcesTest : KoinTest {
 
     @get:Rule
     val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
@@ -75,7 +78,8 @@ class FilterDrawerTest : KoinTest {
     @get:Rule
     val idlingResourceRule = let {
         val signInIdlingResource: SignInIdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource))
+        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+        IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
     }
 
     @BeforeTest
@@ -85,75 +89,34 @@ class FilterDrawerTest : KoinTest {
     }
 
     @Test
-    // https://passbolt.testrail.io/index.php?/cases/view/2616
-    fun asALoggedInMobileUserOnTheHomepageICanSeeAFilterIconInTheSearchBar() {
-        //    Given     that I am a logged in mobile user
-        //    When      I am on the homepage
-        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
-        //    And       the search bar is not focused
-        //    Then      I see an icon filter in the left side of the search bar
-        onView(withId(R.id.text_input_start_icon)).check(matches(isDisplayed()))
-    }
-
-    @Test
-    // https://passbolt.testrail.io/index.php?/cases/view/2617
-    fun asALoggedInMobileUserOnTheHomepageICanSeeTheFilterDrawer() {
-        //    Given     that I am a logged in mobile user on the homepage
-        //    When      I click on the filter icon
-        onView(withId(R.id.text_input_start_icon)).perform(click())
-        //    Then      I see the “filter” drawer
-        onView(withId(R.id.root)).check(matches(isDisplayed()))
-        //    And       I see the homepage is greyed out in the background
-        //    And       I see a “Filter view by” title
-        onView(withText(R.string.filters_menu_title)).check(matches(isDisplayed()))
-        //    And       I see a close button
-        onView(withId(R.id.close)).check(matches(isDisplayed()))
-        //    And       I see a list of filters
-        //    And       I see <filter> list item with their corresponding icon
-        ResourceFilterModel.values().forEach { filterItem ->
-            onView(withId(filterItem.filterId))
-                .check(matches(isDisplayed()))
-                .check(matches(hasDrawable(filterItem.filterIconId, R.color.icon_tint)))
-            //    Examples:
-            //      | filter              |
-            //      | “All items”         |
-            //      | “Favorites”         |
-            //      | “Recently modified” |
-            //      | “Shared with me”    |
-            //      | “Owned by me”       |
-            //      | “Folders”           |
-            //      | “Tags”              |
-            //      | “Groups”            |
-        }
-    }
-
-    @Test
-    // https://passbolt.testrail.io/index.php?/cases/view/2618
-    fun asALoggedInMobileUserOnTheFilterDrawerICanSeeTheActiveFilterUsedToFilterOrSortResources() {
-        // Given      that I am a logged in mobile user
+    // https://passbolt.testrail.io/index.php?/cases/view/2621
+    fun asALoggedInMobileUserOnTheHomepageICanChangeTheCurrentActiveFilter() {
+        //        Given       that I am a logged in mobile user
+        //        And         the active filter is   not   <filter>
         val filterList = ResourceFilterModel.values()
         filterList.indices.forEach { index ->
-            // And        the <filter> is active
-            // When       I open the filter drawer
+            //        When        I open the filter drawer
             onView(withId(R.id.text_input_start_icon)).perform(click())
+            //        And         I click on the <filter> list item
             onView(withId(filterList[index].filterId)).perform(click())
-            // Then       I see the current active <filter> in the list with an active status
-            onView(withId(R.id.text_input_start_icon)).perform(click())
-            onView(withId(filterList[index].filterId))
-                .check(matches(isDisplayed()))
-                .check(matches(hasBackgroundColor(R.color.primary)))
-            // And        I can close the drawer
-            onView(withId(R.id.close)).perform(click())
-            // Examples:
-            //    | filter              |
-            //    | “All items”         |
-            //    | “Favorites”         |
-            //    | “Recently modified” |
-            //    | “Shared with me”    |
-            //    | “Owned by me”       |
-            //    | “Folders”           |
-            //    | “Tags”              |
-            //    | “Groups”            |
+            //        Then        I do not see the filter drawer
+            //        And         I see the homepage
+            onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
+            //        And         I see the title is <filter> with its corresponding icon
+            onView(withText(filterList[index].filterNameId)).check(matches(isDisplayed()))
+            onView(withId(titleDrawable)).check(matches(hasDrawable(filterList[index].filterIconId)))
+            //        And         I see the list of resources contains <filter> elements // TODO: unitTest?
+            //        And         I see the list of resources is <sorted> // TODO: unitTest?
+            //        Examples:
+            //           | filter              | sorted         |
+            //           | “All items”         | alphabetically |
+            //           | “Favourites”        | chronologically with the latest modifications on top |
+            //           | “Recently modified” | chronologically with the latest modifications on top |
+            //           | “Shared with me”    | chronologically with the latest modifications on top |
+            //           | “Owned by me”       | chronologically with the latest modifications on top |
+            //           | “Folders”           | alphabetically |
+            //           | “Tags”              | alphabetically |
+            //           | “Groups”            | alphabetically |
         }
     }
 }
