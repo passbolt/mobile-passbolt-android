@@ -1,10 +1,11 @@
 package com.passbolt.mobile.android.mappers
 
+import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
-import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
 import com.passbolt.mobile.android.dto.request.StatusRequest
-import com.passbolt.mobile.android.ui.UpdateTransferResponseModel
 import com.passbolt.mobile.android.ui.Status
+import org.junit.Before
+import org.junit.Test
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,25 +29,35 @@ import com.passbolt.mobile.android.ui.Status
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UpdateTransferMapper {
+class TransferMapperTest {
+    private lateinit var mapper: TransferMapper
 
-    fun mapRequestToDto(currentPage: Int, status: Status): UpdateTransferRequestDto =
-        UpdateTransferRequestDto(currentPage, mapStatus(status))
+    @Before
+    fun setUp() {
+        mapper = TransferMapper()
+    }
 
-    fun mapResponseToUi(pageResponseDto: UpdateTransferResponseDto): UpdateTransferResponseModel =
-        UpdateTransferResponseModel(
-            id = pageResponseDto.id,
-            firstName = pageResponseDto.user?.profile?.firstName,
-            lastName = pageResponseDto.user?.profile?.lastName,
-            email = pageResponseDto.user?.email,
-            avatarUrl = pageResponseDto.user?.profile?.avatar?.url?.medium
-        )
+    @Test
+    fun `Mapping in progress status should returns proper dto`() =
+        verifyStatus(Status.IN_PROGRESS, StatusRequest.IN_PROGRESS)
 
-    private fun mapStatus(status: Status): StatusRequest =
-        when (status) {
-            Status.ERROR -> StatusRequest.ERROR
-            Status.IN_PROGRESS -> StatusRequest.IN_PROGRESS
-            Status.COMPLETE -> StatusRequest.COMPLETE
-            Status.CANCEL -> StatusRequest.CANCEL
-        }
+    @Test
+    fun `Mapping error status should returns proper dto`() =
+        verifyStatus(Status.ERROR, StatusRequest.ERROR)
+
+    @Test
+    fun `Mapping complete status should returns proper dto`() =
+        verifyStatus(Status.COMPLETE, StatusRequest.COMPLETE)
+
+    @Test
+    fun `Mapping cancel status should returns proper dto`() =
+        verifyStatus(Status.CANCEL, StatusRequest.CANCEL)
+
+    private fun verifyStatus(inputStatus: Status, expectedStatusRequest: StatusRequest) {
+        val result = mapper.mapRequestToDto(0, inputStatus)
+        val expected = UpdateTransferRequestDto(0, expectedStatusRequest)
+        assertThat(result).isEqualTo(expected)
+    }
+
 }
+

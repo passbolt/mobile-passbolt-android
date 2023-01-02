@@ -1,8 +1,6 @@
-package com.passbolt.mobile.android.passboltapi.registration
+package com.passbolt.mobile.android.dto.response
 
-import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,15 +24,22 @@ import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class RegistrationRemoteDataSource(
-    private val registrationApi: RegistrationApi
-) : RegistrationDataSource {
+data class CreateTransferResponseDto(
+    val id: String,
+    @SerializedName("user_id")
+    val userId: String,
+    @SerializedName("current_page")
+    val currentPage: Int,
+    @SerializedName("total_pages")
+    val totalPages: Int,
+    val hash: String,
+    val status: StatusResponse,
+    @SerializedName("authentication_token")
+    val authToken: AuthToken
+)
 
-    override suspend fun updateTransfer(
-        uuid: String,
-        authToken: String,
-        pageRequestDto: UpdateTransferRequestDto,
-        userProfile: String?
-    ): BaseResponse<UpdateTransferResponseDto> =
-        registrationApi.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
-}
+data class AuthToken(
+    val token: String,
+    val active: Boolean,
+    val type: String
+)

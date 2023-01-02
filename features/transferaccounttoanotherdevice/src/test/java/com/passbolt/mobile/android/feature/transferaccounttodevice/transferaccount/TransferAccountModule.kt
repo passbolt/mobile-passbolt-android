@@ -4,8 +4,15 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountContract
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountPresenter
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.data.CreateTransferInputParametersGenerator
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.data.TransferQrCodesDataGenerator
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.usecase.CreateTransferUseCase
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.usecase.ViewTransferUseCase
+import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,11 +37,30 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
+internal val mockCreateTransferUseCase = mock<CreateTransferUseCase>()
+internal val mockViewTransferUseCase = mock<ViewTransferUseCase>()
+internal val mockCreateTransferInputParametersGenerator = mock<CreateTransferInputParametersGenerator>()
+internal val mockTransferQrCodesDataGenerator = mock<TransferQrCodesDataGenerator>()
+internal val mockGetSessionUseCase = mock<GetSessionUseCase> {
+    on { execute(Unit) }.doReturn(
+        GetSessionUseCase.Output(
+            accessToken = "accessToken",
+            refreshToken = "refreshToken",
+            mfaToken = "mfaToken"
+        )
+    )
+}
+
 @ExperimentalCoroutinesApi
 val transferAccountModule = module {
     factory<TransferAccountContract.Presenter> {
         TransferAccountPresenter(
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            createTransferUseCase = mockCreateTransferUseCase,
+            viewTransferUseCase = mockViewTransferUseCase,
+            createTransferInputParametersGenerator = mockCreateTransferInputParametersGenerator,
+            transferQrCodesDataGenerator = mockTransferQrCodesDataGenerator,
+            getSessionUseCase = mockGetSessionUseCase
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

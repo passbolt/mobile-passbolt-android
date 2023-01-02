@@ -10,7 +10,15 @@
         android:id="@+id/transferAccount"
         android:name="com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountFragment"
         android:label="TransferAccount"
-        tools:layout="@layout/fragment_transfer_account" />
+        tools:layout="@layout/fragment_transfer_account">
+        <action
+            android:id="@+id/action_transferAccount_to_transferAccountSummaryFragment"
+            app:destination="@id/transferAccountSummaryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
     <fragment
         android:id="@+id/transferAccountOnboardingFragment"
         android:name="com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.TransferAccountOnboardingFragment"
@@ -24,4 +32,22 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+    <fragment
+        android:id="@+id/transferAccountSummaryFragment"
+        android:name="com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountSummaryFragment"
+        android:label="TransferAccountSummaryFragment"
+        tools:layout="@layout/fragment_transfer_account_summary">
+        <argument
+            android:name="status"
+            app:argType="com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountStatus" />
+        <action
+            android:id="@+id/action_transferAccountSummaryFragment_to_transferAccountOnboardingFragment"
+            app:destination="@id/transferAccountOnboardingFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/transferAccountOnboardingFragment" />
+    </fragment>
+
 </navigation>

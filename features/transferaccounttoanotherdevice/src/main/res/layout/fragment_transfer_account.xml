@@ -11,18 +11,19 @@
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/Theme.Passbolt.Toolbar"
         app:layout_constraintTop_toTopOf="parent"
-        app:toolbarTitle="@string/transfer_details_title" />
+        app:toolbarTitle="@string/transfer_account_title" />
 
     <ImageView
         android:id="@+id/qrCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_32"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
         app:layout_constraintBottom_toTopOf="@+id/cancelTransferButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        android:src="@drawable/ic_sample_qr_code"/>
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <Button
         android:id="@+id/cancelTransferButton"

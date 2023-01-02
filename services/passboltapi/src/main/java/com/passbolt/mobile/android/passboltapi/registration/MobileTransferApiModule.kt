@@ -1,8 +1,9 @@
 package com.passbolt.mobile.android.passboltapi.registration
 
-import com.passbolt.mobile.android.dto.response.UpdateTransferResponseDto
-import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
-import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.core.networking.RestService
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,11 +28,11 @@ import com.passbolt.mobile.android.dto.response.BaseResponse
  * @since v1.0
  */
 
-interface RegistrationDataSource {
-    suspend fun updateTransfer(
-        uuid: String,
-        authToken: String,
-        pageRequestDto: UpdateTransferRequestDto,
-        userProfile: String?
-    ): BaseResponse<UpdateTransferResponseDto>
+internal fun Module.mobileTransferApiModule() {
+    singleOf(::MobileTransferRepository)
+    singleOf(::MobileTransferRemoteDataSource) bind MobileTransferDataSource::class
+    single {
+        get<RestService>()
+            .service(MobileTransferApi::class.java)
+    }
 }

@@ -215,10 +215,10 @@ class ScanQrPresenter(
                 updateAccountDataUseCase.execute(
                     UpdateAccountDataUseCase.Input(
                         userId = userId,
-                        firstName = response.updateTransferResponseModel.firstName,
-                        lastName = response.updateTransferResponseModel.lastName,
-                        avatarUrl = response.updateTransferResponseModel.avatarUrl,
-                        email = response.updateTransferResponseModel.email
+                        firstName = response.updateTransferModel.firstName,
+                        lastName = response.updateTransferModel.lastName,
+                        avatarUrl = response.updateTransferModel.avatarUrl,
+                        email = response.updateTransferModel.email
                     )
                 )
             }

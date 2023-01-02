@@ -1,7 +1,11 @@
 package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice
 
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.transferAccountSummaryModule
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.transferAccountModule
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccountonboarding.transferAccountOnboardingModule
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.usecase.CreateTransferUseCase
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.usecase.ViewTransferUseCase
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 /**
@@ -30,4 +34,8 @@ import org.koin.dsl.module
 val transferAccountToAnotherDeviceModule = module {
     transferAccountModule()
     transferAccountOnboardingModule()
+    transferAccountSummaryModule()
+
+    singleOf(::CreateTransferUseCase)
+    singleOf(::ViewTransferUseCase)
 }

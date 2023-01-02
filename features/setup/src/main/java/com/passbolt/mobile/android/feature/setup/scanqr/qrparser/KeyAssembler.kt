@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.feature.setup.scanqr.qrparser
 
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
+import com.passbolt.mobile.android.dto.response.qrcode.AssembledKeyDto
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import okio.Buffer
 
 /**
@@ -26,20 +27,13 @@ import okio.Buffer
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class KeyAssembler(
-    private val gson: Gson
-) {
+class KeyAssembler {
 
     fun assemblePrivateKey(contentBytes: Buffer): String {
         val key = String(contentBytes.readByteArray())
 
-        val assembledKey = gson.fromJson(key, AssembledKey::class.java)
+        val assembledKey = Json.decodeFromString<AssembledKeyDto>(key)
 
         return assembledKey.armoredKey
     }
 }
-
-class AssembledKey(
-    @SerializedName("armored_key")
-    val armoredKey: String
-)

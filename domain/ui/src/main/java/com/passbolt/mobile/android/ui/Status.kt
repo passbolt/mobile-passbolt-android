@@ -26,5 +26,6 @@ enum class Status {
     ERROR,
     IN_PROGRESS,
     COMPLETE,
-    CANCEL
+    CANCEL,
+    START
 }

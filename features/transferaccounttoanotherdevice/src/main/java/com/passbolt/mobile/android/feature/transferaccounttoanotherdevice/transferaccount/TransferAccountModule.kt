@@ -1,7 +1,13 @@
 package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount
 
+import com.google.zxing.EncodeHintType
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
+import com.journeyapps.barcodescanner.BarcodeEncoder
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.data.CreateTransferInputParametersGenerator
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.data.TransferQrCodesDataGenerator
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 
 /**
@@ -27,8 +33,24 @@ import org.koin.dsl.bind
  * @since v1.0
  */
 
+internal const val QR_CODE_GEN_HINTS = "QR_CODE_GEN_HINTS"
+
+private val QR_CODE_GEN_ERROR_CORRECTION = ErrorCorrectionLevel.L
+private const val QR_CODE_GEN_QR_VERSION = 27
+private const val QR_CODE_GEN_MARGIN_PX = 4
+
 fun Module.transferAccountModule() {
     scope<TransferAccountFragment> {
         scopedOf(::TransferAccountPresenter) bind TransferAccountContract.Presenter::class
+        scopedOf(::BarcodeEncoder)
+        scopedOf(::CreateTransferInputParametersGenerator)
+        scopedOf(::TransferQrCodesDataGenerator)
+        scoped(named(QR_CODE_GEN_HINTS)) {
+            hashMapOf<EncodeHintType, Any>().apply {
+                put(EncodeHintType.ERROR_CORRECTION, QR_CODE_GEN_ERROR_CORRECTION)
+                put(EncodeHintType.QR_VERSION, QR_CODE_GEN_QR_VERSION)
+                put(EncodeHintType.MARGIN, QR_CODE_GEN_MARGIN_PX)
+            }
+        }
     }
 }

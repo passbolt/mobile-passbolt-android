@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.dto.response.qrcode
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.data
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,12 +22,9 @@ package com.passbolt.mobile.android.dto.response.qrcode
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-data class ReservedBytesDto(
-    val version: Int,
-    val page: Int
-) {
-
-    fun encodeToString() =
-        version.toString() + "%02x".format(page)
+object QrGenerationConstants {
+    internal const val PROTOCOL_VERSION = 1
+    internal const val RESERVED_BYTES_COUNT = 3
+    internal const val MAX_QR_DATA_BYTES = 1465
+    internal const val MAX_QR_DATA_BYTES_EXCLUDING_RESERVED_BYTES = MAX_QR_DATA_BYTES - RESERVED_BYTES_COUNT
 }

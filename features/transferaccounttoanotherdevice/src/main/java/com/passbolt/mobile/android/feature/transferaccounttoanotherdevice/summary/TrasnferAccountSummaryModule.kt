@@ -1,4 +1,8 @@
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary
+
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,10 +26,9 @@ package com.passbolt.mobile.android.ui
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-data class UpdateTransferResponseModel(
-    val id: String,
-    val firstName: String?,
-    val lastName: String?,
-    val avatarUrl: String?,
-    val email: String?
-)
+
+fun Module.transferAccountSummaryModule() {
+    scope<TransferAccountSummaryFragment> {
+        scopedOf(::TransferAccountSummaryPresenter) bind TransferAccountSummaryContract.Presenter::class
+    }
+}

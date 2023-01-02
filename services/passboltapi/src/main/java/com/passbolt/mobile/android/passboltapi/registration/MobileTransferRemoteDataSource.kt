@@ -1,11 +1,9 @@
-package com.passbolt.mobile.android.mappers
+package com.passbolt.mobile.android.passboltapi.registration
 
-import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.dto.request.CreateTransferRequestDto
 import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
-import com.passbolt.mobile.android.dto.request.StatusRequest
-import com.passbolt.mobile.android.ui.Status
-import org.junit.Before
-import org.junit.Test
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.TransferResponseDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,35 +27,21 @@ import org.junit.Test
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UpdateTransferMapperTest {
-    private lateinit var mapper: UpdateTransferMapper
+internal class MobileTransferRemoteDataSource(
+    private val mobileTransferApi: MobileTransferApi
+) : MobileTransferDataSource {
 
-    @Before
-    fun setUp() {
-        mapper = UpdateTransferMapper()
-    }
+    override suspend fun updateTransfer(
+        uuid: String,
+        authToken: String,
+        pageRequestDto: UpdateTransferRequestDto,
+        userProfile: String?
+    ): BaseResponse<TransferResponseDto> =
+        mobileTransferApi.updateTransfer(uuid, authToken, pageRequestDto, userProfile)
 
-    @Test
-    fun `Mapping in progress status should returns proper dto`() =
-        verifyStatus(Status.IN_PROGRESS, StatusRequest.IN_PROGRESS)
+    override suspend fun createTransfer(createTransferRequest: CreateTransferRequestDto) =
+        mobileTransferApi.createTransfer(createTransferRequest).body
 
-    @Test
-    fun `Mapping error status should returns proper dto`() =
-        verifyStatus(Status.ERROR, StatusRequest.ERROR)
-
-    @Test
-    fun `Mapping complete status should returns proper dto`() =
-        verifyStatus(Status.COMPLETE, StatusRequest.COMPLETE)
-
-    @Test
-    fun `Mapping cancel status should returns proper dto`() =
-        verifyStatus(Status.CANCEL, StatusRequest.CANCEL)
-
-    private fun verifyStatus(inputStatus: Status, expectedStatusRequest: StatusRequest) {
-        val result = mapper.mapRequestToDto(0, inputStatus)
-        val expected = UpdateTransferRequestDto(0, expectedStatusRequest)
-        assertThat(result).isEqualTo(expected)
-    }
-
+    override suspend fun viewTransfer(authToken: String, uuid: String) =
+        mobileTransferApi.viewTransfer(authToken, uuid).body
 }
-

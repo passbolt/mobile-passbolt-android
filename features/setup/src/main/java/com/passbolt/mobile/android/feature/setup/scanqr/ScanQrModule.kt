@@ -53,11 +53,11 @@ fun Module.scanQrModule() {
             )
         }
         scoped { QrScanResultsMapper() }
-        scoped { KeyAssembler(gson = get()) }
+        scoped { KeyAssembler() }
         scoped {
             UpdateTransferUseCase(
-                registrationRepository = get(),
-                updateTransferMapper = get(),
+                mobileTransferRepository = get(),
+                transferMapper = get(),
                 coroutineContext = get()
             )
         }

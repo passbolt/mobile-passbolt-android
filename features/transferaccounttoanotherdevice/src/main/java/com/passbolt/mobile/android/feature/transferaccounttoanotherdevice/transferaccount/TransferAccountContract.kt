@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountStatus
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,6 +35,11 @@ interface TransferAccountContract {
 
     interface View : BaseAuthenticatedContract.View {
         fun showCancelTransferDialog()
-        fun finish()
+        fun showCouldNotInitializeTransferParameters()
+        fun showCouldNotCreateTransfer(message: String)
+        fun showCouldNotGenerateQrTransferData()
+        fun showQrCodeForData(qrCodeContent: String)
+        fun showErrorDuringTransferDetailsFetch(message: String)
+        fun navigateToResult(result: TransferAccountStatus)
     }
 }

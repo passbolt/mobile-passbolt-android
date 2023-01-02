@@ -1,14 +1,15 @@
-package com.passbolt.mobile.android.feature.setup.scanqr.usecase
+package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.TransferResponseDto
+import com.passbolt.mobile.android.dto.request.CreateTransferRequestDto
 import com.passbolt.mobile.android.mappers.TransferMapper
 import com.passbolt.mobile.android.passboltapi.registration.MobileTransferRepository
-import com.passbolt.mobile.android.ui.Status
-import com.passbolt.mobile.android.ui.UpdateTransferModel
+import com.passbolt.mobile.android.ui.CreateTransferModel
 import kotlinx.coroutines.withContext
 
 /**
@@ -33,41 +34,49 @@ import kotlinx.coroutines.withContext
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UpdateTransferUseCase(
+
+class CreateTransferUseCase(
     private val mobileTransferRepository: MobileTransferRepository,
     private val transferMapper: TransferMapper,
     private val coroutineContext: CoroutineLaunchContext
-) : AsyncUseCase<UpdateTransferUseCase.Input, UpdateTransferUseCase.Output> {
+) : AsyncUseCase<CreateTransferUseCase.Input, CreateTransferUseCase.Output> {
 
     override suspend fun execute(input: Input): Output = withContext(coroutineContext.io) {
-        val response = mobileTransferRepository.turnPage(
-            input.uuid,
-            input.authToken,
-            transferMapper.mapRequestToDto(input.currentPage, input.status),
-            if (input.status == Status.COMPLETE) PROFILE_INFO_REQUIRED else null
-        )
-        when (response) {
+        when (val response = mobileTransferRepository.createTransfer(
+            CreateTransferRequestDto(input.totalPagesCount, input.hash)
+        )) {
             is NetworkResult.Failure -> Output.Failure(response)
-            is NetworkResult.Success -> Output.Success(transferMapper.mapUpdateResponseToUi(response.value.body))
+            is NetworkResult.Success -> Output.Success(transferMapper.mapCreateResponseToUi(response.value))
         }
     }
 
     data class Input(
-        val uuid: String,
-        val authToken: String,
-        val currentPage: Int,
-        val status: Status
+        val totalPagesCount: Int,
+        val hash: String
     )
 
-    sealed class Output {
+    sealed class Output : AuthenticatedUseCaseOutput {
+
+        override val authenticationState: AuthenticationState
+            get() = when {
+                this is Failure<*> && this.response.isUnauthorized -> {
+                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                }
+                this is Failure<*> && this.response.isMfaRequired -> {
+                    val providers = MfaTypeProvider.get(this.response)
+                    AuthenticationState.Unauthenticated(
+                        AuthenticationState.Unauthenticated.Reason.Mfa(providers)
+                    )
+                }
+                else -> {
+                    AuthenticationState.Authenticated
+                }
+            }
+
         data class Success(
-            val updateTransferModel: UpdateTransferModel
+            val transfer: CreateTransferModel
         ) : Output()
 
-        data class Failure(val error: NetworkResult.Failure<BaseResponse<TransferResponseDto>>) : Output()
-    }
-
-    companion object {
-        private const val PROFILE_INFO_REQUIRED = "1"
+        class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }
 }

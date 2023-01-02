@@ -151,4 +151,21 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
             Helper.freeOSMemory()
         }
     }
+
+    suspend fun getPrivateKeyFingerprint(
+        privateKey: String
+    ): OpenPgpResult<String> {
+        return try {
+            withContext(Dispatchers.IO) {
+                OpenPgpResult.Result(
+                    Key(privateKey).fingerprint
+                )
+            }
+        } catch (exception: Exception) {
+            Timber.e(exception, "There was an error during getPrivateKeyFingerprint")
+            OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
+        } finally {
+            Helper.freeOSMemory()
+        }
+    }
 }

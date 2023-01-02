@@ -16,7 +16,7 @@
             android:layout_height="?attr/actionBarSize"
             android:theme="@style/Theme.Passbolt.Toolbar"
             app:layout_constraintTop_toTopOf="parent"
-            app:toolbarTitle="@string/transfer_details_title" />
+            app:toolbarTitle="@string/transfer_account_title" />
 
         <TextView
             android:id="@+id/header"

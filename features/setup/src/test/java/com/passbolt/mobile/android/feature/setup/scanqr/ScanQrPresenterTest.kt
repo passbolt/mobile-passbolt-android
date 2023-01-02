@@ -13,7 +13,7 @@ import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUs
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
-import com.passbolt.mobile.android.ui.UpdateTransferResponseModel
+import com.passbolt.mobile.android.ui.UpdateTransferModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
@@ -172,7 +172,7 @@ class ScanQrPresenterTest : KoinTest {
         whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
         whenever(updateTransferUseCase.execute(any())).doReturn(
             UpdateTransferUseCase.Output.Success(
-                UpdateTransferResponseModel("id", null, null, null, null)
+                UpdateTransferModel("id", null, null, null, null)
             )
         )
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
@@ -196,7 +196,7 @@ class ScanQrPresenterTest : KoinTest {
         whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(false)
         whenever(updateTransferUseCase.execute(any())).doReturn(
             UpdateTransferUseCase.Output.Success(
-                UpdateTransferResponseModel("id", null, null, null, null)
+                UpdateTransferModel("id", null, null, null, null)
             )
         )
 
@@ -219,7 +219,7 @@ class ScanQrPresenterTest : KoinTest {
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Failure)
         whenever(updateTransferUseCase.execute(any())).doReturn(
             UpdateTransferUseCase.Output.Success(
-                UpdateTransferResponseModel("id", null, null, null, null)
+                UpdateTransferModel("id", null, null, null, null)
             )
         )
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(

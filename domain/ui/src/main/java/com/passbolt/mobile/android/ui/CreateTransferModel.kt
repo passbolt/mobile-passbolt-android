@@ -1,7 +1,4 @@
-package com.passbolt.mobile.android.passboltapi.registration
-
-import com.passbolt.mobile.android.core.networking.RestService
-import org.koin.core.module.Module
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,21 +22,11 @@ import org.koin.core.module.Module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-internal fun Module.registrationApiModule() {
-    single {
-        RegistrationRepository(
-            registrationDataSource = get(),
-            responseHandler = get()
-        )
-    }
-    single<RegistrationDataSource> {
-        RegistrationRemoteDataSource(
-            registrationApi = get()
-        )
-    }
-    single {
-        get<RestService>()
-            .service(RegistrationApi::class.java)
-    }
-}
+data class CreateTransferModel(
+    val id: String,
+    val status: Status,
+    val currentPage: Int,
+    val totalPages: Int,
+    val hash: String,
+    val authenticationToken: String
+)
