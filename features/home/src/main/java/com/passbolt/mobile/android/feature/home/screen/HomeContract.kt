@@ -53,7 +53,7 @@ interface HomeContract {
         fun showEmptyList()
         fun showSearchEmptyList()
         fun displaySearchAvatar(url: String?)
-        fun addToClipboard(label: String, value: String)
+        fun addToClipboard(label: String, value: String, isSecret: Boolean)
         fun openWebsite(url: String)
         fun showDecryptionFailure()
         fun showFetchFailure()

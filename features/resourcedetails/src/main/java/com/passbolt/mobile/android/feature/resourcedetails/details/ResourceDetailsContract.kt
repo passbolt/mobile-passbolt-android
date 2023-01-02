@@ -34,7 +34,7 @@ interface ResourceDetailsContract {
     interface View : DataRefreshViewReactiveContract.View {
         fun displayTitle(title: String)
         fun displayUsername(username: String)
-        fun addToClipboard(label: String, value: String)
+        fun addToClipboard(label: String, value: String, isSecret: Boolean)
         fun displayUrl(url: String)
         fun displayInitialsIcon(name: String, initials: String)
         fun navigateToMore(menuModel: ResourceMoreMenuModel)

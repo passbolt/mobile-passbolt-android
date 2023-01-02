@@ -2,8 +2,10 @@ package com.passbolt.mobile.android.feature.resourcedetails.details
 
 import android.annotation.SuppressLint
 import android.content.ClipData
+import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.view.View
@@ -235,9 +237,13 @@ class ResourceDetailsFragment :
         )
     }
 
-    override fun addToClipboard(label: String, value: String) {
+    override fun addToClipboard(label: String, value: String, isSecret: Boolean) {
         clipboardManager?.setPrimaryClip(
-            ClipData.newPlainText(label, value)
+            ClipData.newPlainText(label, value).apply {
+                description.extras = PersistableBundle().apply {
+                    putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, isSecret)
+                }
+            }
         )
         Toast.makeText(requireContext(), getString(R.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }

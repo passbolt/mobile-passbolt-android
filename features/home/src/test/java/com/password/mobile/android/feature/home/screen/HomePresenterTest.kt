@@ -536,7 +536,11 @@ class HomePresenterTest : KoinTest {
         presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuCopyPasswordClick()
 
-        verify(view).addToClipboard(ResourceAuthenticatedActionsInteractor.SECRET_LABEL, String(DECRYPTED_SECRET))
+        verify(view).addToClipboard(
+            ResourceAuthenticatedActionsInteractor.SECRET_LABEL,
+            String(DECRYPTED_SECRET),
+            true
+        )
     }
 
     @Test

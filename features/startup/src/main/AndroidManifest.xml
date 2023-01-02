@@ -6,8 +6,13 @@
     <application>
         <activity
             android:name=".StartUpActivity"
+            android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.App.Starting" />
+            android:theme="@style/Theme.App.Starting">
+            <intent-filter>
+                <action android:name="com.passbolt.mobile.android.MANAGED_PROFILE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

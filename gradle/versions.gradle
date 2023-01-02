@@ -2,9 +2,9 @@ ext {
     projectVersionName = "1.13.0"
     projectVersionCode = 16
 
-    projectCompileSdk = 31
+    projectCompileSdk = 33
     projectMinSdk = 29
-    projectTargetSdk = 31
+    projectTargetSdk = 33
 
     versions = [
         androidGradlePlugin: '7.3.1',

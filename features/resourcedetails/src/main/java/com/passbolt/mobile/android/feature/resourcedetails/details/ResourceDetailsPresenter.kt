@@ -235,21 +235,21 @@ class ResourceDetailsPresenter(
             resourceAuthenticatedActionsInteractor.provideDescription(
                 decryptionFailure = { view?.showDecryptionFailure() },
                 fetchFailure = { view?.showFetchFailure() }
-            ) { _, description ->
-                view?.showDescription(description, useSecretFont = true)
+            ) { _, description, isSecret ->
+                view?.showDescription(description, useSecretFont = isSecret)
             }
         }
     }
 
     override fun usernameCopyClick() {
-        resourceActionsInteractor.provideUsername { label, ussername ->
-            view?.addToClipboard(label, ussername)
+        resourceActionsInteractor.provideUsername { label, username ->
+            view?.addToClipboard(label, username, isSecret = false)
         }
     }
 
     override fun urlCopyClick() {
         resourceActionsInteractor.provideWebsiteUrl { label, url ->
-            view?.addToClipboard(label, url)
+            view?.addToClipboard(label, url, isSecret = false)
         }
     }
 
@@ -259,7 +259,7 @@ class ResourceDetailsPresenter(
                 decryptionFailure = { view?.showDecryptionFailure() },
                 fetchFailure = { view?.showFetchFailure() }
             ) { label, password ->
-                view?.addToClipboard(label, password)
+                view?.addToClipboard(label, password, isSecret = true)
             }
         }
     }
@@ -269,8 +269,8 @@ class ResourceDetailsPresenter(
             resourceAuthenticatedActionsInteractor.provideDescription(
                 decryptionFailure = { view?.showDecryptionFailure() },
                 fetchFailure = { view?.showFetchFailure() }
-            ) { label, description ->
-                view?.addToClipboard(label, description)
+            ) { label, description, isSecret ->
+                view?.addToClipboard(label, description, isSecret = isSecret)
             }
         }
     }

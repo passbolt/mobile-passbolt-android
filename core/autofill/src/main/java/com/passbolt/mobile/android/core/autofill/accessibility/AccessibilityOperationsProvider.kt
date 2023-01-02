@@ -129,12 +129,12 @@ class AccessibilityOperationsProvider(
     }
 
     fun getOverlayAnchorPosition(
-        anchorView: AccessibilityNodeInfo,
+        anchorView: AccessibilityNodeInfo?,
         height: Int,
         isOverlayAboveAnchor: Boolean
     ): Point {
         val anchorViewRect = Rect()
-        anchorView.getBoundsInScreen(anchorViewRect)
+        anchorView?.getBoundsInScreen(anchorViewRect)
         val anchorViewX = anchorViewRect.left
         var anchorViewY = if (isOverlayAboveAnchor) anchorViewRect.top else anchorViewRect.bottom
         if (isOverlayAboveAnchor) {
