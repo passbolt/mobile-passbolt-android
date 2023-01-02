@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.scenarios.home.search
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.pressImeActionButton
 import androidx.test.espresso.action.ViewActions.replaceText
+import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -26,6 +26,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.filters.ResourceFilterModel
 import org.hamcrest.CoreMatchers.not
 import org.junit.Rule
 import org.junit.Test
@@ -85,90 +86,104 @@ class HomeSearchTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()), swipeUp())
         onView(withId(R.id.authButton)).perform(click())
+        onView(withId(R.id.text_input_start_icon)).perform(click())
+        onView(withId(ResourceFilterModel.values()[0].filterId)).perform(click())
     }
 
     @Test
+    // https://passbolt.testrail.io/index.php?/cases/view/2460
     fun asALoggedInMobileUserOnTheHomepageICanPutTheFocusOnTheSearchField() {
-        //    Given     I have biometrics configured on my device
-        //    Given     that I am a mobile user with the application installed
-        //    And       I am on homepage
+        //    Given     I am on homepage
         onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
         //    When      I click on the search bar
         onView(withId(R.id.searchEditText)).perform(click())
         //    Then      I see the search field is focused
         //    And       I see the OS keyboard
-        //    When      I type at least one character
-        onView(withId(R.id.searchEditText)).perform(typeText("cakephp"))
-        //    And       I do not see the account avatar
-        onView(withId(R.id.text_input_end_icon)).check(matches(not(hasDrawable(R.drawable.ic_avatar_placeholder))))
-        //    Then      I see a cross button inside the search field on the right
-        onView(withId(R.id.text_input_end_icon)).check(matches(hasDrawable(R.drawable.ic_close)))
     }
 
     @Test
-    fun asALoggedInMobileUserICanSeeTheResultOfASuccessfulSearchQuery() {
-        //    Given     that I am a mobile user with the application installed
-        //    And       I have at least one resource
-        //    And       I put the focus on the search field
-        onView(withId(R.id.searchEditText)).perform(click())
-        //    When      I start typing a search query
-        //    And       the query has at least one match
+    //  https://passbolt.testrail.io/index.php?/cases/view/2629
+    fun asALoggedInMobileUserOnTheHomepageICanSeeTheResourcesCorrespondingToMySearchQuery() {
+        //      Given   I am a logged in mobile user
+        //      And     the active filter is [Active Filter]
+        //      TODO: iterate through filters when particular user will be chosen https://app.clickup.com/t/2593179/MOB-743
+        //      When    I type a query in the search bar
+        //      And     the query matches at least one resource within [Active Filter]
         onView(withId(R.id.searchEditText)).perform(typeText("cakephp"))
-        //    Then      I see the resource(s) matching the query
-        //    When      I press Go or Enter
-        onView(withId(R.id.searchEditText)).perform(pressImeActionButton())
-        //    Then      I do not see the keyboard
-        //    And       I see the home page with the search results
+        //      Then    I see the list of resources matching the query
         onView(withId(R.id.recyclerView)).check(matches(atPosition(0, hasDescendant(withText("cakephp")))))
-        //    And       I see my search term in the search input
         onView(withId(R.id.searchEditText)).check(matches(withText("cakephp")))
-        //    And       I see a cross button
+        //      And     I see the resources are sorted [sort]
+        //      TODO: implement sorting when particular user will be chosen https://app.clickup.com/t/2593179/MOB-743
+        //
+        //   | Active Filter       |  sort                                  |
+        //   | “All items”         |  "alphabetically"                      |
+        //   | “Favorites”         |  "chronologically by modification date"  |
+        //   | “Recently modified” |  "chronologically by modification date"  |
+        //   | “Shared with me”    |  "chronologically by modification date"  |
+        //   | “Owned by me”       |  "chronologically by modification date"  |
+    }
+
+    @Test
+    //  https://passbolt.testrail.io/index.php?/cases/view/2630
+    fun asALoggedInMobileUserOnTheHomepageICanSeeAMessageWhenThereIsNoMatchToMySearchQuery() {
+        //      Given   I am a logged in mobile user
+        //      And     the active filter is [Active Filter]
+        //      TODO: iterate through filters when particular user will be chosen https://app.clickup.com/t/2593179/MOB-743
+        //      When    I type a query in the search bar
+        onView(withId(R.id.searchEditText)).perform(typeText("Does Not Exist On List"))
+        //      And     the query does not match any resources within [Active Filter]
+        //      Then    I see a “There is no item” message
+        onView(withText(R.string.no_passwords)).check(matches(isDisplayed()))
+        //      And     I see an illustration
+        onView(withId(R.id.emptyListImage)).check(matches(isDisplayed()))
+        //
+        //   | Active Filter       |
+        //   | “All items”         |
+        //   | “Favorites”         |
+        //   | “Recently modified” |
+        //   | “Shared with me”    |
+        //   | “Owned by me”       |
+    }
+
+    @Test
+    // https://passbolt.testrail.io/index.php?/cases/view/2627
+    fun asALoggedInMobileUserOnTheHomepageICanSeeTheCurrentAvatarSwitchesToACloseButtonWhenIFocusTheSearchBar() {
+        //      Given   that I am a logged in mobile user
+        //      When    I focus the search bar and start typing
+        onView(withId(R.id.searchEditText)).perform(click())
+        onView(withId(R.id.searchEditText)).perform(typeText("cakephp"))
+        //      Then    I do not see the user's current avatar
+        //      And     I see a close button
         onView(withId(R.id.text_input_end_icon)).check(matches(hasDrawable(R.drawable.ic_close)))
     }
 
     @Test
-    fun asALoggedInMobileUserOnTheSearchFieldICanSeeTheResultOfAnUnsuccessfulSearchQuery() {
-        //    Given     that I am a mobile user with the application installed
-        //    And       the Passbolt application is already opened
-        //    And       I am put the focus on the search input field
-        onView(withId(R.id.searchEditText)).perform(click())
-        //    When      I type a query
-        onView(withId(R.id.searchEditText)).perform(typeText("Does Not Exist On List"))
-        //    And       the query has no match
-        //    Then      I see a “There is no password” title
-        onView(withText(R.string.no_passwords)).check(matches(isDisplayed()))
-        //    And       I see an illustration
-        onView(withId(R.id.emptyListImage)).check(matches(isDisplayed()))
-    }
-
-    @Test
-    fun asALoggedInMobileUserOnTheSearchFieldICanGoBackToTheHomepageViaTheCrossButton() {
-        //    Given     that I am a mobile user with the application installed
-        //    And       I have filtered the home page using the search
+    // https://passbolt.testrail.io/index.php?/cases/view/2628
+    fun asALoggedInMobileUserOnTheHomepageICanCancelASearchAndGoBackToTheHomepage() {
+        //      Given   I am a logged in mobile user
+        //      And     the search bar is focused
         onView(withId(R.id.searchEditText)).perform(click())
         onView(withId(R.id.searchEditText)).perform(typeText("Does Not Exist On List"))
-        //    When      I click on the cross button next to the search input
+        //      When    I click on the close button
         onView(withId(R.id.text_input_end_icon)).perform(click())
-        //    Then      I see all the resources available
+        //      Then    I do not see the focus status on the search bar
+        //      And     I see the homepage with the current active filter
         onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
         onView(withId(R.id.emptyListImage)).check(matches(not(isDisplayed())))
     }
 
     @Test
+    // https://passbolt.testrail.io/index.php?/cases/view/2464
     fun asALoggedInMobileUserOnTheSearchFieldICanGoBackToTheHomepageWhenThereAreNoCharactersInTheSearchField() {
-        //    Given     that I am a mobile user with the application installed
-        //    And       the Passbolt application is already opened
-        //    And       I completed the login step
-        //    And       I am on the focused search field
+        //      Given   I am on the focused search field
         onView(withId(R.id.searchEditText)).perform(click())
-        //    When      I delete all characters in the search input
+        //      When    I delete all characters in the search input
         onView(withId(R.id.searchEditText)).perform(typeText("Does Not Exist On List"))
         onView(withId(R.id.searchEditText)).perform(replaceText(""))
-        //    And       I click outside the search field or the OS keyboard
-        onView(withId(R.id.screenTitleLabel)).perform(click())
-        //    Then      I see all the resources available
+        //      Then    I see all the resources available
         onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
         onView(withId(R.id.emptyListImage)).check(matches(not(isDisplayed())))
         onView(withText(R.id.text_input_end_icon)).check(doesNotExist())
