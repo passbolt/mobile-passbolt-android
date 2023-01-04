@@ -133,9 +133,9 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
         )
     }
 
-    override fun navigateToSignInForAccount(userId: String) {
+    override fun navigateToSignInForAccount() {
         dismiss()
-        listener?.switchAccountClick(userId)
+        listener?.switchAccountClick()
     }
 
     override fun showProgress() {
@@ -152,7 +152,7 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
 
     interface Listener {
         fun switchAccountManageAccountClick()
-        fun switchAccountClick(userId: String)
+        fun switchAccountClick()
     }
 
     companion object {
