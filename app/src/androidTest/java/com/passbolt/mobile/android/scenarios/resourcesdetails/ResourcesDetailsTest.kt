@@ -136,18 +136,18 @@ class ResourcesDetailsTest : KoinTest {
     }
 
     @Test
+    // https://passbolt.testrail.io/index.php?/cases/view/2447
     fun asALoggedInMobileUserOnTheResourceDisplayICanShowOrHideResourceDescription() {
         //    Given     that I am a mobile user with the application installed
         //    And       the Passbolt application is already opened
         //    And       I completed the login step
         //    And       I am on a resource display screen
-        // TODO in the future, when you change your environment, please change this resource
-        onView(withId(R.id.searchEditText)).perform(click(), typeText("acft ed"))
-        onView(withText("acft edt 2")).perform(click())
+        onView(withId(R.id.searchEditText)).perform(click(), typeText("TestResourceDesc"))
+        onView(withText("TestResourceDescription")).perform(click())
         //    When      I click on the show icon in the “Description” item list
         onView(withText(R.string.resource_details_see_description)).perform(click())
         //    Then      I see the description
-        onView(withText("Tyuo")).check(matches(isDisplayed()))
+        onView(withText("Luxembourg")).check(matches(isDisplayed()))
     }
 
     @Test

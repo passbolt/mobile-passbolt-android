@@ -92,6 +92,6 @@ class ManagedAccountIntentCreator {
         const val PROPERTY_ARMORED_KEY = "ARMORED_KEY"
         const val PROPERTY_LOCAL_USER_UUID = "LOCAL_USER_UUID"
 
-        private const val ACCOUNT_PROPERTIES_FILENAME = "profile_hedy.properties"
+        private const val ACCOUNT_PROPERTIES_FILENAME = "profile_user_automated.properties"
     }
 }
