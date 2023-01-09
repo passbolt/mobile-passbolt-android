@@ -38,6 +38,9 @@ import timber.log.Timber
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+typealias IsSecret = Boolean
+
 class ResourceAuthenticatedActionsInteractor(
     private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
     private val sessionRefreshedFlow: StateFlow<Unit?>,
@@ -52,18 +55,18 @@ class ResourceAuthenticatedActionsInteractor(
     suspend fun provideDescription(
         decryptionFailure: () -> Unit,
         fetchFailure: () -> Unit,
-        success: (ClipboardLabel, String) -> Unit
+        success: (ClipboardLabel, String, IsSecret) -> Unit
     ) {
         when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
             SIMPLE_PASSWORD -> {
                 resource.description?.let {
-                    success(DESCRIPTION_LABEL, it)
+                    success(DESCRIPTION_LABEL, it, false)
                 }
             }
             PASSWORD_WITH_DESCRIPTION -> {
                 fetchAndDecrypt(decryptionFailure, fetchFailure) {
                     val description = secretParser.extractDescription(resourceTypeEnum, it)
-                    success(DESCRIPTION_LABEL, description)
+                    success(DESCRIPTION_LABEL, description, true)
                 }
             }
         }

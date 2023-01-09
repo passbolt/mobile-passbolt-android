@@ -14,11 +14,11 @@ afterEvaluate { project ->
 def setupModule(isAndroid, isAndroidComponent) {
     if (isAndroid) {
         android {
-            compileSdkVersion projectCompileSdk
+            compileSdk projectCompileSdk
 
             defaultConfig {
-                minSdkVersion projectMinSdk
-                targetSdkVersion projectTargetSdk
+                minSdk projectMinSdk
+                targetSdk projectTargetSdk
             }
 
             if (isAndroidComponent) {
@@ -36,8 +36,8 @@ def setupModule(isAndroid, isAndroidComponent) {
                 checkAllWarnings true
                 warningsAsErrors false
                 // MissingTranslation - it is accepted to have fallback to default locale if no translation found
-                // ExtraTranslation - enable only for this build - TODO remove after release (current translations are for develop
-                //                    but the release on done on last master
+                // ExtraTranslation - translations are updated manually on demand - expected differences in code and
+                //                    language source files
                 disable = ["GoogleAppIndexingWarning", "GradleDependency", "NewerVersionAvailable", "UnusedIds",
                            "Autofill", "PermissionImpliesUnsupportedChromeOsHardware", "WrongConstant", "RequiredSize",
                            "Instantiatable", "InvalidPackage", "MissingTranslation", "ExtraTranslation"]

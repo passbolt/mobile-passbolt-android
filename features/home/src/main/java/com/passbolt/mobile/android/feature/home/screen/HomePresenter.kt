@@ -603,14 +603,14 @@ class HomePresenter(
     override fun menuCopyUsernameClick() {
         resourceActionsInteractor
             .provideUsername { label, username ->
-                view?.addToClipboard(label, username)
+                view?.addToClipboard(label, username, isSecret = false)
             }
     }
 
     override fun menuCopyUrlClick() {
         resourceActionsInteractor
             .provideWebsiteUrl { label, url ->
-                view?.addToClipboard(label, url)
+                view?.addToClipboard(label, url, isSecret = false)
             }
     }
 
@@ -620,7 +620,7 @@ class HomePresenter(
                 decryptionFailure = { view?.showDecryptionFailure() },
                 fetchFailure = { view?.showFetchFailure() }
             ) { label, password ->
-                view?.addToClipboard(label, password)
+                view?.addToClipboard(label, password, isSecret = true)
             }
         }
     }
@@ -630,8 +630,8 @@ class HomePresenter(
             resourceAuthenticatedActionsInteractor.provideDescription(
                 decryptionFailure = { view?.showDecryptionFailure() },
                 fetchFailure = { view?.showFetchFailure() }
-            ) { label, description ->
-                view?.addToClipboard(label, description)
+            ) { label, description, isSecret ->
+                view?.addToClipboard(label, description, isSecret = isSecret)
             }
         }
     }
