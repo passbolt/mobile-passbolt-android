@@ -10,8 +10,10 @@ import com.passbolt.mobile.android.feature.home.switchaccount.recycler.SwitchAcc
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,18 +40,12 @@ import org.koin.core.qualifier.named
 
 fun Module.switchAccountModule() {
     scope<SwitchAccountBottomSheetFragment> {
-        scoped<SwitchAccountContract.Presenter> {
-            SwitchAccountPresenter(
-                getAllAccountsDataUseCase = get(),
-                switchAccountModelMapper = get(),
-                signOutUseCase = get(),
-                coroutineLaunchContext = get()
-            )
-        }
+        scopedOf(::SwitchAccountPresenter) bind SwitchAccountContract.Presenter::class
+        scopedOf(::SwitchAccountUiItemsMapper)
+
         scoped { (switchAccountsUiModelMapper: SwitchAccountUiItemsMapper) ->
             ModelAdapter(switchAccountsUiModelMapper::mapModelToItem)
         }
-        scoped { SwitchAccountUiItemsMapper() }
         scoped(named<SwitchAccountUiModel>()) {
             FastAdapter.with(get<ModelAdapter<SwitchAccountUiModel, GenericItem>> {
                 parametersOf(get<SwitchAccountUiItemsMapper>())

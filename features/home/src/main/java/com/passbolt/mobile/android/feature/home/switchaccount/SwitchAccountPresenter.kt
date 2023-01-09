@@ -5,6 +5,8 @@ import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
+import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -38,6 +40,7 @@ class SwitchAccountPresenter(
     private val getAllAccountsDataUseCase: GetAllAccountsDataUseCase,
     private val switchAccountModelMapper: SwitchAccountModelMapper,
     private val signOutUseCase: SignOutUseCase,
+    private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : SwitchAccountContract.Presenter {
 
@@ -82,7 +85,8 @@ class SwitchAccountPresenter(
     }
 
     override fun switchAccountClick(account: SwitchAccountUiModel.AccountItem) {
-        view?.navigateToSignInForAccount(account.userId)
+        saveSelectedAccountUseCase.execute(UserIdInput(account.userId))
+        view?.navigateToSignInForAccount()
     }
 
     override fun seeDetailsClick() {
