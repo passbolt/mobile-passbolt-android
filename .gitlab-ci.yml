@@ -3,6 +3,15 @@ image: registry.gitlab.com/passbolt/passbolt-ci-docker-images/android-app:latest
 variables:
   ANDROID_HOME: "${PWD}/android-home"
 
+default:
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - api_failure
+      - stale_schedule
+
 stages:
   - Build
   - Instrumented tests
