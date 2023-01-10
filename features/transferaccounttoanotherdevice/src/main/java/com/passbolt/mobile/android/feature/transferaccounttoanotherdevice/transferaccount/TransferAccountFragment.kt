@@ -2,13 +2,13 @@ package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.trans
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.passbolt.mobile.android.common.dialogs.cancelTransferAccountAlertDialog
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R
@@ -48,23 +48,29 @@ class TransferAccountFragment :
     override val presenter: TransferAccountContract.Presenter by inject()
     private val barcodeEncoder: BarcodeEncoder by inject()
     private val qrCodeGenHints: HashMap<EncodeHintType, Any> by inject(named(QR_CODE_GEN_HINTS))
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            presenter.backClick()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
-        initDefaultToolbar(binding.toolbar)
         setListeners()
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
+        backPressedCallback.isEnabled = false
         presenter.detach()
+        super.onDestroyView()
     }
 
     private fun setListeners() {
         binding.cancelTransferButton.setDebouncingOnClick {
             presenter.cancelTransferButtonClick()
         }
+        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
     override fun showCancelTransferDialog() {

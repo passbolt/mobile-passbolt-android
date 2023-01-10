@@ -163,6 +163,10 @@ class TransferAccountPresenter(
         view?.showCancelTransferDialog()
     }
 
+    override fun backClick() {
+        view?.showCancelTransferDialog()
+    }
+
     override fun stopTransferClick() {
         view?.navigateToResult(TransferAccountStatus.Canceled())
     }

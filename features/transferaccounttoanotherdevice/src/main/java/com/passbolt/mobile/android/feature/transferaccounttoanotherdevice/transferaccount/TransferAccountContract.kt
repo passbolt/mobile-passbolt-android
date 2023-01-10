@@ -31,6 +31,7 @@ interface TransferAccountContract {
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun cancelTransferButtonClick()
         fun stopTransferClick()
+        fun backClick()
     }
 
     interface View : BaseAuthenticatedContract.View {
