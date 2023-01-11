@@ -17,7 +17,6 @@ import com.passbolt.mobile.android.core.mvp.mvpModule
 import com.passbolt.mobile.android.core.networking.networkingModule
 import com.passbolt.mobile.android.core.notifications.notificationsModule
 import com.passbolt.mobile.android.core.qrscan.barcodeScanModule
-import com.passbolt.mobile.android.core.qrscan.di.cameraScanModule
 import com.passbolt.mobile.android.core.resources.resourcesModule
 import com.passbolt.mobile.android.core.resourcetypes.resourceTypesModule
 import com.passbolt.mobile.android.core.secrets.secretsModule
@@ -101,7 +100,6 @@ class KoinInitializer : Initializer<Unit> {
             mvpModule,
             networkingModule,
             barcodeScanModule,
-            cameraScanModule,
             storageModule,
             passboltApiModule,
             autofillResourcesModule,

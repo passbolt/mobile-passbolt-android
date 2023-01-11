@@ -47,12 +47,13 @@ ext {
             biometric: "1.2.0-alpha03",
             fragment: "1.5.0",
             activity: "1.5.0",
-            cameraX: "1.1.0",
-            cameraView: "1.1.0",
+            cameraX: "1.2.0",
+            cameraView: "1.2.0",
             lifecycle: "2.5.0",
             swiperefresh: "1.1.0",
             appStartUp: "1.1.1",
-            splashScreen: "1.0.0-beta02"
+            splashScreen: "1.0.0-beta02",
+            cameraXMlVision: "1.2.0-beta02"
         ],
         material: "1.6.1",
         networking: [
@@ -60,7 +61,7 @@ ext {
             okHttp: "4.7.2"
         ],
         timber: "5.0.1",
-        mlkit: "17.0.2",
+        mlkit: "17.0.3",
         zxing: "4.3.0",
         gson: "2.9.0",
         appDistribution: "3.0.2",
@@ -153,6 +154,7 @@ ext {
             cameraX: "androidx.camera:camera-camera2:${versions.androidx.cameraX}",
             cameraXLifecycle: "androidx.camera:camera-lifecycle:${versions.androidx.cameraX}",
             cameraXView: "androidx.camera:camera-view:${versions.androidx.cameraView}",
+            cameraXMlVision: "androidx.camera:camera-mlkit-vision:${versions.androidx.cameraXMlVision}",
             lifecycleAnnotationProcessor: "androidx.lifecycle:lifecycle-common-java8:${versions.androidx.lifecycle}",
             processLifecycle: "androidx.lifecycle:lifecycle-process:${versions.androidx.lifecycle}",
             swiperefresh: "androidx.swiperefreshlayout:swiperefreshlayout:${versions.androidx.swiperefresh}",

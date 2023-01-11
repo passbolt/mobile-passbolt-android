@@ -1,52 +1,59 @@
 package com.passbolt.mobile.android.core.qrscan.manager
 
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
-import com.google.common.util.concurrent.ListenableFuture
+import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
-import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
+import com.passbolt.mobile.android.core.qrscan.analyzer.QrCodeImageAnalyzer
 import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.Executor
 
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
 class ScanManager constructor(
-    private val cameraProviderFuture: ListenableFuture<ProcessCameraProvider>,
-    private val previewUseCase: Preview,
-    private val cameraSelector: CameraSelector,
-    private val cameraBarcodeAnalyzer: CameraBarcodeAnalyzer,
-    private val imageAnalysisUseCase: ImageAnalysis,
-    private val mainExecutor: Executor
+    private val mainExecutor: Executor,
+    private val barcodeImageAnalyzer: QrCodeImageAnalyzer,
+    private val cameraController: LifecycleCameraController,
+    private val barcodeScanner: BarcodeScanner
 ) {
 
     val barcodeScanPublisher: StateFlow<BarcodeScanResult>
-        get() = cameraBarcodeAnalyzer.resultFlow
+        get() = barcodeImageAnalyzer.resultFlow
 
-    @Throws(IllegalStateException::class, IllegalArgumentException::class)
-    fun attach(owner: LifecycleOwner, cameraPreview: PreviewView) {
-        cameraProviderFuture.addListener({
-            imageAnalysisUseCase.setAnalyzer(mainExecutor, cameraBarcodeAnalyzer)
-            previewUseCase.setSurfaceProvider(cameraPreview.surfaceProvider)
-            bindCameraUseCases(owner)
-        }, mainExecutor)
+    fun attach(owner: LifecycleOwner, previewView: PreviewView) {
+        with(cameraController) {
+            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+            setImageAnalysisAnalyzer(mainExecutor, barcodeImageAnalyzer)
+            bindToLifecycle(owner)
+        }
+        previewView.controller = cameraController
     }
 
     fun detach() {
-        previewUseCase.setSurfaceProvider(null)
-        cameraProviderFuture.get().unbind(imageAnalysisUseCase, previewUseCase)
-    }
-
-    @Throws(IllegalStateException::class, java.lang.IllegalArgumentException::class)
-    private fun bindCameraUseCases(owner: LifecycleOwner) {
-        with(cameraProviderFuture.get()) {
-            unbindAll()
-            bindToLifecycle(
-                owner,
-                cameraSelector,
-                previewUseCase, imageAnalysisUseCase
-            )
-        }
+        barcodeScanner.close()
+        cameraController.unbind()
     }
 }
