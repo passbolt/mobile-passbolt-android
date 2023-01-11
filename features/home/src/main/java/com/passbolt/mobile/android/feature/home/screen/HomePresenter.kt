@@ -696,8 +696,8 @@ class HomePresenter(
         view?.navigateToManageAccounts()
     }
 
-    override fun switchAccountClick(userId: String) {
-        view?.navigateToSwitchedAccountAuth(userId)
+    override fun switchAccountClick() {
+        view?.navigateToSwitchedAccountAuth()
     }
 
     override fun filtersClick() {

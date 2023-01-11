@@ -611,8 +611,8 @@ class HomeFragment :
         presenter.switchAccountManageAccountClick()
     }
 
-    override fun switchAccountClick(userId: String) {
-        presenter.switchAccountClick(userId)
+    override fun switchAccountClick() {
+        presenter.switchAccountClick()
     }
 
     override fun navigateToManageAccounts() {
@@ -624,7 +624,7 @@ class HomeFragment :
         )
     }
 
-    override fun navigateToSwitchedAccountAuth(userId: String) {
+    override fun navigateToSwitchedAccountAuth() {
         if (resourceHandlingStrategy.appContext == AppContext.APP) {
             requireActivity().finishAffinity()
         }
@@ -635,7 +635,6 @@ class HomeFragment :
                     AppContext.APP -> ActivityIntents.AuthConfig.Startup
                     AppContext.AUTOFILL -> ActivityIntents.AuthConfig.RefreshSession
                 },
-                userId = userId,
                 appContext = resourceHandlingStrategy.appContext
             )
         )

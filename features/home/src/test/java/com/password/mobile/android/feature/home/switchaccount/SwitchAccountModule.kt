@@ -43,7 +43,8 @@ val testSwitchAccountModule = module {
             coroutineLaunchContext = get(),
             getAllAccountsDataUseCase = mockGetAllAccountsDataUseCase,
             switchAccountModelMapper = switchAccountModelMapper,
-            signOutUseCase = mockSignOutUseCase
+            signOutUseCase = mockSignOutUseCase,
+            saveSelectedAccountUseCase = mock()
         )
     }
 }

@@ -44,7 +44,7 @@ interface SwitchAccountContract {
         fun showProgress()
         fun hideProgress()
         fun navigateToStartup()
-        fun navigateToSignInForAccount(userId: String)
+        fun navigateToSignInForAccount()
         fun navigateToAccountDetails()
     }
 }
