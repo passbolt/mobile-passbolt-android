@@ -72,7 +72,7 @@ class TransferAccountOnboardingFragment : BindingScopedFragment<FragmentTransfer
         authenticationResult.launch(
             ActivityIntents.authentication(
                 requireContext(),
-                ActivityIntents.AuthConfig.RefreshPassphrase
+                ActivityIntents.AuthConfig.RefreshSession
             )
         )
     }

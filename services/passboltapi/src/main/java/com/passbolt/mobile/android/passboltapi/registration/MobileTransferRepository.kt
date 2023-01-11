@@ -45,8 +45,8 @@ class MobileTransferRepository(
             mobileTransferDataSource.createTransfer(createTransferRequest)
         }
 
-    suspend fun viewTransfer(authToken: String, uuid: String) =
+    suspend fun viewTransfer(authToken: String, mfaCookie: String, uuid: String) =
         callWithHandler(responseHandler) {
-            mobileTransferDataSource.viewTransfer(authToken, uuid)
+            mobileTransferDataSource.viewTransfer(authToken, mfaCookie, uuid)
         }
 }

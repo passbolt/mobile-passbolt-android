@@ -43,6 +43,7 @@ interface MobileTransferDataSource {
 
     suspend fun viewTransfer(
         authToken: String,
+        mfaCookie: String,
         uuid: String
     ): TransferResponseDto
 }
