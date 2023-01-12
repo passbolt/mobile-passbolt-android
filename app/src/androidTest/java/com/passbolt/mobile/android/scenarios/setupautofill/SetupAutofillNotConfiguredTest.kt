@@ -4,6 +4,7 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
@@ -83,10 +84,10 @@ class SetupAutofillNotConfiguredTest : KoinTest {
     @BeforeTest
     fun setup() {
         onView(withId(R.id.connectToAccountButton)).perform(click())
-        onView(withId(R.id.scanQrCodesButton)).perform(click())
+        onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
         onView(withId(R.id.button)).perform(click())
         onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(R.id.authButton)).perform(scrollTo(), click())
         Intents.init()
     }
 

@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.scenarios.resourcesdetails
 
+import android.view.KeyEvent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -84,7 +86,10 @@ class ResourcesDetailsTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(R.id.input)).perform(
+            typeText(managedAccountIntentCreator.getUsername()),
+            pressKey(KeyEvent.KEYCODE_ENTER)
+        )
         onView(withId(R.id.authButton)).perform(click())
     }
 
@@ -132,7 +137,7 @@ class ResourcesDetailsTest : KoinTest {
         //    And       I see the “Description” list item with title, hidden value and a show icon
         onView(withText(R.string.resource_details_description_header)).check(matches(isDisplayed()))
         onView(withId(R.id.descriptionValue)).check(matches(isDisplayed()))
-        onView(withText(R.string.resource_details_see_description)).check(matches(not(isDisplayed())))
+        onView(withText(R.string.resource_details_see_description)).check(matches(isDisplayed()))
     }
 
     @Test

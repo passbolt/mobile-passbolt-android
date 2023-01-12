@@ -3,9 +3,12 @@ package com.passbolt.mobile.android.scenarios.settings
 import android.app.Instrumentation.ActivityResult
 import android.content.Intent
 import android.provider.Settings
+import android.view.KeyEvent
 import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.pressKey
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
@@ -101,7 +104,10 @@ class SettingsTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(R.id.input)).perform(
+            typeText(managedAccountIntentCreator.getUsername()),
+            pressKey(KeyEvent.KEYCODE_ENTER)
+        )
         onView(withId(R.id.authButton)).perform(click())
         Intents.init()
     }
@@ -138,7 +144,7 @@ class SettingsTest : KoinTest {
         //              "Sign out" } list item with a icon
         val settingsItems = SettingsMenuItemModel.values()
         settingsItems.forEach { settingsItem ->
-            onView(withText(settingsItem.settingsItemTextId)).check(matches(isDisplayed()))
+            onView(withText(settingsItem.settingsItemTextId)).perform(scrollTo()).check(matches(isDisplayed()))
             onView(
                 allOf(
                     isDescendantOfA(withId(settingsItem.settingsItemId)),
@@ -255,7 +261,7 @@ class SettingsTest : KoinTest {
         //    And       I am on the settings page
         onView(withId(R.id.settingsNav)).perform(click())
         //    When      I click on the “Sign out” list item
-        onView(withId(R.id.signOutSetting)).perform(click())
+        onView(withId(R.id.signOutSetting)).perform(scrollTo(), click())
         //    Then      I see an confirmation modal
         onView(withText(R.string.are_you_sure)).check(matches(isDisplayed()))
         onView(withText(R.string.logout_dialog_message)).check(matches(isDisplayed()))
@@ -275,7 +281,7 @@ class SettingsTest : KoinTest {
         //    And       I am on the settings page
         onView(withId(R.id.settingsNav)).perform(click())
         //    When      I click on the “Sign out” list item
-        onView(withId(R.id.signOutSetting)).perform(click())
+        onView(withId(R.id.signOutSetting)).perform(scrollTo(), click())
         //    Then      I see an confirmation modal
         onView(withText(R.string.are_you_sure)).check(matches(isDisplayed()))
         onView(withText(R.string.logout_dialog_message)).check(matches(isDisplayed()))

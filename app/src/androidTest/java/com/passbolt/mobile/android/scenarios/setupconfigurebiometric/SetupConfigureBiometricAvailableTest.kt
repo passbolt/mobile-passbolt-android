@@ -1,8 +1,10 @@
 package com.passbolt.mobile.android.scenarios.setupconfigurebiometric
 
+import android.view.KeyEvent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.swipeUp
+import androidx.test.espresso.action.ViewActions.pressKey
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.isDialog
@@ -79,8 +81,7 @@ class SetupConfigureBiometricAvailableTest : KoinTest {
     @BeforeTest
     fun setup() {
         onView(withId(R.id.connectToAccountButton)).perform(click())
-        onView(withId(R.id.qrCode)).perform(swipeUp())
-        onView(withId(R.id.scanQrCodesButton)).perform(click())
+        onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
         onView(withId(R.id.button)).perform(click())
     }
 
@@ -89,9 +90,10 @@ class SetupConfigureBiometricAvailableTest : KoinTest {
         //    Given     I have biometrics configured on my device
         //    And       I am on the Passphrase screen
         //    When      I successfully entered my passphrase
-        onView(withId(R.id.input))
-            .perform(typeText(managedAccountIntentCreator.getUsername()))
-            .perform(swipeUp())
+        onView(withId(R.id.input)).perform(
+            typeText(managedAccountIntentCreator.getUsername()),
+            pressKey(KeyEvent.KEYCODE_ENTER)
+        )
         onView(withId(R.id.authButton)).perform(click())
         //    Then      I am prompted to use biometrics instead of my passphrase
         //    And       I see a “Configure {biometric provider}” primary button
@@ -111,8 +113,7 @@ class SetupConfigureBiometricAvailableTest : KoinTest {
         //    And       I open the passbolt application
         //    Then      I see a modal telling me that my biometric changed
         onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
-        onView(withId(R.id.input)).perform(swipeUp())
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(R.id.authButton)).perform(scrollTo(), click())
         onView(withId(R.id.useFingerprintButton)).perform(click())
         onView(withText(R.string.fingerprint_authenticate_again)).inRoot(isDialog()).check(matches(isDisplayed()))
         onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click())
