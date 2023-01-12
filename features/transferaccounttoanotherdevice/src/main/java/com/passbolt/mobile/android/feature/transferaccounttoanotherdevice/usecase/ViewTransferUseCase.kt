@@ -41,7 +41,7 @@ class ViewTransferUseCase(
 ) : AsyncUseCase<ViewTransferUseCase.Input, ViewTransferUseCase.Output> {
 
     override suspend fun execute(input: Input): Output = withContext(coroutineContext.io) {
-        when (val response = mobileTransferRepository.viewTransfer(input.authToken, input.uuid)) {
+        when (val response = mobileTransferRepository.viewTransfer(input.authToken, input.mfaCookie, input.uuid)) {
             is NetworkResult.Failure -> Output.Failure(response)
             is NetworkResult.Success -> Output.Success(transferMapper.mapViewResponseToUi(response.value))
         }
@@ -49,6 +49,7 @@ class ViewTransferUseCase(
 
     data class Input(
         val authToken: String,
+        val mfaCookie: String,
         val uuid: String
     )
 
