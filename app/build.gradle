@@ -167,4 +167,5 @@ dependencies {
     androidTestImplementation libs.di.koinTestJUnit
     androidTestImplementation libs.test.androidTestIntents
     androidTestImplementation libs.test.mockitoAndroid
+    androidTestImplementation libs.fabSpeedDial
 }

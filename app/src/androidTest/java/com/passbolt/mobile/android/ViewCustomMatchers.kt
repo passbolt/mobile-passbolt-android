@@ -20,9 +20,13 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Root
 import androidx.test.espresso.matcher.BoundedMatcher
+import com.leinardi.android.speeddial.SpeedDialView
+import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
 
 /**
  * Passbolt - Open source password manager for teams
@@ -71,6 +75,7 @@ fun hasDrawable(
         return when (view) {
             is TextView -> view.compoundDrawables[drawablePosition.ordinal].toBitmap().sameAs(expectedBitmap)
             is ImageView -> view.drawable.toBitmap().sameAs(expectedBitmap)
+            is SpeedDialView -> view.mainFab.drawable.toBitmap().sameAs(expectedBitmap)
             else -> false
         }
     }
@@ -151,3 +156,23 @@ fun atPosition(position: Int, itemMatcher: Matcher<View?>) =
             return itemMatcher.matches(viewHolder.itemView)
         }
     }
+
+fun withHint(stringMatcher: Matcher<String?>): Matcher<View?> {
+    return object : BaseMatcher<View?>() {
+        override fun describeTo(description: Description) {
+            description.appendText("View with #getHint method present AND #getHint value matching ")
+            stringMatcher.describeTo(description)
+        }
+
+        override fun matches(item: Any): Boolean {
+            try {
+                val method: Method = item.javaClass.getMethod("getHint")
+                return stringMatcher.matches(method.invoke(item))
+            } catch (_: NoSuchMethodException) {
+            } catch (_: InvocationTargetException) {
+            } catch (_: IllegalAccessException) {
+            }
+            return false
+        }
+    }
+}
