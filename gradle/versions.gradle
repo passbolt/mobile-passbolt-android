@@ -20,16 +20,16 @@ ext {
             mockitoKotlin: "4.0.0",
             truth: "1.1.3",
             androidxJUnit: "1.1.3",
-            espresso: "3.5.0",
+            espresso: "3.5.0-alpha07",
             turbine: "0.5.1",
             coroutinesTest: "1.6.4",
             androidTestsRunner: "1.4.0",
             androidTestRules: "1.4.0",
             androidTestKtx: "1.4.0",
-            androidTestIntents: "3.5.0",
+            androidTestIntents: "3.5.0-alpha07",
             mockitoAndroid: "4.8.0",
             espressoOkHttpIdlingResource: "1.0.0",
-            espressoIdlingResource: "3.5.0"
+            espressoIdlingResource: "3.5.0-alpha07"
         ],
         quality: [
             ktlint: "0.36.0",
