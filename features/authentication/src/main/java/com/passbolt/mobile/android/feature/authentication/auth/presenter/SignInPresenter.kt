@@ -280,12 +280,12 @@ open class SignInPresenter(
                 Timber.d("User profile updated successfully")
             }
         }
-        signInIdlingResource.setIdle(true)
         view?.apply {
             hideProgress()
             clearPassphraseInput()
             authSuccess()
         }
+        signInIdlingResource.setIdle(true)
     }
 
     fun signOutClick() {
