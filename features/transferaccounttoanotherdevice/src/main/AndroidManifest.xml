@@ -4,6 +4,8 @@
     package="com.passbolt.mobile.android.feature.transferaccounttoanotherdevice">
 
     <application>
-        <activity android:name=".TransferAccountToAnotherDeviceActivity" />
+        <activity
+            android:name=".TransferAccountToAnotherDeviceActivity"
+            android:screenOrientation="portrait" />
     </application>
 </manifest>
