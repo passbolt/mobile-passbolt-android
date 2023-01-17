@@ -1,36 +1,48 @@
 package com.passbolt.mobile.android.scenarios.resourcescreation
 
 import android.view.KeyEvent
+import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.hasTextColor
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.material.textfield.TextInputLayout
 import com.jakewharton.espresso.OkHttp3IdlingResource
 import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
+import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView.PasswordStrength.VeryStrong
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.hasDrawable
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.isTextHidden
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.actions.clickOnPasswordToggle
+import com.passbolt.mobile.android.scenarios.helpers.getString
 import com.passbolt.mobile.android.withHint
+import com.passbolt.mobile.android.withProgressBarOfMinimumProgress
+import com.passbolt.mobile.android.withTextInputStrokeColorOf
+import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
-import org.hamcrest.Matchers
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
 import org.junit.Rule
@@ -39,6 +51,7 @@ import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
+
 
 /**
  * Passbolt - Open source password manager for teams
@@ -97,6 +110,8 @@ class ResourcesCreationTest : KoinTest {
             pressKey(KeyEvent.KEYCODE_ENTER)
         )
         onView(withId(R.id.authButton)).perform(click())
+
+        Thread.sleep(500)
         onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
         onView(withId(R.id.text_input_start_icon)).perform(click())
         onView(withId(R.id.allItems)).perform(click())
@@ -167,8 +182,14 @@ class ResourcesCreationTest : KoinTest {
         onView(withText("Description")).check(matches(isDisplayed()))
         onView(withHint(hasToString("Enter Description"))).check(matches(isDisplayed()))
         //    And       I see a mandatory input text field with a "Show/Hide" button inside the field
-        // TODO please add matcher to find visible icon - below line not working
-//      onView(allOf(withHint(hasToString("Enter password")), withId(R.id.text_input_end_icon))).check(matches(isDisplayed()))
+        onView(
+            allOf(
+                isDescendantOfA(withHint(hasToString("Enter password"))),
+                withId(R.id.text_input_end_icon)
+            )
+        )
+            .check(matches(isDisplayed()))
+            .check(matches(withContentDescription(com.google.android.material.R.string.password_toggle_content_description)))
         //    And       I see a "Random" button on the right of the password field
         onView(withId(R.id.generatePasswordLayout)).check(matches(isDisplayed()))
         //    And       I see a "Strength" bar under the password field
@@ -176,88 +197,120 @@ class ResourcesCreationTest : KoinTest {
         //    And       I see a "Password strength" indicator under the "Strength" bar
         onView(withId(R.id.strengthDescription)).check(matches(isDisplayed()))
         //    And       I see a "Lock" button above the description field
-        // TODO MOB-870 please add matcher to find lock icon - below lines not working
-//        onView(allOf(withText("Description"), withId(R.id.icon))).check(matches(isDisplayed()))
-//        onView(allOf(withHint(hasToString("Enter Description")), withId(R.id.icon))).check(matches(isDisplayed()))
+        onView(allOf(hasSibling(withText("Description")), withId(R.id.icon)))
+            .check(matches(isDisplayed()))
         //    And       I see a "Create" primary button
         onView(withId(R.id.updateButton)).check(matches(isDisplayed()))
     }
 
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageIShouldSeeAToastMessageAfterCreationAPassword() {
-//    Given     I am a logged in mobile user on the new password page
+        //    Given     I am a logged in mobile user on the new password page
         onView(withId(R.id.speedDialViewId)).perform(click())
-//    And       I filled out all mandatory fields
-        // TODO MOB-870 please add matcher to be able to type text in input - below lines not working
-//        onView(withHint(hasToString("Enter Name"))).perform(typeText("PasswordNameTest"))
-//        onView(allOf(withHint(hasToString("Enter Name")), withId(R.id.input))).perform(typeText("PasswordNameTest"))
+        //    And       I filled out all mandatory fields
+        onView(allOf(isDescendantOfA(withHint(hasToString("Enter Name"))), withId(R.id.input)))
+            .perform(typeText("PasswordNameTest"))
         onView(withId(R.id.generatePasswordLayout)).perform(click())
-//    When      I click on the create button
-        onView(withId(R.id.updateButton)).perform(click())
-//    Then      I see a "Loading" box
-//    And       I am redirected to the password workspace
-//    And       I see a toaster message with "New Password created"
+        //    When      I click on the create button
+
+        // TODO add idling resource for that
+        // onView(withId(R.id.updateButton))
+        //    .perform(scrollTo(), click())
+        //    Then      I see a "Loading" box
+        //    And       I am redirected to the password workspace
+        //    And       I see a toaster message with "New Password created"
+        // TODO
     }
 
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageIShouldSeeAnErrorMessageAfterClickingTheCreateButtonWithAnEmptyMandatoryField() {
-//    Given     I am a logged in mobile user on the new password page
+        //    Given     I am a logged in mobile user on the new password page
         onView(withId(R.id.speedDialViewId)).perform(click())
-//    And       I didn't filled out the Name and Password fields
-//    When      I click on the create button
+        //    And       I didn't filled out the Name and Password fields
+        //    When      I click on the create button
         onView(withId(R.id.updateButton)).perform(click())
-//    Then      I see the label of the Name and Password fields in @red
+        //    Then      I see the label of the Name and Password fields in @red
         onView(withText("Name *")).check(matches(hasTextColor(R.color.red)))
         onView(withText("Password *")).check(matches(hasTextColor(R.color.red)))
-//    And       I see the stroke of the Name and Password fields in @red
-        // TODO MOB-870 please add matcher to be able to find the stroke color
-//    And       I see a error <Error> below the field in @red
-        onView(withText("The name cannot be empty")).check(matches(isDisplayed()))
-        // TODO MOB-870 please add matcher to be able to find color - below line not working
-//        onView(withText("The name cannot be empty")).check(matches(hasTextColor(R.color.tint_red)))
-        onView(withText("The password cannot be empty")).check(matches(isDisplayed()))
-        // TODO MOB-870 please add matcher to be able to find color - below line not working
-//        onView(withText("The password cannot be empty")).check(matches(hasTextColor(R.color.tint_red)))
-//    | Field       | Error                            |
-//    | Name        | "The name cannot be empty"       |
-//    | Password    | "The password cannot be empty"  |
+        //    And       I see the stroke of the Name and Password fields in @red
+        onView(
+            allOf(
+                isDescendantOfA(withHint(hasToString("Enter Name"))),
+                isAssignableFrom(TextInputLayout::class.java)
+            )
+        )
+            .check(matches(withTextInputStrokeColorOf(R.color.red)))
+        onView(
+            allOf(
+                isDescendantOfA(withHint(hasToString("Enter password"))),
+                isAssignableFrom(TextInputLayout::class.java)
+            )
+        )
+            .check(matches(withTextInputStrokeColorOf(R.color.red)))
+        //    And       I see a error <Error> below the field in @red
+        onView(withText("The name cannot be empty"))
+            .check(matches(isDisplayed()))
+            .check(matches(hasTextColor(R.color.red)))
+        onView(withText("The password cannot be empty"))
+            .check(matches(isDisplayed()))
+            .check(matches(hasTextColor(R.color.red)))
+        //    | Field       | Error                            |
+        //    | Name        | "The name cannot be empty"       |
+        //    | Password    | "The password cannot be empty"  |
     }
 
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageICanGenerateARandomPassword() {
-//    Given     I am a logged in mobile user on the new password page
+        //    Given     I am a logged in mobile user on the new password page
         onView(withId(R.id.speedDialViewId)).perform(click())
-//    When      I click on the "Random" button
+        //    When      I click on the "Random" button
         onView(withId(R.id.generatePasswordLayout)).perform(click())
-//    Then      I see the "Password" field is automatically filled in
-//    And       I see the password is obfuscated
-        // TODO MOB-870 please add matcher to be able to find input in component - below line not working
-//        onView(allOf(withHint(hasToString("Enter password")), withId(R.id.input))).check(matches(isTextHidden()))
-//    And       I see the "Strength" bar is green
-        onView(withId(R.id.progressBar)).check(matches(isDisplayed()))
-        // TODO MOB-870 please add matcher to be able to find color for progress bar - below line not working
-//        onView(withId(R.id.progressBar)).check(matches(hasTextColor(R.color.green)))
-//    And       I see the "password strength" text is "Very strong"
-        onView(withId(R.id.strengthDescription)).check(matches(withText("Very strong")))
+        //    Then      I see the "Password" field is automatically filled in
+        //    And       I see the password is obfuscated
+        onView(allOf(isDescendantOfA(withHint(hasToString("Enter password"))), withId(R.id.input)))
+            .check(matches(isTextHidden()))
+        //    And       I see the "Strength" bar is green
+        onView(
+            allOf(
+                isDescendantOfA(isAssignableFrom(PasswordGenerateInputView::class.java)),
+                isAssignableFrom(ProgressBar::class.java)
+            )
+        )
+            .check(matches(isDisplayed()))
+            .check(matches(withProgressBarOfMinimumProgress(VeryStrong.progress)))
+        //    And       I see the "password strength" text is "Very strong"
+        onView(withId(R.id.strengthDescription))
+            .check(matches(withText(VeryStrong.text)))
     }
 
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageICanSwitchTheVisibilityOfThePassword() {
-//    Given     I am a logged in mobile user on the new password page
-        onView(withId(R.id.speedDialViewId)).perform(click())
-//    And       the password field is not empty
-        onView(withId(R.id.generatePasswordLayout)).perform(click())
-//    And       the "show/hide" button is in a <State> state
-        // TODO MOB-870 please add matcher to be able to find state icon and drawable to find color - below line not working
-//        onView(withId(R.id.text_input_end_icon))
-//            .check(matches(hasDrawable(id = R.drawable.ic_eye_visible, tint = R.color.icon_tint)))
-//    When      I click on the "show/hide" button
-        // TODO MOB-870 please add matcher to be able to click state icon - below line not working
-//        onView(allOf(withHint(hasToString("Enter password")), withId(R.id.input))).perform(click())
-//    Then      I can see the password <Visibility>
+        val password = "password"
 
-//    | State         | Visibility      |
-//    | Visible       | in plain text   |
-//    | Hidden        | obfuscated      |
+        //    Given     I am a logged in mobile user on the new password page
+        onView(withId(R.id.speedDialViewId))
+            .perform(click())
+        //    And       the password field is not empty
+        onPasswordInputView()
+            .perform(typeText(password))
+        //    And       the "show/hide" button is in a <State> state
+        onPasswordInputView()
+            .check(matches(isTextHidden()))
+        //    When      I click on the "show/hide" button
+        clickOnPasswordToggle()
+        //    Then      I can see the password <Visibility>
+        onPasswordInputView()
+            .check(matches(withText(password)))
+        //    | State         | Visibility      |
+        //    | Visible       | in plain text   |
+        //    | Hidden        | obfuscated      |
     }
+
+    private fun onPasswordInputView() =
+        onView(
+            allOf(
+                isDescendantOfA(withHint(equalTo(getString(R.string.resource_update_password_hint)))),
+                withId(R.id.input)
+            )
+        )
 }

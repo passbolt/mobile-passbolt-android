@@ -11,6 +11,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -20,6 +21,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Root
 import androidx.test.espresso.matcher.BoundedMatcher
+import com.google.android.material.textfield.TextInputLayout
 import com.leinardi.android.speeddial.SpeedDialView
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
@@ -176,3 +178,29 @@ fun withHint(stringMatcher: Matcher<String?>): Matcher<View?> {
         }
     }
 }
+
+fun withProgressBarOfMinimumProgress(progress: Int): Matcher<View?> =
+    object : BoundedMatcher<View, ProgressBar>(ProgressBar::class.java) {
+        override fun describeTo(description: Description) {
+            description.appendText("ProgressBar with progress value of at least $progress ")
+        }
+
+        override fun matchesSafely(progressBar: ProgressBar?): Boolean {
+            return progressBar?.let {
+                it.progress >= progress
+            } ?: false
+        }
+    }
+
+fun withTextInputStrokeColorOf(@ColorRes colorResId: Int): Matcher<View?> =
+    object : BoundedMatcher<View, TextInputLayout>(TextInputLayout::class.java) {
+        override fun describeTo(description: Description) {
+            description.appendText("TextInputLayout with stroke color of res id: $colorResId")
+        }
+
+        override fun matchesSafely(textInputLayout: TextInputLayout?): Boolean {
+            return textInputLayout?.let {
+                textInputLayout.boxStrokeErrorColor?.defaultColor == textInputLayout.context.getColor(colorResId)
+            } ?: false
+        }
+    }
