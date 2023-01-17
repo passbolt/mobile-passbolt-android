@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.scenarios.home.search
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
-import androidx.test.espresso.action.ViewActions.swipeUp
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -86,8 +86,8 @@ class HomeSearchTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()), swipeUp())
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(R.id.authButton)).perform(scrollTo(), click())
         onView(withId(R.id.text_input_start_icon)).perform(click())
         onView(withId(ResourceFilterModel.values()[0].filterId)).perform(click())
     }

@@ -4,7 +4,7 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.swipeUp
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
@@ -85,8 +85,7 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     @BeforeTest
     fun setup() {
         onView(withId(R.id.connectToAccountButton)).perform(click())
-        onView(withId(R.id.qrCode)).perform(swipeUp())
-        onView(withId(R.id.scanQrCodesButton)).perform(click())
+        onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
         onView(withId(R.id.button)).perform(click())
         Intents.init()
     }
@@ -103,8 +102,7 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         //    When      I successfully entered my passphrase
         onView(withId(R.id.input))
             .perform(typeText(managedAccountIntentCreator.getUsername()))
-            .perform(swipeUp())
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(R.id.authButton)).perform(scrollTo(), click())
         //    Then       I am prompted to Configure biometrics
         //    And        I see a “Configure {biometric provider}” primary button
         onView(withId(R.id.icon)).check(matches(isDisplayed()))
@@ -122,8 +120,7 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         //    And       I am on the Configure {biometrics provider} screen
         onView(withId(R.id.input))
             .perform(typeText(managedAccountIntentCreator.getUsername()))
-            .perform(swipeUp())
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(R.id.authButton)).perform(scrollTo(), click())
         //    When      I click on Configure {biometrics provider} button
         onView(withId(R.id.useFingerprintButton)).perform(click())
         //    Then      I am taken to the phone security settings / OS-specific process where I can complete the biometric setup
@@ -140,8 +137,7 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         //    And       I am on the Configure {biometrics provider} screen
         onView(withId(R.id.input))
             .perform(typeText(managedAccountIntentCreator.getUsername()))
-            .perform(swipeUp())
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(R.id.authButton)).perform(scrollTo(), click())
         //    When      I click the “Maybe later” button
         onView(withId(R.id.maybeLaterButton)).perform(click())
         //    Then      I am redirected to the setup of the autofill screen

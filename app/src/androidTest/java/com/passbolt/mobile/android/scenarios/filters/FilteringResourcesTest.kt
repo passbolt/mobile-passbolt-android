@@ -1,10 +1,8 @@
 package com.passbolt.mobile.android.scenarios.filters
 
-import android.view.KeyEvent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.pressKey
-import androidx.test.espresso.action.ViewActions.swipeUp
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -31,7 +29,6 @@ import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
-import kotlin.test.AfterTest
 
 /**
  * Passbolt - Open source password manager for teams
@@ -84,8 +81,8 @@ class FilteringResourcesTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()), pressKey(KeyEvent.KEYCODE_ENTER))
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(R.id.authButton)).perform(scrollTo(), click())
     }
 
     @Test

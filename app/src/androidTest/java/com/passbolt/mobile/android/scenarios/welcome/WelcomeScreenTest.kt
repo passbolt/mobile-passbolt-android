@@ -4,7 +4,7 @@ import android.content.Intent
 import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.swipeUp
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
@@ -154,7 +154,6 @@ class WelcomeScreenTest : KoinTest {
         //        And             it has an illustration giving some context about the process
         onView(withId(R.id.qrCode)).check(matches(isDisplayed()))
         //        And             it has a "Scan QR codes" primary action button
-        onView(withId(R.id.qrCode)).perform(swipeUp())
-        onView(withId(R.id.scanQrCodesButton)).check(matches(isDisplayed()))
+        onView(withId(R.id.scanQrCodesButton)).perform(scrollTo()).check(matches(isDisplayed()))
     }
 }

@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.scenarios.setupautofill
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
+import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -75,10 +77,10 @@ class SetupAutofillConfiguredTest : KoinTest {
     @BeforeTest
     fun setup() {
         onView(withId(R.id.connectToAccountButton)).perform(click())
-        onView(withId(R.id.scanQrCodesButton)).perform(click())
+        onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
         onView(withId(R.id.button)).perform(click())
         onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(R.id.authButton)).perform(scrollTo(), click())
     }
 
     @Test
