@@ -42,6 +42,10 @@ internal class MobileTransferRemoteDataSource(
     override suspend fun createTransfer(createTransferRequest: CreateTransferRequestDto) =
         mobileTransferApi.createTransfer(createTransferRequest).body
 
-    override suspend fun viewTransfer(authToken: String, mfaCookie: String, uuid: String) =
-        mobileTransferApi.viewTransfer(authToken, mfaCookie, uuid).body
+    override suspend fun viewTransfer(authToken: String, mfaCookie: String?, uuid: String) =
+        if (mfaCookie != null) {
+            mobileTransferApi.viewTransferWithMfa(authToken, mfaCookie, uuid).body
+        } else {
+            mobileTransferApi.viewTransfer(authToken, uuid).body
+        }
 }

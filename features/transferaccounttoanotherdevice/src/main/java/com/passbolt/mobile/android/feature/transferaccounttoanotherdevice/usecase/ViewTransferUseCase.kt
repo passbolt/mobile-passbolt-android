@@ -49,7 +49,7 @@ class ViewTransferUseCase(
 
     data class Input(
         val authToken: String,
-        val mfaCookie: String,
+        val mfaCookie: String?,
         val uuid: String
     )
 
