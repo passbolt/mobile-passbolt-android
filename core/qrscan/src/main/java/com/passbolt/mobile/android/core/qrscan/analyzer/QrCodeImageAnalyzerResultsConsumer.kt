@@ -1,10 +1,8 @@
 package com.passbolt.mobile.android.core.qrscan.analyzer
 
-import androidx.camera.core.ExperimentalGetImage
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
+import androidx.camera.mlkit.vision.MlKitAnalyzer
+import androidx.core.util.Consumer
 import com.google.mlkit.vision.barcode.BarcodeScanner
-import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,40 +31,31 @@ import timber.log.Timber
  * @since v1.0
  */
 
-class CameraBarcodeAnalyzer(
+class QrCodeImageAnalyzerResultsConsumer(
     private val barcodeScanner: BarcodeScanner
-) : ImageAnalysis.Analyzer {
+) : Consumer<MlKitAnalyzer.Result> {
 
     val resultFlow: StateFlow<BarcodeScanResult>
         get() = _resultFlow.asStateFlow()
 
     private val _resultFlow = MutableStateFlow<BarcodeScanResult>(BarcodeScanResult.NoBarcodeInRange)
 
-    @ExperimentalGetImage
-    override fun analyze(imageProxy: ImageProxy) {
-        imageProxy.image?.apply {
-            val inputImage = InputImage.fromMediaImage(this, imageProxy.imageInfo.rotationDegrees)
-            barcodeScanner.process(inputImage)
-                .addOnSuccessListener { barcodes ->
-                    _resultFlow.tryEmit(
-                        when {
-                            barcodes.isEmpty() -> {
-                                BarcodeScanResult.NoBarcodeInRange
-                            }
-                            barcodes.size == 1 -> {
-                                BarcodeScanResult.SingleBarcode(barcodes.first().rawBytes)
-                            }
-                            else -> {
-                                BarcodeScanResult.MultipleBarcodes
-                            }
-                        }
-                    )
+    override fun accept(result: MlKitAnalyzer.Result?) {
+        if (result == null) return
+
+        result.getThrowable(barcodeScanner)?.let { throwable ->
+            Timber.e("Error during qr code scan", throwable)
+            _resultFlow.tryEmit(BarcodeScanResult.Failure(throwable))
+        }
+
+        result.getValue(barcodeScanner)?.let { value ->
+            _resultFlow.tryEmit(
+                when {
+                    value.isEmpty() -> BarcodeScanResult.NoBarcodeInRange
+                    value.size == 1 -> BarcodeScanResult.SingleBarcode(value.first().rawBytes)
+                    else -> BarcodeScanResult.MultipleBarcodes
                 }
-                .addOnFailureListener { exception ->
-                    Timber.e(exception, "Exception during analyzing QR code")
-                    _resultFlow.tryEmit(BarcodeScanResult.Failure(exception))
-                }
-                .addOnCompleteListener { imageProxy.close() }
+            )
         }
     }
 }

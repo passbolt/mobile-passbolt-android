@@ -14,7 +14,7 @@ class QrScanResultsMapper {
 
     fun apply(scanResult: BarcodeScanResult) = when (scanResult) {
         is BarcodeScanResult.Failure ->
-            ParseResult.ScanFailure(scanResult.exception)
+            ParseResult.ScanFailure(scanResult.throwable)
         is BarcodeScanResult.MultipleBarcodes ->
             ParseResult.UserResolvableError(MULTIPLE_BARCODES)
         is BarcodeScanResult.NoBarcodeInRange ->

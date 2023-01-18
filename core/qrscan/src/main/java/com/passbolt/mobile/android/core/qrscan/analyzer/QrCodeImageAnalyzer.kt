@@ -1,16 +1,10 @@
-package com.passbolt.mobile.android.feature.setup.scanqr.di
+package com.passbolt.mobile.android.core.qrscan.analyzer
 
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrContract
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrFragment
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrPresenter
-import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
-import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
-import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
-import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.bind
+import androidx.camera.mlkit.vision.MlKitAnalyzer
+import androidx.camera.view.CameraController
+import com.google.mlkit.vision.barcode.BarcodeScanner
+import kotlinx.coroutines.flow.StateFlow
+import java.util.concurrent.Executor
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,12 +29,17 @@ import org.koin.dsl.bind
  * @since v1.0
  */
 
-fun Module.scanQrModule() {
-    scope(named<ScanQrFragment>()) {
-        scopedOf(::ScanQrPresenter) bind ScanQrContract.Presenter::class
-        scopedOf(::QrScanResultsMapper)
-        scopedOf(::KeyAssembler)
-        scopedOf(::UpdateTransferUseCase)
-        scopedOf(::ScanQrParser)
-    }
+class QrCodeImageAnalyzer(
+    private val qrCodeImageAnalyzerResultsConsumer: QrCodeImageAnalyzerResultsConsumer,
+    barcodeScanner: BarcodeScanner,
+    mainExecutor: Executor
+) : MlKitAnalyzer(
+    listOf(barcodeScanner),
+    CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED,
+    mainExecutor,
+    qrCodeImageAnalyzerResultsConsumer
+) {
+
+    val resultFlow: StateFlow<BarcodeScanResult>
+        get() = qrCodeImageAnalyzerResultsConsumer.resultFlow
 }

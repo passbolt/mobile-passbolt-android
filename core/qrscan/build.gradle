@@ -4,11 +4,12 @@ plugins {
 }
 
 dependencies {
+    implementation libs.di.koin
     implementation libs.qrScan
     implementation libs.androidx.cameraX
     implementation libs.androidx.cameraXLifecycle
     implementation libs.androidx.cameraXView
-    implementation libs.di.koin
+    implementation libs.androidx.cameraXMlVision
 }
 
 android {

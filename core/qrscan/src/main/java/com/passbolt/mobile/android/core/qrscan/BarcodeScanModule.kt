@@ -1,10 +1,15 @@
 package com.passbolt.mobile.android.core.qrscan
 
-import com.google.mlkit.vision.barcode.BarcodeScanner
+import androidx.camera.view.LifecycleCameraController
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.passbolt.mobile.android.core.qrscan.analyzer.CameraBarcodeAnalyzer
+import com.passbolt.mobile.android.core.qrscan.analyzer.QrCodeImageAnalyzer
+import com.passbolt.mobile.android.core.qrscan.analyzer.QrCodeImageAnalyzerResultsConsumer
+import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.scopedOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -29,18 +34,21 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+const val SCAN_MANAGER_SCOPE = "SCAN_MANAGER_SCOPE"
+
 val barcodeScanModule = module {
-    factory { provideBarcodeScannerOptions() }
-    factory { provideBarcodeScanner(get()) }
-    factory { provideBarcodeAnalyzer(get()) }
+    scope(named(SCAN_MANAGER_SCOPE)) {
+        scopedOf(::ScanManager)
+        scopedOf(::QrCodeImageAnalyzer)
+        scopedOf(::QrCodeImageAnalyzerResultsConsumer)
+
+        scoped {
+            BarcodeScannerOptions.Builder()
+                .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+                .build()
+        }
+        scoped { BarcodeScanning.getClient(get()) }
+        scoped { LifecycleCameraController(androidContext()) }
+    }
 }
-
-fun provideBarcodeScannerOptions() = BarcodeScannerOptions.Builder()
-    .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-    .build()
-
-fun provideBarcodeScanner(options: BarcodeScannerOptions) =
-    BarcodeScanning.getClient(options)
-
-fun provideBarcodeAnalyzer(barcodeScanner: BarcodeScanner) =
-    CameraBarcodeAnalyzer(barcodeScanner)

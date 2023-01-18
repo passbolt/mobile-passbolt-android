@@ -27,5 +27,5 @@ sealed class BarcodeScanResult {
 
     object NoBarcodeInRange : BarcodeScanResult()
 
-    class Failure(val exception: Exception) : BarcodeScanResult()
+    class Failure(val throwable: Throwable) : BarcodeScanResult()
 }
