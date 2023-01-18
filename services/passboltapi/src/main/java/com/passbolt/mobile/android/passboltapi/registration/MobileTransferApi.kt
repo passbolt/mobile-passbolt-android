@@ -46,6 +46,12 @@ internal interface MobileTransferApi {
     @GET(TRANSFER_BY_ID)
     suspend fun viewTransfer(
         @Header("Authorization") authToken: String,
+        @Path(PATH_UUID) uuid: String
+    ): BaseResponse<TransferResponseDto>
+
+    @GET(TRANSFER_BY_ID)
+    suspend fun viewTransferWithMfa(
+        @Header("Authorization") authToken: String,
         @Header("Cookie") mfaCookie: String,
         @Path(PATH_UUID) uuid: String
     ): BaseResponse<TransferResponseDto>

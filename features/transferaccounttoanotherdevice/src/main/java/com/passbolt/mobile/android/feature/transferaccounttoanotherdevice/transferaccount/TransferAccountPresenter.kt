@@ -124,7 +124,7 @@ class TransferAccountPresenter(
                 val accessToken = "Bearer %s".format(
                     requireNotNull(getSessionUseCase.execute(Unit).accessToken)
                 )
-                val mfaCookie = requireNotNull(getSessionUseCase.execute(Unit).mfaToken)
+                val mfaCookie = getSessionUseCase.execute(Unit).mfaToken
 
                 delay(GET_TRANSFER_LOOP_INTERVAL_DELAY_MILLIS)
                 when (val response = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {

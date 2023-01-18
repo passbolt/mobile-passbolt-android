@@ -411,7 +411,7 @@
     <string name="import_profile_invalid_private_key">Private key cannot be empty</string>
 
     <string name="transfer_account_onboarding_header">Show QR codes to transfer your account details</string>
-    <string name="transfer_account_onboarding_transfer_button">Start Transfer</string>
+    <string name="transfer_account_onboarding_transfer_button">Start transfer</string>
 
     <string name="transfer_account_cancel_button">Cancel transfer</string>
     <string name="transfer_account_stop_button">Stop transfer</string>
