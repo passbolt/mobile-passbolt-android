@@ -6,8 +6,9 @@
     <application>
         <activity
             android:name=".AuthenticationMainActivity"
-            android:screenOrientation="portrait"
+            android:configChanges="keyboard|keyboardHidden"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Passbolt" />
     </application>
 

@@ -79,7 +79,7 @@ ext {
             testing: "2.4.3"
         ],
         yubikit: [
-            android: "2.1.0"
+            android: "2.2.0"
         ],
         pinentry: "2.0.6",
         balloon: "1.4.6",
