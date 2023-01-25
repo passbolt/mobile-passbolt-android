@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.helpers.createNewPasswordFromHomeScreen
 import com.passbolt.mobile.android.withHint
 import com.passbolt.mobile.android.withTextInputStrokeColorOf
 import org.hamcrest.CoreMatchers
@@ -116,7 +117,7 @@ class ResourcesEditionTest : KoinTest {
         onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
         onView(withId(R.id.text_input_start_icon)).perform(click())
         onView(withId(R.id.allItems)).perform(click())
-        createNewPassword()
+        createNewPasswordFromHomeScreen()
     }
 
     @Test
@@ -315,18 +316,4 @@ class ResourcesEditionTest : KoinTest {
             isAssignableFrom(TextInputLayout::class.java)
         )
     )
-
-    private fun createNewPassword() {
-        onView(withId(R.id.speedDialViewId)).perform(click())
-        onView(allOf(isDescendantOfA(withHint(hasToString("Enter Name"))), withId(R.id.input)))
-            .perform(typeText("ResourcesEditionTestPK"), pressKey(KeyEvent.KEYCODE_BACK))
-        onView(allOf(isDescendantOfA(withHint(hasToString("Enter URL"))), withId(R.id.input)))
-            .perform(typeText("TestURL"), pressKey(KeyEvent.KEYCODE_BACK))
-        onView(allOf(isDescendantOfA(withHint(hasToString("Enter Username"))), withId(R.id.input)))
-            .perform(typeText("TestUsername"), pressKey(KeyEvent.KEYCODE_BACK))
-        onView(withId(R.id.generatePasswordLayout)).perform(click())
-        onView(allOf(isDescendantOfA(withHint(hasToString("Enter Description"))), withId(R.id.input)))
-            .perform(typeText("TestDescription"), pressKey(KeyEvent.KEYCODE_BACK))
-        onView(withId(R.id.updateButton)).perform(scrollTo(), click())
-    }
 }
