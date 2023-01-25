@@ -1,7 +1,19 @@
 package com.passbolt.mobile.android.scenarios.helpers
 
+import android.view.KeyEvent
 import androidx.annotation.StringRes
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.pressKey
+import androidx.test.espresso.action.ViewActions.scrollTo
+import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.feature.setup.R
+import com.passbolt.mobile.android.withHint
+import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.hasToString
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,3 +40,37 @@ import androidx.test.platform.app.InstrumentationRegistry
 
 internal fun getString(@StringRes stringResId: Int) =
     InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId)
+
+internal fun createNewPasswordFromHomeScreen() {
+    onView(withId(R.id.speedDialViewId)).perform(click())
+    onView(
+        allOf(
+            isDescendantOfA(withHint(hasToString("Enter Name"))),
+            withId(R.id.input)
+        )
+    )
+        .perform(typeText("ResourcesEditionTestPK"), pressKey(KeyEvent.KEYCODE_BACK))
+    onView(
+        allOf(
+            isDescendantOfA(withHint(hasToString("Enter URL"))),
+            withId(R.id.input)
+        )
+    )
+        .perform(typeText("TestURL"), pressKey(KeyEvent.KEYCODE_BACK))
+    onView(
+        allOf(
+            isDescendantOfA(withHint(hasToString("Enter Username"))),
+            withId(R.id.input)
+        )
+    )
+        .perform(typeText("TestUsername"), pressKey(KeyEvent.KEYCODE_BACK))
+    onView(withId(R.id.generatePasswordLayout)).perform(click())
+    onView(
+        allOf(
+            isDescendantOfA(withHint(hasToString("Enter Description"))),
+            withId(R.id.input)
+        )
+    )
+        .perform(typeText("TestDescription"), pressKey(KeyEvent.KEYCODE_BACK))
+    onView(withId(R.id.updateButton)).perform(scrollTo(), click())
+}
