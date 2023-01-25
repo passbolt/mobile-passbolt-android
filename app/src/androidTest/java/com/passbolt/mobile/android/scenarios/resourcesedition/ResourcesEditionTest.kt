@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.scenarios.resourcesedition
 
 import android.view.KeyEvent
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.pressKey
@@ -19,7 +20,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.material.textfield.TextInputLayout
-import com.jakewharton.espresso.OkHttp3IdlingResource
+import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
@@ -35,6 +36,7 @@ import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.withHint
 import com.passbolt.mobile.android.withTextInputStrokeColorOf
+import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
@@ -87,18 +89,19 @@ class ResourcesEditionTest : KoinTest {
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
+    private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+
     @get:Rule
     val idlingResourceRule = let {
         val signInIdlingResource: SignInIdlingResource by inject()
-        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-        val okHttpIdlingResource: OkHttp3IdlingResource by inject()
         val updateResourceIdlingResource: UpdateResourceIdlingResource by inject()
+        val createResourceIdlingResource: CreateResourceIdlingResource by inject()
         IdlingResourceRule(
             arrayOf(
                 signInIdlingResource,
                 resourcesFullRefreshIdlingResource,
-                okHttpIdlingResource,
-                updateResourceIdlingResource
+                updateResourceIdlingResource,
+                createResourceIdlingResource
             )
         )
     }
@@ -113,15 +116,15 @@ class ResourcesEditionTest : KoinTest {
         onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
         onView(withId(R.id.text_input_start_icon)).perform(click())
         onView(withId(R.id.allItems)).perform(click())
-        //    Given     that I am on the action menu drawer
-        onView(withId(R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
-        onView(first(withId(R.id.more))).perform(click())
+        createNewPassword()
     }
 
     @Test
 //    https://passbolt.testrail.io/index.php?/cases/view/8134
     fun onTheResourcesActionMenuDrawerICanClickEditPassword() {
         //    Given     that I am on the action menu drawer
+        onView(withId(R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(first(withId(R.id.more))).perform(click())
         //    And       I see ‘Edit password’ element enabled
         onView(withId(R.id.edit))
             .check(matches(isDisplayed()))
@@ -136,6 +139,8 @@ class ResourcesEditionTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8135
     fun onTheEditPasswordPageICanEditElements() {
         //    Given     that I am on `Edit password` screen
+        onView(withId(R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(first(withId(R.id.more))).perform(click())
         onView(withId(R.id.edit)).perform(click())
         //    And       I see Edit password workspace
         onView(withText(R.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
@@ -167,6 +172,8 @@ class ResourcesEditionTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8136
     fun onTheEditPasswordPageICanSaveChangedResources() {
         //    Given     that I am on `Edit password` screen
+        onView(withId(R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(first(withId(R.id.more))).perform(click())
         onView(withId(R.id.edit)).perform(click())
         //    And       I see Edit password workspace
         onView(withText(R.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
@@ -177,12 +184,6 @@ class ResourcesEditionTest : KoinTest {
         }
         //    When      I click ‘Save’ button
         onView(withId(R.id.updateButton)).perform(scrollTo(), click())
-        //    Then      I see a popup "{password name} password was successfully edited." in @green
-        //        TODO idling not working
-        //        onView(withText(R.string.common_message_resource_edited))
-        //            .inRoot(hasToast())
-        //            .check(matches(isDisplayed()))
-        //        createNewPassword()
         //    Examples:
         //    | placeholder |
         //    | Enter a name |
@@ -196,6 +197,8 @@ class ResourcesEditionTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8137
     fun onTheEditPasswordPageIShouldSeeAnErrorMessageAfterDeletingTheMandatoryTextField() {
         //    Given     that I am on `Edit password` screen
+        onView(withId(R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(first(withId(R.id.more))).perform(click())
         onView(withId(R.id.edit)).perform(click())
         //    And       all placeholders are filled
         EditableFieldInput.values().forEach { editableInputField ->
@@ -235,6 +238,8 @@ class ResourcesEditionTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8138
     fun onTheEditPasswordPageICanDeleteTheOptionalInputTextField() {
         //    Given     that I am on `Edit password` screen
+        onView(withId(R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(first(withId(R.id.more))).perform(click())
         onView(withId(R.id.edit)).perform(click())
         //    And       all placeholders are filled
         EditableFieldInput.values().forEach { editableInputField ->
@@ -263,9 +268,15 @@ class ResourcesEditionTest : KoinTest {
     }
 
     @Test
-//    https://passbolt.testrail.io/index.php?/cases/view/8139
+//    https://passbolt.testrail.io/index.php?/cases/view/
     fun onTheEditPasswordPageISeeConfirmationPopupWhenSavingAChangedResource() {
+        // unregister refresh idling resource after first refresh not to block the snackbar checks
+        // (second refresh is during snackbar is showing)
+        IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
+
         //    Given     that I am on `Edit password` screen
+        onView(withId(R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(first(withId(R.id.more))).perform(click())
         onView(withId(R.id.edit)).perform(click())
         //    And       all placeholders are filled
         EditableFieldInput.values().forEach { editableInputField ->
@@ -284,11 +295,10 @@ class ResourcesEditionTest : KoinTest {
         //    When      I click "Save" button
         onView(withId(R.id.updateButton)).perform(scrollTo(), click())
         //    Then      I see a popup "{password name} password was successfully edited." in @green
-        //        TODO idling not working
-        //        onView(withText(R.string.common_message_resource_edited))
-        //            .inRoot(hasToast())
-        //            .check(matches(isDisplayed()))
-        //        createNewPassword()
+        //    Then      I see a popup "{password name} password was successfully edited." in @green
+        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(CoreMatchers.endsWith("password was successfully edited."))))
         //    Examples:
         //    | placeholder |
         //    | Enter URL |

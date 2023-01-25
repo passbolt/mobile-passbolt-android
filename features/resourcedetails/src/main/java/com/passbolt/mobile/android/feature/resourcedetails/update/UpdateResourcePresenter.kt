@@ -113,10 +113,10 @@ class UpdateResourcePresenter(
         view?.showProgress()
         view?.clearInputFields()
         scope.launch {
-            updateResourceIdlingResource.setIdle(false)
             when (resourceUpdateType) {
                 ResourceUpdateType.CREATE -> createInputFields()
                 ResourceUpdateType.EDIT -> {
+                    updateResourceIdlingResource.setIdle(false)
                     val existingResource = requireNotNull(existingResource)
                     doAfterFetchAndDecrypt(existingResource.resourceId,
                         action = {
@@ -131,10 +131,10 @@ class UpdateResourcePresenter(
                             view?.showError()
                         }
                     )
+                    updateResourceIdlingResource.setIdle(true)
                 }
             }
             view?.hideProgress()
-            updateResourceIdlingResource.setIdle(true)
         }
     }
 
@@ -268,9 +268,12 @@ class UpdateResourcePresenter(
                 ResourceUpdateType.CREATE -> {
                     createResourceIdlingResource.setIdle(false)
                     createResource()
+                    createResourceIdlingResource.setIdle(true)
                 }
                 ResourceUpdateType.EDIT -> {
+                    updateResourceIdlingResource.setIdle(false)
                     editResource()
+                    updateResourceIdlingResource.setIdle(true)
                 }
             }
             view?.hideProgress()
@@ -301,7 +304,6 @@ class UpdateResourcePresenter(
                 }
             }
         }
-        createResourceIdlingResource.setIdle(true)
     }
 
     private suspend fun applyFolderPermissionsToCreatedResource(
