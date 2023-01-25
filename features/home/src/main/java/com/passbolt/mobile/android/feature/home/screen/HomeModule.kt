@@ -76,7 +76,8 @@ fun Module.homeModule() {
                 getHomeDisplayViewPrefsUseCase = get(),
                 homeModelMapper = get(),
                 domainProvider = get(),
-                getLocalFolderUseCase = get()
+                getLocalFolderUseCase = get(),
+                deleteResourceIdlingResource = get()
             )
         }
         scopedOf(::SpeedDialFabFactory)

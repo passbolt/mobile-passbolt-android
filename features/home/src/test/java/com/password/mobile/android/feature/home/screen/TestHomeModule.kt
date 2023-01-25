@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
+import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
@@ -76,6 +77,7 @@ val testHomeModule = module {
     factory { HomeDisplayViewMapper() }
     factory { DomainProvider() }
     single { mock<FullDataRefreshExecutor>() }
+    single { DeleteResourceIdlingResource() }
     factory<HomeContract.Presenter> {
         HomePresenter(
             coroutineLaunchContext = get(),
@@ -94,7 +96,8 @@ val testHomeModule = module {
             getHomeDisplayViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
             homeModelMapper = get(),
             domainProvider = get(),
-            getLocalFolderUseCase = mockGetLocalFolderUseCase
+            getLocalFolderUseCase = mockGetLocalFolderUseCase,
+            deleteResourceIdlingResource = get()
         )
     }
     scope<HomePresenter> {

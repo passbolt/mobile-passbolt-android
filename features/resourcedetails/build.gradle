@@ -34,6 +34,7 @@ dependencies {
     implementation project(':tagsdetails')
     implementation project(':navigation')
     implementation project(':fulldatarefresh')
+    implementation project(':idlingresource')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -45,6 +46,7 @@ dependencies {
     implementation libs.coil.core
     implementation libs.coil.base
     implementation libs.room.core
+    implementation libs.test.espressoIdlingResource
 
     testImplementation project(':commontest')
 }
