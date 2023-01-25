@@ -6,6 +6,8 @@ import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.Validation
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
+import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.core.resources.usecase.CreateResourceUseCase
@@ -83,7 +85,9 @@ class UpdateResourcePresenter(
     private val fieldNamesMapper: FieldNamesMapper,
     private val resourceShareInteractor: ResourceShareInteractor,
     private val getLocalParentFolderPermissionsToApplyUseCase: GetLocalParentFolderPermissionsToApplyToNewItemUseCase,
-    private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase
+    private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase,
+    private val createResourceIdlingResource: CreateResourceIdlingResource,
+    private val updateResourceIdlingResource: UpdateResourceIdlingResource
 ) : DataRefreshViewReactivePresenter<UpdateResourceContract.View>(coroutineLaunchContext),
     UpdateResourceContract.Presenter {
 
@@ -109,6 +113,7 @@ class UpdateResourcePresenter(
         view?.showProgress()
         view?.clearInputFields()
         scope.launch {
+            updateResourceIdlingResource.setIdle(false)
             when (resourceUpdateType) {
                 ResourceUpdateType.CREATE -> createInputFields()
                 ResourceUpdateType.EDIT -> {
@@ -129,6 +134,7 @@ class UpdateResourcePresenter(
                 }
             }
             view?.hideProgress()
+            updateResourceIdlingResource.setIdle(true)
         }
     }
 
@@ -259,8 +265,13 @@ class UpdateResourcePresenter(
         view?.showProgress()
         scope.launch {
             when (resourceUpdateType) {
-                ResourceUpdateType.CREATE -> createResource()
-                ResourceUpdateType.EDIT -> editResource()
+                ResourceUpdateType.CREATE -> {
+                    createResourceIdlingResource.setIdle(false)
+                    createResource()
+                }
+                ResourceUpdateType.EDIT -> {
+                    editResource()
+                }
             }
             view?.hideProgress()
         }
@@ -290,6 +301,7 @@ class UpdateResourcePresenter(
                 }
             }
         }
+        createResourceIdlingResource.setIdle(true)
     }
 
     private suspend fun applyFolderPermissionsToCreatedResource(

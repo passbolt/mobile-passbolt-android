@@ -4,8 +4,10 @@ import android.view.KeyEvent
 import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.pressKey
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
@@ -20,8 +22,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.material.textfield.TextInputLayout
-import com.jakewharton.espresso.OkHttp3IdlingResource
 import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
+import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -51,7 +53,6 @@ import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
-
 
 /**
  * Passbolt - Open source password manager for teams
@@ -95,12 +96,19 @@ class ResourcesCreationTest : KoinTest {
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
+    private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+
     @get:Rule
     val idlingResourceRule = let {
         val signInIdlingResource: SignInIdlingResource by inject()
-        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-        val okHttpIdlingResource: OkHttp3IdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource, okHttpIdlingResource))
+        val createResourceIdlingResource: CreateResourceIdlingResource by inject()
+        IdlingResourceRule(
+            arrayOf(
+                signInIdlingResource,
+                resourcesFullRefreshIdlingResource,
+                createResourceIdlingResource
+            )
+        )
     }
 
     @BeforeTest
@@ -110,8 +118,6 @@ class ResourcesCreationTest : KoinTest {
             pressKey(KeyEvent.KEYCODE_ENTER)
         )
         onView(withId(R.id.authButton)).perform(click())
-
-        Thread.sleep(500)
         onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
         onView(withId(R.id.text_input_start_icon)).perform(click())
         onView(withId(R.id.allItems)).perform(click())
@@ -189,7 +195,7 @@ class ResourcesCreationTest : KoinTest {
             )
         )
             .check(matches(isDisplayed()))
-            .check(matches(withContentDescription(com.google.android.material.R.string.password_toggle_content_description)))
+            .check(matches(withContentDescription(R.string.password_toggle_content_description)))
         //    And       I see a "Random" button on the right of the password field
         onView(withId(R.id.generatePasswordLayout)).check(matches(isDisplayed()))
         //    And       I see a "Strength" bar under the password field
@@ -205,6 +211,10 @@ class ResourcesCreationTest : KoinTest {
 
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageIShouldSeeAToastMessageAfterCreationAPassword() {
+        // unregister refresh idling resource after first refresh not to block the snackbar checks
+        // (second refresh is during snackbar is showing)
+        IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
+
         //    Given     I am a logged in mobile user on the new password page
         onView(withId(R.id.speedDialViewId)).perform(click())
         //    And       I filled out all mandatory fields
@@ -212,14 +222,14 @@ class ResourcesCreationTest : KoinTest {
             .perform(typeText("PasswordNameTest"))
         onView(withId(R.id.generatePasswordLayout)).perform(click())
         //    When      I click on the create button
-
-        // TODO add idling resource for that
-        // onView(withId(R.id.updateButton))
-        //    .perform(scrollTo(), click())
+        onView(withId(R.id.updateButton))
+            .perform(scrollTo(), click())
         //    Then      I see a "Loading" box
         //    And       I am redirected to the password workspace
+        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
         //    And       I see a toaster message with "New Password created"
-        // TODO
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.resource_update_create_success)))
     }
 
     @Test

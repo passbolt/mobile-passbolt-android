@@ -53,7 +53,9 @@ fun Module.updateResourceModule() {
                 fieldNamesMapper = get(),
                 resourceShareInteractor = get(),
                 getLocalParentFolderPermissionsToApplyUseCase = get(),
-                addLocalResourcePermissionsUseCase = get()
+                addLocalResourcePermissionsUseCase = get(),
+                createResourceIdlingResource = get(),
+                updateResourceIdlingResource = get()
             )
         }
 

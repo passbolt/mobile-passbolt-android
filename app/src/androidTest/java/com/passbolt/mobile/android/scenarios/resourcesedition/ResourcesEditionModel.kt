@@ -1,11 +1,8 @@
-package com.passbolt.mobile.android.core.idlingresource
-
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+package com.passbolt.mobile.android.scenarios.resourcesedition
 
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2023 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -26,10 +23,10 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val idlingResourcesModule = module {
-    singleOf(::SignInIdlingResource)
-    singleOf(::ResourcesFullRefreshIdlingResource)
-    singleOf(::CreateResourceIdlingResource)
-    singleOf(::UpdateResourceIdlingResource)
-    singleOf(::DeleteResourceIdlingResource)
+enum class EditableFieldInput(val hintName: String, val textToReplace: String) {
+    ENTER_NAME("Enter Name", "DeleteThisPassword"),
+    ENTER_URL("Enter URL", "URLToBeDeleted"),
+    ENTER_USERNAME("Enter Username", "UsernameToBeDeleted"),
+    ENTER_PASSWORD("Enter password", "PasswordToBeDeleted"),
+    ENTER_DESCRIPTION("Enter Description", "Password was generated for testing purposes. Needs to be deleted.")
 }

@@ -32,6 +32,7 @@ dependencies {
     implementation project(':resourcedetails')
     implementation project(':fulldatarefresh')
     implementation project(':resourcetypes')
+    implementation project(':idlingresource')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -45,6 +46,7 @@ dependencies {
     implementation libs.coil.base
     implementation libs.fabSpeedDial
     implementation libs.room.core
+    implementation libs.test.espressoIdlingResource
 
     testImplementation project(':commontest')
 }

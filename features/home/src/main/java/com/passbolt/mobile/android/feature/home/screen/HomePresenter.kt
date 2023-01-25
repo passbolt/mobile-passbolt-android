@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
+import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
@@ -93,7 +94,8 @@ class HomePresenter(
     private val getHomeDisplayViewPrefsUseCase: GetHomeDisplayViewPrefsUseCase,
     private val homeModelMapper: HomeDisplayViewMapper,
     private val domainProvider: DomainProvider,
-    private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase
+    private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
+    private val deleteResourceIdlingResource: DeleteResourceIdlingResource
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
     KoinScopeComponent {
 
@@ -650,11 +652,13 @@ class HomePresenter(
 
     override fun deleteResourceConfirmed() {
         coroutineScope.launch {
+            deleteResourceIdlingResource.setIdle(false)
             resourceAuthenticatedActionsInteractor.deleteResource(
                 failure = { view?.showDeleteResourceFailure() }
             ) {
                 resourceDeleted(it)
             }
+            deleteResourceIdlingResource.setIdle(true)
         }
     }
 
