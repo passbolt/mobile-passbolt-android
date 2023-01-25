@@ -12,4 +12,6 @@
 - added more instrumented tests
 
 ## Fixed
+- updated Yubikit SDK (fixes NFC errors on Android 13)
+- multiple sign in screen instances when plugging in the Yubikey into the phone using USB
 - accessibility service overlay logo image color on dark theme
