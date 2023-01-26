@@ -29,11 +29,29 @@
         android:gravity="start"
         android:maxLines="1"
         android:textColor="@color/text_primary"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/path"
         app:layout_constraintEnd_toStartOf="@id/folderChildrenCount"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread"
         tools:text="Adobe Photoshop" />
+
+    <TextView
+        android:id="@+id/path"
+        style="@style/BodyLight"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_12"
+        android:layout_marginEnd="@dimen/dp_8"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:textSize="@dimen/sp_12"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/folderChildrenCount"
+        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        app:layout_constraintVertical_chainStyle="spread"
+        tools:text="Root > child" />
 
     <TextView
         android:id="@+id/folderChildrenCount"

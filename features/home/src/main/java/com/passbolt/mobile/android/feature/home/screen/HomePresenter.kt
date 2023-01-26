@@ -27,7 +27,7 @@ import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccoun
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
-import com.passbolt.mobile.android.ui.FolderWithCount
+import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -116,12 +116,12 @@ class HomePresenter(
     private var suggestedResourceList: List<ResourceModel> = emptyList()
 
     private var resourceList: List<ResourceModel> = emptyList()
-    private var foldersList: List<FolderWithCount> = emptyList()
+    private var foldersList: List<FolderWithCountAndPath> = emptyList()
     private var tagsList: List<TagWithCount> = emptyList()
     private var groupsList: List<GroupWithCount> = emptyList()
     private var filteredSubFolderResources: List<ResourceModel> = emptyList()
 
-    private var filteredSubFolders: List<FolderWithCount> = emptyList()
+    private var filteredSubFolders: List<FolderWithCountAndPath> = emptyList()
     private var currentMoreMenuResource: ResourceModel? = null
 
     private var userAvatarUrl: String? = null
@@ -557,7 +557,7 @@ class HomePresenter(
         }
     }
 
-    private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderWithCount>) =
+    private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderWithCountAndPath>) =
         getLocalResourcesFiltered.execute(
             GetLocalSubFolderResourcesFilteredUseCase.Input(
                 allSubFolders.map { it.folderId }, currentSearchText.value
@@ -754,7 +754,7 @@ class HomePresenter(
         navigateToHomeView(HomeDisplayViewModel.groupsRoot())
     }
 
-    override fun folderItemClick(folderModel: FolderWithCount) {
+    override fun folderItemClick(folderModel: FolderWithCountAndPath) {
         view?.navigateToChild(
             HomeDisplayViewModel.Folders(
                 Folder.Child(

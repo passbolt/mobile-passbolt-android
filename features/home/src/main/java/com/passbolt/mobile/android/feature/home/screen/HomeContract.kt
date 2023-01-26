@@ -4,7 +4,7 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
-import com.passbolt.mobile.android.ui.FolderWithCount
+import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -39,10 +39,10 @@ interface HomeContract {
         fun showItems(
             suggestedResources: List<ResourceModel>,
             resourceList: List<ResourceModel>,
-            foldersList: List<FolderWithCount>,
+            foldersList: List<FolderWithCountAndPath>,
             tagsList: List<TagWithCount>,
             groupsList: List<GroupWithCount>,
-            filteredSubFoldersList: List<FolderWithCount>,
+            filteredSubFoldersList: List<FolderWithCountAndPath>,
             filteredSubFolderResourceList: List<ResourceModel>,
             sectionsConfiguration: HomeFragment.HeaderSectionConfiguration
         )
@@ -138,7 +138,7 @@ interface HomeContract {
             shouldShowResourceMoreMenu: Boolean
         )
 
-        fun folderItemClick(folderModel: FolderWithCount)
+        fun folderItemClick(folderModel: FolderWithCountAndPath)
         fun createResourceClick()
         fun tagsClick()
         fun tagItemClick(tag: TagWithCount)
