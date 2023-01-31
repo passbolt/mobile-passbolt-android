@@ -14,9 +14,14 @@ import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationU
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
 import com.passbolt.mobile.android.database.impl.folders.ItemIdFolderId
+import com.passbolt.mobile.android.database.impl.users.GetLocalCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.mappers.SharePermissionsModelMapper
+import com.passbolt.mobile.android.mappers.UsersModelMapper
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import com.passbolt.mobile.android.ui.FolderModel
+import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -53,6 +58,8 @@ class CreateFolderPresenter(
     private val folderShareInteractor: FolderShareInteractor,
     private val addLocalFolderUseCase: AddLocalFolderUseCase,
     private val addLocalFolderPermissionsUseCase: AddLocalFolderPermissionsUseCase,
+    private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase,
+    private val usersModelMapper: UsersModelMapper,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<CreateFolderContract.View>(coroutineLaunchContext),
     CreateFolderContract.Presenter {
@@ -81,7 +88,14 @@ class CreateFolderPresenter(
                 GetLocalFolderPermissionsUseCase.Input(parentFolderId)
             ).permissions
         } else {
-            emptyList()
+            // current user in root always has the owner permission
+            listOf(
+                PermissionModelUi.UserPermissionModel(
+                    ResourcePermission.OWNER,
+                    SharePermissionsModelMapper.TEMPORARY_NEW_PERMISSION_ID,
+                    usersModelMapper.mapToUserWithAvatar(getLocalCurrentUserUseCase.execute(Unit).user)
+                )
+            )
         }
 
         val permissionsDisplayDataset = PermissionsDatasetCreator(
