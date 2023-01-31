@@ -116,7 +116,7 @@
                 android:layout_marginBottom="@dimen/dp_24"
                 android:fontFamily="@font/inter"
                 android:gravity="center"
-                android:text="@string/settings_transfer_account" />
+                android:text="@string/settings_accounts_transfer_account" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

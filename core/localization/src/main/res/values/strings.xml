@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Passbolt</string>
+    <string name="help_website"
+        translatable="false">https://help.passbolt.com/</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
@@ -271,18 +273,12 @@
     <string name="resource_update_field_username">Username</string>
     <string name="resource_update_field_description">Description</string>
 
+    <string name="settings_app_settings">App settings</string>
+    <string name="settings_accounts">Accounts</string>
+    <string name="settings_terms_and_licenses">Terms &amp; licenses</string>
+    <string name="settings_debug_logs">Debug, logs</string>
     <string name="settings_disable">Disable</string>
     <string name="settings_sign_out">Sign out</string>
-    <string name="settings_fingerprint">Fingerprint</string>
-    <string name="settings_enable_logs">Enable debug logs</string>
-    <string name="settings_autofill">Autofill</string>
-    <string name="settings_default_filter">Default filter</string>
-    <string name="settings_manage_accounts">Manage accounts</string>
-    <string name="settings_transfer_account">Transfer account to another device</string>
-    <string name="settings_terms">Terms &amp; Conditions</string>
-    <string name="settings_privacy_policy">Privacy policy</string>
-    <string name="settings_logs">Access the logs</string>
-    <string name="settings_licenses">Open Source Licenses</string>
     <string name="settings_title">Settings</string>
     <string name="settings_disable_fingerprint_confirmation_message">After disabling Fingerprint you will need to login by using your passphrase.</string>
     <string name="settings_turn_on_biometric_title">Turn on fingerprint authentication</string>
@@ -290,6 +286,22 @@
     <string name="settings_add_first_fingerprint">Please add your fingerprint in the system settings first</string>
     <string name="settings_add_first_fingerprint_title">Configure fingerprint</string>
     <string name="settings_add_first_fingerprint_settings">Go to settings</string>
+
+    <string name="settings_debug_logs_settings_logs">Access the logs</string>
+    <string name="settings_debug_logs_enable_logs">Enable debug logs</string>
+    <string name="settings_debug_logs_visit_help_website">Visit help website</string>
+
+    <string name="settings_accounts_manage_accounts">Manage accounts</string>
+    <string name="settings_accounts_transfer_account">Transfer account to another device</string>
+
+    <string name="settings_terms_and_licenses_privacy_policy">Privacy policy</string>
+    <string name="settings_terms_and_licenses_licenses">Open Source Licenses</string>
+    <string name="settings_terms_and_licenses_terms">Terms &amp; Conditions</string>
+
+    <string name="settings_app_settings_default_filter">Default filter</string>
+    <string name="settings_app_settings_autofill">Autofill</string>
+    <string name="settings_app_settings_fingerprint">Fingerprint</string>
+    <string name="settings_app_settings_biometry_error">Biometry error. %s</string>
 
     <string name="settings_autofill_autofill_title">Here you can change autofill methods</string>
     <string name="settings_autofill_autofill_desc">It is recommended to use the Autofill Service method, but the Service performance may depend on your device and battery optimization settings. \n\nIf the Autofill Service is not working reliably on your device you can try enabling autofill based on Accessibility Service.</string>

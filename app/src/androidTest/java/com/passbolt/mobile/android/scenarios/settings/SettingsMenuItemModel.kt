@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.scenarios.settings
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import com.passbolt.mobile.android.feature.main.R
+import com.passbolt.mobile.android.feature.settings.R
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,54 +33,29 @@ enum class SettingsMenuItemModel(
     @DrawableRes val settingsItemIconId: Int,
     @IdRes val settingsItemId: Int
 ) {
-    FINGERPRINT(
-        settingsItemTextId = R.string.settings_fingerprint,
-        settingsItemIconId = R.drawable.ic_fingerprint,
-        settingsItemId = R.id.fingerprintSetting
+    APP_SETTINGS(
+        settingsItemTextId = R.string.settings_app_settings,
+        settingsItemIconId = R.drawable.ic_app_settings,
+        settingsItemId = R.id.appSettings
     ),
-    AUTOFILL(
-        settingsItemTextId = R.string.settings_autofill,
-        settingsItemIconId = R.drawable.ic_key,
-        settingsItemId = R.id.autofillSetting
-    ),
-    DEFAULT_FILTER(
-        settingsItemTextId = R.string.settings_default_filter,
-        settingsItemIconId = R.drawable.ic_filter,
-        settingsItemId = R.id.defaultFilterSetting
-    ),
-    MANAGE_ACCOUNT(
-        settingsItemTextId = R.string.settings_manage_accounts,
+    ACCOUNTS(
+        settingsItemTextId = R.string.settings_accounts,
         settingsItemIconId = R.drawable.ic_manage_accounts,
-        settingsItemId = R.id.manageAccountsSetting
+        settingsItemId = R.id.accountsSettings
     ),
-    TERMS(
-        settingsItemTextId = R.string.settings_terms,
+    TERMS_AND_LICENSES(
+        settingsItemTextId = R.string.settings_terms_and_licenses,
         settingsItemIconId = R.drawable.ic_terms,
-        settingsItemId = R.id.termsSetting
+        settingsItemId = R.id.termsAndLicensesSettings
     ),
-    PRIVACY(
-        settingsItemTextId = R.string.settings_privacy_policy,
-        settingsItemIconId = R.drawable.ic_lock,
-        settingsItemId = R.id.privacySetting
-    ),
-    ENABLE_LOGS(
-        settingsItemTextId = R.string.settings_enable_logs,
+    DEBUG_LOGS(
+        settingsItemTextId = R.string.settings_debug_logs,
         settingsItemIconId = R.drawable.ic_bug,
-        settingsItemId = R.id.enableLogsSetting
-    ),
-    LOGS(
-        settingsItemTextId = R.string.settings_logs,
-        settingsItemIconId = R.drawable.ic_bug,
-        settingsItemId = R.id.logsSetting
-    ),
-    LICENSES(
-        settingsItemTextId = R.string.settings_licenses,
-        settingsItemIconId = R.drawable.ic_licenses,
-        settingsItemId = R.id.licensesSetting
+        settingsItemId = R.id.debugLogsSettings
     ),
     SIGN_OUT(
         settingsItemTextId = R.string.settings_sign_out,
         settingsItemIconId = R.drawable.ic_sign_out,
-        settingsItemId = R.id.signOutSetting
+        settingsItemId = R.id.signOut
     )
 }

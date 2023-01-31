@@ -1,8 +1,6 @@
 package com.passbolt.mobile.android.feature.settings.screen
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.DefaultFilterModel
-import javax.crypto.Cipher
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,63 +26,23 @@ import javax.crypto.Cipher
  */
 interface SettingsContract {
 
-    @Suppress("TooManyFunctions")
     interface View : BaseContract.View {
-        fun openUrl(url: String)
-        fun navigateToManageAccounts()
-        fun toggleFingerprintOn(silently: Boolean)
-        fun toggleFingerprintOff(silently: Boolean)
-        fun showAutofillSetting()
-        fun navigateToAutofill()
-        fun showAutofillEnabledDialog()
-        fun showDisableFingerprintConfirmationDialog()
-        fun navigateToAuthGetPassphrase()
-        fun hideAutofillSetting()
         fun showLogoutDialog()
-        fun showBiometricPrompt(fingerprintEncryptionCipher: Cipher)
-        fun showAuthenticationError(errorMessage: Int)
         fun navigateToSignInWithLogout()
-        fun showKeyChangesDetected()
-        fun showGenericError()
-        fun showConfigureFingerprintFirst()
-        fun navigateToSystemSettings()
-        fun hidePrivacyPolicyButton()
-        fun hideTermsAndConditionsButton()
         fun showProgress()
         fun hideProgress()
-        fun navigateToLicenses()
-        fun navigateToLogs()
-        fun setEnableLogsSwitchOn()
-        fun setEnableLogsSwitchOff()
-        fun enableAccessLogs()
-        fun disableAccessLogs()
-        fun showPrivacyPolicyButton()
-        fun showTermsAndConditionsButton()
-        fun navigateToDefaultFilter(userSetHomeView: DefaultFilterModel)
-        fun navigateToTransferAccountOnboarding()
+        fun navigateToDebugLogsSettings()
+        fun navigateAccountsSettings()
+        fun navigateToTermsAndLicensesSettings()
+        fun navigateToAppSettings()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun privacyPolicyClick()
-        fun termsClick()
         fun signOutClick()
-        fun manageAccountsClick()
-        fun transferAccountClick()
-        fun autofillClick()
-        fun fingerprintSettingChanged(isEnabled: Boolean)
-        fun disableFingerprintConfirmed()
-        fun disableFingerprintCanceled()
         fun logoutConfirmed()
-        fun getPassphraseSucceeded()
-        fun biometricAuthError(errorMessage: Int)
-        fun biometricAuthSucceeded(authenticatedCipher: Cipher?)
-        fun biometricAuthCanceled()
-        fun keyChangesInfoConfirmClick()
-        fun systemSettingsClick()
-        fun licensesClick()
-        fun logsClick()
-        fun enableDebugLogsChanged(areLogsEnabled: Boolean)
-        fun viewResumed()
-        fun defaultFilterClick()
+        fun debugLogsSettingsClick()
+        fun accountsSettingsClick()
+        fun termsAndLicensesClick()
+        fun appSettingsClick()
     }
 }

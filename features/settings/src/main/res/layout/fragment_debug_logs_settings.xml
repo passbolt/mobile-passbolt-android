@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/settingsRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+            android:id="@+id/toolbar"
+            style="@style/Heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_32"
+            android:gravity="center"
+            android:textSize="@dimen/sp_16"
+            app:toolbarTitle="@string/settings_debug_logs" />
+
+        <com.passbolt.mobile.android.core.ui.menu.SwitchSettingView
+            android:id="@+id/enableLogsSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_32"
+            app:icon="@drawable/ic_bug"
+            app:name="@string/settings_debug_logs_enable_logs" />
+
+        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+            android:id="@+id/accessLogsSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_access_logs"
+            app:name="@string/settings_debug_logs_settings_logs" />
+
+        <com.passbolt.mobile.android.core.ui.menu.SettingView
+            android:id="@+id/visitHelpWebsite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_external_link"
+            app:name="@string/settings_debug_logs_visit_help_website" />
+    </LinearLayout>
+</ScrollView>

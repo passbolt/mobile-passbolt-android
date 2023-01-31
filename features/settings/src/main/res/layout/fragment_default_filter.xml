@@ -10,7 +10,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:toolbarTitle="@string/settings_default_filter"
+        app:toolbarTitle="@string/settings_app_settings_default_filter"
         android:paddingVertical="@dimen/dp_16"/>
 
     <androidx.recyclerview.widget.RecyclerView

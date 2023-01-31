@@ -22,79 +22,37 @@
             android:text="@string/settings_title"
             android:textSize="@dimen/sp_16" />
 
-        <com.passbolt.mobile.android.core.ui.menu.SwitchSettingView
-            android:id="@+id/fingerprintSetting"
+        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+            android:id="@+id/appSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_40"
-            app:icon="@drawable/ic_fingerprint"
-            app:name="@string/settings_fingerprint" />
+            app:icon="@drawable/ic_app_settings"
+            app:name="@string/settings_app_settings" />
 
         <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-            android:id="@+id/autofillSetting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_key"
-            app:name="@string/settings_autofill" />
-
-        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-            android:id="@+id/defaultFilterSetting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_filter"
-            app:name="@string/settings_default_filter" />
-
-        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-            android:id="@+id/manageAccountsSetting"
+            android:id="@+id/accountsSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_manage_accounts"
-            app:name="@string/settings_manage_accounts" />
+            app:name="@string/settings_accounts" />
 
         <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-            android:id="@+id/transferAccountSetting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_transfer_account"
-            app:name="@string/settings_transfer_account" />
-
-        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-            android:id="@+id/termsSetting"
+            android:id="@+id/termsAndLicensesSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_terms"
-            app:name="@string/settings_terms" />
+            app:name="@string/settings_terms_and_licenses" />
 
         <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-            android:id="@+id/privacySetting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_lock"
-            app:name="@string/settings_privacy_policy" />
-
-        <com.passbolt.mobile.android.core.ui.menu.SwitchSettingView
-            android:id="@+id/enableLogsSetting"
+            android:id="@+id/debugLogsSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_bug"
-            app:name="@string/settings_enable_logs" />
-
-        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-            android:id="@+id/logsSetting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_bug"
-            app:name="@string/settings_logs" />
-
-        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-            android:id="@+id/licensesSetting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_licenses"
-            app:name="@string/settings_licenses" />
+            app:name="@string/settings_debug_logs" />
 
         <com.passbolt.mobile.android.core.ui.menu.SettingView
-            android:id="@+id/signOutSetting"
+            android:id="@+id/signOut"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_sign_out"

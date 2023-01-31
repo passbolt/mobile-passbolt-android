@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -17,9 +16,9 @@ import androidx.test.filters.MediumTest
 import androidx.test.rule.GrantPermissionRule
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
-import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
+import com.passbolt.mobile.android.scenarios.helpers.getString
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf
 import org.junit.Rule
@@ -103,7 +102,7 @@ class ScanQrCodeTest : KoinTest {
         //        Then    a webpage with help is presented
         val expectedIntent: Matcher<Intent> = AllOf.allOf(
             IntentMatchers.hasAction(Intent.ACTION_VIEW),
-            IntentMatchers.hasData(HelpMenuFragment.HELP_WEBSITE_URL)
+            IntentMatchers.hasData(getString(R.string.help_website))
         )
         Intents.intended(expectedIntent)
     }
