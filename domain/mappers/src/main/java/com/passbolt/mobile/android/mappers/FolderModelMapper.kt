@@ -2,10 +2,10 @@ package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.dto.response.FolderResponseDto
 import com.passbolt.mobile.android.entity.folder.Folder
-import com.passbolt.mobile.android.entity.folder.FolderWithChildItemsCount
+import com.passbolt.mobile.android.entity.folder.FolderWithChildItemsCountAndPath
 import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.FolderModelWithAttributes
-import com.passbolt.mobile.android.ui.FolderWithCount
+import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 
 /**
  * Passbolt - Open source password manager for teams
@@ -63,13 +63,14 @@ class FolderModelMapper(
             permission = permissionsModelMapper.map(folderEntity.permission)
         )
 
-    fun map(folderWithChildItemsCount: FolderWithChildItemsCount) =
-        FolderWithCount(
-            folderId = folderWithChildItemsCount.folderId,
-            name = folderWithChildItemsCount.name,
-            permission = permissionsModelMapper.map(folderWithChildItemsCount.permission),
-            parentId = folderWithChildItemsCount.parentId,
-            isShared = folderWithChildItemsCount.isShared,
-            subItemsCount = folderWithChildItemsCount.childItemsCount
+    fun map(folderWithChildItemsCountAndPath: FolderWithChildItemsCountAndPath) =
+        FolderWithCountAndPath(
+            folderId = folderWithChildItemsCountAndPath.folderId,
+            name = folderWithChildItemsCountAndPath.name,
+            permission = permissionsModelMapper.map(folderWithChildItemsCountAndPath.permission),
+            parentId = folderWithChildItemsCountAndPath.parentId,
+            isShared = folderWithChildItemsCountAndPath.isShared,
+            subItemsCount = folderWithChildItemsCountAndPath.childItemsCount,
+            path = folderWithChildItemsCountAndPath.path
         )
 }

@@ -60,7 +60,7 @@ import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
-import com.passbolt.mobile.android.ui.FolderWithCount
+import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceListUiModel
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -350,10 +350,10 @@ class HomeFragment :
     override fun showItems(
         suggestedResources: List<ResourceModel>,
         resourceList: List<ResourceModel>,
-        foldersList: List<FolderWithCount>,
+        foldersList: List<FolderWithCountAndPath>,
         tagsList: List<TagWithCount>,
         groupsList: List<GroupWithCount>,
-        filteredSubFoldersList: List<FolderWithCount>,
+        filteredSubFoldersList: List<FolderWithCountAndPath>,
         filteredSubFolderResourceList: List<ResourceModel>,
         sectionsConfiguration: HeaderSectionConfiguration
     ) {

@@ -34,13 +34,14 @@ data class FolderModel(
     override val searchCriteria: String = name
 ) : Searchable
 
-data class FolderWithCount(
+data class FolderWithCountAndPath(
     val folderId: String,
     val name: String,
     val permission: ResourcePermission,
     val parentId: String?,
     val isShared: Boolean,
     val subItemsCount: Int,
+    val path: String?,
     override val searchCriteria: String = name
 ) : Searchable
 

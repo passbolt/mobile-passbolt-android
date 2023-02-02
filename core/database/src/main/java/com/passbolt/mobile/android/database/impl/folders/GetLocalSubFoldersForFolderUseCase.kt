@@ -5,7 +5,7 @@ import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.Folder
-import com.passbolt.mobile.android.ui.FolderWithCount
+import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 
 /**
  * Passbolt - Open source password manager for teams
@@ -60,5 +60,5 @@ class GetLocalSubFoldersForFolderUseCase(
         val folder: Folder
     )
 
-    data class Output(val folders: List<FolderWithCount>)
+    data class Output(val folders: List<FolderWithCountAndPath>)
 }

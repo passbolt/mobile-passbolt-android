@@ -10,7 +10,7 @@ import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.asBinding
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.ItemFolderBinding
-import com.passbolt.mobile.android.ui.FolderWithCount
+import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,7 +35,7 @@ import com.passbolt.mobile.android.ui.FolderWithCount
  * @since v1.0
  */
 class FolderItem(
-    val folderWithCount: FolderWithCount
+    val folderWithCountAndPath: FolderWithCountAndPath
 ) : AbstractBindingItem<ItemFolderBinding>() {
 
     override val type: Int
@@ -47,20 +47,26 @@ class FolderItem(
     override fun bindView(binding: ItemFolderBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            name.text = folderWithCount.name
-            folderChildrenCount.text = folderWithCount.subItemsCount.toString()
+            name.text = folderWithCountAndPath.name
+            folderChildrenCount.text = folderWithCountAndPath.subItemsCount.toString()
             icon.setImageResource(
-                if (folderWithCount.isShared) {
+                if (folderWithCountAndPath.isShared) {
                     R.drawable.ic_filled_shared_folder_with_bg
                 } else {
                     R.drawable.ic_filled_folder_with_bg
                 }
             )
+
+            val rootPathPlaceholder = path.context.getString(R.string.folder_root)
+            val pathSeparator = path.context.getString(R.string.folder_details_location_separator)
+            path.text = folderWithCountAndPath.path?.let {
+                "$rootPathPlaceholder $pathSeparator %s".format(it)
+            } ?: rootPathPlaceholder
         }
     }
 
     class ItemClick(
-        private val clickListener: (FolderWithCount) -> Unit
+        private val clickListener: (FolderWithCountAndPath) -> Unit
     ) : ClickEventHook<FolderItem>() {
 
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
@@ -75,7 +81,7 @@ class FolderItem(
             fastAdapter: FastAdapter<FolderItem>,
             item: FolderItem
         ) {
-            clickListener.invoke(item.folderWithCount)
+            clickListener.invoke(item.folderWithCountAndPath)
         }
     }
 }

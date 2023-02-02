@@ -6,7 +6,7 @@ import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.Folder
-import com.passbolt.mobile.android.ui.FolderWithCount
+import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -65,7 +65,7 @@ class GetLocalResourcesAndFoldersUseCase(
     sealed class Output {
 
         data class Success(
-            val folders: List<FolderWithCount>,
+            val folders: List<FolderWithCountAndPath>,
             val resources: List<ResourceModel>
         ) : Output()
 
