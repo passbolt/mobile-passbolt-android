@@ -1,7 +1,11 @@
 package com.passbolt.mobile.android.database.impl.users
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.UsersModelMapper
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.ui.UserModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,11 +29,22 @@ import org.koin.core.module.dsl.singleOf
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GetLocalCurrentUserUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val userModelMapper: UsersModelMapper,
+    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
+) : AsyncUseCase<Unit, GetLocalCurrentUserUseCase.Output>, SelectedAccountUseCase {
 
-internal fun Module.usersModule() {
-    singleOf(::RemoveLocalUsersUseCase)
-    singleOf(::AddLocalUsersUseCase)
-    singleOf(::GetLocalUsersUseCase)
-    singleOf(::GetLocalUserUseCase)
-    singleOf(::GetLocalCurrentUserUseCase)
+    override suspend fun execute(input: Unit): Output {
+        val currentUserAccountData = getSelectedAccountDataUseCase.execute(Unit)
+        return databaseProvider
+            .get(selectedAccountId)
+            .usersDao()
+            .get(requireNotNull(currentUserAccountData.serverId))
+            .let { Output(userModelMapper.map(it)) }
+    }
+
+    data class Output(
+        val user: UserModel
+    )
 }
