@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.idlingresource.SignOutIdlingResource
 import com.passbolt.mobile.android.mappers.SignOutMapper
 import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
@@ -37,15 +38,18 @@ class SignOutUseCase(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val authRepository: AuthRepository,
     private val signOutMapper: SignOutMapper,
-    private val getSessionUseCase: GetSessionUseCase
+    private val getSessionUseCase: GetSessionUseCase,
+    private val signOutIdlingResource: SignOutIdlingResource
 ) : AsyncUseCase<Unit, Unit> {
 
     override suspend fun execute(input: Unit) {
+        signOutIdlingResource.setIdle(false)
         getSessionUseCase.execute(Unit).refreshToken?.let {
             authRepository.signOut(signOutMapper.mapRequestToDto(it))
         }
         passphraseMemoryCache.clear()
         val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
         removeSelectedAccountUseCase.execute(UserIdInput(requireNotNull(selectedAccount)))
+        signOutIdlingResource.setIdle(true)
     }
 }

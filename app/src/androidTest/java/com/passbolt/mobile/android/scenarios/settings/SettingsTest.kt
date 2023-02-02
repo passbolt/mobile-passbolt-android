@@ -1,55 +1,3 @@
-package com.passbolt.mobile.android.scenarios.settings
-
-import android.app.Instrumentation.ActivityResult
-import android.content.Intent
-import android.provider.Settings
-import android.view.KeyEvent
-import androidx.appcompat.widget.Toolbar
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.pressKey
-import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.Intents.intending
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
-import androidx.test.espresso.matcher.RootMatchers.isDialog
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withTagValue
-import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.MediumTest
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
-import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.main.R
-import com.passbolt.mobile.android.hasDrawable
-import com.passbolt.mobile.android.instrumentationTestsModule
-import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.rules.IdlingResourceRule
-import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.setupautofill.autofillConfiguredModuleTests
-import com.passbolt.mobile.android.scenarios.setupconfigurebiometric.biometricSetupUnavailableModuleTests
-import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.Matcher
-import org.hamcrest.Matchers.`is`
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.koin.core.component.inject
-import org.koin.test.KoinTest
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -73,8 +21,61 @@ import kotlin.test.BeforeTest
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.scenarios.settings
+
+import android.app.Instrumentation.ActivityResult
+import android.content.Intent
+import android.provider.Settings
+import androidx.appcompat.widget.Toolbar
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
+import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
+import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withTagValue
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
+import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.SignOutIdlingResource
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
+import com.passbolt.mobile.android.feature.main.R
+import com.passbolt.mobile.android.hasDrawable
+import com.passbolt.mobile.android.instrumentationTestsModule
+import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.rules.IdlingResourceRule
+import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.setupautofill.autofillConfiguredModuleTests
+import com.passbolt.mobile.android.scenarios.setupconfigurebiometric.biometricSetupUnavailableModuleTests
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers.`is`
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.koin.core.component.inject
+import org.koin.test.KoinTest
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+
+
 @RunWith(AndroidJUnit4::class)
-@MediumTest
+@LargeTest
 class SettingsTest : KoinTest {
 
     @get:Rule
@@ -99,16 +100,15 @@ class SettingsTest : KoinTest {
     @get:Rule
     val idlingResourceRule = let {
         val signInIdlingResource: SignInIdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource))
+        val signOutIdlingResource: SignOutIdlingResource by inject()
+        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+        IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource, signOutIdlingResource))
     }
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.input)).perform(
-            typeText(managedAccountIntentCreator.getUsername()),
-            pressKey(KeyEvent.KEYCODE_ENTER)
-        )
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(R.id.authButton)).perform(scrollTo(), click())
         Intents.init()
     }
 

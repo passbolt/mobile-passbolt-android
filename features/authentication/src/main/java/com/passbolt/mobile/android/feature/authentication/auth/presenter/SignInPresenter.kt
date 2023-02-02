@@ -144,6 +144,7 @@ open class SignInPresenter(
         signInVerifyInteractor.signInVerify(serverPublicKey, passphrase, userId, rsaKey,
             onError = {
                 view?.hideProgress()
+                signInIdlingResource.setIdle(true)
                 when (it) {
                     is SignInVerifyInteractor.Error.AccountDoesNotExist -> {
                         view?.showAccountDoesNotExistDialog(

@@ -1,39 +1,3 @@
-package com.passbolt.mobile.android.scenarios.setupconfigurebiometric
-
-import android.content.Intent
-import android.provider.Settings
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.MediumTest
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
-import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
-import com.passbolt.mobile.android.feature.setup.R
-import com.passbolt.mobile.android.feature.setup.SetUpActivity
-import com.passbolt.mobile.android.hasDrawable
-import com.passbolt.mobile.android.instrumentationTestsModule
-import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.rules.IdlingResourceRule
-import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import org.hamcrest.Matcher
-import org.hamcrest.core.AllOf
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.koin.test.KoinTest
-import org.koin.test.inject
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -57,19 +21,56 @@ import kotlin.test.BeforeTest
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.scenarios.setupconfigurebiometric
+
+import android.content.Intent
+import android.provider.Settings
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
+import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
+import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.feature.setup.R
+import com.passbolt.mobile.android.feature.setup.SetUpActivity
+import com.passbolt.mobile.android.hasDrawable
+import com.passbolt.mobile.android.instrumentationTestsModule
+import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.rules.IdlingResourceRule
+import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import org.hamcrest.Matcher
+import org.hamcrest.core.AllOf
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.koin.test.KoinTest
+import org.koin.test.inject
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+
 @RunWith(AndroidJUnit4::class)
-@MediumTest
+@LargeTest
 class SetupConfigureBiometricUnavailableTest : KoinTest {
 
     @get:Rule
-    val startActivityRule = lazyActivitySetupScenarioRule<SetUpActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule, biometricSetupUnavailableModuleTests),
+    val startActivityRule = lazyActivitySetupScenarioRule<SetUpActivity>(koinOverrideModules = listOf(
+        instrumentationTestsModule,
+        biometricSetupUnavailableModuleTests
+    ),
         intentSupplier = {
             managedAccountIntentCreator.createIntent(
                 InstrumentationRegistry.getInstrumentation().targetContext
             )
-        }
-    )
+        })
 
     @get:Rule
     val idlingResourceRule = let {
@@ -96,12 +97,12 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     }
 
     @Test
+    // https://passbolt.testrail.io/index.php?/cases/view/2358
     fun asAMobileUserIHaveAnOptionToConfigureBiometricsOnTheDevice() {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Passphrase screen
         //    When      I successfully entered my passphrase
-        onView(withId(R.id.input))
-            .perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
         onView(withId(R.id.authButton)).perform(scrollTo(), click())
         //    Then       I am prompted to Configure biometrics
         //    And        I see a “Configure {biometric provider}” primary button
@@ -115,11 +116,11 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     }
 
     @Test
+    // https://passbolt.testrail.io/index.php?/cases/view/2359
     fun asAMobileUserICanConfigureBiometricsToUseItOnTheDevice() {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Configure {biometrics provider} screen
-        onView(withId(R.id.input))
-            .perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
         onView(withId(R.id.authButton)).perform(scrollTo(), click())
         //    When      I click on Configure {biometrics provider} button
         onView(withId(R.id.useFingerprintButton)).perform(click())
@@ -132,11 +133,11 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     }
 
     @Test
+    // https://passbolt.testrail.io/index.php?/cases/view/2360
     fun asAMobileUserIShouldBeAbleToSkipTheBiometricsConfiguration() {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Configure {biometrics provider} screen
-        onView(withId(R.id.input))
-            .perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
         onView(withId(R.id.authButton)).perform(scrollTo(), click())
         //    When      I click the “Maybe later” button
         onView(withId(R.id.maybeLaterButton)).perform(click())

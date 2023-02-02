@@ -1,35 +1,3 @@
-package com.passbolt.mobile.android.scenarios.filters
-
-import android.view.KeyEvent
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.pressKey
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.MediumTest
-import androidx.test.platform.app.InstrumentationRegistry
-import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.setup.R
-import com.passbolt.mobile.android.hasBackgroundColor
-import com.passbolt.mobile.android.hasDrawable
-import com.passbolt.mobile.android.instrumentationTestsModule
-import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.rules.IdlingResourceRule
-import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.koin.core.component.inject
-import org.koin.test.KoinTest
-import kotlin.test.BeforeTest
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -53,8 +21,41 @@ import kotlin.test.BeforeTest
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.scenarios.filters
+
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
+import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
+import com.passbolt.mobile.android.feature.setup.R
+import com.passbolt.mobile.android.hasBackgroundColor
+import com.passbolt.mobile.android.hasDrawable
+import com.passbolt.mobile.android.instrumentationTestsModule
+import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.rules.IdlingResourceRule
+import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.koin.core.component.inject
+import org.koin.test.KoinTest
+import kotlin.test.BeforeTest
+
+
 @RunWith(AndroidJUnit4::class)
-@MediumTest
+@LargeTest
 class FilterDrawerTest : KoinTest {
 
     @get:Rule
@@ -75,13 +76,14 @@ class FilterDrawerTest : KoinTest {
     @get:Rule
     val idlingResourceRule = let {
         val signInIdlingResource: SignInIdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource))
+        val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+        IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource))
     }
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()), pressKey(KeyEvent.KEYCODE_ENTER))
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(R.id.authButton)).perform(scrollTo(), click())
     }
 
     @Test
