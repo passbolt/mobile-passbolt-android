@@ -1,35 +1,3 @@
-package com.passbolt.mobile.android.scenarios.filters
-
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.MediumTest
-import androidx.test.platform.app.InstrumentationRegistry
-import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
-import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.setup.R
-import com.passbolt.mobile.android.feature.setup.R.id.titleDrawable
-import com.passbolt.mobile.android.hasDrawable
-import com.passbolt.mobile.android.instrumentationTestsModule
-import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.rules.IdlingResourceRule
-import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.koin.core.component.inject
-import org.koin.test.KoinTest
-import kotlin.test.BeforeTest
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -53,22 +21,55 @@ import kotlin.test.BeforeTest
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.scenarios.filters
+
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
+import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.FlakyTest
+import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
+import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
+import com.passbolt.mobile.android.feature.setup.R
+import com.passbolt.mobile.android.feature.setup.R.id.titleDrawable
+import com.passbolt.mobile.android.hasDrawable
+import com.passbolt.mobile.android.instrumentationTestsModule
+import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.rules.IdlingResourceRule
+import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.koin.core.component.inject
+import org.koin.test.KoinTest
+import kotlin.test.BeforeTest
+
+
 @RunWith(AndroidJUnit4::class)
-@MediumTest
+@LargeTest
 class FilteringResourcesTest : KoinTest {
 
     @get:Rule
-    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(
-        koinOverrideModules = listOf(instrumentationTestsModule),
-        intentSupplier = {
-            ActivityIntents.authentication(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                ActivityIntents.AuthConfig.Startup,
-                AppContext.APP,
-                managedAccountIntentCreator.getUserLocalId()
-            )
-        }
-    )
+    val startUpActivityRule = lazyActivitySetupScenarioRule<AuthenticationMainActivity>(koinOverrideModules = listOf(
+        instrumentationTestsModule
+    ), intentSupplier = {
+        ActivityIntents.authentication(
+            InstrumentationRegistry.getInstrumentation().targetContext,
+            ActivityIntents.AuthConfig.Startup,
+            AppContext.APP,
+            managedAccountIntentCreator.getUserLocalId()
+        )
+    })
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
 
@@ -86,6 +87,7 @@ class FilteringResourcesTest : KoinTest {
     }
 
     @Test
+    @FlakyTest(detail = "It is currently failing nondeterministic on Android 12 - reason unknown")
     // https://passbolt.testrail.io/index.php?/cases/view/2621
     fun asALoggedInMobileUserOnTheHomepageICanChangeTheCurrentActiveFilter() {
         //        Given       that I am a logged in mobile user

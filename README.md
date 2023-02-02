@@ -82,6 +82,59 @@ You can also run each check individually if needed:
 To execute Android instrumented tests connect your device and execute:
 `./gradlew connectedAndroidTest`
 
+# How run instrumented tests with SauceLabs cloud
+
+Example running `saucectl` with espresso.
+
+### What You'll Need
+
+The steps below illustrate one of the quickest ways to get set up. If you'd like a more in-depth guide, please check out
+SauceLabs [documentation](https://docs.saucelabs.com/testrunner-toolkit/installation).
+
+### Install `saucectl`
+
+```shell
+curl -L https://saucelabs.github.io/saucectl/install | bash
+```
+
+### Install `saucectl` using Homebrew (macOS)
+```shell
+brew tap saucelabs/saucectl
+brew install saucectl
+```
+
+⚠ Make sure saucectl version is newer than **v0.44.0**
+
+### Set Your Sauce Labs Credentials
+
+```shell
+saucectl configure
+```
+
+### Prepare test artifacts
+
+```
+./gradlew --no-daemon --build-cache assembleDebug assembleAndroidTest
+```
+
+### Running Tests
+
+```shell
+saucectl run
+```
+
+![sauce cloud example](https://github.com/saucelabs/saucectl-espresso-example/blob/master/assets/sauce_cloud_example.gif?raw=true)
+
+### Sauce cloud support
+Espresso only works on sauce cloud for both Android Emulators and Real Devices.
+
+[Docker mode](https://docs.saucelabs.com/testrunner-toolkit/configuration/common-syntax/index.html#mode) is not supported.
+
+### The Config
+
+Go to `.sauce/config.yml` if you'd like to see how saucectl is configured for this repository.
+
+
 # Credits
 
 https://www.passbolt.com/credits

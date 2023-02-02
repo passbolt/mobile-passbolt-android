@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.accountinit
 
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.storage.usecase.account.SaveAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.database.SaveResourcesDatabasePassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
@@ -15,7 +16,8 @@ class AccountInitializer(
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val updateAccountDataUseCase: UpdateAccountDataUseCase,
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
-    private val managedAccountIntentCreator: ManagedAccountIntentCreator
+    private val managedAccountIntentCreator: ManagedAccountIntentCreator,
+    private val saveAccountUseCase: SaveAccountUseCase
 ) : KoinComponent {
 
     fun initializeAccount() {
@@ -23,6 +25,9 @@ class AccountInitializer(
             SaveCurrentApiUrlUseCase.Input(managedAccountIntentCreator.getDomain())
         )
         saveSelectedAccountUseCase.execute(
+            UserIdInput(managedAccountIntentCreator.getUserLocalId())
+        )
+        saveAccountUseCase.execute(
             UserIdInput(managedAccountIntentCreator.getUserLocalId())
         )
         saveResourcesDatabasePassphraseUseCase.execute(
