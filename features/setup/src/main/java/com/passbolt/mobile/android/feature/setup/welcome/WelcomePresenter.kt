@@ -1,9 +1,11 @@
 package com.passbolt.mobile.android.feature.setup.welcome
 
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 
 class WelcomePresenter(
-    private val rootDetector: RootDetector
+    private val rootDetector: RootDetector,
+    private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase
 ) : WelcomeContract.Presenter {
 
     override var view: WelcomeContract.View? = null
@@ -12,7 +14,7 @@ class WelcomePresenter(
         if (!isTaskRoot) {
             view?.initBackNavigation()
         }
-        if (rootDetector.isDeviceRooted()) {
+        if (!getGlobalPreferencesUseCase.execute(Unit).isHideRootDialogEnabled && rootDetector.isDeviceRooted()) {
             view?.showDeviceRootedDialog()
         }
     }

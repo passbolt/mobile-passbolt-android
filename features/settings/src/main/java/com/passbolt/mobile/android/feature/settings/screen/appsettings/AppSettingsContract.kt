@@ -43,6 +43,7 @@ interface AppSettingsContract {
         fun showBiometryError(message: String?)
         fun showAuthenticationError(@StringRes errorMessage: Int)
         fun navigateToSystemSettings()
+        fun navigateToExpertSettings()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -58,5 +59,6 @@ interface AppSettingsContract {
         fun disableFingerprintCanceled()
         fun keyChangesInfoConfirmClick()
         fun viewResumed()
+        fun expertSettingsClick()
     }
 }

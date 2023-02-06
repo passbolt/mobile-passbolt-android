@@ -1,10 +1,3 @@
-package com.passbolt.mobile.android.feature.setup.welcome
-
-import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import org.koin.dsl.module
-import org.mockito.kotlin.mock
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,15 +21,23 @@ import org.mockito.kotlin.mock
  * @since v1.0
  */
 
-internal val mockRootDetector = mock<RootDetectorImpl>()
-internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
+package com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings
 
-val welcomeModule = module {
-    factory<WelcomeContract.Presenter> {
-        WelcomePresenter(
-            mockRootDetector,
-            mockGetGlobalPreferencesUseCase
-        )
+import com.passbolt.mobile.android.core.mvp.BaseContract
+
+interface ExpertSettingsContract {
+
+    interface View : BaseContract.View {
+        fun setDeveloperModeSwitchToOn()
+        fun setDeveloperModeSwitchToOff()
+        fun setHideRootDialogSwitchToOn()
+        fun setHideRootDialogSwitchToOff()
+        fun enableHideRootSwitch()
+        fun disableHideRootSwitch()
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun onDeveloperModeStateChanged(isDeveloperModeEnabled: Boolean)
+        fun onHideRootChanged(isHideRootDialogEnabled: Boolean)
     }
 }
-

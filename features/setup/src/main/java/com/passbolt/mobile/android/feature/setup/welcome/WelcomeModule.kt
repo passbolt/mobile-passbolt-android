@@ -4,7 +4,8 @@ import com.passbolt.mobile.android.feature.setup.welcome.WelcomeContract
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomeFragment
 import com.passbolt.mobile.android.feature.setup.welcome.WelcomePresenter
 import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,11 +30,7 @@ import org.koin.core.qualifier.named
  * @since v1.0
  */
 fun Module.welcomeModule() {
-    scope(named<WelcomeFragment>()) {
-        scoped<WelcomeContract.Presenter> {
-            WelcomePresenter(
-                rootDetector = get()
-            )
-        }
+    scope<WelcomeFragment> {
+        scopedOf(::WelcomePresenter) bind WelcomeContract.Presenter::class
     }
 }

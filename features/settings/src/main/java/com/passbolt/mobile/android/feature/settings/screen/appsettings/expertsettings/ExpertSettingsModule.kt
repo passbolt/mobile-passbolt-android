@@ -1,9 +1,8 @@
-package com.passbolt.mobile.android.feature.setup.welcome
+package com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings
 
-import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import org.koin.dsl.module
-import org.mockito.kotlin.mock
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,15 +27,8 @@ import org.mockito.kotlin.mock
  * @since v1.0
  */
 
-internal val mockRootDetector = mock<RootDetectorImpl>()
-internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
-
-val welcomeModule = module {
-    factory<WelcomeContract.Presenter> {
-        WelcomePresenter(
-            mockRootDetector,
-            mockGetGlobalPreferencesUseCase
-        )
+fun Module.expertSettingsModule() {
+    scope<ExpertSettingsFragment> {
+        scopedOf(::ExpertSettingsPresenter) bind ExpertSettingsContract.Presenter::class
     }
 }
-

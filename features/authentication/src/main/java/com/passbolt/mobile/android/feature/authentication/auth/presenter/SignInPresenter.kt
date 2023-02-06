@@ -24,6 +24,7 @@ import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUse
 import com.passbolt.mobile.android.storage.usecase.accountdata.SaveServerFingerprintUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
@@ -76,7 +77,8 @@ open class SignInPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     authReasonMapper: AuthReasonMapper,
     rootDetector: RootDetector,
-    runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag
+    runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
+    getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase
 ) : AuthBasePresenter(
     getAccountDataUseCase,
     getPrivateKeyUseCase,
@@ -87,6 +89,7 @@ open class SignInPresenter(
     authReasonMapper,
     rootDetector,
     biometryInteractor,
+    getGlobalPreferencesUseCase,
     runtimeAuthenticatedFlag,
     coroutineLaunchContext
 ) {

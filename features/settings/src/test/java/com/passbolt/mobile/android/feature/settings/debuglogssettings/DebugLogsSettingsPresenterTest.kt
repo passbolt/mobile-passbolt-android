@@ -55,7 +55,9 @@ class DebugLogsSettingsPresenterTest : KoinTest {
             .doReturn(
                 GetGlobalPreferencesUseCase.Output(
                     areDebugLogsEnabled = true,
-                    debugLogFileCreationDateTime = LocalDateTime.now()
+                    debugLogFileCreationDateTime = LocalDateTime.now(),
+                    isDeveloperModeEnabled = false,
+                    isHideRootDialogEnabled = false
                 )
             )
 
@@ -71,7 +73,9 @@ class DebugLogsSettingsPresenterTest : KoinTest {
             .doReturn(
                 GetGlobalPreferencesUseCase.Output(
                     areDebugLogsEnabled = false,
-                    debugLogFileCreationDateTime = null
+                    debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = false,
+                    isHideRootDialogEnabled = false
                 )
             )
 

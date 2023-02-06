@@ -16,6 +16,7 @@ import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -58,6 +59,7 @@ abstract class AuthBasePresenter(
     private val authReasonMapper: AuthReasonMapper,
     private val rootDetector: RootDetector,
     private val biometryInteractor: BiometryInteractor,
+    private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
     protected val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthContract.Presenter {
@@ -76,7 +78,7 @@ abstract class AuthBasePresenter(
         super.attach(view)
         view.showTitle()
         authReason?.let { view.showAuthenticationReason(it) }
-        if (rootDetector.isDeviceRooted()) {
+        if (!getGlobalPreferencesUseCase.execute(Unit).isHideRootDialogEnabled && rootDetector.isDeviceRooted()) {
             view.showDeviceRootedDialog()
         } else {
             handleBiometry()

@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCach
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import javax.crypto.Cipher
 
@@ -48,7 +49,8 @@ class PassphrasePresenter(
     authReasonMapper: AuthReasonMapper,
     rootDetector: RootDetector,
     biometryInteractor: BiometryInteractor,
-    runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag
+    runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
+    getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase
 ) : AuthBasePresenter(
     getAccountDataUseCase,
     getPrivateKeyUseCase,
@@ -59,6 +61,7 @@ class PassphrasePresenter(
     authReasonMapper,
     rootDetector,
     biometryInteractor,
+    getGlobalPreferencesUseCase,
     runtimeAuthenticatedFlag,
     coroutineLaunchContext
 ) {

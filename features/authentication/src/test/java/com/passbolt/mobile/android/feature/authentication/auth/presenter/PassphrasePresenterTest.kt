@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.auth.AuthContract
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
 import org.junit.Before
@@ -19,6 +20,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
@@ -65,6 +67,13 @@ class PassphrasePresenterTest : KoinTest {
     @Before
     fun setup() {
         whenever(mockRootDetector.isDeviceRooted()).doReturn(false)
+        whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
+            .doReturn(
+                GetGlobalPreferencesUseCase.Output(
+                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = false, isHideRootDialogEnabled = false
+                )
+            )
     }
 
     @After
@@ -193,10 +202,37 @@ class PassphrasePresenterTest : KoinTest {
             .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = true))
         whenever(mockFingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
         whenever(mockRootDetector.isDeviceRooted()).doReturn(true)
+        whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
+            .doReturn(
+                GetGlobalPreferencesUseCase.Output(
+                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = true, isHideRootDialogEnabled = false
+                )
+            )
 
         presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshPassphrase, ACCOUNT)
         presenter.attach(mockView)
 
         verify(mockView).showDeviceRootedDialog()
+    }
+
+    @Test
+    fun `view should not show root warning when detected but turned off from settings`() {
+        whenever(mockCheckIfPassphraseExistsUseCase.execute(anyOrNull()))
+            .doReturn(CheckIfPassphraseFileExistsUseCase.Output(passphraseFileExists = true))
+        whenever(mockFingerprintInformationProvider.hasBiometricSetUp()).thenReturn(true)
+        whenever(mockRootDetector.isDeviceRooted()).doReturn(true)
+        whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
+            .doReturn(
+                GetGlobalPreferencesUseCase.Output(
+                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = true, isHideRootDialogEnabled = true
+                )
+            )
+
+        presenter.argsRetrieved(ActivityIntents.AuthConfig.RefreshPassphrase, ACCOUNT)
+        presenter.attach(mockView)
+
+        verify(mockView, never()).showDeviceRootedDialog()
     }
 }

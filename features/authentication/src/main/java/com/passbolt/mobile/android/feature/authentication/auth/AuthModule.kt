@@ -1,13 +1,13 @@
 package com.passbolt.mobile.android.feature.authentication.auth
 
 import androidx.biometric.BiometricPrompt
+import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.MfaProviderHandler
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
-import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.AuthReasonMapper
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.PassphrasePresenter
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.RefreshSessionPresenter
@@ -103,7 +103,8 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
     authReasonMapper = get(),
     rootDetector = get(),
     biometryInteractor = get(),
-    runtimeAuthenticatedFlag = get()
+    runtimeAuthenticatedFlag = get(),
+    getGlobalPreferencesUseCase = get()
 )
 
 private fun Scope.signInPresenter() = SignInPresenter(
@@ -128,7 +129,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     authReasonMapper = get(),
     rootDetector = get(),
     runtimeAuthenticatedFlag = get(),
-    signInIdlingResource = get()
+    signInIdlingResource = get(),
+    getGlobalPreferencesUseCase = get()
 )
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
@@ -154,5 +156,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     userProfileInteractor = get(),
     runtimeAuthenticatedFlag = get(),
     inAppReviewInteractor = get(),
-    signInIdlingResource = get()
+    signInIdlingResource = get(),
+    getGlobalPreferencesUseCase = get()
 )

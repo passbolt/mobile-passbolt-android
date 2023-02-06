@@ -5,6 +5,8 @@ import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesF
 import com.passbolt.mobile.android.storage.usecase.GLOBAL_PREFERENCES_FILE_NAME
 import com.passbolt.mobile.android.storage.usecase.KEY_DEBUG_LOGS_ENABLED
 import com.passbolt.mobile.android.storage.usecase.KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME
+import com.passbolt.mobile.android.storage.usecase.KEY_IS_DEVELOPER_MODE_ENABLED
+import com.passbolt.mobile.android.storage.usecase.KEY_IS_HIDE_ROOT_DIALOG_ENABLED
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -44,12 +46,20 @@ class UpdateGlobalPreferencesUseCase(
             input.debugLogFileCreationDateTime?.let {
                 putLong(KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME, it.toEpochSecond(ZoneOffset.UTC))
             }
+            input.isDeveloperModeEnabled?.let {
+                putBoolean(KEY_IS_DEVELOPER_MODE_ENABLED, it)
+            }
+            input.isHideRootDialogEnabled?.let {
+                putBoolean(KEY_IS_HIDE_ROOT_DIALOG_ENABLED, it)
+            }
             apply()
         }
     }
 
     data class Input(
         val areDebugLogsEnabled: Boolean? = null,
-        val debugLogFileCreationDateTime: LocalDateTime? = null
+        val debugLogFileCreationDateTime: LocalDateTime? = null,
+        val isDeveloperModeEnabled: Boolean? = null,
+        val isHideRootDialogEnabled: Boolean? = null
     )
 }
