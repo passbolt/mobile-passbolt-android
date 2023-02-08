@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
-import androidx.annotation.VisibleForTesting
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.WebsiteOpener
@@ -116,7 +115,7 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
     }
 
     private fun openHelpWebsite() {
-        websiteOpener.open(requireContext(), HELP_WEBSITE_URL)
+        websiteOpener.open(requireContext(), getString(R.string.help_website))
     }
 
     override fun showScanQrCodesHelp() {
@@ -144,8 +143,6 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
     }
 
     companion object {
-        @VisibleForTesting
-        const val HELP_WEBSITE_URL = "https://help.passbolt.com/"
         private const val EXTRA_HELP_MENU_MODEL = "HELP_MENU_MODEL"
 
         fun newInstance(helpMenuModel: HelpMenuModel) = HelpMenuFragment().apply {

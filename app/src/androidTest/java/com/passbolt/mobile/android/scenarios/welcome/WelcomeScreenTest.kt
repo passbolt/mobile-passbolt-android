@@ -19,9 +19,9 @@ import androidx.test.filters.MediumTest
 import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
-import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
+import com.passbolt.mobile.android.scenarios.helpers.getString
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Rule
@@ -134,7 +134,7 @@ class WelcomeScreenTest : KoinTest {
         //        Then    a webpage with help is presented
         val expectedIntent: Matcher<Intent> = allOf(
             hasAction(Intent.ACTION_VIEW),
-            hasData(HelpMenuFragment.HELP_WEBSITE_URL)
+            hasData(getString(R.string.help_website))
         )
         intended(expectedIntent)
     }

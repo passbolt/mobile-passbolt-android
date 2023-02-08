@@ -25,20 +25,16 @@ package com.passbolt.mobile.android.scenarios.settings
 
 import android.app.Instrumentation.ActivityResult
 import android.content.Intent
-import android.provider.Settings
-import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.espresso.matcher.RootMatchers.isDialog
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -47,7 +43,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignOutIdlingResource
@@ -163,6 +158,7 @@ class SettingsTest : KoinTest {
         //    And       I am on the settings page
         onView(withId(R.id.settingsNav)).perform(click())
         //    When      I click on the “Manage accounts” list item
+        onView(withId(R.id.accountsSettings)).perform(click())
         onView(withId(R.id.manageAccountsSetting)).perform(click())
         //    Then      I see the “List of accounts” screen
         onView(withText(R.string.accounts_list_manage_accounts)).check(matches(isDisplayed()))
@@ -176,11 +172,12 @@ class SettingsTest : KoinTest {
         //    And       Biometric is disabled on my device 
         //    And       I am on the settings page
         onView(withId(R.id.settingsNav)).perform(click())
+        onView(withId(R.id.appSettings)).perform(click())
         //    When      I switch on the biometrics toggle button
         onView(
             withTagValue(
                 `is`(
-                    getInstrumentation().targetContext.resources.getString(R.string.settings_fingerprint)
+                    getInstrumentation().targetContext.resources.getString(R.string.settings_app_settings_fingerprint)
                 )
             )
         ).perform(
@@ -202,27 +199,12 @@ class SettingsTest : KoinTest {
         //    And       Autofill is enabled
         //    And       I am on the settings page
         onView(withId(R.id.settingsNav)).perform(click())
+        onView(withId(R.id.appSettings)).perform(click())
         //    When      I click on the “Autofill” list item
         onView(withId(R.id.autofillSetting)).perform(click())
-        //    Then      I see the “Passbolt Autofill enabled!” screen
-        onView(withText(R.string.settings_autofill_autofill_title)).check(matches(isDisplayed()))
-        onView(withText(R.string.settings_autofill_autofill_desc)).check(matches(isDisplayed()))
-        //    And       I see an arrow to go back to the app “settings” page
-        onView(isAssignableFrom(Toolbar::class.java))
-            .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
         onView(withId(R.id.autofillServiceSwitchContainer)).perform(click())
-        //    And       I see a success illustration
-        //    And       I see a “Passbolt Autofill enabled!” title
-        onView(withText(R.string.dialog_encourage_autofill_header)).check(matches(isDisplayed()))
-        //    And       I see an explanation message
-        onView(withId(R.id.stepsView)).check(matches(isDisplayed()))
-        //    And       I see a “Go to settings” button
-        onView(withId(R.id.goToSettingsButton)).check(matches(isDisplayed()))
-        //    When      I click on the “Go to settings” button
-        onView(withId(R.id.goToSettingsButton)).perform(click())
-        //    Then      I see the OS settings page
-        val expectedIntent: Matcher<Intent> = allOf(hasAction(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE))
-        intended(expectedIntent)
+        //    Then      I see the “Passbolt Autofill enabled!” screen
+        onView(withText(R.string.dialog_autofill_enabled_title)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -233,7 +215,8 @@ class SettingsTest : KoinTest {
         //    And       I am on the settings page
         onView(withId(R.id.settingsNav)).perform(click())
         //    When      I click on “Terms & Conditions” list item
-        onView(withId(R.id.termsSetting)).perform(click())
+        onView(withId(R.id.termsAndLicensesSettings)).perform(click())
+        onView(withId(R.id.termsAndConditionsSetting)).perform(click())
         //    Then      I see a “Terms & Conditions” page (as web page)
         val expectedIntent: Matcher<Intent> = allOf(hasAction(Intent.ACTION_VIEW), hasData("passbolt.com/terms"))
         intending(expectedIntent).respondWith(ActivityResult(0, null))
@@ -246,8 +229,9 @@ class SettingsTest : KoinTest {
         //    And       I completed the login step
         //    And       I am on the settings page
         onView(withId(R.id.settingsNav)).perform(click())
+        onView(withId(R.id.termsAndLicensesSettings)).perform(click())
         //    When      I click on “Privacy policy” list item
-        onView(withId(R.id.privacySetting)).perform(click())
+        onView(withId(R.id.privacyPolicySetting)).perform(click())
         //    Then      I see a “Privacy policy” page (as a web page)
         val expectedIntent: Matcher<Intent> = allOf(hasAction(Intent.ACTION_VIEW), hasData("passbolt.com/privacy"))
         intending(expectedIntent).respondWith(ActivityResult(0, null))
@@ -261,7 +245,7 @@ class SettingsTest : KoinTest {
         //    And       I am on the settings page
         onView(withId(R.id.settingsNav)).perform(click())
         //    When      I click on the “Sign out” list item
-        onView(withId(R.id.signOutSetting)).perform(scrollTo(), click())
+        onView(withId(R.id.signOut)).perform(scrollTo(), click())
         //    Then      I see an confirmation modal
         onView(withText(R.string.are_you_sure)).check(matches(isDisplayed()))
         onView(withText(R.string.logout_dialog_message)).check(matches(isDisplayed()))
@@ -281,7 +265,7 @@ class SettingsTest : KoinTest {
         //    And       I am on the settings page
         onView(withId(R.id.settingsNav)).perform(click())
         //    When      I click on the “Sign out” list item
-        onView(withId(R.id.signOutSetting)).perform(scrollTo(), click())
+        onView(withId(R.id.signOut)).perform(scrollTo(), click())
         //    Then      I see an confirmation modal
         onView(withText(R.string.are_you_sure)).check(matches(isDisplayed()))
         onView(withText(R.string.logout_dialog_message)).check(matches(isDisplayed()))
@@ -289,6 +273,6 @@ class SettingsTest : KoinTest {
         onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click())
         //    Then      I do not see the modal
         //    And       I am not signed out
-        onView(withId(R.id.signOutSetting)).check(matches(isDisplayed()))
+        onView(withId(R.id.signOut)).check(matches(isDisplayed()))
     }
 }

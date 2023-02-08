@@ -72,7 +72,13 @@ open class SettingView @JvmOverloads constructor(
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
         binding.root.children.forEach {
+            it.alpha = if (enabled) ALPHA_FULLY_VISIBLE else ALPHA_GREYED_OUT
             it.isEnabled = enabled
         }
+    }
+
+    private companion object {
+        private const val ALPHA_GREYED_OUT = 0.5f
+        private const val ALPHA_FULLY_VISIBLE = 1f
     }
 }

@@ -11,30 +11,31 @@
         android:name="com.passbolt.mobile.android.feature.settings.screen.SettingsFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_settings">
+
         <action
-            android:id="@+id/action_settings_to_settingsAutofillFragment"
-            app:destination="@id/settingsAutofillFragment"
+            android:id="@+id/action_settings_to_debugLogsSettingsFragment"
+            app:destination="@id/debugLogsSettingsFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_settings_to_licensesFragment"
-            app:destination="@id/licensesFragment"
+            android:id="@+id/action_settings_to_accountsSettingsFragment"
+            app:destination="@id/accountsSettingsFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_settings_to_defaultFilterFragment"
-            app:destination="@id/defaultFilterFragment"
+            android:id="@+id/action_settings_to_termsAndLicensesSettingsFragment"
+            app:destination="@id/termsAndLicensesSettingsFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_settings_to_logs"
-            app:destination="@id/logs"
+            android:id="@+id/action_settings_to_appSettingsFragment"
+            app:destination="@id/appSettingsFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -43,25 +44,78 @@
 
     <fragment
         android:id="@+id/settingsAutofillFragment"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.autofill.SettingsAutofillFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.SettingsAutofillFragment"
         android:label="SettingsAutofillFragment"
         tools:layout="@layout/fragment_settings_autofill" />
 
     <fragment
         android:id="@+id/licensesFragment"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.licenses.LicensesFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.LicensesFragment"
         android:label="LicensesFragment"
         tools:layout="@layout/fragment_licenses" />
 
     <fragment
         android:id="@+id/defaultFilterFragment"
-        android:name="com.passbolt.mobile.android.feature.settings.screen.defaultfilter.DefaultFilterFragment"
-        android:label="DefaultFilterFragment">
+        android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.DefaultFilterFragment"
+        android:label="DefaultFilterFragment"
+        tools:layout="@layout/fragment_default_filter">
         <argument
             android:name="selectedFilter"
             app:argType="com.passbolt.mobile.android.ui.DefaultFilterModel" />
     </fragment>
 
     <include app:graph="@navigation/logs" />
+
+    <fragment
+        android:id="@+id/debugLogsSettingsFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.DebugLogsSettingsFragment"
+        android:label="DebugLogsSettingsFragment"
+        tools:layout="@layout/fragment_debug_logs_settings">
+        <action
+            android:id="@+id/action_debugLogsSettingsFragment_to_logs"
+            app:destination="@id/logs"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountsSettingsFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsFragment"
+        android:label="AccountsSettingsFragment"
+        tools:layout="@layout/fragment_accounts_settings" />
+    <fragment
+        android:id="@+id/termsAndLicensesSettingsFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsFragment"
+        android:label="TermsAndLicensesSettingsFragment"
+        tools:layout="@layout/fragment_terms_and_licenses_settings">
+        <action
+            android:id="@+id/action_termsAndLicensesSettingsFragment_to_licensesFragment"
+            app:destination="@id/licensesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/appSettingsFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.AppSettingsFragment"
+        android:label="AppSettingsFragment"
+        tools:layout="@layout/fragment_app_settings">
+        <action
+            android:id="@+id/action_appSettingsFragment_to_defaultFilterFragment"
+            app:destination="@id/defaultFilterFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_appSettingsFragment_to_settingsAutofillFragment"
+            app:destination="@id/settingsAutofillFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
 </navigation>
