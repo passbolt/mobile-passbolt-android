@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.RemoveAllAccountsPassphrasesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -125,6 +126,7 @@ internal val mockRefreshSessionUseCase = mock<RefreshSessionUseCase>()
 internal val mockRootDetector = mock<RootDetectorImpl>()
 internal val mockProfileInteractor = mock<UserProfileInteractor>()
 internal val mockInAppReviewInteractor = mock<InAppReviewInteractor>()
+internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
 
 @ExperimentalCoroutinesApi
 val testAuthModule = module {
@@ -192,7 +194,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     authReasonMapper = authReasonMapper,
     rootDetector = mockRootDetector,
     runtimeAuthenticatedFlag = get(),
-    signInIdlingResource = get()
+    signInIdlingResource = get(),
+    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase
 )
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(
@@ -206,7 +209,8 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
     authReasonMapper = authReasonMapper,
     rootDetector = mockRootDetector,
     biometryInteractor = get(),
-    runtimeAuthenticatedFlag = get()
+    runtimeAuthenticatedFlag = get(),
+    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase
 )
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
@@ -232,5 +236,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     userProfileInteractor = mockProfileInteractor,
     runtimeAuthenticatedFlag = get(),
     inAppReviewInteractor = mockInAppReviewInteractor,
-    signInIdlingResource = get()
+    signInIdlingResource = get(),
+    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase
 )

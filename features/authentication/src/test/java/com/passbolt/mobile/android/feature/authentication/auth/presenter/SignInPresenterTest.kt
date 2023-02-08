@@ -18,8 +18,10 @@ import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphras
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -73,6 +75,17 @@ class SignInPresenterTest : KoinTest {
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
         modules(testAuthModule)
+    }
+
+    @Before
+    fun setup() {
+        whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
+            .doReturn(
+                GetGlobalPreferencesUseCase.Output(
+                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = false, isHideRootDialogEnabled = false
+                )
+            )
     }
 
     @Test

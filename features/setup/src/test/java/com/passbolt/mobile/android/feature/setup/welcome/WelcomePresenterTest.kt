@@ -1,18 +1,20 @@
 package com.passbolt.mobile.android.feature.setup.welcome
 
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
-import org.mockito.kotlin.whenever
 import com.passbolt.mobile.android.feature.setup.di.testModule
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 
 /**
  * Passbolt - Open source password manager for teams
@@ -46,6 +48,17 @@ class WelcomePresenterTest : KoinTest {
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
         modules(testModule, welcomeModule)
+    }
+
+    @Before
+    fun setup() {
+        whenever(mockGetGlobalPreferencesUseCase.execute(Unit))
+            .doReturn(
+                GetGlobalPreferencesUseCase.Output(
+                    areDebugLogsEnabled = false, debugLogFileCreationDateTime = null,
+                    isDeveloperModeEnabled = false, isHideRootDialogEnabled = false
+                )
+            )
     }
 
     @Test

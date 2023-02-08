@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.settings
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.appSettingsModule
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.settingsAutofillModule
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.defaultFilterModule
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.expertSettingsModule
 import com.passbolt.mobile.android.feature.settings.screen.debuglogssettings.debugLogsSettingsModule
 import com.passbolt.mobile.android.feature.settings.screen.settingsModule
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.licenses.licensesModule
@@ -34,10 +35,13 @@ import org.koin.dsl.module
 
 val settingsModule = module {
     settingsModule()
+
+    appSettingsModule()
+    debugLogsSettingsModule()
+    termsAndLicensesSettingsModule()
+    expertSettingsModule()
+
     settingsAutofillModule()
     licensesModule()
     defaultFilterModule()
-    debugLogsSettingsModule()
-    termsAndLicensesSettingsModule()
-    appSettingsModule()
 }

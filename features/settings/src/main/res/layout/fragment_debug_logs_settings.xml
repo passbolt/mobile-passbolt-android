@@ -41,7 +41,7 @@
             android:id="@+id/visitHelpWebsite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:icon="@drawable/ic_external_link"
+            app:icon="@drawable/ic_link"
             app:name="@string/settings_debug_logs_visit_help_website" />
     </LinearLayout>
 </ScrollView>

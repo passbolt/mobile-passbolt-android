@@ -153,4 +153,8 @@ class AppSettingsPresenter(
             getHomeDisplayViewPrefsUseCase.execute(Unit).userSetHomeView
         )
     }
+
+    override fun expertSettingsClick() {
+        view?.navigateToExpertSettings()
+    }
 }

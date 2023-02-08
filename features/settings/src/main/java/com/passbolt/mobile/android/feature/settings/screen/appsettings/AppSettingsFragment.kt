@@ -104,6 +104,9 @@ class AppSettingsFragment :
             defaultFilterSetting.setDebouncingOnClick {
                 presenter.defaultFilterClick()
             }
+            expertSettings.setDebouncingOnClick {
+                presenter.expertSettingsClick()
+            }
         }
     }
 
@@ -176,6 +179,12 @@ class AppSettingsFragment :
     override fun navigateToAutofillSettings() {
         findNavController().navigate(
             AppSettingsFragmentDirections.actionAppSettingsFragmentToSettingsAutofillFragment()
+        )
+    }
+
+    override fun navigateToExpertSettings() {
+        findNavController().navigate(
+            AppSettingsFragmentDirections.actionAppSettingsFragmentToExpertSettingsFragment()
         )
     }
 }

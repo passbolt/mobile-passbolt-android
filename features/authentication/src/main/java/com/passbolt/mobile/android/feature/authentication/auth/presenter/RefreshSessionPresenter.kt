@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.SaveServerFingerprintUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.GetPassphraseUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.session.SaveSessionUseCase
@@ -70,7 +71,8 @@ class RefreshSessionPresenter(
     userProfileInteractor: UserProfileInteractor,
     runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
     inAppReviewInteractor: InAppReviewInteractor,
-    signInIdlingResource: SignInIdlingResource
+    signInIdlingResource: SignInIdlingResource,
+    getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase
 ) : SignInPresenter(
     saveSessionUseCase,
     saveSelectedAccountUseCase,
@@ -93,7 +95,8 @@ class RefreshSessionPresenter(
     coroutineLaunchContext,
     authReasonMapper,
     rootDetector,
-    runtimeAuthenticatedFlag
+    runtimeAuthenticatedFlag,
+    getGlobalPreferencesUseCase
 ) {
 
     override fun performSignIn(passphrase: ByteArray) {

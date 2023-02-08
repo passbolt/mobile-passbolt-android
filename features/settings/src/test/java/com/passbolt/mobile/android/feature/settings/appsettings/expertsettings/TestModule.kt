@@ -1,10 +1,3 @@
-package com.passbolt.mobile.android.feature.setup.welcome
-
-import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import org.koin.dsl.module
-import org.mockito.kotlin.mock
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,15 +21,23 @@ import org.mockito.kotlin.mock
  * @since v1.0
  */
 
-internal val mockRootDetector = mock<RootDetectorImpl>()
-internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
+package com.passbolt.mobile.android.feature.settings.appsettings.expertsettings
 
-val welcomeModule = module {
-    factory<WelcomeContract.Presenter> {
-        WelcomePresenter(
-            mockRootDetector,
-            mockGetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.ExpertSettingsContract
+import com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.ExpertSettingsPresenter
+import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.UpdateGlobalPreferencesUseCase
+import org.koin.dsl.module
+import org.mockito.kotlin.mock
+
+internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
+internal val mockUpdateGlobalPreferencesUseCase = mock<UpdateGlobalPreferencesUseCase>()
+
+val testExpertSettingsModule = module {
+    factory<ExpertSettingsContract.Presenter> {
+        ExpertSettingsPresenter(
+            getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+            updateGlobalPreferencesUseCase = mockUpdateGlobalPreferencesUseCase
         )
     }
 }
-

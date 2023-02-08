@@ -47,3 +47,5 @@ internal const val RESOURCE_DATABASE_ALIAS = "current_url" // TODO bug in the fi
 internal const val PASSPHRASE_KEY = "passphrase_key"
 internal const val KEY_LAST_USED_HOME_VIEW = "LAST_USED_HOME_VIEW"
 internal const val KEY_USER_SET_HOME_VIEW = "USER_SET_HOME_VIEW"
+internal const val KEY_IS_DEVELOPER_MODE_ENABLED = "IS_DEVELOPER_MODE_ENABLED"
+internal const val KEY_IS_HIDE_ROOT_DIALOG_ENABLED = "IS_HIDE_ROOT_DIALOG_ENABLED"

@@ -302,6 +302,10 @@
     <string name="settings_app_settings_autofill">Autofill</string>
     <string name="settings_app_settings_fingerprint">Fingerprint</string>
     <string name="settings_app_settings_biometry_error">Biometry error. %s</string>
+    <string name="settings_app_settings_expert_settings">Expert settings</string>
+
+    <string name="settings_app_settings_expert_settings_dev_mode">Developer mode</string>
+    <string name="settings_app_settings_expert_settings_hide_root">Hide “device is rooted” dialog</string>
 
     <string name="settings_autofill_autofill_title">Here you can change autofill methods</string>
     <string name="settings_autofill_autofill_desc">It is recommended to use the Autofill Service method, but the Service performance may depend on your device and battery optimization settings. \n\nIf the Autofill Service is not working reliably on your device you can try enabling autofill based on Accessibility Service.</string>
