@@ -7,5 +7,8 @@
 
     <include app:graph="@navigation/home" />
 
+    <include app:graph="@navigation/otp" />
+
     <include app:graph="@navigation/settings" />
+
 </navigation>

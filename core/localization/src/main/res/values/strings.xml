@@ -241,6 +241,7 @@
 
     <string name="main_menu_home">Home</string>
     <string name="main_menu_settings">Settings</string>
+    <string name="main_menu_otp">OTP</string>
 
     <string name="resource_details_username_header">Username</string>
     <string name="resource_details_password_header">Password</string>

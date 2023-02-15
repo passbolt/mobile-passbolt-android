@@ -9,23 +9,14 @@ dependencies {
     implementation project(':architecture')
     implementation project(':ui')
     implementation project(':coreui')
-    implementation project(':home')
-    implementation project(':settings')
     implementation project(':common')
     implementation project(':localization')
     implementation project(':authentication')
-    implementation project(':security')
     implementation project(':fulldatarefresh')
-    implementation project(':inappreview')
-    implementation project(':otp')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
     implementation libs.di.koin
-    implementation libs.inAppUpdate.core
-    implementation libs.inAppUpdate.ktx
-    implementation libs.inAppReview.core
-    implementation libs.inAppReview.ktx
 }
 
 android {

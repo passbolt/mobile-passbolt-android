@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/otpNav"
+    app:startDestination="@id/otpFragment">
+
+    <fragment
+        android:id="@+id/otpFragment"
+        android:name="com.passbolt.mobile.android.feature.otp.screen.OtpFragment"
+        android:label="OtpFragment" />
+</navigation>
