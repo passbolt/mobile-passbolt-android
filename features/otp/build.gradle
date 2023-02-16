@@ -5,6 +5,16 @@ plugins {
 
 apply plugin: "androidx.navigation.safeargs"
 
+android {
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    useLibrary("android.test.runner")
+    useLibrary("android.test.base")
+    useLibrary("android.test.mock")
+}
+
 dependencies {
     implementation project(':architecture')
     implementation project(':ui')
@@ -16,6 +26,8 @@ dependencies {
     implementation project(':home')
     implementation project(':storage')
     implementation project(':navigation')
+    implementation project(':security')
+    implementation project(':qrscan')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -28,6 +40,9 @@ dependencies {
     implementation libs.coil.core
     implementation libs.coil.base
     implementation libs.fabSpeedDial
+    implementation libs.androidx.cameraXView
+    implementation libs.androidx.cameraX
+    implementation libs.androidx.cameraXLifecycle
 }
 
 android {

@@ -247,7 +247,7 @@ class OtpPresenter(
     }
 
     override fun scanOtpQrCodeClick() {
-        // TODO launch qr scanner
+        view?.navigateToScanQrCode()
     }
 
     override fun createOtpManuallyClick() {

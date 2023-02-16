@@ -8,5 +8,15 @@
     <fragment
         android:id="@+id/otpFragment"
         android:name="com.passbolt.mobile.android.feature.otp.screen.OtpFragment"
-        android:label="OtpFragment" />
+        android:label="OtpFragment" >
+        <action
+            android:id="@+id/action_otpFragment_to_scanOtpFragment"
+            app:destination="@id/scanOtpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/scanOtpFragment"
+        android:name="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment"
+        android:label="ScanOtpFragment" />
+
+
 </navigation>

@@ -1,3 +1,12 @@
+package com.passbolt.mobile.android.feature.otp.scanotp.parser
+
+import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult.UserResolvableError.ErrorType.NO_BARCODES_IN_RANGE
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,15 +30,19 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp
+class OtpQrParser(
+    private val otpQrScanResultsMapper: OtpQrScanResultsMapper
+) {
 
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.otpMoreMenuModule
-import com.passbolt.mobile.android.feature.otp.scanotp.scanOtpModule
-import com.passbolt.mobile.android.feature.otp.screen.otpModule
-import org.koin.dsl.module
+    val parseResultFlow: SharedFlow<OtpParseResult>
+        get() = _pareResultFlow.asStateFlow()
+    private val _pareResultFlow = MutableStateFlow<OtpParseResult>(
+        OtpParseResult.UserResolvableError(NO_BARCODES_IN_RANGE)
+    )
 
-val otpMainModule = module {
-    otpModule()
-    otpMoreMenuModule()
-    scanOtpModule()
+    suspend fun startParsing(scanFlow: SharedFlow<BarcodeScanResult>) {
+        scanFlow
+            .map { otpQrScanResultsMapper.apply(it) }
+            .collect(_pareResultFlow::tryEmit)
+    }
 }
