@@ -13,10 +13,16 @@ dependencies {
     implementation project(':localization')
     implementation project(':authentication')
     implementation project(':fulldatarefresh')
+    implementation project(':home')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
     implementation libs.di.koin
+    implementation libs.androidx.swiperefresh
+    implementation libs.fabSpeedDial
+    implementation libs.fastAdapter.core
+    implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.diff
 }
 
 android {

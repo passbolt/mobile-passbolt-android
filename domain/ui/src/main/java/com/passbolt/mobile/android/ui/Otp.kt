@@ -21,23 +21,22 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.screen
+package com.passbolt.mobile.android.ui
 
-import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.common.search.Searchable
 
-interface OtpContract {
+data class Otp(
+    val name: String,
+    val initials: String,
+    val permission: ResourcePermission,
+    val otpExpirySeconds: Int,
+    val otpValue: String?,
+    override val searchCriteria: String = name
+) : Searchable
 
-    interface View : DataRefreshViewReactiveContract.View {
-        fun showOtpList(otpList: List<OtpListItemWrapper>)
-        fun showEmptyView()
-        fun hideEmptyView()
-        fun performRefreshUsingRefreshExecutor()
-    }
-
-    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun otpItemClick(otp: OtpListItemWrapper)
-        fun otpItemMoreClick(otp: OtpListItemWrapper)
-        fun refreshClick()
-    }
-}
+data class OtpListItemWrapper(
+    val otp: Otp,
+    val listId: Long,
+    val isVisible: Boolean,
+    val remainingSecondsCounter: Int = otp.otpExpirySeconds
+) : Searchable by otp

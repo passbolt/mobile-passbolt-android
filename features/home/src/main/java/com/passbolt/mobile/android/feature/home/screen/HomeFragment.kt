@@ -39,6 +39,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
+import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.createfolder.CreateFolderFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
@@ -119,6 +120,7 @@ class HomeFragment :
     private val inCurrentFoldersHeaderItemAdapter: ItemAdapter<InCurrentFoldersHeaderItem> by inject(
         named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)
     )
+    private val initialsIconGenerator: InitialsIconGenerator by inject()
 
     private val snackbarAnchorView: View?
         get() {
@@ -347,6 +349,7 @@ class HomeFragment :
         }
     }
 
+    @Suppress("LongMethod") // will be refactored in Q2 - MOB-1029
     override fun showItems(
         suggestedResources: List<ResourceModel>,
         resourceList: List<ResourceModel>,
@@ -370,7 +373,13 @@ class HomeFragment :
         // suggested items
         FastAdapterDiffUtil.calculateDiff(
             suggestedItemsItemAdapter,
-            suggestedResources.map { PasswordItem(it, resourceHandlingStrategy.shouldShowResourceMoreMenu()) }
+            suggestedResources.map {
+                PasswordItem(
+                    it,
+                    initialsIconGenerator,
+                    resourceHandlingStrategy.shouldShowResourceMoreMenu()
+                )
+            }
         )
         // other items header
         FastAdapterDiffUtil.calculateDiff(
@@ -395,7 +404,13 @@ class HomeFragment :
         // current folder resources
         FastAdapterDiffUtil.calculateDiff(
             passwordItemAdapter,
-            resourceList.map { PasswordItem(it, dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()) })
+            resourceList.map {
+                PasswordItem(
+                    it,
+                    initialsIconGenerator,
+                    dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()
+                )
+            })
         // "in sub-folders" header
         FastAdapterDiffUtil.calculateDiff(
             inSubFoldersHeaderItemAdapter,
@@ -409,6 +424,7 @@ class HomeFragment :
             filteredSubFolderResourceList.map {
                 PasswordItem(
                     it,
+                    initialsIconGenerator,
                     dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()
                 )
             })
