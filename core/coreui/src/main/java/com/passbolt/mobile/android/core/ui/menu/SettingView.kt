@@ -77,8 +77,8 @@ open class SettingView @JvmOverloads constructor(
         }
     }
 
-    private companion object {
-        private const val ALPHA_GREYED_OUT = 0.5f
-        private const val ALPHA_FULLY_VISIBLE = 1f
+    protected companion object {
+        const val ALPHA_GREYED_OUT = 0.5f
+        const val ALPHA_FULLY_VISIBLE = 1f
     }
 }

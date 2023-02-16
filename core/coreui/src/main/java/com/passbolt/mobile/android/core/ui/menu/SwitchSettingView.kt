@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.ui.menu
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.core.view.children
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 /**
@@ -65,5 +66,14 @@ class SwitchSettingView @JvmOverloads constructor(
         silentCheckChangedModeOn = silently
         switch.isChecked = checkChangeValue
         silentCheckChangedModeOn = false
+    }
+
+    override fun setEnabled(enabled: Boolean) {
+        binding.root.children.forEach {
+            if (it != switch) { // don't change alpha for switch as it's not visible well in dark mode
+                it.alpha = if (enabled) ALPHA_FULLY_VISIBLE else ALPHA_GREYED_OUT
+            }
+            it.isEnabled = enabled
+        }
     }
 }
