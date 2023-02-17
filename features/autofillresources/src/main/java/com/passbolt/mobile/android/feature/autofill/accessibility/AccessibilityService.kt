@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.autofill.accessibility
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.os.PowerManager
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -152,7 +153,14 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
         } else {
             Timber.d("View clicked else - displaying overlay")
             uri = accessibilityOperationsProvider.getUri(root)
-            displayOverlay(event)
+            if (Settings.canDrawOverlays(this)) {
+                displayOverlay(event)
+            } else {
+                Timber.e(
+                    "Permission to draw over other apps not granted " +
+                            "- please grant in the system application settings"
+                )
+            }
         }
     }
 
