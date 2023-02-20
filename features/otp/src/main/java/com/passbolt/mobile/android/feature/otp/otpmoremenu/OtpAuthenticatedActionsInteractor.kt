@@ -21,13 +21,29 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp
+package com.passbolt.mobile.android.feature.otp.otpmoremenu
 
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.otpMoreMenuModule
-import com.passbolt.mobile.android.feature.otp.screen.otpModule
-import org.koin.dsl.module
+import androidx.annotation.VisibleForTesting
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.ui.Otp
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-val otpMainModule = module {
-    otpModule()
-    otpMoreMenuModule()
+class OtpAuthenticatedActionsInteractor(
+    private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+    private val sessionRefreshedFlow: StateFlow<Unit?>,
+    private val otpModel: Otp
+) {
+
+    suspend fun provideOtp(
+        success: (ClipboardLabel, String) -> Unit
+    ) {
+        // TODO integrate with API
+        success(OTP_LABEL, "123 456")
+    }
+
+    companion object {
+        @VisibleForTesting
+        const val OTP_LABEL = "OTP"
+    }
 }

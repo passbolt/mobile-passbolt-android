@@ -1,3 +1,13 @@
+package com.passbolt.mobile.android.feature.otp.otpmoremenu
+
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,13 +31,19 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp
-
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.otpMoreMenuModule
-import com.passbolt.mobile.android.feature.otp.screen.otpModule
-import org.koin.dsl.module
-
-val otpMainModule = module {
-    otpModule()
-    otpMoreMenuModule()
+fun Module.otpMoreMenuModule() {
+    scope<OtpMoreMenuFragment> {
+        scopedOf(::OtpMoreMenuPresenter) bind OtpMoreMenuContract.Presenter::class
+    }
+    factory { (
+                  otpListItemWrapper: OtpListItemWrapper,
+                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                  sessionRefreshedFlow: StateFlow<Unit?>
+              ) ->
+        OtpAuthenticatedActionsInteractor(
+            needSessionRefreshFlow,
+            sessionRefreshedFlow,
+            otpListItemWrapper.otp
+        )
+    }
 }

@@ -449,6 +449,11 @@
     <string name="otp_hide_otp"
         translatable="false">•••&#x9;•••</string>
 
+    <string name="otp_more_copy_otp">Copy OTP</string>
+    <string name="otp_more_show_otp">Show OTP</string>
+    <string name="otp_more_edit_otp">Edit OTP</string>
+    <string name="otp_more_delete_otp">Delete OTP</string>
+
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
