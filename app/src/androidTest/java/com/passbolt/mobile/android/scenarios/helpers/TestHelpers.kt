@@ -38,8 +38,8 @@ import org.hamcrest.Matchers.hasToString
  * @since v1.0
  */
 
-internal fun getString(@StringRes stringResId: Int) =
-    InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId)
+internal fun getString(@StringRes stringResId: Int, vararg formatArgs: String? = emptyArray()) =
+    InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId, *formatArgs)
 
 internal fun createNewPasswordFromHomeScreen() {
     onView(withId(R.id.speedDialViewId)).perform(click())

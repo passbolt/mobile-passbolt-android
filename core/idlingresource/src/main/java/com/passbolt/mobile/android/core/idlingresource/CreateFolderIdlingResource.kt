@@ -1,11 +1,8 @@
 package com.passbolt.mobile.android.core.idlingresource
 
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2023 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -25,13 +22,11 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class CreateFolderIdlingResource : FlaggedIdlingResource() {
 
-val idlingResourcesModule = module {
-    singleOf(::SignInIdlingResource)
-    singleOf(::ResourcesFullRefreshIdlingResource)
-    singleOf(::SignOutIdlingResource)
-    singleOf(::CreateResourceIdlingResource)
-    singleOf(::UpdateResourceIdlingResource)
-    singleOf(::DeleteResourceIdlingResource)
-    singleOf(::CreateFolderIdlingResource)
+    override fun getName(): String = CREATE_FOLDER_IDLING_RESOURCE
+
+    private companion object {
+        private val CREATE_FOLDER_IDLING_RESOURCE = CreateFolderIdlingResource::class.java.name
+    }
 }

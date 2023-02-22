@@ -49,7 +49,8 @@ fun Module.createFolderModule() {
                 addLocalFolderPermissionsUseCase = get(),
                 getLocalCurrentUserUseCase = get(),
                 usersModelMapper = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
+                createFolderIdlingResource = get()
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {
