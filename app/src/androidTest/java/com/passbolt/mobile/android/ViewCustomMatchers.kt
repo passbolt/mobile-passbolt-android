@@ -221,3 +221,32 @@ fun <T> first(matcher: Matcher<T>): Matcher<T>? {
         }
     }
 }
+
+fun <T> withIndex(index: Int, matcher: Matcher<T>): Matcher<T>? {
+    return object : BaseMatcher<T>() {
+        private var currentIndex = 0
+
+        override fun matches(item: Any): Boolean {
+            return matcher.matches(item) && currentIndex++ == index;
+        }
+
+        override fun describeTo(description: Description?) {
+            description?.appendText("with index: ");
+            description?.appendValue(index);
+            matcher.describeTo(description);
+        }
+    }
+}
+
+fun withSpeedDialViewOpenState(isOpen: Boolean): Matcher<View?> =
+    object : BoundedMatcher<View, SpeedDialView>(SpeedDialView::class.java) {
+        override fun describeTo(description: Description) {
+            description.appendText("SpeedDialView with isOpen state set to: $isOpen")
+        }
+
+        override fun matchesSafely(speedDialView: SpeedDialView?): Boolean {
+            return speedDialView?.let {
+                speedDialView.isOpen == isOpen
+            } ?: false
+        }
+    }
