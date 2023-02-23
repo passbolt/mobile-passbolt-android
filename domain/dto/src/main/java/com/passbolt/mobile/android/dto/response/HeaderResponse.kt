@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.dto.response
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,8 +28,9 @@ package com.passbolt.mobile.android.dto.response
 class HeaderResponse(
     val id: String,
     val status: StatusResponse,
-    val action: String,
     val message: String,
     val url: String,
-    val code: Int
+    val code: Int,
+    @SerializedName("servertime")
+    val serverTime: Long?
 )
