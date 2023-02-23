@@ -23,8 +23,18 @@
 
 package com.passbolt.mobile.android.feature.otp.screen
 
+import com.passbolt.mobile.android.common.coroutinetimer.infiniteTimer
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.ui.Otp
+import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.ResourcePermission
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class OtpPresenter(
     coroutineLaunchContext: CoroutineLaunchContext
@@ -32,11 +42,86 @@ class OtpPresenter(
 
     override var view: OtpContract.View? = null
 
-    override fun refreshAction() {
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private val tickerJob = SupervisorJob()
+    private val tickerScope = CoroutineScope(tickerJob + coroutineLaunchContext.ui)
+
+    // TODO get from API
+    @Suppress("MagicNumber")
+    private val otpList = mutableListOf(
+        OtpListItemWrapper(
+            Otp("demotywatory", "w", ResourcePermission.OWNER, 15, null), 1L, false
+        ),
+        OtpListItemWrapper(
+            Otp("wykop", "d", ResourcePermission.OWNER, 60, null), 2L, false
+        ),
+        OtpListItemWrapper(
+            Otp("android", "a", ResourcePermission.OWNER, 20, null), 3L, false
+        )
+    )
+    private val visibleOtpListIds = mutableListOf<Long>()
+
+    override fun attach(view: OtpContract.View) {
+        super<DataRefreshViewReactivePresenter>.attach(view)
+        updateOtpsCounterTime(view)
+    }
+
+    private fun updateOtpsCounterTime(view: OtpContract.View) {
+        tickerScope.launch {
+            infiniteTimer(tickDuration = 1.seconds).collectLatest {
+                var replaced = false
+                otpList.replaceAll {
+                    if (!visibleOtpListIds.contains(it.listId)) {
+                        it
+                    } else {
+                        replaced = true
+                        it.copy(remainingSecondsCounter = it.remainingSecondsCounter - 1)
+                    }
+                }
+                if (replaced) {
+                    view.showOtpList(otpList)
+                }
+            }
+        }
+    }
+
+    override fun otpItemClick(otp: OtpListItemWrapper) {
+        // TODO get from API
+        val otpValue = "123 456"
+
+        val newOtp = otp.copy(otp = otp.otp.copy(otpValue = otpValue), isVisible = true)
+        with(newOtp) {
+            otpList[otpList.indexOf(otp)] = this
+            visibleOtpListIds.add(listId)
+        }
+        view?.showOtpList(otpList)
+    }
+
+    override fun otpItemMoreClick(otp: OtpListItemWrapper) {
 //        TODO("Not yet implemented")
+    }
+
+    override fun refreshAction() {
+        if (otpList.isEmpty()) {
+            view?.showEmptyView()
+        } else {
+            view?.hideEmptyView()
+        }
+        view?.showOtpList(otpList)
     }
 
     override fun refreshFailureAction() {
 //        TODO("Not yet implemented")
+    }
+
+    override fun refreshClick() {
+        view?.performRefreshUsingRefreshExecutor()
+    }
+
+    override fun detach() {
+        tickerScope.coroutineContext.cancelChildren()
+        scope.coroutineContext.cancelChildren()
+        super<DataRefreshViewReactivePresenter>.detach()
     }
 }

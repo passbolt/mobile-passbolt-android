@@ -23,6 +23,9 @@
 
 package com.passbolt.mobile.android.feature.otp.screen
 
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 import org.koin.dsl.bind
@@ -30,5 +33,10 @@ import org.koin.dsl.bind
 fun Module.otpModule() {
     scope<OtpFragment> {
         scopedOf(::OtpPresenter) bind OtpContract.Presenter::class
+
+        scoped { FastAdapter.with(get<ItemAdapter<OtpItem>>()) }
+        scoped<ItemAdapter<OtpItem>> {
+            ItemAdapter.items()
+        }
     }
 }

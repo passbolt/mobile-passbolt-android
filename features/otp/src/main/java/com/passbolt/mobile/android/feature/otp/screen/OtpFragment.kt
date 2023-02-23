@@ -23,8 +23,22 @@
 
 package com.passbolt.mobile.android.feature.otp.screen
 
+import android.os.Bundle
+import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.GenericItem
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.common.extension.gone
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
+import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
+import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import org.koin.android.ext.android.inject
 
 class OtpFragment :
@@ -32,12 +46,82 @@ class OtpFragment :
     OtpContract.View {
 
     override val presenter: OtpContract.Presenter by inject()
+    private val otpAdapter: ItemAdapter<OtpItem> by inject()
+    private val fastAdapter: FastAdapter<GenericItem> by inject()
+    private val initialsIconGenerator: InitialsIconGenerator by inject()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpRecycler()
+        setupListeners()
+        presenter.attach(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.resume(this)
+    }
+
+    override fun onPause() {
+        presenter.pause()
+        super.onPause()
+    }
+
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
+    private fun setUpRecycler() {
+        fastAdapter.addEventHooks(
+            listOf(
+                OtpItem.ItemClick { presenter.otpItemClick(it) },
+                OtpItem.ItemMoreClick { presenter.otpItemMoreClick(it) }
+            )
+        )
+        with(binding.recyclerView) {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = fastAdapter
+            itemAnimator = null
+        }
+    }
+
+    private fun setupListeners() {
+        with(binding) {
+            refreshButton.setDebouncingOnClick {
+                presenter.refreshClick()
+            }
+            swipeRefresh.setOnRefreshListener {
+                presenter.refreshClick()
+            }
+        }
+    }
 
     override fun hideRefreshProgress() {
-//        TODO("Not yet implemented")
+        binding.swipeRefresh.isRefreshing = false
     }
 
     override fun showRefreshProgress() {
-//        TODO("Not yet implemented")
+        binding.swipeRefresh.isRefreshing = true
+    }
+
+    override fun showOtpList(otpList: List<OtpListItemWrapper>) {
+        val result = FastAdapterDiffUtil.calculateDiff(
+            otpAdapter,
+            otpList.map { OtpItem(it, initialsIconGenerator) }
+        )
+        FastAdapterDiffUtil[otpAdapter] = result
+    }
+
+    override fun showEmptyView() {
+        binding.emptyListContainer.visible()
+    }
+
+    override fun hideEmptyView() {
+        binding.emptyListContainer.gone()
+    }
+
+    override fun performRefreshUsingRefreshExecutor() {
+        (activity as HomeDataRefreshExecutor).performFullDataRefresh()
     }
 }

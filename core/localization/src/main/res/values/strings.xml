@@ -19,6 +19,7 @@
     <string name="all_items_home_search_hint">Search name, user, url or tag</string>
     <string name="user_search_hint">Search for users…</string>
     <string name="no_passwords">There are no passwords</string>
+    <string name="no_otps">There are no OTPs</string>
     <string name="authentication_required">Authentication required</string>
     <string name="save">Save</string>
     <string name="apply">Apply</string>
@@ -248,7 +249,8 @@
     <string name="resource_details_url_header">Website URL</string>
     <string name="resource_details_description_header">Description</string>
     <string name="resource_details_tags_header">Tags</string>
-    <string name="resource_details_hide_password">••••••••••••••••••</string>
+    <string name="resource_details_hide_password"
+        translatable="false">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">Description is encrypted</string>
     <string name="resource_details_see_description">See description</string>
     <string name="resource_details_decryption_failure">Error during secret decryption</string>
@@ -442,6 +444,10 @@
     <string name="transfer_account_summary_success">Your information has been transferred!</string>
     <string name="transfer_account_summary_cancelled">Transfer cancelled</string>
     <string name="transfer_account_summary_go_back">Go back to my account</string>
+
+    <string name="otp_search">Search OTP</string>
+    <string name="otp_hide_otp"
+        translatable="false">•••&#x9;•••</string>
 
     <!--
     arrays can be inconsistent when in other languages

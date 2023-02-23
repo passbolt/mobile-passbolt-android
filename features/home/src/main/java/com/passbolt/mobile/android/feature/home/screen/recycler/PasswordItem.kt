@@ -1,25 +1,19 @@
 package com.passbolt.mobile.android.feature.home.screen.recycler
 
-import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.amulyakhare.textdrawable.TextDrawable
-import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.passbolt.mobile.android.common.extension.DebounceClickEventHook
 import com.passbolt.mobile.android.common.extension.asBinding
-import com.passbolt.mobile.android.common.px
+import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.ItemPasswordBinding
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -47,7 +41,8 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @since v1.0
  */
 class PasswordItem(
-    val resourceModel: ResourceModel,
+    private val resourceModel: ResourceModel,
+    private val initialsIconGenerator: InitialsIconGenerator,
     private val dotsVisible: Boolean = true
 ) : AbstractBindingItem<ItemPasswordBinding>() {
 
@@ -66,7 +61,7 @@ class PasswordItem(
             more.isVisible = dotsVisible
             loader.isVisible = resourceModel.loaderVisible
             itemPassword.isEnabled = resourceModel.clickable
-            val initialsIcons = getInitialsIcon(binding.root.context)
+            val initialsIcons = initialsIconGenerator.generate(resourceModel.name, resourceModel.initials)
             icon.setImageDrawable(initialsIcons)
 
             resourceModel.icon?.let {
@@ -87,18 +82,6 @@ class PasswordItem(
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
             subtitle.text = resourceModel.username
         }
-    }
-
-    private fun getInitialsIcon(context: Context): Drawable {
-        val generator = ColorGenerator.MATERIAL
-        val generatedColor = generator.getColor(resourceModel.name)
-        val color = ColorUtils.blendARGB(generatedColor, Color.WHITE, LIGHT_RATIO)
-        return TextDrawable.builder()
-            .beginConfig()
-            .textColor(ColorUtils.blendARGB(color, generatedColor, DARK_RATIO))
-            .useFont(ResourcesCompat.getFont(context, R.font.inter_medium))
-            .endConfig()
-            .buildRoundRect(resourceModel.initials, color, ICON_RADIUS)
     }
 
     class MoreClick(
@@ -140,9 +123,6 @@ class PasswordItem(
     }
 
     companion object {
-        private const val LIGHT_RATIO = 0.8f
-        private const val DARK_RATIO = 0.95f
         private const val FONT_WEIGHT = 400
-        private val ICON_RADIUS = 4.px
     }
 }
