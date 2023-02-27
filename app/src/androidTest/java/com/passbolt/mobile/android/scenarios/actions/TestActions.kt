@@ -1,12 +1,21 @@
 package com.passbolt.mobile.android.scenarios.actions
 
+import android.view.View
+import android.widget.Checkable
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.scenarios.helpers.getString
 import com.passbolt.mobile.android.withHint
+import org.hamcrest.BaseMatcher
+import org.hamcrest.CoreMatchers.isA
+import org.hamcrest.Description
+import org.hamcrest.Matcher
 import org.hamcrest.Matchers
+
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,4 +47,26 @@ internal fun clickOnPasswordToggle() {
             ViewMatchers.withId(R.id.text_input_end_icon)
         )
     ).perform(ViewActions.click())
+}
+
+internal fun setChecked(checked: Boolean) = object : ViewAction {
+
+    override fun getDescription(): String {
+        return "checking the checkable view"
+    }
+
+    override fun getConstraints(): Matcher<View> = object : BaseMatcher<View>() {
+
+        override fun describeTo(description: Description?) {
+            description?.appendText("is checkable")
+        }
+
+        override fun matches(item: Any?): Boolean {
+            return isA(Checkable::class.java).matches(item)
+        }
+    }
+
+    override fun perform(uiController: UiController?, view: View?) {
+        (view as Checkable).isChecked = checked
+    }
 }
