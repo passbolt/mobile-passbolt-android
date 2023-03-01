@@ -9,6 +9,7 @@ import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.time.Instant
 
 /**
  * Passbolt - Open source password manager for teams
@@ -103,6 +104,10 @@ inline fun <T : Any> callWithLibraryResponseHandler(
     } else {
         try {
             val errorResponse = requireNotNull(responseHandler.parseErrorResponseBody(response))
+            Timber.d(
+                "Server time is ${errorResponse.header.serverTime}, " +
+                        "device time is ${Instant.now().epochSecond}"
+            )
             NetworkResult.Failure.ServerError(
                 exception = IOException("There was an error during API invocation"),
                 errorCode = errorResponse.header.code,
