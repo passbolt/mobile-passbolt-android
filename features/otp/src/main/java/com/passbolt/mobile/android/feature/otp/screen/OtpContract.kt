@@ -61,5 +61,7 @@ interface OtpContract {
         fun menuShowOtpClick()
         fun menuDeleteOtpClick()
         fun menuEditOtpClick()
+        fun scanOtpQrCodeClick()
+        fun createOtpManuallyClick()
     }
 }

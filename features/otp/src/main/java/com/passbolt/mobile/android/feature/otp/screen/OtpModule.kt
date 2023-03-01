@@ -33,6 +33,7 @@ import org.koin.dsl.bind
 fun Module.otpModule() {
     scope<OtpFragment> {
         scopedOf(::OtpPresenter) bind OtpContract.Presenter::class
+        scopedOf(::OtpSpeedDialFabFactory)
 
         scoped { FastAdapter.with(get<ItemAdapter<OtpItem>>()) }
         scoped<ItemAdapter<OtpItem>> {

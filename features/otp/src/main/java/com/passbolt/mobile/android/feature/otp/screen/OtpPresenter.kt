@@ -29,7 +29,9 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
+import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.Otp
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
@@ -51,7 +53,8 @@ class OtpPresenter(
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val searchableMatcher: SearchableMatcher,
     coroutineLaunchContext: CoroutineLaunchContext
-) : DataRefreshViewReactivePresenter<OtpContract.View>(coroutineLaunchContext), OtpContract.Presenter {
+) : DataRefreshViewReactivePresenter<OtpContract.View>(coroutineLaunchContext), OtpContract.Presenter,
+    SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener {
 
     override var view: OtpContract.View? = null
     private val job = SupervisorJob()
@@ -241,5 +244,13 @@ class OtpPresenter(
 
     override fun menuEditOtpClick() {
         // TODO navigate to edit otp
+    }
+
+    override fun scanOtpQrCodeClick() {
+        // TODO launch qr scanner
+    }
+
+    override fun createOtpManuallyClick() {
+        // TODO navigate to manual form
     }
 }

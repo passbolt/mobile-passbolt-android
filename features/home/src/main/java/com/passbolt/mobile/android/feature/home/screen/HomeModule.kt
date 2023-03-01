@@ -80,7 +80,7 @@ fun Module.homeModule() {
                 deleteResourceIdlingResource = get()
             )
         }
-        scopedOf(::SpeedDialFabFactory)
+        scopedOf(::HomeSpeedDialFabFactory)
         declareHomeListAdapters()
         declareHomeListItemAdapters()
         declareResourceActionsInteractors()

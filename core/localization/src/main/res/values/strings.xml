@@ -448,6 +448,8 @@
     <string name="otp_search">Search OTP</string>
     <string name="otp_hide_otp"
         translatable="false">•••&#x9;•••</string>
+    <string name="otp_speed_dial_scan_qr">Scan QR code</string>
+    <string name="otp_speed_dial_create_manually">Create OTP manually</string>
 
     <string name="otp_more_copy_otp">Copy OTP</string>
     <string name="otp_more_show_otp">Show OTP</string>

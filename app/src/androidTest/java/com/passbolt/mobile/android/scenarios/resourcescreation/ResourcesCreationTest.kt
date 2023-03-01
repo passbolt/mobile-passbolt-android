@@ -141,7 +141,7 @@ class ResourcesCreationTest : KoinTest {
         VisibleCreateButton.values().forEach { visibleCreateButton ->
             onView(withId(R.id.text_input_start_icon)).perform(click())
             onView(withId(visibleCreateButton.filterId)).perform(click())
-            onView(withId(R.id.speedDialViewId))
+            onView(withId(R.id.homeSpeedDialViewId))
                 .check(matches(isDisplayed()))
                 .check(matches(hasDrawable(id = R.drawable.ic_plus, tint = R.color.icon_tint)))
         }
@@ -155,7 +155,7 @@ class ResourcesCreationTest : KoinTest {
         HiddenCreateButton.values().forEach { hiddenCreateButton ->
             onView(withId(R.id.text_input_start_icon)).perform(click())
             onView(withId(hiddenCreateButton.filterId)).perform(click())
-            onView(withId(R.id.speedDialViewId))
+            onView(withId(R.id.homeSpeedDialViewId))
                 .check(matches(not(isDisplayed())))
         }
     }
@@ -167,7 +167,7 @@ class ResourcesCreationTest : KoinTest {
         //    And       I see the create button
         //    When      I click on the create button
         //    Then      I see the New password page with "New password" title
-        onView(withId(R.id.speedDialViewId)).perform(click())
+        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
         //    And       I see a back arrow to go back to the previous page
         onView(isAssignableFrom(Toolbar::class.java))
@@ -216,7 +216,7 @@ class ResourcesCreationTest : KoinTest {
         IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
 
         //    Given     I am a logged in mobile user on the new password page
-        onView(withId(R.id.speedDialViewId)).perform(click())
+        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
         //    And       I filled out all mandatory fields
         onView(allOf(isDescendantOfA(withHint(hasToString("Enter Name"))), withId(R.id.input)))
             .perform(typeText("PasswordNameTest"))
@@ -235,7 +235,7 @@ class ResourcesCreationTest : KoinTest {
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageIShouldSeeAnErrorMessageAfterClickingTheCreateButtonWithAnEmptyMandatoryField() {
         //    Given     I am a logged in mobile user on the new password page
-        onView(withId(R.id.speedDialViewId)).perform(click())
+        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
         //    And       I didn't filled out the Name and Password fields
         //    When      I click on the create button
         onView(withId(R.id.updateButton)).perform(click())
@@ -272,7 +272,7 @@ class ResourcesCreationTest : KoinTest {
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageICanGenerateARandomPassword() {
         //    Given     I am a logged in mobile user on the new password page
-        onView(withId(R.id.speedDialViewId)).perform(click())
+        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
         //    When      I click on the "Random" button
         onView(withId(R.id.generatePasswordLayout)).perform(click())
         //    Then      I see the "Password" field is automatically filled in
@@ -298,7 +298,7 @@ class ResourcesCreationTest : KoinTest {
         val password = "password"
 
         //    Given     I am a logged in mobile user on the new password page
-        onView(withId(R.id.speedDialViewId))
+        onView(withId(R.id.homeSpeedDialViewId))
             .perform(click())
         //    And       the password field is not empty
         onPasswordInputView()

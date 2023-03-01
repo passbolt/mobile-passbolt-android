@@ -61,6 +61,7 @@ import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import org.koin.android.ext.android.inject
 
+@Suppress("TooManyFunctions")
 class OtpFragment :
     BindingScopedAuthenticatedFragment<FragmentOtpBinding, OtpContract.View>(FragmentOtpBinding::inflate),
     OtpContract.View, SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener {
@@ -71,6 +72,7 @@ class OtpFragment :
     private val initialsIconGenerator: InitialsIconGenerator by inject()
     private val imageLoader: ImageLoader by inject()
     private val clipboardManager: ClipboardManager? by inject()
+    private val speedDialFabFactory: OtpSpeedDialFabFactory by inject()
 
     private val authenticationResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -85,6 +87,7 @@ class OtpFragment :
         super.onViewCreated(view, savedInstanceState)
         setUpRecycler()
         setupListeners()
+        initSpeedDialFab()
         presenter.attach(this)
     }
 
@@ -101,6 +104,17 @@ class OtpFragment :
     override fun onDestroyView() {
         presenter.detach()
         super.onDestroyView()
+    }
+
+    private fun initSpeedDialFab() {
+        with(speedDialFabFactory) {
+            scanQrCodeClick = { presenter.scanOtpQrCodeClick() }
+            createManuallyClick = { presenter.createOtpManuallyClick() }
+
+            binding.otpRootLayout.addView(
+                getSpeedDialFab(requireContext(), binding.overlay)
+            )
+        }
     }
 
     private fun setUpRecycler() {
