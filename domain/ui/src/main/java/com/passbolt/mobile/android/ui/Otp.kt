@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.common.coroutinetimer
-
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
-import kotlin.time.Duration
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,15 +21,22 @@ import kotlin.time.Duration
  * @since v1.0
  */
 
-fun timerFlow(repeatTimes: Long, delayMillis: Long) =
-    (0 until repeatTimes)
-        .asFlow()
-        .onEach { delay(delayMillis) }
+package com.passbolt.mobile.android.ui
 
-fun infiniteTimer(tickDuration: Duration) =
-    flow {
-        while (true) {
-            delay(tickDuration)
-            emit(Unit)
-        }
-    }
+import com.passbolt.mobile.android.common.search.Searchable
+
+data class Otp(
+    val name: String,
+    val initials: String,
+    val permission: ResourcePermission,
+    val otpExpirySeconds: Int,
+    val otpValue: String?,
+    override val searchCriteria: String = name
+) : Searchable
+
+data class OtpListItemWrapper(
+    val otp: Otp,
+    val listId: Long,
+    val isVisible: Boolean,
+    val remainingSecondsCounter: Int = otp.otpExpirySeconds
+) : Searchable by otp

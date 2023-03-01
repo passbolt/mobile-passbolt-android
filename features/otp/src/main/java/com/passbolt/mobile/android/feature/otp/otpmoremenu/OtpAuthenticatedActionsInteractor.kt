@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.common.coroutinetimer
-
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
-import kotlin.time.Duration
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,15 +21,29 @@ import kotlin.time.Duration
  * @since v1.0
  */
 
-fun timerFlow(repeatTimes: Long, delayMillis: Long) =
-    (0 until repeatTimes)
-        .asFlow()
-        .onEach { delay(delayMillis) }
+package com.passbolt.mobile.android.feature.otp.otpmoremenu
 
-fun infiniteTimer(tickDuration: Duration) =
-    flow {
-        while (true) {
-            delay(tickDuration)
-            emit(Unit)
-        }
+import androidx.annotation.VisibleForTesting
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.ui.Otp
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
+class OtpAuthenticatedActionsInteractor(
+    private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+    private val sessionRefreshedFlow: StateFlow<Unit?>,
+    private val otpModel: Otp
+) {
+
+    suspend fun provideOtp(
+        success: (ClipboardLabel, String) -> Unit
+    ) {
+        // TODO integrate with API
+        success(OTP_LABEL, "123 456")
     }
+
+    companion object {
+        @VisibleForTesting
+        const val OTP_LABEL = "OTP"
+    }
+}

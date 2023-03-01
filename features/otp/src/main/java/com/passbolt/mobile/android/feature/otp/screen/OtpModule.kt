@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.common.coroutinetimer
-
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
-import kotlin.time.Duration
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,15 +21,23 @@ import kotlin.time.Duration
  * @since v1.0
  */
 
-fun timerFlow(repeatTimes: Long, delayMillis: Long) =
-    (0 until repeatTimes)
-        .asFlow()
-        .onEach { delay(delayMillis) }
+package com.passbolt.mobile.android.feature.otp.screen
 
-fun infiniteTimer(tickDuration: Duration) =
-    flow {
-        while (true) {
-            delay(tickDuration)
-            emit(Unit)
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
+
+fun Module.otpModule() {
+    scope<OtpFragment> {
+        scopedOf(::OtpPresenter) bind OtpContract.Presenter::class
+        scopedOf(::OtpSpeedDialFabFactory)
+
+        scoped { FastAdapter.with(get<ItemAdapter<OtpItem>>()) }
+        scoped<ItemAdapter<OtpItem>> {
+            ItemAdapter.items()
         }
     }
+}

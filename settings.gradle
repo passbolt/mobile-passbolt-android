@@ -50,6 +50,7 @@ featureModule "helpmenu"
 featureModule "logs"
 featureModule "resourcemoremenu"
 featureModule "transferaccounttoanotherdevice"
+featureModule "otp"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"

@@ -145,6 +145,7 @@ dependencies {
     implementation project(':idlingresource')
     implementation project(':entity')
     implementation project(':transferaccounttoanotherdevice')
+    implementation project(':otp')
 
     debugImplementation libs.quality.leakcanary
 

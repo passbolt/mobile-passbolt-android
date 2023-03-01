@@ -1,10 +1,12 @@
-package com.passbolt.mobile.android.common.coroutinetimer
+package com.passbolt.mobile.android.feature.otp.otpmoremenu
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
-import kotlin.time.Duration
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,15 +31,19 @@ import kotlin.time.Duration
  * @since v1.0
  */
 
-fun timerFlow(repeatTimes: Long, delayMillis: Long) =
-    (0 until repeatTimes)
-        .asFlow()
-        .onEach { delay(delayMillis) }
-
-fun infiniteTimer(tickDuration: Duration) =
-    flow {
-        while (true) {
-            delay(tickDuration)
-            emit(Unit)
-        }
+fun Module.otpMoreMenuModule() {
+    scope<OtpMoreMenuFragment> {
+        scopedOf(::OtpMoreMenuPresenter) bind OtpMoreMenuContract.Presenter::class
     }
+    factory { (
+                  otpListItemWrapper: OtpListItemWrapper,
+                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                  sessionRefreshedFlow: StateFlow<Unit?>
+              ) ->
+        OtpAuthenticatedActionsInteractor(
+            needSessionRefreshFlow,
+            sessionRefreshedFlow,
+            otpListItemWrapper.otp
+        )
+    }
+}

@@ -1,10 +1,4 @@
-package com.passbolt.mobile.android.common.coroutinetimer
-
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
-import kotlin.time.Duration
+package com.passbolt.mobile.android.feature.otp.otpmoremenu
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,15 +23,5 @@ import kotlin.time.Duration
  * @since v1.0
  */
 
-fun timerFlow(repeatTimes: Long, delayMillis: Long) =
-    (0 until repeatTimes)
-        .asFlow()
-        .onEach { delay(delayMillis) }
-
-fun infiniteTimer(tickDuration: Duration) =
-    flow {
-        while (true) {
-            delay(tickDuration)
-            emit(Unit)
-        }
-    }
+typealias ClipboardLabel = String
+typealias OtpName = String

@@ -25,8 +25,8 @@ class InitialsIconGenerator(
     }
 
     companion object {
-        private const val LIGHT_RATIO = 0.5f
-        private const val DARK_RATIO = 0.88f
+        private const val LIGHT_RATIO = 0.8f
+        private const val DARK_RATIO = 0.95f
         private const val ICON_RADIUS = 4
     }
 }
