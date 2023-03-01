@@ -27,6 +27,7 @@ dependencies {
     implementation libs.fastAdapter.diff
     implementation libs.coil.core
     implementation libs.coil.base
+    implementation libs.fabSpeedDial
 }
 
 android {

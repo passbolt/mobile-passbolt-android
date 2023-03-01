@@ -124,7 +124,7 @@ class HomeFragment :
 
     private val snackbarAnchorView: View?
         get() {
-            val speedDialView: View = binding.rootLayout.findViewById(R.id.speedDialViewId)
+            val speedDialView: View = binding.rootLayout.findViewById(R.id.homeSpeedDialViewId)
             return if (speedDialView.isVisible) {
                 speedDialView
             } else {
@@ -137,7 +137,7 @@ class HomeFragment :
     private val websiteOpener: WebsiteOpener by inject()
     private val arguments: HomeFragmentArgs by navArgs()
     private val navController by lifecycleAwareLazy { findNavController() }
-    private val speedDialFabFactory: SpeedDialFabFactory by inject()
+    private val speedDialFabFactory: HomeSpeedDialFabFactory by inject()
 
     private val folderCreatedListener = { _: String, bundle: Bundle ->
         val name = requireNotNull(bundle.getString(CreateFolderFragment.EXTRA_CREATED_FOLDER_NAME))
@@ -606,11 +606,11 @@ class HomeFragment :
     }
 
     override fun hideAddButton() {
-        binding.rootLayout.findViewById<View>(R.id.speedDialViewId).gone()
+        binding.rootLayout.findViewById<View>(R.id.homeSpeedDialViewId).gone()
     }
 
     override fun showAddButton() {
-        binding.rootLayout.findViewById<View>(R.id.speedDialViewId).visible()
+        binding.rootLayout.findViewById<View>(R.id.homeSpeedDialViewId).visible()
     }
 
     override fun showDeleteConfirmationDialog() {

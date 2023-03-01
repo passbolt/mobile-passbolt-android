@@ -42,7 +42,7 @@ internal fun getString(@StringRes stringResId: Int) =
     InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId)
 
 internal fun createNewPasswordFromHomeScreen() {
-    onView(withId(R.id.speedDialViewId)).perform(click())
+    onView(withId(R.id.homeSpeedDialViewId)).perform(click())
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString("Enter Name"))),

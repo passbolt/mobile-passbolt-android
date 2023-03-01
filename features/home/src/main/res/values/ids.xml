@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="speedDialViewId"
+    <item name="homeSpeedDialViewId"
         type="id" />
-    <item name="speedDialViewAddPasswordId"
+    <item name="homeSpeedDialViewAddPasswordId"
         type="id" />
-    <item name="speedDialViewAddFolderId"
+    <item name="homeSpeedDialViewAddFolderId"
+        type="id" />
+    <item name="otpSpeedDialViewId"
+        type="id" />
+    <item name="otpSpeedDialViewScanQr"
+        type="id" />
+    <item name="otpSpeedDialViewCreateManually"
         type="id" />
 </resources>
