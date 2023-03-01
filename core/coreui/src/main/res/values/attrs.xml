@@ -26,4 +26,10 @@
         <attr name="name"
             format="string" />
     </declare-styleable>
+    <declare-styleable name="DropDownInputView">
+        <attr name="dropdownTitle"
+            format="string" />
+        <attr name="dropdownIsRequired"
+            format="boolean" />
+    </declare-styleable>
 </resources>

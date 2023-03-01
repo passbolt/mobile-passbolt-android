@@ -103,7 +103,7 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
     }
 
     override fun showNotAnOtpBarcode() {
-        binding.tooltip.text = getString(R.string.otp_scan_not_an_otp_qr)
+        binding.tooltip.text = getString(R.string.otp_scan_not_a_totp_qr)
     }
 
     override fun navigateToSummary() {

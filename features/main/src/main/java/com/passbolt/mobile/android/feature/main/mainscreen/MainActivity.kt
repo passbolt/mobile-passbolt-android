@@ -129,6 +129,10 @@ class MainActivity :
 
     private companion object {
         private const val REQUEST_APP_UPDATE = 8000
-        private val noBottomNavFragmentIds = listOf(R.id.scanOtpFragment)
+        private val noBottomNavFragmentIds = listOf(
+            R.id.scanOtpFragment,
+            R.id.createOtpManuallyFragment,
+            R.id.createOtpAdvancedSettingsFragment
+        )
     }
 }

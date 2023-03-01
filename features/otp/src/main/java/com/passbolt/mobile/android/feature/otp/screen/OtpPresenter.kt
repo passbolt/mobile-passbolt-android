@@ -247,10 +247,10 @@ class OtpPresenter(
     }
 
     override fun scanOtpQrCodeClick() {
-        view?.navigateToScanQrCode()
+        view?.navigateToScanOtpQrCode()
     }
 
     override fun createOtpManuallyClick() {
-        // TODO navigate to manual form
+        view?.navigateToCreateOtpManually()
     }
 }

@@ -21,19 +21,21 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp
+package com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings
 
-import com.passbolt.mobile.android.feature.otp.createotpmanually.createOtpModule
-import com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings.createOtpAdvancedSettingsModule
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.otpMoreMenuModule
-import com.passbolt.mobile.android.feature.otp.scanotp.scanOtpModule
-import com.passbolt.mobile.android.feature.otp.screen.otpModule
-import org.koin.dsl.module
+import timber.log.Timber
 
-val otpMainModule = module {
-    otpModule()
-    otpMoreMenuModule()
-    scanOtpModule()
-    createOtpModule()
-    createOtpAdvancedSettingsModule()
+class CreateOtpAdvancedSettingsPresenter : CreateOtpAdvancedSettingsContract.Presenter {
+
+    override var view: CreateOtpAdvancedSettingsContract.View? = null
+
+    override fun totpExpiryChanged(totpExpirySeconds: String) {
+        // TODO
+        Timber.e("Expiry changed: %s", totpExpirySeconds)
+    }
+
+    override fun totpAlgorithmChanged(algorithm: String) {
+        // TODO
+        Timber.e("Algorithm changed: %s", algorithm)
+    }
 }
