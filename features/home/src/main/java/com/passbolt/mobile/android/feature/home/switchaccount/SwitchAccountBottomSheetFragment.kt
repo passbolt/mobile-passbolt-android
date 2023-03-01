@@ -26,7 +26,6 @@ import com.passbolt.mobile.android.feature.home.switchaccount.recycler.HeaderSig
 import com.passbolt.mobile.android.feature.home.switchaccount.recycler.ManageAccountsClick
 import com.passbolt.mobile.android.feature.home.switchaccount.recycler.SwitchAccountClick
 import com.passbolt.mobile.android.feature.home.switchaccount.recycler.SwitchAccountUiItemsMapper
-import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
@@ -67,8 +66,8 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
     override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = when {
-            activity is ResourceMoreMenuFragment.Listener -> activity as Listener
-            parentFragment is ResourceMoreMenuFragment.Listener -> parentFragment as Listener
+            activity is Listener -> activity as Listener
+            parentFragment is Listener -> parentFragment as Listener
             else -> error("Parent must implement ${Listener::class.java.name}")
         }
     }

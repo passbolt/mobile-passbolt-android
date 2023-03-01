@@ -14,6 +14,8 @@ dependencies {
     implementation project(':authentication')
     implementation project(':fulldatarefresh')
     implementation project(':home')
+    implementation project(':storage')
+    implementation project(':navigation')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -23,6 +25,8 @@ dependencies {
     implementation libs.fastAdapter.core
     implementation libs.fastAdapter.binding
     implementation libs.fastAdapter.diff
+    implementation libs.coil.core
+    implementation libs.coil.base
 }
 
 android {

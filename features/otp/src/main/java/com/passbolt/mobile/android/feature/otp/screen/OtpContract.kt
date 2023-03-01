@@ -24,7 +24,9 @@
 package com.passbolt.mobile.android.feature.otp.screen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
+import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 
 interface OtpContract {
 
@@ -33,11 +35,31 @@ interface OtpContract {
         fun showEmptyView()
         fun hideEmptyView()
         fun performRefreshUsingRefreshExecutor()
+        fun displaySearchAvatar(avatarUrl: String?)
+        fun navigateToSwitchAccount(appContext: AppContext)
+        fun showFullscreenError()
+        fun hideFullScreenError()
+        fun navigateToManageAccounts()
+        fun navigateToSwitchedAccountAuth(appContext: AppContext)
+        fun showPleaseWaitForDataRefresh()
+        fun displaySearchClearIcon()
+        fun clearSearchInput()
+        fun showOtmMoreMenu(otpMoreMenuModel: OtpMoreMenuModel)
+        fun copySecretToClipBoard(label: String, value: String)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun otpItemClick(otp: OtpListItemWrapper)
-        fun otpItemMoreClick(otp: OtpListItemWrapper)
+        fun otpItemMoreClick(otpListWrapper: OtpListItemWrapper)
         fun refreshClick()
+        fun searchAvatarClick()
+        fun switchAccountManageAccountClick()
+        fun switchAccountClick()
+        fun searchClearClick()
+        fun searchTextChanged(text: String)
+        fun menuCopyOtpClick()
+        fun menuShowOtpClick()
+        fun menuDeleteOtpClick()
+        fun menuEditOtpClick()
     }
 }

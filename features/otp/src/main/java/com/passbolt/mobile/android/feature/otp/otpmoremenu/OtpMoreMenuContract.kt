@@ -21,13 +21,21 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp
+package com.passbolt.mobile.android.feature.otp.otpmoremenu
 
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.otpMoreMenuModule
-import com.passbolt.mobile.android.feature.otp.screen.otpModule
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 
-val otpMainModule = module {
-    otpModule()
-    otpMoreMenuModule()
+interface OtpMoreMenuContract {
+
+    interface View : BaseContract.View {
+        fun showTitle(title: String)
+        fun showSeparator()
+        fun showDeleteButton()
+        fun showEditButton()
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun argsRetrieved(menuModel: OtpMoreMenuModel)
+    }
 }
