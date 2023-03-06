@@ -132,7 +132,8 @@ class MainActivity :
         private val noBottomNavFragmentIds = listOf(
             R.id.scanOtpFragment,
             R.id.createOtpManuallyFragment,
-            R.id.createOtpAdvancedSettingsFragment
+            R.id.createOtpAdvancedSettingsFragment,
+            R.id.createOtpSuccessFragment
         )
     }
 }

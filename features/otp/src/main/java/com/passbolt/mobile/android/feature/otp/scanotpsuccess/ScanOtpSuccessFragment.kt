@@ -1,3 +1,12 @@
+package com.passbolt.mobile.android.feature.otp.scanotpsuccess
+
+import android.os.Bundle
+import android.view.View
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.feature.authentication.R
+import com.passbolt.mobile.android.feature.otp.databinding.FragmentCreateOtpSuccessBinding
+import org.koin.android.ext.android.inject
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,22 +29,25 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class ScanOtpSuccessFragment : BindingScopedFragment<FragmentCreateOtpSuccessBinding>(
+    FragmentCreateOtpSuccessBinding::inflate
+) {
 
-package com.passbolt.mobile.android.feature.otp
+    private val presenter: ScanOtpSuccessContract.Presenter by inject()
 
-import com.passbolt.mobile.android.feature.otp.createotpmanually.createOtpModule
-import com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings.createOtpAdvancedSettingsModule
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.otpMoreMenuModule
-import com.passbolt.mobile.android.feature.otp.scanotp.scanOtpModule
-import com.passbolt.mobile.android.feature.otp.scanotpsuccess.scanOtpSuccessModule
-import com.passbolt.mobile.android.feature.otp.screen.otpModule
-import org.koin.dsl.module
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupView()
+    }
 
-val otpMainModule = module {
-    otpModule()
-    otpMoreMenuModule()
-    scanOtpModule()
-    createOtpModule()
-    createOtpAdvancedSettingsModule()
-    scanOtpSuccessModule()
+    private fun setupView() {
+        with(binding.resultView) {
+            setIcon(R.drawable.ic_success)
+            setTitle(getString(R.string.otp_create_success))
+            setButtonLabel(getString(R.string.otp_create_totp_create_standalone))
+            setButtonAction {
+                presenter.createStandaloneOtpClick()
+            }
+        }
+    }
 }

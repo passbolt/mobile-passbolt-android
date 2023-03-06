@@ -471,6 +471,8 @@
     <string name="otp_create_totp_expert_settings_expiry_seconds_info">seconds until the TOTP expires.</string>
     <string name="otp_create_totp_expert_settings_algorithm">Algorithm</string>
 
+    <string name="otp_create_success">Your TOTP has been scanned!</string>
+
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code

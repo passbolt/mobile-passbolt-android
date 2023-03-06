@@ -25,6 +25,8 @@ package com.passbolt.mobile.android.feature.otp.scanotp
 
 import android.os.Bundle
 import android.view.View
+
+import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
@@ -106,8 +108,10 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
         binding.tooltip.text = getString(R.string.otp_scan_not_a_totp_qr)
     }
 
-    override fun navigateToSummary() {
-        // TODO
+    override fun navigateToCreateOtpSuccess() {
+        findNavController().navigate(
+            ScanOtpFragmentDirections.actionScanOtpFragmentToCreateOtpSuccessFragment()
+        )
     }
 
     override fun setFlagSecure() {

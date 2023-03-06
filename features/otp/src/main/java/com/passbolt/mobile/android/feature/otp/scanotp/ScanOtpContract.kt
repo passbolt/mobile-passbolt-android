@@ -33,7 +33,7 @@ interface ScanOtpContract {
         fun startAnalysis()
         fun showStartCameraError()
         fun scanResultChannel(): StateFlow<BarcodeScanResult>
-        fun navigateToSummary()
+        fun navigateToCreateOtpSuccess()
         fun showBarcodeScanError(message: String?)
         fun showMultipleCodesInRange()
         fun showCenterCameraOnBarcode()
