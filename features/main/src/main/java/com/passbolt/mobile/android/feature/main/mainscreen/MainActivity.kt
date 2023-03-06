@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.main.mainscreen
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.view.isVisible
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
@@ -47,8 +48,15 @@ class MainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runtimeAuthenticatedFlag.require(this)
-        binding.mainNavigation.setupWithNavController(bottomNavController)
+        setupBottomNavigation()
         presenter.attach(this)
+    }
+
+    private fun setupBottomNavigation() {
+        binding.mainNavigation.setupWithNavController(bottomNavController)
+        bottomNavController.addOnDestinationChangedListener { _, destination, _ ->
+            binding.mainNavigation.isVisible = !noBottomNavFragmentIds.contains(destination.id)
+        }
     }
 
     @Deprecated("Deprecated in Java")
@@ -115,11 +123,12 @@ class MainActivity :
             }
     }
 
-    private companion object {
-        private const val REQUEST_APP_UPDATE = 8000
-    }
-
     override fun performFullDataRefresh() {
         presenter.performFullDataRefresh()
+    }
+
+    private companion object {
+        private const val REQUEST_APP_UPDATE = 8000
+        private val noBottomNavFragmentIds = listOf(R.id.scanOtpFragment)
     }
 }

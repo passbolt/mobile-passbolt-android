@@ -21,15 +21,18 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp
+package com.passbolt.mobile.android.feature.otp.scanotp
 
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.otpMoreMenuModule
-import com.passbolt.mobile.android.feature.otp.scanotp.scanOtpModule
-import com.passbolt.mobile.android.feature.otp.screen.otpModule
-import org.koin.dsl.module
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpQrParser
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpQrScanResultsMapper
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
-val otpMainModule = module {
-    otpModule()
-    otpMoreMenuModule()
-    scanOtpModule()
+fun Module.scanOtpModule() {
+    scope<ScanOtpFragment> {
+        scopedOf(::ScanOtpPresenter) bind ScanOtpContract.Presenter::class
+        scopedOf(::OtpQrParser)
+        scopedOf(::OtpQrScanResultsMapper)
+    }
 }

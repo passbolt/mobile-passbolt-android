@@ -46,6 +46,7 @@ interface OtpContract {
         fun clearSearchInput()
         fun showOtmMoreMenu(otpMoreMenuModel: OtpMoreMenuModel)
         fun copySecretToClipBoard(label: String, value: String)
+        fun navigateToScanQrCode()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {

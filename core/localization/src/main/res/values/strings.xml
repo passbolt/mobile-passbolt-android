@@ -456,6 +456,9 @@
     <string name="otp_more_edit_otp">Edit OTP</string>
     <string name="otp_more_delete_otp">Delete OTP</string>
 
+    <string name="otp_scan_title">Scan QR code</string>
+    <string name="otp_scan_not_an_otp_qr">Not a TOTP Qr Code</string>
+
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code

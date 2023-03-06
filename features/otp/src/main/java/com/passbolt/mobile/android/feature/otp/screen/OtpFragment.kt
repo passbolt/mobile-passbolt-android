@@ -34,6 +34,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.request.ImageRequest
@@ -283,6 +284,12 @@ class OtpFragment :
             }
         )
         Toast.makeText(requireContext(), getString(R.string.copied_info, label), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun navigateToScanQrCode() {
+        findNavController().navigate(
+            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment()
+        )
     }
 
     private companion object {

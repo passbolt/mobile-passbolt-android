@@ -21,15 +21,30 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp
+package com.passbolt.mobile.android.feature.otp.scanotp
 
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.otpMoreMenuModule
-import com.passbolt.mobile.android.feature.otp.scanotp.scanOtpModule
-import com.passbolt.mobile.android.feature.otp.screen.otpModule
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
+import kotlinx.coroutines.flow.StateFlow
 
-val otpMainModule = module {
-    otpModule()
-    otpMoreMenuModule()
-    scanOtpModule()
+interface ScanOtpContract {
+
+    interface View : BaseContract.View {
+        fun startAnalysis()
+        fun showStartCameraError()
+        fun scanResultChannel(): StateFlow<BarcodeScanResult>
+        fun navigateToSummary()
+        fun showBarcodeScanError(message: String?)
+        fun showMultipleCodesInRange()
+        fun showCenterCameraOnBarcode()
+        fun setFlagSecure()
+        fun removeFlagSecure()
+        fun showNotAnOtpBarcode()
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun startCameraError(exc: Exception)
+        fun viewResumed()
+        fun viewPaused()
+    }
 }
