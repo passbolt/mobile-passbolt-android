@@ -51,6 +51,7 @@ sealed class OtpParseResult {
             companion object {
                 const val DEFAULT_PERIOD_SECONDS = 30
                 const val DEFAULT_DIGITS = 6
+                val predefinedPossibleValues = listOf(DEFAULT_PERIOD_SECONDS, 60, 90, 120, 240)
             }
         }
 

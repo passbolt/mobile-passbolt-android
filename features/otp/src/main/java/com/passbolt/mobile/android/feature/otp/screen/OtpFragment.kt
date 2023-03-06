@@ -286,9 +286,15 @@ class OtpFragment :
         Toast.makeText(requireContext(), getString(R.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }
 
-    override fun navigateToScanQrCode() {
+    override fun navigateToScanOtpQrCode() {
         findNavController().navigate(
             OtpFragmentDirections.actionOtpFragmentToScanOtpFragment()
+        )
+    }
+
+    override fun navigateToCreateOtpManually() {
+        findNavController().navigate(
+            OtpFragmentDirections.actionOtpFragmentToCreateOtpManuallyFragment()
         )
     }
 

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="@dimen/dp_32"
+        app:layout_constraintTop_toTopOf="parent"
+        app:toolbarTitle="@string/otp_create_totp_expert_settings_title" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_16">
+
+            <com.passbolt.mobile.android.core.ui.dropdown.DropDownInputView
+                android:id="@+id/totpExpiryDropdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_8"
+                app:dropdownIsRequired="true"
+                app:dropdownTitle="@string/otp_create_totp_expert_settings_expiry"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_8"
+                android:gravity="start"
+                android:text="@string/otp_create_totp_expert_settings_expiry_seconds_info"
+                app:layout_constraintBottom_toBottomOf="@id/totpExpiryDropdown"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/totpExpiryDropdown"
+                app:layout_constraintTop_toTopOf="@id/totpExpiryDropdown"
+                app:layout_constraintVertical_bias="0.7" />
+
+            <com.passbolt.mobile.android.core.ui.dropdown.DropDownInputView
+                android:id="@+id/algorithmDropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_8"
+                app:dropdownIsRequired="true"
+                app:dropdownTitle="@string/otp_create_totp_expert_settings_algorithm"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/totpExpiryDropdown" />
+
+            <Button
+                android:id="@+id/applyButton"
+                style="@style/PrimaryBlueButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_56"
+                android:layout_gravity="bottom"
+                android:layout_marginHorizontal="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginBottom="@dimen/dp_16"
+                android:text="@string/apply"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

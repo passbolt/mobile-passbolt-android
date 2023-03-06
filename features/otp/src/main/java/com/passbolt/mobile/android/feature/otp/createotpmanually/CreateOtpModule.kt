@@ -21,19 +21,14 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp
+package com.passbolt.mobile.android.feature.otp.createotpmanually
 
-import com.passbolt.mobile.android.feature.otp.createotpmanually.createOtpModule
-import com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings.createOtpAdvancedSettingsModule
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.otpMoreMenuModule
-import com.passbolt.mobile.android.feature.otp.scanotp.scanOtpModule
-import com.passbolt.mobile.android.feature.otp.screen.otpModule
-import org.koin.dsl.module
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
-val otpMainModule = module {
-    otpModule()
-    otpMoreMenuModule()
-    scanOtpModule()
-    createOtpModule()
-    createOtpAdvancedSettingsModule()
+fun Module.createOtpModule() {
+    scope<CreateOtpFragment> {
+        scopedOf(::CreateOtpPresenter) bind CreateOtpContract.Presenter::class
+    }
 }

@@ -93,7 +93,7 @@ class OtpSpeedDialFabFactory(
     private fun otpSpeedDial(context: Context, overlay: SpeedDialOverlayLayout) =
         mainFab(context, overlay).apply {
             addSpeedDialItem(
-                R.id.homeSpeedDialViewAddFolderId,
+                R.id.otpSpeedDialViewCreateManually,
                 R.drawable.ic_write,
                 R.string.otp_speed_dial_create_manually
             )

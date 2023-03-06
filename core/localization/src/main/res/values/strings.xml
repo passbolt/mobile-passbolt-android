@@ -457,7 +457,19 @@
     <string name="otp_more_delete_otp">Delete OTP</string>
 
     <string name="otp_scan_title">Scan QR code</string>
-    <string name="otp_scan_not_an_otp_qr">Not a TOTP Qr Code</string>
+    <string name="otp_scan_not_a_totp_qr">Not a TOTP Qr Code</string>
+
+    <string name="otp_create_totp_title">Create TOTP</string>
+    <string name="otp_create_totp_field_name">Name (Label)</string>
+    <string name="otp_create_totp_field_url">URL (Issuer)</string>
+    <string name="otp_create_totp_field_secret">Secret</string>
+    <string name="otp_create_totp_advanced_settings">Advanced settings</string>
+    <string name="otp_create_totp_create_standalone">Create a standalone TOTP</string>
+
+    <string name="otp_create_totp_expert_settings_title">Create TOTP - advanced settings</string>
+    <string name="otp_create_totp_expert_settings_expiry">TOTP expiry</string>
+    <string name="otp_create_totp_expert_settings_expiry_seconds_info">seconds until the TOTP expires.</string>
+    <string name="otp_create_totp_expert_settings_algorithm">Algorithm</string>
 
     <!--
     arrays can be inconsistent when in other languages
