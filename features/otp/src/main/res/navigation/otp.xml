@@ -30,7 +30,16 @@
         android:id="@+id/scanOtpFragment"
         android:name="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment"
         android:label="ScanOtpFragment"
-        tools:layout="@layout/fragment_scan_otp" />
+        tools:layout="@layout/fragment_scan_otp">
+        <action
+            android:id="@+id/action_scanOtpFragment_to_createOtpSuccessFragment"
+            app:destination="@id/createOtpSuccessFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/otpFragment" />
+    </fragment>
     <fragment
         android:id="@+id/createOtpManuallyFragment"
         android:name="com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment"
@@ -49,4 +58,9 @@
         android:name="com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings.CreateOtpAdvancedSettingsFragment"
         android:label="CreateOtpAdvancedSettingsFragment"
         tools:layout="@layout/fragment_create_otp_advanced_settings" />
+    <fragment
+        android:id="@+id/createOtpSuccessFragment"
+        android:name="com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment"
+        android:label="CreateOtpSuccessFragment"
+        tools:layout="@layout/fragment_create_otp_success" />
 </navigation>
