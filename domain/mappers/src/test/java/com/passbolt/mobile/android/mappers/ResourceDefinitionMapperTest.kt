@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
+import com.passbolt.mobile.android.entity.resource.ResourceField
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -53,51 +54,295 @@ class ResourceDefinitionMapperTest : KoinTest {
     @Before
     fun setUp() {
         val resourceDirectory = Paths.get("src", "test", "resources").toFile().absolutePath
-        val resourceFile = File(resourceDirectory, "resource-types.json")
+        val resourceFile = File(resourceDirectory, "resource-types-v2.json")
 
         val parsedType = object : TypeToken<List<ResourceTypeDto>>() {}.type
         resourceTypesResponse = gson.fromJson(FileReader(resourceFile), parsedType)
     }
 
     @Test
-    fun `parsed model should contain correct fields count`() {
+    fun `parsed model should contain correct fields for simple password resource type`() {
         val model = mapper.map(resourceTypesResponse)
 
-        assertThat(model[0].resourceFields.size).isEqualTo(5)
-        assertThat(model[1].resourceFields.size).isEqualTo(5)
+        with(model[0].resourceFields) {
+            assertThat(size).isEqualTo(5)
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "name",
+                    isSecret = false,
+                    maxLength = 255,
+                    isRequired = true,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "username",
+                    isSecret = false,
+                    maxLength = 255,
+                    isRequired = false,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "uri",
+                    isSecret = false,
+                    maxLength = 1024,
+                    isRequired = false,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "description",
+                    isSecret = false,
+                    maxLength = 10000,
+                    isRequired = false,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "secret",
+                    isSecret = true,
+                    maxLength = 4096,
+                    isRequired = true,
+                    "string"
+                )
+            )
+        }
     }
 
     @Test
-    fun `parsed model should contain correct secret and raw fields count`() {
+    fun `parsed model should contain correct fields for password with description resource type`() {
         val model = mapper.map(resourceTypesResponse)
 
-        assertThat(model[0].resourceFields.filter { it.isSecret }.size).isEqualTo(1)
-        assertThat(model[1].resourceFields.filter { it.isSecret }.size).isEqualTo(2)
+        with(model[1].resourceFields) {
+            assertThat(size).isEqualTo(5)
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "name",
+                    isSecret = false,
+                    maxLength = 255,
+                    isRequired = true,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "username",
+                    isSecret = false,
+                    maxLength = 255,
+                    isRequired = false,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "uri",
+                    isSecret = false,
+                    maxLength = 1024,
+                    isRequired = false,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "description",
+                    isSecret = true,
+                    maxLength = 10000,
+                    isRequired = false,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "password",
+                    isSecret = true,
+                    maxLength = 4096,
+                    isRequired = true,
+                    "string"
+                )
+            )
+        }
     }
 
     @Test
-    fun `parsed model should contain correct secret and raw fields`() {
+    fun `parsed model should contain correct fields for standalone otp resource type`() {
         val model = mapper.map(resourceTypesResponse)
 
-        val secretFieldNamesForAllResourceTypes = model
-            .flatMap { it.resourceFields }
-            .filter { it.isSecret }
-            .map { it.name }
-
-        assertThat(secretFieldNamesForAllResourceTypes.size).isEqualTo(3)
-        assertThat(secretFieldNamesForAllResourceTypes).containsExactly("password", "description", "secret")
+        with(model[2].resourceFields) {
+            assertThat(size).isEqualTo(6)
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "name",
+                    isSecret = false,
+                    maxLength = 255,
+                    isRequired = true,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "uri",
+                    isSecret = false,
+                    maxLength = 1024,
+                    isRequired = false,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "secret_key",
+                    isSecret = true,
+                    maxLength = 1024,
+                    isRequired = true,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "algorithm",
+                    isSecret = true,
+                    maxLength = 4,
+                    isRequired = true,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "period",
+                    isSecret = true,
+                    maxLength = null,
+                    isRequired = false,
+                    "number"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "digits",
+                    isSecret = true,
+                    maxLength = null,
+                    isRequired = true,
+                    "number"
+                )
+            )
+        }
     }
 
     @Test
-    fun `parsed model should contain correct required flag`() {
+    fun `parsed model should contain correct fields for standalone password with otp resource type`() {
         val model = mapper.map(resourceTypesResponse)
 
-        val requiredFieldNamesForAllResourceTypes = model
-            .flatMap { it.resourceFields }
-            .filter { it.isRequired }
-            .map { it.name }
-
-        assertThat(requiredFieldNamesForAllResourceTypes.size).isEqualTo(4)
-        assertThat(requiredFieldNamesForAllResourceTypes).containsExactly("name", "secret", "name", "password")
+        with(model[3].resourceFields) {
+            assertThat(size).isEqualTo(9)
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "name",
+                    isSecret = false,
+                    maxLength = 255,
+                    isRequired = true,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "username",
+                    isSecret = false,
+                    maxLength = 255,
+                    isRequired = false,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "uri",
+                    isSecret = false,
+                    maxLength = 1024,
+                    isRequired = false,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "description",
+                    isSecret = true,
+                    maxLength = 10000,
+                    isRequired = false,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "password",
+                    isSecret = true,
+                    maxLength = 4096,
+                    isRequired = true,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "secret_key",
+                    isSecret = true,
+                    maxLength = 1024,
+                    isRequired = true,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "algorithm",
+                    isSecret = true,
+                    maxLength = 4,
+                    isRequired = true,
+                    "string"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "period",
+                    isSecret = true,
+                    maxLength = null,
+                    isRequired = false,
+                    "number"
+                )
+            )
+            assertThat(this).contains(
+                ResourceField(
+                    0,
+                    "digits",
+                    isSecret = true,
+                    maxLength = null,
+                    isRequired = true,
+                    "number"
+                )
+            )
+        }
     }
 }
