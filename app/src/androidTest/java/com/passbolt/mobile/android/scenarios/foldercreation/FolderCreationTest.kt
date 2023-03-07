@@ -1,3 +1,26 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021-2023 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
 package com.passbolt.mobile.android.scenarios.foldercreation
 
 import android.view.KeyEvent
@@ -32,28 +55,6 @@ import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
@@ -91,6 +92,14 @@ class FolderCreationTest : KoinTest {
 
     @BeforeTest
     fun setup() {
+        //    Background context
+        //    #PRO_FOLDER_CREATION_WITH_PERMISSION ●
+        //    Given I already have account admin_automated
+        //    And I am logged in mobile app
+        //    And I am on Passbolt PRO
+        //    And I want to create new folder
+        //    And I am on the folders filter view
+        //    And I have the permission to create a folder in my current location
         onView(withId(R.id.input)).perform(
             typeText(managedAccountIntentCreator.getUsername()),
             pressKey(KeyEvent.KEYCODE_ENTER)
@@ -102,41 +111,32 @@ class FolderCreationTest : KoinTest {
         onView(withId(R.id.folders)).perform(click())
     }
 
-//    Background context
-//    #PRO_FOLDER_CREATION_WITH_PERMISSION ●
-//    Given I already have account admin_automated
-//    And I am logged in mobile app
-//    And I am on Passbolt PRO
-//    And I want to create new folder
-//    And I am on the folders filter view
-//    And I have the permission to create a folder in my current location
-
     @Test
 //    https://passbolt.testrail.io/index.php?/cases/view/8160
     fun onTheFoldersWorkspaceICanClickCreateButton() {
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
         //    And       I see a create button with an icon in @blue
-        onView(withId(R.id.speedDialViewId))
+        onView(withId(R.id.homeSpeedDialViewId))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = R.drawable.ic_plus, tint = R.color.icon_tint)))
         //    When      I click create button
-        onView(withId(R.id.speedDialViewId)).perform(click())
+        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
         //    Then      I see ‘Add folder’ with folder icon
-        onView(allOf(isDescendantOfA(withId(R.id.speedDialViewAddFolderId)), withId(R.id.sd_fab)))
+        onView(allOf(isDescendantOfA(withId(R.id.homeSpeedDialViewAddFolderId)), withId(R.id.sd_fab)))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = R.drawable.ic_folder, tint = R.color.icon_tint)))
-        onView(allOf(isDescendantOfA(withId(R.id.speedDialViewAddFolderId)), withId(R.id.sd_label)))
+        onView(allOf(isDescendantOfA(withId(R.id.homeSpeedDialViewAddFolderId)), withId(R.id.sd_label)))
             .check(matches(isDisplayed()))
             .check(matches(withText(R.string.home_speed_dial_add_folder)))
         //    And       I see ‘Add password’ with key icon
-        onView(allOf(isDescendantOfA(withId(R.id.speedDialViewAddPasswordId)), withId(R.id.sd_fab)))
+        onView(allOf(isDescendantOfA(withId(R.id.homeSpeedDialViewAddPasswordId)), withId(R.id.sd_fab)))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = R.drawable.ic_key, tint = R.color.icon_tint)))
-        onView(allOf(isDescendantOfA(withId(R.id.speedDialViewAddPasswordId)), withId(R.id.sd_label)))
+        onView(allOf(isDescendantOfA(withId(R.id.homeSpeedDialViewAddPasswordId)), withId(R.id.sd_label)))
             .check(matches(isDisplayed()))
             .check(matches(withText(R.string.home_speed_dial_add_password)))
         //    And       And I see ‘X’ close button (Note: this is actually the "plus" icon but rotated 45 degrees)
-        onView(withId(R.id.speedDialViewId))
+        onView(withId(R.id.homeSpeedDialViewId))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = R.drawable.ic_plus, tint = R.color.icon_tint)))
     }
@@ -145,11 +145,11 @@ class FolderCreationTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8161
     fun onTheFoldersWorkspaceICanClickAddPasswordAndOpenNewPasswordWorkspace() {
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
-        onView(withId(R.id.speedDialViewId))
+        onView(withId(R.id.homeSpeedDialViewId))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = R.drawable.ic_plus, tint = R.color.icon_tint)))
         //    When      I click create button
-        onView(withId(R.id.speedDialViewId)).perform(click())
+        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
         //    When      When I click ‘Add password’
         onView(withIndex(1, withId(R.id.sd_fab))).perform(click())
         //    Then      Then I see ‘New password’ workspace
@@ -167,16 +167,16 @@ class FolderCreationTest : KoinTest {
     fun onTheFolderWorkspaceICanCancelCreationProcess() {
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
         //    And       I see a create button with an icon in @blue
-        onView(withId(R.id.speedDialViewId))
+        onView(withId(R.id.homeSpeedDialViewId))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = R.drawable.ic_plus, tint = R.color.icon_tint)))
         //    When      I click create button
-        onView(withId(R.id.speedDialViewId)).perform(click())
+        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
         //    When      I click ‘X’ button
         //    Then      I am on folders workspace
         onView(
             allOf(
-                withId(R.id.speedDialViewId),
+                withId(R.id.homeSpeedDialViewId),
                 isAssignableFrom(SpeedDialView::class.java)
             )
         )
@@ -187,11 +187,11 @@ class FolderCreationTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8163
     fun onTheFolderWorkspaceICanClickAddFolderAndOpenCreateFolderWorkspace() {
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
-        onView(withId(R.id.speedDialViewId))
+        onView(withId(R.id.homeSpeedDialViewId))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = R.drawable.ic_plus, tint = R.color.icon_tint)))
         //    When      I click create button
-        onView(withId(R.id.speedDialViewId)).perform(click())
+        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
         //    When      I click ‘Add folder’ button
         onView(withIndex(0, withId(R.id.sd_label_container))).perform(click())
         //    Then      I see ‘Create folder’ workspace
@@ -219,11 +219,11 @@ class FolderCreationTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8164
     fun onTheRootFolderWorkspaceIWillSeeAnErrorWhenSavingFolderWithoutItsName() {
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
-        onView(withId(R.id.speedDialViewId))
+        onView(withId(R.id.homeSpeedDialViewId))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = R.drawable.ic_plus, tint = R.color.icon_tint)))
         //    When      I click create button
-        onView(withId(R.id.speedDialViewId)).perform(click())
+        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
         //    When      I click ‘Add folder’ button
         onView(withIndex(0, withId(R.id.sd_label_container))).perform(click())
         //    Given     that I am on ‘Create folder’ workspace
@@ -250,11 +250,11 @@ class FolderCreationTest : KoinTest {
         IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
 
         //    Given     that I am on #PRO_FOLDER_CREATION_WITH_PERMISSION
-        onView(withId(R.id.speedDialViewId))
+        onView(withId(R.id.homeSpeedDialViewId))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = R.drawable.ic_plus, tint = R.color.icon_tint)))
         //    When      I click create button
-        onView(withId(R.id.speedDialViewId)).perform(click())
+        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
         //    When      I click ‘Add folder’ button
         onView(withIndex(0, withId(R.id.sd_label_container))).perform(click())
         //    Given     that I am on ‘Create folder’ workspace
@@ -298,13 +298,13 @@ class FolderCreationTest : KoinTest {
         //    And       I see ‘There are no passwords’ description with picture
         onView(withText(R.string.no_passwords)).check(matches(isDisplayed()))
         //    And       I see create button in @blue
-        onView(withId(R.id.speedDialViewId))
+        onView(withId(R.id.homeSpeedDialViewId))
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = R.drawable.ic_plus, tint = R.color.icon_tint)))
     }
 
     private fun createFolderForOpening() {
-        onView(withId(R.id.speedDialViewId)).perform(click())
+        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
         onView(withIndex(0, withId(R.id.sd_label_container))).perform(click())
         onView(withId(R.id.input)).perform(replaceText(NEW_TEST_FOLDER_NAME))
         onView(withText(R.string.save)).perform(click())
