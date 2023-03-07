@@ -10,9 +10,8 @@
     <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:paddingTop="@dimen/dp_16"
-        android:paddingBottom="@dimen/dp_16"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/dp_8"
         android:theme="@style/Theme.Passbolt.Toolbar"
         app:layout_constraintTop_toTopOf="parent"
         app:toolbarTitle="@string/otp_scan_title" />
