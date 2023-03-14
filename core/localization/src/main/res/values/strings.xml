@@ -461,13 +461,17 @@
 
     <string name="otp_create_totp_title">Create TOTP</string>
     <string name="otp_create_totp_field_name">Name (Label)</string>
+    <string name="otp_create_totp_field_name_hint">Name</string>
     <string name="otp_create_totp_field_url">URL (Issuer)</string>
+    <string name="otp_create_totp_field_url_hint">URL</string>
     <string name="otp_create_totp_field_secret">Secret</string>
+    <string name="otp_create_totp_field_secret_hint">Secret</string>
     <string name="otp_create_totp_advanced_settings">Advanced settings</string>
     <string name="otp_create_totp_create_standalone">Create a standalone TOTP</string>
 
     <string name="otp_create_totp_expert_settings_title">Create TOTP - advanced settings</string>
     <string name="otp_create_totp_expert_settings_expiry">TOTP expiry</string>
+    <string name="otp_create_totp_expert_settings_expiry_hint">TOTP expiry</string>
     <string name="otp_create_totp_expert_settings_expiry_seconds_info">seconds until the TOTP expires.</string>
     <string name="otp_create_totp_expert_settings_algorithm">Algorithm</string>
 

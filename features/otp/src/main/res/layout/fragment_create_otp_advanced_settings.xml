@@ -25,14 +25,15 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dp_16">
 
-            <com.passbolt.mobile.android.core.ui.dropdown.DropDownInputView
-                android:id="@+id/totpExpiryDropdown"
+            <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
+                android:id="@+id/totpExpiryInput"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_8"
-                app:dropdownIsRequired="true"
-                app:dropdownTitle="@string/otp_create_totp_expert_settings_expiry"
+                app:inputHint="@string/otp_create_totp_expert_settings_expiry_hint"
+                app:inputIsRequired="true"
+                app:inputTitle="@string/otp_create_totp_expert_settings_expiry"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,10 +43,10 @@
                 android:layout_marginStart="@dimen/dp_8"
                 android:gravity="start"
                 android:text="@string/otp_create_totp_expert_settings_expiry_seconds_info"
-                app:layout_constraintBottom_toBottomOf="@id/totpExpiryDropdown"
+                app:layout_constraintBottom_toBottomOf="@id/totpExpiryInput"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/totpExpiryDropdown"
-                app:layout_constraintTop_toTopOf="@id/totpExpiryDropdown"
+                app:layout_constraintStart_toEndOf="@id/totpExpiryInput"
+                app:layout_constraintTop_toTopOf="@id/totpExpiryInput"
                 app:layout_constraintVertical_bias="0.7" />
 
             <com.passbolt.mobile.android.core.ui.dropdown.DropDownInputView
@@ -57,7 +58,7 @@
                 app:dropdownIsRequired="true"
                 app:dropdownTitle="@string/otp_create_totp_expert_settings_algorithm"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/totpExpiryDropdown" />
+                app:layout_constraintTop_toBottomOf="@id/totpExpiryInput" />
 
             <Button
                 android:id="@+id/applyButton"

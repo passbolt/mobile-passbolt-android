@@ -9,8 +9,8 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="@dimen/dp_32"
+        app:layout_constraintTop_toTopOf="parent"
         app:toolbarTitle="@string/otp_create_totp_title" />
 
     <ScrollView
@@ -32,6 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_8"
+                app:inputHint="@string/otp_create_totp_field_name_hint"
                 app:inputIsRequired="true"
                 app:inputTitle="@string/otp_create_totp_field_name" />
 
@@ -41,6 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_8"
+                app:inputHint="@string/otp_create_totp_field_url_hint"
                 app:inputIsRequired="false"
                 app:inputTitle="@string/otp_create_totp_field_url" />
 
@@ -50,6 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_8"
+                app:inputHint="@string/otp_create_totp_field_secret_hint"
                 app:inputIsRequired="false"
                 app:inputTitle="@string/otp_create_totp_field_secret" />
 

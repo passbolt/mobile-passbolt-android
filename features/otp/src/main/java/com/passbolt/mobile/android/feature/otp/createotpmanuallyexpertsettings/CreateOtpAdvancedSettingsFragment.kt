@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
@@ -42,14 +43,14 @@ class CreateOtpAdvancedSettingsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
-        setupDropdowns()
+        setupDefaults()
         setupListeners()
         presenter.attach(this)
     }
 
     private fun setupListeners() {
         with(binding) {
-            totpExpiryDropdown.selectedItemChangedListener = {
+            totpExpiryInput.setTextChangeListener {
                 presenter.totpExpiryChanged(it)
             }
             algorithmDropdown.selectedItemChangedListener = {
@@ -58,10 +59,10 @@ class CreateOtpAdvancedSettingsFragment :
         }
     }
 
-    private fun setupDropdowns() {
+    private fun setupDefaults() {
         with(binding) {
-            totpExpiryDropdown.items = OtpParseResult.OtpQr.TotpQr.predefinedPossibleValues.map { it.toString() }
-            totpExpiryDropdown.setDefaultItem(DEFAULT_PERIOD_SECONDS.toString())
+            totpExpiryInput.text = DEFAULT_PERIOD_SECONDS.toString()
+            totpExpiryInput.setInputType(InputType.TYPE_CLASS_NUMBER)
             algorithmDropdown.items = OtpParseResult.OtpQr.Algorithm.values().map { it.toString() }
             algorithmDropdown.setDefaultItem(DEFAULT.name)
         }

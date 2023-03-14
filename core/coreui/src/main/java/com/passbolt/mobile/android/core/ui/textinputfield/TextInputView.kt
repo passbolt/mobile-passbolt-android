@@ -157,6 +157,10 @@ open class TextInputView @JvmOverloads constructor(
         }
     }
 
+    fun setInputType(inputType: Int) {
+        binding.input.inputType = inputType
+    }
+
     fun getInputBytes(): ByteArray =
         binding.input.text?.toString()?.toByteArray() ?: byteArrayOf()
 
