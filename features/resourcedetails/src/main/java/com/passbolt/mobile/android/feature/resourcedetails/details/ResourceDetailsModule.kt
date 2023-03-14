@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.feature.resourcedetails.details
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
-import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceActionsInteractor
-import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.permissions.recycler.CounterItem
 import com.passbolt.mobile.android.permissions.recycler.GroupItem
 import com.passbolt.mobile.android.permissions.recycler.UserItem

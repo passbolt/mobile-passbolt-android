@@ -23,10 +23,64 @@
 
 package com.passbolt.mobile.android.feature.otp.scanotpsuccess
 
-class ScanOtpSuccessPresenter : ScanOtpSuccessContract.Presenter {
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.usecase.CreateTotpResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_TOTP
+import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsBySlugUseCase
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+
+class ScanOtpSuccessPresenter(
+    private val createTotpResourceUseCase: CreateTotpResourceUseCase,
+    private val getResourceTypeWithFieldsBySlugUseCase: GetResourceTypeWithFieldsBySlugUseCase,
+    coroutineLaunchContext: CoroutineLaunchContext
+) : BaseAuthenticatedPresenter<ScanOtpSuccessContract.View>(coroutineLaunchContext),
+    ScanOtpSuccessContract.Presenter {
+
     override var view: ScanOtpSuccessContract.View? = null
+    private lateinit var scannedTotp: OtpParseResult.OtpQr.TotpQr
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+
+    override fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr) {
+        this.scannedTotp = scannedTotp
+    }
 
     override fun createStandaloneOtpClick() {
-        // TODO
+        scope.launch {
+            view?.showProgress()
+            when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                createTotpResourceUseCase.execute(createResourceInput())
+            }) {
+                is CreateTotpResourceUseCase.Output.Failure<*> -> view?.showGenericError()
+                is CreateTotpResourceUseCase.Output.OpenPgpError -> view?.showEncryptionError(result.message)
+                is CreateTotpResourceUseCase.Output.PasswordExpired -> {
+                    /* will not happen in BaseAuthenticatedPresenter */
+                }
+                is CreateTotpResourceUseCase.Output.Success -> {
+                    view?.navigateToOtpList(otpCreated = true)
+                }
+            }
+            view?.hideProgress()
+        }
+    }
+
+    private suspend fun createResourceInput(): CreateTotpResourceUseCase.Input {
+        val totpResourceType = getResourceTypeWithFieldsBySlugUseCase.execute(
+            GetResourceTypeWithFieldsBySlugUseCase.Input(SLUG_TOTP)
+        )
+        return CreateTotpResourceUseCase.Input(
+            resourceTypeId = totpResourceType.resourceTypeId,
+            issuer = scannedTotp.issuer,
+            label = scannedTotp.label,
+            period = scannedTotp.period,
+            digits = scannedTotp.digits,
+            algorithm = scannedTotp.algorithm.name,
+            secretKey = scannedTotp.secret
+        )
     }
 }

@@ -48,10 +48,17 @@ interface OtpContract {
         fun copySecretToClipBoard(label: String, value: String)
         fun navigateToScanOtpQrCode()
         fun navigateToCreateOtpManually()
+        fun showDecryptionFailure()
+        fun showFetchFailure()
+        fun showConfirmDeleteDialog()
+        fun showFailedToDeleteResource()
+        fun showResourceDeleted()
+        fun initRefresh()
+        fun showNewOtpCreated()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun otpItemClick(otp: OtpListItemWrapper)
+        fun otpItemClick(otpListItemWrapper: OtpListItemWrapper)
         fun otpItemMoreClick(otpListWrapper: OtpListItemWrapper)
         fun refreshClick()
         fun searchAvatarClick()
@@ -65,5 +72,7 @@ interface OtpContract {
         fun menuEditOtpClick()
         fun scanOtpQrCodeClick()
         fun createOtpManuallyClick()
+        fun totpDeletetionConfirmed()
+        fun otpCreated()
     }
 }

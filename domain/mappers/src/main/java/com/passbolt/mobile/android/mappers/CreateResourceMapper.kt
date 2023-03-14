@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.mappers
 
 import com.google.gson.Gson
 import com.passbolt.mobile.android.dto.request.SecretsDto
+import com.passbolt.mobile.android.dto.request.TotpSecretsDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,4 +32,7 @@ class CreateResourceMapper(
 
     fun map(password: String, description: String?): String =
         gson.toJson(SecretsDto(password, description.orEmpty()))
+
+    fun map(digits: Int, period: Int, algorithm: String, secretKey: String): String =
+        gson.toJson(TotpSecretsDto(TotpSecretsDto.Totp(algorithm, secretKey, digits, period)))
 }

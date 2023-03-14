@@ -29,6 +29,7 @@ coreModule "autofill"
 coreModule "inappreview"
 coreModule "envinfo"
 coreModule "idlingresource"
+coreModule "otpcore"
 
 featureModule "startup"
 featureModule "setup"

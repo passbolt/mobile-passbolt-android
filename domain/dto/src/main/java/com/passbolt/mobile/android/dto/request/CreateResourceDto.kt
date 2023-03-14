@@ -46,3 +46,14 @@ data class SecretsDto(
     val password: String,
     val description: String
 )
+
+data class TotpSecretsDto(
+    val totp: Totp
+) {
+    data class Totp(
+        val algorithm: String,
+        val key: String,
+        val digits: Int,
+        val period: Int
+    )
+}

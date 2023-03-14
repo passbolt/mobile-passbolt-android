@@ -17,6 +17,7 @@ dependencies {
     implementation project(':gopenpgp')
     implementation project(':secrets')
     implementation project(':resourcetypes')
+    implementation project(':authentication')
 
     implementation libs.gson
     implementation libs.room.core

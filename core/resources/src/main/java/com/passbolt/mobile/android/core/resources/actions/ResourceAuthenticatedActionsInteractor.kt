@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.resourcedetails.actions
+package com.passbolt.mobile.android.core.resources.actions
 
 import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
@@ -7,7 +7,9 @@ import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -69,6 +71,10 @@ class ResourceAuthenticatedActionsInteractor(
                     success(DESCRIPTION_LABEL, description, true)
                 }
             }
+            STANDALONE_TOTP -> {
+                Timber.e("Standalone totp resource does not contain description field")
+                decryptionFailure()
+            }
         }
     }
 
@@ -81,6 +87,18 @@ class ResourceAuthenticatedActionsInteractor(
             val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)
             val password = secretParser.extractPassword(resourceTypeEnum, it)
             success(SECRET_LABEL, password)
+        }
+    }
+
+    suspend fun provideOtp(
+        decryptionFailure: () -> Unit,
+        fetchFailure: () -> Unit,
+        success: (ClipboardLabel, DecryptedSecret.StandaloneTotp) -> Unit
+    ) {
+        fetchAndDecrypt(decryptionFailure, fetchFailure) {
+            val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)
+            val totp = secretParser.extractTotpData(resourceTypeEnum, it)
+            success(OTP_LABEL, totp)
         }
     }
 
@@ -154,5 +172,8 @@ class ResourceAuthenticatedActionsInteractor(
 
         @VisibleForTesting
         const val DESCRIPTION_LABEL = "Description"
+
+        @VisibleForTesting
+        const val OTP_LABEL = "OTP"
     }
 }

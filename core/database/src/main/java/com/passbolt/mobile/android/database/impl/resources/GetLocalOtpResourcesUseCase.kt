@@ -1,6 +1,10 @@
-package com.passbolt.mobile.android.feature.resourcedetails.actions
+package com.passbolt.mobile.android.database.impl.resources
 
-import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.OtpModelMapper
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.OtpModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,24 +28,21 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResourceActionsInteractor(
-    private val resource: ResourceModel
-) {
+class GetLocalOtpResourcesUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val otpModelMapper: OtpModelMapper,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) : AsyncUseCase<Unit, GetLocalOtpResourcesUseCase.Output> {
 
-    fun provideWebsiteUrl(onUrlReady: (ClipboardLabel, String) -> Unit) {
-        resource.url?.let {
-            onUrlReady(URL_LABEL, it)
-        }
+    override suspend fun execute(input: Unit): Output {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        val resources = databaseProvider
+            .get(userId)
+            .resourcesDao()
+            .getAllOtpResources()
+
+        return Output(resources.map { otpModelMapper.map(it) })
     }
 
-    fun provideUsername(onUsernameReady: (ClipboardLabel, String) -> Unit) {
-        resource.username?.let {
-            onUsernameReady(USERNAME_LABEL, it)
-        }
-    }
-
-    companion object {
-        private const val USERNAME_LABEL = "Username"
-        private const val URL_LABEL = "Url"
-    }
+    data class Output(val otps: List<OtpModel>)
 }

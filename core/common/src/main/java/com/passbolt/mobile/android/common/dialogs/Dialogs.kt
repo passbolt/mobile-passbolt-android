@@ -89,3 +89,12 @@ fun keyChangesDetectedAlertDialog(context: Context, confirmAction: () -> Unit) =
         .setMessage(R.string.fingerprint_authenticate_again)
         .setPositiveButton(R.string.got_it) { _, _ -> confirmAction() }
         .setCancelable(false)
+        .create()
+
+fun confirmTotpDeletionAlertDialog(context: Context, confirmAction: () -> Unit) =
+    AlertDialog.Builder(context)
+        .setTitle(R.string.are_you_sure)
+        .setMessage(R.string.fingerprint_authenticate_again)
+        .setPositiveButton(R.string.cancel) { _, _ -> }
+        .setNegativeButton(R.string.otp_delete_totp) { _, _ -> confirmAction() }
+        .create()

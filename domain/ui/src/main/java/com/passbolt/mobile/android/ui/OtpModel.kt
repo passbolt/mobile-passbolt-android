@@ -21,23 +21,22 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.scanotpsuccess
+package com.passbolt.mobile.android.ui
 
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.common.search.Searchable
 
-interface ScanOtpSuccessContract {
+data class OtpModel(
+    val resourceId: String,
+    val name: String,
+    val initials: String,
+    val permission: ResourcePermission,
+    override val searchCriteria: String = name
+) : Searchable
 
-    interface View : BaseAuthenticatedContract.View {
-        fun showGenericError()
-        fun showEncryptionError(message: String)
-        fun navigateToOtpList(otpCreated: Boolean)
-        fun showProgress()
-        fun hideProgress()
-    }
-
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun createStandaloneOtpClick()
-        fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr)
-    }
-}
+data class OtpListItemWrapper(
+    val otp: OtpModel,
+    val isVisible: Boolean,
+    val otpExpirySeconds: Long?,
+    val otpValue: String?,
+    val remainingSecondsCounter: Long? = otpExpirySeconds
+) : Searchable by otp

@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.otp.R
 import com.passbolt.mobile.android.feature.otp.databinding.ItemOtpBinding
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,38 +40,26 @@ import com.passbolt.mobile.android.ui.OtpListItemWrapper
  * @since v1.0
  */
 class OtpItem(
-    private val otpModel: OtpListItemWrapper,
+    val otpModel: OtpListItemWrapper,
     private val initialsIconGenerator: InitialsIconGenerator
 ) : AbstractBindingItem<ItemOtpBinding>() {
 
     override val type: Int
         get() = R.id.itemOtp
 
-    override var identifier: Long =
-        otpModel.listId
-
-    override fun equals(other: Any?): Boolean {
-        return (other is OtpItem) && (other.otpModel == otpModel)
-    }
-
-    override fun hashCode(): Int {
-        return identifier.toInt() + otpModel.hashCode()
-    }
-
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemOtpBinding =
         ItemOtpBinding.inflate(inflater, parent, false)
 
     override fun bindView(binding: ItemOtpBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
-
         with(binding) {
             with(progress) {
                 min = 0
-                max = otpModel.otp.otpExpirySeconds * ANIMATION_MULTIPLIER
-                progress = (otpModel.remainingSecondsCounter + 1) * ANIMATION_MULTIPLIER
+                max = otpModel.otpExpirySeconds?.let { it.toInt() * ANIMATION_MULTIPLIER } ?: 0
+                progress = otpModel.remainingSecondsCounter?.let { (it.toInt() + 1) * ANIMATION_MULTIPLIER } ?: 0
             }
             name.text = otpModel.otp.name
-            otp.text = otpModel.otp.otpValue ?: otp.context.getString(R.string.otp_hide_otp)
+            otp.text = otpModel.otpValue ?: otp.context.getString(R.string.otp_hide_otp)
             icon.setImageDrawable(initialsIconGenerator.generate(otpModel.otp.name, otpModel.otp.initials))
             eye.isVisible = !otpModel.isVisible
             progress.isVisible = otpModel.isVisible
@@ -83,19 +72,25 @@ class OtpItem(
         val progressAnimator = ObjectAnimator.ofInt(
             binding.progress,
             PROPERTY_PROGRESS,
-            otpModel.remainingSecondsCounter * ANIMATION_MULTIPLIER
+            otpModel.remainingSecondsCounter?.let { it.toInt() * ANIMATION_MULTIPLIER } ?: 0
         ).apply {
             duration = PROGRESS_ANIMATION_DURATION_MILLIS
             interpolator = LinearInterpolator()
         }
         progressAnimator.start()
+        Timber.e("Progress: ${otpModel.remainingSecondsCounter}")
     }
 
     /**
      * If progress <= 25% highlight otp value and progress in red
      */
     private fun updateColors(binding: ItemOtpBinding) {
-        val progressPercentage = otpModel.remainingSecondsCounter.toFloat() / otpModel.otp.otpExpirySeconds
+        val progressPercentage =
+            if (otpModel.remainingSecondsCounter != null && otpModel.otpExpirySeconds != null) {
+                otpModel.remainingSecondsCounter!!.toFloat() / otpModel.otpExpirySeconds!!
+            } else {
+                MAX_PERCENTAGE
+            }
         with(binding) {
             if (progressPercentage <= RED_HIGHLIGHT_PROGRESS_PERCENTAGE) {
                 otp.setTextColor(progress.context.getColor(R.color.red))
@@ -150,6 +145,7 @@ class OtpItem(
     private companion object {
         private const val ANIMATION_MULTIPLIER = 1_000
         private const val RED_HIGHLIGHT_PROGRESS_PERCENTAGE = 0.25
+        private const val MAX_PERCENTAGE = 1f
         private const val PROGRESS_ANIMATION_DURATION_MILLIS = 1_000L
         private const val PROPERTY_PROGRESS = "progress"
     }

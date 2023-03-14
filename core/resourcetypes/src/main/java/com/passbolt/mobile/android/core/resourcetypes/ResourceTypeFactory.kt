@@ -32,31 +32,27 @@ class ResourceTypeFactory(
 
     suspend fun getResourceTypeEnum(resourceTypeId: String): ResourceTypeEnum {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val resourceFields = databaseProvider.get(selectedAccount)
+        val resourceType = databaseProvider.get(selectedAccount)
             .resourceTypesDao()
             .getResourceTypeWithFieldsById(resourceTypeId)
-            .resourceFields
 
-        val secretFields = resourceFields.filter { it.isSecret }.map { it.name }
-        return if (secretFields.size == 2 && secretFields.containsAll(SECRET_WITH_DESCRIPTION_SECRET_FIELDS)) {
-            ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
-        } else if (secretFields.size == 1 && secretFields.contains(FIELD_SECRET)) {
-            ResourceTypeEnum.SIMPLE_PASSWORD
-        } else {
-            throw UnsupportedOperationException(
-                "Cannot parse resource type enum with secret fields " +
-                        secretFields.joinToString(separator = ", ")
-            )
+        return when (val slug = resourceType.resourceType.slug) {
+            SLUG_SIMPLE_PASSWORD -> ResourceTypeEnum.SIMPLE_PASSWORD
+            SLUG_PASSWORD_WITH_DESCRIPTION -> ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
+            SLUG_TOTP -> ResourceTypeEnum.STANDALONE_TOTP
+            else -> throw UnsupportedOperationException("Unknown resource type with slug: $slug")
         }
     }
 
     enum class ResourceTypeEnum {
         SIMPLE_PASSWORD,
-        PASSWORD_WITH_DESCRIPTION
+        PASSWORD_WITH_DESCRIPTION,
+        STANDALONE_TOTP
     }
 
-    private companion object {
-        private const val FIELD_SECRET = "secret"
-        private val SECRET_WITH_DESCRIPTION_SECRET_FIELDS = listOf("password", "description")
+    companion object {
+        const val SLUG_SIMPLE_PASSWORD = "password-string"
+        const val SLUG_PASSWORD_WITH_DESCRIPTION = "password-with-description"
+        const val SLUG_TOTP = "totp"
     }
 }

@@ -16,6 +16,7 @@ import com.passbolt.mobile.android.core.resources.usecase.UpdateResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.users.FetchUsersUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
@@ -391,6 +392,8 @@ class UpdateResourcePresenter(
         val password = when (resourceTypeFactory.getResourceTypeEnum(existingResource!!.resourceTypeId)) {
             SIMPLE_PASSWORD -> getFieldValue(SECRET_FIELD)!!
             PASSWORD_WITH_DESCRIPTION -> getFieldValue(PASSWORD_FIELD)!!
+            // TODO new refactor resource types handling
+            STANDALONE_TOTP -> throw IllegalArgumentException("Standalone totp is not create on update resource form")
         }
         return UpdateResourceUseCase.Input(
             existingResource!!.resourceId,

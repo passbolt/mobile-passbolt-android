@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import com.passbolt.mobile.android.feature.otp.R
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentScanOtpBinding
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -108,9 +109,9 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
         binding.tooltip.text = getString(R.string.otp_scan_not_a_totp_qr)
     }
 
-    override fun navigateToCreateOtpSuccess() {
+    override fun navigateToScanOtpSuccess(scannedTotp: OtpParseResult.OtpQr.TotpQr) {
         findNavController().navigate(
-            ScanOtpFragmentDirections.actionScanOtpFragmentToCreateOtpSuccessFragment()
+            ScanOtpFragmentDirections.actionScanOtpFragmentToScanOtpSuccessFragment(scannedTotp)
         )
     }
 

@@ -455,6 +455,11 @@
     <string name="otp_more_show_otp">Show OTP</string>
     <string name="otp_more_edit_otp">Edit OTP</string>
     <string name="otp_more_delete_otp">Delete OTP</string>
+    <string name="otp_delete_confirmation">This action will permanently delete TOTP</string>
+    <string name="otp_delete_totp">Delete TOTP</string>
+    <string name="otp_deleted">TOTP was deleted</string>
+    <string name="otp_failed_to_delete">Failed to delete totp</string>
+    <string name="otp_new_otp_created">New TOTP created!</string>
 
     <string name="otp_scan_title">Scan QR code</string>
     <string name="otp_scan_not_a_totp_qr">Not a TOTP Qr Code</string>
