@@ -60,7 +60,8 @@ val transferAccountModule = module {
             viewTransferUseCase = mockViewTransferUseCase,
             createTransferInputParametersGenerator = mockCreateTransferInputParametersGenerator,
             transferQrCodesDataGenerator = mockTransferQrCodesDataGenerator,
-            getSessionUseCase = mockGetSessionUseCase
+            getSessionUseCase = mockGetSessionUseCase,
+            transferAccountIdlingResource = mock()
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

@@ -50,6 +50,7 @@ import kotlinx.coroutines.launch
 // presenter for sign in view used for refreshing the session using dedicated endpoint
 class RefreshSessionPresenter(
     private val refreshSessionUseCase: RefreshSessionUseCase,
+    private val signInIdlingResource: SignInIdlingResource,
     passphraseMemoryCache: PassphraseMemoryCache,
     saveSessionUseCase: SaveSessionUseCase,
     saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
@@ -71,7 +72,6 @@ class RefreshSessionPresenter(
     userProfileInteractor: UserProfileInteractor,
     runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
     inAppReviewInteractor: InAppReviewInteractor,
-    signInIdlingResource: SignInIdlingResource,
     getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase
 ) : SignInPresenter(
     saveSessionUseCase,
@@ -101,9 +101,11 @@ class RefreshSessionPresenter(
 
     override fun performSignIn(passphrase: ByteArray) {
         view?.showProgress()
+        signInIdlingResource.setIdle(false)
         scope.launch {
             val refreshSessionResult = refreshSessionUseCase.execute(Unit)
             view?.hideProgress()
+            signInIdlingResource.setIdle(true)
             when (refreshSessionResult) {
                 is RefreshSessionUseCase.Output.Success -> {
                     runtimeAuthenticatedFlag.isAuthenticated = true

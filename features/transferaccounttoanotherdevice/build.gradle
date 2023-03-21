@@ -19,6 +19,7 @@ dependencies {
     implementation project(':passboltapi')
     implementation project(':mappers')
     implementation project(':ui')
+    implementation project(':idlingresource')
 
     implementation libs.di.koin
     implementation libs.androidx.fragment
@@ -31,6 +32,7 @@ dependencies {
     implementation libs.kotlin.serializationJson
     implementation libs.qrGeneration
     implementation libs.okio
+    implementation libs.test.espressoIdlingResource
 
     testImplementation project(':commontest')
 }
