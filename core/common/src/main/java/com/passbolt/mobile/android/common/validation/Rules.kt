@@ -10,6 +10,9 @@ open class Rule<T>(val condition: (T) -> Boolean)
 object StringNotBlank :
     Rule<String>({ it.isNotBlank() })
 
+object StringIsIntegerNumber :
+    Rule<String>({ it.toIntOrNull() != null })
+
 class StringMaxLength(length: Int) :
     Rule<String>({ it.length <= length })
 

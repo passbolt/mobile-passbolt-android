@@ -76,6 +76,10 @@ sealed class OtpParseResult {
                 val DEFAULT = SHA1
             }
         }
+
+        companion object {
+            val digitsRange = 6..8 step 1
+        }
     }
 
     sealed class IncompleteOtpParameters(

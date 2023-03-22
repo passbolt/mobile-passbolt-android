@@ -57,6 +57,7 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
+import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
 import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment
@@ -87,9 +88,17 @@ class OtpFragment :
             }
         }
 
-    private val otpCreatedResult = { _: String, result: Bundle ->
+    private val otpScannedResult = { _: String, result: Bundle ->
         if (result.containsKey(ScanOtpSuccessFragment.EXTRA_OTP_CREATED) &&
             result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED)
+        ) {
+            presenter.otpCreated()
+        }
+    }
+
+    private val otpCreatedResult = { _: String, result: Bundle ->
+        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_CREATED) &&
+            result.getBoolean(CreateOtpFragment.EXTRA_OTP_CREATED)
         ) {
             presenter.otpCreated()
         }
@@ -296,8 +305,8 @@ class OtpFragment :
 
     override fun navigateToScanOtpQrCode() {
         setFragmentResultListener(
-            ScanOtpSuccessFragment.REQUEST_CREATE_OTP,
-            otpCreatedResult
+            ScanOtpSuccessFragment.REQUEST_SCAN_OTP,
+            otpScannedResult
         )
         findNavController().navigate(
             OtpFragmentDirections.actionOtpFragmentToScanOtpFragment()
@@ -305,6 +314,10 @@ class OtpFragment :
     }
 
     override fun navigateToCreateOtpManually() {
+        setFragmentResultListener(
+            CreateOtpFragment.REQUEST_CREATE_OTP,
+            otpCreatedResult
+        )
         findNavController().navigate(
             OtpFragmentDirections.actionOtpFragmentToCreateOtpManuallyFragment()
         )

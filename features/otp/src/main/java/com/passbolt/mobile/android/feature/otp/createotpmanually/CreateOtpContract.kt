@@ -23,15 +23,30 @@
 
 package com.passbolt.mobile.android.feature.otp.createotpmanually
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 
 interface CreateOtpContract {
 
-    interface View : BaseContract.View {
-        fun navigateToCreateOtpAdvancedSettings()
+    interface View : BaseAuthenticatedContract.View {
+        fun navigateToCreateOtpAdvancedSettings(advancedSettingsModel: OtpAdvancedSettingsModel)
+        fun showLabelValidationError(maxLength: Int)
+        fun showSecretValidationError(maxLength: Int)
+        fun showIssuerValidationError(maxLength: Int)
+        fun showProgress()
+        fun showGenericError()
+        fun showEncryptionError(message: String)
+        fun navigateToOtpList(otpCreated: Boolean)
+        fun hideProgress()
+        fun setValues(label: String, issuer: String, secret: String)
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
+    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun advancedSettingsClick()
+        fun createClick()
+        fun otpSettingsModified(algorithm: String, period: Int, digits: Int)
+        fun totpLabelChanged(label: String)
+        fun totpSecretChanged(secret: String)
+        fun totpIssuerChanged(issuer: String)
     }
 }

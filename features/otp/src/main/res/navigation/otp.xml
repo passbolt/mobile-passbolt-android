@@ -57,7 +57,11 @@
         android:id="@+id/createOtpAdvancedSettingsFragment"
         android:name="com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings.CreateOtpAdvancedSettingsFragment"
         android:label="CreateOtpAdvancedSettingsFragment"
-        tools:layout="@layout/fragment_create_otp_advanced_settings" />
+        tools:layout="@layout/fragment_create_otp_advanced_settings">
+        <argument
+            android:name="advancedSettingsModel"
+            app:argType="com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel" />
+    </fragment>
     <fragment
         android:id="@+id/scanOtpSuccessFragment"
         android:name="com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment"

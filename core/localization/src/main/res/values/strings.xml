@@ -46,6 +46,7 @@
     <string name="common_message_folder_created">New folder %s has been created!</string>
 
     <string name="validation_required_with_max_length">Length should be between 1 and %d</string>
+    <string name="validation_required_integer">Should be an integer number</string>
 
     <string name="fingerprint_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Biometric authorization has been blocked due to too many attempts.</string>
@@ -447,7 +448,7 @@
 
     <string name="otp_search">Search OTP</string>
     <string name="otp_hide_otp"
-        translatable="false">•••&#x9;•••</string>
+        translatable="false">••••••</string>
     <string name="otp_speed_dial_scan_qr">Scan QR code</string>
     <string name="otp_speed_dial_create_manually">Create OTP manually</string>
 
@@ -478,7 +479,9 @@
     <string name="otp_create_totp_expert_settings_expiry">TOTP expiry</string>
     <string name="otp_create_totp_expert_settings_expiry_hint">TOTP expiry</string>
     <string name="otp_create_totp_expert_settings_expiry_seconds_info">seconds until the TOTP expires.</string>
+    <string name="otp_create_totp_expert_settings_expiry_length_info">digits.</string>
     <string name="otp_create_totp_expert_settings_algorithm">Algorithm</string>
+    <string name="otp_create_totp_expert_settings_length">TOTP length</string>
 
     <string name="otp_create_success">Your TOTP has been scanned!</string>
 
