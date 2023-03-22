@@ -168,6 +168,10 @@ open class TextInputView @JvmOverloads constructor(
         binding.input.isSaveEnabled = false
     }
 
+    fun disableSavingInstanceState() {
+        binding.input.isSaveEnabled = false
+    }
+
     private companion object {
         private const val DEFAULT_REQUIRED_STATE = false
         private const val REQUIRED_TITLE_FORMAT = "%s *"
