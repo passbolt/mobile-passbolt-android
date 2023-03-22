@@ -1,3 +1,9 @@
+package com.passbolt.mobile.android.database.impl.resources
+
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,21 +26,25 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GetIsResourceTypeSupportedUseCase(
+    private val databaseProvider: DatabaseProvider
+) : AsyncUseCase<GetIsResourceTypeSupportedUseCase.Input, GetIsResourceTypeSupportedUseCase.Output>,
+    SelectedAccountUseCase {
 
-package com.passbolt.mobile.android.feature.otp.otpmoremenu
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-
-interface OtpMoreMenuContract {
-
-    interface View : BaseContract.View {
-        fun showTitle(title: String)
-        fun showSeparator()
-        fun showDeleteButton()
+    override suspend fun execute(input: Input): Output {
+        return Output(
+            databaseProvider
+                .get(selectedAccountId)
+                .resourceTypesDao()
+                .isResourceTypeSupported(input.resourceTypeSlug)
+        )
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(menuModel: ResourceMoreMenuModel)
-    }
+    data class Input(
+        val resourceTypeSlug: String
+    )
+
+    data class Output(
+        val isSupported: Boolean
+    )
 }

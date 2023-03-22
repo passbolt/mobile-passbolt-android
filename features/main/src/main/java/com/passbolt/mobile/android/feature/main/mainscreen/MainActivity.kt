@@ -20,6 +20,7 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.main.R
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
+import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
@@ -48,12 +49,15 @@ class MainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runtimeAuthenticatedFlag.require(this)
-        setupBottomNavigation()
         presenter.attach(this)
     }
 
-    private fun setupBottomNavigation() {
-        binding.mainNavigation.setupWithNavController(bottomNavController)
+    override fun setupBottomNavigation(navigationModel: MainBottomNavigationModel) {
+        with(binding.mainNavigation) {
+            setupWithNavController(bottomNavController)
+            menu.findItem(R.id.otpNav).isVisible = navigationModel.isOtpTabVisible
+        }
+
         bottomNavController.addOnDestinationChangedListener { _, destination, _ ->
             binding.mainNavigation.isVisible = !noBottomNavFragmentIds.contains(destination.id)
         }

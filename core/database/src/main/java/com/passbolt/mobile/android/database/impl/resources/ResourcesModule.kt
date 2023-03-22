@@ -39,4 +39,5 @@ internal fun Module.resourcesModule() {
     singleOf(::GetLocalResourcesFilteredByTagUseCase)
     singleOf(::GetLocalResourceTagsUseCase)
     singleOf(::GetLocalOtpResourcesUseCase)
+    singleOf(::GetIsResourceTypeSupportedUseCase)
 }
