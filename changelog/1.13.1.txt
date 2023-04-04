@@ -1,1 +1,4 @@
+# Passbolt 1.13.1-19 Android app release notes
+
+## Fixed
 - Fixed "continue" button on setup success screen not visible on some screens
