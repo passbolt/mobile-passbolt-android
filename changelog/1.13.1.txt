@@ -1,0 +1,7 @@
+# Passbolt 1.13.1-19 Android app release notes
+
+## Improved
+- Trim inputs on manual account import to prevent user-added whitespace errors
+
+## Fixed
+- Fixed "continue" button on setup success screen not visible on some screens

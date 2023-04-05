@@ -25,15 +25,15 @@ class ImportProfilePresenter(
     private var privateKey: String = ""
 
     override fun userIdChanged(userId: String) {
-        this.userId = userId
+        this.userId = userId.trim()
     }
 
     override fun accountUrlChanged(accountUrl: String) {
-        this.accountUrl = accountUrl
+        this.accountUrl = accountUrl.trim()
     }
 
     override fun privateKeyChanged(privateKey: String) {
-        this.privateKey = privateKey
+        this.privateKey = privateKey.trim()
     }
 
     override fun importClick() {
