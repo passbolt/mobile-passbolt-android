@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.importprofile
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
@@ -43,6 +44,7 @@ class ImportProfileFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
+        binding.accountUrlInput.setInputType(InputType.TYPE_TEXT_VARIATION_URI)
         setUpListeners()
         presenter.attach(this)
     }

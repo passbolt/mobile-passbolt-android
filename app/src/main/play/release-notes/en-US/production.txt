@@ -1,6 +1,2 @@
-- Settings are now clearly divided into groups
-- Option to hide root warning dialog in App Settings -> Expert Settings
-- Add folder paths on folder item list
-- When creating folder in root current user avatar is added in "Shared with" section for consistency
-- Update of the CameraX scanning library
-- Updated targetSdk to latest
+- Fixed "continue" button on setup success screen not visible on some screens
+- Trim inputs on manual account import to prevent user-added whitespace errors

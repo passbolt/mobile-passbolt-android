@@ -5,49 +5,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+    android:orientation="vertical"
+    tools:parentTag="android.widget.LinearLayout">
 
-    <LinearLayout
-        android:id="@+id/container"
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_64"
+        tools:src="@drawable/ic_failed" />
+
+    <TextView
+        android:id="@+id/titleLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_32"
+        android:gravity="center_horizontal"
+        android:textColor="@color/text_primary"
+        android:textFontWeight="600"
+        android:textSize="@dimen/sp_24"
+        tools:text="Title" />
 
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            tools:src="@drawable/ic_failed" />
+    <TextView
+        android:id="@+id/descriptionLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_16"
+        android:gravity="center_horizontal"
+        android:textColor="@color/text_secondary"
+        android:textFontWeight="400"
+        android:textSize="14sp"
+        tools:text="Description" />
 
-        <TextView
-            android:id="@+id/titleLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="@dimen/dp_16"
-            android:gravity="center_horizontal"
-            android:layout_marginTop="@dimen/dp_32"
-            android:textColor="@color/text_primary"
-            android:textFontWeight="600"
-            android:textSize="@dimen/sp_24"
-            tools:text="Title" />
-
-        <TextView
-            android:id="@+id/descriptionLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:layout_marginTop="@dimen/dp_16"
-            android:textColor="@color/text_secondary"
-            android:textFontWeight="400"
-            android:textSize="14sp"
-            tools:text="Description" />
-
-    </LinearLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <Button
         android:id="@+id/button"

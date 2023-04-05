@@ -164,6 +164,10 @@ open class TextInputView @JvmOverloads constructor(
     fun getInputBytes(): ByteArray =
         binding.input.text?.toString()?.toByteArray() ?: byteArrayOf()
 
+    fun setInputType(inputType: Int) {
+        binding.input.inputType = inputType
+    }
+
     private companion object {
         private const val DEFAULT_REQUIRED_STATE = false
         private const val REQUIRED_TITLE_FORMAT = "%s *"
