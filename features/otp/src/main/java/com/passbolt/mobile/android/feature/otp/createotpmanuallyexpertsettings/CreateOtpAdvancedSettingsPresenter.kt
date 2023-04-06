@@ -23,7 +23,7 @@
 
 package com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings
 
-import com.passbolt.mobile.android.common.validation.StringIsIntegerNumber
+import com.passbolt.mobile.android.common.validation.StringIsAPositiveIntegerNumber
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 
@@ -57,7 +57,7 @@ class CreateOtpAdvancedSettingsPresenter : CreateOtpAdvancedSettingsContract.Pre
     override fun applyClick() {
         validation {
             of(period) {
-                withRules(StringIsIntegerNumber) {
+                withRules(StringIsAPositiveIntegerNumber) {
                     onInvalid { view?.showTotpPeriodError() }
                 }
             }

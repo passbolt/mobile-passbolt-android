@@ -38,14 +38,15 @@ class GetLocalSubFolderResourcesFilteredUseCase(
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         val resources = databaseProvider
             .get(userId)
-            .resourcesDao().getFilteredForChildFolders(input.containingQuery, input.containingFolders)
+            .resourcesDao().getFilteredForChildFolders(input.containingQuery, input.containingFolders, input.slugs)
 
         return Output(resources.map { resourceModelMapper.map(it) })
     }
 
     data class Input(
         val containingFolders: List<String>,
-        val containingQuery: String
+        val containingQuery: String,
+        val slugs: List<String>
     )
 
     data class Output(val resources: List<ResourceModel>)

@@ -48,7 +48,7 @@ class GetLocalResourcesAndFoldersUseCase(
             .resourcesDao()
 
         return runCatching {
-            val resourcesInFolder = resourcesDao.getResourcesForFolderWithId(input.folder.folderId)
+            val resourcesInFolder = resourcesDao.getResourcesForFolderWithId(input.folder.folderId, input.slugs)
             val foldersInFolder = foldersDao.getFolderDirectChildFolders(input.folder.folderId)
 
             Output.Success(
@@ -59,7 +59,8 @@ class GetLocalResourcesAndFoldersUseCase(
     }
 
     data class Input(
-        val folder: Folder
+        val folder: Folder,
+        val slugs: List<String>
     )
 
     sealed class Output {
