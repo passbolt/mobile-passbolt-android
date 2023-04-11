@@ -9,7 +9,7 @@ import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResou
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_WITH_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_AND_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_SIMPLE_PASSWORD
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
@@ -838,6 +838,6 @@ class HomePresenter(
     }
 
     private companion object {
-        private val homeResourcesSlugs = listOf(SLUG_SIMPLE_PASSWORD, SLUG_PASSWORD_WITH_DESCRIPTION)
+        private val homeResourcesSlugs = listOf(SLUG_SIMPLE_PASSWORD, SLUG_PASSWORD_AND_DESCRIPTION)
     }
 }
