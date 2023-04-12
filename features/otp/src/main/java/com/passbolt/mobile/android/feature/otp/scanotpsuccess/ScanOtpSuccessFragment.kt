@@ -2,7 +2,14 @@ package com.passbolt.mobile.android.feature.otp.scanotpsuccess
 
 import android.os.Bundle
 import android.view.View
-import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
+import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentCreateOtpSuccessBinding
 import org.koin.android.ext.android.inject
@@ -29,15 +36,19 @@ import org.koin.android.ext.android.inject
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ScanOtpSuccessFragment : BindingScopedFragment<FragmentCreateOtpSuccessBinding>(
-    FragmentCreateOtpSuccessBinding::inflate
-) {
+class ScanOtpSuccessFragment :
+    BindingScopedAuthenticatedFragment<FragmentCreateOtpSuccessBinding, ScanOtpSuccessContract.View>(
+        FragmentCreateOtpSuccessBinding::inflate
+    ), ScanOtpSuccessContract.View {
 
-    private val presenter: ScanOtpSuccessContract.Presenter by inject()
+    override val presenter: ScanOtpSuccessContract.Presenter by inject()
+    private val navArgs: ScanOtpSuccessFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
+        presenter.attach(this)
+        presenter.argsRetrieved(navArgs.scannedTotp)
     }
 
     private fun setupView() {
@@ -49,5 +60,34 @@ class ScanOtpSuccessFragment : BindingScopedFragment<FragmentCreateOtpSuccessBin
                 presenter.createStandaloneOtpClick()
             }
         }
+    }
+
+    override fun showProgress() {
+        showProgressDialog(childFragmentManager)
+    }
+
+    override fun hideProgress() {
+        hideProgressDialog(childFragmentManager)
+    }
+
+    override fun showGenericError() {
+        showSnackbar(R.string.common_failure, backgroundColor = R.color.red)
+    }
+
+    override fun showEncryptionError(message: String) {
+        showSnackbar(R.string.resource_permissions_secret_encrypt_failure, backgroundColor = R.color.red)
+    }
+
+    override fun navigateToOtpList(otpCreated: Boolean) {
+        setFragmentResult(
+            REQUEST_CREATE_OTP,
+            bundleOf(EXTRA_OTP_CREATED to otpCreated)
+        )
+        findNavController().popBackStack()
+    }
+
+    companion object {
+        const val REQUEST_CREATE_OTP = "CREATE_OTP"
+        const val EXTRA_OTP_CREATED = "OTP_CREATED"
     }
 }

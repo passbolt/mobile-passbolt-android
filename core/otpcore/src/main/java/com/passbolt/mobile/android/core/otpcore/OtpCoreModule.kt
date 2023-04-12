@@ -21,22 +21,11 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.ui
+package com.passbolt.mobile.android.core.otpcore
 
-import com.passbolt.mobile.android.common.search.Searchable
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
 
-data class Otp(
-    val name: String,
-    val initials: String,
-    val permission: ResourcePermission,
-    val otpExpirySeconds: Int,
-    val otpValue: String?,
-    override val searchCriteria: String = name
-) : Searchable
-
-data class OtpListItemWrapper(
-    val otp: Otp,
-    val listId: Long,
-    val isVisible: Boolean,
-    val remainingSecondsCounter: Int = otp.otpExpirySeconds
-) : Searchable by otp
+val otpCoreModule = module {
+    singleOf(::TotpParametersProvider)
+}

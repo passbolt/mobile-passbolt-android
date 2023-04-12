@@ -25,14 +25,14 @@ package com.passbolt.mobile.android.feature.otp.otpmoremenu
 
 import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
-import com.passbolt.mobile.android.ui.Otp
+import com.passbolt.mobile.android.ui.OtpModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class OtpAuthenticatedActionsInteractor(
     private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
     private val sessionRefreshedFlow: StateFlow<Unit?>,
-    private val otpModel: Otp
+    private val otpModel: OtpModel
 ) {
 
     suspend fun provideOtp(

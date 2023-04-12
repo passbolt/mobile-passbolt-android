@@ -34,6 +34,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
@@ -42,12 +43,13 @@ import coil.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.px
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
+import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
@@ -57,6 +59,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
 import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
+import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import com.passbolt.mobile.android.ui.OtpMoreMenuModel
@@ -83,6 +86,14 @@ class OtpFragment :
                 presenter.attach(this)
             }
         }
+
+    private val otpCreatedResult = { _: String, result: Bundle ->
+        if (result.containsKey(ScanOtpSuccessFragment.EXTRA_OTP_CREATED) &&
+            result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED)
+        ) {
+            presenter.otpCreated()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -155,11 +166,8 @@ class OtpFragment :
     }
 
     override fun showOtpList(otpList: List<OtpListItemWrapper>) {
-        val result = FastAdapterDiffUtil.calculateDiff(
-            otpAdapter,
-            otpList.map { OtpItem(it, initialsIconGenerator) }
-        )
-        FastAdapterDiffUtil[otpAdapter] = result
+        otpAdapter.set(otpList.map { OtpItem(it, initialsIconGenerator) })
+        fastAdapter.notifyAdapterDataSetChanged()
     }
 
     override fun showEmptyView() {
@@ -287,6 +295,10 @@ class OtpFragment :
     }
 
     override fun navigateToScanOtpQrCode() {
+        setFragmentResultListener(
+            ScanOtpSuccessFragment.REQUEST_CREATE_OTP,
+            otpCreatedResult
+        )
         findNavController().navigate(
             OtpFragmentDirections.actionOtpFragmentToScanOtpFragment()
         )
@@ -296,6 +308,36 @@ class OtpFragment :
         findNavController().navigate(
             OtpFragmentDirections.actionOtpFragmentToCreateOtpManuallyFragment()
         )
+    }
+
+    override fun showDecryptionFailure() {
+        showSnackbar(R.string.home_decryption_failure, backgroundColor = R.color.red)
+    }
+
+    override fun showFetchFailure() {
+        showSnackbar(R.string.home_fetch_failure, backgroundColor = R.color.red)
+    }
+
+    override fun showConfirmDeleteDialog() {
+        confirmTotpDeletionAlertDialog(requireContext()) {
+            presenter.totpDeletetionConfirmed()
+        }.show()
+    }
+
+    override fun initRefresh() {
+        (activity as HomeDataRefreshExecutor).performFullDataRefresh()
+    }
+
+    override fun showResourceDeleted() {
+        showSnackbar(R.string.otp_deleted, backgroundColor = R.color.green)
+    }
+
+    override fun showFailedToDeleteResource() {
+        showSnackbar(R.string.otp_failed_to_delete, backgroundColor = R.color.red)
+    }
+
+    override fun showNewOtpCreated() {
+        showSnackbar(R.string.otp_new_otp_created, backgroundColor = R.color.green)
     }
 
     private companion object {

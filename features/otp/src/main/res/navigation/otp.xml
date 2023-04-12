@@ -32,8 +32,8 @@
         android:label="ScanOtpFragment"
         tools:layout="@layout/fragment_scan_otp">
         <action
-            android:id="@+id/action_scanOtpFragment_to_createOtpSuccessFragment"
-            app:destination="@id/createOtpSuccessFragment"
+            android:id="@+id/action_scanOtpFragment_to_scanOtpSuccessFragment"
+            app:destination="@id/scanOtpSuccessFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -59,8 +59,12 @@
         android:label="CreateOtpAdvancedSettingsFragment"
         tools:layout="@layout/fragment_create_otp_advanced_settings" />
     <fragment
-        android:id="@+id/createOtpSuccessFragment"
+        android:id="@+id/scanOtpSuccessFragment"
         android:name="com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment"
         android:label="CreateOtpSuccessFragment"
-        tools:layout="@layout/fragment_create_otp_success" />
+        tools:layout="@layout/fragment_create_otp_success">
+        <argument
+            android:name="scannedTotp"
+            app:argType="com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult$OtpQr$TotpQr" />
+    </fragment>
 </navigation>

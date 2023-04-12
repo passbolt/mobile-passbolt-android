@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.resources
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.CreateResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.CreateTotpResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.GetResourceTypesUseCase
@@ -61,4 +62,5 @@ val resourcesModule = module {
     singleOf(::RemoveFromFavouritesUseCase)
     singleOf(::FavouritesInteractor)
     singleOf(::ResourceShareInteractor)
+    singleOf(::CreateTotpResourceUseCase)
 }

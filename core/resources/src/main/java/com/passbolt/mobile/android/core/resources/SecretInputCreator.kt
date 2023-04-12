@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.dto.request.SecretsDto
 
 /**
@@ -38,5 +39,7 @@ class SecretInputCreator(
             PASSWORD_WITH_DESCRIPTION -> gson.toJson(
                 SecretsDto(password, description.orEmpty())
             )
+            // TODO new refactor resource types handling
+            STANDALONE_TOTP -> throw IllegalArgumentException("Standalone totp is not create on update resource form")
         }
 }

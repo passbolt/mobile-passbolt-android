@@ -23,6 +23,9 @@
 
 package com.passbolt.mobile.android.feature.otp.scanotp.parser
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 typealias OtpAlgorithm = OtpParseResult.OtpQr.Algorithm
 
 // Check details in the documentation
@@ -39,6 +42,7 @@ sealed class OtpParseResult {
         open val digits: Int
     ) : OtpParseResult() {
 
+        @Parcelize
         data class TotpQr(
             override val label: String,
             override val secret: String,
@@ -46,12 +50,11 @@ sealed class OtpParseResult {
             override val algorithm: Algorithm,
             override val digits: Int,
             val period: Int
-        ) : OtpQr(label, secret, issuer, algorithm, digits) {
+        ) : OtpQr(label, secret, issuer, algorithm, digits), Parcelable {
 
             companion object {
                 const val DEFAULT_PERIOD_SECONDS = 30
                 const val DEFAULT_DIGITS = 6
-                val predefinedPossibleValues = listOf(DEFAULT_PERIOD_SECONDS, 60, 90, 120, 240)
             }
         }
 

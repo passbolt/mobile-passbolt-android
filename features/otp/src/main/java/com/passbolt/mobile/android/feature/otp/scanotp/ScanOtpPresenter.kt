@@ -79,9 +79,7 @@ class ScanOtpPresenter(
     }
 
     private fun totpScanned(parserResult: OtpParseResult.OtpQr.TotpQr) {
-        // TODO create totp resource via API
-        Timber.d(parserResult.toString())
-        view?.navigateToCreateOtpSuccess()
+        view?.navigateToScanOtpSuccess(parserResult)
     }
 
     private fun parserFailure(exception: Throwable?) {

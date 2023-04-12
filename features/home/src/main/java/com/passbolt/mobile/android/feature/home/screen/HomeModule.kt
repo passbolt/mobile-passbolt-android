@@ -4,6 +4,8 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.feature.home.screen.recycler.FolderItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.GroupWithCountItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.InCurrentFoldersHeaderItem
@@ -11,8 +13,6 @@ import com.passbolt.mobile.android.feature.home.screen.recycler.InSubFoldersHead
 import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordHeaderItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.TagWithCountItem
-import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceActionsInteractor
-import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

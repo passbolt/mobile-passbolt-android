@@ -1,25 +1,3 @@
-package com.passbolt.mobile.android
-
-import com.passbolt.mobile.android.mappers.AccountModelMapper
-import com.passbolt.mobile.android.mappers.CreateResourceMapper
-import com.passbolt.mobile.android.mappers.FolderModelMapper
-import com.passbolt.mobile.android.mappers.GroupsModelMapper
-import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
-import com.passbolt.mobile.android.mappers.PermissionsModelMapper
-import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
-import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
-import com.passbolt.mobile.android.mappers.SharePermissionsModelMapper
-import com.passbolt.mobile.android.mappers.SignInMapper
-import com.passbolt.mobile.android.mappers.SignOutMapper
-import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
-import com.passbolt.mobile.android.mappers.TagsModelMapper
-import com.passbolt.mobile.android.mappers.TransferMapper
-import com.passbolt.mobile.android.mappers.UserProfileMapper
-import com.passbolt.mobile.android.mappers.UsersModelMapper
-import com.passbolt.mobile.android.mappers.comparator.SwitchAccountUiModelComparator
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -42,58 +20,49 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android
+
+import com.passbolt.mobile.android.mappers.AccountModelMapper
+import com.passbolt.mobile.android.mappers.CreateResourceMapper
+import com.passbolt.mobile.android.mappers.FolderModelMapper
+import com.passbolt.mobile.android.mappers.GroupsModelMapper
+import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
+import com.passbolt.mobile.android.mappers.OtpModelMapper
+import com.passbolt.mobile.android.mappers.PermissionsModelMapper
+import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
+import com.passbolt.mobile.android.mappers.ResourceModelMapper
+import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
+import com.passbolt.mobile.android.mappers.SharePermissionsModelMapper
+import com.passbolt.mobile.android.mappers.SignInMapper
+import com.passbolt.mobile.android.mappers.SignOutMapper
+import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
+import com.passbolt.mobile.android.mappers.TagsModelMapper
+import com.passbolt.mobile.android.mappers.TransferMapper
+import com.passbolt.mobile.android.mappers.UserProfileMapper
+import com.passbolt.mobile.android.mappers.UsersModelMapper
+import com.passbolt.mobile.android.mappers.comparator.SwitchAccountUiModelComparator
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+
 val mappersModule = module {
-    single { TransferMapper() }
-    single {
-        AccountModelMapper(
-            selectedAccountUseCase = get()
-        )
-    }
-    single { SignInMapper() }
-    single {
-        ResourceModelMapper(
-            initialsProvider = get(),
-            permissionsModelMapper = get()
-        )
-    }
-    single { SignOutMapper() }
-    single {
-        CreateResourceMapper(
-            gson = get()
-        )
-    }
-    single {
-        ResourceTypesModelMapper(
-            gson = get()
-        )
-    }
-    single { ResourceMenuModelMapper() }
-    single { UsersModelMapper() }
-    single { SwitchAccountUiModelComparator() }
-    single {
-        SwitchAccountModelMapper(
-            selectedAccountUseCase = get(),
-            comparator = get()
-        )
-    }
-    single { UserProfileMapper() }
-    single { HomeDisplayViewMapper() }
-    single {
-        FolderModelMapper(
-            permissionsModelMapper = get()
-        )
-    }
-    single { TagsModelMapper() }
-    single { GroupsModelMapper() }
-    single {
-        PermissionsModelMapper(
-            groupsModelMapper = get(),
-            usersModelMapper = get()
-        )
-    }
-    single {
-        SharePermissionsModelMapper(
-            permissionsModelMapper = get()
-        )
-    }
+    singleOf(::TransferMapper)
+    singleOf(::AccountModelMapper)
+    singleOf(::SignInMapper)
+    singleOf(::ResourceModelMapper)
+    singleOf(::SignOutMapper)
+    singleOf(::CreateResourceMapper)
+    singleOf(::ResourceTypesModelMapper)
+    singleOf(::ResourceMenuModelMapper)
+    singleOf(::UsersModelMapper)
+    singleOf(::SwitchAccountUiModelComparator)
+    singleOf(::SwitchAccountModelMapper)
+    singleOf(::UserProfileMapper)
+    singleOf(::HomeDisplayViewMapper)
+    singleOf(::FolderModelMapper)
+    singleOf(::TagsModelMapper)
+    singleOf(::GroupsModelMapper)
+    singleOf(::PermissionsModelMapper)
+    singleOf(::SharePermissionsModelMapper)
+    singleOf(::OtpModelMapper)
 }

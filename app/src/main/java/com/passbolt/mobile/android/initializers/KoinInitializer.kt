@@ -16,6 +16,7 @@ import com.passbolt.mobile.android.core.logger.loggerModule
 import com.passbolt.mobile.android.core.mvp.mvpModule
 import com.passbolt.mobile.android.core.networking.networkingModule
 import com.passbolt.mobile.android.core.notifications.notificationsModule
+import com.passbolt.mobile.android.core.otpcore.otpCoreModule
 import com.passbolt.mobile.android.core.qrscan.barcodeScanModule
 import com.passbolt.mobile.android.core.resources.resourcesModule
 import com.passbolt.mobile.android.core.resourcetypes.resourceTypesModule
@@ -139,7 +140,8 @@ class KoinInitializer : Initializer<Unit> {
             envInfoModule,
             idlingResourcesModule,
             transferAccountToAnotherDeviceModule,
-            otpMainModule
+            otpMainModule,
+            otpCoreModule
         )
     }
 }

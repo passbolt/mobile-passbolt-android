@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.feature.resourcedetails.actions
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,5 +21,31 @@ package com.passbolt.mobile.android.feature.resourcedetails.actions
  * @since v1.0
  */
 
-typealias ClipboardLabel = String
-typealias ResourceName = String
+package com.passbolt.mobile.android.mappers
+
+import com.passbolt.mobile.android.common.InitialsProvider
+import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpModel
+
+class OtpModelMapper(
+    private val initialsProvider: InitialsProvider,
+    private val permissionsModelMapper: PermissionsModelMapper
+) {
+
+    fun map(resourceEntity: Resource): OtpModel =
+        OtpModel(
+            resourceId = resourceEntity.resourceId,
+            name = resourceEntity.resourceName,
+            initials = initialsProvider.get(resourceEntity.resourceName),
+            permission = permissionsModelMapper.map(resourceEntity.resourcePermission)
+        )
+
+    fun map(otpModel: OtpModel): OtpListItemWrapper =
+        OtpListItemWrapper(
+            otp = otpModel,
+            isVisible = false,
+            otpExpirySeconds = null,
+            otpValue = null
+        )
+}

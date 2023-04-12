@@ -1,3 +1,7 @@
+package com.passbolt.mobile.android.core.resources.actions
+
+import com.passbolt.mobile.android.ui.ResourceModel
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,24 +24,24 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class ResourceActionsInteractor(
+    private val resource: ResourceModel
+) {
 
-package com.passbolt.mobile.android.feature.otp.scanotpsuccess
-
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
-
-interface ScanOtpSuccessContract {
-
-    interface View : BaseAuthenticatedContract.View {
-        fun showGenericError()
-        fun showEncryptionError(message: String)
-        fun navigateToOtpList(otpCreated: Boolean)
-        fun showProgress()
-        fun hideProgress()
+    fun provideWebsiteUrl(onUrlReady: (ClipboardLabel, String) -> Unit) {
+        resource.url?.let {
+            onUrlReady(URL_LABEL, it)
+        }
     }
 
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun createStandaloneOtpClick()
-        fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr)
+    fun provideUsername(onUsernameReady: (ClipboardLabel, String) -> Unit) {
+        resource.username?.let {
+            onUsernameReady(USERNAME_LABEL, it)
+        }
+    }
+
+    companion object {
+        private const val USERNAME_LABEL = "Username"
+        private const val URL_LABEL = "Url"
     }
 }

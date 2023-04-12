@@ -1,6 +1,7 @@
 plugins {
     id "com.android.library"
     id "kotlin-android"
+    id "kotlin-parcelize"
 }
 
 apply plugin: "androidx.navigation.safeargs"
@@ -28,6 +29,12 @@ dependencies {
     implementation project(':navigation')
     implementation project(':security')
     implementation project(':qrscan')
+    implementation project(':database')
+    implementation project(':mappers')
+    implementation project(':resources')
+    implementation project(':secrets')
+    implementation project(':resourcetypes')
+    implementation project(':otpcore')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -43,6 +50,7 @@ dependencies {
     implementation libs.androidx.cameraXView
     implementation libs.androidx.cameraX
     implementation libs.androidx.cameraXLifecycle
+    implementation libs.networking.retrofit
 }
 
 android {

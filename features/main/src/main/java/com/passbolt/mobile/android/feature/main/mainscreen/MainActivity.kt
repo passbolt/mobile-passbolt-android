@@ -133,7 +133,7 @@ class MainActivity :
             R.id.scanOtpFragment,
             R.id.createOtpManuallyFragment,
             R.id.createOtpAdvancedSettingsFragment,
-            R.id.createOtpSuccessFragment
+            R.id.scanOtpSuccessFragment
         )
     }
 }

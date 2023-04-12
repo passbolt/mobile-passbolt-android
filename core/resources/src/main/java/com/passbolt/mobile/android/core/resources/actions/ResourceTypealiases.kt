@@ -1,3 +1,5 @@
+package com.passbolt.mobile.android.core.resources.actions
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,23 +23,5 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.scanotpsuccess
-
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
-
-interface ScanOtpSuccessContract {
-
-    interface View : BaseAuthenticatedContract.View {
-        fun showGenericError()
-        fun showEncryptionError(message: String)
-        fun navigateToOtpList(otpCreated: Boolean)
-        fun showProgress()
-        fun hideProgress()
-    }
-
-    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun createStandaloneOtpClick()
-        fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr)
-    }
-}
+typealias ClipboardLabel = String
+typealias ResourceName = String
