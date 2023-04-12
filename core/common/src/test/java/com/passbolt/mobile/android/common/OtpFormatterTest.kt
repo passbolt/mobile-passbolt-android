@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.common
-
-import org.koin.android.ext.koin.androidApplication
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,14 +21,34 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val commonModule = module {
-    single {
-        ResourceDimenProvider(
-            androidApplication().resources
-        )
+package com.passbolt.mobile.android.common
+
+import com.google.common.truth.Truth.assertThat
+import org.junit.Test
+
+
+class OtpFormatterTest {
+
+    private val otpFormatter = OtpFormatter()
+
+    @Test
+    fun `otp with 6 digits should be formatter correct`() {
+        val otp = "123456"
+
+        assertThat(otpFormatter.format(otp)).isEqualTo("123 456")
     }
 
-    singleOf(::DomainProvider)
-    singleOf(::FingerprintFormatter)
-    singleOf(::OtpFormatter)
+    @Test
+    fun `otp with 7 digits should be formatter correct`() {
+        val otp = "1234567"
+
+        assertThat(otpFormatter.format(otp)).isEqualTo("123 456 7")
+    }
+
+    @Test
+    fun `otp with 8 digits should be formatter correct`() {
+        val otp = "12345678"
+
+        assertThat(otpFormatter.format(otp)).isEqualTo("123 456 78")
+    }
 }

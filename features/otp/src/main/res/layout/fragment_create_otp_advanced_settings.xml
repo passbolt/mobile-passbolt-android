@@ -26,7 +26,7 @@
             android:layout_marginHorizontal="@dimen/dp_16">
 
             <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
-                android:id="@+id/totpExpiryInput"
+                android:id="@+id/totpPeriodInput"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_16"
@@ -43,10 +43,33 @@
                 android:layout_marginStart="@dimen/dp_8"
                 android:gravity="start"
                 android:text="@string/otp_create_totp_expert_settings_expiry_seconds_info"
-                app:layout_constraintBottom_toBottomOf="@id/totpExpiryInput"
+                app:layout_constraintBottom_toBottomOf="@id/totpPeriodInput"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/totpExpiryInput"
-                app:layout_constraintTop_toTopOf="@id/totpExpiryInput"
+                app:layout_constraintStart_toEndOf="@id/totpPeriodInput"
+                app:layout_constraintTop_toTopOf="@id/totpPeriodInput"
+                app:layout_constraintVertical_bias="0.7" />
+
+            <com.passbolt.mobile.android.core.ui.dropdown.DropDownInputView
+                android:id="@+id/digitsDropdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_8"
+                app:dropdownIsRequired="true"
+                app:dropdownTitle="@string/otp_create_totp_expert_settings_length"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/totpPeriodInput" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_8"
+                android:gravity="start"
+                android:text="@string/otp_create_totp_expert_settings_expiry_length_info"
+                app:layout_constraintBottom_toBottomOf="@id/digitsDropdown"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/digitsDropdown"
+                app:layout_constraintTop_toTopOf="@id/digitsDropdown"
                 app:layout_constraintVertical_bias="0.7" />
 
             <com.passbolt.mobile.android.core.ui.dropdown.DropDownInputView
@@ -58,7 +81,7 @@
                 app:dropdownIsRequired="true"
                 app:dropdownTitle="@string/otp_create_totp_expert_settings_algorithm"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/totpExpiryInput" />
+                app:layout_constraintTop_toBottomOf="@id/digitsDropdown" />
 
             <Button
                 android:id="@+id/applyButton"

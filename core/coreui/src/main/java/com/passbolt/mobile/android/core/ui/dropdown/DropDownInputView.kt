@@ -155,12 +155,12 @@ class DropDownInputView @JvmOverloads constructor(
         }
     }
 
-    fun setDefaultItem(item: String) {
-        val defaultItemIndex = items.indexOf(item)
-        if (defaultItemIndex == -1) {
-            throw IllegalArgumentException("Default item not present inside set items.")
+    fun setItem(item: String) {
+        val itemIndex = items.indexOf(item)
+        if (itemIndex == -1) {
+            throw IllegalArgumentException("Item not present inside set items.")
         } else {
-            binding.input.setText(items[defaultItemIndex], false)
+            binding.input.setText(items[itemIndex], false)
         }
     }
 

@@ -80,14 +80,14 @@ class ScanOtpSuccessFragment :
 
     override fun navigateToOtpList(otpCreated: Boolean) {
         setFragmentResult(
-            REQUEST_CREATE_OTP,
+            REQUEST_SCAN_OTP,
             bundleOf(EXTRA_OTP_CREATED to otpCreated)
         )
         findNavController().popBackStack()
     }
 
     companion object {
-        const val REQUEST_CREATE_OTP = "CREATE_OTP"
+        const val REQUEST_SCAN_OTP = "SCAN_OTP"
         const val EXTRA_OTP_CREATED = "OTP_CREATED"
     }
 }

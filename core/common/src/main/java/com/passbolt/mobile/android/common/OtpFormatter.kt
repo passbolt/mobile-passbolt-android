@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.common
-
-import org.koin.android.ext.koin.androidApplication
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,14 +21,22 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val commonModule = module {
-    single {
-        ResourceDimenProvider(
-            androidApplication().resources
-        )
-    }
+package com.passbolt.mobile.android.common
 
-    singleOf(::DomainProvider)
-    singleOf(::FingerprintFormatter)
-    singleOf(::OtpFormatter)
+@Suppress("MagicNumber")
+class OtpFormatter {
+
+    fun format(otp: String) =
+        when (otp.length) {
+            6 -> "%s %s".format(
+                otp.substring(0..2),
+                otp.substring(3..5)
+            )
+            7, 8 -> "%s %s %s".format(
+                otp.substring(0..2),
+                otp.substring(3..5),
+                otp.substring(6)
+            )
+            else -> "%s".format(otp)
+        }
 }

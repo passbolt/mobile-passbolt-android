@@ -26,12 +26,19 @@ package com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings
 import android.os.Bundle
 import android.text.InputType
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
+import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
+import com.passbolt.mobile.android.feature.otp.R
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentCreateOtpAdvancedSettingsBinding
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult.OtpQr.Algorithm.Companion.DEFAULT
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult.OtpQr.TotpQr.Companion.DEFAULT_PERIOD_SECONDS
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult.OtpQr.TotpQr.Companion.DEFAULT_DIGITS
+import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 import org.koin.android.ext.android.inject
 
 class CreateOtpAdvancedSettingsFragment :
@@ -39,32 +46,73 @@ class CreateOtpAdvancedSettingsFragment :
     CreateOtpAdvancedSettingsContract.View {
 
     private val presenter: CreateOtpAdvancedSettingsContract.Presenter by inject()
+    private val args: CreateOtpAdvancedSettingsFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
-        setupDefaults()
+        setupDropdowns()
         setupListeners()
         presenter.attach(this)
+        presenter.bundleRetrieved(args.advancedSettingsModel)
+    }
+
+    private fun setupDropdowns() {
+        with(binding) {
+            totpPeriodInput.setInputType(InputType.TYPE_CLASS_NUMBER)
+            algorithmDropdown.items = OtpParseResult.OtpQr.Algorithm.values().map { it.toString() }
+            digitsDropdown.items = OtpParseResult.OtpQr.digitsRange.map { it.toString() }
+        }
     }
 
     private fun setupListeners() {
         with(binding) {
-            totpExpiryInput.setTextChangeListener {
-                presenter.totpExpiryChanged(it)
+            totpPeriodInput.setTextChangeListener {
+                presenter.totpPeriodChanged(it)
             }
             algorithmDropdown.selectedItemChangedListener = {
                 presenter.totpAlgorithmChanged(it)
             }
+            digitsDropdown.selectedItemChangedListener = {
+                presenter.totpDigitsChanged(it)
+            }
+            applyButton.setDebouncingOnClick {
+                presenter.applyClick()
+            }
         }
     }
 
-    private fun setupDefaults() {
+    override fun setValues(values: OtpAdvancedSettingsModel) {
         with(binding) {
-            totpExpiryInput.text = DEFAULT_PERIOD_SECONDS.toString()
-            totpExpiryInput.setInputType(InputType.TYPE_CLASS_NUMBER)
-            algorithmDropdown.items = OtpParseResult.OtpQr.Algorithm.values().map { it.toString() }
-            algorithmDropdown.setDefaultItem(DEFAULT.name)
+            totpPeriodInput.text = values.period.toString()
+            algorithmDropdown.setItem(values.algorithm)
+            digitsDropdown.setItem(DEFAULT_DIGITS.toString())
         }
+    }
+
+    override fun applyChangesAndGoBack(model: OtpAdvancedSettingsModel) {
+        setFragmentResult(
+            REQUEST_MODIFY_TOTP_SETTINGS, bundleOf(
+                EXTRA_ALGORITHM to model.algorithm,
+                EXTRA_PERIOD to model.period,
+                EXTRA_DIGITS to model.digits
+            )
+        )
+        findNavController().popBackStack()
+    }
+
+    override fun showTotpPeriodError() {
+        binding.totpPeriodInput.setState(
+            StatefulInput.State.Error(
+                getString(R.string.validation_required_integer)
+            )
+        )
+    }
+
+    companion object {
+        const val REQUEST_MODIFY_TOTP_SETTINGS = "MODIFY_TOTP_ADVANCED_SETTINGS"
+        const val EXTRA_ALGORITHM = "ALGORITHM"
+        const val EXTRA_PERIOD = "PERIOD"
+        const val EXTRA_DIGITS = "DIGITS"
     }
 }

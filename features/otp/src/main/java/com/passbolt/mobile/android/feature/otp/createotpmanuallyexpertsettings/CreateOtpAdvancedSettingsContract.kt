@@ -24,13 +24,21 @@
 package com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 
 interface CreateOtpAdvancedSettingsContract {
 
-    interface View : BaseContract.View
+    interface View : BaseContract.View {
+        fun applyChangesAndGoBack(model: OtpAdvancedSettingsModel)
+        fun setValues(values: OtpAdvancedSettingsModel)
+        fun showTotpPeriodError()
+    }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun totpExpiryChanged(totpExpirySeconds: String)
+        fun totpPeriodChanged(period: String)
         fun totpAlgorithmChanged(algorithm: String)
+        fun applyClick()
+        fun totpDigitsChanged(digits: String)
+        fun bundleRetrieved(advancedSettingsModel: OtpAdvancedSettingsModel)
     }
 }

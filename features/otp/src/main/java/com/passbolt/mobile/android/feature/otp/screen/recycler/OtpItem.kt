@@ -10,12 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
+import com.passbolt.mobile.android.common.OtpFormatter
 import com.passbolt.mobile.android.common.extension.asBinding
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.otp.R
 import com.passbolt.mobile.android.feature.otp.databinding.ItemOtpBinding
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
-import timber.log.Timber
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -42,10 +44,12 @@ import timber.log.Timber
 class OtpItem(
     val otpModel: OtpListItemWrapper,
     private val initialsIconGenerator: InitialsIconGenerator
-) : AbstractBindingItem<ItemOtpBinding>() {
+) : AbstractBindingItem<ItemOtpBinding>(), KoinComponent {
 
     override val type: Int
         get() = R.id.itemOtp
+
+    private val otpFormatter: OtpFormatter by inject()
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemOtpBinding =
         ItemOtpBinding.inflate(inflater, parent, false)
@@ -59,7 +63,7 @@ class OtpItem(
                 progress = otpModel.remainingSecondsCounter?.let { (it.toInt() + 1) * ANIMATION_MULTIPLIER } ?: 0
             }
             name.text = otpModel.otp.name
-            otp.text = otpModel.otpValue ?: otp.context.getString(R.string.otp_hide_otp)
+            otp.text = otpFormatter.format(otpModel.otpValue ?: otp.context.getString(R.string.otp_hide_otp))
             icon.setImageDrawable(initialsIconGenerator.generate(otpModel.otp.name, otpModel.otp.initials))
             eye.isVisible = !otpModel.isVisible
             progress.isVisible = otpModel.isVisible
@@ -78,7 +82,6 @@ class OtpItem(
             interpolator = LinearInterpolator()
         }
         progressAnimator.start()
-        Timber.e("Progress: ${otpModel.remainingSecondsCounter}")
     }
 
     /**

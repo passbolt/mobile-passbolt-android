@@ -23,19 +23,52 @@
 
 package com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings
 
-import timber.log.Timber
+import com.passbolt.mobile.android.common.validation.StringIsIntegerNumber
+import com.passbolt.mobile.android.common.validation.validation
+import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 
 class CreateOtpAdvancedSettingsPresenter : CreateOtpAdvancedSettingsContract.Presenter {
 
     override var view: CreateOtpAdvancedSettingsContract.View? = null
 
-    override fun totpExpiryChanged(totpExpirySeconds: String) {
-        // TODO
-        Timber.e("Expiry changed: %s", totpExpirySeconds)
+    private var period = ""
+    private var digits = ""
+    private var algorithm = ""
+
+    override fun bundleRetrieved(advancedSettingsModel: OtpAdvancedSettingsModel) {
+        period = advancedSettingsModel.period.toString()
+        digits = advancedSettingsModel.digits.toString()
+        algorithm = advancedSettingsModel.algorithm
+        view?.setValues(advancedSettingsModel)
+    }
+
+    override fun totpPeriodChanged(period: String) {
+        this.period = period
+    }
+
+    override fun totpDigitsChanged(digits: String) {
+        this.digits = digits
     }
 
     override fun totpAlgorithmChanged(algorithm: String) {
-        // TODO
-        Timber.e("Algorithm changed: %s", algorithm)
+        this.algorithm = algorithm
+    }
+
+    override fun applyClick() {
+        validation {
+            of(period) {
+                withRules(StringIsIntegerNumber) {
+                    onInvalid { view?.showTotpPeriodError() }
+                }
+            }
+            // digits and algorithm are selected from predefined list (no validation needed)
+            onValid {
+                view?.applyChangesAndGoBack(
+                    OtpAdvancedSettingsModel(
+                        period.toInt(), algorithm, digits.toInt()
+                    )
+                )
+            }
+        }
     }
 }
