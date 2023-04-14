@@ -39,13 +39,14 @@ class GetLocalResourcesFilteredByTagUseCase(
         val resources = databaseProvider
             .get(userId)
             .resourcesDao()
-            .getAllThatHaveTagContaining(input.tagSearchQuery)
+            .getAllThatHaveTagContaining(input.tagSearchQuery, input.slugs)
 
         return Output(resources.map { resourceModelMapper.map(it) })
     }
 
     data class Input(
-        val tagSearchQuery: String
+        val tagSearchQuery: String,
+        val slugs: List<String>
     )
 
     data class Output(val resources: List<ResourceModel>)

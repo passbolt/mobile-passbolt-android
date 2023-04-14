@@ -38,7 +38,7 @@ class ResourceTypeFactory(
 
         return when (val slug = resourceType.resourceType.slug) {
             SLUG_SIMPLE_PASSWORD -> ResourceTypeEnum.SIMPLE_PASSWORD
-            SLUG_PASSWORD_WITH_DESCRIPTION -> ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
+            SLUG_PASSWORD_AND_DESCRIPTION -> ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
             SLUG_TOTP -> ResourceTypeEnum.STANDALONE_TOTP
             else -> throw UnsupportedOperationException("Unknown resource type with slug: $slug")
         }
@@ -52,7 +52,7 @@ class ResourceTypeFactory(
 
     companion object {
         const val SLUG_SIMPLE_PASSWORD = "password-string"
-        const val SLUG_PASSWORD_WITH_DESCRIPTION = "password-with-description"
+        const val SLUG_PASSWORD_AND_DESCRIPTION = "password-and-description"
         const val SLUG_TOTP = "totp"
     }
 }

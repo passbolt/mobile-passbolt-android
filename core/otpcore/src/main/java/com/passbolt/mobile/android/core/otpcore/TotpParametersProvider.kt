@@ -21,6 +21,7 @@ class TotpParametersProvider {
         val counter = totpGenerator.counter()
         // get the beginning of the next timeslot -1 millisecond
         val currentTimeslotEndMillis = totpGenerator.timeslotStart(counter + 1) - 1
+
         @Suppress("MagicNumber")
         val secondsValid = (currentTimeslotEndMillis - System.currentTimeMillis()) / 1_000
 

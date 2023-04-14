@@ -45,10 +45,10 @@ class GetLocalResourcesUseCase(
             .resourcesDao()
             .let {
                 when (val viewType = homeDisplayViewMapper.map(input.homeDisplayView)) {
-                    is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate()
-                    is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName()
-                    is ResourceDatabaseView.IsFavourite -> it.getFavourites()
-                    is ResourceDatabaseView.HasPermissions -> it.getWithPermissions(viewType.permissions)
+                    is ResourceDatabaseView.ByModifiedDateDescending -> it.getAllOrderedByModifiedDate(input.slugs)
+                    is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName(input.slugs)
+                    is ResourceDatabaseView.IsFavourite -> it.getFavourites(input.slugs)
+                    is ResourceDatabaseView.HasPermissions -> it.getWithPermissions(viewType.permissions, input.slugs)
                 }
             }
 
@@ -56,6 +56,7 @@ class GetLocalResourcesUseCase(
     }
 
     data class Input(
+        val slugs: List<String>,
         val homeDisplayView: HomeDisplayViewModel = HomeDisplayViewModel.AllItems
     )
 
