@@ -63,7 +63,7 @@ import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
-import com.passbolt.mobile.android.ui.OtpMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
 
 @Suppress("TooManyFunctions")
@@ -109,22 +109,18 @@ class OtpFragment :
         setUpRecycler()
         setupListeners()
         initSpeedDialFab()
-        presenter.attach(this)
     }
 
     override fun onResume() {
         super.onResume()
+        presenter.attach(this)
         presenter.resume(this)
     }
 
     override fun onPause() {
+        presenter.detach()
         presenter.pause()
         super.onPause()
-    }
-
-    override fun onDestroyView() {
-        presenter.detach()
-        super.onDestroyView()
     }
 
     private fun initSpeedDialFab() {
@@ -225,8 +221,8 @@ class OtpFragment :
             .show(childFragmentManager, SwitchAccountBottomSheetFragment::class.java.name)
     }
 
-    override fun showOtmMoreMenu(otpMoreMenuModel: OtpMoreMenuModel) {
-        OtpMoreMenuFragment.newInstance(otpMoreMenuModel)
+    override fun showOtmMoreMenu(moreMenuModel: ResourceMoreMenuModel) {
+        OtpMoreMenuFragment.newInstance(moreMenuModel)
             .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
     }
 

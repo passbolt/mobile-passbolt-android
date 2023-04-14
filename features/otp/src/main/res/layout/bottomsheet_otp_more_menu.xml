@@ -69,16 +69,6 @@
         app:layout_constraintTop_toBottomOf="@id/showOtp" />
 
     <TextView
-        android:id="@+id/editOtp"
-        style="@style/PasswordMenuItem"
-        android:drawablePadding="@dimen/dp_16"
-        android:text="@string/otp_more_edit_otp"
-        android:visibility="gone"
-        app:drawableStartCompat="@drawable/ic_edit"
-        app:drawableTint="@color/icon_tint"
-        app:layout_constraintTop_toBottomOf="@+id/separator" />
-
-    <TextView
         android:id="@+id/deleteOtp"
         style="@style/PasswordMenuItem"
         android:drawablePadding="@dimen/dp_16"
@@ -86,6 +76,6 @@
         android:visibility="gone"
         app:drawableStartCompat="@drawable/ic_trash"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editOtp" />
+        app:layout_constraintTop_toBottomOf="@+id/separator" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

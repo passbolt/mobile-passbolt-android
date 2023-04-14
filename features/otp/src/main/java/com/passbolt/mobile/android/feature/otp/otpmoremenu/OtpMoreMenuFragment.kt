@@ -34,7 +34,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismi
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.feature.otp.databinding.BottomsheetOtpMoreMenuBinding
-import com.passbolt.mobile.android.ui.OtpMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
 
@@ -42,7 +42,7 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
 
     override val scope by fragmentScope()
     private val presenter: OtpMoreMenuContract.Presenter by scope.inject()
-    private val menuModel: OtpMoreMenuModel by lifecycleAwareLazy {
+    private val menuModel: ResourceMoreMenuModel by lifecycleAwareLazy {
         requireNotNull(requireArguments().getParcelable(EXTRA_OTP_MENU_MODEL))
     }
     private lateinit var binding: BottomsheetOtpMoreMenuBinding
@@ -82,7 +82,6 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
         with(binding) {
             setDebouncingOnClickAndDismiss(showOtp) { listener?.menuShowOtpClick() }
             setDebouncingOnClickAndDismiss(copyOtp) { listener?.menuCopyOtpClick() }
-            setDebouncingOnClickAndDismiss(editOtp) { listener?.menuEditOtpClick() }
             setDebouncingOnClickAndDismiss(deleteOtp) { listener?.menuDeleteOtpClick() }
             setDebouncingOnClickAndDismiss(close)
         }
@@ -100,14 +99,10 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
         binding.deleteOtp.visible()
     }
 
-    override fun showEditButton() {
-        binding.editOtp.visible()
-    }
-
     companion object {
         private const val EXTRA_OTP_MENU_MODEL = "OTP_MENU_MODEL"
 
-        fun newInstance(model: OtpMoreMenuModel) =
+        fun newInstance(model: ResourceMoreMenuModel) =
             OtpMoreMenuFragment().apply {
                 arguments = bundleOf(EXTRA_OTP_MENU_MODEL to model)
             }

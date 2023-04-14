@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.main.mainscreen
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,6 +32,7 @@ interface MainContract {
         fun checkForAppUpdates()
         fun showAppUpdateDownloadedSnackbar()
         fun tryLaunchReviewFlow()
+        fun setupBottomNavigation(navigationModel: MainBottomNavigationModel)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

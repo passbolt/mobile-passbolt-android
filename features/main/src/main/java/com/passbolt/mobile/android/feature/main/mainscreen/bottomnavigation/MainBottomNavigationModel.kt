@@ -21,20 +21,6 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.otpmoremenu
+package com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-
-interface OtpMoreMenuContract {
-
-    interface View : BaseContract.View {
-        fun showTitle(title: String)
-        fun showSeparator()
-        fun showDeleteButton()
-    }
-
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(menuModel: ResourceMoreMenuModel)
-    }
-}
+data class MainBottomNavigationModel(val isOtpTabVisible: Boolean)

@@ -36,9 +36,9 @@ import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconM
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.mappers.OtpModelMapper
+import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
-import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -60,6 +60,7 @@ class OtpPresenter(
     private val otpModelMapper: OtpModelMapper,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val totpParametersProvider: TotpParametersProvider,
+    private val resourceMenuModelMapper: ResourceMenuModelMapper,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<OtpContract.View>(coroutineLaunchContext), OtpContract.Presenter,
     SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener, KoinScopeComponent {
@@ -83,11 +84,11 @@ class OtpPresenter(
     private var currentOtpItemForMenu: OtpListItemWrapper? = null
 
     private var otpList = mutableListOf<OtpListItemWrapper>()
-    private val visibleOtpIds = mutableListOf<String>()
+    private var visibleOtpId: String = ""
 
     override fun attach(view: OtpContract.View) {
         super<DataRefreshViewReactivePresenter>.attach(view)
-        updateOtpsCounterTime(view)
+        updateOtpsCounterTime()
         loadUserAvatar()
         collectFilteringRefreshes()
 
@@ -99,7 +100,18 @@ class OtpPresenter(
     override fun refreshAction() {
         refreshInProgress = false
         presenterScope.launch {
+            val itemVisibleBeforeRefresh = visibleOtpId
+            hideCurrentlyVisibleItem()
             getAndShowOtpResources()
+            if (itemVisibleBeforeRefresh.isNotBlank()) {
+                otpList
+                    .find { it.otp.resourceId == itemVisibleBeforeRefresh }
+                    ?.let {
+                        hideCurrentlyVisibleItem()
+                        otpItemClick(it)
+                    }
+                showOtps()
+            }
         }
     }
 
@@ -113,7 +125,7 @@ class OtpPresenter(
                     view?.showEmptyView()
                 } else {
                     view?.hideEmptyView()
-                    view?.showOtpList(it)
+                    showOtps()
                 }
             }
     }
@@ -123,20 +135,35 @@ class OtpPresenter(
             .also { view?.displaySearchAvatar(it) }
     }
 
-    private fun updateOtpsCounterTime(view: OtpContract.View) {
+    private fun updateOtpsCounterTime() {
         tickerScope.launch {
             infiniteTimer(tickDuration = 1.seconds).collectLatest {
-                var replaced = false
-                otpList.replaceAll {
-                    if (!visibleOtpIds.contains(it.otp.resourceId)) {
-                        it
-                    } else {
-                        replaced = true
-                        it.copy(remainingSecondsCounter = it.remainingSecondsCounter!! - 1)
+                if (visibleOtpId.isNotEmpty()) {
+                    var replaced = false
+                    otpList.replaceAll {
+                        if (it.otp.resourceId != visibleOtpId) {
+                            it.copy(
+                                otp = it.otp,
+                                isVisible = false,
+                                otpExpirySeconds = null,
+                                otpValue = null,
+                                remainingSecondsCounter = null
+                            )
+                        } else {
+                            replaced = true
+                            it.copy(remainingSecondsCounter = it.remainingSecondsCounter!! - 1)
+                        }
                     }
-                }
-                if (replaced) {
-                    view.showOtpList(otpList)
+                    if (replaced) {
+                        // restart expired ones
+                        otpList
+                            .find { it.isVisible && (it.remainingSecondsCounter ?: Long.MAX_VALUE) < 0 }
+                            ?.let {
+                                hideCurrentlyVisibleItem()
+                                otpItemClick(it)
+                            }
+                        showOtps()
+                    }
                 }
             }
         }
@@ -171,8 +198,26 @@ class OtpPresenter(
         }
     }
 
+    private fun hideCurrentlyVisibleItem() {
+        otpList.replaceAll {
+            if (it.otp.resourceId == visibleOtpId) {
+                it.copy(
+                    otp = it.otp,
+                    isVisible = false,
+                    otpExpirySeconds = null,
+                    otpValue = null,
+                    remainingSecondsCounter = null
+                )
+            } else {
+                it
+            }
+        }
+        visibleOtpId = ""
+        showOtps()
+    }
+
     override fun otpItemClick(otpListItemWrapper: OtpListItemWrapper) {
-        // TODO get from API
+        hideCurrentlyVisibleItem()
         presenterScope.launch {
             val otpResource = getLocalResourceUseCase.execute(
                 GetLocalResourceUseCase.Input(otpListItemWrapper.otp.resourceId)
@@ -183,7 +228,7 @@ class OtpPresenter(
             resourceAuthenticatedActionsInteractor.provideOtp(
                 decryptionFailure = { view?.showDecryptionFailure() },
                 fetchFailure = { view?.showFetchFailure() }
-            ) { _, otp ->
+            ) { label, otp ->
                 view?.apply {
                     val otpParameters = totpParametersProvider.provideOtpParameters(
                         secretKey = otp.totp.key,
@@ -199,20 +244,34 @@ class OtpPresenter(
                         remainingSecondsCounter = otpParameters.secondsValid
                     )
                     with(newOtp) {
-                        otpList[otpList.indexOf(otpListItemWrapper)] = this
-                        visibleOtpIds.add(otpListItemWrapper.otp.resourceId)
+                        val indexOfOld = otpList.indexOfFirst { it.otp.resourceId == otpListItemWrapper.otp.resourceId }
+                        otpList[indexOfOld] = this
+                        visibleOtpId = otpListItemWrapper.otp.resourceId
                     }
-                    view?.showOtpList(otpList)
+                    showOtps()
+                    view?.copySecretToClipBoard(label, otpParameters.otpValue)
                 }
             }
         }
     }
 
+    private fun showOtps() {
+        if (currentSearchText.value.isEmpty()) {
+            view?.showOtpList(otpList)
+        } else {
+            filterOtps()
+        }
+    }
+
     override fun otpItemMoreClick(otpListWrapper: OtpListItemWrapper) {
+        hideCurrentlyVisibleItem()
         currentOtpItemForMenu = otpListWrapper
-        view?.showOtmMoreMenu(
-            OtpMoreMenuModel(otpListWrapper.otp.name, canDelete = true, canEdit = true)
-        )
+        presenterScope.launch {
+            val otpResource = getLocalResourceUseCase.execute(
+                GetLocalResourceUseCase.Input(otpListWrapper.otp.resourceId)
+            ).resource
+            view?.showOtmMoreMenu(resourceMenuModelMapper.map(otpResource))
+        }
     }
 
     override fun refreshFailureAction() {
@@ -246,6 +305,7 @@ class OtpPresenter(
     }
 
     override fun detach() {
+        hideCurrentlyVisibleItem()
         tickerScope.coroutineContext.cancelChildren()
         filteringScope.coroutineContext.cancelChildren()
         presenterScope.coroutineContext.cancelChildren()
@@ -254,7 +314,29 @@ class OtpPresenter(
     }
 
     override fun menuCopyOtpClick() {
-        // TODO
+        presenterScope.launch {
+            val otpResource = getLocalResourceUseCase.execute(
+                GetLocalResourceUseCase.Input(requireNotNull(currentOtpItemForMenu).otp.resourceId)
+            ).resource
+            val resourceAuthenticatedActionsInteractor = get<ResourceAuthenticatedActionsInteractor> {
+                parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
+            resourceAuthenticatedActionsInteractor.provideOtp(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { label, otp ->
+                view?.apply {
+                    val otpParameters = totpParametersProvider.provideOtpParameters(
+                        secretKey = otp.totp.key,
+                        digits = otp.totp.digits,
+                        period = otp.totp.period,
+                        algorithm = otp.totp.algorithm
+                    )
+
+                    view?.copySecretToClipBoard(label, otpParameters.otpValue)
+                }
+            }
+        }
     }
 
     override fun menuShowOtpClick() {
