@@ -243,7 +243,7 @@
 
     <string name="main_menu_home">Home</string>
     <string name="main_menu_settings">Settings</string>
-    <string name="main_menu_otp">OTP</string>
+    <string name="main_menu_otp">TOTP</string>
 
     <string name="resource_details_username_header">Username</string>
     <string name="resource_details_password_header">Password</string>
@@ -446,17 +446,17 @@
     <string name="transfer_account_summary_cancelled">Transfer cancelled</string>
     <string name="transfer_account_summary_go_back">Go back to my account</string>
 
-    <string name="otp_search">Search OTP</string>
+    <string name="otp_search">Search TOTP</string>
     <string name="otp_hide_otp"
         translatable="false">••••••</string>
     <string name="otp_speed_dial_scan_qr">Scan QR code</string>
-    <string name="otp_speed_dial_create_manually">Create OTP manually</string>
+    <string name="otp_speed_dial_create_manually">Create TOTP manually</string>
 
-    <string name="otp_more_copy_otp">Copy OTP</string>
-    <string name="otp_more_show_otp">Show OTP</string>
-    <string name="otp_more_edit_otp">Edit OTP</string>
-    <string name="otp_more_delete_otp">Delete OTP</string>
-    <string name="otp_delete_confirmation">This action will permanently delete TOTP</string>
+    <string name="otp_more_copy_otp">Copy TOTP</string>
+    <string name="otp_more_show_otp">Show TOTP</string>
+    <string name="otp_more_edit_otp">Edit TOTP</string>
+    <string name="otp_more_delete_otp">Delete TOTP</string>
+    <string name="otp_delete_confirmation">This action will permanently delete the TOTP.</string>
     <string name="otp_delete_totp">Delete TOTP</string>
     <string name="otp_deleted">TOTP was deleted</string>
     <string name="otp_failed_to_delete">Failed to delete totp</string>

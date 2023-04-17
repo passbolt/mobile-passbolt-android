@@ -94,7 +94,7 @@ fun keyChangesDetectedAlertDialog(context: Context, confirmAction: () -> Unit) =
 fun confirmTotpDeletionAlertDialog(context: Context, confirmAction: () -> Unit) =
     AlertDialog.Builder(context)
         .setTitle(R.string.are_you_sure)
-        .setMessage(R.string.fingerprint_authenticate_again)
+        .setMessage(R.string.otp_delete_confirmation)
         .setPositiveButton(R.string.cancel) { _, _ -> }
         .setNegativeButton(R.string.otp_delete_totp) { _, _ -> confirmAction() }
         .create()
