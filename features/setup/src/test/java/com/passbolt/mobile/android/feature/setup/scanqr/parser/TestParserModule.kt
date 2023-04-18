@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.setup.scanqr.parser
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
+import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
 /**
@@ -29,6 +30,7 @@ import org.koin.dsl.module
  */
 val testParserModule = module {
     factory { ScanQrParser(get(), get(), get()) }
-    factory { KeyAssembler() }
-    factory { QrScanResultsMapper() }
+    factory { Json { ignoreUnknownKeys = true } }
+    factory { KeyAssembler(json = get()) }
+    factory { QrScanResultsMapper(json = get()) }
 }

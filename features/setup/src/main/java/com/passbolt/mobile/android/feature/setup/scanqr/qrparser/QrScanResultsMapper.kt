@@ -10,7 +10,9 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 
-class QrScanResultsMapper {
+class QrScanResultsMapper(
+    private val json: Json
+) {
 
     fun apply(scanResult: BarcodeScanResult) = when (scanResult) {
         is BarcodeScanResult.Failure ->
@@ -35,7 +37,7 @@ class QrScanResultsMapper {
 
             if (reservedBytesDto.page == FIRST_PAGE_INDEX) {
                 ParseResult.PassboltQr.FirstPage(
-                    reservedBytesDto, Json.decodeFromString(String(payloadBytes))
+                    reservedBytesDto, json.decodeFromString(String(payloadBytes))
                 )
             } else {
                 ParseResult.PassboltQr.SubsequentPage(reservedBytesDto, payloadBytes)
