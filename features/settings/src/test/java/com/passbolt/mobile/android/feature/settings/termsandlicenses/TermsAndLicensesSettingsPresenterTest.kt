@@ -63,7 +63,8 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
                         URL_TERMS,
                         isPreviewPasswordAvailable = true,
                         areFoldersAvailable = false,
-                        areTagsAvailable = false
+                        areTagsAvailable = false,
+                        isTotpAvailable = true
                     )
                 )
             )
@@ -76,11 +77,12 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
             onBlocking { execute(Unit) }.doReturn(
                 GetFeatureFlagsUseCase.Output(
                     FeatureFlagsModel(
-                        null,
-                        null,
+                        privacyPolicyUrl = null,
+                        termsAndConditionsUrl = null,
                         isPreviewPasswordAvailable = true,
                         areFoldersAvailable = false,
-                        areTagsAvailable = false
+                        areTagsAvailable = false,
+                        isTotpAvailable = true
                     )
                 )
             )
@@ -115,7 +117,8 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
             null,
             isPreviewPasswordAvailable = true,
             areFoldersAvailable = false,
-            areTagsAvailable = false
+            areTagsAvailable = false,
+            isTotpAvailable = true
         )
         getFeatureFlagsUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(

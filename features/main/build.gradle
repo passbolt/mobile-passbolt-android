@@ -21,6 +21,7 @@ dependencies {
     implementation project(':database')
     implementation project(':resourcetypes')
     implementation project(':storage')
+    implementation project(':entity')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

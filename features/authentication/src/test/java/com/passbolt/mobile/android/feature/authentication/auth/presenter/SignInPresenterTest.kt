@@ -189,11 +189,12 @@ class SignInPresenterTest : KoinTest {
             onBlocking { fetchAndSaveFeatureFlags() }.doReturn(
                 FeatureFlagsInteractor.Output.Success(
                     FeatureFlagsModel(
-                        null,
-                        null,
+                        privacyPolicyUrl = null,
+                        termsAndConditionsUrl = null,
                         isPreviewPasswordAvailable = true,
                         areFoldersAvailable = false,
-                        areTagsAvailable = true
+                        areTagsAvailable = true,
+                        isTotpAvailable = true
                     )
                 )
             )
