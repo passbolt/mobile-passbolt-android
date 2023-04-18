@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PREVIE
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PRIVACY_POLICY_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TAGS_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TOTP_KEY
 
 /**
  * Passbolt - Open source password manager for teams
@@ -46,6 +47,7 @@ class SaveFeatureFlagsUseCase(
             putBoolean(PREVIEW_PASSWORD_KEY, input.featureFlags.isPreviewPasswordAvailable)
             putBoolean(FOLDERS_KEY, input.featureFlags.areFoldersAvailable)
             putBoolean(TAGS_KEY, input.featureFlags.areTagsAvailable)
+            putBoolean(TOTP_KEY, input.featureFlags.isTotpAvailable)
             apply()
         }
     }

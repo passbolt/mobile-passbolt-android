@@ -29,4 +29,5 @@ object Constants {
     const val PREVIEW_PASSWORD_KEY = "PREVIEW_PASSWORD_KEY"
     const val FOLDERS_KEY = "FOLDERS_KEY"
     const val TAGS_KEY = "TAGS_KEY"
+    const val TOTP_KEY = "TOTP_KEY"
 }

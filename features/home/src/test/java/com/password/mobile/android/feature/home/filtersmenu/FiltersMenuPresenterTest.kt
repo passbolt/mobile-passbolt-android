@@ -38,7 +38,8 @@ class FiltersMenuPresenterTest : KoinTest {
                     termsAndConditionsUrl = null,
                     isPreviewPasswordAvailable = false,
                     areFoldersAvailable = true,
-                    areTagsAvailable = true
+                    areTagsAvailable = true,
+                    isTotpAvailable = true
                 )
             )
         }
@@ -60,7 +61,8 @@ class FiltersMenuPresenterTest : KoinTest {
                     termsAndConditionsUrl = null,
                     isPreviewPasswordAvailable = false,
                     areFoldersAvailable = true,
-                    areTagsAvailable = true
+                    areTagsAvailable = true,
+                    isTotpAvailable = true
                 )
             )
         }

@@ -99,7 +99,8 @@ class ResourceDetailsPresenterTest : KoinTest {
                     termsAndConditionsUrl = null,
                     isPreviewPasswordAvailable = true,
                     areFoldersAvailable = true,
-                    areTagsAvailable = true
+                    areTagsAvailable = true,
+                    isTotpAvailable = true
                 )
             )
         }
@@ -291,7 +292,8 @@ class ResourceDetailsPresenterTest : KoinTest {
                         null,
                         isPreviewPasswordAvailable = false,
                         areFoldersAvailable = false,
-                        areTagsAvailable = false
+                        areTagsAvailable = false,
+                        isTotpAvailable = true
                     )
                 )
             )
