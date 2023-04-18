@@ -188,7 +188,12 @@ class OtpPresenter(
         val filtered = otpList.filter {
             searchableMatcher.matches(it, currentSearchText.value)
         }
-        view?.showOtpList(filtered)
+        if (filtered.isEmpty()) {
+            view?.showEmptyView()
+        } else {
+            view?.hideEmptyView()
+            view?.showOtpList(filtered)
+        }
     }
 
     private fun processSearchIconChange() {
