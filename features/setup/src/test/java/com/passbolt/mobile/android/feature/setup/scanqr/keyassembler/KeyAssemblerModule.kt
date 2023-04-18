@@ -1,10 +1,3 @@
-package com.passbolt.mobile.android.feature.setup.scanqr.qrparser
-
-import com.passbolt.mobile.android.dto.response.qrcode.AssembledKeyDto
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import okio.Buffer
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,15 +20,15 @@ import okio.Buffer
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class KeyAssembler(
-    private val json: Json
-) {
 
-    fun assemblePrivateKey(contentBytes: Buffer): String {
-        val key = String(contentBytes.readByteArray())
+package com.passbolt.mobile.android.feature.setup.scanqr.keyassembler
 
-        val assembledKey = json.decodeFromString<AssembledKeyDto>(key)
+import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
+import kotlinx.serialization.json.Json
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.module
 
-        return assembledKey.armoredKey
-    }
+val keyAssemblerModule = module {
+    factoryOf(::KeyAssembler)
+    factory { Json { ignoreUnknownKeys = true } }
 }
