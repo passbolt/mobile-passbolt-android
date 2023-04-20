@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.leinardi.android.speeddial.SpeedDialView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -78,6 +79,7 @@ class OtpFragment :
     private val imageLoader: ImageLoader by inject()
     private val clipboardManager: ClipboardManager? by inject()
     private val speedDialFabFactory: OtpSpeedDialFabFactory by inject()
+    private var speedDialView: SpeedDialView? = null
 
     private val authenticationResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -123,14 +125,19 @@ class OtpFragment :
         super.onPause()
     }
 
+    override fun onDestroyView() {
+        speedDialView = null
+        super.onDestroyView()
+    }
+
     private fun initSpeedDialFab() {
         with(speedDialFabFactory) {
             scanQrCodeClick = { presenter.scanOtpQrCodeClick() }
             createManuallyClick = { presenter.createOtpManuallyClick() }
 
-            binding.otpRootLayout.addView(
-                getSpeedDialFab(requireContext(), binding.overlay)
-            )
+            speedDialView = getSpeedDialFab(requireContext(), binding.overlay)
+            speedDialView?.gone()
+            binding.otpRootLayout.addView(speedDialView)
         }
     }
 
@@ -181,10 +188,6 @@ class OtpFragment :
 
     override fun hideEmptyView() {
         binding.emptyListContainer.gone()
-    }
-
-    override fun performRefreshUsingRefreshExecutor() {
-        (activity as HomeDataRefreshExecutor).performFullDataRefresh()
     }
 
     override fun displaySearchAvatar(avatarUrl: String?) {
@@ -347,6 +350,14 @@ class OtpFragment :
 
     override fun showNewOtpCreated() {
         showSnackbar(R.string.otp_new_otp_created, backgroundColor = R.color.green)
+    }
+
+    override fun showCreateButton() {
+        speedDialView?.visible()
+    }
+
+    override fun hideCreateButton() {
+        speedDialView?.gone()
     }
 
     private companion object {

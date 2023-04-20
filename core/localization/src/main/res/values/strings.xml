@@ -482,6 +482,7 @@
     <string name="otp_create_totp_expert_settings_expiry_length_info">digits.</string>
     <string name="otp_create_totp_expert_settings_algorithm">Algorithm</string>
     <string name="otp_create_totp_expert_settings_length">TOTP length</string>
+    <string name="otp_create_totp_expert_settings_warning">Advanced settings have to match your TOTP provider settings otherwise it won’t work.</string>
 
     <string name="otp_create_success">Your TOTP has been scanned!</string>
 

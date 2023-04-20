@@ -34,7 +34,6 @@ interface OtpContract {
         fun showOtpList(otpList: List<OtpListItemWrapper>)
         fun showEmptyView()
         fun hideEmptyView()
-        fun performRefreshUsingRefreshExecutor()
         fun displaySearchAvatar(avatarUrl: String?)
         fun navigateToSwitchAccount(appContext: AppContext)
         fun showFullscreenError()
@@ -55,6 +54,8 @@ interface OtpContract {
         fun showResourceDeleted()
         fun initRefresh()
         fun showNewOtpCreated()
+        fun showCreateButton()
+        fun hideCreateButton()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
