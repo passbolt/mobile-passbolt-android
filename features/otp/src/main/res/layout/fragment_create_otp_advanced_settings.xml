@@ -25,17 +25,39 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dp_16">
 
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/background_yellow_rectangle_corners"
+                app:layout_constraintBottom_toBottomOf="@id/changeSettingsWarning"
+                app:layout_constraintEnd_toEndOf="@id/changeSettingsWarning"
+                app:layout_constraintStart_toStartOf="@id/changeSettingsWarning"
+                app:layout_constraintTop_toTopOf="@id/changeSettingsWarning" />
+
+            <!-- do not use textPrimary color here as the background is yellow -->
+            <TextView
+                android:id="@+id/changeSettingsWarning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/dp_16"
+                android:padding="@dimen/dp_16"
+                android:text="@string/otp_create_totp_expert_settings_warning"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                app:drawableStartCompat="@drawable/ic_alert_triangle"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
                 android:id="@+id/totpPeriodInput"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_32"
                 android:layout_marginEnd="@dimen/dp_8"
                 app:inputHint="@string/otp_create_totp_expert_settings_expiry_hint"
                 app:inputIsRequired="true"
                 app:inputTitle="@string/otp_create_totp_expert_settings_expiry"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/changeSettingsWarning" />
 
             <TextView
                 android:layout_width="0dp"

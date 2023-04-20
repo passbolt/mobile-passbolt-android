@@ -99,6 +99,7 @@ class OtpPresenter(
 
     override fun refreshAction() {
         refreshInProgress = false
+        view?.showCreateButton()
         presenterScope.launch {
             val itemVisibleBeforeRefresh = visibleOtpId
             hideCurrentlyVisibleItem()
@@ -284,7 +285,7 @@ class OtpPresenter(
     }
 
     override fun refreshClick() {
-        view?.performRefreshUsingRefreshExecutor()
+        refreshData()
     }
 
     override fun searchAvatarClick() {
@@ -375,8 +376,8 @@ class OtpPresenter(
             resourceAuthenticatedActionsInteractor.deleteResource(
                 failure = { view?.showFailedToDeleteResource() },
                 success = {
-                    view?.initRefresh()
                     view?.showResourceDeleted()
+                    refreshData()
                 }
             )
         }
@@ -384,6 +385,12 @@ class OtpPresenter(
 
     override fun otpCreated() {
         view?.showNewOtpCreated()
+        refreshData()
+    }
+
+    private fun refreshData() {
         view?.initRefresh()
+        refreshInProgress = true
+        view?.hideCreateButton()
     }
 }
