@@ -53,6 +53,7 @@ import org.koin.core.parameter.parametersOf
 import org.koin.core.scope.Scope
 import kotlin.time.Duration.Companion.seconds
 
+@Suppress("TooManyFunctions")
 class OtpPresenter(
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val searchableMatcher: SearchableMatcher,
@@ -109,7 +110,7 @@ class OtpPresenter(
                     .find { it.otp.resourceId == itemVisibleBeforeRefresh }
                     ?.let {
                         hideCurrentlyVisibleItem()
-                        otpItemClick(it)
+                        showTotp(it, copyToClipboard = true)
                     }
                 showOtps()
             }
@@ -161,7 +162,7 @@ class OtpPresenter(
                             .find { it.isVisible && (it.remainingSecondsCounter ?: Long.MAX_VALUE) < 0 }
                             ?.let {
                                 hideCurrentlyVisibleItem()
-                                otpItemClick(it)
+                                showTotp(it, copyToClipboard = true)
                             }
                         showOtps()
                     }
@@ -224,6 +225,10 @@ class OtpPresenter(
 
     override fun otpItemClick(otpListItemWrapper: OtpListItemWrapper) {
         hideCurrentlyVisibleItem()
+        showTotp(otpListItemWrapper, copyToClipboard = true)
+    }
+
+    private fun showTotp(otpListItemWrapper: OtpListItemWrapper, copyToClipboard: Boolean) {
         presenterScope.launch {
             val otpResource = getLocalResourceUseCase.execute(
                 GetLocalResourceUseCase.Input(otpListItemWrapper.otp.resourceId)
@@ -255,7 +260,9 @@ class OtpPresenter(
                         visibleOtpId = otpListItemWrapper.otp.resourceId
                     }
                     showOtps()
-                    view?.copySecretToClipBoard(label, otpParameters.otpValue)
+                    if (copyToClipboard) {
+                        view?.copySecretToClipBoard(label, otpParameters.otpValue)
+                    }
                 }
             }
         }
@@ -346,7 +353,7 @@ class OtpPresenter(
     }
 
     override fun menuShowOtpClick() {
-        otpItemClick(requireNotNull(currentOtpItemForMenu))
+        showTotp(requireNotNull(currentOtpItemForMenu), copyToClipboard = false)
     }
 
     override fun menuDeleteOtpClick() {
