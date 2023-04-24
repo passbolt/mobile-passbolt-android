@@ -16,22 +16,31 @@
     <string name="all_items_home_search_hint">Name, Benutzer, URL oder Tag suchen</string>
     <string name="user_search_hint">Suche nach Benutzern…</string>
     <string name="no_passwords">Keine Passwörter vorhanden</string>
+    <string name="no_otps">There are no OTPs</string>
     <string name="authentication_required">Authentifizierung erforderlich</string>
     <string name="save">Speichern</string>
     <string name="apply">Anwenden</string>
     <string name="confirm">Bestätigen</string>
     <string name="suggested">Vorgeschlagen</string>
     <string name="other">Andere</string>
-    <string name="favourites_failure">Could not modify favourite</string>
+    <string name="favourites_failure">Favorit konnte nicht angepasst werden</string>
+    <string name="delete_failure">Ressource konnte nicht gelöscht werden</string>
     <string name="shared_with">Freigegeben für</string>
+    <string name="location">Standort</string>
+    <string name="content_not_available">Der Inhalt ist nicht mehr verfügbar</string>
+    <string name="consent">Ich stimme zu</string>
     <string name="common_failure">Etwas ist schiefgelaufen!</string>
-    <string name="common_network_failure">There was a connection issue</string>
-    <string name="common_failure_format">Something went wrong![%s]</string>
+    <string name="common_network_failure">Es gab ein Verbindungsproblem</string>
+    <string name="common_failure_format">Etwas ist schiefgelaufen![%s]</string>
     <string name="common_refresh">Aktuallisieren</string>
     <string name="common_sign_out">Abmelden</string>
+    <string name="common_data_refresh_error">Es gab einen Fehler beim Aktualisieren der Daten</string>
     <string name="common_message_resource_edited">%s Passwort wurde erfolgreich bearbeitet.</string>
     <string name="common_message_resource_deleted">%s Kennwort wurde gelöscht.</string>
     <string name="common_message_resource_shared">Die Berechtigungen für die Ressource wurden aktualisiert.</string>
+    <string name="common_message_folder_created">Neuer Ordner %s wurde erstellt!</string>
+    <string name="validation_required_with_max_length">Die Länge sollte zwischen 1 und %d liegen.</string>
+    <string name="validation_required_integer">Should be an integer number</string>
     <string name="fingerprint_biometric_error_generic">Es ist ein Fehler beim Fingerabdrucksensor aufgetreten.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Die biometrische Autorisierung wurde aufgrund von zu vielen Versuchen blockiert.</string>
     <string name="fingerprint_biometric_error_blocked">Die biometrische Autorisierung wurde für 30 Sekunden gesperrt.</string>
@@ -52,8 +61,8 @@
     <string name="more_edit">Passwort bearbeiten</string>
     <string name="more_delete">Passwort löschen</string>
     <string name="more_share">Passwort teilen</string>
-    <string name="more_add_to_favourite">Add to favourite</string>
-    <string name="more_remove_from_favourite">Remove from favourite</string>
+    <string name="more_add_to_favourite">Zu Favoriten hinzufügen</string>
+    <string name="more_remove_from_favourite">Aus Favoriten entfernen</string>
     <string name="folder_more_see_details">Details anzeigen</string>
     <string name="dialog_server_not_reachable_title">Server wurde nicht erreicht!</string>
     <string name="dialog_server_not_reachable_message">%s kann nicht erreicht werden. Bitte versuchen Sie es erneut</string>
@@ -71,6 +80,7 @@
     <string name="help_menu_visit_help_website">Hilfeseite besuchen</string>
     <string name="help_menu_why_scan_codes">Warum QR-Codes scannen?</string>
     <string name="help_menu_enable_debug_logs">Debug-Protokolle einschalten</string>
+    <string name="help_menu_import_profile_manually">Ihr Konto manuell importieren</string>
     <string name="logs_share_title">Protokoll teilen</string>
     <string name="logs_share_email_title">Passbolt Protokolle</string>
     <string name="logs_share_email">contact@passbolt.com</string>
@@ -84,7 +94,6 @@
     <string name="account_details_label_name">Name</string>
     <string name="account_details_label_email">E-Mail</string>
     <string name="account_details_label_org">URL der Organisation</string>
-    <string name="validation_required_with_max_length">Die Länge sollte zwischen 1 und %d liegen.</string>
     <string name="account_details_save_changes">Änderungen speichern</string>
     <string name="account_details_label_saved">Ihr Kontobezeichung wurde geändert!</string>
     <string name="unknown_error">Unbekannter Fehler aufgetreten</string>
@@ -107,7 +116,7 @@
     <string name="auth_enter_passphrase">Passphrase eingeben</string>
     <string name="auth_exit_dialog_message">Wenn Sie gehen, müssen Sie Ihr Konto möglicherweise erneut einrichten.</string>
     <string name="auth_biometric_title">Bestätigen Sie mit Ihrem Fingerabdruck</string>
-    <string name="auth_biometric_subtitle" />
+    <string name="auth_biometric_subtitle"></string>
     <string name="auth_reason_session_expired">Bitte authentifizieren Sie sich, um die Sitzung zu aktualisieren</string>
     <string name="auth_reason_passphrase_expired">Bitte authentifizieren Sie den Zugriff mit einer Passphrase</string>
     <string name="auth_server_fingerprint_changed_title">Entschuldigung, der Serverschlüssel hat sich geändert.</string>
@@ -182,6 +191,9 @@
     <string name="home_create">Erstellen</string>
     <string name="home_in_sub_folders">in Unterordnern:</string>
     <string name="home_in_current_folder">in \"%s\":</string>
+    <string name="home_speed_dial_add_password">Passwort hinzufügen</string>
+    <string name="home_speed_dial_add_folder">Ordner hinzufügen</string>
+    <string name="home_please_wait_for_refresh">Bitte warten Sie, bis die Daten aktualisiert werden, um das Konto zu wechseln</string>
     <string name="switch_account_see_details">Siehe Details</string>
     <string name="switch_account_sign_out">Abmelden</string>
     <string name="switch_account_manage_accounts">Konten verwalten</string>
@@ -198,12 +210,12 @@
     <string name="filters_menu_groups">Gruppen</string>
     <string name="main_menu_home">Start</string>
     <string name="main_menu_settings">Einstellungen</string>
+    <string name="main_menu_otp">TOTP</string>
     <string name="resource_details_username_header">Benutzername</string>
     <string name="resource_details_password_header">Passwort</string>
     <string name="resource_details_url_header">Webseiten URL</string>
     <string name="resource_details_description_header">Beschreibung</string>
     <string name="resource_details_tags_header">Tags</string>
-    <string name="resource_details_hide_password">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">Beschreibung ist verschlüsselt</string>
     <string name="resource_details_see_description">Beschreibung anzeigen</string>
     <string name="resource_details_decryption_failure">Fehler bei der Entschlüsselung des Geheimnisses</string>
@@ -226,17 +238,12 @@
     <string name="resource_update_field_uri">URL</string>
     <string name="resource_update_field_username">Benutzername</string>
     <string name="resource_update_field_description">Beschreibung</string>
+    <string name="settings_app_settings">App-Einstellungen</string>
+    <string name="settings_accounts">Konten</string>
+    <string name="settings_terms_and_licenses">Bedingungen &amp; Lizenzen</string>
+    <string name="settings_debug_logs">Debug, Protokolle</string>
     <string name="settings_disable">Deaktiviert</string>
     <string name="settings_sign_out">Abmelden</string>
-    <string name="settings_app_settings_fingerprint">Fingerabdruck</string>
-    <string name="settings_debug_logs_enable_logs">Debug-Logs aktivieren</string>
-    <string name="settings_app_settings_autofill">Autofill</string>
-    <string name="settings_app_settings_default_filter">Standardfilter</string>
-    <string name="settings_accounts_manage_accounts">Konten verwalten</string>
-    <string name="settings_terms_and_licenses_terms">Bedingungen &amp; Konditionen</string>
-    <string name="settings_terms_and_licenses_privacy_policy">Datenschutzbestimmungen</string>
-    <string name="settings_debug_logs_settings_logs">Protokolle</string>
-    <string name="settings_terms_and_licenses_licenses">Open-Source-Lizenzen</string>
     <string name="settings_title">Einstellungen</string>
     <string name="settings_disable_fingerprint_confirmation_message">Nachdem Sie den Fingerabdruck deaktiviert haben, müssen Sie sich mit Ihrer Passphrase anmelden.</string>
     <string name="settings_turn_on_biometric_title">Aktivieren der Fingerabdruck-Authentifizierung</string>
@@ -244,6 +251,21 @@
     <string name="settings_add_first_fingerprint">Bitte fügen Sie zunächst Ihren Fingerabdruck in den Systemeinstellungen hinzu</string>
     <string name="settings_add_first_fingerprint_title">Fingerabdruck konfigurieren</string>
     <string name="settings_add_first_fingerprint_settings">Zu den Einstellungen</string>
+    <string name="settings_debug_logs_settings_logs">Protokolle</string>
+    <string name="settings_debug_logs_enable_logs">Debug-Logs aktivieren</string>
+    <string name="settings_debug_logs_visit_help_website">Hilfe-Website besuchen</string>
+    <string name="settings_accounts_manage_accounts">Konten verwalten</string>
+    <string name="settings_accounts_transfer_account">Konto auf ein anderes Gerät übertragen</string>
+    <string name="settings_terms_and_licenses_privacy_policy">Datenschutzbestimmungen</string>
+    <string name="settings_terms_and_licenses_licenses">Open-Source-Lizenzen</string>
+    <string name="settings_terms_and_licenses_terms">Bedingungen &amp; Konditionen</string>
+    <string name="settings_app_settings_default_filter">Standardfilter</string>
+    <string name="settings_app_settings_autofill">Autofill</string>
+    <string name="settings_app_settings_fingerprint">Fingerabdruck</string>
+    <string name="settings_app_settings_biometry_error">Biometriefehler. %s</string>
+    <string name="settings_app_settings_expert_settings">Experteneinstellungen</string>
+    <string name="settings_app_settings_expert_settings_dev_mode">Entwicklermodus</string>
+    <string name="settings_app_settings_expert_settings_hide_root">\"Gerät ist gerootet\"-Dialog ausblenden</string>
     <string name="settings_autofill_autofill_title">Hier können Sie die Autofüllungsmethoden ändern</string>
     <string name="settings_autofill_autofill_desc">Es wird empfohlen, die Autofill-Service-Methode zu verwenden, aber die Leistung des Services kann von den Einstellungen Ihres Geräts und der Batterieoptimierung abhängen. \n\nWenn der Autofill-Service nicht zuverlässig auf Ihrem Gerät funktioniert, können Sie versuchen, Autofill basierend auf den Bedienungshilfen zu aktivieren.</string>
     <string name="settings_autofill_autofill_service">Autmatisches ausfüllen Service (empfohlen)</string>
@@ -266,7 +288,6 @@
     <string name="welcome_create_account_dialog_message">Es ist derzeit nicht möglich, ein Konto über die mobile App zu erstellen. Zunächst müssen Sie ein Konto über Ihre Desktop-Browser-Erweiterung erstellen.</string>
     <string name="transfer_details_header">QR-Codes scannen, um Ihre Kontodaten zu übertragen</string>
     <string name="transfer_details_scan_button">QR-Codes scannen</string>
-    <string name="transfer_account_title">Kontodaten übertragen</string>
     <string name="transfer_details_camera_access_dialog_title">Zugang zur Kamera erforderlich</string>
     <string name="transfer_details_camera_required_dialog_title">Kamera erforderlich</string>
     <string name="transfer_details_camera_required_dialog_message">Leider benötigen Sie ein Gerät mit einer Kamera, um fortzufahren, da die Schlüsselübertragung über QR-Codes erfolgt.</string>
@@ -294,7 +315,7 @@
     <string name="fingerprint_setup_use_description">Entschlüsseln Sie Ihre Geheimnisse in einer Sekunde.</string>
     <string name="fingerprint_setup_biometric_title">Bestätigen Sie mit Ihrem Fingerabdruck</string>
     <string name="fingerprint_setup_biometric_subtitle">Berühren Sie den Fingerabdrucksensor</string>
-    <string name="folder_root">Root</string>
+    <string name="folder_root">Wurzelverzeichnis</string>
     <string name="resource_permissions_can_read">Kann lesen</string>
     <string name="resource_permissions_can_update">Kann aktualisieren</string>
     <string name="resource_permissions_is_owner">Ist Besitzer</string>
@@ -323,13 +344,71 @@
     <string name="dialog_encryption_error_message">Es gab einen Verschlüsselungsfehler (%s). Bitte versuchen Sie es erneut.</string>
     <string name="resource_tags_section">Tags</string>
     <string name="folder_details_name_header">Ordnername</string>
-    <string name="folder_details_location_header">Standort</string>
+    <string name="help_button_description">Hilfe</string>
+    <string name="create_folder_title">Ordner anlegen</string>
+    <string name="create_folder_name">Name</string>
+    <string name="create_folder_name_validation">Ordnername darf nicht leer sein</string>
+    <string name="create_folder_error_format">Ordner konnte nicht erstellt werden. %s</string>
+    <string name="share_folder_error_format">Ordner konnte nicht geteilt werden. %s</string>
+    <string name="dialog_accessibility_consent_title">Barrierefreiheitsdienst Offenlegung</string>
+    <string name="dialog_accessibility_consent_message">Wir verwenden den Barrierefreiheitsdienst, um zusätzliche Unterstützung für das Ausfüllen von Passwörtern in Webbrowsern bereitzustellen, die das native Android-Autofill nicht implementieren, oder Telefonhersteller, die es deaktivieren. Bitte erteilen Sie die Erlaubnis, wenn Sie sie aktivieren möchten.</string>
+    <string name="import_profile_title">Konto importieren</string>
+    <string name="import_profile_user_id">Benutzer-ID</string>
+    <string name="import_profile_account_url">Konto-URL</string>
+    <string name="import_profile_private_key">Privater Schlüssel</string>
+    <string name="import_profile_import">Importieren</string>
+    <string name="import_profile_invalid_uuid">Ungültiges UUID-Format</string>
+    <string name="import_profile_invalid_account_url">Ungültiges URL-Format. URL muss mit https:// beginnen</string>
+    <string name="import_profile_invalid_private_key">Der private Schlüssel darf nicht leer sein</string>
+    <string name="transfer_account_onboarding_header">QR-Codes anzeigen, um Ihre Kontodaten zu übertragen</string>
+    <string name="transfer_account_onboarding_transfer_button">Übertragung starten</string>
+    <string name="transfer_account_cancel_button">Übertragung abbrechen</string>
+    <string name="transfer_account_stop_button">Übertragung beenden</string>
+    <string name="transfer_account_title">Kontodaten übertragen</string>
+    <string name="transfer_account_stop_confirmation_dialog_message">Wenn Sie gehen, müssen Sie die QR-Codes erneut scannen.</string>
+    <string name="transfer_account_could_not_initialize_parameters">Übertragungsparameter konnten nicht initialisiert werden</string>
+    <string name="transfer_account_could_not_create_transfer_format">Übertragung konnte nicht erstellt werden. %s </string>
+    <string name="transfer_account_could_not_initialize_qr_code_page_data">Konnte QR-Code-Seitendaten nicht initialisieren</string>
+    <string name="transfer_account_error_during_fetch_transfer_format">Übertragungsdetails konnten nicht abgerufen werden. %s</string>
+    <string name="transfer_account_summary_success">Ihre Daten wurden übertragen!</string>
+    <string name="transfer_account_summary_cancelled">Übertragung abgebrochen</string>
+    <string name="transfer_account_summary_go_back">Zurück zu meinem Konto</string>
+    <string name="otp_search">Search TOTP</string>
+    <string name="otp_speed_dial_scan_qr">Scan QR code</string>
+    <string name="otp_speed_dial_create_manually">Create TOTP manually</string>
+    <string name="otp_more_copy_otp">Copy TOTP</string>
+    <string name="otp_more_show_otp">Show TOTP</string>
+    <string name="otp_more_edit_otp">Edit TOTP</string>
+    <string name="otp_more_delete_otp">Delete TOTP</string>
+    <string name="otp_delete_confirmation">This action will permanently delete the TOTP.</string>
+    <string name="otp_delete_totp">Delete TOTP</string>
+    <string name="otp_deleted">TOTP was deleted</string>
+    <string name="otp_failed_to_delete">Failed to delete totp</string>
+    <string name="otp_new_otp_created">New TOTP created!</string>
+    <string name="otp_scan_title">Scan QR code</string>
+    <string name="otp_scan_not_a_totp_qr">Not a TOTP Qr Code</string>
+    <string name="otp_create_totp_title">Create TOTP</string>
+    <string name="otp_create_totp_field_name">Name (Label)</string>
+    <string name="otp_create_totp_field_name_hint">Name</string>
+    <string name="otp_create_totp_field_url">URL (Issuer)</string>
+    <string name="otp_create_totp_field_url_hint">URL</string>
+    <string name="otp_create_totp_field_secret">Geheimnis</string>
+    <string name="otp_create_totp_field_secret_hint">Geheimnis</string>
+    <string name="otp_create_totp_advanced_settings">Erweiterte Einstellungen</string>
+    <string name="otp_create_totp_create_standalone">Create a standalone TOTP</string>
+    <string name="otp_create_totp_expert_settings_title">Create TOTP - advanced settings</string>
+    <string name="otp_create_totp_expert_settings_expiry">TOTP expiry</string>
+    <string name="otp_create_totp_expert_settings_expiry_hint">TOTP expiry</string>
+    <string name="otp_create_totp_expert_settings_expiry_seconds_info">seconds until the TOTP expires.</string>
+    <string name="otp_create_totp_expert_settings_expiry_length_info">digits.</string>
+    <string name="otp_create_totp_expert_settings_algorithm">Algorithmus</string>
+    <string name="otp_create_totp_expert_settings_length">TOTP length</string>
+    <string name="otp_create_success">Your TOTP has been scanned!</string>
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
         <item>E-Mail</item>
         <item>Benutzername</item>
         <item>Mobil</item>
@@ -340,8 +419,7 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
         <item>Passwort</item>
         <item>Geheimniss</item>
         <item>Passphrase</item>
@@ -354,6 +432,12 @@
         <item>Anmeldung über die Browsererweiterung</item>
         <item>Gehen Sie zur &lt;b&gt;Profil&lt;/b&gt; Seite</item>
         <item>Gehen Sie zum &lt;b&gt;Mobilen&lt;/b&gt; Bereich</item>
+        <item>Scannen Sie die QR-Codes nacheinander</item>
+    </string-array>
+    <string-array name="transfer_account_onboarding_steps_array">
+        <item>App auf einem anderen Handy installieren</item>
+        <item>Die App starten</item>
+        <item>Wählen Sie \"Mit einem bestehenden Konto verbinden\"</item>
         <item>Scannen Sie die QR-Codes nacheinander</item>
     </string-array>
 </resources>

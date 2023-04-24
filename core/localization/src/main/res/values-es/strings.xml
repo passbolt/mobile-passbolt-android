@@ -16,22 +16,31 @@
     <string name="all_items_home_search_hint">Buscar nombre, usuario, url o etiqueta</string>
     <string name="user_search_hint">Buscar usuarios…</string>
     <string name="no_passwords">No hay contraseñas</string>
+    <string name="no_otps">No hay OTPs</string>
     <string name="authentication_required">Autenticación obligatoria</string>
     <string name="save">Guardar</string>
     <string name="apply">Aplicar</string>
     <string name="confirm">Confirmar</string>
     <string name="suggested">Sugerido</string>
     <string name="other">Otro</string>
-    <string name="favourites_failure">No se puede modificar el favorito</string>
+    <string name="favourites_failure">No se pudo modificar el favorito</string>
+    <string name="delete_failure">No se pudo eliminar el recurso</string>
     <string name="shared_with">Compartido con</string>
+    <string name="location">Ubicación</string>
+    <string name="content_not_available">El contenido ya no está disponible</string>
+    <string name="consent">Acepto</string>
     <string name="common_failure">¡Algo salió mal!</string>
     <string name="common_network_failure">Ha habido un problema de conexión</string>
     <string name="common_failure_format">¡Algo salió mal![%s]</string>
     <string name="common_refresh">Recargar</string>
     <string name="common_sign_out">Cerrar sesión</string>
+    <string name="common_data_refresh_error">Se ha producido un error durante la actualización de datos</string>
     <string name="common_message_resource_edited">La contraseña %s se ha editado correctamente.</string>
     <string name="common_message_resource_deleted">La contraseña %s fue eliminada.</string>
     <string name="common_message_resource_shared">Los permisos de recursos fueron actualizados.</string>
+    <string name="common_message_folder_created">¡Se ha creado la nueva carpeta %s!</string>
+    <string name="validation_required_with_max_length">La longitud debe estar entre 1 y %d</string>
+    <string name="validation_required_integer">Debe ser un número entero</string>
     <string name="fingerprint_biometric_error_generic">Ha ocurrido un error con el sensor de huella dactilar.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">La autorización biométrica ha sido bloqueada debido a demasiados intentos.</string>
     <string name="fingerprint_biometric_error_blocked">La autorización biométrica ha sido bloqueada durante 30 segundos.</string>
@@ -56,7 +65,7 @@
     <string name="more_remove_from_favourite">Eliminar de favoritos</string>
     <string name="folder_more_see_details">Ver detalles</string>
     <string name="dialog_server_not_reachable_title">¡El servidor no es accesible!</string>
-    <string name="dialog_server_not_reachable_message">No se puede acceder a %s. Inténtelo de nuevo</string>
+    <string name="dialog_server_not_reachable_message">No se puede acceder a %s. Por favor, inténtelo de nuevo</string>
     <string name="dialog_server_not_reachable_got_it">Entendido</string>
     <string name="password_strength_empty">Fortaleza de la contraseña</string>
     <string name="password_strength_very_weak">Muy débil</string>
@@ -71,6 +80,7 @@
     <string name="help_menu_visit_help_website">Visitar el sitio de ayuda</string>
     <string name="help_menu_why_scan_codes">¿Por qué escanear los códigos QR?</string>
     <string name="help_menu_enable_debug_logs">Habilitar registros de depuración</string>
+    <string name="help_menu_import_profile_manually">Importe su cuenta manualmente</string>
     <string name="logs_share_title">Compartir registros</string>
     <string name="logs_share_email_title">Registros de Passbolt</string>
     <string name="logs_share_email">contact@passbolt.com</string>
@@ -84,7 +94,6 @@
     <string name="account_details_label_name">Nombre</string>
     <string name="account_details_label_email">Correo</string>
     <string name="account_details_label_org">URL de la organización</string>
-    <string name="validation_required_with_max_length">La longitud debe estar entre 1 y %d</string>
     <string name="account_details_save_changes">Guardar cambios</string>
     <string name="account_details_label_saved">¡Se ha cambiado la etiqueta de tu cuenta!</string>
     <string name="unknown_error">Se ha producido un error desconocido</string>
@@ -102,12 +111,12 @@
     <string name="auth_sign_in">Iniciar sesión</string>
     <string name="auth_incorrect_passphrase">Contraseña incorrecta o error de descifrado. Por favor, inténtelo de nuevo.</string>
     <string name="auth_forgot_password_button">Olvidé mi contraseña</string>
-    <string name="auth_forgot_password_title">¿Has olvidado tu contraseña?</string>
-    <string name="auth_forgot_password_message">Lamentablemente no puede acceder a sus datos si no recuerda su contraseña. Póngase en contacto con su administrador para desbloquear su cuenta.</string>
+    <string name="auth_forgot_password_title">¿Ha olvidado su contraseña?</string>
+    <string name="auth_forgot_password_message">Lamentablemente no puede acceder a sus datos si no recuerda su contraseña. Por favor, póngase en contacto con su administrador para desbloquear su cuenta.</string>
     <string name="auth_enter_passphrase">Introduzca su contraseña</string>
     <string name="auth_exit_dialog_message">Si sale, puede que necesite configurar su cuenta de nuevo.</string>
     <string name="auth_biometric_title">Confirme usando su huella digital</string>
-    <string name="auth_biometric_subtitle" />
+    <string name="auth_biometric_subtitle"></string>
     <string name="auth_reason_session_expired">Por favor, autentifíquese para actualizar la sesión</string>
     <string name="auth_reason_passphrase_expired">Por favor, autentifique el acceso a la contraseña</string>
     <string name="auth_server_fingerprint_changed_title">Lo sentimos, la clave del servidor ha cambiado.</string>
@@ -170,7 +179,7 @@
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Servicio de accesibilidad de autocompletado activado</string>
     <string name="autofill_service_enable_overlay">Activar permiso de superposición</string>
-    <string name="autofill_service_overlay_description"><![CDATA[Autocompletar nombres de usuario y contraseñas para los navegadores web Android. Por favor, active el permiso ‘Mostrar sobre otras aplicaciones‘ para el autocompletado de Passbolt]]></string>
+    <string name="autofill_service_overlay_description"><![CDATA[Autocompletar nombres de usuario y contraseñas para los navegadores web Android. Por favor, active el permiso \'Mostrar sobre otras aplicaciones\' para el autocompletado de Passbolt]]></string>
     <string name="autofill_service_enable_service">Activar autocompletado para la mayoría de aplicaciones</string>
     <string name="autofill_service_enable_service_description"><![CDATA[Autocompletar nombres de usuario y contraseñas para aplicaciones Android]]></string>
     <string name="autofill_dropdown_select">Seleccionar desde Passbolt</string>
@@ -182,6 +191,9 @@
     <string name="home_create">Crear</string>
     <string name="home_in_sub_folders">en subcarpetas:</string>
     <string name="home_in_current_folder">en \"%s\":</string>
+    <string name="home_speed_dial_add_password">Añadir contraseña</string>
+    <string name="home_speed_dial_add_folder">Añadir carpeta</string>
+    <string name="home_please_wait_for_refresh">Por favor, espere a la actualización de datos para cambiar de cuenta</string>
     <string name="switch_account_see_details">Ver detalles</string>
     <string name="switch_account_sign_out">Cerrar sesión</string>
     <string name="switch_account_manage_accounts">Gestionar cuentas</string>
@@ -198,12 +210,12 @@
     <string name="filters_menu_groups">Grupos</string>
     <string name="main_menu_home">Inicio</string>
     <string name="main_menu_settings">Ajustes</string>
+    <string name="main_menu_otp">TOTP</string>
     <string name="resource_details_username_header">Nombre de usuario</string>
     <string name="resource_details_password_header">Contraseña</string>
     <string name="resource_details_url_header">URL del sitio web</string>
     <string name="resource_details_description_header">Descripción</string>
     <string name="resource_details_tags_header">Etiquetas</string>
-    <string name="resource_details_hide_password">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">La descripción está cifrada</string>
     <string name="resource_details_see_description">Ver descripción</string>
     <string name="resource_details_decryption_failure">Error durante el descifrado del secreto</string>
@@ -216,7 +228,7 @@
     <string name="resource_update_password_hint">Introduzca contraseña</string>
     <string name="resource_update_description">Descripción</string>
     <string name="resource_update_description_hint">Introduzca una descripción</string>
-    <string name="resource_update_empty_error">%s no puede estar vacío</string>
+    <string name="resource_update_empty_error">El %s no puede estar vacío</string>
     <string name="resource_update_too_long_error">Se ha superado la longitud máxima</string>
     <string name="resource_update_create_button">Crear</string>
     <string name="resource_update_create_success">¡La nueva contraseña fue creada!</string>
@@ -226,17 +238,12 @@
     <string name="resource_update_field_uri">URL</string>
     <string name="resource_update_field_username">Nombre de usuario</string>
     <string name="resource_update_field_description">Descripción</string>
+    <string name="settings_app_settings">Ajustes de la app</string>
+    <string name="settings_accounts">Cuentas</string>
+    <string name="settings_terms_and_licenses">Términos &amp; licencias</string>
+    <string name="settings_debug_logs">Depurar, registros</string>
     <string name="settings_disable">Desactivar</string>
     <string name="settings_sign_out">Cerrar sesión</string>
-    <string name="settings_app_settings_fingerprint">Huella dactilar</string>
-    <string name="settings_debug_logs_enable_logs">Habilitar registros de depuración</string>
-    <string name="settings_app_settings_autofill">Autocompletar</string>
-    <string name="settings_app_settings_default_filter">Filtro por defecto</string>
-    <string name="settings_accounts_manage_accounts">Gestionar cuentas</string>
-    <string name="settings_terms_and_licenses_terms">Términos &amp; Condiciones</string>
-    <string name="settings_terms_and_licenses_privacy_policy">Política de privacidad</string>
-    <string name="settings_debug_logs_settings_logs">Acceder a los registros</string>
-    <string name="settings_terms_and_licenses_licenses">Licencias de código abierto</string>
     <string name="settings_title">Ajustes</string>
     <string name="settings_disable_fingerprint_confirmation_message">Después de desactivar la huella dactilar necesitará iniciar sesión usando su contraseña.</string>
     <string name="settings_turn_on_biometric_title">Activar la autenticación con huella digital</string>
@@ -244,6 +251,21 @@
     <string name="settings_add_first_fingerprint">Por favor, añada su huella dactilar primero en la configuración del sistema</string>
     <string name="settings_add_first_fingerprint_title">Configurar huella digital</string>
     <string name="settings_add_first_fingerprint_settings">Ir a la configuración</string>
+    <string name="settings_debug_logs_settings_logs">Acceder a los registros</string>
+    <string name="settings_debug_logs_enable_logs">Habilitar registros de depuración</string>
+    <string name="settings_debug_logs_visit_help_website">Visitar el sitio de ayuda</string>
+    <string name="settings_accounts_manage_accounts">Gestionar cuentas</string>
+    <string name="settings_accounts_transfer_account">Transferir cuenta a otro dispositivo</string>
+    <string name="settings_terms_and_licenses_privacy_policy">Política de privacidad</string>
+    <string name="settings_terms_and_licenses_licenses">Licencias de código abierto</string>
+    <string name="settings_terms_and_licenses_terms">Términos &amp; Condiciones</string>
+    <string name="settings_app_settings_default_filter">Filtro por defecto</string>
+    <string name="settings_app_settings_autofill">Autocompletar</string>
+    <string name="settings_app_settings_fingerprint">Huella dactilar</string>
+    <string name="settings_app_settings_biometry_error">Error de biometría. %s</string>
+    <string name="settings_app_settings_expert_settings">Ajustes de experto</string>
+    <string name="settings_app_settings_expert_settings_dev_mode">Modo desarrollador</string>
+    <string name="settings_app_settings_expert_settings_hide_root">Ocultar diálogo \"el dispositivo está rooteado\"</string>
     <string name="settings_autofill_autofill_title">Aquí puede cambiar los métodos de autocompletado</string>
     <string name="settings_autofill_autofill_desc">Se recomienda utilizar el método Servicio de Autocompletado pero el rendimiento del Servicio puede depender de la configuración de su dispositivo y de la optimización de batería. \n\nSi el Servicio de Autocompletado no funciona de forma fiable en su dispositivo puede intentar habilitar el autocompletado basado en el Servicio de Accesibilidad.</string>
     <string name="settings_autofill_autofill_service">Servicio de completado (recomendado)</string>
@@ -266,10 +288,9 @@
     <string name="welcome_create_account_dialog_message">Actualmente no es posible crear una cuenta usando la aplicación móvil. Primero necesitará crear una cuenta usando la extensión de su navegador de escritorio.</string>
     <string name="transfer_details_header">Escanee los códigos QR para transferir los datos de su cuenta</string>
     <string name="transfer_details_scan_button">Escanear códigos QR</string>
-    <string name="transfer_account_title">Transferir detalles de la cuenta</string>
     <string name="transfer_details_camera_access_dialog_title">Se requiere acceso a la cámara</string>
     <string name="transfer_details_camera_required_dialog_title">Cámara obligatoria</string>
-    <string name="transfer_details_camera_required_dialog_message">Lo sentimos, se necesita un dispositivo con una cámara para continuar, ya que la transferencia de claves se realiza usando códigos QR.</string>
+    <string name="transfer_details_camera_required_dialog_message">Lo sentimos, se requiere un dispositivo con una cámara para continuar, ya que la transferencia de claves se realiza usando códigos QR.</string>
     <string name="transfer_details_camera_access_dialog_message">Por favor, proporcione permisos a la aplicación Passbolt para acceder a la cámara en sus ajustes.</string>
     <string name="scan_qr_exit_confirmation_dialog_message">Si sale, necesitará escanear los códigos QR de nuevo.</string>
     <string name="scan_qr_exit_information_dialog_message">Verá una secuencia de códigos QR. Se escanearán estos códigos hasta que la barra de progreso esté llena. ¡Entonces podrá iniciar sesión!</string>
@@ -323,13 +344,71 @@
     <string name="dialog_encryption_error_message">Se ha producido un error de cifrado (%s). Por favor, inténtelo de nuevo.</string>
     <string name="resource_tags_section">Etiquetas</string>
     <string name="folder_details_name_header">Nombre de la carpeta</string>
-    <string name="folder_details_location_header">Ubicación</string>
+    <string name="help_button_description">Ayuda</string>
+    <string name="create_folder_title">Crear carpeta</string>
+    <string name="create_folder_name">Nombre</string>
+    <string name="create_folder_name_validation">El nombre de la carpeta no puede estar vacío</string>
+    <string name="create_folder_error_format">No se pudo crear la carpeta. %s</string>
+    <string name="share_folder_error_format">No se pudo compartir la carpeta. %s</string>
+    <string name="dialog_accessibility_consent_title">Divulgación del servicio de accesibilidad</string>
+    <string name="dialog_accessibility_consent_message">Utilizamos el servicio de accesibilidad para proporcionar soporte adicional para rellenar contraseñas dentro de navegadores web que no implementan el autorellenado nativo de Android o fabricantes de teléfonos que lo desactivan. Por favor, conceda el permiso si desea habilitarlo.</string>
+    <string name="import_profile_title">Importe su cuenta</string>
+    <string name="import_profile_user_id">ID de usuario</string>
+    <string name="import_profile_account_url">URL de la cuenta</string>
+    <string name="import_profile_private_key">Clave privada</string>
+    <string name="import_profile_import">Importar</string>
+    <string name="import_profile_invalid_uuid">Formato de UUID incorrecto</string>
+    <string name="import_profile_invalid_account_url">Formato de URL incorrecto. La URL debe empezar con https://</string>
+    <string name="import_profile_invalid_private_key">La clave privada no puede estar vacía</string>
+    <string name="transfer_account_onboarding_header">Mostrar los códigos QR para transferir los datos de su cuenta</string>
+    <string name="transfer_account_onboarding_transfer_button">Iniciar transferencia</string>
+    <string name="transfer_account_cancel_button">Cancelar transferencia</string>
+    <string name="transfer_account_stop_button">Detener transferencia</string>
+    <string name="transfer_account_title">Transferir detalles de la cuenta</string>
+    <string name="transfer_account_stop_confirmation_dialog_message">Si sale, necesitará escanear los códigos QR de nuevo.</string>
+    <string name="transfer_account_could_not_initialize_parameters">No se pudieron inicializar los parámetros de la transferencia</string>
+    <string name="transfer_account_could_not_create_transfer_format">No se pudo crear la transferencia. %s </string>
+    <string name="transfer_account_could_not_initialize_qr_code_page_data">No se pudieron inicializar los datos de la página del código QR</string>
+    <string name="transfer_account_error_during_fetch_transfer_format">No se pudieron obtener los detalles de la transferencia. %s</string>
+    <string name="transfer_account_summary_success">¡Su información ha sido transferida!</string>
+    <string name="transfer_account_summary_cancelled">Transferencia cancelada</string>
+    <string name="transfer_account_summary_go_back">Volver a mi cuenta</string>
+    <string name="otp_search">Buscar TOTP</string>
+    <string name="otp_speed_dial_scan_qr">Escanear código QR</string>
+    <string name="otp_speed_dial_create_manually">Crear TOTP manualmente</string>
+    <string name="otp_more_copy_otp">Copiar TOTP</string>
+    <string name="otp_more_show_otp">Mostrar TOTP</string>
+    <string name="otp_more_edit_otp">Editar TOTP</string>
+    <string name="otp_more_delete_otp">Eliminar TOTP</string>
+    <string name="otp_delete_confirmation">Esta acción eliminará el TOTP de forma permanente.</string>
+    <string name="otp_delete_totp">Eliminar TOTP</string>
+    <string name="otp_deleted">El TOTP ha sido eliminado</string>
+    <string name="otp_failed_to_delete">Error al eliminar el TOTP</string>
+    <string name="otp_new_otp_created">¡Nuevo TOTP creado!</string>
+    <string name="otp_scan_title">Escanear código QR</string>
+    <string name="otp_scan_not_a_totp_qr">No es un código QR TOTP</string>
+    <string name="otp_create_totp_title">Crear TOTP</string>
+    <string name="otp_create_totp_field_name">Nombre (Etiqueta)</string>
+    <string name="otp_create_totp_field_name_hint">Nombre</string>
+    <string name="otp_create_totp_field_url">URL (emisor)</string>
+    <string name="otp_create_totp_field_url_hint">URL</string>
+    <string name="otp_create_totp_field_secret">Secreto</string>
+    <string name="otp_create_totp_field_secret_hint">Secreto</string>
+    <string name="otp_create_totp_advanced_settings">Configuración avanzada</string>
+    <string name="otp_create_totp_create_standalone">Crear un TOTP independiente</string>
+    <string name="otp_create_totp_expert_settings_title">Crear TOTP - configuración avanzada</string>
+    <string name="otp_create_totp_expert_settings_expiry">Caducidad TOTP</string>
+    <string name="otp_create_totp_expert_settings_expiry_hint">Caducidad TOTP</string>
+    <string name="otp_create_totp_expert_settings_expiry_seconds_info">segundos hasta que el TOTP caduque.</string>
+    <string name="otp_create_totp_expert_settings_expiry_length_info">dígitos.</string>
+    <string name="otp_create_totp_expert_settings_algorithm">Algoritmo</string>
+    <string name="otp_create_totp_expert_settings_length">Longitud del TOTP</string>
+    <string name="otp_create_success">¡Su TOTP ha sido escaneado!</string>
     <!--
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
         <item>correo</item>
         <item>nombre de usuario</item>
         <item>móvil</item>
@@ -340,8 +419,7 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values"
-        tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
         <item>contraseña</item>
         <item>secreto</item>
         <item>contraseña</item>
@@ -355,5 +433,11 @@
         <item>Vaya a la página de &lt;b&gt;Perfil&lt;/b&gt;</item>
         <item>Vaya a la sección &lt;b&gt;Móvil&lt;/b&gt;</item>
         <item>Escanee la secuencia de códigos qr</item>
+    </string-array>
+    <string-array name="transfer_account_onboarding_steps_array">
+        <item>Instalar la aplicación en otro móvil</item>
+        <item>Iniciar la aplicación</item>
+        <item>Seleccione \"Conectar a una cuenta existente\"</item>
+        <item>Escanee la secuencia de códigos QR</item>
     </string-array>
 </resources>
