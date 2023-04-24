@@ -51,6 +51,8 @@ dependencies {
     implementation libs.androidx.cameraX
     implementation libs.androidx.cameraXLifecycle
     implementation libs.networking.retrofit
+
+    testImplementation project(':commontest')
 }
 
 android {
