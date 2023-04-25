@@ -111,22 +111,22 @@ class OtpFragment :
         setUpRecycler()
         setupListeners()
         initSpeedDialFab()
+        presenter.attach(this)
     }
 
     override fun onResume() {
         super.onResume()
-        presenter.attach(this)
         presenter.resume(this)
     }
 
     override fun onPause() {
-        presenter.detach()
         presenter.pause()
         super.onPause()
     }
 
     override fun onDestroyView() {
         speedDialView = null
+        presenter.detach()
         super.onDestroyView()
     }
 
