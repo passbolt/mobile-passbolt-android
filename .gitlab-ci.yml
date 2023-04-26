@@ -84,8 +84,8 @@ Deploy qa application to Firebase:
       -Pandroid.injected.signing.key.password=$QA_KEY_PASSWORD
       assembleQa appDistributionUploadQa
   rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-    - if: '$CI_COMMIT_BRANCH == "release"'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH =~ /^release/
   artifacts:
     expire_in: 72 hrs
     paths:

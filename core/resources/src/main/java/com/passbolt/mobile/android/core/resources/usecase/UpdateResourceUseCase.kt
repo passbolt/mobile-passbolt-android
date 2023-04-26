@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.resources.SecretInputCreator
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
@@ -54,7 +55,7 @@ class UpdateResourceUseCase(
     private val resourceModelMapper: ResourceModelMapper,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val secretInputCreator: SecretInputCreator,
-    private val resourceTypeFactory: com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+    private val resourceTypeFactory: ResourceTypeFactory
 ) : AsyncUseCase<UpdateResourceUseCase.Input, UpdateResourceUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
