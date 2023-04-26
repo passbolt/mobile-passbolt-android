@@ -5,8 +5,8 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resources.SecretInputCreator
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.request.EncryptedSecret
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
@@ -52,7 +52,7 @@ class UpdateResourceUseCase(
     private val resourceModelMapper: ResourceModelMapper,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val secretInputCreator: SecretInputCreator,
-    private val resourceTypeFactory: com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+    private val resourceTypeFactory: ResourceTypeFactory
 ) : AsyncUseCase<UpdateResourceUseCase.Input, UpdateResourceUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
@@ -87,8 +87,8 @@ class UpdateResourceUseCase(
 
     private suspend fun createDescription(input: Input): String? =
         when (resourceTypeFactory.getResourceTypeEnum(input.resourceTypeId)) {
-            com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> input.description
-            com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> null
+            ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> input.description
+            ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> null
         }
 
     private suspend fun createSecrets(

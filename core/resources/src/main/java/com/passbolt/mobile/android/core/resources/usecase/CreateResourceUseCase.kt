@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.request.EncryptedSecret
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
@@ -51,7 +52,8 @@ class CreateResourceUseCase(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val resourceModelMapper: ResourceModelMapper,
     private val passphraseMemoryCache: PassphraseMemoryCache,
-    private val permissionsModelMapper: PermissionsModelMapper
+    private val permissionsModelMapper: PermissionsModelMapper,
+    private val resourceTypeFactory: ResourceTypeFactory
 ) : AsyncUseCase<CreateResourceUseCase.Input, CreateResourceUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
@@ -73,7 +75,7 @@ class CreateResourceUseCase(
                         secrets = listOf(EncryptedSecret(secret.userId, secret.data)),
                         username = input.username,
                         uri = input.uri,
-                        description = input.description,
+                        description = createDescription(input),
                         folderParentId = input.folderParentId
                     )
                 )) {
@@ -90,6 +92,12 @@ class CreateResourceUseCase(
             }
         }
     }
+
+    private suspend fun createDescription(input: Input): String? =
+        when (resourceTypeFactory.getResourceTypeEnum(input.resourceTypeId)) {
+            ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> input.description
+            ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> null
+        }
 
     private suspend fun createSecret(
         password: String,

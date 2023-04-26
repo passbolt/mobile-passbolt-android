@@ -1,2 +1,1 @@
-- Fixed "continue" button on setup success screen not visible on some screens
-- Trim inputs on manual account import to prevent user-added whitespace errors
+- Bug fixes

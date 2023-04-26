@@ -1,0 +1,3 @@
+# Passbolt 1.13.2-20 Android app release notes
+
+- Bug fixes
