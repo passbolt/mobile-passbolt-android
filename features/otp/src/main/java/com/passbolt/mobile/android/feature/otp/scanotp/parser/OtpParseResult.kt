@@ -49,11 +49,11 @@ sealed class OtpParseResult {
             override val issuer: String?,
             override val algorithm: Algorithm,
             override val digits: Int,
-            val period: Int
+            val period: Long
         ) : OtpQr(label, secret, issuer, algorithm, digits), Parcelable {
 
             companion object {
-                const val DEFAULT_PERIOD_SECONDS = 30
+                const val DEFAULT_PERIOD_SECONDS = 30L
                 const val DEFAULT_DIGITS = 6
             }
         }
@@ -96,7 +96,7 @@ sealed class OtpParseResult {
             override val issuer: String?,
             override val algorithm: OtpQr.Algorithm?,
             override val digits: Int?,
-            val period: Int?
+            val period: Long?
         ) : IncompleteOtpParameters(label, secret, issuer, algorithm, digits)
 
         data class IncompleteHotpParametrs(

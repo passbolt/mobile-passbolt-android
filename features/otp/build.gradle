@@ -35,6 +35,8 @@ dependencies {
     implementation project(':secrets')
     implementation project(':resourcetypes')
     implementation project(':otpcore')
+    implementation project(':users')
+    implementation project(':networking')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

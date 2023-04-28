@@ -43,7 +43,7 @@ import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class CreateTotpResourceUseCase(
+class CreateStandaloneTotpResourceUseCase(
     private val resourceRepository: ResourceRepository,
     private val openPgp: OpenPgp,
     private val createResourceMapper: CreateResourceMapper,
@@ -52,7 +52,7 @@ class CreateTotpResourceUseCase(
     private val resourceModelMapper: ResourceModelMapper,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val permissionsModelMapper: PermissionsModelMapper
-) : AsyncUseCase<CreateTotpResourceUseCase.Input, CreateTotpResourceUseCase.Output> {
+) : AsyncUseCase<CreateStandaloneTotpResourceUseCase.Input, CreateStandaloneTotpResourceUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
         val passphrase = when (val result = passphraseMemoryCache.get()) {
@@ -91,7 +91,7 @@ class CreateTotpResourceUseCase(
     }
 
     private suspend fun createSecret(
-        period: Int,
+        period: Long,
         digits: Int,
         algorithm: String,
         secretKey: String,
@@ -155,7 +155,7 @@ class CreateTotpResourceUseCase(
         val resourceTypeId: String,
         val issuer: String?, // mapped to resource url
         val label: String, // mapped to resource name
-        val period: Int,
+        val period: Long,
         val digits: Int,
         val algorithm: String,
         val secretKey: String

@@ -139,7 +139,7 @@ class OtpPresenterTest : KoinTest {
     private companion object {
         private const val SEARCH_AVATAR_URL = "url"
         private val mockTotpResources = listOf(
-            OtpModel("resId", "name", "N", ResourcePermission.READ)
+            OtpModel("resId", null, "name", "url", "N", ResourcePermission.READ)
         )
     }
 }

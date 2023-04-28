@@ -33,12 +33,26 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
 
 fun Module.otpModule() {
     scope<OtpFragment> {
-        scopedOf(::OtpPresenter) bind OtpContract.Presenter::class
         scopedOf(::OtpSpeedDialFabFactory)
+        scoped<OtpContract.Presenter> {
+            OtpPresenter(
+                getSelectedAccountDataUseCase = get(),
+                searchableMatcher = get(),
+                getLocalOtpResourcesUseCase = get(),
+                otpModelMapper = get(),
+                getLocalResourceUseCase = get(),
+                totpParametersProvider = get(),
+                resourceMenuModelMapper = get(),
+                fetchUsersUseCase = get(),
+                updateStandaloneTotpResourceUseCase = get(),
+                getResourceTypeWithFieldsBySlugUseCase = get(),
+                updateLocalResourceUseCase = get(),
+                coroutineLaunchContext = get()
+            )
+        }
 
         scoped { FastAdapter.with(get<ItemAdapter<OtpItem>>()) }
         scoped<ItemAdapter<OtpItem>> {

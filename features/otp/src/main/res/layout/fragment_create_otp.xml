@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,7 +12,7 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_marginTop="@dimen/dp_32"
         app:layout_constraintTop_toTopOf="parent"
-        app:toolbarTitle="@string/otp_create_totp_title" />
+        tools:toolbarTitle="@string/otp_create_totp_title" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -70,14 +71,14 @@
                 android:layout_weight="@integer/material_motion_duration_long_1" />
 
             <Button
-                android:id="@+id/createButton"
+                android:id="@+id/mainButton"
                 style="@style/PrimaryBlueButton"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_56"
                 android:layout_gravity="bottom"
                 android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginBottom="@dimen/dp_16"
-                android:text="@string/otp_create_totp_create_standalone" />
+                tools:text="@string/otp_create_totp_create_standalone" />
 
         </LinearLayout>
 

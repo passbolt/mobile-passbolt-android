@@ -54,23 +54,29 @@ import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
+import com.passbolt.mobile.android.feature.otp.editmoremenu.OtpEditMoreMenuFragment
 import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
 
 @Suppress("TooManyFunctions")
 class OtpFragment :
     BindingScopedAuthenticatedFragment<FragmentOtpBinding, OtpContract.View>(FragmentOtpBinding::inflate),
-    OtpContract.View, SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener {
+    OtpContract.View, SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener,
+    OtpEditMoreMenuFragment.Listener {
 
     override val presenter: OtpContract.Presenter by inject()
     private val otpAdapter: ItemAdapter<OtpItem> by inject()
@@ -103,6 +109,22 @@ class OtpFragment :
             result.getBoolean(CreateOtpFragment.EXTRA_OTP_CREATED)
         ) {
             presenter.otpCreated()
+        }
+    }
+
+    private val otpUpdatedResult = { _: String, result: Bundle ->
+        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_UPDATED) &&
+            result.getBoolean(CreateOtpFragment.EXTRA_OTP_UPDATED)
+        ) {
+            presenter.otpUpdated()
+        }
+    }
+
+    private val otpEditByScanningScannedResult = { _: String, result: Bundle ->
+        if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
+            presenter.otpEditedByScanningNew(
+                result.getParcelable(ScanOtpFragment.EXTRA_SCANNED_OTP)
+            )
         }
     }
 
@@ -224,6 +246,11 @@ class OtpFragment :
             .show(childFragmentManager, SwitchAccountBottomSheetFragment::class.java.name)
     }
 
+    override fun navigateToEditOtpMenu() {
+        OtpEditMoreMenuFragment()
+            .show(childFragmentManager, OtpEditMoreMenuFragment::class.java.name)
+    }
+
     override fun showOtmMoreMenu(moreMenuModel: ResourceMoreMenuModel) {
         OtpMoreMenuFragment.newInstance(moreMenuModel)
             .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
@@ -308,7 +335,7 @@ class OtpFragment :
             otpScannedResult
         )
         findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment()
+            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment(false)
         )
     }
 
@@ -318,7 +345,7 @@ class OtpFragment :
             otpCreatedResult
         )
         findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToCreateOtpManuallyFragment()
+            OtpFragmentDirections.actionOtpFragmentToCreateOtpManuallyFragment(null)
         )
     }
 
@@ -332,7 +359,7 @@ class OtpFragment :
 
     override fun showConfirmDeleteDialog() {
         confirmTotpDeletionAlertDialog(requireContext()) {
-            presenter.totpDeletetionConfirmed()
+            presenter.topDeletionConfirmed()
         }.show()
     }
 
@@ -350,6 +377,67 @@ class OtpFragment :
 
     override fun showNewOtpCreated() {
         showSnackbar(R.string.otp_new_otp_created, backgroundColor = R.color.green)
+    }
+
+    override fun showOtpUpdate() {
+        showSnackbar(R.string.otp_otp_updated, backgroundColor = R.color.green)
+    }
+
+    override fun menuEditOtpManuallyClick() {
+        presenter.menuEditOtpManuallyClick()
+    }
+
+    override fun menuEditByNewOtpScanClick() {
+        presenter.menuEditByQrScanClick()
+    }
+
+    override fun showProgress() {
+        showProgressDialog(childFragmentManager)
+    }
+
+    override fun navigateToEditOtpManually(totp: OtpResourceModel) {
+        setFragmentResultListener(
+            CreateOtpFragment.REQUEST_UPDATE_OTP,
+            otpUpdatedResult
+        )
+        findNavController().navigate(
+            OtpFragmentDirections.actionOtpFragmentToCreateOtpManuallyFragment(totp)
+        )
+    }
+
+    override fun navigateToScanOtpCodeForResult() {
+        setFragmentResultListener(
+            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
+            otpEditByScanningScannedResult
+        )
+        findNavController().navigate(
+            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment(true)
+        )
+    }
+
+    override fun showInvalidQrCodeDataScanned() {
+        showSnackbar(
+            R.string.resource_permissions_secret_encrypt_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun hideProgress() {
+        hideProgressDialog(childFragmentManager)
+    }
+
+    override fun showEncryptionError(message: String) {
+        showSnackbar(
+            R.string.resource_permissions_secret_encrypt_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showError(message: String) {
+        showSnackbar(
+            getString(R.string.common_failure_format, message),
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showCreateButton() {

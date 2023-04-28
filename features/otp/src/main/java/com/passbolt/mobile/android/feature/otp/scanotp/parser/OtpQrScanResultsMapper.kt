@@ -42,7 +42,7 @@ class OtpQrScanResultsMapper {
             } ?: OtpAlgorithm.DEFAULT
             val digits = otpUri.getQueryParameter(OTP_URI_PARAMETER_DIGITS)?.toInt()
                 ?: OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS
-            val period = otpUri.getQueryParameter(OTP_URI_PARAMETER_PERIOD)?.toInt()
+            val period = otpUri.getQueryParameter(OTP_URI_PARAMETER_PERIOD)?.toLong()
                 ?: OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS
 
             if (label == null || secret == null) {

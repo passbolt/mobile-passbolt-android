@@ -2,10 +2,8 @@ package com.passbolt.mobile.android.core.resources
 
 import com.google.gson.Gson
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.dto.request.SecretsDto
+import com.passbolt.mobile.android.dto.request.TotpSecretsDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,13 +31,16 @@ class SecretInputCreator(
     private val gson: Gson,
     private val resourceTypeFactory: ResourceTypeFactory
 ) {
-    suspend fun createSecretInput(resourceTypeId: String, password: String, description: String?): String =
-        when (resourceTypeFactory.getResourceTypeEnum(resourceTypeId)) {
-            SIMPLE_PASSWORD -> password
-            PASSWORD_WITH_DESCRIPTION -> gson.toJson(
-                SecretsDto(password, description.orEmpty())
-            )
-            // TODO new refactor resource types handling
-            STANDALONE_TOTP -> throw IllegalArgumentException("Standalone totp is not create on update resource form")
-        }
+
+    fun createSimplePasswordSecretInput(password: String) = password
+
+    fun createPasswordWithDescriptionSecretInput(password: String, description: String?): String =
+        gson.toJson(
+            SecretsDto(password, description.orEmpty())
+        )
+
+    fun createTotpSecretInput(algorithm: String, key: String, digits: Int, period: Long): String =
+        gson.toJson(
+            TotpSecretsDto(TotpSecretsDto.Totp(algorithm, key, digits, period))
+        )
 }

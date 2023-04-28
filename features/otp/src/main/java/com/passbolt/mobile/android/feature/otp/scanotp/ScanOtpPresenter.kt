@@ -41,10 +41,15 @@ class ScanOtpPresenter(
 
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+    private var isScanLaunchedForResult: Boolean = false
 
     override fun attach(view: ScanOtpContract.View) {
         super.attach(view)
         initQrScanning()
+    }
+
+    override fun argsRetrieved(isScanLaunchedForResult: Boolean) {
+        this.isScanLaunchedForResult = isScanLaunchedForResult
     }
 
     private fun initQrScanning() {
@@ -79,7 +84,11 @@ class ScanOtpPresenter(
     }
 
     private fun totpScanned(parserResult: OtpParseResult.OtpQr.TotpQr) {
-        view?.navigateToScanOtpSuccess(parserResult)
+        if (isScanLaunchedForResult) {
+            view?.setResultAndNavigateBack(parserResult)
+        } else {
+            view?.navigateToScanOtpSuccess(parserResult)
+        }
     }
 
     private fun parserFailure(exception: Throwable?) {

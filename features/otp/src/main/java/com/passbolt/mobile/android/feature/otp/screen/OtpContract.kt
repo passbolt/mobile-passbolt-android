@@ -25,11 +25,14 @@ package com.passbolt.mobile.android.feature.otp.screen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 
 interface OtpContract {
 
+    @Suppress("TooManyFunctions")
     interface View : DataRefreshViewReactiveContract.View {
         fun showOtpList(otpList: List<OtpListItemWrapper>)
         fun showEmptyView()
@@ -54,6 +57,15 @@ interface OtpContract {
         fun showResourceDeleted()
         fun initRefresh()
         fun showNewOtpCreated()
+        fun navigateToEditOtpMenu()
+        fun showProgress()
+        fun navigateToEditOtpManually(totp: OtpResourceModel)
+        fun hideProgress()
+        fun showOtpUpdate()
+        fun navigateToScanOtpCodeForResult()
+        fun showInvalidQrCodeDataScanned()
+        fun showError(message: String)
+        fun showEncryptionError(message: String)
         fun showCreateButton()
         fun hideCreateButton()
     }
@@ -73,7 +85,11 @@ interface OtpContract {
         fun menuEditOtpClick()
         fun scanOtpQrCodeClick()
         fun createOtpManuallyClick()
-        fun totpDeletetionConfirmed()
+        fun topDeletionConfirmed()
         fun otpCreated()
+        fun menuEditByQrScanClick()
+        fun menuEditOtpManuallyClick()
+        fun otpUpdated()
+        fun otpEditedByScanningNew(totpQr: OtpParseResult.OtpQr.TotpQr?)
     }
 }

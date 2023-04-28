@@ -36,9 +36,11 @@ class OtpModelMapper(
     fun map(resourceEntity: Resource): OtpModel =
         OtpModel(
             resourceId = resourceEntity.resourceId,
+            parentFolderId = resourceEntity.folderId,
             name = resourceEntity.resourceName,
             initials = initialsProvider.get(resourceEntity.resourceName),
-            permission = permissionsModelMapper.map(resourceEntity.resourcePermission)
+            permission = permissionsModelMapper.map(resourceEntity.resourcePermission),
+            url = resourceEntity.url
         )
 
     fun map(otpModel: OtpModel): OtpListItemWrapper =

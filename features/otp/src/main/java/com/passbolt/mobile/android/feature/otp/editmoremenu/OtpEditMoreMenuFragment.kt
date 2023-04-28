@@ -21,31 +21,20 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.otpmoremenu
+package com.passbolt.mobile.android.feature.otp.editmoremenu
 
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismiss
-import com.passbolt.mobile.android.common.extension.visible
-import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.feature.otp.databinding.BottomsheetOtpMoreMenuBinding
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.fragmentScope
+import com.passbolt.mobile.android.feature.otp.databinding.BottomsheetEditOtpMoreMenuBinding
 
-class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.View, AndroidScopeComponent {
+class OtpEditMoreMenuFragment : BottomSheetDialogFragment() {
 
-    override val scope by fragmentScope()
-    private val presenter: OtpMoreMenuContract.Presenter by scope.inject()
-    private val menuModel: ResourceMoreMenuModel by lifecycleAwareLazy {
-        requireNotNull(requireArguments().getParcelable(EXTRA_OTP_MENU_MODEL))
-    }
-    private lateinit var binding: BottomsheetOtpMoreMenuBinding
+    private lateinit var binding: BottomsheetEditOtpMoreMenuBinding
     private var listener: Listener? = null
 
     override fun onCreateView(
@@ -53,9 +42,7 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = BottomsheetOtpMoreMenuBinding.inflate(inflater)
-        presenter.attach(this)
-        presenter.argsRetrieved(menuModel)
+        binding = BottomsheetEditOtpMoreMenuBinding.inflate(inflater)
         return binding.root
     }
 
@@ -80,43 +67,14 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
 
     private fun setListeners() {
         with(binding) {
-            setDebouncingOnClickAndDismiss(showOtp) { listener?.menuShowOtpClick() }
-            setDebouncingOnClickAndDismiss(copyOtp) { listener?.menuCopyOtpClick() }
-            setDebouncingOnClickAndDismiss(deleteOtp) { listener?.menuDeleteOtpClick() }
-            setDebouncingOnClickAndDismiss(editOtp) { listener?.menuEditOtpClick() }
+            setDebouncingOnClickAndDismiss(scanANewOtp) { listener?.menuEditByNewOtpScanClick() }
+            setDebouncingOnClickAndDismiss(editOtpManually) { listener?.menuEditOtpManuallyClick() }
             setDebouncingOnClickAndDismiss(close)
         }
     }
 
-    override fun showTitle(title: String) {
-        binding.title.text = menuModel.title
-    }
-
-    override fun showSeparator() {
-        binding.separator.visible()
-    }
-
-    override fun showDeleteButton() {
-        binding.deleteOtp.visible()
-    }
-
-    override fun showEditButton() {
-        binding.editOtp.visible()
-    }
-
-    companion object {
-        private const val EXTRA_OTP_MENU_MODEL = "OTP_MENU_MODEL"
-
-        fun newInstance(model: ResourceMoreMenuModel) =
-            OtpMoreMenuFragment().apply {
-                arguments = bundleOf(EXTRA_OTP_MENU_MODEL to model)
-            }
-    }
-
     interface Listener {
-        fun menuCopyOtpClick()
-        fun menuShowOtpClick()
-        fun menuEditOtpClick()
-        fun menuDeleteOtpClick()
+        fun menuEditOtpManuallyClick()
+        fun menuEditByNewOtpScanClick()
     }
 }

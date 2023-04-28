@@ -29,11 +29,25 @@ import kotlinx.parcelize.Parcelize
 
 data class OtpModel(
     val resourceId: String,
+    val parentFolderId: String?,
     val name: String,
+    val url: String?,
     val initials: String,
     val permission: ResourcePermission,
     override val searchCriteria: String = name
 ) : Searchable
+
+@Parcelize
+data class OtpResourceModel(
+    val resourceId: String,
+    val parentFolderId: String?,
+    val label: String,
+    val secret: String,
+    val issuer: String?,
+    val algorithm: String,
+    val digits: Int,
+    val period: Long
+) : Parcelable
 
 data class OtpListItemWrapper(
     val otp: OtpModel,
@@ -45,7 +59,7 @@ data class OtpListItemWrapper(
 
 @Parcelize
 data class OtpAdvancedSettingsModel(
-    val period: Int,
+    val period: Long,
     val algorithm: String,
     val digits: Int
 ) : Parcelable

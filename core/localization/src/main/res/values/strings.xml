@@ -224,7 +224,7 @@
     <string name="home_in_current_folder">in \"%s\":</string>
     <string name="home_speed_dial_add_password">Add password</string>
     <string name="home_speed_dial_add_folder">Add folder</string>
-    <string name="home_please_wait_for_refresh">Please wait for data refresh to switch account</string>
+    <string name="home_please_wait_for_refresh">Please wait for data refresh to finish</string>
 
     <string name="switch_account_see_details">See details</string>
     <string name="switch_account_sign_out">Sign out</string>
@@ -451,15 +451,21 @@
         translatable="false">••••••</string>
     <string name="otp_speed_dial_scan_qr">Scan QR code</string>
     <string name="otp_speed_dial_create_manually">Create TOTP manually</string>
+    <string name="otp_invalid_itp_data_scanned">There was an error during TOTP QR code scanning</string>
 
     <string name="otp_more_copy_otp">Copy TOTP</string>
     <string name="otp_more_show_otp">Show TOTP</string>
     <string name="otp_more_edit_otp">Edit TOTP</string>
     <string name="otp_more_delete_otp">Delete TOTP</string>
-    <string name="otp_delete_confirmation">This action will permanently delete the TOTP.</string>
+
+    <string name="otp_edit_title">Edit TOTP</string>
+    <string name="otp_edit_scan_new">Scan a new QR code</string>
+    <string name="otp_edit_edit_manually">Edit the TOTP manually</string>
+
     <string name="otp_delete_totp">Delete TOTP</string>
     <string name="otp_deleted">TOTP was deleted</string>
-    <string name="otp_failed_to_delete">Failed to delete totp</string>
+    <string name="otp_failed_to_delete">Failed to delete TOTP</string>
+    <string name="otp_delete_confirmation">This action will permanently delete the TOTP.</string>
     <string name="otp_new_otp_created">New TOTP created!</string>
 
     <string name="otp_scan_title">Scan QR code</string>
@@ -475,7 +481,7 @@
     <string name="otp_create_totp_advanced_settings">Advanced settings</string>
     <string name="otp_create_totp_create_standalone">Create a standalone TOTP</string>
 
-    <string name="otp_create_totp_expert_settings_title">Create TOTP - advanced settings</string>
+    <string name="otp_create_totp_expert_settings_title">TOTP - advanced settings</string>
     <string name="otp_create_totp_expert_settings_expiry">TOTP expiry</string>
     <string name="otp_create_totp_expert_settings_expiry_hint">TOTP expiry</string>
     <string name="otp_create_totp_expert_settings_expiry_seconds_info">seconds until the TOTP expires.</string>
@@ -485,6 +491,7 @@
     <string name="otp_create_totp_expert_settings_warning">Advanced settings have to match your TOTP provider settings otherwise it won’t work.</string>
 
     <string name="otp_create_success">Your TOTP has been scanned!</string>
+    <string name="otp_otp_updated">TOTP successfully replaced.</string>
 
     <!--
     arrays can be inconsistent when in other languages

@@ -6,10 +6,6 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.resources.SecretInputCreator
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.request.EncryptedSecret
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
@@ -18,9 +14,8 @@ import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.UserModel
@@ -47,24 +42,21 @@ import com.passbolt.mobile.android.ui.UserModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UpdateResourceUseCase(
+class UpdateStandaloneTotpResourceUseCase(
     private val resourceRepository: ResourceRepository,
     private val openPgp: OpenPgp,
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val resourceModelMapper: ResourceModelMapper,
     private val passphraseMemoryCache: PassphraseMemoryCache,
-    private val secretInputCreator: SecretInputCreator,
-    private val resourceTypeFactory: ResourceTypeFactory
-) : AsyncUseCase<UpdateResourceUseCase.Input, UpdateResourceUseCase.Output> {
+    private val secretInputCreator: SecretInputCreator
+) : AsyncUseCase<UpdateStandaloneTotpResourceUseCase.Input, UpdateStandaloneTotpResourceUseCase.Output>, SelectedAccountUseCase {
 
     override suspend fun execute(input: Input): Output {
         val passphrase = when (val result = passphraseMemoryCache.get()) {
-            is PotentialPassphrase.Passphrase -> {
-                result.passphrase
-            }
+            is PotentialPassphrase.Passphrase -> result.passphrase
             is PotentialPassphrase.PassphraseNotPresent -> return Output.PasswordExpired
         }
+
         val secretsResult = createSecrets(input, passphrase)
         return if (secretsResult.any { it is EncryptedSecretOrError.Error }) {
             Output.OpenPgpError(secretsResult.filterIsInstance<EncryptedSecretOrError.Error>().first().message)
@@ -73,12 +65,12 @@ class UpdateResourceUseCase(
             when (val response = resourceRepository.updateResource(
                 input.resourceId,
                 CreateResourceDto(
-                    name = input.name,
+                    name = input.label,
                     resourceTypeId = input.resourceTypeId,
                     secrets = secrets.map { EncryptedSecret(it.userId, it.data) },
-                    username = input.username,
-                    uri = input.uri,
-                    description = createDescription(input),
+                    username = null,
+                    uri = input.issuer,
+                    description = null,
                     folderParentId = input.resourceParentFolderId
                 )
             )) {
@@ -88,30 +80,19 @@ class UpdateResourceUseCase(
         }
     }
 
-    private suspend fun createDescription(input: Input): String? =
-        when (resourceTypeFactory.getResourceTypeEnum(input.resourceTypeId)) {
-            SIMPLE_PASSWORD -> input.description
-            PASSWORD_WITH_DESCRIPTION -> null
-            STANDALONE_TOTP -> throw IllegalArgumentException("Use UpdateTotpResourceUseCase for updating totp")
-        }
-
     private suspend fun createSecrets(
         input: Input,
         passphrase: ByteArray
     ): List<EncryptedSecretOrError> {
         return input.users.mapTo(mutableListOf()) {
-            val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-            val privateKey = getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
+            val privateKey = getPrivateKeyUseCase.execute(selectedAccountUserIdInput).privateKey
             val publicKey = it.gpgKey.armoredKey
-            val secret = when (resourceTypeFactory.getResourceTypeEnum(input.resourceTypeId)) {
-                SIMPLE_PASSWORD -> secretInputCreator.createSimplePasswordSecretInput(input.password)
-                PASSWORD_WITH_DESCRIPTION -> secretInputCreator.createPasswordWithDescriptionSecretInput(
-                    input.password,
-                    input.description
-                )
-                STANDALONE_TOTP -> throw IllegalArgumentException("Use UpdateTotpResourceUseCase for updating totp")
-            }
-
+            val secret = secretInputCreator.createTotpSecretInput(
+                input.algorithm,
+                input.secretKey,
+                input.digits,
+                input.period
+            )
             when (val encryptedSecret = openPgp.encryptSignMessageArmored(publicKey, privateKey, passphrase, secret)) {
                 is OpenPgpResult.Error -> EncryptedSecretOrError.Error(encryptedSecret.error.message)
                 is OpenPgpResult.Result -> EncryptedSecretOrError.EncryptedSecret(it.id, encryptedSecret.result)
@@ -154,11 +135,12 @@ class UpdateResourceUseCase(
     data class Input(
         val resourceId: String,
         val resourceTypeId: String,
-        val name: String,
-        val password: String,
-        val description: String?,
-        val username: String?,
-        val uri: String?,
+        val issuer: String?, // mapped to resource url
+        val label: String, // mapped to resource name
+        val period: Long,
+        val digits: Int,
+        val algorithm: String,
+        val secretKey: String,
         val users: List<UserModel>,
         val resourceParentFolderId: String?
     )

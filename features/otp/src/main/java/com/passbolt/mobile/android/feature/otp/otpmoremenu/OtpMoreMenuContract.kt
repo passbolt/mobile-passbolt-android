@@ -32,6 +32,7 @@ interface OtpMoreMenuContract {
         fun showTitle(title: String)
         fun showSeparator()
         fun showDeleteButton()
+        fun showEditButton()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
