@@ -43,6 +43,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_8"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbarThumbVertical="@color/scrollbars"
+        android:scrollbars="vertical"
         app:layout_constraintTop_toBottomOf="@id/separator" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
