@@ -54,6 +54,6 @@ data class TotpSecretsDto(
         val algorithm: String,
         val key: String,
         val digits: Int,
-        val period: Int
+        val period: Long
     )
 }

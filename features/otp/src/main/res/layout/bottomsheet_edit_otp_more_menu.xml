@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/dp_16"
         android:layout_marginTop="@dimen/dp_16"
+        android:text="@string/otp_edit_title"
         android:textColor="@color/text_primary"
         app:layout_constraintEnd_toStartOf="@+id/close"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,50 +43,21 @@
         app:layout_constraintTop_toBottomOf="@+id/title" />
 
     <TextView
-        android:id="@+id/copyOtp"
+        android:id="@+id/scanANewOtp"
         style="@style/PasswordMenuItem"
         android:drawablePadding="@dimen/dp_16"
-        android:text="@string/otp_more_copy_otp"
-        app:drawableStartCompat="@drawable/ic_copy"
+        android:text="@string/otp_edit_scan_new"
+        app:drawableStartCompat="@drawable/ic_camera"
         app:drawableTint="@color/icon_tint"
         app:layout_constraintTop_toBottomOf="@+id/divider" />
 
     <TextView
-        android:id="@+id/showOtp"
+        android:id="@+id/editOtpManually"
         style="@style/PasswordMenuItem"
         android:drawablePadding="@dimen/dp_16"
-        android:text="@string/otp_more_show_otp"
-        app:drawableStartCompat="@drawable/ic_eye_visible"
-        app:drawableTint="@color/icon_tint"
-        app:layout_constraintTop_toBottomOf="@+id/copyOtp" />
-
-    <View
-        android:id="@+id/separator"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_1"
-        android:layout_marginHorizontal="@dimen/dp_16"
-        android:background="@color/divider"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/showOtp" />
-
-    <TextView
-        android:id="@+id/editOtp"
-        style="@style/PasswordMenuItem"
-        android:drawablePadding="@dimen/dp_16"
-        android:text="@string/otp_more_edit_otp"
-        android:visibility="gone"
+        android:text="@string/otp_edit_edit_manually"
         app:drawableStartCompat="@drawable/ic_edit"
         app:drawableTint="@color/icon_tint"
-        app:layout_constraintTop_toBottomOf="@+id/separator" />
-
-    <TextView
-        android:id="@+id/deleteOtp"
-        style="@style/PasswordMenuItem"
-        android:drawablePadding="@dimen/dp_16"
-        android:text="@string/otp_more_delete_otp"
-        android:visibility="gone"
-        app:drawableStartCompat="@drawable/ic_trash"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editOtp" />
+        app:layout_constraintTop_toBottomOf="@+id/scanANewOtp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,15 +30,24 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.usecase.UpdateStandaloneTotpResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.users.FetchUsersUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalOtpResourcesUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import com.passbolt.mobile.android.database.impl.resources.UpdateLocalResourceUseCase
+import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsBySlugUseCase
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpResourceModel
+import com.passbolt.mobile.android.ui.UserModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -51,6 +60,7 @@ import org.koin.core.component.get
 import org.koin.core.component.getOrCreateScope
 import org.koin.core.parameter.parametersOf
 import org.koin.core.scope.Scope
+import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
 @Suppress("TooManyFunctions")
@@ -62,6 +72,10 @@ class OtpPresenter(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val totpParametersProvider: TotpParametersProvider,
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
+    private val fetchUsersUseCase: FetchUsersUseCase,
+    private val updateStandaloneTotpResourceUseCase: UpdateStandaloneTotpResourceUseCase,
+    private val getResourceTypeWithFieldsBySlugUseCase: GetResourceTypeWithFieldsBySlugUseCase,
+    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<OtpContract.View>(coroutineLaunchContext), OtpContract.Presenter,
     SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener, KoinScopeComponent {
@@ -361,7 +375,11 @@ class OtpPresenter(
     }
 
     override fun menuEditOtpClick() {
-        // TODO navigate to edit otp
+        if (refreshInProgress) {
+            view?.showPleaseWaitForDataRefresh()
+        } else {
+            view?.navigateToEditOtpMenu()
+        }
     }
 
     override fun scanOtpQrCodeClick() {
@@ -372,7 +390,7 @@ class OtpPresenter(
         view?.navigateToCreateOtpManually()
     }
 
-    override fun totpDeletetionConfirmed() {
+    override fun topDeletionConfirmed() {
         presenterScope.launch {
             val otpResource = getLocalResourceUseCase.execute(
                 GetLocalResourceUseCase.Input(requireNotNull(currentOtpItemForMenu).otp.resourceId)
@@ -399,5 +417,115 @@ class OtpPresenter(
         view?.initRefresh()
         refreshInProgress = true
         view?.hideCreateButton()
+    }
+
+    override fun otpUpdated() {
+        view?.showOtpUpdate()
+        view?.initRefresh()
+    }
+
+    override fun menuEditByQrScanClick() {
+        view?.navigateToScanOtpCodeForResult()
+    }
+
+    override fun menuEditOtpManuallyClick() {
+        presenterScope.launch {
+            view?.showProgress()
+            val otpResource = getLocalResourceUseCase.execute(
+                GetLocalResourceUseCase.Input(currentOtpItemForMenu!!.otp.resourceId)
+            ).resource
+            val resourceAuthenticatedActionsInteractor = get<ResourceAuthenticatedActionsInteractor> {
+                parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
+            resourceAuthenticatedActionsInteractor.provideOtp(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { _, otp ->
+                view?.navigateToEditOtpManually(
+                    OtpResourceModel(
+                        currentOtpItemForMenu!!.otp.resourceId,
+                        currentOtpItemForMenu!!.otp.parentFolderId,
+                        currentOtpItemForMenu!!.otp.name,
+                        otp.totp.key,
+                        currentOtpItemForMenu!!.otp.url,
+                        otp.totp.algorithm,
+                        otp.totp.digits,
+                        otp.totp.period
+                    )
+                )
+            }
+            view?.hideProgress()
+        }
+    }
+
+    override fun otpEditedByScanningNew(totpQr: OtpParseResult.OtpQr.TotpQr?) {
+        if (totpQr == null) {
+            Timber.e("No data scanned in the QR code")
+            view?.showInvalidQrCodeDataScanned()
+            return
+        }
+        presenterScope.launch {
+            view?.showProgress()
+            val existingResource = requireNotNull(currentOtpItemForMenu) {
+                "In edit by scanning new qr code mode but menu resource not present"
+            }
+
+            when (val usersWhoHaveAccess = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                fetchUsersUseCase.execute(
+                    FetchUsersUseCase.Input(listOf(existingResource.otp.resourceId))
+                )
+            }) {
+                is FetchUsersUseCase.Output.Success -> {
+                    when (val editResourceResult =
+                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                            updateStandaloneTotpResourceUseCase.execute(
+                                updateStandaloneTotpResourceInput(usersWhoHaveAccess.users, existingResource, totpQr)
+                            )
+                        }) {
+                        is UpdateStandaloneTotpResourceUseCase.Output.Success -> {
+                            updateLocalResourceUseCase.execute(
+                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                            )
+                            view?.showOtpUpdate()
+                            view?.initRefresh()
+                        }
+                        is UpdateStandaloneTotpResourceUseCase.Output.Failure<*> ->
+                            view?.showError(editResourceResult.response.exception.message.orEmpty())
+                        is UpdateStandaloneTotpResourceUseCase.Output.PasswordExpired -> {
+                            /* will not happen in BaseAuthenticatedPresenter */
+                        }
+                        is UpdateStandaloneTotpResourceUseCase.Output.OpenPgpError ->
+                            view?.showEncryptionError(editResourceResult.message)
+                    }
+                }
+                is FetchUsersUseCase.Output.Failure<*> -> {
+                    Timber.e(usersWhoHaveAccess.response.exception)
+                    view?.showError(usersWhoHaveAccess.response.exception.message.orEmpty())
+                }
+            }
+            view?.hideProgress()
+        }
+    }
+
+    private suspend fun updateStandaloneTotpResourceInput(
+        usersWhoHaveAccess: List<UserModel>,
+        existingResource: OtpListItemWrapper,
+        totpQr: OtpParseResult.OtpQr.TotpQr
+    ): UpdateStandaloneTotpResourceUseCase.Input {
+        val totpResourceType = getResourceTypeWithFieldsBySlugUseCase.execute(
+            GetResourceTypeWithFieldsBySlugUseCase.Input(ResourceTypeFactory.SLUG_TOTP)
+        )
+        return UpdateStandaloneTotpResourceUseCase.Input(
+            resourceId = existingResource.otp.resourceId,
+            resourceTypeId = totpResourceType.resourceTypeId,
+            issuer = totpQr.issuer,
+            label = totpQr.label,
+            period = totpQr.period,
+            digits = totpQr.digits,
+            algorithm = totpQr.algorithm.name,
+            secretKey = totpQr.secret,
+            resourceParentFolderId = existingResource.otp.parentFolderId,
+            users = usersWhoHaveAccess
+        )
     }
 }

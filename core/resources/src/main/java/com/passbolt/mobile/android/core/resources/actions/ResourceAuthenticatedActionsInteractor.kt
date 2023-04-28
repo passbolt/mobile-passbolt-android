@@ -174,6 +174,6 @@ class ResourceAuthenticatedActionsInteractor(
         const val DESCRIPTION_LABEL = "Description"
 
         @VisibleForTesting
-        const val OTP_LABEL = "OTP"
+        const val OTP_LABEL = "TOTP"
     }
 }

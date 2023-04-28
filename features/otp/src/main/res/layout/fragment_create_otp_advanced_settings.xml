@@ -115,7 +115,8 @@
                 android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginBottom="@dimen/dp_16"
                 android:text="@string/apply"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/algorithmDropdown" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

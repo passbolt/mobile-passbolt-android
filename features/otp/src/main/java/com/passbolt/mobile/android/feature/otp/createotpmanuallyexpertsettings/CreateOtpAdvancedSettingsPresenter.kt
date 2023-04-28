@@ -65,7 +65,7 @@ class CreateOtpAdvancedSettingsPresenter : CreateOtpAdvancedSettingsContract.Pre
             onValid {
                 view?.applyChangesAndGoBack(
                     OtpAdvancedSettingsModel(
-                        period.toInt(), algorithm, digits.toInt()
+                        period.toLong(), algorithm, digits.toInt()
                     )
                 )
             }

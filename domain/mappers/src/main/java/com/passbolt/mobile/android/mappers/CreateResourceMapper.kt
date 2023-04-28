@@ -33,6 +33,6 @@ class CreateResourceMapper(
     fun map(password: String, description: String?): String =
         gson.toJson(SecretsDto(password, description.orEmpty()))
 
-    fun map(digits: Int, period: Int, algorithm: String, secretKey: String): String =
+    fun map(digits: Int, period: Long, algorithm: String, secretKey: String): String =
         gson.toJson(TotpSecretsDto(TotpSecretsDto.Totp(algorithm, secretKey, digits, period)))
 }

@@ -16,6 +16,10 @@ class OtpMoreMenuPresenter : OtpMoreMenuContract.Presenter {
             view?.showSeparator()
         }
 
+        if (menuModel.canEdit) {
+            view?.showEditButton()
+        }
+
         if (menuModel.canDelete) {
             view?.showDeleteButton()
         }

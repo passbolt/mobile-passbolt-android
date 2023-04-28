@@ -25,8 +25,10 @@ package com.passbolt.mobile.android.feature.otp.scanotp
 
 import android.os.Bundle
 import android.view.View
-
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
@@ -47,6 +49,7 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
     private lateinit var scanManagerScope: Scope
     private lateinit var scanManager: ScanManager
     private val flagSecureSetter: FlagSecureSetter by inject()
+    private val args: ScanOtpFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,6 +58,7 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
         scanManager = scanManagerScope.get()
 
         presenter.attach(this)
+        presenter.argsRetrieved(args.launchScanForResult)
     }
 
     override fun onResume() {
@@ -121,5 +125,18 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
 
     override fun removeFlagSecure() {
         flagSecureSetter.remove(requireActivity())
+    }
+
+    override fun setResultAndNavigateBack(parserResult: OtpParseResult.OtpQr.TotpQr) {
+        setFragmentResult(
+            REQUEST_SCAN_OTP_FOR_RESULT,
+            bundleOf(EXTRA_SCANNED_OTP to parserResult)
+        )
+        findNavController().popBackStack()
+    }
+
+    companion object {
+        const val REQUEST_SCAN_OTP_FOR_RESULT = "SCAN_OTP_FOR_RESULT"
+        const val EXTRA_SCANNED_OTP = "SCANNED_OTP"
     }
 }

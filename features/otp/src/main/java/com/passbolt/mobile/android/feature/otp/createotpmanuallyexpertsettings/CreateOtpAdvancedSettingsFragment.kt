@@ -37,7 +37,6 @@ import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.feature.otp.R
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentCreateOtpAdvancedSettingsBinding
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
-import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult.OtpQr.TotpQr.Companion.DEFAULT_DIGITS
 import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 import org.koin.android.ext.android.inject
 
@@ -86,7 +85,7 @@ class CreateOtpAdvancedSettingsFragment :
         with(binding) {
             totpPeriodInput.text = values.period.toString()
             algorithmDropdown.setItem(values.algorithm)
-            digitsDropdown.setItem(DEFAULT_DIGITS.toString())
+            digitsDropdown.setItem(values.digits.toString())
         }
     }
 

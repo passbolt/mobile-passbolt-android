@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.core.resources
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.CreateResourceUseCase
-import com.passbolt.mobile.android.core.resources.usecase.CreateTotpResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.CreateStandaloneTotpResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.GetResourceTypesUseCase
@@ -17,6 +17,7 @@ import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteracto
 import com.passbolt.mobile.android.core.resources.usecase.ShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.SimulateShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.UpdateResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.UpdateStandaloneTotpResourceUseCase
 import com.passbolt.mobile.android.core.resources.validation.resourceValidationModule
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -62,5 +63,6 @@ val resourcesModule = module {
     singleOf(::RemoveFromFavouritesUseCase)
     singleOf(::FavouritesInteractor)
     singleOf(::ResourceShareInteractor)
-    singleOf(::CreateTotpResourceUseCase)
+    singleOf(::CreateStandaloneTotpResourceUseCase)
+    singleOf(::UpdateStandaloneTotpResourceUseCase)
 }

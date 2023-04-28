@@ -39,6 +39,9 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/otpFragment" />
+        <argument
+            android:name="launchScanForResult"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/createOtpManuallyFragment"
@@ -52,6 +55,10 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="editedOtpData"
+            app:argType="com.passbolt.mobile.android.ui.OtpResourceModel"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/createOtpAdvancedSettingsFragment"

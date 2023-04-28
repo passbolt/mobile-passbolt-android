@@ -29,6 +29,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.showSnackbar
@@ -49,9 +50,10 @@ class CreateOtpFragment :
     CreateOtpContract.View {
 
     override val presenter: CreateOtpContract.Presenter by inject()
+    private val args: CreateOtpFragmentArgs by navArgs()
     private val otpSettingsModifiedListener = { _: String, bundle: Bundle ->
         val algorithm = requireNotNull(bundle.getString(CreateOtpAdvancedSettingsFragment.EXTRA_ALGORITHM))
-        val period = requireNotNull(bundle.getInt(CreateOtpAdvancedSettingsFragment.EXTRA_PERIOD))
+        val period = requireNotNull(bundle.getLong(CreateOtpAdvancedSettingsFragment.EXTRA_PERIOD))
         val digits = requireNotNull(bundle.getInt(CreateOtpAdvancedSettingsFragment.EXTRA_DIGITS))
         presenter.otpSettingsModified(algorithm, period, digits)
     }
@@ -62,6 +64,21 @@ class CreateOtpFragment :
         setListeners()
         initDefaultToolbar(binding.toolbar)
         presenter.attach(this)
+        presenter.argsRetrieved(args.editedOtpData)
+    }
+
+    override fun setupEditUi() {
+        with(binding) {
+            toolbar.toolbarTitle = getString(R.string.otp_edit_title)
+            mainButton.text = getString(R.string.save)
+        }
+    }
+
+    override fun setupCreateUi() {
+        with(binding) {
+            toolbar.toolbarTitle = getString(R.string.otp_create_totp_title)
+            mainButton.text = getString(R.string.otp_create_totp_create_standalone)
+        }
     }
 
     private fun disableSaveInstanceStateForInputs() {
@@ -83,10 +100,22 @@ class CreateOtpFragment :
             advancedSettings.setDebouncingOnClick {
                 presenter.advancedSettingsClick()
             }
-            createButton.setDebouncingOnClick {
-                presenter.createClick()
+            mainButton.setDebouncingOnClick {
+                presenter.mainButtonClick()
             }
         }
+    }
+
+    override fun setFormValues(label: String, issuer: String, secret: String) {
+        with(binding) {
+            totpLabelInput.text = label
+            totpIssuerInput.text = issuer
+            totpSecretInput.text = secret
+        }
+    }
+
+    override fun showError(message: String) {
+        showSnackbar(getString(R.string.common_failure_format, message), backgroundColor = R.color.red)
     }
 
     override fun navigateToCreateOtpAdvancedSettings(advancedSettingsModel: OtpAdvancedSettingsModel) {
@@ -141,10 +170,18 @@ class CreateOtpFragment :
         )
     }
 
-    override fun navigateToOtpList(otpCreated: Boolean) {
+    override fun navigateToOtpListInCreateFlow(otpCreated: Boolean) {
         setFragmentResult(
             REQUEST_CREATE_OTP,
             bundleOf(EXTRA_OTP_CREATED to otpCreated)
+        )
+        findNavController().popBackStack()
+    }
+
+    override fun navigateToOtpListInUpdateFlow(otpUpdated: Boolean) {
+        setFragmentResult(
+            REQUEST_UPDATE_OTP,
+            bundleOf(EXTRA_OTP_UPDATED to otpUpdated)
         )
         findNavController().popBackStack()
     }
@@ -160,5 +197,7 @@ class CreateOtpFragment :
     companion object {
         const val REQUEST_CREATE_OTP = "CREATE_OTP"
         const val EXTRA_OTP_CREATED = "OTP_CREATED"
+        const val REQUEST_UPDATE_OTP = "UPDATE_OTP"
+        const val EXTRA_OTP_UPDATED = "OTP_UPDATED"
     }
 }

@@ -1,17 +1,18 @@
 package com.passbolt.mobile.android.core.otpcore
 
-import dev.turingcomplete.kotlinonetimepassword.HmacAlgorithm
 import dev.turingcomplete.kotlinonetimepassword.TimeBasedOneTimePasswordConfig
 import dev.turingcomplete.kotlinonetimepassword.TimeBasedOneTimePasswordGenerator
 import org.apache.commons.codec.binary.Base32
 import java.util.concurrent.TimeUnit
 
-class TotpParametersProvider {
+class TotpParametersProvider(
+    private val otpMapper: OtpMapper
+) {
 
     fun provideOtpParameters(secretKey: String, digits: Int, period: Long, algorithm: String): OtpParameters {
         val generatorConfig = TimeBasedOneTimePasswordConfig(
             codeDigits = digits,
-            hmacAlgorithm = mapAlgorithm(algorithm),
+            hmacAlgorithm = otpMapper.mapAlgorithmToLibraryAlgorithm(algorithm),
             timeStep = period,
             timeStepUnit = TimeUnit.SECONDS
         )
@@ -27,14 +28,6 @@ class TotpParametersProvider {
 
         return OtpParameters(otpValue = totpGenerator.generate(), secondsValid = secondsValid)
     }
-
-    private fun mapAlgorithm(algorithm: String) =
-        when (algorithm) {
-            "SHA1" -> HmacAlgorithm.SHA1
-            "SHA256" -> HmacAlgorithm.SHA256
-            "SHA512" -> HmacAlgorithm.SHA512
-            else -> throw IllegalArgumentException("Unsupported TOTP algorithm: $algorithm")
-        }
 
     data class OtpParameters(
         val otpValue: String,
