@@ -10,4 +10,15 @@ sealed class DecryptedSecret(val password: String) {
         val description: String,
         password: String
     ) : DecryptedSecret(password)
+
+    class StandaloneTotp(
+        val totp: Totp
+    ) {
+        data class Totp(
+            val algorithm: String,
+            val key: String,
+            val digits: Int,
+            val period: Long
+        )
+    }
 }

@@ -14,8 +14,8 @@ import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermi
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsByIdUseCase
-import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceActionsInteractor
-import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsPresenter
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper

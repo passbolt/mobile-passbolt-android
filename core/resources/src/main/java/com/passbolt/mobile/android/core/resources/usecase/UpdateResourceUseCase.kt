@@ -7,6 +7,9 @@ import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.resources.SecretInputCreator
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.request.EncryptedSecret
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
@@ -87,8 +90,9 @@ class UpdateResourceUseCase(
 
     private suspend fun createDescription(input: Input): String? =
         when (resourceTypeFactory.getResourceTypeEnum(input.resourceTypeId)) {
-            ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> input.description
-            ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> null
+            SIMPLE_PASSWORD -> input.description
+            PASSWORD_WITH_DESCRIPTION -> null
+            STANDALONE_TOTP -> null
         }
 
     private suspend fun createSecrets(

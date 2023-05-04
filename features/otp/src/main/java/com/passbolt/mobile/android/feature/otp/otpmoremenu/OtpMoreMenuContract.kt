@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.feature.resourcedetails.actions
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,5 +21,20 @@ package com.passbolt.mobile.android.feature.resourcedetails.actions
  * @since v1.0
  */
 
-typealias ClipboardLabel = String
-typealias ResourceName = String
+package com.passbolt.mobile.android.feature.otp.otpmoremenu
+
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+
+interface OtpMoreMenuContract {
+
+    interface View : BaseContract.View {
+        fun showTitle(title: String)
+        fun showSeparator()
+        fun showDeleteButton()
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun argsRetrieved(menuModel: ResourceMoreMenuModel)
+    }
+}

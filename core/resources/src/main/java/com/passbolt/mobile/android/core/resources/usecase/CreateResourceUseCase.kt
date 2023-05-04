@@ -97,6 +97,7 @@ class CreateResourceUseCase(
         when (resourceTypeFactory.getResourceTypeEnum(input.resourceTypeId)) {
             ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD -> input.description
             ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION -> null
+            ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP -> null
         }
 
     private suspend fun createSecret(

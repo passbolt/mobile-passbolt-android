@@ -38,4 +38,6 @@ internal fun Module.resourcesModule() {
     singleOf(::GetLocalResourcePermissionsUseCase)
     singleOf(::GetLocalResourcesFilteredByTagUseCase)
     singleOf(::GetLocalResourceTagsUseCase)
+    singleOf(::GetLocalOtpResourcesUseCase)
+    singleOf(::GetIsResourceTypeSupportedUseCase)
 }

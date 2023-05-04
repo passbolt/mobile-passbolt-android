@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.main.mainscreen
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.view.isVisible
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
@@ -19,6 +20,7 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.main.R
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
+import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
@@ -47,8 +49,18 @@ class MainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runtimeAuthenticatedFlag.require(this)
-        binding.mainNavigation.setupWithNavController(bottomNavController)
         presenter.attach(this)
+    }
+
+    override fun setupBottomNavigation(navigationModel: MainBottomNavigationModel) {
+        with(binding.mainNavigation) {
+            setupWithNavController(bottomNavController)
+            menu.findItem(R.id.otpNav).isVisible = navigationModel.isOtpTabVisible
+        }
+
+        bottomNavController.addOnDestinationChangedListener { _, destination, _ ->
+            binding.mainNavigation.isVisible = !noBottomNavFragmentIds.contains(destination.id)
+        }
     }
 
     @Deprecated("Deprecated in Java")
@@ -115,11 +127,17 @@ class MainActivity :
             }
     }
 
-    private companion object {
-        private const val REQUEST_APP_UPDATE = 8000
-    }
-
     override fun performFullDataRefresh() {
         presenter.performFullDataRefresh()
+    }
+
+    private companion object {
+        private const val REQUEST_APP_UPDATE = 8000
+        private val noBottomNavFragmentIds = listOf(
+            R.id.scanOtpFragment,
+            R.id.createOtpManuallyFragment,
+            R.id.createOtpAdvancedSettingsFragment,
+            R.id.scanOtpSuccessFragment
+        )
     }
 }

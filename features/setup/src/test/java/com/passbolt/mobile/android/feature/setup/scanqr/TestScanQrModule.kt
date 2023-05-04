@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.setup.scanqr
 
-import org.mockito.kotlin.mock
 import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
@@ -12,7 +11,9 @@ import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountData
 import com.passbolt.mobile.android.storage.usecase.accounts.CheckAccountExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.SavePrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveCurrentApiUrlUseCase
+import kotlinx.serialization.json.Json
 import org.koin.dsl.module
+import org.mockito.kotlin.mock
 
 /**
  * Passbolt - Open source password manager for teams
@@ -63,10 +64,9 @@ val testScanQrModule = module {
             keyAssembler = get()
         )
     }
-    factory {
-        KeyAssembler()
-    }
-    factory { QrScanResultsMapper() }
+    factory { Json { ignoreUnknownKeys = true } }
+    factory { KeyAssembler(json = get()) }
+    factory { QrScanResultsMapper(json = get()) }
     factory<ScanQrContract.Presenter> {
         ScanQrPresenter(
             coroutineLaunchContext = get(),

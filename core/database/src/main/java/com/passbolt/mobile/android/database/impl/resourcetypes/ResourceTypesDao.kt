@@ -41,6 +41,10 @@ interface ResourceTypesDao : BaseDao<ResourceType> {
     suspend fun getResourceTypeWithFieldsBySlug(slug: String): ResourceTypeIdWithFields
 
     @Transaction
+    @Query("SELECT EXISTS (SELECT * FROM ResourceType WHERE slug = :slug)")
+    suspend fun isResourceTypeSupported(slug: String): Boolean
+
+    @Transaction
     @Query("DELETE FROM ResourceField")
     suspend fun deleteAll()
 }

@@ -1,0 +1,6 @@
+# Passbolt 1.14.0-21 Android app release notes
+
+## Added
+- You can now store TOTP data in Passbolt and generate TOTP codes! (once enabled on the backed)
+- Add TOTP manually or by scanning a QR code
+- View, search, delete TOTPs

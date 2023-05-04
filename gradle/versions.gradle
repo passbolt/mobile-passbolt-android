@@ -1,6 +1,6 @@
 ext {
-    projectVersionName = "1.13.2"
-    projectVersionCode = 20
+    projectVersionName = "1.14.0"
+    projectVersionCode = 21
 
     projectCompileSdk = 33
     projectMinSdk = 29
@@ -92,7 +92,9 @@ ext {
         inAppUpdate: "2.0.0",
         fabSpeedDial: "3.3.0",
         inAppReview: "2.0.0",
-        okio: "3.2.0"
+        okio: "3.2.0",
+        otp: "2.4.0",
+        apacheCommonsCodec: "1.15"
     ]
 
     libs = [
@@ -214,5 +216,7 @@ ext {
         ],
         fabSpeedDial: "com.leinardi.android:speed-dial:${versions.fabSpeedDial}",
         okio: "com.squareup.okio:okio:${versions.okio}",
+        otp: "dev.turingcomplete:kotlin-onetimepassword:${versions.otp}",
+        apacheCommonsCodec: "commons-codec:commons-codec:${versions.apacheCommonsCodec}"
     ]
 }

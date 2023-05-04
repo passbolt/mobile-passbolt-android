@@ -1,7 +1,3 @@
-package com.passbolt.mobile.android.feature.resourcedetails.actions
-
-import com.passbolt.mobile.android.ui.ResourceModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -24,24 +20,32 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResourceActionsInteractor(
-    private val resource: ResourceModel
+
+package com.passbolt.mobile.android.mappers
+
+import com.passbolt.mobile.android.common.InitialsProvider
+import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpModel
+
+class OtpModelMapper(
+    private val initialsProvider: InitialsProvider,
+    private val permissionsModelMapper: PermissionsModelMapper
 ) {
 
-    fun provideWebsiteUrl(onUrlReady: (ClipboardLabel, String) -> Unit) {
-        resource.url?.let {
-            onUrlReady(URL_LABEL, it)
-        }
-    }
+    fun map(resourceEntity: Resource): OtpModel =
+        OtpModel(
+            resourceId = resourceEntity.resourceId,
+            name = resourceEntity.resourceName,
+            initials = initialsProvider.get(resourceEntity.resourceName),
+            permission = permissionsModelMapper.map(resourceEntity.resourcePermission)
+        )
 
-    fun provideUsername(onUsernameReady: (ClipboardLabel, String) -> Unit) {
-        resource.username?.let {
-            onUsernameReady(USERNAME_LABEL, it)
-        }
-    }
-
-    companion object {
-        private const val USERNAME_LABEL = "Username"
-        private const val URL_LABEL = "Url"
-    }
+    fun map(otpModel: OtpModel): OtpListItemWrapper =
+        OtpListItemWrapper(
+            otp = otpModel,
+            isVisible = false,
+            otpExpirySeconds = null,
+            otpValue = null
+        )
 }

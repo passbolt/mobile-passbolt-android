@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.common.coroutinetimer
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
+import kotlin.time.Duration
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,3 +33,11 @@ fun timerFlow(repeatTimes: Long, delayMillis: Long) =
     (0 until repeatTimes)
         .asFlow()
         .onEach { delay(delayMillis) }
+
+fun infiniteTimer(tickDuration: Duration) =
+    flow {
+        while (true) {
+            delay(tickDuration)
+            emit(Unit)
+        }
+    }

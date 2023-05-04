@@ -25,6 +25,8 @@ package com.passbolt.mobile.android.scenarios.settings
 
 import android.app.Instrumentation.ActivityResult
 import android.content.Intent
+import androidx.annotation.IdRes
+import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
@@ -35,14 +37,19 @@ import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.isNotEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import com.google.android.material.switchmaterial.SwitchMaterial
+import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignOutIdlingResource
@@ -55,6 +62,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.actions.setChecked
 import com.passbolt.mobile.android.scenarios.setupautofill.autofillConfiguredModuleTests
 import com.passbolt.mobile.android.scenarios.setupconfigurebiometric.biometricSetupUnavailableModuleTests
 import org.hamcrest.CoreMatchers.allOf
@@ -102,6 +110,10 @@ class SettingsTest : KoinTest {
 
     @BeforeTest
     fun setup() {
+        //    #MOBILE_USER_ON_SETTINGS_PAGE:
+        //    Given	I am a mobile user with the application installed
+        //    And	I am logged in
+        //    And 	I am on Passbolt PRO/CE/Cloud
         onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
         onView(withId(R.id.authButton)).perform(scrollTo(), click())
         Intents.init()
@@ -127,16 +139,18 @@ class SettingsTest : KoinTest {
     }
 
     @Test
-    fun asALoggedInMobileUserOnTheSettingsPageICanSeeTheListOfSettingsIHaveAccessTo() {
-        //    Given     that I am a mobile user with the application installed
-        //    And       I completed the login step
-        //    When      I access the settings page
+//    https://passbolt.testrail.io/index.php?/cases/view/2438
+    fun asAMobileUserOnTheMainSettingsPageICanSeeTheListOfSettingsIHaveAccessTo() {
+        //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
+        //    When      I’m staying on the Settings page
         onView(withId(R.id.settingsNav)).perform(click())
         //    Then      I see the “Settings” title
         onView(withId(R.id.settingsTitle)).check(matches(isDisplayed()))
-        //    And       I see a { "biometric", "Autofill", "Manage accounts", "Terms & Conditions",
-        //              "Privacy policy", "Enable debug logs", "Access the logs", "Open Source Licenses",
-        //              "Sign out" } list item with a icon
+        //    And       I see a "App settings" with an settings icon and a caret on the right
+        //    And       I see a "Accounts" with an personas icon and a caret on the right
+        //    And       I see a "Terms & licences" with an info icon and a caret on the right
+        //    And       I see a "Debug, logs" with an bug icon and a caret on the right
+        //    And       I see a "Sign out" with an exit icon
         val settingsItems = SettingsMenuItemModel.values()
         settingsItems.forEach { settingsItem ->
             onView(withText(settingsItem.settingsItemTextId)).perform(scrollTo()).check(matches(isDisplayed()))
@@ -151,25 +165,118 @@ class SettingsTest : KoinTest {
     }
 
     @Test
-    fun asALoggedInMobileUserOnTheSettingsPageICanSwitchAccount() {
-        //    Given     that I am a mobile user with the application installed
-        //    And       I have one or more accounts configured
-        //    And       the Passbolt application is already opened
-        //    And       I am on the settings page
+    fun asAnAndroidUserICanSeeAppSettings() {
+        //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
         onView(withId(R.id.settingsNav)).perform(click())
-        //    When      I click on the “Manage accounts” list item
+        //    When 	    I click on the “App settings” button
+        onView(withId(R.id.appSettings)).perform(click())
+        //    Then      I see the “App settings” title
+        onView(allOf(isDescendantOfA(withId(R.id.toolbar)), withText(R.string.settings_app_settings)))
+            .check(matches(isDisplayed()))
+        //    And	    I see a back button to go to the main settings page
+        onView(isAssignableFrom(Toolbar::class.java))
+            .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
+        //    And 	    I see a Fingerprint with an fingerprint icon and a switch on the right
+        //    And 	    I see a Autofill with an key icon and a caret on the right
+        //    And 	    I see a Default filter with an filter icon and a caret on the right
+        //    And 	    I see a Expert settings with an gear icon and a caret on the right
+        AppSettingsItemModel.values().forEach { appSettingsItem ->
+            onView(withText(appSettingsItem.settingsItemTextId)).perform(scrollTo()).check(matches(isDisplayed()))
+            onView(allOf(isDescendantOfA(withId(appSettingsItem.settingsItemId)), withId(R.id.iconImage)))
+                .check(matches(hasDrawable(id = appSettingsItem.settingsItemIconId, tint = R.color.icon_tint)))
+        }
+    }
+
+    @Test
+    fun asAnAndroidUserICanSeeExpertSettings() {
+        //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
+        onView(withId(R.id.settingsNav)).perform(click())
+        //    And	    I’m on the “App settings” screen
+        onView(withId(R.id.appSettings)).perform(click())
+        //    When 	    I click on the “Expert settings” button
+        onView(withId(R.id.expertSettings)).perform(click())
+        //    Then      I see the “Expert settings” title
+        onView(allOf(isDescendantOfA(withId(R.id.toolbar)), withText(R.string.settings_app_settings_expert_settings)))
+            .check(matches(isDisplayed()))
+        //    And 	    I see the back button to go to the main settings page
+        onView(isAssignableFrom(Toolbar::class.java))
+            .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
+        //    And 	    I see a Developer mode with an nodes icon and a switch on the right
+        //    And 	    I see a Hide “device is rooted” dialog with an hash icon and a switch on the right
+        ExpertSettingsItemModel.values().forEach { expertSettingsItem ->
+            onView(withText(expertSettingsItem.settingsItemTextId)).perform(scrollTo()).check(matches(isDisplayed()))
+            onView(allOf(isDescendantOfA(withId(expertSettingsItem.settingsItemId)), withId(R.id.iconImage)))
+                .check(matches(hasDrawable(id = expertSettingsItem.settingsItemIconId, tint = R.color.icon_tint)))
+        }
+    }
+
+    @Test
+    fun asAnAndroidUserICanEnableDeveloperMode() {
+        //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
+        onView(withId(R.id.settingsNav)).perform(click())
+        //    And	    I’m on the “Expert settings” screen
+        onView(withId(R.id.appSettings)).perform(click())
+        onView(withId(R.id.expertSettings)).perform(click())
+        //    When 	    I enable the “Developer mode” switch
+        onView(isChildSwitchOfSetting(R.id.developerModeSetting))
+            .perform(setChecked(true))
+        //    Then      I see that switch is enabled
+        onView(isChildSwitchOfSetting(R.id.developerModeSetting))
+            .check(matches(isEnabled()))
+        //    And 	    I see that “Hide “device is rooted” dialog” switch is available
+        onView(isChildSwitchOfSetting(R.id.hideRootWarningSetting))
+            .check(matches(isEnabled()))
+    }
+
+    @Test
+    fun asAnAndroidUserICanDisableDeveloperMode() {
+        //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
+        onView(withId(R.id.settingsNav)).perform(click())
+        //    And	    I’m on the “Expert settings” screen
+        onView(withId(R.id.appSettings)).perform(click())
+        onView(withId(R.id.expertSettings)).perform(click())
+        //    When 	    I disable the “Developer mode” switch
+        onView(isChildSwitchOfSetting(R.id.developerModeSetting))
+            .perform(setChecked(false))
+        //    And 	    I see that every subsequent position is unavailable
+        onView(isChildSwitchOfSetting(R.id.hideRootWarningSetting))
+            .check(matches(isNotEnabled()))
+    }
+
+    @Test
+    fun asAnAndroidUserICanHideDeviceIsRootedDialog() {
+        //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
+        onView(withId(R.id.settingsNav)).perform(click())
+        //    And	    I’m on the “Expert settings” screen
+        onView(withId(R.id.appSettings)).perform(click())
+        onView(withId(R.id.expertSettings)).perform(click())
+        //    When 	    I enable the “Hide “device is rooted” dialog” switch
+        onView(isChildSwitchOfSetting(R.id.developerModeSetting))
+            .perform(setChecked(true))
+        onView(isChildSwitchOfSetting(R.id.hideRootWarningSetting))
+            .perform(setChecked(true))
+    }
+
+    @Test
+    fun asAMobileUserICanSeeAccounts() {
+        //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
+        //    When 	    I click on the “Accounts” button
+        //    Then      I see the “Accounts” title
+        //    And 	    I see the back button to go to the main settings page
+        onView(withId(R.id.settingsNav)).perform(click())
+        //    And 	    I see a Manage accounts with an peronas icon and a caret on the right
         onView(withId(R.id.accountsSettings)).perform(click())
         onView(withId(R.id.manageAccountsSetting)).perform(click())
-        //    Then      I see the “List of accounts” screen
+        //    And 	    I see a Transfer account to another device with an lorry icon and a caret on the right
         onView(withText(R.string.accounts_list_manage_accounts)).check(matches(isDisplayed()))
         onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
     }
 
     @Test
     fun asALoggedInMobileUserOnTheSettingsPageAndBiometricIsDisabledOnMyDeviceICanEnableBiometrics() {
-        //    Given     that I am a mobile user with the application installed 
-        //    And       I completed the login step 
-        //    And       Biometric is disabled on my device 
+        //    Given     that I am a mobile user with the application installed
+        //    And       I completed the login step
+        //    And       Biometric is disabled on my device
         //    And       I am on the settings page
         onView(withId(R.id.settingsNav)).perform(click())
         onView(withId(R.id.appSettings)).perform(click())
@@ -208,16 +315,17 @@ class SettingsTest : KoinTest {
     }
 
     @Test
-    fun asALoggedInMobileUserOnTheSettingsPageICanOpenTheTermsAndConditionsPage() {
-        //    Given     that I am a mobile user with the application installed
-        //    And       the Passbolt application is already opened
-        //    And       I completed the login step
-        //    And       I am on the settings page
+    fun asAnAndroidUserICanSeeTermsAndLicences() {
+        //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
+        //    Then      I see the “Terms & licences” title
         onView(withId(R.id.settingsNav)).perform(click())
-        //    When      I click on “Terms & Conditions” list item
+        //    When 	    I click on the “Terms & licences” button
         onView(withId(R.id.termsAndLicensesSettings)).perform(click())
         onView(withId(R.id.termsAndConditionsSetting)).perform(click())
-        //    Then      I see a “Terms & Conditions” page (as web page)
+        //    And 	    I see the back button to go to the main settings page
+        //    And 	    I see a Terms & Conditions with an info icon and a caret on the right
+        //    And 	    I see a Privacy policy with an lock icon and a caret on the right
+        //    And 	    I see a Open Source Licences with an feather icon and a caret on the right
         val expectedIntent: Matcher<Intent> = allOf(hasAction(Intent.ACTION_VIEW), hasData("passbolt.com/terms"))
         intending(expectedIntent).respondWith(ActivityResult(0, null))
     }
@@ -235,6 +343,28 @@ class SettingsTest : KoinTest {
         //    Then      I see a “Privacy policy” page (as a web page)
         val expectedIntent: Matcher<Intent> = allOf(hasAction(Intent.ACTION_VIEW), hasData("passbolt.com/privacy"))
         intending(expectedIntent).respondWith(ActivityResult(0, null))
+    }
+
+    @Test
+    fun asAnAndroidUserISeeDebugLogs() {
+        //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
+        onView(withId(R.id.settingsNav)).perform(click())
+        //    When 	    I click on the “Debug, logs” button
+        onView(withId(R.id.debugLogsSettings)).perform(click())
+        //    Then      I see the “Debug, logs” title
+        onView(allOf(isDescendantOfA(withId(R.id.toolbar)), withText(R.string.settings_debug_logs)))
+            .check(matches(isDisplayed()))
+        //    And 	    I see the back button to go to the main settings page
+        onView(isAssignableFrom(Toolbar::class.java))
+            .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
+        //    And 	    I see a Enable debug logs with an bug icon and a switch on the right
+        //    And 	    I see a Access the logs with an sheet icon and a caret on the right
+        //    And 	    I see a Visit help site with an chain icon and a caret on the right
+        DebugLogsItemModel.values().forEach { debugLogsSettingsItem ->
+            onView(withText(debugLogsSettingsItem.settingsItemTextId)).perform(scrollTo()).check(matches(isDisplayed()))
+            onView(allOf(isDescendantOfA(withId(debugLogsSettingsItem.settingsItemId)), withId(R.id.iconImage)))
+                .check(matches(hasDrawable(id = debugLogsSettingsItem.settingsItemIconId, tint = R.color.icon_tint)))
+        }
     }
 
     @Test
@@ -275,4 +405,9 @@ class SettingsTest : KoinTest {
         //    And       I am not signed out
         onView(withId(R.id.signOut)).check(matches(isDisplayed()))
     }
+
+    private fun isChildSwitchOfSetting(@IdRes id: Int) = allOf(
+        isDescendantOfA(withId(id)),
+        isAssignableFrom(SwitchMaterial::class.java)
+    )
 }

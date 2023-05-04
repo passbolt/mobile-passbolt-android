@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
 import com.mikepenz.fastadapter.GenericItem
+import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordHeaderItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordItem
 import com.passbolt.mobile.android.ui.ResourceListUiModel
@@ -27,11 +28,13 @@ import com.passbolt.mobile.android.ui.ResourceListUiModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResourceUiItemsMapper {
+class ResourceUiItemsMapper(
+    private val initialsIconGenerator: InitialsIconGenerator
+) {
 
     fun mapModelToItem(model: ResourceListUiModel): GenericItem =
         when (model) {
-            is ResourceListUiModel.Data -> PasswordItem(model.resourceModel, false)
+            is ResourceListUiModel.Data -> PasswordItem(model.resourceModel, initialsIconGenerator, false)
             is ResourceListUiModel.Header -> PasswordHeaderItem(model)
         }
 }

@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.commonfolders.usecase.AddLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.CreateFolderUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.FolderShareInteractor
+import com.passbolt.mobile.android.core.idlingresource.CreateFolderIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.database.impl.folders.AddLocalFolderUseCase
@@ -60,6 +61,7 @@ class CreateFolderPresenter(
     private val addLocalFolderPermissionsUseCase: AddLocalFolderPermissionsUseCase,
     private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase,
     private val usersModelMapper: UsersModelMapper,
+    private val createFolderIdlingResource: CreateFolderIdlingResource,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<CreateFolderContract.View>(coroutineLaunchContext),
     CreateFolderContract.Presenter {
@@ -143,6 +145,7 @@ class CreateFolderPresenter(
 
     private fun createFolder() {
         view?.showProgress()
+        createFolderIdlingResource.setIdle(false)
         scope.launch {
             when (val output = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                 createFolderUseCase.execute(CreateFolderUseCase.Input(folderName, parentFolderId))
@@ -169,6 +172,7 @@ class CreateFolderPresenter(
                     }
                 }
             }
+            createFolderIdlingResource.setIdle(true)
             view?.hideProgress()
         }
     }

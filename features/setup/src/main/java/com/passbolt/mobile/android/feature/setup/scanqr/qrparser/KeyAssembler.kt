@@ -27,12 +27,14 @@ import okio.Buffer
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class KeyAssembler {
+class KeyAssembler(
+    private val json: Json
+) {
 
     fun assemblePrivateKey(contentBytes: Buffer): String {
         val key = String(contentBytes.readByteArray())
 
-        val assembledKey = Json.decodeFromString<AssembledKeyDto>(key)
+        val assembledKey = json.decodeFromString<AssembledKeyDto>(key)
 
         return assembledKey.armoredKey
     }

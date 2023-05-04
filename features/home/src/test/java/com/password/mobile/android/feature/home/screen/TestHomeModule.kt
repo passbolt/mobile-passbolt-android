@@ -27,8 +27,8 @@ import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseC
 import com.passbolt.mobile.android.database.impl.tags.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
-import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceActionsInteractor
-import com.passbolt.mobile.android.feature.resourcedetails.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase

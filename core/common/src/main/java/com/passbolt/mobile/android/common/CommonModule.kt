@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.common
 
 import org.koin.android.ext.koin.androidApplication
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 /**
@@ -28,14 +29,12 @@ import org.koin.dsl.module
 
 val commonModule = module {
     single {
-        FingerprintFormatter()
-    }
-    single {
-        DomainProvider()
-    }
-    single {
         ResourceDimenProvider(
             androidApplication().resources
         )
     }
+
+    singleOf(::DomainProvider)
+    singleOf(::FingerprintFormatter)
+    singleOf(::OtpFormatter)
 }

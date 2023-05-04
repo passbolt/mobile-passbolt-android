@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.scanqr.mapper
 
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
+import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
 /**
@@ -27,7 +28,6 @@ import org.koin.dsl.module
  */
 
 val testMapperModule = module {
-    factory {
-        QrScanResultsMapper()
-    }
+    factory { Json { ignoreUnknownKeys = true } }
+    factory { QrScanResultsMapper(json = get()) }
 }

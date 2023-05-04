@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
 import com.passbolt.mobile.android.feature.setup.scanqr.usecase.UpdateTransferUseCase
+import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
@@ -42,5 +43,7 @@ fun Module.scanQrModule() {
         scopedOf(::KeyAssembler)
         scopedOf(::UpdateTransferUseCase)
         scopedOf(::ScanQrParser)
+
+        scoped { Json { ignoreUnknownKeys = true } }
     }
 }

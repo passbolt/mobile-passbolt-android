@@ -56,6 +56,7 @@ class AddLocalResourceTypesUseCase(
         // insert each resource types along with its fields and ResourceType<->ResourceField cross reference
         resourceFieldsDao.deleteAll()
         resourceTypesAndFieldsCrossRefDao.deleteAll()
+        resourceTypesDao.deleteAll()
         resourceTypeDbModel.forEach { resourceType ->
             resourceTypesDao.insert(resourceType.resourceType)
             resourceType.resourceFields.forEach { resourceTypeField ->

@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.home.screen
+package com.passbolt.mobile.android.feature.otp.screen
 
 import android.content.Context
 import android.graphics.Color
@@ -15,9 +15,7 @@ import androidx.core.view.updateMargins
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialOverlayLayout
 import com.leinardi.android.speeddial.SpeedDialView
-import com.leinardi.android.speeddial.SpeedDialView.OnChangeListener
 import com.passbolt.mobile.android.feature.home.R
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -41,23 +39,20 @@ import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewMode
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SpeedDialFabFactory(
+class OtpSpeedDialFabFactory(
     val context: Context
 ) {
 
-    var addPasswordClick: (() -> Unit)? = null
-    var addFolderClick: (() -> Unit)? = null
+    var scanQrCodeClick: (() -> Unit)? = null
+    var createManuallyClick: (() -> Unit)? = null
 
     private val backgroundColor = ResourcesCompat.getColor(context.resources, R.color.background, context.theme)
     private val tintColor = ResourcesCompat.getColor(context.resources, R.color.icon_tint, context.theme)
     private val primaryColor = ResourcesCompat.getColor(context.resources, R.color.primary, context.theme)
     private val textColor = ResourcesCompat.getColor(context.resources, R.color.text_primary, context.theme)
 
-    fun getSpeedDialFab(context: Context, overlay: SpeedDialOverlayLayout, homeDisplay: HomeDisplayViewModel) =
-        when (homeDisplay) {
-            is HomeDisplayViewModel.Folders -> foldersSpeedDial(context, overlay)
-            else -> mainFab(context, overlay)
-        }
+    fun getSpeedDialFab(context: Context, overlay: SpeedDialOverlayLayout) =
+        otpSpeedDial(context, overlay)
 
     /**
      * Single FAB without speed dial. Upon click add a new resource.
@@ -65,7 +60,7 @@ class SpeedDialFabFactory(
     private fun mainFab(context: Context, overlay: SpeedDialOverlayLayout) =
         SpeedDialView(context).apply {
             val margin = context.resources.getDimension(R.dimen.dp_16).toInt()
-            id = R.id.speedDialViewId
+            id = R.id.otpSpeedDialViewId
             overlayLayout = overlay
 
             layoutParams = CoordinatorLayout.LayoutParams(
@@ -90,37 +85,34 @@ class SpeedDialFabFactory(
 
             // disable ripple as there is a shadow bug on some APIs in material design lib
             mainFab.rippleColor = Color.TRANSPARENT
-
-            setOnChangeListener(object : OnChangeListener {
-                override fun onMainActionSelected(): Boolean {
-                    addPasswordClick?.invoke()
-                    return false
-                }
-
-                override fun onToggleChanged(isOpen: Boolean) {
-                    // not interested
-                }
-            })
         }
 
     /**
      * FAB with two action items: add resource & add folders.
      */
-    private fun foldersSpeedDial(context: Context, overlay: SpeedDialOverlayLayout) =
+    private fun otpSpeedDial(context: Context, overlay: SpeedDialOverlayLayout) =
         mainFab(context, overlay).apply {
-            addSpeedDialItem(R.id.speedDialViewAddPasswordId, R.drawable.ic_key, R.string.home_speed_dial_add_password)
-            addSpeedDialItem(R.id.speedDialViewAddFolderId, R.drawable.ic_folder, R.string.home_speed_dial_add_folder)
+            addSpeedDialItem(
+                R.id.otpSpeedDialViewCreateManually,
+                R.drawable.ic_write,
+                R.string.otp_speed_dial_create_manually
+            )
+            addSpeedDialItem(
+                R.id.otpSpeedDialViewScanQr,
+                R.drawable.ic_camera,
+                R.string.otp_speed_dial_scan_qr
+            )
 
             setOnChangeListener(null)
             setOnActionSelectedListener(SpeedDialView.OnActionSelectedListener { actionItem ->
                 return@OnActionSelectedListener when (actionItem.id) {
-                    R.id.speedDialViewAddPasswordId -> {
-                        addPasswordClick?.invoke()
+                    R.id.otpSpeedDialViewScanQr -> {
+                        scanQrCodeClick?.invoke()
                         close()
                         true
                     }
-                    R.id.speedDialViewAddFolderId -> {
-                        addFolderClick?.invoke()
+                    R.id.otpSpeedDialViewCreateManually -> {
+                        createManuallyClick?.invoke()
                         close()
                         true
                     }

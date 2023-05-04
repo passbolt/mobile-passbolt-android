@@ -19,6 +19,7 @@
     <string name="all_items_home_search_hint">Search name, user, url or tag</string>
     <string name="user_search_hint">Search for users…</string>
     <string name="no_passwords">There are no passwords</string>
+    <string name="no_otps">There are no TOTPs</string>
     <string name="authentication_required">Authentication required</string>
     <string name="save">Save</string>
     <string name="apply">Apply</string>
@@ -45,6 +46,7 @@
     <string name="common_message_folder_created">New folder %s has been created!</string>
 
     <string name="validation_required_with_max_length">Length should be between 1 and %d</string>
+    <string name="validation_required_integer">Should be an integer number</string>
 
     <string name="fingerprint_biometric_error_generic">An error has occurred with the fingerprint sensor.</string>
     <string name="fingerprint_biometric_error_too_many_attempts">Biometric authorization has been blocked due to too many attempts.</string>
@@ -241,13 +243,15 @@
 
     <string name="main_menu_home">Home</string>
     <string name="main_menu_settings">Settings</string>
+    <string name="main_menu_otp">TOTP</string>
 
     <string name="resource_details_username_header">Username</string>
     <string name="resource_details_password_header">Password</string>
     <string name="resource_details_url_header">Website URL</string>
     <string name="resource_details_description_header">Description</string>
     <string name="resource_details_tags_header">Tags</string>
-    <string name="resource_details_hide_password">••••••••••••••••••</string>
+    <string name="resource_details_hide_password"
+        translatable="false">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">Description is encrypted</string>
     <string name="resource_details_see_description">See description</string>
     <string name="resource_details_decryption_failure">Error during secret decryption</string>
@@ -441,6 +445,46 @@
     <string name="transfer_account_summary_success">Your information has been transferred!</string>
     <string name="transfer_account_summary_cancelled">Transfer cancelled</string>
     <string name="transfer_account_summary_go_back">Go back to my account</string>
+
+    <string name="otp_search">Search TOTP</string>
+    <string name="otp_hide_otp"
+        translatable="false">••••••</string>
+    <string name="otp_speed_dial_scan_qr">Scan QR code</string>
+    <string name="otp_speed_dial_create_manually">Create TOTP manually</string>
+
+    <string name="otp_more_copy_otp">Copy TOTP</string>
+    <string name="otp_more_show_otp">Show TOTP</string>
+    <string name="otp_more_edit_otp">Edit TOTP</string>
+    <string name="otp_more_delete_otp">Delete TOTP</string>
+    <string name="otp_delete_confirmation">This action will permanently delete the TOTP.</string>
+    <string name="otp_delete_totp">Delete TOTP</string>
+    <string name="otp_deleted">TOTP was deleted</string>
+    <string name="otp_failed_to_delete">Failed to delete totp</string>
+    <string name="otp_new_otp_created">New TOTP created!</string>
+
+    <string name="otp_scan_title">Scan QR code</string>
+    <string name="otp_scan_not_a_totp_qr">Not a TOTP Qr Code</string>
+
+    <string name="otp_create_totp_title">Create TOTP</string>
+    <string name="otp_create_totp_field_name">Name (Label)</string>
+    <string name="otp_create_totp_field_name_hint">Name</string>
+    <string name="otp_create_totp_field_url">URL (Issuer)</string>
+    <string name="otp_create_totp_field_url_hint">URL</string>
+    <string name="otp_create_totp_field_secret">Secret</string>
+    <string name="otp_create_totp_field_secret_hint">Secret</string>
+    <string name="otp_create_totp_advanced_settings">Advanced settings</string>
+    <string name="otp_create_totp_create_standalone">Create a standalone TOTP</string>
+
+    <string name="otp_create_totp_expert_settings_title">Create TOTP - advanced settings</string>
+    <string name="otp_create_totp_expert_settings_expiry">TOTP expiry</string>
+    <string name="otp_create_totp_expert_settings_expiry_hint">TOTP expiry</string>
+    <string name="otp_create_totp_expert_settings_expiry_seconds_info">seconds until the TOTP expires.</string>
+    <string name="otp_create_totp_expert_settings_expiry_length_info">digits.</string>
+    <string name="otp_create_totp_expert_settings_algorithm">Algorithm</string>
+    <string name="otp_create_totp_expert_settings_length">TOTP length</string>
+    <string name="otp_create_totp_expert_settings_warning">Advanced settings have to match your TOTP provider settings otherwise it won’t work.</string>
+
+    <string name="otp_create_success">Your TOTP has been scanned!</string>
 
     <!--
     arrays can be inconsistent when in other languages

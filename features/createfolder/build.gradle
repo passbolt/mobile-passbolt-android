@@ -19,6 +19,7 @@ dependencies {
     implementation project(':networking')
     implementation project(':folders')
     implementation project(':storage')
+    implementation project(':idlingresource')
 
     implementation libs.di.koin
     implementation libs.room.sqlite
@@ -33,6 +34,7 @@ dependencies {
     implementation libs.material
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
+    implementation libs.test.espressoIdlingResource
 }
 
 android {

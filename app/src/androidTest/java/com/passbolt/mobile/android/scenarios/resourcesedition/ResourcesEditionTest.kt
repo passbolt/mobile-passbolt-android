@@ -296,7 +296,6 @@ class ResourcesEditionTest : KoinTest {
         //    When      I click "Save" button
         onView(withId(R.id.updateButton)).perform(scrollTo(), click())
         //    Then      I see a popup "{password name} password was successfully edited." in @green
-        //    Then      I see a popup "{password name} password was successfully edited." in @green
         onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
         onView(withId(com.google.android.material.R.id.snackbar_text))
             .check(matches(withText(CoreMatchers.endsWith("password was successfully edited."))))

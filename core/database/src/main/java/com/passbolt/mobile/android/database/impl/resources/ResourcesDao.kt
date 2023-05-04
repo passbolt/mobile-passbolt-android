@@ -35,20 +35,45 @@ import com.passbolt.mobile.android.entity.resource.Resource
 interface ResourcesDao : BaseDao<Resource> {
 
     @Transaction
-    @Query("SELECT * FROM Resource ORDER BY resourceName COLLATE NOCASE ASC")
-    suspend fun getAllOrderedByName(): List<Resource>
+    @Query(
+        "SELECT * FROM Resource " +
+                "WHERE resourceTypeId IN(" +
+                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+                ") " +
+                "ORDER BY resourceName " +
+                "COLLATE NOCASE ASC"
+    )
+    suspend fun getAllOrderedByName(slugs: List<String>): List<Resource>
 
     @Transaction
-    @Query("SELECT * FROM Resource WHERE favouriteId IS NOT NULL ORDER BY modified DESC")
-    suspend fun getFavourites(): List<Resource>
+    @Query(
+        "SELECT * FROM Resource " +
+                "WHERE favouriteId IS NOT NULL AND resourceTypeId IN(" +
+                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+                ") " +
+                "ORDER BY modified DESC"
+    )
+    suspend fun getFavourites(slugs: List<String>): List<Resource>
 
     @Transaction
-    @Query("SELECT * FROM Resource ORDER BY modified DESC")
-    suspend fun getAllOrderedByModifiedDate(): List<Resource>
+    @Query(
+        "SELECT * FROM Resource " +
+                "WHERE resourceTypeId IN(" +
+                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+                ") " +
+                "ORDER BY modified DESC"
+    )
+    suspend fun getAllOrderedByModifiedDate(slugs: List<String>): List<Resource>
 
     @Transaction
-    @Query("SELECT * FROM Resource WHERE resourcePermission IN (:permissions) ORDER BY modified DESC")
-    suspend fun getWithPermissions(permissions: Set<Permission>): List<Resource>
+    @Query(
+        "SELECT * FROM Resource " +
+                "WHERE resourcePermission IN (:permissions) AND resourceTypeId IN(" +
+                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+                ")" +
+                "ORDER BY modified DESC"
+    )
+    suspend fun getWithPermissions(permissions: Set<Permission>, slugs: List<String>): List<Resource>
 
     @Transaction
     @Query(
@@ -58,35 +83,52 @@ interface ResourcesDao : BaseDao<Resource> {
                 "username LIKE '%' || :searchQuery || '%') " +
                 "AND " +
                 "folderId IN (:inOneOfFolders) " +
+                "AND " +
+                "resourceTypeId IN(" +
+                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+                ")" +
                 "ORDER BY modified DESC"
     )
-    suspend fun getFilteredForChildFolders(searchQuery: String, inOneOfFolders: List<String>): List<Resource>
+    suspend fun getFilteredForChildFolders(
+        searchQuery: String,
+        inOneOfFolders: List<String>,
+        slugs: List<String>
+    ): List<Resource>
 
     @Transaction
     @Query("SELECT * FROM Resource WHERE resourceId == :resourceId")
     suspend fun get(resourceId: String): Resource
 
     @Transaction
-    @Query("SELECT * FROM Resource WHERE folderId IS :folderId")
-    suspend fun getResourcesForFolderWithId(folderId: String?): List<Resource>
+    @Query(
+        "SELECT * FROM Resource " +
+                "WHERE folderId IS :folderId AND resourceTypeId IN(" +
+                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+                ")"
+    )
+    suspend fun getResourcesForFolderWithId(folderId: String?, slugs: List<String>): List<Resource>
 
     @Transaction
     @Query(
         "SELECT * FROM Resource r " +
                 "INNER JOIN ResourceAndTagsCrossRef cr " +
                 "ON r.resourceId=cr.resourceId " +
-                "WHERE cr.tagId=:tagId"
+                "WHERE cr.tagId=:tagId AND r.resourceTypeId IN(" +
+                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+                ")"
     )
-    suspend fun getResourcesWithTag(tagId: String): List<Resource>
+    suspend fun getResourcesWithTag(tagId: String, slugs: List<String>): List<Resource>
 
     @Transaction
     @Query(
         "SELECT * FROM Resource r " +
                 "INNER JOIN ResourceAndGroupsCrossRef cr " +
                 "ON r.resourceId=cr.resourceId " +
-                "WHERE cr.groupId=:groupId"
+                "WHERE cr.groupId=:groupId AND r.resourceTypeId IN(" +
+                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+                ")"
     )
-    suspend fun getResourcesWithGroup(groupId: String): List<Resource>
+    suspend fun getResourcesWithGroup(groupId: String, slugs: List<String>): List<Resource>
 
     @Transaction
     @Query(
@@ -119,13 +161,32 @@ interface ResourcesDao : BaseDao<Resource> {
                 "ON rTCR.resourceId = r.resourceId " +
                 "INNER JOIN Tag t " +
                 "ON t.id =rTCr.tagId " +
-                "WHERE t.slug LIKE '%' || :tagSearchQuery || '%' " +
+                "WHERE (t.slug LIKE '%' || :tagSearchQuery || '%') AND r.resourceTypeId IN(" +
+                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+                ")" +
                 "GROUP BY r.resourceId " +
                 "ORDER BY resourceName COLLATE NOCASE ASC "
     )
-    suspend fun getAllThatHaveTagContaining(tagSearchQuery: String): List<Resource>
+    suspend fun getAllThatHaveTagContaining(tagSearchQuery: String, slugs: List<String>): List<Resource>
+
+    @Transaction
+    @Query(
+        "SELECT * FROM Resource " +
+                "WHERE resourceTypeId IN(" +
+                "SELECT resourceTypeId FROM ResourceType WHERE slug IN (:otpSlugs)" +
+                ")" +
+                "ORDER BY resourceName " +
+                "COLLATE NOCASE ASC"
+    )
+    suspend fun getAllOtpResources(otpSlugs: List<String> = otpResourceTypeSlugs): List<Resource>
 
     @Transaction
     @Query("DELETE FROM Resource")
     suspend fun deleteAll()
+
+    private companion object {
+        private val otpResourceTypeSlugs = listOf(
+            "totp", "password-description-totp"
+        )
+    }
 }

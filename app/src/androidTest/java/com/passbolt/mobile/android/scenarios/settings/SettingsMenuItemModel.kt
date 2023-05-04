@@ -59,3 +59,69 @@ enum class SettingsMenuItemModel(
         settingsItemId = R.id.signOut
     )
 }
+
+enum class AppSettingsItemModel(
+    @StringRes val settingsItemTextId: Int,
+    @DrawableRes val settingsItemIconId: Int,
+    @IdRes val settingsItemId: Int
+) {
+    FINGERPRINT(
+        settingsItemTextId = R.string.settings_app_settings_fingerprint,
+        settingsItemIconId = R.drawable.ic_fingerprint,
+        settingsItemId = R.id.fingerprintSetting
+    ),
+    AUTOFILL(
+        settingsItemTextId = R.string.settings_app_settings_autofill,
+        settingsItemIconId = R.drawable.ic_key,
+        settingsItemId = R.id.autofillSetting
+    ),
+    DEFAULT_FILTER(
+        settingsItemTextId = R.string.settings_app_settings_default_filter,
+        settingsItemIconId = R.drawable.ic_filter,
+        settingsItemId = R.id.defaultFilterSetting
+    ),
+    EXPERT_SETTINGS(
+        settingsItemTextId = R.string.settings_app_settings_expert_settings,
+        settingsItemIconId = R.drawable.ic_cog,
+        settingsItemId = R.id.expertSettings
+    )
+}
+
+enum class ExpertSettingsItemModel(
+    @StringRes val settingsItemTextId: Int,
+    @DrawableRes val settingsItemIconId: Int,
+    @IdRes val settingsItemId: Int
+) {
+    DEVELOPER_MODE(
+        settingsItemTextId = R.string.settings_app_settings_expert_settings_dev_mode,
+        settingsItemIconId = R.drawable.ic_dev_mode,
+        settingsItemId = R.id.developerModeSetting
+    ),
+    DEVICE_IS_ROOTED_DIALOG(
+        settingsItemTextId = R.string.settings_app_settings_expert_settings_hide_root,
+        settingsItemIconId = R.drawable.ic_hash,
+        settingsItemId = R.id.hideRootWarningSetting
+    )
+}
+
+enum class DebugLogsItemModel(
+    @StringRes val settingsItemTextId: Int,
+    @DrawableRes val settingsItemIconId: Int,
+    @IdRes val settingsItemId: Int
+) {
+    ENABLE_DEBUG_LOGS(
+        settingsItemTextId = R.string.settings_debug_logs_enable_logs,
+        settingsItemIconId = R.drawable.ic_bug,
+        settingsItemId = R.id.enableLogsSetting
+    ),
+    ACCESS_THE_LOGS(
+        settingsItemTextId = R.string.settings_debug_logs_settings_logs,
+        settingsItemIconId = R.drawable.ic_access_logs,
+        settingsItemId = R.id.accessLogsSetting
+    ),
+    VISIT_HELP_WEBSITE(
+        settingsItemTextId = R.string.settings_debug_logs_visit_help_website,
+        settingsItemIconId = R.drawable.ic_link,
+        settingsItemId = R.id.visitHelpWebsite
+    )
+}

@@ -39,6 +39,7 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
+import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.createfolder.CreateFolderFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
@@ -119,10 +120,11 @@ class HomeFragment :
     private val inCurrentFoldersHeaderItemAdapter: ItemAdapter<InCurrentFoldersHeaderItem> by inject(
         named(IN_CURRENT_FOLDER_HEADER_ITEM_ADAPTER)
     )
+    private val initialsIconGenerator: InitialsIconGenerator by inject()
 
     private val snackbarAnchorView: View?
         get() {
-            val speedDialView: View = binding.rootLayout.findViewById(R.id.speedDialViewId)
+            val speedDialView: View = binding.rootLayout.findViewById(R.id.homeSpeedDialViewId)
             return if (speedDialView.isVisible) {
                 speedDialView
             } else {
@@ -135,7 +137,7 @@ class HomeFragment :
     private val websiteOpener: WebsiteOpener by inject()
     private val arguments: HomeFragmentArgs by navArgs()
     private val navController by lifecycleAwareLazy { findNavController() }
-    private val speedDialFabFactory: SpeedDialFabFactory by inject()
+    private val speedDialFabFactory: HomeSpeedDialFabFactory by inject()
 
     private val folderCreatedListener = { _: String, bundle: Bundle ->
         val name = requireNotNull(bundle.getString(CreateFolderFragment.EXTRA_CREATED_FOLDER_NAME))
@@ -347,6 +349,7 @@ class HomeFragment :
         }
     }
 
+    @Suppress("LongMethod") // will be refactored in Q2 - MOB-1029
     override fun showItems(
         suggestedResources: List<ResourceModel>,
         resourceList: List<ResourceModel>,
@@ -370,7 +373,13 @@ class HomeFragment :
         // suggested items
         FastAdapterDiffUtil.calculateDiff(
             suggestedItemsItemAdapter,
-            suggestedResources.map { PasswordItem(it, resourceHandlingStrategy.shouldShowResourceMoreMenu()) }
+            suggestedResources.map {
+                PasswordItem(
+                    it,
+                    initialsIconGenerator,
+                    resourceHandlingStrategy.shouldShowResourceMoreMenu()
+                )
+            }
         )
         // other items header
         FastAdapterDiffUtil.calculateDiff(
@@ -395,7 +404,13 @@ class HomeFragment :
         // current folder resources
         FastAdapterDiffUtil.calculateDiff(
             passwordItemAdapter,
-            resourceList.map { PasswordItem(it, dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()) })
+            resourceList.map {
+                PasswordItem(
+                    it,
+                    initialsIconGenerator,
+                    dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()
+                )
+            })
         // "in sub-folders" header
         FastAdapterDiffUtil.calculateDiff(
             inSubFoldersHeaderItemAdapter,
@@ -409,6 +424,7 @@ class HomeFragment :
             filteredSubFolderResourceList.map {
                 PasswordItem(
                     it,
+                    initialsIconGenerator,
                     dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()
                 )
             })
@@ -590,11 +606,11 @@ class HomeFragment :
     }
 
     override fun hideAddButton() {
-        binding.rootLayout.findViewById<View>(R.id.speedDialViewId).gone()
+        binding.rootLayout.findViewById<View>(R.id.homeSpeedDialViewId).gone()
     }
 
     override fun showAddButton() {
-        binding.rootLayout.findViewById<View>(R.id.speedDialViewId).visible()
+        binding.rootLayout.findViewById<View>(R.id.homeSpeedDialViewId).visible()
     }
 
     override fun showDeleteConfirmationDialog() {

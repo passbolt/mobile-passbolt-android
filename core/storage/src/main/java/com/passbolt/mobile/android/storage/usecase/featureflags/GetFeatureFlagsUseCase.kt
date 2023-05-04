@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PREVIE
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PRIVACY_POLICY_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TAGS_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TOTP_KEY
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,9 +46,15 @@ class GetFeatureFlagsUseCase(
             val previewPasswordAvailable = it.getBoolean(PREVIEW_PASSWORD_KEY, Defaults.IS_PREVIEW_PASSWORD_AVAILABLE)
             val areFoldersAvailable = it.getBoolean(FOLDERS_KEY, Defaults.ARE_FOLDERS_AVAILABLE)
             val areTagsAvailable = it.getBoolean(TAGS_KEY, Defaults.ARE_TAGS_AVAILABLE)
+            val isTotpAvailable = it.getBoolean(TOTP_KEY, Defaults.IS_TOTP_AVAILABLE)
             return Output(
                 FeatureFlagsModel(
-                    privacyPolicyUrl, termsUrl, previewPasswordAvailable, areFoldersAvailable, areTagsAvailable
+                    privacyPolicyUrl,
+                    termsUrl,
+                    previewPasswordAvailable,
+                    areFoldersAvailable,
+                    areTagsAvailable,
+                    isTotpAvailable
                 )
             )
         }

@@ -1,0 +1,62 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "kotlin-parcelize"
+}
+
+apply plugin: "androidx.navigation.safeargs"
+
+android {
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    useLibrary("android.test.runner")
+    useLibrary("android.test.base")
+    useLibrary("android.test.mock")
+}
+
+dependencies {
+    implementation project(':architecture')
+    implementation project(':ui')
+    implementation project(':coreui')
+    implementation project(':common')
+    implementation project(':localization')
+    implementation project(':authentication')
+    implementation project(':fulldatarefresh')
+    implementation project(':home')
+    implementation project(':storage')
+    implementation project(':navigation')
+    implementation project(':security')
+    implementation project(':qrscan')
+    implementation project(':database')
+    implementation project(':mappers')
+    implementation project(':resources')
+    implementation project(':secrets')
+    implementation project(':resourcetypes')
+    implementation project(':otpcore')
+
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+    implementation libs.di.koin
+    implementation libs.androidx.swiperefresh
+    implementation libs.fabSpeedDial
+    implementation libs.fastAdapter.core
+    implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.diff
+    implementation libs.coil.core
+    implementation libs.coil.base
+    implementation libs.fabSpeedDial
+    implementation libs.androidx.cameraXView
+    implementation libs.androidx.cameraX
+    implementation libs.androidx.cameraXLifecycle
+    implementation libs.networking.retrofit
+
+    testImplementation project(':commontest')
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

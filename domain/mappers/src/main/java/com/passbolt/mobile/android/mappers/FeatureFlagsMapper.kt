@@ -38,7 +38,9 @@ class FeatureFlagsMapper {
                 areFoldersAvailable = it.plugins.folders?.enabled
                     ?: Defaults.ARE_FOLDERS_AVAILABLE,
                 areTagsAvailable = it.plugins.tags?.enabled
-                    ?: Defaults.ARE_TAGS_AVAILABLE
+                    ?: Defaults.ARE_TAGS_AVAILABLE,
+                isTotpAvailable = it.plugins.totpResourceTypes?.enabled
+                    ?: Defaults.IS_TOTP_AVAILABLE
             )
         }
 }
