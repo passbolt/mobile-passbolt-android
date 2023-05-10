@@ -71,6 +71,7 @@ interface AuthContract {
         fun showChallengeTokenExpired()
         fun showChallengeVerificationFailure()
         fun showFailedToFetchUserProfile(message: String?)
+        fun showTimeIsOutOfSync()
 
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE

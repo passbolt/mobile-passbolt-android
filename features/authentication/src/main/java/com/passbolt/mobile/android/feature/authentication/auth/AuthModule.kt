@@ -14,9 +14,10 @@ import com.passbolt.mobile.android.feature.authentication.auth.presenter.Refresh
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpTimeUpdater
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -66,8 +67,9 @@ fun Module.authModule() {
         scopedOf(::VerifyPassphraseUseCase)
         scopedOf(::AuthReasonMapper)
         scopedOf(::MfaStatusProvider)
-        scopedOf(::GetAndVerifyServerKeysInteractor)
+        scopedOf(::GetAndVerifyServerKeysAndTimeInteractor)
         scopedOf(::SignInVerifyInteractor)
+        scopedOf(::GopenPgpTimeUpdater)
         scoped {
             BiometricPrompt.PromptInfo.Builder()
         }

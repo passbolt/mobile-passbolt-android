@@ -1,3 +1,2 @@
-- You can now store TOTP data in Passbolt and generate TOTP codes! (once enabled on the backed)
-- Add TOTP manually or by scanning a QR code
-- View, search, delete TOTPs
+- Fixed a random sign in failure issue occurring on some devices; related to client-backend time synchronisation
+- Now if time difference is low, the sync is handled on the client and if it's big, an info message is shown

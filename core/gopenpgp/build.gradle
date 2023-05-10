@@ -8,12 +8,12 @@ repositories {
 }
 
 dependencies {
-    implementation(name: "Gopenpgp", ext: "aar")
+    implementation(name: "gopenpgp", ext: "aar")
     implementation project(":common")
 
     implementation libs.di.koin
 
-    androidTestImplementation(name: "Gopenpgp", ext: "aar")
+    androidTestImplementation(name: "gopenpgp", ext: "aar")
     androidTestImplementation libs.di.koinTest
     androidTestImplementation libs.di.koinTestJUnit
     androidTestImplementation libs.test.coroutinesTest
@@ -27,7 +27,6 @@ android {
     }
 
     packagingOptions {
-        exclude "META-INF/AL2.0"
-        exclude "META-INF/LGPL2.1"
+        exclude "META-INF/{AL2.0,LGPL2.1}"
     }
 }

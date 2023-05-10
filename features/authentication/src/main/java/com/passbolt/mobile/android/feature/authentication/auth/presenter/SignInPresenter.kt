@@ -12,7 +12,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStat
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider.Companion.MFA_PROVIDER_YUBIKEY
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.ChallengeVerificationErrorType
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
@@ -63,7 +63,7 @@ open class SignInPresenter(
     private val saveServerFingerprintUseCase: SaveServerFingerprintUseCase,
     private val mfaStatusProvider: MfaStatusProvider,
     private val featureFlagsInteractor: FeatureFlagsInteractor,
-    private val getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysInteractor,
+    private val getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysAndTimeInteractor,
     private val signInVerifyInteractor: SignInVerifyInteractor,
     private val userProfileInteractor: UserProfileInteractor,
     private val inAppReviewInteractor: InAppReviewInteractor,
@@ -121,14 +121,17 @@ open class SignInPresenter(
                 onError = {
                     view?.hideProgress()
                     when (it) {
-                        is GetAndVerifyServerKeysInteractor.Error.Generic -> {
+                        is GetAndVerifyServerKeysAndTimeInteractor.Error.Generic -> {
                             view?.showGenericError()
                         }
-                        is GetAndVerifyServerKeysInteractor.Error.IncorrectServerFingerprint -> {
+                        is GetAndVerifyServerKeysAndTimeInteractor.Error.IncorrectServerFingerprint -> {
                             view?.showServerFingerprintChanged(it.fingerprint)
                         }
-                        is GetAndVerifyServerKeysInteractor.Error.ServerNotReachable -> {
+                        is GetAndVerifyServerKeysAndTimeInteractor.Error.ServerNotReachable -> {
                             view?.showServerNotReachable(it.serverUrl)
+                        }
+                        is GetAndVerifyServerKeysAndTimeInteractor.Error.TimeIsOutOfSync -> {
+                            view?.showTimeIsOutOfSync()
                         }
                     }
                 }

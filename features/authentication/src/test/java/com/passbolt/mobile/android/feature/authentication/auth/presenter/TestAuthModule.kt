@@ -15,9 +15,10 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpTimeUpdater
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
@@ -127,15 +128,17 @@ internal val mockRootDetector = mock<RootDetectorImpl>()
 internal val mockProfileInteractor = mock<UserProfileInteractor>()
 internal val mockInAppReviewInteractor = mock<InAppReviewInteractor>()
 internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
+internal val mockGopenPgpTimeUpdater = mock<GopenPgpTimeUpdater>()
 
 @ExperimentalCoroutinesApi
 val testAuthModule = module {
     factory {
-        GetAndVerifyServerKeysInteractor(
+        GetAndVerifyServerKeysAndTimeInteractor(
             getServerPublicPgpKeyUseCase = mockGetServerPublicPgpKeyUseCase,
             getServerPublicRsaKeyUseCase = mockGetServerPublicRsaKeyUseCase,
             getAccountDataUseCase = mockGetAccountDataUseCase,
-            isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase
+            isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
+            gopenPgpTimeUpdater = mockGopenPgpTimeUpdater
         )
     }
     factory {
