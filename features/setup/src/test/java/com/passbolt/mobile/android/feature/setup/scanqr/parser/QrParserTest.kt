@@ -180,19 +180,6 @@ class QrParserTest : KoinTest {
         scanningJob.cancel()
     }
 
-    private fun assertPassboltQrFirstPage(item: ParseResult) {
-        assertThat(item).isInstanceOf(ParseResult.PassboltQr.FirstPage::class.java)
-    }
-
-
-    private fun assertPassboltQrSubsequentPage(item: ParseResult) {
-        assertThat(item).isInstanceOf(ParseResult.PassboltQr.SubsequentPage::class.java)
-    }
-
-    private fun assertParserError(item: ParseResult) {
-        assertThat(item).isInstanceOf(ParseResult.Failure::class.java)
-    }
-
     @Test
     fun `parser should handle exceptions correct`() = runTest {
         scanningJob = launch {
@@ -209,6 +196,36 @@ class QrParserTest : KoinTest {
         mockScanningFlow.emit(BarcodeScanResult.Failure(TEST_EXCEPTION))
 
         scanningJob.cancel()
+    }
+
+    @Test
+    fun `parser should return error when invalid uuid found`() = runTest {
+        scanningJob = launch {
+            scanQrParser.startParsing(mockScanningFlow)
+        }
+
+        launch {
+            scanQrParser.parseResultFlow.test {
+                assertNoBarcodesInRange(expectItem())
+                assertParserError(expectItem())
+                expectComplete()
+            }
+        }
+        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_SUBSEQUENT_PAGE_SCAN))
+
+        scanningJob.cancel()
+    }
+
+    private fun assertPassboltQrFirstPage(item: ParseResult) {
+        assertThat(item).isInstanceOf(ParseResult.PassboltQr.FirstPage::class.java)
+    }
+
+    private fun assertPassboltQrSubsequentPage(item: ParseResult) {
+        assertThat(item).isInstanceOf(ParseResult.PassboltQr.SubsequentPage::class.java)
+    }
+
+    private fun assertParserError(item: ParseResult) {
+        assertThat(item).isInstanceOf(ParseResult.Failure::class.java)
     }
 
     private fun assertFailWithScanException(item: ParseResult) {

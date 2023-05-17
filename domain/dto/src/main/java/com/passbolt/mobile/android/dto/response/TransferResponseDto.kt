@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.dto.response
 
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,7 +26,7 @@ import com.google.gson.annotations.SerializedName
  * @since v1.0
  */
 data class TransferResponseDto(
-    val id: String,
+    val id: UUID,
     val status: StatusResponse,
     val user: UserResponseDto?,
     @SerializedName("current_page")

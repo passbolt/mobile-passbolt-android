@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.dto.response
 
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,7 +26,7 @@ import com.google.gson.annotations.SerializedName
  * @since v1.0
  */
 data class GroupsResponseDto(
-    val id: String,
+    val id: UUID,
     val name: String,
     val created: String?,
     @SerializedName("created_by")
@@ -38,5 +39,5 @@ data class GroupsResponseDto(
 )
 
 data class GroupUser(
-    val id: String
+    val id: UUID
 )

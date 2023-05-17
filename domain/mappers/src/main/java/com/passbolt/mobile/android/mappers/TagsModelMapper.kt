@@ -32,7 +32,7 @@ class TagsModelMapper {
 
     fun map(tag: TagDto): TagModel =
         TagModel(
-            id = tag.id,
+            id = tag.id.toString(),
             slug = tag.slug,
             isShared = tag.isShared
         )

@@ -36,7 +36,7 @@ class AddToFavouritesUseCase(
     override suspend fun execute(input: Input) =
         when (val response = favouritesRepository.addToFavourites(input.resourceId)) {
             is NetworkResult.Failure -> Output.Failure(response)
-            is NetworkResult.Success -> Output.Success(response.value.favouriteId)
+            is NetworkResult.Success -> Output.Success(response.value.favouriteId.toString())
         }
 
     sealed class Output : AuthenticatedUseCaseOutput {

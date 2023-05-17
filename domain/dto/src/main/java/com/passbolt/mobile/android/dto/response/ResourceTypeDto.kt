@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.dto.response
 
 import com.google.gson.JsonObject
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,7 +26,7 @@ import com.google.gson.JsonObject
  * @since v1.0
  */
 data class ResourceTypeDto(
-    val id: String,
+    val id: UUID,
     val slug: String,
     val name: String,
     val description: String,

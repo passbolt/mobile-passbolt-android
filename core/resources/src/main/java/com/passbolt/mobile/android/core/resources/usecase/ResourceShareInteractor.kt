@@ -158,7 +158,7 @@ class ResourceShareInteractor(
     ): List<EncryptedSecretOrError> {
         val encryptedSecretsForAddedUsers = mutableListOf<EncryptedSecretOrError>()
         addedUsers
-            .map { getLocalUserUseCase.execute(GetLocalUserUseCase.Input(it.user.id)).user }
+            .map { getLocalUserUseCase.execute(GetLocalUserUseCase.Input(it.user.id.toString())).user }
             .forEach { user ->
                 val currentUserId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
                 val privateKey = getPrivateKeyUseCase.execute(UserIdInput(currentUserId)).privateKey

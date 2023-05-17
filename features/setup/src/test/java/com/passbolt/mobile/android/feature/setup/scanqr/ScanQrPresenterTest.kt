@@ -36,6 +36,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -140,7 +141,7 @@ class ScanQrPresenterTest : KoinTest {
     fun `view should initialize progress and show keep going after first page scan`() = runTest {
         presenter.argsRetrieved(null)
 
-        whenever(uuidProvider.get()).doReturn("testUserId")
+        whenever(uuidProvider.get()).doReturn(testUserId.toString())
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
         whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
 
@@ -166,7 +167,7 @@ class ScanQrPresenterTest : KoinTest {
     fun `view should navigate to scanning success after scanning finished`() = runTest {
         presenter.argsRetrieved(null)
 
-        whenever(uuidProvider.get()).doReturn("testUserId")
+        whenever(uuidProvider.get()).doReturn(testUserId.toString())
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
         whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
@@ -190,7 +191,7 @@ class ScanQrPresenterTest : KoinTest {
     fun `view should navigate to failure after scanning non https domain`() = runTest {
         presenter.argsRetrieved(null)
 
-        whenever(uuidProvider.get()).doReturn("testUserId")
+        whenever(uuidProvider.get()).doReturn(testUserId.toString())
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Success)
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
         whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(false)
@@ -215,7 +216,7 @@ class ScanQrPresenterTest : KoinTest {
         presenter.argsRetrieved(null)
 
         whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
-        whenever(uuidProvider.get()).doReturn("testUserId")
+        whenever(uuidProvider.get()).doReturn(testUserId.toString())
         whenever(savePrivateKeyUseCase.execute(any())).doReturn(SavePrivateKeyUseCase.Output.Failure)
         whenever(updateTransferUseCase.execute(any())).doReturn(
             UpdateTransferUseCase.Output.Success(
@@ -225,7 +226,7 @@ class ScanQrPresenterTest : KoinTest {
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(
             CheckAccountExistsUseCase.Output(
                 true,
-                "testUserId"
+                testUserId.toString()
             )
         )
 
@@ -240,9 +241,11 @@ class ScanQrPresenterTest : KoinTest {
     private companion object {
         private const val TOTAL_PAGES = 10
         private val FIRST_PAGE_RESERVED_BYTES_DTO = ReservedBytesDto(1, 0)
+        private val testTransferId = UUID.randomUUID()
+        private val testUserId = UUID.randomUUID()
         private val FIRST_PAGE_CONTENT = QrFirstPageDto(
-            "testTransferId",
-            "testUserId",
+            testTransferId,
+            testUserId,
             TOTAL_PAGES,
             "testAuthToken",
             "testHash",

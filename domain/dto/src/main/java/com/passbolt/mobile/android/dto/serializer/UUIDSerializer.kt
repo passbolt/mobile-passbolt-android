@@ -1,7 +1,3 @@
-package com.passbolt.mobile.android.dto.response
-
-import com.google.gson.annotations.SerializedName
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -24,7 +20,23 @@ import com.google.gson.annotations.SerializedName
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class MfaErrorResponse(
-    @SerializedName("providers")
-    var mfaProviders: List<String>?
-)
+
+package com.passbolt.mobile.android.dto.serializer
+
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import java.util.UUID
+
+class UUIDSerializer : KSerializer<UUID> {
+    override val descriptor = PrimitiveSerialDescriptor(UUID::class.java.name, PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): UUID =
+        UUID.fromString(decoder.decodeString())
+
+    override fun serialize(encoder: Encoder, value: UUID) {
+        encoder.encodeString(value.toString())
+    }
+}

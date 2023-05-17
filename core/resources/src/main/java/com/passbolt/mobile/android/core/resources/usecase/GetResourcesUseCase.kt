@@ -49,7 +49,7 @@ class GetResourcesUseCase(
                         resourceModelMapper.map(it),
                         it.tags?.map { tag -> tagModelMapper.map(tag) }.orEmpty(),
                         it.permissions?.map { permission -> permissionsModelMapper.map(permission) }.orEmpty(),
-                        it.favorite?.id
+                        it.favorite?.id?.toString()
                     )
                 }
             )

@@ -82,7 +82,7 @@ class CreateStandaloneTotpResourceUseCase(
                             resourceModelMapper.map(response.value.body),
                             emptyList(), // cannot add tags during creation
                             listOf(permissionsModelMapper.mapToUserPermission(response.value.body.permission)),
-                            response.value.body.favorite?.id
+                            response.value.body.favorite?.id?.toString()
                         )
                     )
                 }

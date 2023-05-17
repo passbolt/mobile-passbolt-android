@@ -36,8 +36,8 @@ class FolderModelMapper(
     fun map(folder: FolderResponseDto): FolderModelWithAttributes =
         FolderModelWithAttributes(
             FolderModel(
-                folderId = folder.id,
-                parentFolderId = folder.folderParentId,
+                folderId = folder.id.toString(),
+                parentFolderId = folder.folderParentId?.toString(),
                 name = folder.name.orEmpty(),
                 isShared = folder.personal == false,
                 permission = permissionsModelMapper.map(folder.permission.type)
