@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.core.commongroups.usecase
 
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import net.sqlcipher.SQLException
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,8 +36,13 @@ class GroupsInteractor(
         return when (val fetched = fetchUserGroupsUseCase.execute(Unit)) {
             is FetchUserGroupsUseCase.Output.Failure -> Output.Failure(fetched.authenticationState)
             is FetchUserGroupsUseCase.Output.Success -> {
-                rebuildLocalGroupsUseCase.execute(RebuildGroupsTablesUseCase.Input(fetched.groups))
-                Output.Success
+                try {
+                    rebuildLocalGroupsUseCase.execute(RebuildGroupsTablesUseCase.Input(fetched.groups))
+                    Output.Success
+                } catch (exception: SQLException) {
+                    Timber.e(exception, "There was an error during groups db insert")
+                    Output.Failure(fetched.authenticationState)
+                }
             }
         }
     }

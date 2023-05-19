@@ -27,7 +27,7 @@ import org.koin.core.module.Module
 
 internal fun Module.resourceTypesModule() {
     single {
-        AddLocalResourceTypesUseCase(
+        RebuildLocalResourceTypesUseCase(
             databaseProvider = get(),
             resourceTypesModelMapper = get(),
             getSelectedAccountUseCase = get()

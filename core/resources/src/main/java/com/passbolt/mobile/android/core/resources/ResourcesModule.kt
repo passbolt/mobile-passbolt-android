@@ -18,7 +18,6 @@ import com.passbolt.mobile.android.core.resources.usecase.ShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.SimulateShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.UpdateResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.UpdateStandaloneTotpResourceUseCase
-import com.passbolt.mobile.android.core.resources.validation.resourceValidationModule
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -45,7 +44,6 @@ import org.koin.dsl.module
  * @since v1.0
  */
 val resourcesModule = module {
-    resourceValidationModule()
     singleOf(::GetResourcesUseCase)
     singleOf(::GetResourceTypesUseCase)
     singleOf(::ResourceInteractor)

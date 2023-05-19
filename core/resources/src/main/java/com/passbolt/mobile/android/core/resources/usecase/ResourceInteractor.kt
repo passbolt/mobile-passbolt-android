@@ -3,8 +3,9 @@ package com.passbolt.mobile.android.core.resources.usecase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.plus
-import com.passbolt.mobile.android.core.resources.validation.ResourceValidationRunner
-import com.passbolt.mobile.android.database.impl.resourcetypes.AddLocalResourceTypesUseCase
+import com.passbolt.mobile.android.database.impl.resourcetypes.RebuildLocalResourceTypesUseCase
+import net.sqlcipher.SQLException
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,8 +32,7 @@ import com.passbolt.mobile.android.database.impl.resourcetypes.AddLocalResourceT
 class ResourceInteractor(
     private val getResourceTypesUseCase: GetResourceTypesUseCase,
     private val getResourcesUseCase: GetResourcesUseCase,
-    private val addLocalResourceTypesUseCase: AddLocalResourceTypesUseCase,
-    private val resourceValidationRunner: ResourceValidationRunner,
+    private val rebuildLocalResourceTypesUseCase: RebuildLocalResourceTypesUseCase,
     private val rebuildResourceTablesUseCase: RebuildResourceTablesUseCase,
     private val rebuildTagsTablesUseCase: RebuildTagsTablesUseCase,
     private val rebuildResourcePermissionsTablesUseCase: RebuildResourcePermissionsTablesUseCase
@@ -44,22 +44,27 @@ class ResourceInteractor(
         return if (resourcesResult is GetResourcesUseCase.Output.Success) {
             val resourceTypesResult = getResourceTypesUseCase.execute(Unit)
             if (resourceTypesResult is GetResourceTypesUseCase.Output.Success) {
-                addLocalResourceTypesUseCase.execute(
-                    AddLocalResourceTypesUseCase.Input(resourceTypesResult.resourceTypes)
-                )
-                val validatedResources = resourcesResult.resources
-                    .filter { resourceValidationRunner.isValid(it.resourceModel) }
-
-                rebuildResourceTablesUseCase.execute(
-                    RebuildResourceTablesUseCase.Input(validatedResources.map { it.resourceModel })
-                )
-                rebuildTagsTablesUseCase.execute(
-                    RebuildTagsTablesUseCase.Input(validatedResources)
-                )
-                rebuildResourcePermissionsTablesUseCase.execute(
-                    RebuildResourcePermissionsTablesUseCase.Input(validatedResources)
-                )
-                Output.Success
+                try {
+                    rebuildLocalResourceTypesUseCase.execute(
+                        RebuildLocalResourceTypesUseCase.Input(resourceTypesResult.resourceTypes)
+                    )
+                    rebuildResourceTablesUseCase.execute(
+                        RebuildResourceTablesUseCase.Input(resourcesResult.resources.map { it.resourceModel })
+                    )
+                    rebuildTagsTablesUseCase.execute(
+                        RebuildTagsTablesUseCase.Input(resourcesResult.resources)
+                    )
+                    rebuildResourcePermissionsTablesUseCase.execute(
+                        RebuildResourcePermissionsTablesUseCase.Input(resourcesResult.resources)
+                    )
+                    Output.Success
+                } catch (exception: SQLException) {
+                    Timber.e(
+                        exception, "There was an error during resource types, resources, tags " +
+                                "and resource permissions db insert"
+                    )
+                    Output.Failure(resourcesResult.authenticationState + resourceTypesResult.authenticationState)
+                }
             } else {
                 Output.Failure(resourcesResult.authenticationState + resourceTypesResult.authenticationState)
             }

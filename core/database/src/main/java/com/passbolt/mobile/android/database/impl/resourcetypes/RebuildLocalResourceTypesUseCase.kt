@@ -29,11 +29,11 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AddLocalResourceTypesUseCase(
+class RebuildLocalResourceTypesUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceTypesModelMapper: ResourceTypesModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<AddLocalResourceTypesUseCase.Input, Unit> {
+) : AsyncUseCase<RebuildLocalResourceTypesUseCase.Input, Unit> {
 
     override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
