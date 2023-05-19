@@ -45,8 +45,8 @@ class CreateFolderUseCase(
             is NetworkResult.Success -> Output.Success(
                 FolderModelWithAttributes(
                     FolderModel(
-                        result.value.id,
-                        result.value.parentFolderId,
+                        result.value.id.toString(),
+                        result.value.parentFolderId?.toString(),
                         result.value.name,
                         !result.value.personal,
                         permissionsModelMapper.map(result.value.permission.type)

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.dto.response
 
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,9 +26,9 @@ import com.google.gson.annotations.SerializedName
  * @since v1.0
  */
 data class CreateFolderResponseDto(
-    val id: String,
+    val id: UUID,
     @SerializedName("folder_parent_id")
-    val parentFolderId: String,
+    val parentFolderId: UUID?,
     val name: String,
     val personal: Boolean,
     val permission: PermissionDto

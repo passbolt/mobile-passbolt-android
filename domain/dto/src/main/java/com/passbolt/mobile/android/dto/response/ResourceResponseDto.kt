@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.dto.response
 
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,11 +32,11 @@ import com.google.gson.annotations.SerializedName
  * @param favorite if resource is in favourites it contains a favourite object else null
  */
 data class ResourceResponseDto(
-    val id: String,
+    val id: UUID,
     @SerializedName("resource_type_id")
-    val resourceTypeId: String,
+    val resourceTypeId: UUID,
     @SerializedName("folder_parent_id")
-    val resourceFolderId: String?,
+    val resourceFolderId: UUID?,
     val description: String?,
     val name: String,
     val uri: String?,
@@ -48,12 +49,12 @@ data class ResourceResponseDto(
 )
 
 data class TagDto(
-    val id: String,
+    val id: UUID,
     val slug: String,
     @SerializedName("is_shared")
     val isShared: Boolean
 )
 
 data class FavouriteDto(
-    val id: String
+    val id: UUID
 )

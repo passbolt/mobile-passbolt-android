@@ -35,9 +35,9 @@ class ResourceModelMapper(
 
     fun map(resource: ResourceResponseDto): ResourceModel =
         ResourceModel(
-            resourceId = resource.id,
-            resourceTypeId = resource.resourceTypeId,
-            folderId = resource.resourceFolderId,
+            resourceId = resource.id.toString(),
+            resourceTypeId = resource.resourceTypeId.toString(),
+            folderId = resource.resourceFolderId?.toString(),
             name = resource.name,
             username = resource.username,
             icon = null,
@@ -45,7 +45,7 @@ class ResourceModelMapper(
             url = resource.uri,
             description = resource.description,
             permission = permissionsModelMapper.map(resource.permission.type),
-            favouriteId = resource.favorite?.id,
+            favouriteId = resource.favorite?.id?.toString(),
             modified = ZonedDateTime.parse(resource.modified)
         )
 

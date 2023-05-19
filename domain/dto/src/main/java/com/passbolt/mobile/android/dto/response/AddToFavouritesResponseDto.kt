@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.dto.response
 
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,5 +28,5 @@ import com.google.gson.annotations.SerializedName
 
 data class AddToFavouritesResponseDto(
     @SerializedName("id")
-    val favouriteId: String
+    val favouriteId: UUID
 )

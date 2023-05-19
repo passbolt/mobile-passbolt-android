@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccoun
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -58,8 +59,8 @@ class TransferQrCodesDataGenerator(
 
         val firstPageReservedBytes = ReservedBytesDto(PROTOCOL_VERSION, page = 0)
         val firstPage = QrFirstPageDto(
-            input.transferId,
-            userServerId,
+            UUID.fromString(input.transferId),
+            UUID.fromString(userServerId),
             input.pagesCount,
             input.authenticationToken,
             input.hash,

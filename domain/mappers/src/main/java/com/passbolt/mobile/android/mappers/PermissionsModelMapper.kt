@@ -71,14 +71,14 @@ class PermissionsModelMapper(
         if (permissionWithGroups.group != null) {
             PermissionModel.GroupPermissionModel(
                 map(permissionWithGroups.type),
-                permissionWithGroups.id,
+                permissionWithGroups.id.toString(),
                 groupsModelMapper.map(permissionWithGroups.group!!)
             )
         } else {
             PermissionModel.UserPermissionModel(
                 map(permissionWithGroups.type),
-                permissionWithGroups.id,
-                permissionWithGroups.aroForeignKey!!
+                permissionWithGroups.id.toString(),
+                permissionWithGroups.aroForeignKey.toString()
             )
         }
 
@@ -120,7 +120,7 @@ class PermissionsModelMapper(
     fun mapToUserPermission(permission: PermissionDto): PermissionModel.UserPermissionModel =
         PermissionModel.UserPermissionModel(
             map(permission.type),
-            permission.id,
-            permission.aroForeignKey
+            permission.id.toString(),
+            permission.aroForeignKey.toString()
         )
 }
