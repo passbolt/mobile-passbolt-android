@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import com.google.gson.GsonBuilder
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
+import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import org.junit.Test
 
 
@@ -37,9 +38,10 @@ class SecretParserTest {
     fun `password with special characters should parse correct for string secret`() {
         val secret = "\\\"!@#_$%^&*()".toByteArray()
 
-        val extracted = secretParser.extractPassword(com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD, secret)
+        val extracted = secretParser.extractPassword(ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD, secret)
 
-        assertThat(extracted).isEqualTo(String(secret))
+        assertThat(extracted).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+        assertThat((extracted as DecryptedSecretOrError.DecryptedSecret).secret).isEqualTo(String(secret))
     }
 
     @Test
@@ -47,9 +49,10 @@ class SecretParserTest {
         val secret = "{\"password\":\"\\\"!@#_\$%^&*()\", \"description\":\"desc\"}".toByteArray()
 
         val extracted = secretParser.extractPassword(
-            com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION, secret
+            ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION, secret
         )
 
-        assertThat(extracted).isEqualTo("\"!@#_\$%^&*()")
+        assertThat(extracted).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+        assertThat((extracted as DecryptedSecretOrError.DecryptedSecret).secret).isEqualTo("\"!@#_\$%^&*()")
     }
 }

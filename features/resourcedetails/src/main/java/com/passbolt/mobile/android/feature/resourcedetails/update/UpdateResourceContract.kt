@@ -77,6 +77,7 @@ interface UpdateResourceContract {
         fun showContentNotAvailable()
         fun navigateHome()
         fun clearInputFields()
+        fun showInvalidSecretDataAndNavigateBack()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {

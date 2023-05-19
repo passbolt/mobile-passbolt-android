@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.feature.resourcedetails.update.ResourceValue
+import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -37,6 +38,7 @@ class EditFieldsModelCreator(
     private val resourceFieldsComparator: ResourceFieldsComparator
 ) {
 
+    @Throws(ClassCastException::class)
     suspend fun create(
         existingResource: ResourceModel,
         secret: ByteArray
@@ -54,12 +56,20 @@ class EditFieldsModelCreator(
             .map { field ->
                 val initialValue = when (field.name) {
                     in listOf(FieldNamesMapper.PASSWORD_FIELD, FieldNamesMapper.SECRET_FIELD) -> {
-                        secretParser.extractPassword(resourceTypeEnum, secret)
+                        // there can be parsing errors when secret data is invalid - do not create the input then
+                        (secretParser.extractPassword(
+                            resourceTypeEnum,
+                            secret
+                        ) as DecryptedSecretOrError.DecryptedSecret<String>).secret
                     }
                     FieldNamesMapper.DESCRIPTION_FIELD -> {
                         when (resourceTypeEnum) {
                             SIMPLE_PASSWORD -> existingResource.description
-                            PASSWORD_WITH_DESCRIPTION -> secretParser.extractDescription(resourceTypeEnum, secret)
+                            // there can be parsing errors when secret data is invalid - do not create the input then
+                            PASSWORD_WITH_DESCRIPTION -> (secretParser.extractDescription(
+                                resourceTypeEnum,
+                                secret
+                            ) as DecryptedSecretOrError.DecryptedSecret<String>).secret
                             STANDALONE_TOTP -> {
                                 throw IllegalArgumentException("Standalone totp does not contain description field")
                             }

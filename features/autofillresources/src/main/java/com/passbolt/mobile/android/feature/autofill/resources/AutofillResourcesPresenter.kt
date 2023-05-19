@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretPar
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAccountsUseCase
+import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -95,14 +96,22 @@ class AutofillResourcesPresenter(
                 resourceModel.resourceId,
                 successAction = {
                     view?.hideProgress()
-                    val password = secretParser.extractPassword(resourceTypeEnum, it)
-                    view?.autofillReturn(resourceModel.username.orEmpty(), password, uri)
+                    when (val password = secretParser.extractPassword(resourceTypeEnum, it)) {
+                        is DecryptedSecretOrError.DecryptedSecret -> view?.autofillReturn(
+                            resourceModel.username.orEmpty(),
+                            password.secret,
+                            uri
+                        )
+                        is DecryptedSecretOrError.Error -> error(password.message)
+                    }
                 },
-                errorAction = {
-                    view?.hideProgress()
-                    view?.showError(it)
-                })
+                errorAction = { error(it) })
         }
+    }
+
+    private fun error(messahe: String?) {
+        view?.hideProgress()
+        view?.showError(messahe)
     }
 
     private suspend fun doAfterFetchAndDecrypt(

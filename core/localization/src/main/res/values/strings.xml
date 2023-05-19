@@ -277,6 +277,7 @@
     <string name="resource_update_field_uri">URL</string>
     <string name="resource_update_field_username">Username</string>
     <string name="resource_update_field_description">Description</string>
+    <string name="resource_update_invalid_secret_data">Invalid secret data types. Aborting edit.</string>
 
     <string name="settings_app_settings">App settings</string>
     <string name="settings_accounts">Accounts</string>

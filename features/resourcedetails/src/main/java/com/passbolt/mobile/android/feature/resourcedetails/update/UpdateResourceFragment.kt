@@ -292,4 +292,10 @@ class UpdateResourceFragment :
     override fun clearInputFields() {
         binding.container.removeAllViews()
     }
+
+    override fun showInvalidSecretDataAndNavigateBack() {
+        Toast.makeText(requireContext(), R.string.resource_update_invalid_secret_data, Toast.LENGTH_SHORT)
+            .show()
+        requireActivity().finish()
+    }
 }
