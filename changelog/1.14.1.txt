@@ -1,5 +1,0 @@
-# Passbolt 1.14.1-22 Android app release notes
-
-## Fixed
-- Fixed a random sign in failure issue occurring on some devices; related to client-backend time synchronisation
-- Now if time difference is low, the sync is handled on the client and if it's big, an info message is shown
