@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.core.users
 
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import net.sqlcipher.SQLException
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,8 +36,13 @@ class UsersInteractor(
         return when (val fetched = fetchUsersUseCase.execute(FetchUsersUseCase.Input())) {
             is FetchUsersUseCase.Output.Failure<*> -> Output.Failure(fetched.authenticationState)
             is FetchUsersUseCase.Output.Success -> {
-                rebuildLocalUsersUseCase.execute(RebuildUsersTablesUseCase.Input(fetched.users))
-                Output.Success
+                try {
+                    rebuildLocalUsersUseCase.execute(RebuildUsersTablesUseCase.Input(fetched.users))
+                    Output.Success
+                } catch (exception: SQLException) {
+                    Timber.e(exception, "There was an error during users db insert")
+                    Output.Failure(fetched.authenticationState)
+                }
             }
         }
     }

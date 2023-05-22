@@ -21,6 +21,7 @@ dependencies {
 
     implementation libs.gson
     implementation libs.room.core
+    implementation libs.room.cipher
     implementation libs.di.koin
 }
 

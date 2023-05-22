@@ -16,10 +16,10 @@ dependencies {
     implementation project(':networking')
     implementation project(':passboltapi')
     implementation project(':database')
-    implementation project(':database')
 
     implementation libs.di.koin
     implementation libs.room.core
+    implementation libs.room.cipher
 }
 
 android {
