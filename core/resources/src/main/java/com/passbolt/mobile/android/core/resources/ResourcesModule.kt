@@ -6,7 +6,6 @@ import com.passbolt.mobile.android.core.resources.usecase.CreateResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.CreateStandaloneTotpResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
-import com.passbolt.mobile.android.core.resources.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RebuildResourcePermissionsTablesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesUseCase
@@ -45,7 +44,6 @@ import org.koin.dsl.module
  */
 val resourcesModule = module {
     singleOf(::GetResourcesUseCase)
-    singleOf(::GetResourceTypesUseCase)
     singleOf(::ResourceInteractor)
     singleOf(::CreateResourceUseCase)
     singleOf(::SearchableMatcher)

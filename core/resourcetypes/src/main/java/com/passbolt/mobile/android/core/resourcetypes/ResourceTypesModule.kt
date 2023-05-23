@@ -28,4 +28,6 @@ import org.koin.dsl.module
 
 val resourceTypesModule = module {
     singleOf(::ResourceTypeFactory)
+    singleOf(::GetResourceTypesUseCase)
+    singleOf(::ResourceTypesInteractor)
 }

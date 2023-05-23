@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.database.impl.resourcetypes
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,23 +27,8 @@ import org.koin.core.module.Module
  */
 
 internal fun Module.resourceTypesModule() {
-    single {
-        RebuildLocalResourceTypesUseCase(
-            databaseProvider = get(),
-            resourceTypesModelMapper = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetResourceTypeWithFieldsByIdUseCase(
-            databaseProvider = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
-    single {
-        GetResourceTypeWithFieldsBySlugUseCase(
-            databaseProvider = get(),
-            getSelectedAccountUseCase = get()
-        )
-    }
+    singleOf(::RebuildLocalResourceTypesUseCase)
+    singleOf(::GetResourceTypeWithFieldsByIdUseCase)
+    singleOf(::GetResourceTypeWithFieldsBySlugUseCase)
+    singleOf(::GetResourceTypeIdToSlugMappingUseCase)
 }

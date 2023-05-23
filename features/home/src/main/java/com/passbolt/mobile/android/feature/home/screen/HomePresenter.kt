@@ -9,8 +9,6 @@ import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResou
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_AND_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_SIMPLE_PASSWORD
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFolderResourcesFilteredUseCase
@@ -25,6 +23,7 @@ import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewMode
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
+import com.passbolt.mobile.android.serializers.SupportedContentTypes
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.ui.Folder
@@ -327,7 +326,7 @@ class HomePresenter(
         coroutineScope.launch {
             runWithHandlingMissingItem({
                 suggestedResourceList = if (shouldShowSuggested()) {
-                    getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(homeResourcesSlugs))
+                    getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(SupportedContentTypes.homeSlugs))
                         .resources
                         .filter {
                             val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
@@ -395,7 +394,7 @@ class HomePresenter(
 
     private suspend fun showResourcesFromDatabase() {
         resourceList = getLocalResourcesUseCase.execute(
-            GetLocalResourcesUseCase.Input(homeResourcesSlugs, homeView)
+            GetLocalResourcesUseCase.Input(SupportedContentTypes.homeSlugs, homeView)
         ).resources
         foldersList = emptyList()
         tagsList = emptyList()
@@ -414,7 +413,7 @@ class HomePresenter(
             foldersList = emptyList()
             groupsList = emptyList()
             resourceList = getLocalResourcesWithTagUseCase.execute(
-                GetLocalResourcesWithTagUseCase.Input(tags, homeResourcesSlugs)
+                GetLocalResourcesWithTagUseCase.Input(tags, SupportedContentTypes.homeSlugs)
             ).resources
         }
         displayHomeData()
@@ -431,7 +430,7 @@ class HomePresenter(
             foldersList = emptyList()
             groupsList = emptyList()
             resourceList = getLocalResourcesWithGroupsUseCase.execute(
-                GetLocalResourcesWithGroupUseCase.Input(groups, homeResourcesSlugs)
+                GetLocalResourcesWithGroupUseCase.Input(groups, SupportedContentTypes.homeSlugs)
             ).resources
         }
         displayHomeData()
@@ -442,7 +441,7 @@ class HomePresenter(
         groupsList = emptyList()
         when (
             val result = getLocalResourcesAndFoldersUseCase.execute(
-                GetLocalResourcesAndFoldersUseCase.Input(folders.activeFolder, homeResourcesSlugs)
+                GetLocalResourcesAndFoldersUseCase.Input(folders.activeFolder, SupportedContentTypes.homeSlugs)
             )
         ) {
             is GetLocalResourcesAndFoldersUseCase.Output.Failure -> {
@@ -544,7 +543,7 @@ class HomePresenter(
     }
 
     private suspend fun getResourcesFilteredByTag() = getLocalResourcesFilteredByTag.execute(
-        GetLocalResourcesFilteredByTagUseCase.Input(currentSearchText.value, homeResourcesSlugs)
+        GetLocalResourcesFilteredByTagUseCase.Input(currentSearchText.value, SupportedContentTypes.homeSlugs)
     ).resources
 
     private suspend fun populateSubFoldersFilteringResults(folders: HomeDisplayViewModel.Folders) {
@@ -565,7 +564,7 @@ class HomePresenter(
     private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderWithCountAndPath>) =
         getLocalResourcesFiltered.execute(
             GetLocalSubFolderResourcesFilteredUseCase.Input(
-                allSubFolders.map { it.folderId }, currentSearchText.value, homeResourcesSlugs
+                allSubFolders.map { it.folderId }, currentSearchText.value, SupportedContentTypes.homeSlugs
             )
         ).resources
 
@@ -835,9 +834,5 @@ class HomePresenter(
     override fun folderCreated(name: String) {
         initRefresh()
         view?.showFolderCreated(name)
-    }
-
-    private companion object {
-        private val homeResourcesSlugs = listOf(SLUG_SIMPLE_PASSWORD, SLUG_PASSWORD_AND_DESCRIPTION)
     }
 }

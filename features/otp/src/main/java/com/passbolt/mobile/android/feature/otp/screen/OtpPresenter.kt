@@ -44,6 +44,7 @@ import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
+import com.passbolt.mobile.android.serializers.SupportedContentTypes
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import com.passbolt.mobile.android.ui.OtpResourceModel
@@ -132,7 +133,7 @@ class OtpPresenter(
     }
 
     private suspend fun getAndShowOtpResources() {
-        getLocalOtpResourcesUseCase.execute(Unit).otps
+        getLocalOtpResourcesUseCase.execute(GetLocalOtpResourcesUseCase.Input(SupportedContentTypes.totpSlugs)).otps
             .map(otpModelMapper::map)
             .let {
                 otpList = it.toMutableList()

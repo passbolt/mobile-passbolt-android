@@ -33,6 +33,7 @@ dependencies {
     implementation project(':fulldatarefresh')
     implementation project(':resourcetypes')
     implementation project(':idlingresource')
+    implementation project(':serializers')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

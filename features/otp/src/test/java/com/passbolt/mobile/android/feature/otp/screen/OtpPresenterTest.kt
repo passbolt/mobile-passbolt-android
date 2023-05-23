@@ -43,6 +43,7 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.get
 import org.koin.test.inject
+import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
@@ -94,7 +95,7 @@ class OtpPresenterTest : KoinTest {
     @Test
     fun `view should show empty state if otp list is empty`() {
         mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(Unit) } doReturn GetLocalOtpResourcesUseCase.Output(emptyList())
+            onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(emptyList())
         }
 
         presenter.attach(view)
@@ -106,7 +107,7 @@ class OtpPresenterTest : KoinTest {
     @Test
     fun `view should show otp resources`() {
         mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(Unit) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
+            onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
         }
         val mapper = get<OtpModelMapper>()
 
@@ -126,7 +127,7 @@ class OtpPresenterTest : KoinTest {
     @Test
     fun `view should show empty list when search term not found`() {
         mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(Unit) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
+            onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
         }
 
         presenter.attach(view)

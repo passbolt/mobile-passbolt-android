@@ -48,6 +48,7 @@ import com.passbolt.mobile.android.mappersModule
 import com.passbolt.mobile.android.passboltapi.passboltApiModule
 import com.passbolt.mobile.android.resourceMoreMenuModule
 import com.passbolt.mobile.android.resourceTagsModule
+import com.passbolt.mobile.android.serializers.serializersModule
 import com.passbolt.mobile.android.service.linksApiModule
 import com.passbolt.mobile.android.storage.storageModule
 import org.koin.android.ext.koin.androidContext
@@ -141,7 +142,8 @@ class KoinInitializer : Initializer<Unit> {
             idlingResourcesModule,
             transferAccountToAnotherDeviceModule,
             otpMainModule,
-            otpCoreModule
+            otpCoreModule,
+            serializersModule
         )
     }
 }
