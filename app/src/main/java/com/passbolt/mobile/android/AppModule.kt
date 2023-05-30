@@ -9,7 +9,6 @@ import com.google.gson.GsonBuilder
 import com.jakewharton.espresso.OkHttp3IdlingResource
 import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.InitialsProvider
-import com.passbolt.mobile.android.common.TimeProvider
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.core.navigation.AppForegroundListener
@@ -54,7 +53,6 @@ internal val appModule = module {
     single {
         GsonBuilder().create()
     }
-    single { TimeProvider() }
     single { UuidProvider() }
     single {
         ImageLoader.Builder(androidContext())

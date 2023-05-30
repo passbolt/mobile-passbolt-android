@@ -254,6 +254,10 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         showSnackbar(message, length = Snackbar.LENGTH_LONG, backgroundColor = R.color.red)
     }
 
+    override fun showTimeIsOutOfSync() {
+        showSnackbar(R.string.common_time_is_out_of_sync, length = Snackbar.LENGTH_LONG, backgroundColor = R.color.red)
+    }
+
     override fun showFingerprintChangedError() {
         AlertDialog.Builder(requireContext())
             .setCancelable(false)

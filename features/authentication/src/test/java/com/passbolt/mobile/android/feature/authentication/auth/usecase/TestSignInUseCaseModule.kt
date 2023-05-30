@@ -1,13 +1,17 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
+import com.passbolt.mobile.android.common.CookieExtractor
+import com.passbolt.mobile.android.common.time.TimeProvider
+import com.passbolt.mobile.android.dto.request.SignInRequestDto
+import com.passbolt.mobile.android.gopenpgp.OpenPgp
+import com.passbolt.mobile.android.mappers.SignInMapper
+import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import com.passbolt.mobile.android.common.CookieExtractor
-import com.passbolt.mobile.android.dto.request.SignInRequestDto
-import com.passbolt.mobile.android.mappers.SignInMapper
-import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
-import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,6 +37,8 @@ import org.koin.dsl.module
  */
 
 internal val mockAuthRepository = mock<AuthRepository>()
+internal val mockOpenPgp = mock<OpenPgp>()
+internal val mockTimeProvider = mock<TimeProvider>()
 
 val testSignInUseCaseModule = module {
     factory {
@@ -40,13 +46,10 @@ val testSignInUseCaseModule = module {
             on { mapRequestToDto(any(), any()) }.doReturn(SignInRequestDto("userId", "challenge"))
         }
     }
-    single { CookieExtractor() }
     factory { mockAuthRepository }
-    factory {
-        SignInUseCase(
-            authRepository = get(),
-            signInMapper = get(),
-            cookieExtractor = get()
-        )
-    }
+    factory { mockTimeProvider }
+    factory { mockOpenPgp }
+    singleOf(::CookieExtractor)
+    factoryOf(::SignInUseCase)
+    factoryOf(::GopenPgpTimeUpdater)
 }

@@ -38,7 +38,7 @@ class ChallengeProviderTest : KoinTest {
 
         whenever(openPgp.encryptSignMessageArmored(eq(publicKey), eq(privateKey), any(), any()))
             .thenReturn(OpenPgpResult.Result(challenge))
-        whenever(timeProvider.getCurrentEpochTime()).thenReturn(1624448538)
+        whenever(timeProvider.getCurrentEpochSeconds()).thenReturn(1624448538)
         whenever(uuidProvider.get()).thenReturn("555a30f6-48f0-42be-beca-d200347f1848")
         whenever(getPrivateKeyUseCase.execute(any())).thenReturn(GetPrivateKeyUseCase.Output(privateKey))
 

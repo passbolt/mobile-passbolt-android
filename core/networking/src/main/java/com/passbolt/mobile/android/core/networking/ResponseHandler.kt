@@ -9,7 +9,6 @@ import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import java.time.Instant
 
 /**
  * Passbolt - Open source password manager for teams
@@ -51,18 +50,22 @@ class ResponseHandler(
                     mfaStatus = checkIfMfaRequired(baseResponse)
                 )
             }
+
             is UnknownHostException -> NetworkResult.Failure.NetworkError(
                 exception = e,
                 headerMessage = errorHeaderMapper.getMessage()
             )
+
             is ConnectException -> NetworkResult.Failure.NetworkError(
                 exception = e,
                 headerMessage = errorHeaderMapper.getMessage()
             )
+
             is SocketTimeoutException -> NetworkResult.Failure.ServerError(
                 exception = e,
                 headerMessage = errorHeaderMapper.getMessage()
             )
+
             else -> NetworkResult.Failure.ServerError(
                 exception = e,
                 headerMessage = errorHeaderMapper.getMessage()
@@ -104,10 +107,6 @@ inline fun <T : Any> callWithLibraryResponseHandler(
     } else {
         try {
             val errorResponse = requireNotNull(responseHandler.parseErrorResponseBody(response))
-            Timber.d(
-                "Server time is ${errorResponse.header.serverTime}, " +
-                        "device time is ${Instant.now().epochSecond}"
-            )
             NetworkResult.Failure.ServerError(
                 exception = IOException("There was an error during API invocation"),
                 errorCode = errorResponse.header.code,

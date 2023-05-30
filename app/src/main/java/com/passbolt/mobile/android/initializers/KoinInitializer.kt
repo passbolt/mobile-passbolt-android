@@ -39,7 +39,7 @@ import com.passbolt.mobile.android.feature.startup.di.startUpModule
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferAccountToAnotherDeviceModule
 import com.passbolt.mobile.android.featureflags.featureFlagsModule
 import com.passbolt.mobile.android.folderDetailsModule
-import com.passbolt.mobile.android.gopenpgp.di.openPgpModule
+import com.passbolt.mobile.android.gopenpgp.openPgpModule
 import com.passbolt.mobile.android.groupDetailsModule
 import com.passbolt.mobile.android.helpMenuModule
 import com.passbolt.mobile.android.locationDetailsModule

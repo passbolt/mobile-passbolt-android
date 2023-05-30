@@ -28,6 +28,7 @@ dependencies {
     implementation project(':logs')
     implementation project(':inappreview')
     implementation project(':idlingresource')
+    implementation project(':gopenpgp')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

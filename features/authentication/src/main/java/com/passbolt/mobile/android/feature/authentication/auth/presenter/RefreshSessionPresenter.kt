@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticate
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -65,7 +65,7 @@ class RefreshSessionPresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     authReasonMapper: AuthReasonMapper,
     rootDetector: RootDetector,
-    getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysInteractor,
+    getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysAndTimeInteractor,
     signInVerifyInteractor: SignInVerifyInteractor,
     biometryInteractor: BiometryInteractor,
     userProfileInteractor: UserProfileInteractor,

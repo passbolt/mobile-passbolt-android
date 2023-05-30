@@ -3,9 +3,9 @@ package com.passbolt.mobile.android.gopenpgp
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
-import com.proton.Gopenpgp.crypto.Crypto
-import com.proton.Gopenpgp.crypto.Key
-import com.proton.Gopenpgp.helper.Helper
+import com.proton.gopenpgp.crypto.Crypto
+import com.proton.gopenpgp.crypto.Key
+import com.proton.gopenpgp.helper.Helper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -167,5 +167,12 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
         } finally {
             Helper.freeOSMemory()
         }
+    }
+
+    /**
+     * Sets time offset for all crypto operations for the session duration.
+     */
+    fun setTimeOffsetSecond(timeOffsetSeconds: Long) {
+        Crypto.setTimeOffset(timeOffsetSeconds)
     }
 }

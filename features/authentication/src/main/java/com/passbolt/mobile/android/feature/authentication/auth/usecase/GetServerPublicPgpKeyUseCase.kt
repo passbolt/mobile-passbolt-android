@@ -37,7 +37,8 @@ class GetServerPublicPgpKeyUseCase(
             is NetworkResult.Failure -> Output.Failure(result)
             is NetworkResult.Success -> Output.Success(
                 result.value.body.keydata,
-                result.value.body.fingerprint
+                result.value.body.fingerprint,
+                result.value.header.serverTime
             )
         }
 
@@ -45,7 +46,8 @@ class GetServerPublicPgpKeyUseCase(
 
         data class Success(
             val publicKey: String,
-            val fingerprint: String
+            val fingerprint: String,
+            val serverTime: Long
         ) : Output()
 
         data class Failure(val error: NetworkResult.Failure<BaseResponse<ServerPgpResponseDto>>) : Output()
