@@ -1,9 +1,11 @@
 package com.passbolt.mobile.android.core.networking
 
+import com.google.gson.GsonBuilder
 import com.passbolt.mobile.android.common.CookieExtractor
 import com.passbolt.mobile.android.core.networking.interceptor.AuthInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.CookiesInterceptor
+import com.passbolt.mobile.android.dto.serializer.gson.typeAdapters
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -75,7 +77,15 @@ val networkingModule = module {
     single<RestService> {
         RetrofitRestService(
             client = get(named(DEFAULT_HTTP_CLIENT)),
-            converterFactory = GsonConverterFactory.create()
+            converterFactory = GsonConverterFactory.create(
+                GsonBuilder()
+                    .apply {
+                        typeAdapters.forEach {
+                            registerTypeAdapter(it.key, it.value)
+                        }
+                    }
+                    .create()
+            )
         )
     }
     single {

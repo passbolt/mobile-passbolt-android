@@ -21,22 +21,9 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.dto.serializer
+package com.passbolt.mobile.android.dto.serializer.gson.exception
 
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import java.util.UUID
+import java.io.IOException
 
-class UUIDSerializer : KSerializer<UUID> {
-    override val descriptor = PrimitiveSerialDescriptor(UUID::class.java.name, PrimitiveKind.STRING)
-
-    override fun deserialize(decoder: Decoder): UUID =
-        UUID.fromString(decoder.decodeString())
-
-    override fun serialize(encoder: Encoder, value: UUID) {
-        encoder.encodeString(value.toString())
-    }
-}
+class InvalidJsonTokenType(tokenString: String, tokenType: String, expectedType: String) :
+    IOException("Token type $tokenType is expected to have $expectedType type; Token string: $tokenString")

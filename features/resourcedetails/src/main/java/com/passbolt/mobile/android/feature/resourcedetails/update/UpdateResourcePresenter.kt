@@ -169,7 +169,13 @@ class UpdateResourcePresenter(
             ResourceUpdateType.EDIT -> {
                 val resource = requireNotNull(existingResource)
                 val secret = requireNotNull(existingResourceSecret)
-                editFieldsModelCreator.create(resource, secret)
+                try {
+                    editFieldsModelCreator.create(resource, secret)
+                } catch (exception: ClassCastException) {
+                    Timber.e("Secret data has invalid type, quitting edit form")
+                    view?.showInvalidSecretDataAndNavigateBack()
+                    return
+                }
             }
         }
 

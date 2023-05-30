@@ -1,9 +1,4 @@
-package com.passbolt.mobile.android.dto.response.qrcode
-
-import com.passbolt.mobile.android.dto.serializer.kotlinx.UUIDSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import java.util.UUID
+package com.passbolt.mobile.android.ui
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,12 +23,13 @@ import java.util.UUID
  * @since v1.0
  */
 
-@Serializable
-class AssembledKeyDto(
-    @SerialName("armored_key")
-    val armoredKey: String,
-    @SerialName("user_id")
-    @Serializable(with = UUIDSerializer::class)
-    val userId: UUID,
-    val fingerprint: String
-)
+sealed class DecryptedSecretOrError<out T> {
+
+    data class Error<out T>(
+        val message: String
+    ) : DecryptedSecretOrError<T>()
+
+    data class DecryptedSecret<out T>(
+        val secret: T
+    ) : DecryptedSecretOrError<T>()
+}

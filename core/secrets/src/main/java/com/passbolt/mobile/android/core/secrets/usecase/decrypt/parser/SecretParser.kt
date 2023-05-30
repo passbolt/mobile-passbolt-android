@@ -5,35 +5,58 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
+import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 
 class SecretParser(
     private val gson: Gson
 ) {
 
-    fun extractPassword(resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum, decryptedSecret: ByteArray): String {
+    fun extractPassword(
+        resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum,
+        decryptedSecret: ByteArray
+    ): DecryptedSecretOrError<String> {
         return when (resourceTypeEnum) {
             SIMPLE_PASSWORD -> {
-                String(decryptedSecret)
+                try {
+                    DecryptedSecretOrError.DecryptedSecret(String(decryptedSecret))
+                } catch (exception: Exception) {
+                    DecryptedSecretOrError.Error("Error during secret parsing: ${exception.message}")
+                }
             }
             PASSWORD_WITH_DESCRIPTION -> {
-                gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordWithDescription::class.java).password
+                try {
+                    val parsedSecret =
+                        gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordWithDescription::class.java)
+                    DecryptedSecretOrError.DecryptedSecret(parsedSecret.password)
+                } catch (exception: Exception) {
+                    DecryptedSecretOrError.Error("Error during secret parsing: ${exception.message}")
+                }
             }
             STANDALONE_TOTP -> {
-                throw IllegalArgumentException("Stanalone totp resource type does not contain password secret")
+                throw IllegalArgumentException("Standalone totp resource type does not contain password secret")
             }
         }
     }
 
-    fun extractDescription(resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum, decryptedSecret: ByteArray): String {
+    fun extractDescription(
+        resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum,
+        decryptedSecret: ByteArray
+    ): DecryptedSecretOrError<String> {
         return when (resourceTypeEnum) {
             SIMPLE_PASSWORD -> {
                 throw IllegalArgumentException("Simple password resource type does not contain description secret")
             }
             PASSWORD_WITH_DESCRIPTION -> {
-                gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordWithDescription::class.java).description
+                try {
+                    val parsedSecret =
+                        gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordWithDescription::class.java)
+                    DecryptedSecretOrError.DecryptedSecret(parsedSecret.description)
+                } catch (exception: Exception) {
+                    DecryptedSecretOrError.Error("Error during secret parsing: ${exception.message}")
+                }
             }
             STANDALONE_TOTP -> {
-                throw IllegalArgumentException("Stanalone totp resource type does not contain description secret")
+                throw IllegalArgumentException("Standalone totp resource type does not contain description secret")
             }
         }
     }
@@ -41,7 +64,7 @@ class SecretParser(
     fun extractTotpData(
         resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum,
         decryptedSecret: ByteArray
-    ): DecryptedSecret.StandaloneTotp {
+    ): DecryptedSecretOrError<DecryptedSecret.StandaloneTotp> {
         return when (resourceTypeEnum) {
             SIMPLE_PASSWORD -> {
                 throw IllegalArgumentException("Simple password resource type does not contain totp data")
@@ -50,7 +73,13 @@ class SecretParser(
                 throw IllegalArgumentException("Password with description resource type does not contain totp data")
             }
             STANDALONE_TOTP -> {
-                gson.fromJson(String(decryptedSecret), DecryptedSecret.StandaloneTotp::class.java)
+                try {
+                    val parsedSecret =
+                        gson.fromJson(String(decryptedSecret), DecryptedSecret.StandaloneTotp::class.java)
+                    DecryptedSecretOrError.DecryptedSecret(parsedSecret)
+                } catch (exception: Exception) {
+                    DecryptedSecretOrError.Error("Error during secret parsing: ${exception.message}")
+                }
             }
         }
     }

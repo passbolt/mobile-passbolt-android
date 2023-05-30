@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,8 +68,14 @@ class ResourceAuthenticatedActionsInteractor(
             }
             PASSWORD_WITH_DESCRIPTION -> {
                 fetchAndDecrypt(decryptionFailure, fetchFailure) {
-                    val description = secretParser.extractDescription(resourceTypeEnum, it)
-                    success(DESCRIPTION_LABEL, description, true)
+                    when (val description = secretParser.extractDescription(resourceTypeEnum, it)) {
+                        is DecryptedSecretOrError.DecryptedSecret -> success(
+                            DESCRIPTION_LABEL,
+                            description.secret,
+                            true
+                        )
+                        is DecryptedSecretOrError.Error -> decryptionFailure()
+                    }
                 }
             }
             STANDALONE_TOTP -> {
@@ -85,8 +92,10 @@ class ResourceAuthenticatedActionsInteractor(
     ) {
         fetchAndDecrypt(decryptionFailure, fetchFailure) {
             val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)
-            val password = secretParser.extractPassword(resourceTypeEnum, it)
-            success(SECRET_LABEL, password)
+            when (val password = secretParser.extractPassword(resourceTypeEnum, it)) {
+                is DecryptedSecretOrError.DecryptedSecret -> success(SECRET_LABEL, password.secret)
+                is DecryptedSecretOrError.Error -> decryptionFailure()
+            }
         }
     }
 
@@ -97,8 +106,10 @@ class ResourceAuthenticatedActionsInteractor(
     ) {
         fetchAndDecrypt(decryptionFailure, fetchFailure) {
             val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)
-            val totp = secretParser.extractTotpData(resourceTypeEnum, it)
-            success(OTP_LABEL, totp)
+            when (val totp = secretParser.extractTotpData(resourceTypeEnum, it)) {
+                is DecryptedSecretOrError.DecryptedSecret -> success(OTP_LABEL, totp.secret)
+                is DecryptedSecretOrError.Error -> decryptionFailure()
+            }
         }
     }
 

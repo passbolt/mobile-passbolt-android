@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -205,7 +206,8 @@ class ResourceDetailsPresenterTest : KoinTest {
             )
         }
         whenever(mockSecretParser.extractPassword(any(), any()))
-            .doReturn(String(DECRYPTED_SECRET))
+            .doReturn(
+                DecryptedSecretOrError.DecryptedSecret(String(DECRYPTED_SECRET)))
 
         presenter.argsReceived(
             RESOURCE_MODEL.resourceId,

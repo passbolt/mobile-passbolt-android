@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
@@ -18,11 +19,11 @@ import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderModel
@@ -519,7 +520,7 @@ class HomePresenterTest : KoinTest {
             )
         }
         whenever(mockSecretParser.extractPassword(any(), any()))
-            .doReturn(String(DECRYPTED_SECRET))
+            .doReturn(DecryptedSecretOrError.DecryptedSecret(String(DECRYPTED_SECRET)))
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
             flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         )
