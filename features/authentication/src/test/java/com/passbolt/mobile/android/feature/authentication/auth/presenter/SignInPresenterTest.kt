@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpTimeUpdater
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFailureType
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
@@ -39,6 +40,7 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.time.Instant
 
 /**
  * Passbolt - Open source password manager for teams
@@ -86,6 +88,8 @@ class SignInPresenterTest : KoinTest {
                     isDeveloperModeEnabled = false, isHideRootDialogEnabled = false
                 )
             )
+        whenever(mockGopenPgpTimeUpdater.updateTimeIfNeeded(any(), any()))
+            .thenReturn(GopenPgpTimeUpdater.Result.TIME_SYNCED)
     }
 
     @Test
@@ -153,7 +157,8 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetServerPublicPgpKeyUseCase.Output.Success(
                     "publicKey",
-                    "fingerprint"
+                    "fingerprint",
+                    Instant.now().epochSecond
                 )
             )
         }
@@ -225,7 +230,8 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
-                    "fingerprint"
+                    "fingerprint",
+                    Instant.now().epochSecond
                 )
             )
         }
@@ -259,7 +265,8 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
-                    "fingerprint"
+                    "fingerprint",
+                    Instant.now().epochSecond
                 )
             )
         }
@@ -308,7 +315,8 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
-                    "fingerprint"
+                    "fingerprint",
+                    Instant.now().epochSecond
                 )
             )
         }
@@ -351,7 +359,8 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
-                    "fingerprint"
+                    "fingerprint",
+                    Instant.now().epochSecond
                 )
             )
         }
@@ -395,7 +404,8 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
-                    "fingerprint"
+                    "fingerprint",
+                    Instant.now().epochSecond
                 )
             )
         }
@@ -449,7 +459,8 @@ class SignInPresenterTest : KoinTest {
             onBlocking { execute(any()) }.thenReturn(
                 GetServerPublicPgpKeyUseCase.Output.Success(
                     "publickKey",
-                    "fingerprint"
+                    "fingerprint",
+                    Instant.now().epochSecond
                 )
             )
         }

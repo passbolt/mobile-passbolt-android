@@ -34,6 +34,7 @@
     <string name="consent">I consent</string>
 
     <string name="common_failure">Something went wrong!</string>
+    <string name="common_time_is_out_of_sync">Server and client time is out of sync, please contact your administrator.</string>
     <string name="common_network_failure">There was a connection issue</string>
     <string name="common_failure_format">Something went wrong![%s]</string>
     <string name="common_refresh">Refresh</string>

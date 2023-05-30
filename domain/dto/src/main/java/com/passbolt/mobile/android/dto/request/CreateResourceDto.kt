@@ -52,6 +52,7 @@ data class TotpSecretsDto(
 ) {
     data class Totp(
         val algorithm: String,
+        @SerializedName("secret_key")
         val key: String,
         val digits: Int,
         val period: Long

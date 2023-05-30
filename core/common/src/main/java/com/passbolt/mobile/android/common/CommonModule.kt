@@ -1,7 +1,10 @@
 package com.passbolt.mobile.android.common
 
+import com.passbolt.mobile.android.common.time.AndroidTimeProvider
+import com.passbolt.mobile.android.common.time.TimeProvider
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
@@ -37,4 +40,5 @@ val commonModule = module {
     singleOf(::DomainProvider)
     singleOf(::FingerprintFormatter)
     singleOf(::OtpFormatter)
+    singleOf(::AndroidTimeProvider) bind TimeProvider::class
 }

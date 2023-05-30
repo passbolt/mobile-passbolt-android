@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.auth.challenge
 
 import com.google.gson.Gson
-import com.passbolt.mobile.android.common.TimeProvider
+import com.passbolt.mobile.android.common.time.TimeProvider
 import com.passbolt.mobile.android.common.UuidProvider
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.dto.request.ChallengeDto
@@ -69,7 +69,7 @@ class ChallengeProvider(
     }
 
     private fun getVerifyTokenExpiry() =
-        timeProvider.getCurrentEpochTime() + TOKEN_VALIDATION_TIME
+        timeProvider.getCurrentEpochSeconds() + TOKEN_VALIDATION_TIME
 
     sealed class Output {
         data class Success(

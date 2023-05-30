@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
+import com.google.gson.annotations.SerializedName
+
 sealed class DecryptedSecret(val password: String) {
 
     class SimplePassword(
@@ -16,6 +18,7 @@ sealed class DecryptedSecret(val password: String) {
     ) {
         data class Totp(
             val algorithm: String,
+            @SerializedName("secret_key")
             val key: String,
             val digits: Int,
             val period: Long
