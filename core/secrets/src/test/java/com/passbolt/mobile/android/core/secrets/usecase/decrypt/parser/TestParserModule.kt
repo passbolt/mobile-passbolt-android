@@ -1,16 +1,3 @@
-package com.passbolt.mobile.android.core.secrets
-
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.DecryptSecretUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.FetchSecretUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordAndDescriptionSecretValidation
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordStringSecretValidation
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.SecretValidationRunner
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.TotpSecretValidation
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -34,13 +21,21 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val secretsModule = module {
-    singleOf(::FetchSecretUseCase)
-    singleOf(::DecryptSecretUseCase)
-    singleOf(::SecretInteractor)
-    singleOf(::SecretParser)
+package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
+
+import com.google.gson.GsonBuilder
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordAndDescriptionSecretValidation
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordStringSecretValidation
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.SecretValidationRunner
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.TotpSecretValidation
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+
+val testParserModule = module {
+    single { GsonBuilder().create() }
     singleOf(::SecretValidationRunner)
     singleOf(::PasswordStringSecretValidation)
     singleOf(::PasswordAndDescriptionSecretValidation)
     singleOf(::TotpSecretValidation)
+    singleOf(::SecretParser)
 }

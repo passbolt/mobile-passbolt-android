@@ -21,30 +21,24 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
+package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation
 
-import com.google.gson.annotations.SerializedName
+import androidx.annotation.VisibleForTesting
+import com.passbolt.mobile.android.common.validation.RequiredStringLengthValidation
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 
-sealed class DecryptedSecret(val password: String) {
+class PasswordStringSecretValidation {
 
-    class SimplePassword(
-        password: String
-    ) : DecryptedSecret(password)
-
-    class PasswordWithDescription(
-        val description: String,
-        password: String
-    ) : DecryptedSecret(password)
-
-    class StandaloneTotp(
-        val totp: Totp
-    ) {
-        data class Totp(
-            val algorithm: String,
-            @SerializedName("secret_key")
-            val key: String,
-            val digits: Int,
-            val period: Long
+    fun invoke(secret: DecryptedSecret.SimplePassword) =
+        RequiredStringLengthValidation().invoke(
+            secret.password,
+            PASSWORD_STRING_PASSWORD_MIN_LENGTH,
+            PASSWORD_STRING_PASSWORD_MAX_LENGTH
         )
+
+    @VisibleForTesting
+    companion object {
+        const val PASSWORD_STRING_PASSWORD_MIN_LENGTH = 0
+        const val PASSWORD_STRING_PASSWORD_MAX_LENGTH = 4096
     }
 }
