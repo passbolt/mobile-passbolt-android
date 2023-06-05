@@ -1,12 +1,3 @@
-package com.passbolt.mobile.android.core.secrets.usecase.decrypt
-
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
-import retrofit2.HttpException
-import java.net.HttpURLConnection
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,6 +20,16 @@ import java.net.HttpURLConnection
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.core.secrets.usecase.decrypt
+
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
+import retrofit2.HttpException
+import java.net.HttpURLConnection
+
 class SecretInteractor(
     private val fetchSecretUseCase: FetchSecretUseCase,
     private val decryptSecretUseCase: DecryptSecretUseCase

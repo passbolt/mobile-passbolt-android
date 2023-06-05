@@ -21,7 +21,22 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.serializers.gson.validation
+package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation
 
-internal typealias MinLength = Int
-internal typealias MaxLength = Int
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+
+class SecretValidationRunner(
+    private val passwordStringSecretValidation: PasswordStringSecretValidation,
+    private val passwordAndDescriptionSecretValidation: PasswordAndDescriptionSecretValidation,
+    private val totpSecretValidation: TotpSecretValidation
+) {
+
+    fun isPasswordStringSecretValid(secret: DecryptedSecret.SimplePassword) =
+        passwordStringSecretValidation.invoke(secret)
+
+    fun isPasswordAndDescriptionSecretValid(secret: DecryptedSecret.PasswordWithDescription) =
+        passwordAndDescriptionSecretValidation.invoke(secret)
+
+    fun isTotpSecretValid(secret: DecryptedSecret.StandaloneTotp) =
+        totpSecretValidation.invoke(secret)
+}

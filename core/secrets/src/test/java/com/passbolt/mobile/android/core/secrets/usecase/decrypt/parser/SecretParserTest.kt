@@ -1,11 +1,16 @@
 package com.passbolt.mobile.android.feature.secrets.usecase.decrypt.parser
 
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.GsonBuilder
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.testParserModule
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
+import org.junit.Rule
 import org.junit.Test
+import org.koin.core.logger.Level
+import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
+import org.koin.test.inject
 
 
 /**
@@ -30,9 +35,15 @@ import org.junit.Test
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SecretParserTest {
+class SecretParserTest : KoinTest {
 
-    private val secretParser = SecretParser(GsonBuilder().create())
+    @get:Rule
+    val koinTestRule = KoinTestRule.create {
+        printLogger(Level.ERROR)
+        modules(testParserModule)
+    }
+
+    private val secretParser: SecretParser by inject()
 
     @Test
     fun `password with special characters should parse correct for string secret`() {
