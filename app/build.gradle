@@ -147,6 +147,7 @@ dependencies {
     implementation project(':transferaccounttoanotherdevice')
     implementation project(':otp')
     implementation project(':otpcore')
+    implementation project(':serializers')
 
     debugImplementation libs.quality.leakcanary
 

@@ -170,23 +170,6 @@ interface ResourcesDao : BaseDao<Resource> {
     suspend fun getAllThatHaveTagContaining(tagSearchQuery: String, slugs: List<String>): List<Resource>
 
     @Transaction
-    @Query(
-        "SELECT * FROM Resource " +
-                "WHERE resourceTypeId IN(" +
-                "SELECT resourceTypeId FROM ResourceType WHERE slug IN (:otpSlugs)" +
-                ")" +
-                "ORDER BY resourceName " +
-                "COLLATE NOCASE ASC"
-    )
-    suspend fun getAllOtpResources(otpSlugs: List<String> = otpResourceTypeSlugs): List<Resource>
-
-    @Transaction
     @Query("DELETE FROM Resource")
     suspend fun deleteAll()
-
-    private companion object {
-        private val otpResourceTypeSlugs = listOf(
-            "totp", "password-description-totp"
-        )
-    }
 }

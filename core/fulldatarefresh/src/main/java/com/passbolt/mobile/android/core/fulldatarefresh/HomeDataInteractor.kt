@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.plus
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypesInteractor
 import com.passbolt.mobile.android.core.users.UsersInteractor
 
 /**
@@ -40,28 +41,34 @@ class HomeDataInteractor(
     private val resourcesInteractor: ResourceInteractor,
     private val groupsInteractor: GroupsInteractor,
     private val usersInteractor: UsersInteractor,
+    private val resourceTypesInteractor: ResourceTypesInteractor,
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource
 ) {
 
     suspend fun refreshAllHomeScreenData(): Output {
         resourcesFullRefreshIdlingResource.setIdle(false)
+        val resourceTypesOutput = resourceTypesInteractor.fetchAndSaveResourceTypes()
         val userInteractorOutput = usersInteractor.fetchAndSaveUsers()
         val groupsRefreshOutput = groupsInteractor.fetchAndSaveGroups()
         val foldersRefreshOutput = foldersInteractor.fetchAndSaveFolders()
-        val resourcesAndResourcesTypesOutput = resourcesInteractor.updateResourcesWithTypes()
+        val resourcesOutput = resourcesInteractor.fetchAndSaveResources()
         resourcesFullRefreshIdlingResource.setIdle(true)
-        return if (foldersRefreshOutput is FoldersInteractor.Output.Success &&
-            resourcesAndResourcesTypesOutput is ResourceInteractor.Output.Success &&
+
+        @Suppress("ComplexCondition")
+        return if (resourceTypesOutput is ResourceTypesInteractor.Output.Success &&
+            userInteractorOutput is UsersInteractor.Output.Success &&
             groupsRefreshOutput is GroupsInteractor.Output.Success &&
-            userInteractorOutput is UsersInteractor.Output.Success
+            foldersRefreshOutput is FoldersInteractor.Output.Success &&
+            resourcesOutput is ResourceInteractor.Output.Success
         ) {
             Output.Success
         } else {
             Output.Failure(
-                userInteractorOutput.authenticationState +
+                resourceTypesOutput.authenticationState +
+                        userInteractorOutput.authenticationState +
                         groupsRefreshOutput.authenticationState +
                         foldersRefreshOutput.authenticationState +
-                        resourcesAndResourcesTypesOutput.authenticationState
+                        resourcesOutput.authenticationState
             )
         }
     }

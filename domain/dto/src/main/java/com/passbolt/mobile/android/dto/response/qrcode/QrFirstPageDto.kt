@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.dto.response.qrcode
 
-import com.passbolt.mobile.android.dto.serializer.kotlinx.UUIDSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.UUID

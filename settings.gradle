@@ -60,6 +60,7 @@ domainModule "dto"
 domainModule "ui"
 domainModule "mappers"
 domainModule "entity"
+domainModule "serializers"
 
 def featureModule(String name) {
     projectModule(name, "features/")

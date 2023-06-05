@@ -32,17 +32,19 @@ class GetLocalOtpResourcesUseCase(
     private val databaseProvider: DatabaseProvider,
     private val otpModelMapper: OtpModelMapper,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<Unit, GetLocalOtpResourcesUseCase.Output> {
+) : AsyncUseCase<GetLocalOtpResourcesUseCase.Input, GetLocalOtpResourcesUseCase.Output> {
 
-    override suspend fun execute(input: Unit): Output {
+    override suspend fun execute(input: Input): Output {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
         val resources = databaseProvider
             .get(userId)
             .resourcesDao()
-            .getAllOtpResources()
+            .getAllOrderedByName(input.slugs)
 
         return Output(resources.map { otpModelMapper.map(it) })
     }
+
+    data class Input(val slugs: List<String>)
 
     data class Output(val otps: List<OtpModel>)
 }

@@ -8,6 +8,7 @@ dependencies {
     implementation project(':storage')
     implementation project(':dto')
     implementation project(':architecture')
+    implementation project(':serializers')
 
     api libs.networking.retrofit
     api libs.networking.okHttp
