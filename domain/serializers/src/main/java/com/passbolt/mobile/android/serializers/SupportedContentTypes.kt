@@ -35,4 +35,6 @@ object SupportedContentTypes {
     val totpSlugs = listOf(
         TOTP_SLUG
     )
+
+    val allSlugs = homeSlugs + totpSlugs
 }

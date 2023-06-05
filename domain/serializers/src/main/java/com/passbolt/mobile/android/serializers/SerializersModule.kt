@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.serializers
 
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
+import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
 import com.passbolt.mobile.android.serializers.gson.validation.ResourceValidationRunner
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -31,4 +32,5 @@ import org.koin.dsl.module
 val serializersModule = module {
     singleOf(::ResourceValidationRunner)
     singleOf(::ResourceListDeserializer)
+    singleOf(::ResourceTypesListDeserializer)
 }

@@ -7,7 +7,9 @@ import com.passbolt.mobile.android.core.networking.interceptor.AuthInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.CookiesInterceptor
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
+import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
 import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -89,6 +91,10 @@ val networkingModule = module {
                         registerTypeAdapter(
                             object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
                             get<ResourceListDeserializer>()
+                        )
+                        registerTypeAdapter(
+                            object : TypeToken<List<@JvmSuppressWildcards ResourceTypeDto>>() {}.type,
+                            get<ResourceTypesListDeserializer>()
                         )
                     }
                     .create()
