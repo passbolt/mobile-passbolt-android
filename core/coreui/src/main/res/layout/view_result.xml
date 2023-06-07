@@ -5,15 +5,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:parentTag="android.widget.LinearLayout">
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_64"
+        android:layout_width="@dimen/dp_148"
+        android:layout_height="@dimen/dp_148"
+        app:layout_constraintBottom_toTopOf="@id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/ic_failed" />
 
     <TextView
@@ -23,28 +24,31 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginHorizontal="@dimen/dp_16"
         android:layout_marginTop="@dimen/dp_32"
-        android:gravity="center_horizontal"
+        android:ellipsize="middle"
+        android:gravity="center"
+        android:maxLines="2"
         android:textColor="@color/text_primary"
         android:textFontWeight="600"
         android:textSize="@dimen/sp_24"
+        app:layout_constraintTop_toBottomOf="@id/icon"
         tools:text="Title" />
 
     <TextView
         android:id="@+id/descriptionLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="@dimen/dp_16"
         android:layout_marginTop="@dimen/dp_16"
-        android:gravity="center_horizontal"
+        android:ellipsize="middle"
+        android:gravity="center"
+        android:maxLines="2"
         android:textColor="@color/text_secondary"
         android:textFontWeight="400"
         android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/button"
+        app:layout_constraintTop_toBottomOf="@id/titleLabel"
+        app:layout_constraintVertical_bias="0"
         tools:text="Description" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
 
     <Button
         android:id="@+id/button"

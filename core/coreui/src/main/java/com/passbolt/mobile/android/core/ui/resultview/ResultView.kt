@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.ui.R
@@ -37,12 +37,11 @@ class ResultView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-) : LinearLayout(context, attrs, defStyle) {
+) : ConstraintLayout(context, attrs, defStyle) {
 
     private val binding = ViewResultBinding.inflate(LayoutInflater.from(context), this)
 
     init {
-        orientation = VERTICAL
         fillAttributes(context.obtainStyledAttributes(attrs, R.styleable.ResultView))
     }
 
