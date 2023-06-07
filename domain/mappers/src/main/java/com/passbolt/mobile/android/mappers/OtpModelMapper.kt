@@ -48,6 +48,7 @@ class OtpModelMapper(
             otp = otpModel,
             isVisible = false,
             otpExpirySeconds = null,
-            otpValue = null
+            otpValue = null,
+            isRefreshing = false
         )
 }

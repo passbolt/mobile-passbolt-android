@@ -176,7 +176,7 @@ class OtpPresenter(
                         otpList
                             .find { it.isVisible && (it.remainingSecondsCounter ?: Long.MAX_VALUE) < 0 }
                             ?.let {
-                                hideCurrentlyVisibleItem()
+                                hideCurrentlyVisibleItem(isCurrentItemRefreshing = true)
                                 showTotp(it, copyToClipboard = true)
                             }
                         showOtps()
@@ -220,7 +220,7 @@ class OtpPresenter(
         }
     }
 
-    private fun hideCurrentlyVisibleItem() {
+    private fun hideCurrentlyVisibleItem(isCurrentItemRefreshing: Boolean = false) {
         otpList.replaceAll {
             if (it.otp.resourceId == visibleOtpId) {
                 it.copy(
@@ -228,7 +228,8 @@ class OtpPresenter(
                     isVisible = false,
                     otpExpirySeconds = null,
                     otpValue = null,
-                    remainingSecondsCounter = null
+                    remainingSecondsCounter = null,
+                    isRefreshing = isCurrentItemRefreshing
                 )
             } else {
                 it
@@ -239,7 +240,8 @@ class OtpPresenter(
     }
 
     override fun otpItemClick(otpListItemWrapper: OtpListItemWrapper) {
-        hideCurrentlyVisibleItem()
+        visibleOtpId = otpListItemWrapper.otp.resourceId
+        hideCurrentlyVisibleItem(isCurrentItemRefreshing = true)
         showTotp(otpListItemWrapper, copyToClipboard = true)
     }
 
@@ -267,7 +269,8 @@ class OtpPresenter(
                         otpValue = otpParameters.otpValue,
                         isVisible = true,
                         otpExpirySeconds = otp.totp.period,
-                        remainingSecondsCounter = otpParameters.secondsValid
+                        remainingSecondsCounter = otpParameters.secondsValid,
+                        isRefreshing = false
                     )
                     with(newOtp) {
                         val indexOfOld = otpList.indexOfFirst { it.otp.resourceId == otpListItemWrapper.otp.resourceId }

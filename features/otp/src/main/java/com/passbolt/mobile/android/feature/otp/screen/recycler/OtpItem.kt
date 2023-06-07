@@ -4,8 +4,11 @@ import android.animation.ObjectAnimator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
 import androidx.core.view.isVisible
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
@@ -51,6 +54,17 @@ class OtpItem(
 
     private val otpFormatter: OtpFormatter by inject()
 
+    @Suppress("MagicNumber")
+    private val rotateAnimation = RotateAnimation(
+        0f, 180f,
+        Animation.RELATIVE_TO_SELF, 0.5f,
+        Animation.RELATIVE_TO_SELF, 0.5f
+    ).apply {
+        interpolator = FastOutSlowInInterpolator()
+        duration = 500
+        repeatCount = Animation.INFINITE
+    }
+
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemOtpBinding =
         ItemOtpBinding.inflate(inflater, parent, false)
 
@@ -65,10 +79,22 @@ class OtpItem(
             name.text = otpModel.otp.name
             otp.text = otpFormatter.format(otpModel.otpValue ?: otp.context.getString(R.string.otp_hide_otp))
             icon.setImageDrawable(initialsIconGenerator.generate(otpModel.otp.name, otpModel.otp.initials))
-            eye.isVisible = !otpModel.isVisible
+            eye.isVisible = !otpModel.isVisible && !otpModel.isRefreshing
             progress.isVisible = otpModel.isVisible
+            updateIsRefreshing(binding)
             updateProgress(binding)
             updateColors(binding)
+        }
+    }
+
+    private fun updateIsRefreshing(binding: ItemOtpBinding) {
+        binding.generationInProgress.let { inProgressView ->
+            inProgressView.isVisible = otpModel.isRefreshing
+            if (otpModel.isRefreshing) {
+                inProgressView.startAnimation(rotateAnimation)
+            } else {
+                inProgressView.clearAnimation()
+            }
         }
     }
 
