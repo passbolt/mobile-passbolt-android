@@ -61,7 +61,10 @@ class ScanOtpPresenter(
         when (parserResult) {
             is OtpParseResult.Failure -> parserFailure(parserResult.exception)
             is OtpParseResult.OtpQr -> when (parserResult) {
-                is OtpParseResult.OtpQr.TotpQr -> totpScanned(parserResult)
+                is OtpParseResult.OtpQr.TotpQr -> {
+                    scope.coroutineContext.cancelChildren()
+                    totpScanned(parserResult)
+                }
                 is OtpParseResult.OtpQr.HotpQr -> {} // HOTP is not supported yet
             }
             is OtpParseResult.UserResolvableError -> when (parserResult.errorType) {
