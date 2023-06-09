@@ -333,7 +333,8 @@ class HomePresenter(
                             val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
                             val itemUrl = it.url
                             if (!autofillUrl.isNullOrBlank() && !itemUrl.isNullOrBlank()) {
-                                domainProvider.getHost(itemUrl) == domainProvider.getHost(autofillUrl)
+                                val itemDomain = domainProvider.getHost(itemUrl)
+                                (!itemDomain.isNullOrBlank()) && (itemDomain == domainProvider.getHost(autofillUrl))
                             } else {
                                 false
                             }
