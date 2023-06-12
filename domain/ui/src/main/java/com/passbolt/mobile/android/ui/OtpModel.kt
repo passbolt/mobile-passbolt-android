@@ -52,6 +52,7 @@ data class OtpResourceModel(
 data class OtpListItemWrapper(
     val otp: OtpModel,
     val isVisible: Boolean,
+    val isRefreshing: Boolean,
     val otpExpirySeconds: Long?,
     val otpValue: String?,
     val remainingSecondsCounter: Long? = otpExpirySeconds
