@@ -137,6 +137,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     refreshSessionUseCase = get(),
+    signInIdlingResource = get(),
     passphraseMemoryCache = get(),
     saveSessionUseCase = get(),
     saveSelectedAccountUseCase = get(),
@@ -158,6 +159,5 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     userProfileInteractor = get(),
     runtimeAuthenticatedFlag = get(),
     inAppReviewInteractor = get(),
-    signInIdlingResource = get(),
     getGlobalPreferencesUseCase = get()
 )

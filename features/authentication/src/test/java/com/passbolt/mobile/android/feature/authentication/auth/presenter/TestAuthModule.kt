@@ -218,6 +218,7 @@ private fun Scope.passphrasePresenter() = PassphrasePresenter(
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     refreshSessionUseCase = mockRefreshSessionUseCase,
+    signInIdlingResource = get(),
     passphraseMemoryCache = mockPassphraseMemoryCache,
     saveSessionUseCase = mock(),
     saveSelectedAccountUseCase = mock(),
@@ -239,6 +240,5 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     userProfileInteractor = mockProfileInteractor,
     runtimeAuthenticatedFlag = get(),
     inAppReviewInteractor = mockInAppReviewInteractor,
-    signInIdlingResource = get(),
     getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase
 )
