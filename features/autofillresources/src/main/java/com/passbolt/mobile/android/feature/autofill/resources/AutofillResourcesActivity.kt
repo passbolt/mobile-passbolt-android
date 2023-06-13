@@ -18,7 +18,6 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
-import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
@@ -51,7 +50,7 @@ import org.koin.core.qualifier.named
 class AutofillResourcesActivity :
     BindingScopedAuthenticatedActivity<ActivityAutofillResourcesBinding, AutofillResourcesContract.View>(
         ActivityAutofillResourcesBinding::inflate
-    ), AutofillResourcesContract.View, HomeDataRefreshExecutor {
+    ), AutofillResourcesContract.View {
 
     override val presenter: AutofillResourcesContract.Presenter by inject()
     override val appContext = AppContext.AUTOFILL
@@ -79,7 +78,7 @@ class AutofillResourcesActivity :
         super.onCreate(savedInstanceState)
         returnAutofillDatasetStrategy = scope.get(named(bundledAutofillMode)) { parametersOf(this) }
         presenter.attach(this)
-        presenter.argsReceived(bundledAutofillUri)
+        presenter.argsReceived(bundledAutofillUri, isRecreated = savedInstanceState != null)
     }
 
     override fun onDestroy() {
@@ -89,11 +88,10 @@ class AutofillResourcesActivity :
     }
 
     override fun navigateToAutofillHome() {
-        findNavHostFragment(binding.fragmentContainer.id).navController.setGraph(R.navigation.home)
+        findNavHostFragment(binding.fragmentContainer.id)
+            .navController
+            .setGraph(R.navigation.home)
     }
-
-    override fun performFullDataRefresh() =
-        presenter.performFullDataRefresh()
 
     override fun navigateToAuth() {
         initialAuthenticationResult.launch(

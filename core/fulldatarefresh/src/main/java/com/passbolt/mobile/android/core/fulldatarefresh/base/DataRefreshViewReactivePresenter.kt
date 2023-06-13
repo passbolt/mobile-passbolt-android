@@ -42,9 +42,10 @@ abstract class DataRefreshViewReactivePresenter<V : DataRefreshViewReactiveContr
 ) : BaseAuthenticatedPresenter<V>(coroutineLaunchContext),
     DataRefreshViewReactiveContract.Presenter<V>, KoinComponent {
 
+    protected val fullDataRefreshExecutor: FullDataRefreshExecutor by inject()
+
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private val fullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     override fun resume(view: V) {
         fullDataRefreshExecutor.attach(this)

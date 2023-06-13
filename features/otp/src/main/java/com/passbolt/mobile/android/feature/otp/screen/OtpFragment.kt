@@ -56,7 +56,6 @@ import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
-import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
@@ -334,10 +333,6 @@ class OtpFragment :
         confirmTotpDeletionAlertDialog(requireContext()) {
             presenter.totpDeletetionConfirmed()
         }.show()
-    }
-
-    override fun initRefresh() {
-        (activity as HomeDataRefreshExecutor).performFullDataRefresh()
     }
 
     override fun showResourceDeleted() {
