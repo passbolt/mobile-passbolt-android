@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.google.gson.GsonBuilder
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordAndDescriptionSecretValidation
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordDescriptionTotpSecretValidation
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordStringSecretValidation
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.SecretValidationRunner
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.TotpSecretValidation
@@ -37,5 +38,6 @@ val testParserModule = module {
     singleOf(::PasswordStringSecretValidation)
     singleOf(::PasswordAndDescriptionSecretValidation)
     singleOf(::TotpSecretValidation)
+    singleOf(::PasswordDescriptionTotpSecretValidation)
     singleOf(::SecretParser)
 }

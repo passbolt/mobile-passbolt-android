@@ -40,6 +40,7 @@ class ResourceTypeFactory(
             SLUG_SIMPLE_PASSWORD -> ResourceTypeEnum.SIMPLE_PASSWORD
             SLUG_PASSWORD_AND_DESCRIPTION -> ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
             SLUG_TOTP -> ResourceTypeEnum.STANDALONE_TOTP
+            SLUG_PASSWORD_DESCRIPTION_TOTP -> ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
             else -> throw UnsupportedOperationException("Unknown resource type with slug: $slug")
         }
     }
@@ -47,12 +48,14 @@ class ResourceTypeFactory(
     enum class ResourceTypeEnum {
         SIMPLE_PASSWORD,
         PASSWORD_WITH_DESCRIPTION,
-        STANDALONE_TOTP
+        STANDALONE_TOTP,
+        PASSWORD_DESCRIPTION_TOTP
     }
 
     companion object {
         const val SLUG_SIMPLE_PASSWORD = "password-string"
         const val SLUG_PASSWORD_AND_DESCRIPTION = "password-and-description"
         const val SLUG_TOTP = "totp"
+        const val SLUG_PASSWORD_DESCRIPTION_TOTP = "password-description-totp"
     }
 }

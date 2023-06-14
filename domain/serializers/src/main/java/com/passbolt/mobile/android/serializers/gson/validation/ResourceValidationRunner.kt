@@ -35,7 +35,8 @@ class ResourceValidationRunner {
         private val validations = mapOf(
             SupportedContentTypes.PASSWORD_STRING_SLUG to PasswordStringResourceValidation(),
             SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG to PasswordAndDescriptionResourceValidation(),
-            SupportedContentTypes.TOTP_SLUG to TotpResourceValidation()
+            SupportedContentTypes.TOTP_SLUG to TotpResourceValidation(),
+            SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG to PasswordDescriptionTotpResourceValidation()
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator
 
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
@@ -66,7 +67,8 @@ class EditFieldsModelCreator(
                         when (resourceTypeEnum) {
                             SIMPLE_PASSWORD -> existingResource.description
                             // there can be parsing errors when secret data is invalid - do not create the input then
-                            PASSWORD_WITH_DESCRIPTION -> (secretParser.extractDescription(
+                            // TODO confirm if this will be reused for PASSWORD_DESCRIPTION_TOTP
+                            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> (secretParser.extractDescription(
                                 resourceTypeEnum,
                                 secret
                             ) as DecryptedSecretOrError.DecryptedSecret<String>).secret

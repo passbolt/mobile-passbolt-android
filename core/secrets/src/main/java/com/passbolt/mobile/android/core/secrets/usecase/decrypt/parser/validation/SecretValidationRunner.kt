@@ -28,7 +28,8 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.Decrypted
 class SecretValidationRunner(
     private val passwordStringSecretValidation: PasswordStringSecretValidation,
     private val passwordAndDescriptionSecretValidation: PasswordAndDescriptionSecretValidation,
-    private val totpSecretValidation: TotpSecretValidation
+    private val totpSecretValidation: TotpSecretValidation,
+    private val passwordDescriptionTotpSecretValidation: PasswordDescriptionTotpSecretValidation
 ) {
 
     fun isPasswordStringSecretValid(secret: DecryptedSecret.SimplePassword) =
@@ -39,4 +40,7 @@ class SecretValidationRunner(
 
     fun isTotpSecretValid(secret: DecryptedSecret.StandaloneTotp) =
         totpSecretValidation.invoke(secret)
+
+    fun isPasswordDescriptionTotpSecretValid(secret: DecryptedSecret.PasswordDescriptionTotp) =
+        passwordDescriptionTotpSecretValidation.invoke(secret)
 }

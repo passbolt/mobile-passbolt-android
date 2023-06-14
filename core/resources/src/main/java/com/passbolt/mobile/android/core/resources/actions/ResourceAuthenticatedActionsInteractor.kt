@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
@@ -66,7 +67,7 @@ class ResourceAuthenticatedActionsInteractor(
                     success(DESCRIPTION_LABEL, it, false)
                 }
             }
-            PASSWORD_WITH_DESCRIPTION -> {
+            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> {
                 fetchAndDecrypt(decryptionFailure, fetchFailure) {
                     when (val description = secretParser.extractDescription(resourceTypeEnum, it)) {
                         is DecryptedSecretOrError.DecryptedSecret -> success(
@@ -102,7 +103,7 @@ class ResourceAuthenticatedActionsInteractor(
     suspend fun provideOtp(
         decryptionFailure: () -> Unit,
         fetchFailure: () -> Unit,
-        success: (ClipboardLabel, DecryptedSecret.StandaloneTotp) -> Unit
+        success: (ClipboardLabel, DecryptedSecret.StandaloneTotp.Totp) -> Unit
     ) {
         fetchAndDecrypt(decryptionFailure, fetchFailure) {
             val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)
