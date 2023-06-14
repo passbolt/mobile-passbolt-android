@@ -2,11 +2,11 @@ package com.passbolt.mobile.android.core.networking
 
 import android.content.Context
 import com.google.gson.Gson
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import retrofit2.Response
-import java.lang.Exception
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
+import com.passbolt.mobile.android.dto.response.BaseResponse
 import okhttp3.ResponseBody
+import retrofit2.Response
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,8 +36,13 @@ class ErrorHeaderMapper(
 ) {
 
     fun getBaseResponse(response: Response<*>? = null) =
-        response?.errorBody()?.charStream()?.let {
-            gson.fromJson(it, BaseResponse::class.java)
+        response?.errorBody()?.charStream()?.let { charStream ->
+            try {
+                gson.fromJson(charStream, BaseResponse::class.java)
+            } catch (exception: Exception) {
+                Timber.e("Encountered a non-standard backend error response")
+                null
+            }
         }
 
     fun getMessage(baseResponse: BaseResponse<*>? = null) =
@@ -53,6 +58,7 @@ class ErrorHeaderMapper(
                 }
                 invalidFields
             } catch (e: Exception) {
+                Timber.e(e, "There was an error during getting validation fields")
                 null
             }
         }
@@ -65,6 +71,7 @@ class ErrorHeaderMapper(
                 return MfaStatus.Required(mfaType)
             }
         } catch (e: Exception) {
+            Timber.e(e, "There was an error during checking if MFA is required")
             return MfaStatus.NotRequired
         }
         return MfaStatus.NotRequired
