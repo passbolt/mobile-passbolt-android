@@ -17,7 +17,6 @@ import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.extension.getRootView
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
-import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.main.R
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
@@ -26,7 +25,7 @@ import timber.log.Timber
 
 class MainActivity :
     BindingScopedAuthenticatedActivity<ActivityMainBinding, MainContract.View>(ActivityMainBinding::inflate),
-    MainContract.View, HomeDataRefreshExecutor {
+    MainContract.View {
 
     override val presenter: MainContract.Presenter by inject()
 
@@ -125,10 +124,6 @@ class MainActivity :
                     Timber.e("In app review request to start flow failed: ${it.exception?.message}")
                 }
             }
-    }
-
-    override fun performFullDataRefresh() {
-        presenter.performFullDataRefresh()
     }
 
     private companion object {

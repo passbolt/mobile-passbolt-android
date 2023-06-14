@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
@@ -18,7 +19,6 @@ import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
@@ -189,7 +189,7 @@ class HomePresenterTest : KoinTest {
             )
         )
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(refreshFlow)
-        whenever(view.performRefreshUsingRefreshExecutor()).then {
+        whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
             refreshFlow.tryEmit(
                 DataRefreshStatus.Finished(
                     HomeDataInteractor.Output.Success
@@ -210,7 +210,6 @@ class HomePresenterTest : KoinTest {
         presenter.refreshSwipe()
 
 
-        verify(view).performRefreshUsingRefreshExecutor()
         verify(view, times(2)).hideAddButton()
         verify(view).hideRefreshProgress()
         verify(view, times(3)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
@@ -318,7 +317,7 @@ class HomePresenterTest : KoinTest {
         whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
-        whenever(view.performRefreshUsingRefreshExecutor()).then {
+        whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
             refreshFlow.tryEmit(
                 DataRefreshStatus.Finished(
                     HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)
@@ -338,7 +337,6 @@ class HomePresenterTest : KoinTest {
         presenter.refreshClick()
         presenter.resume(view)
 
-        verify(view).performRefreshUsingRefreshExecutor()
         verify(view).hideBackArrow()
         verify(view).hideAddButton()
         verify(view).hideRefreshProgress()

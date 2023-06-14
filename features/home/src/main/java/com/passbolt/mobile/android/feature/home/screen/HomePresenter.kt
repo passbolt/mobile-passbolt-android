@@ -139,6 +139,10 @@ class HomePresenter(
 
     private var refreshInProgress: Boolean = true
 
+    override fun activityCreated() {
+        fullDataRefreshExecutor.performFullDataRefresh()
+    }
+
     override fun argsRetrieved(
         showSuggestedModel: ShowSuggestedModel,
         homeDisplayView: HomeDisplayViewModel?,
@@ -588,7 +592,7 @@ class HomePresenter(
         refreshInProgress = true
         view?.apply {
             hideAddButton()
-            performRefreshUsingRefreshExecutor()
+            fullDataRefreshExecutor.performFullDataRefresh()
         }
     }
 
@@ -695,7 +699,7 @@ class HomePresenter(
 
     private fun initRefresh() {
         refreshInProgress = true
-        view?.performRefreshUsingRefreshExecutor()
+        fullDataRefreshExecutor.performFullDataRefresh()
     }
 
     override fun menuEditClick() {

@@ -61,17 +61,14 @@ class FullDataRefreshExecutor(
         scope.launch {
             Timber.d("Full data refresh initiated")
             _dataRefreshStatusFlow.emit(DataRefreshStatus.InProgress)
-            val output =
-                runAuthenticatedOperation(
-                    requireNotNull(presenter).needSessionRefreshFlow,
-                    requireNotNull(presenter).sessionRefreshedFlow
-                ) {
-                    homeDataInteractor.refreshAllHomeScreenData()
-                }
+            val output = runAuthenticatedOperation(
+                requireNotNull(presenter).needSessionRefreshFlow,
+                requireNotNull(presenter).sessionRefreshedFlow
+            ) {
+                homeDataInteractor.refreshAllHomeScreenData()
+            }
             _dataRefreshStatusFlow.emit(
-                DataRefreshStatus.Finished(
-                    output
-                )
+                DataRefreshStatus.Finished(output)
             )
         }
     }
