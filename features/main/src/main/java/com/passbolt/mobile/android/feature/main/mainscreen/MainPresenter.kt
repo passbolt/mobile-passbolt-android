@@ -51,6 +51,7 @@ class MainPresenter(
     }
 
     override fun performFullDataRefresh() {
+        fullDataRefreshExecutor.performFullDataRefresh()
         scope.launch {
             fullDataRefreshExecutor.dataRefreshStatusFlow.collectLatest {
                 if (it is Finished) setupBottomNavigation()

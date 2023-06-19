@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Passbolt - Open source password manager for teams
@@ -46,6 +47,7 @@ class FullDataRefreshExecutor(
         get() = _dataRefreshStatusFlow
     private val _dataRefreshStatusFlow = MutableSharedFlow<DataRefreshStatus>(replay = 1)
     private var presenter: BaseAuthenticatedPresenter<BaseAuthenticatedContract.View>? = null
+    private val refreshInProgress = AtomicBoolean(false)
 
     fun <V : BaseAuthenticatedContract.View, P : BaseAuthenticatedPresenter<V>> attach(presenter: P) {
         Timber.d("Refresh executor attaching to: ${presenter.javaClass.name}")
@@ -60,16 +62,20 @@ class FullDataRefreshExecutor(
     fun performFullDataRefresh() {
         scope.launch {
             Timber.d("Full data refresh initiated")
-            _dataRefreshStatusFlow.emit(DataRefreshStatus.InProgress)
-            val output = runAuthenticatedOperation(
-                requireNotNull(presenter).needSessionRefreshFlow,
-                requireNotNull(presenter).sessionRefreshedFlow
-            ) {
-                homeDataInteractor.refreshAllHomeScreenData()
+            if (!refreshInProgress.get()) {
+                refreshInProgress.set(true)
+                _dataRefreshStatusFlow.emit(DataRefreshStatus.InProgress)
+                val output = runAuthenticatedOperation(
+                    requireNotNull(presenter).needSessionRefreshFlow,
+                    requireNotNull(presenter).sessionRefreshedFlow
+                ) {
+                    homeDataInteractor.refreshAllHomeScreenData()
+                }
+                _dataRefreshStatusFlow.emit(
+                    DataRefreshStatus.Finished(output)
+                )
+                refreshInProgress.set(false)
             }
-            _dataRefreshStatusFlow.emit(
-                DataRefreshStatus.Finished(output)
-            )
         }
     }
 }

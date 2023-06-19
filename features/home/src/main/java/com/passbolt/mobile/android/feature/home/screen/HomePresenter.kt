@@ -139,10 +139,6 @@ class HomePresenter(
 
     private var refreshInProgress: Boolean = true
 
-    override fun activityCreated() {
-        fullDataRefreshExecutor.performFullDataRefresh()
-    }
-
     override fun argsRetrieved(
         showSuggestedModel: ShowSuggestedModel,
         homeDisplayView: HomeDisplayViewModel?,
