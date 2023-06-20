@@ -30,6 +30,10 @@ import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
+import com.passbolt.mobile.android.core.ui.controller.TotpViewController
+import com.passbolt.mobile.android.core.ui.controller.TotpViewController.StateParameters
+import com.passbolt.mobile.android.core.ui.controller.TotpViewController.TimeParameters
+import com.passbolt.mobile.android.core.ui.controller.TotpViewController.ViewParameters
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -49,6 +53,7 @@ import com.passbolt.mobile.android.permissions.recycler.CounterItem
 import com.passbolt.mobile.android.permissions.recycler.GroupItem
 import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
+import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -109,6 +114,9 @@ class ResourceDetailsFragment :
     private val sharedWithFields
         get() = listOf(binding.sharedWithLabel, binding.sharedWithRecyclerClickableArea, binding.sharedWithNavIcon)
 
+    private val totpFields
+        get() = listOf(binding.totpHeader, binding.totpValue)
+
     private val tagsFields
         get() = listOf(binding.tagsHeader, binding.tagsClickableArea, binding.tagsNavIcon)
 
@@ -132,6 +140,8 @@ class ResourceDetailsFragment :
     private val resourceShareResult = { _: String, _: Bundle ->
         presenter.resourceShared()
     }
+
+    private val totpViewController: TotpViewController by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -186,6 +196,8 @@ class ResourceDetailsFragment :
             sharedWithFields.forEach { it.setDebouncingOnClick { presenter.sharedWithClick() } }
             tagsFields.forEach { it.setDebouncingOnClick { presenter.tagsClick() } }
             locationFields.forEach { it.setDebouncingOnClick { presenter.locationClick() } }
+            totpIcon.setDebouncingOnClick { presenter.totpIconClick() }
+            totpFields.forEach { it.setDebouncingOnClick { presenter.copyTotpClick() } }
             fastAdapter.onClickListener = { _, _, _, _ ->
                 presenter.sharedWithClick()
                 true
@@ -208,6 +220,10 @@ class ResourceDetailsFragment :
 
     override fun displayUsername(username: String) {
         binding.usernameValue.text = username
+    }
+
+    override fun showTotpSection() {
+        (totpFields + binding.totpIcon).forEach { it.visible() }
     }
 
     override fun navigateBack() {
@@ -504,7 +520,7 @@ class ResourceDetailsFragment :
         binding.swipeRefresh.isRefreshing = true
     }
 
-    override fun showDataRefresError() {
+    override fun showDataRefreshError() {
         showSnackbar(
             R.string.common_data_refresh_error,
             backgroundColor = R.color.red
@@ -513,5 +529,19 @@ class ResourceDetailsFragment :
 
     override fun showContentNotAvailable() {
         Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun showTotp(otpWrapper: OtpListItemWrapper?) {
+        otpWrapper?.let { otpModel ->
+            totpViewController.updateView(
+                ViewParameters(binding.totpProgress, binding.totpValue, binding.generationInProgress),
+                StateParameters(otpModel.isRefreshing, otpModel.isVisible, otpModel.otpValue),
+                TimeParameters(otpModel.otpExpirySeconds, otpModel.remainingSecondsCounter)
+            )
+
+            binding.totpIcon.setImageResource(
+                if (otpModel.isVisible) R.drawable.ic_eye_invisible else R.drawable.ic_eye_visible
+            )
+        }
     }
 }

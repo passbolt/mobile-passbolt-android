@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.resourcedetails.details
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -74,8 +75,10 @@ interface ResourceDetailsContract {
         fun navigateToResourceTags(resourceId: String, mode: PermissionsMode)
         fun showFolderLocation(locationPathSegments: List<String>)
         fun navigateToResourceLocation(folderId: String)
-        fun showDataRefresError()
+        fun showDataRefreshError()
         fun showContentNotAvailable()
+        fun showTotp(otpWrapper: OtpListItemWrapper?)
+        fun showTotpSection()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -100,5 +103,7 @@ interface ResourceDetailsContract {
         fun shareClick()
         fun tagsClick()
         fun locationClick()
+        fun totpIconClick()
+        fun copyTotpClick()
     }
 }

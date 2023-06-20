@@ -12,9 +12,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
-import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,7 +43,21 @@ internal const val COUNTER_ITEM_ADAPTER = "COUNTER_ITEM_ADAPTER"
 
 fun Module.detailsModule() {
     scope<ResourceDetailsFragment> {
-        scopedOf(::ResourceDetailsPresenter) bind ResourceDetailsContract.Presenter::class
+        scoped<ResourceDetailsContract.Presenter> {
+            ResourceDetailsPresenter(
+                getFeatureFlagsUseCase = get(),
+                resourceMenuModelMapper = get(),
+                getLocalResourceUseCase = get(),
+                getLocalResourcePermissionsUseCase = get(),
+                getLocalResourceTagsUseCase = get(),
+                getLocalFolderLocation = get(),
+                getResourceTypeWithFieldsByIdUseCase = get(),
+                totpParametersProvider = get(),
+                otpModelMapper = get(),
+                getResourceTypeIdToSlugMappingUseCase = get(),
+                coroutineLaunchContext = get()
+            )
+        }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {
             ItemAdapter.items()
         }
