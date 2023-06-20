@@ -152,6 +152,5 @@ interface HomeContract {
         fun seeFolderDetailsClick()
         fun createFolderClick()
         fun folderCreated(name: String)
-        fun activityCreated()
     }
 }

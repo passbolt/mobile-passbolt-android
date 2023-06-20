@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
-import android.content.Context
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.View
@@ -17,8 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -192,18 +189,6 @@ class HomeFragment :
             }
         }
 
-    private val activityCreatedObserver = object : DefaultLifecycleObserver {
-        override fun onCreate(owner: LifecycleOwner) {
-            super.onCreate(owner)
-            presenter.activityCreated()
-        }
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        activity?.lifecycle?.addObserver(activityCreatedObserver)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapter()
@@ -242,7 +227,6 @@ class HomeFragment :
 
     override fun onDestroyView() {
         binding.recyclerView.adapter = null
-        activity?.lifecycle?.removeObserver(activityCreatedObserver)
         presenter.detach()
         super.onDestroyView()
     }

@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
@@ -43,6 +44,7 @@ class AutofillResourcesPresenter(
     private val secretParser: SecretParser,
     private val secretInteractor: SecretInteractor,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
+    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<AutofillResourcesContract.View>(coroutineLaunchContext),
     AutofillResourcesContract.Presenter {
@@ -72,6 +74,7 @@ class AutofillResourcesPresenter(
 
     override fun userAuthenticated() {
         view?.navigateToAutofillHome()
+        fullDataRefreshExecutor.performFullDataRefresh()
     }
 
     override fun itemClick(resourceModel: ResourceModel) {
