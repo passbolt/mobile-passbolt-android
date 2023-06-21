@@ -38,6 +38,10 @@ class RebuildLocalResourceTypesUseCase(
     override suspend fun execute(input: Input) {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
 
+        val resourcesDao = databaseProvider
+            .get(selectedAccount)
+            .resourcesDao()
+
         val resourceTypesDao = databaseProvider
             .get(selectedAccount)
             .resourceTypesDao()
@@ -56,6 +60,7 @@ class RebuildLocalResourceTypesUseCase(
         // insert each resource types along with its fields and ResourceType<->ResourceField cross reference
         resourceFieldsDao.deleteAll()
         resourceTypesAndFieldsCrossRefDao.deleteAll()
+        resourcesDao.deleteAll()
         resourceTypesDao.deleteAll()
         resourceTypeDbModel.forEach { resourceType ->
             resourceTypesDao.insert(resourceType.resourceType)

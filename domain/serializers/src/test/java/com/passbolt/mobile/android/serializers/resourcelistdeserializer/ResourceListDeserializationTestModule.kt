@@ -28,17 +28,22 @@ import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
+import com.passbolt.mobile.android.serializers.gson.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.serializers.gson.validation.ResourceValidationRunner
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
 val mockIdToSlugMappingUseCase = mock<GetResourceTypeIdToSlugMappingUseCase>()
+val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 
 val resourceListDeserializationTestModule = module {
     singleOf(::ResourceValidationRunner)
     singleOf(::ResourceListDeserializer)
+    singleOf(::ResourceTypeIdToSlugMappingProvider)
     single { mockIdToSlugMappingUseCase }
+    factory { mockGetSelectedAccountUseCase }
     single {
         GsonBuilder()
             .registerTypeAdapter(

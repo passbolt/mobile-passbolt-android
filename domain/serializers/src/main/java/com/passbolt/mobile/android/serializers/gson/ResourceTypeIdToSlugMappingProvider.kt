@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.database.impl.tags
-
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,20 +20,28 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class RemoveLocalTagsUseCase(
-    private val databaseProvider: DatabaseProvider
-) : AsyncUseCase<UserIdInput, Unit> {
 
-    override suspend fun execute(input: UserIdInput) {
-        val tagsDao = databaseProvider
-            .get(input.userId)
-            .tagsDao()
+package com.passbolt.mobile.android.serializers.gson
 
-        val resourcesAndTagsCrossRefDao = databaseProvider
-            .get(input.userId)
-            .resourcesAndTagsCrossRefDao()
+import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeIdToSlugMappingUseCase
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import java.util.UUID
 
-        tagsDao.deleteAll()
-        resourcesAndTagsCrossRefDao.deleteAll()
+class ResourceTypeIdToSlugMappingProvider(
+    private val resourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
+) {
+
+    private val perAccountMappings = mutableMapOf<String, Map<UUID, String>>()
+
+    suspend fun provideMappingForSelectedAccount(): Map<UUID, String> {
+        val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        return if (perAccountMappings.containsKey(selectedAccount)) {
+            perAccountMappings[selectedAccount]!!
+        } else {
+            resourceTypeIdToSlugMappingUseCase.execute(Unit).idToSlugMapping.also {
+                perAccountMappings[selectedAccount] = it
+            }
+        }
     }
 }

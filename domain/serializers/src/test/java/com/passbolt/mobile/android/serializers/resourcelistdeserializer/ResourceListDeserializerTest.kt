@@ -33,6 +33,8 @@ import com.passbolt.mobile.android.serializers.SupportedContentTypes
 import com.passbolt.mobile.android.serializers.gson.validation.PasswordAndDescriptionResourceValidation
 import com.passbolt.mobile.android.serializers.gson.validation.PasswordStringResourceValidation
 import com.passbolt.mobile.android.serializers.gson.validation.TotpResourceValidation
+import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -52,6 +54,13 @@ class ResourceListDeserializerTest : KoinTest {
     }
 
     private val gson: Gson by inject()
+
+    @Before
+    fun setup() {
+        mockGetSelectedAccountUseCase.stub {
+            onBlocking { execute(Unit) } doReturn GetSelectedAccountUseCase.Output("selectedAccountId")
+        }
+    }
 
     @Test
     fun `resources with invalid fields for password string type should be filtered`() {

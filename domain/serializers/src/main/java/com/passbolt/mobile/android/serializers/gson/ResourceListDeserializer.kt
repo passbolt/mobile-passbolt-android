@@ -26,7 +26,6 @@ package com.passbolt.mobile.android.serializers.gson
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
-import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.serializers.SupportedContentTypes
 import com.passbolt.mobile.android.serializers.gson.validation.ResourceValidationRunner
@@ -34,21 +33,12 @@ import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import java.lang.reflect.Type
+import java.util.UUID
 
 open class ResourceListDeserializer(
-    private val resourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val resourceValidationRunner: ResourceValidationRunner
 ) : JsonDeserializer<List<ResourceResponseDto>>, KoinComponent {
-
-    private val resourceTypeIdToSlugMapping by lazy {
-        // done on the parser thread
-        runBlocking { resourceTypeIdToSlugMappingUseCase.execute(Unit).idToSlugMapping }
-    }
-    private val supportedResourceTypesIds by lazy {
-        resourceTypeIdToSlugMapping
-            .filter { it.value in SupportedContentTypes.homeSlugs + SupportedContentTypes.totpSlugs }
-            .keys
-    }
 
     override fun deserialize(
         json: JsonElement?,
@@ -60,6 +50,15 @@ open class ResourceListDeserializer(
             return emptyList()
         }
 
+        // done on the parser thread
+        val resourceTypeIdToSlugMapping = runBlocking {
+            resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()
+        }
+
+        val supportedResourceTypesIds = resourceTypeIdToSlugMapping
+            .filter { it.value in SupportedContentTypes.homeSlugs + SupportedContentTypes.totpSlugs }
+            .keys
+
         return if (json.isJsonArray) {
             json.asJsonArray.mapNotNullTo(mutableListOf()) { jsonElement ->
                 if (!jsonElement.isJsonNull) {
@@ -67,7 +66,9 @@ open class ResourceListDeserializer(
                         jsonElement, ResourceResponseDto::class.java
                     )
 
-                    if (isSupported(resource) && isValid(resource)) {
+                    if (isSupported(resource, supportedResourceTypesIds) &&
+                        isValid(resource, resourceTypeIdToSlugMapping)
+                    ) {
                         resource
                     } else {
                         Timber.d("Invalid resource found id=(${resource.id}, skipping")
@@ -83,7 +84,7 @@ open class ResourceListDeserializer(
         }
     }
 
-    private fun isValid(resource: ResourceResponseDto): Boolean {
+    private fun isValid(resource: ResourceResponseDto, resourceTypeIdToSlugMapping: Map<UUID, String>): Boolean {
         val resourceTypeSlug = resourceTypeIdToSlugMapping[resource.resourceTypeId]
         return if (resourceTypeSlug != null) {
             resourceValidationRunner.isValid(resource, resourceTypeSlug)
@@ -92,6 +93,6 @@ open class ResourceListDeserializer(
         }
     }
 
-    private fun isSupported(resource: ResourceResponseDto) =
+    private fun isSupported(resource: ResourceResponseDto, supportedResourceTypesIds: Set<UUID>) =
         resource.resourceTypeId in supportedResourceTypesIds
 }

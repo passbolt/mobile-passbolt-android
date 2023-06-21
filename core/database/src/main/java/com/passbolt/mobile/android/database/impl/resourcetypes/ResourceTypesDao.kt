@@ -50,6 +50,6 @@ interface ResourceTypesDao : BaseDao<ResourceType> {
     suspend fun getResourceTypesIdToSlugMapping(): List<ResourceTypeIdToSlugMapping>
 
     @Transaction
-    @Query("DELETE FROM ResourceField")
+    @Query("DELETE FROM ResourceType")
     suspend fun deleteAll()
 }
