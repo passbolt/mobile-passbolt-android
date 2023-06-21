@@ -1,10 +1,3 @@
-package com.passbolt.mobile.android.ui
-
-import android.os.Parcelable
-import com.passbolt.mobile.android.common.search.Searchable
-import kotlinx.parcelize.Parcelize
-import java.time.ZonedDateTime
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,31 +21,12 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 
-// TODO move UI stuff do wrapper
-@Parcelize
-data class ResourceModel(
-    val resourceId: String,
-    val resourceTypeId: String,
-    val folderId: String?,
-    val name: String,
-    val username: String?,
-    val icon: String?,
-    val initials: String,
-    val url: String?,
-    val description: String?,
-    val permission: ResourcePermission,
-    val favouriteId: String?,
-    val modified: ZonedDateTime,
-    var loaderVisible: Boolean = false,
-    var clickable: Boolean = true,
-    override val searchCriteria: String = "$name$username$url"
-) : Parcelable, Searchable
+package com.passbolt.mobile.android.ui
 
-fun ResourceModel.isFavourite() = favouriteId != null
+import com.passbolt.mobile.android.common.search.Searchable
 
-data class ResourceModelWithAttributes(
+data class SelectableResourceModelWrapper(
     val resourceModel: ResourceModel,
-    val resourceTags: List<TagModel>,
-    val resourcePermissions: List<PermissionModel>,
-    val favouriteId: String?
-)
+    val isSelectable: Boolean,
+    val isSelected: Boolean
+) : Searchable by resourceModel

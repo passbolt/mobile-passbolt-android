@@ -148,6 +148,7 @@ dependencies {
     implementation project(':otp')
     implementation project(':otpcore')
     implementation project(':serializers')
+    implementation project(':resourcepicker')
 
     debugImplementation libs.quality.leakcanary
 

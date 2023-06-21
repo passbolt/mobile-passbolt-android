@@ -1,10 +1,3 @@
-package com.passbolt.mobile.android.ui
-
-import android.os.Parcelable
-import com.passbolt.mobile.android.common.search.Searchable
-import kotlinx.parcelize.Parcelize
-import java.time.ZonedDateTime
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,31 +21,32 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 
-// TODO move UI stuff do wrapper
-@Parcelize
-data class ResourceModel(
-    val resourceId: String,
-    val resourceTypeId: String,
-    val folderId: String?,
-    val name: String,
-    val username: String?,
-    val icon: String?,
-    val initials: String,
-    val url: String?,
-    val description: String?,
-    val permission: ResourcePermission,
-    val favouriteId: String?,
-    val modified: ZonedDateTime,
-    var loaderVisible: Boolean = false,
-    var clickable: Boolean = true,
-    override val searchCriteria: String = "$name$username$url"
-) : Parcelable, Searchable
+package com.passbolt.mobile.android.resourcepicker
 
-fun ResourceModel.isFavourite() = favouriteId != null
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
+import com.passbolt.mobile.android.ui.SelectableResourceModelWrapper
 
-data class ResourceModelWithAttributes(
-    val resourceModel: ResourceModel,
-    val resourceTags: List<TagModel>,
-    val resourcePermissions: List<PermissionModel>,
-    val favouriteId: String?
-)
+interface ResourcePickerContract {
+
+    interface View : DataRefreshViewReactiveContract.View {
+        fun showResources(
+            suggestedResources: List<SelectableResourceModelWrapper>,
+            resourceList: List<SelectableResourceModelWrapper>
+        )
+        fun showEmptyState()
+        fun hideEmptyState()
+        fun hideSearchEndIcon()
+        fun displaySearchClearEndIcon()
+        fun showDataRefreshError()
+        fun enableApplyButton()
+        fun clearSearchInput()
+    }
+
+    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
+        fun searchTextChanged(text: String)
+        fun searchClearClick()
+        fun argsRetrieved(suggestion: String)
+        fun refreshSwipe()
+        fun resourcePicked(selectableResourceModel: SelectableResourceModelWrapper, selected: Boolean)
+    }
+}

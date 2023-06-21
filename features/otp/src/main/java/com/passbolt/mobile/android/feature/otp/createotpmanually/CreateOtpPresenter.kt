@@ -242,6 +242,10 @@ class CreateOtpPresenter(
         )
     }
 
+    override fun linkToResourceClick() {
+        view?.navigateToResourcePicker(label)
+    }
+
     private companion object {
         private const val LABEL_MAX_LENGTH = 255
         private const val ISSUER_MAX_LENGTH = 255
