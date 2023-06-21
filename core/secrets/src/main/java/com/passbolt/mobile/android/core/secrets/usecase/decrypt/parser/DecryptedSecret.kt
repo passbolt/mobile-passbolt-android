@@ -47,4 +47,10 @@ sealed class DecryptedSecret(val password: String) {
             val period: Long
         )
     }
+
+    class PasswordDescriptionTotp(
+        password: String,
+        val description: String,
+        val totp: StandaloneTotp.Totp
+    ) : DecryptedSecret(password)
 }

@@ -259,16 +259,16 @@ class OtpPresenter(
             ) { label, otp ->
                 view?.apply {
                     val otpParameters = totpParametersProvider.provideOtpParameters(
-                        secretKey = otp.totp.key,
-                        digits = otp.totp.digits,
-                        period = otp.totp.period,
-                        algorithm = otp.totp.algorithm
+                        secretKey = otp.key,
+                        digits = otp.digits,
+                        period = otp.period,
+                        algorithm = otp.algorithm
                     )
 
                     val newOtp = otpListItemWrapper.copy(
                         otpValue = otpParameters.otpValue,
                         isVisible = true,
-                        otpExpirySeconds = otp.totp.period,
+                        otpExpirySeconds = otp.period,
                         remainingSecondsCounter = otpParameters.secondsValid,
                         isRefreshing = false
                     )
@@ -358,10 +358,10 @@ class OtpPresenter(
             ) { label, otp ->
                 view?.apply {
                     val otpParameters = totpParametersProvider.provideOtpParameters(
-                        secretKey = otp.totp.key,
-                        digits = otp.totp.digits,
-                        period = otp.totp.period,
-                        algorithm = otp.totp.algorithm
+                        secretKey = otp.key,
+                        digits = otp.digits,
+                        period = otp.period,
+                        algorithm = otp.algorithm
                     )
 
                     view?.copySecretToClipBoard(label, otpParameters.otpValue)
@@ -450,11 +450,11 @@ class OtpPresenter(
                         currentOtpItemForMenu!!.otp.resourceId,
                         currentOtpItemForMenu!!.otp.parentFolderId,
                         currentOtpItemForMenu!!.otp.name,
-                        otp.totp.key,
+                        otp.key,
                         currentOtpItemForMenu!!.otp.url,
-                        otp.totp.algorithm,
-                        otp.totp.digits,
-                        otp.totp.period
+                        otp.algorithm,
+                        otp.digits,
+                        otp.period
                     )
                 )
             }

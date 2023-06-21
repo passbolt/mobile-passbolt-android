@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.dto.response.PermissionDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.serializers.SupportedContentTypes
 import com.passbolt.mobile.android.serializers.gson.validation.PasswordAndDescriptionResourceValidation
+import com.passbolt.mobile.android.serializers.gson.validation.PasswordDescriptionTotpResourceValidation
 import com.passbolt.mobile.android.serializers.gson.validation.PasswordStringResourceValidation
 import com.passbolt.mobile.android.serializers.gson.validation.TotpResourceValidation
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -149,6 +150,39 @@ class ResourceListDeserializerTest : KoinTest {
                 TotpResourceValidation.TOTP_URI_MAX_LENGTH + 1,
                 testedResourceTypeUuid
             ),
+        )
+
+        val listJson = gson.toJson(invalidResources)
+        val resulList = gson.fromJson<List<ResourceResponseDto>>(
+            listJson,
+            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type
+        )
+
+        assertThat(resulList).isEmpty()
+    }
+
+    @Test
+    fun `resources with invalid fields for password description totp type should be filtered`() {
+        mockIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG)
+                )
+            )
+        }
+        val invalidResources = listOf(
+            resourceWithNameOfLength(
+                PasswordDescriptionTotpResourceValidation.PASSWORD_DESCRIPTION_TOTP_NAME_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            ),
+            resourceWithUriOfLength(
+                PasswordDescriptionTotpResourceValidation.PASSWORD_DESCRIPTION_TOTP_URI_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            ),
+            resourceWithUsernameOfLength(
+                PasswordDescriptionTotpResourceValidation.PASSWORD_DESCRIPTION_TOTP_USERNAME_MAX_LENGTH + 1,
+                testedResourceTypeUuid
+            )
         )
 
         val listJson = gson.toJson(invalidResources)
