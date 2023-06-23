@@ -396,7 +396,7 @@ class OtpPresenter(
     }
 
     private fun refreshData() {
-        view?.initRefresh()
+        fullDataRefreshExecutor.performFullDataRefresh()
         refreshInProgress = true
         view?.hideCreateButton()
     }

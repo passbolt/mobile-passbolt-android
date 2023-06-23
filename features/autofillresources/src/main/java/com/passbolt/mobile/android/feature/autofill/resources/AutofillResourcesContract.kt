@@ -45,9 +45,8 @@ interface AutofillResourcesContract {
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
-        fun argsReceived(uri: String?)
+        fun argsReceived(uri: String?, isRecreated: Boolean)
         fun userAuthenticated()
-        fun performFullDataRefresh()
         fun itemClick(resourceModel: ResourceModel)
         fun newResourceCreated(resourceId: String)
     }

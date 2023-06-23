@@ -45,6 +45,6 @@ interface ResourceTypesDao : BaseDao<ResourceType> {
     suspend fun isResourceTypeSupported(slug: String): Boolean
 
     @Transaction
-    @Query("DELETE FROM ResourceField")
+    @Query("DELETE FROM ResourceType")
     suspend fun deleteAll()
 }

@@ -1,3 +1,6 @@
+# Passbolt 1.14.1-23 Android app release notes
+
+## Fixed
 - Fixed a race condition that could happen when scanning a TOTP QR code reported on the community forum
 - Fixed couple of crashes reported in Play Store
 - Fixed error when non-standard API response was received

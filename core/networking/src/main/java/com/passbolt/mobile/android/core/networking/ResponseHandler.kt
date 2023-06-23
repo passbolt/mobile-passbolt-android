@@ -106,10 +106,10 @@ inline fun <T : Any> callWithLibraryResponseHandler(
         responseHandler.handleSuccess(response)
     } else {
         try {
-            val errorResponse = requireNotNull(responseHandler.parseErrorResponseBody(response))
+            val errorResponse = responseHandler.parseErrorResponseBody(response)
             NetworkResult.Failure.ServerError(
                 exception = IOException("There was an error during API invocation"),
-                errorCode = errorResponse.header.code,
+                errorCode = response.code(),
                 headerMessage = responseHandler.getHeaderMessage(errorResponse),
                 mfaStatus = responseHandler.checkIfMfaRequired(errorResponse)
             )

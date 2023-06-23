@@ -75,7 +75,6 @@ interface HomeContract {
         fun showBackArrow()
         fun hideBackArrow()
         fun navigateToRootHomeFromChildHome(homeView: HomeDisplayViewModel)
-        fun performRefreshUsingRefreshExecutor()
         fun navigateRootHomeFromRootHome(homeView: HomeDisplayViewModel)
         fun navigateToCreateResource(parentFolderId: String?)
         fun showChildFolderTitle(activeFolderName: String, isShared: Boolean)

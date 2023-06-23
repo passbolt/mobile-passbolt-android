@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.feature.main.mainscreen
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus.Finished
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
@@ -52,7 +51,6 @@ class MainPresenter(
     }
 
     override fun performFullDataRefresh() {
-        fullDataRefreshExecutor.attach(this@MainPresenter as BaseAuthenticatedPresenter<BaseAuthenticatedContract.View>)
         fullDataRefreshExecutor.performFullDataRefresh()
         scope.launch {
             fullDataRefreshExecutor.dataRefreshStatusFlow.collectLatest {
@@ -66,7 +64,6 @@ class MainPresenter(
     }
 
     override fun detach() {
-        fullDataRefreshExecutor.detach()
         scope.coroutineContext.cancelChildren()
         super<BaseAuthenticatedPresenter>.detach()
     }

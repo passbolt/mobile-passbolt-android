@@ -35,6 +35,11 @@ class RemoveLocalTagsUseCase(
             .get(input.userId)
             .tagsDao()
 
+        val resourcesAndTagsCrossRefDao = databaseProvider
+            .get(input.userId)
+            .resourcesAndTagsCrossRefDao()
+
         tagsDao.deleteAll()
+        resourcesAndTagsCrossRefDao.deleteAll()
     }
 }

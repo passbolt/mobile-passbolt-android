@@ -333,7 +333,8 @@ class HomePresenter(
                             val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
                             val itemUrl = it.url
                             if (!autofillUrl.isNullOrBlank() && !itemUrl.isNullOrBlank()) {
-                                domainProvider.getHost(itemUrl) == domainProvider.getHost(autofillUrl)
+                                val itemDomain = domainProvider.getHost(itemUrl)
+                                (!itemDomain.isNullOrBlank()) && (itemDomain == domainProvider.getHost(autofillUrl))
                             } else {
                                 false
                             }
@@ -587,7 +588,7 @@ class HomePresenter(
         refreshInProgress = true
         view?.apply {
             hideAddButton()
-            performRefreshUsingRefreshExecutor()
+            fullDataRefreshExecutor.performFullDataRefresh()
         }
     }
 
@@ -694,7 +695,7 @@ class HomePresenter(
 
     private fun initRefresh() {
         refreshInProgress = true
-        view?.performRefreshUsingRefreshExecutor()
+        fullDataRefreshExecutor.performFullDataRefresh()
     }
 
     override fun menuEditClick() {

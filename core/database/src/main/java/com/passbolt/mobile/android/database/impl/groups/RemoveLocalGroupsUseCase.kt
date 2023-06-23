@@ -31,9 +31,15 @@ class RemoveLocalGroupsUseCase(
 ) : AsyncUseCase<UserIdInput, Unit> {
 
     override suspend fun execute(input: UserIdInput) {
-        databaseProvider
+        val groupsDao = databaseProvider
             .get(input.userId)
             .groupsDao()
-            .deleteAll()
+
+        val usersAndGroupsCrossRefDao = databaseProvider
+            .get(input.userId)
+            .usersAndGroupsCrossRefDao()
+
+        groupsDao.deleteAll()
+        usersAndGroupsCrossRefDao.deleteAll()
     }
 }

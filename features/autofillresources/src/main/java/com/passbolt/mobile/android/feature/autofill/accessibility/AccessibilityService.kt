@@ -102,7 +102,7 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
         if (!powerManager.isInteractive) {
             return
         }
-        if (accessibilityOperationsProvider.shouldSkipPackage(event?.packageName.toString())) {
+        if (accessibilityOperationsProvider.shouldSkipPackage(event?.packageName?.toString())) {
             if (event?.packageName != SYSTEM_UI_PACKAGE) {
                 hideOverlay()
             }
@@ -123,7 +123,9 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
         val root = rootInActiveWindow
         if (AccessibilityCommunicator.lastCredentials == null) {
             Timber.d("Last credentials are null - ignoring event")
-        } else if (event.source == null || event.packageName.contains(PASSBOLT_PACKAGE)) {
+        } else if (event.source == null ||
+            (event.packageName != null && event.packageName.contains(PASSBOLT_PACKAGE))
+        ) {
             Timber.d("Event source is null or package is Passbolt - hiding overlay")
             hideOverlay()
         } else if (root == null || root.packageName != event.packageName) {
@@ -136,7 +138,9 @@ class AccessibilityService : AccessibilityService(), KoinComponent {
 
     private fun viewClicked(event: AccessibilityEvent) {
         val root = rootInActiveWindow
-        if (event.source == null || event.packageName.contains(PASSBOLT_PACKAGE)) {
+        if (event.source == null ||
+            (event.packageName != null && event.packageName.contains(PASSBOLT_PACKAGE))
+        ) {
             Timber.d("Event source is null or package is Passbolt - hiding overlay")
             hideOverlay()
             return
