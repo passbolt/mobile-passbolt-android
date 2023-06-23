@@ -262,6 +262,80 @@
                     app:layout_constraintTop_toBottomOf="@+id/descriptionValue" />
 
                 <TextView
+                    android:id="@+id/totpHeader"
+                    style="@style/Heading"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_24"
+                    android:layout_marginEnd="@dimen/dp_8"
+                    android:text="@string/resource_details_totp_header"
+                    android:textAllCaps="true"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/sp_12"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toStartOf="@id/passwordIcon"
+                    app:layout_constraintStart_toStartOf="@+id/guideline"
+                    app:layout_constraintTop_toBottomOf="@+id/seeDescriptionButton" />
+
+                <TextView
+                    android:id="@+id/totpValue"
+                    style="@style/SecretText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:layout_marginEnd="@dimen/dp_8"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/inconsolata"
+                    android:maxLines="1"
+                    android:text="@string/otp_hide_otp"
+                    android:textColor="@color/text_secondary"
+                    android:textFontWeight="400"
+                    android:textSize="@dimen/sp_24"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="@+id/guideline"
+                    app:layout_constraintTop_toBottomOf="@+id/totpHeader" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/totpProgress"
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:visibility="gone"
+                    app:indicatorDirectionCircular="clockwise"
+                    app:indicatorSize="@dimen/dp_20"
+                    app:layout_constraintStart_toEndOf="@id/totpValue"
+                    app:layout_constraintTop_toBottomOf="@id/totpValue"
+                    app:layout_constraintTop_toTopOf="@id/totpValue"
+                    app:layout_goneMarginStart="@dimen/dp_16"
+                    app:trackColor="#40000000"
+                    app:trackThickness="3dp" />
+
+                <ImageView
+                    android:id="@+id/generationInProgress"
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:src="@drawable/ic_refresh"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toEndOf="@id/totpValue"
+                    app:layout_constraintTop_toBottomOf="@id/totpValue"
+                    app:layout_constraintTop_toTopOf="@id/totpValue"
+                    app:layout_goneMarginStart="@dimen/dp_16" />
+
+                <ImageView
+                    android:id="@+id/totpIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/dp_12"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_eye_visible"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/totpValue"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/totpHeader"
+                    app:tint="@color/icon_tint" />
+
+                <TextView
                     android:id="@+id/tagsHeader"
                     style="@style/Heading"
                     android:layout_width="0dp"
@@ -274,7 +348,7 @@
                     app:drawableTint="@color/icon_tint"
                     app:layout_constraintEnd_toStartOf="@id/tagsNavIcon"
                     app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/seeDescriptionButton" />
+                    app:layout_constraintTop_toBottomOf="@+id/totpValue" />
 
                 <TextView
                     android:id="@+id/tagsValue"
