@@ -58,7 +58,6 @@ import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
-import com.passbolt.mobile.android.feature.home.screen.HomeDataRefreshExecutor
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
@@ -361,10 +360,6 @@ class OtpFragment :
         confirmTotpDeletionAlertDialog(requireContext()) {
             presenter.topDeletionConfirmed()
         }.show()
-    }
-
-    override fun initRefresh() {
-        (activity as HomeDataRefreshExecutor).performFullDataRefresh()
     }
 
     override fun showResourceDeleted() {

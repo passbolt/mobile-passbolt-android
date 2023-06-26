@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.common
 
+import timber.log.Timber
 import java.net.URL
 
 /**
@@ -26,15 +27,20 @@ import java.net.URL
  */
 class DomainProvider {
 
-    fun getHost(url: String): String =
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            URL("http://$url").host
-        } else {
-            val host = URL(url).host
-            if (!host.startsWith("www.")) {
-                "www.${URL(url).host}"
+    fun getHost(url: String): String? =
+        try {
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                URL("http://$url").host
             } else {
-                host
+                val host = URL(url).host
+                if (!host.startsWith("www.")) {
+                    "www.${URL(url).host}"
+                } else {
+                    host
+                }
             }
+        } catch (exception: Exception) {
+            Timber.e(exception, "Error during URL parsing")
+            null
         }
 }

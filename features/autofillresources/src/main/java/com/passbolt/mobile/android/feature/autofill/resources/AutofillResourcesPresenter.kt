@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.feature.autofill.resources
 
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
-import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
@@ -58,34 +57,25 @@ class AutofillResourcesPresenter(
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    override fun attach(view: AutofillResourcesContract.View) {
-        super<BaseAuthenticatedPresenter>.attach(view)
-        if (getAccountsUseCase.execute(Unit).users.isNotEmpty()) {
-            view.navigateToAuth()
-        } else {
-            view.navigateToSetup()
-        }
-    }
-
     override fun detach() {
         scope.coroutineContext.cancelChildren()
         super<BaseAuthenticatedPresenter>.detach()
     }
 
-    override fun argsReceived(uri: String?) {
+    override fun argsReceived(uri: String?, isRecreated: Boolean) {
         this.uri = uri
+        if (!isRecreated) {
+            if (getAccountsUseCase.execute(Unit).users.isNotEmpty()) {
+                view?.navigateToAuth()
+            } else {
+                view?.navigateToSetup()
+            }
+        }
     }
 
     override fun userAuthenticated() {
         view?.navigateToAutofillHome()
-        performFullDataRefresh()
-    }
-
-    override fun performFullDataRefresh() {
-        with(fullDataRefreshExecutor) {
-            this.attach(this@AutofillResourcesPresenter as BaseAuthenticatedPresenter<BaseAuthenticatedContract.View>)
-            this.performFullDataRefresh()
-        }
+        fullDataRefreshExecutor.performFullDataRefresh()
     }
 
     override fun itemClick(resourceModel: ResourceModel) {

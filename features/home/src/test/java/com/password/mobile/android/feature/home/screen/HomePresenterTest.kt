@@ -190,7 +190,7 @@ class HomePresenterTest : KoinTest {
             )
         )
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(refreshFlow)
-        whenever(view.performRefreshUsingRefreshExecutor()).then {
+        whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
             refreshFlow.tryEmit(
                 DataRefreshStatus.Finished(
                     HomeDataInteractor.Output.Success
@@ -211,7 +211,6 @@ class HomePresenterTest : KoinTest {
         presenter.refreshSwipe()
 
 
-        verify(view).performRefreshUsingRefreshExecutor()
         verify(view, times(2)).hideAddButton()
         verify(view).hideRefreshProgress()
         verify(view, times(3)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
@@ -319,7 +318,7 @@ class HomePresenterTest : KoinTest {
         whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
-        whenever(view.performRefreshUsingRefreshExecutor()).then {
+        whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
             refreshFlow.tryEmit(
                 DataRefreshStatus.Finished(
                     HomeDataInteractor.Output.Failure(AuthenticationState.Authenticated)
@@ -339,7 +338,6 @@ class HomePresenterTest : KoinTest {
         presenter.refreshClick()
         presenter.resume(view)
 
-        verify(view).performRefreshUsingRefreshExecutor()
         verify(view).hideBackArrow()
         verify(view).hideAddButton()
         verify(view).hideRefreshProgress()

@@ -418,14 +418,14 @@ class OtpPresenter(
     }
 
     private fun refreshData() {
-        view?.initRefresh()
+        fullDataRefreshExecutor.performFullDataRefresh()
         refreshInProgress = true
         view?.hideCreateButton()
     }
 
     override fun otpUpdated() {
         view?.showOtpUpdate()
-        view?.initRefresh()
+        refreshData()
     }
 
     override fun menuEditByQrScanClick() {
@@ -491,7 +491,7 @@ class OtpPresenter(
                                 UpdateLocalResourceUseCase.Input(editResourceResult.resource)
                             )
                             view?.showOtpUpdate()
-                            view?.initRefresh()
+                            refreshData()
                         }
                         is UpdateStandaloneTotpResourceUseCase.Output.Failure<*> ->
                             view?.showError(editResourceResult.response.exception.message.orEmpty())

@@ -168,7 +168,7 @@ class AccessibilityOperationsProvider(
 
     fun getOverlayAnchorPosition(
         anchorNode: AccessibilityNodeInfo?,
-        root: AccessibilityNodeInfo,
+        root: AccessibilityNodeInfo?,
         windows: List<AccessibilityWindowInfo>?,
         overlayViewHeight: Int,
         isOverlayAboveAnchor: Boolean
@@ -190,7 +190,7 @@ class AccessibilityOperationsProvider(
 
     private fun countOverlayPosition(
         anchorNode: AccessibilityNodeInfo,
-        root: AccessibilityNodeInfo,
+        root: AccessibilityNodeInfo?,
         overlayViewHeight: Int,
         isOverlayAboveAnchor: Boolean,
         inputMethodHeight: Int

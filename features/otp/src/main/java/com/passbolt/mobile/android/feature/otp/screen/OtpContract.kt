@@ -55,7 +55,6 @@ interface OtpContract {
         fun showConfirmDeleteDialog()
         fun showFailedToDeleteResource()
         fun showResourceDeleted()
-        fun initRefresh()
         fun showNewOtpCreated()
         fun navigateToEditOtpMenu()
         fun showProgress()

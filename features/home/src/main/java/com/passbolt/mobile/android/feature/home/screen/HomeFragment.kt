@@ -785,10 +785,6 @@ class HomeFragment :
         )
     }
 
-    override fun performRefreshUsingRefreshExecutor() {
-        (activity as HomeDataRefreshExecutor).performFullDataRefresh()
-    }
-
     override fun showBackArrow() {
         binding.backButton.visible()
     }
