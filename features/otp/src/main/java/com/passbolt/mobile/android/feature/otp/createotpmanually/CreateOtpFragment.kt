@@ -30,9 +30,12 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
@@ -71,6 +74,7 @@ class CreateOtpFragment :
         with(binding) {
             toolbar.toolbarTitle = getString(R.string.otp_edit_title)
             mainButton.text = getString(R.string.save)
+            linkToButton.gone()
         }
     }
 
@@ -78,6 +82,7 @@ class CreateOtpFragment :
         with(binding) {
             toolbar.toolbarTitle = getString(R.string.otp_create_totp_title)
             mainButton.text = getString(R.string.otp_create_totp_create_standalone)
+            linkToButton.visible()
         }
     }
 
@@ -102,6 +107,9 @@ class CreateOtpFragment :
             }
             mainButton.setDebouncingOnClick {
                 presenter.mainButtonClick()
+            }
+            linkToButton.setDebouncingOnClick {
+                presenter.linkToResourceClick()
             }
         }
     }
@@ -192,6 +200,12 @@ class CreateOtpFragment :
             totpIssuerInput.text = issuer
             totpSecretInput.text = secret
         }
+    }
+
+    override fun navigateToResourcePicker(suggestion: String) {
+        findNavController().navigate(
+            NavDeepLinkProvider.resourceResourcePickerDeepLinkRequest(suggestion)
+        )
     }
 
     companion object {

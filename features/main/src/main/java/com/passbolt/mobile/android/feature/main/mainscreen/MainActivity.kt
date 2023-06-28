@@ -137,7 +137,8 @@ class MainActivity :
             R.id.scanOtpFragment,
             R.id.createOtpManuallyFragment,
             R.id.createOtpAdvancedSettingsFragment,
-            R.id.scanOtpSuccessFragment
+            R.id.scanOtpSuccessFragment,
+            R.id.resourcePickerFragment
         )
     }
 }

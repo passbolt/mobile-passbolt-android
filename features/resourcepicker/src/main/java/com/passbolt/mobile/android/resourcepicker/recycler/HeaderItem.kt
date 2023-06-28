@@ -1,10 +1,3 @@
-package com.passbolt.mobile.android.ui
-
-import android.os.Parcelable
-import com.passbolt.mobile.android.common.search.Searchable
-import kotlinx.parcelize.Parcelize
-import java.time.ZonedDateTime
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,31 +21,34 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 
-// TODO move UI stuff do wrapper
-@Parcelize
-data class ResourceModel(
-    val resourceId: String,
-    val resourceTypeId: String,
-    val folderId: String?,
-    val name: String,
-    val username: String?,
-    val icon: String?,
-    val initials: String,
-    val url: String?,
-    val description: String?,
-    val permission: ResourcePermission,
-    val favouriteId: String?,
-    val modified: ZonedDateTime,
-    var loaderVisible: Boolean = false,
-    var clickable: Boolean = true,
-    override val searchCriteria: String = "$name$username$url"
-) : Parcelable, Searchable
+package com.passbolt.mobile.android.resourcepicker.recycler
 
-fun ResourceModel.isFavourite() = favouriteId != null
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.passbolt.mobile.android.resourcepicker.R
+import com.passbolt.mobile.android.resourcepicker.databinding.ItemHeaderBinding
+import com.passbolt.mobile.android.resourcepicker.model.HeaderType
 
-data class ResourceModelWithAttributes(
-    val resourceModel: ResourceModel,
-    val resourceTags: List<TagModel>,
-    val resourcePermissions: List<PermissionModel>,
-    val favouriteId: String?
-)
+class HeaderItem(
+    private val headerType: HeaderType
+) : AbstractBindingItem<ItemHeaderBinding>() {
+
+    override val type: Int
+        get() = R.id.itemHeader
+
+    override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?) =
+        ItemHeaderBinding.inflate(inflater, parent, false)
+
+    override fun bindView(binding: ItemHeaderBinding, payloads: List<Any>) {
+        super.bindView(binding, payloads)
+        with(binding) {
+            title.text = title.context.getString(
+                when (headerType) {
+                    HeaderType.OTHER -> R.string.other
+                    HeaderType.SUGGESTED -> R.string.suggested
+                }
+            )
+        }
+    }
+}

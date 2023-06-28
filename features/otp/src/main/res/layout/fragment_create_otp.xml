@@ -80,6 +80,21 @@
                 android:layout_marginBottom="@dimen/dp_16"
                 tools:text="@string/otp_create_totp_create_standalone" />
 
+            <TextView
+                android:id="@+id/linkToButton"
+                style="@style/ButtonSmallText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/dp_32"
+                android:background="?selectableItemBackground"
+                android:padding="@dimen/dp_16"
+                android:text="@string/otp_create_totp_link_to_password"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
         </LinearLayout>
 
     </ScrollView>
