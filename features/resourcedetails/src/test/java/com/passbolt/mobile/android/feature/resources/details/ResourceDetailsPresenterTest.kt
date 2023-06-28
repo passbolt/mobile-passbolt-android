@@ -13,11 +13,13 @@ import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationU
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
+import com.passbolt.mobile.android.serializers.SupportedContentTypes
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.GroupModel
@@ -40,12 +42,14 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -126,6 +130,13 @@ class ResourceDetailsPresenterTest : KoinTest {
                 )
             )
         }
+        mockGetResourceTypeIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG)
+                )
+            )
+        }
         presenter.attach(view)
     }
 
@@ -150,7 +161,28 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showDescription(RESOURCE_MODEL.description!!, useSecretFont = false)
         verify(view, times(2)).showFolderLocation(emptyList())
         verify(view).hideRefreshProgress()
+        verify(view, never()).showTotpSection()
         verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `top should show on appropriate content type`() {
+        mockGetResourceTypeIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG)
+                )
+            )
+        }
+
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
+        presenter.resume(view)
+
+        verify(view, times(2)).showTotpSection()
     }
 
     @Test
@@ -207,7 +239,8 @@ class ResourceDetailsPresenterTest : KoinTest {
         }
         whenever(mockSecretParser.extractPassword(any(), any()))
             .doReturn(
-                DecryptedSecretOrError.DecryptedSecret(String(DECRYPTED_SECRET)))
+                DecryptedSecretOrError.DecryptedSecret(String(DECRYPTED_SECRET))
+            )
 
         presenter.argsReceived(
             RESOURCE_MODEL.resourceId,
@@ -376,9 +409,9 @@ class ResourceDetailsPresenterTest : KoinTest {
         private const val USERNAME = "username"
         private const val INITIALS = "NN"
         private const val URL = "https://www.passbolt.com"
-        private const val ID = "id"
+        private val ID = UUID.randomUUID().toString()
         private const val DESCRIPTION = "desc"
-        private const val RESOURCE_TYPE_ID = "resTypeId"
+        private val RESOURCE_TYPE_ID = UUID.randomUUID().toString()
         private const val FOLDER_ID_ID = "folderId"
         private val RESOURCE_MODEL = ResourceModel(
             ID,

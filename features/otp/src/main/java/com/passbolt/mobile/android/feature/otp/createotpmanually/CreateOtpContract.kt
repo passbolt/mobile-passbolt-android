@@ -45,6 +45,7 @@ interface CreateOtpContract {
         fun navigateToOtpListInUpdateFlow(otpUpdated: Boolean)
         fun setupEditUi()
         fun setupCreateUi()
+        fun navigateToResourcePicker(suggestion: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -55,5 +56,6 @@ interface CreateOtpContract {
         fun totpSecretChanged(secret: String)
         fun totpIssuerChanged(issuer: String)
         fun argsRetrieved(editedOtpData: OtpResourceModel?)
+        fun linkToResourceClick()
     }
 }

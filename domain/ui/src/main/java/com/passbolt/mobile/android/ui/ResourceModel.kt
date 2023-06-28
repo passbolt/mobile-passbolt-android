@@ -28,6 +28,7 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 
+// TODO move UI stuff do wrapper
 @Parcelize
 data class ResourceModel(
     val resourceId: String,

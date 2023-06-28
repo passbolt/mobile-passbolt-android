@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.FetchSecretUseCa
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordAndDescriptionSecretValidation
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordDescriptionTotpSecretValidation
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordStringSecretValidation
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.SecretValidationRunner
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.TotpSecretValidation
@@ -43,4 +44,5 @@ val secretsModule = module {
     singleOf(::PasswordStringSecretValidation)
     singleOf(::PasswordAndDescriptionSecretValidation)
     singleOf(::TotpSecretValidation)
+    singleOf(::PasswordDescriptionTotpSecretValidation)
 }

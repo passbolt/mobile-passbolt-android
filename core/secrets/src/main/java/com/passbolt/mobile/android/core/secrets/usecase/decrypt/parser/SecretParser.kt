@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.google.gson.Gson
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
@@ -78,6 +79,23 @@ class SecretParser(
             STANDALONE_TOTP -> {
                 throw IllegalArgumentException("Standalone totp resource type does not contain password secret")
             }
+            PASSWORD_DESCRIPTION_TOTP -> {
+                try {
+                    val parsedSecret =
+                        gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordDescriptionTotp::class.java)
+                    if (secretValidationRunner.isPasswordDescriptionTotpSecretValid(parsedSecret)) {
+                        DecryptedSecretOrError.DecryptedSecret(parsedSecret.password)
+                    } else {
+                        val errorMessage = "Invalid secret in password description totp resource type"
+                        Timber.e(errorMessage)
+                        DecryptedSecretOrError.Error.ValidationError(errorMessage)
+                    }
+                } catch (exception: Exception) {
+                    val errorMessage = "Error during secret parsing: ${exception.message}"
+                    Timber.e(exception, errorMessage)
+                    DecryptedSecretOrError.Error.ParsingError(errorMessage)
+                }
+            }
         }
     }
 
@@ -109,13 +127,30 @@ class SecretParser(
             STANDALONE_TOTP -> {
                 throw IllegalArgumentException("Standalone totp resource type does not contain description secret")
             }
+            PASSWORD_DESCRIPTION_TOTP -> {
+                try {
+                    val parsedSecret =
+                        gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordDescriptionTotp::class.java)
+                    if (secretValidationRunner.isPasswordDescriptionTotpSecretValid(parsedSecret)) {
+                        DecryptedSecretOrError.DecryptedSecret(parsedSecret.description)
+                    } else {
+                        val errorMessage = "Invalid secret in password description totp resource type"
+                        Timber.e(errorMessage)
+                        DecryptedSecretOrError.Error.ValidationError(errorMessage)
+                    }
+                } catch (exception: Exception) {
+                    val errorMessage = "Error during secret parsing: ${exception.message}"
+                    Timber.e(exception, errorMessage)
+                    DecryptedSecretOrError.Error.ParsingError(errorMessage)
+                }
+            }
         }
     }
 
     fun extractTotpData(
         resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum,
         decryptedSecret: ByteArray
-    ): DecryptedSecretOrError<DecryptedSecret.StandaloneTotp> {
+    ): DecryptedSecretOrError<DecryptedSecret.StandaloneTotp.Totp> {
         return when (resourceTypeEnum) {
             SIMPLE_PASSWORD -> {
                 throw IllegalArgumentException("Simple password resource type does not contain totp data")
@@ -128,9 +163,24 @@ class SecretParser(
                     val parsedSecret =
                         gson.fromJson(String(decryptedSecret), DecryptedSecret.StandaloneTotp::class.java)
                     if (secretValidationRunner.isTotpSecretValid(parsedSecret)) {
-                        DecryptedSecretOrError.DecryptedSecret(parsedSecret)
+                        DecryptedSecretOrError.DecryptedSecret(parsedSecret.totp)
                     } else {
                         val errorMessage = "Invalid secret in totp resource type"
+                        Timber.e(errorMessage)
+                        DecryptedSecretOrError.Error.ValidationError(errorMessage)
+                    }
+                } catch (exception: Exception) {
+                    DecryptedSecretOrError.Error.ParsingError("Error during secret parsing: ${exception.message}")
+                }
+            }
+            PASSWORD_DESCRIPTION_TOTP -> {
+                try {
+                    val parsedSecret =
+                        gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordDescriptionTotp::class.java)
+                    if (secretValidationRunner.isPasswordDescriptionTotpSecretValid(parsedSecret)) {
+                        DecryptedSecretOrError.DecryptedSecret(parsedSecret.totp)
+                    } else {
+                        val errorMessage = "Invalid secret in password description totp resource type"
                         Timber.e(errorMessage)
                         DecryptedSecretOrError.Error.ValidationError(errorMessage)
                     }

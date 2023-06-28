@@ -1,3 +1,33 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
+/**
+ * Presenter responsible for managing the home resource list. The general flow is to fetch resources and resource types
+ * from the backend on start and update the database. Then when applying different views (all, favourite,
+ * shared with me, etc.) the reload is done from the database only. To refresh from backend again users can do the
+ * swipe to refresh gesture.
+ */
+
 package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.common.DomainProvider
@@ -48,35 +78,6 @@ import org.koin.core.parameter.parametersOf
 import org.koin.core.scope.Scope
 import timber.log.Timber
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-
-/**
- * Presenter responsible for managing the home resource list. The general flow is to fetch resources and resource types
- * from the backend on start and update the database. Then when applying different views (all, favourite,
- * shared with me, etc.) the reload is done from the database only. To refresh from backend again users can do the
- * swipe to refresh gesture.
- */
 @Suppress("TooManyFunctions", "LargeClass") // TODO MOB-321
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
@@ -103,8 +104,6 @@ class HomePresenter(
     override var view: HomeContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private val dataRefreshJob = SupervisorJob()
-    private val dataRefreshScope = CoroutineScope(dataRefreshJob + coroutineLaunchContext.ui)
     private val filteringJob = SupervisorJob()
     private val filteringScope = CoroutineScope(filteringJob + coroutineLaunchContext.ui)
     override val scope: Scope
@@ -371,7 +370,6 @@ class HomePresenter(
     }
 
     override fun detach() {
-        dataRefreshScope.coroutineContext.cancelChildren()
         filteringScope.coroutineContext.cancelChildren()
         coroutineScope.coroutineContext.cancelChildren()
         scope.close()

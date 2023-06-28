@@ -78,4 +78,6 @@
             android:name="scannedTotp"
             app:argType="com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult$OtpQr$TotpQr" />
     </fragment>
+
+    <include app:graph="@navigation/resource_picker" />
 </navigation>

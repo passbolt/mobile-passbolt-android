@@ -248,6 +248,7 @@
 
     <string name="resource_details_username_header">Username</string>
     <string name="resource_details_password_header">Password</string>
+    <string name="resource_details_totp_header">Totp</string>
     <string name="resource_details_url_header">Website URL</string>
     <string name="resource_details_description_header">Description</string>
     <string name="resource_details_tags_header">Tags</string>
@@ -482,6 +483,7 @@
     <string name="otp_create_totp_field_secret_hint">Secret</string>
     <string name="otp_create_totp_advanced_settings">Advanced settings</string>
     <string name="otp_create_totp_create_standalone">Create a standalone TOTP</string>
+    <string name="otp_create_totp_link_to_password">Link TOTP to a password</string>
 
     <string name="otp_create_totp_expert_settings_title">TOTP - advanced settings</string>
     <string name="otp_create_totp_expert_settings_expiry">TOTP expiry</string>
@@ -494,6 +496,8 @@
 
     <string name="otp_create_success">Your TOTP has been scanned!</string>
     <string name="otp_otp_updated">TOTP successfully replaced.</string>
+
+    <string name="resource_picker_title">Add TOTP to a password</string>
 
     <!--
     arrays can be inconsistent when in other languages

@@ -38,6 +38,7 @@ dependencies {
     implementation project(':users')
     implementation project(':serializers')
     implementation project(':networking')
+    implementation project(':resourcepicker')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

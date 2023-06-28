@@ -46,7 +46,7 @@ class DefaultFilterFragment :
     private val presenter: DefaultFilterContract.Presenter by inject()
     private val fastAdapter: FastAdapter<DefaultFilterItem> by inject()
     private val itemAdapter: ItemAdapter<DefaultFilterItem> by inject()
-    private val defalutFilterSelectedListener = object : ISelectionListener<DefaultFilterItem> {
+    private val defaultFilterSelectedListener = object : ISelectionListener<DefaultFilterItem> {
         override fun onSelectionChanged(item: DefaultFilterItem, selected: Boolean) {
             presenter.defaultFilterSelectionChanged(item.filterModel, selected)
         }
@@ -78,7 +78,7 @@ class DefaultFilterFragment :
             allowDeselection = false
             selectOnLongClick = false
             selectWithItemUpdate = true
-            selectionListener = defalutFilterSelectedListener
+            selectionListener = defaultFilterSelectedListener
             withSavedInstanceState(savedInstanceState, BUNDLE_DEFAULT_FILTER_SELECTION)
         }
 
@@ -94,7 +94,7 @@ class DefaultFilterFragment :
             deselect()
             val selectPosition = itemAdapter.adapterItems.indexOfFirst { it.filterModel == selectedFilter }
             select(selectPosition)
-            selectionListener = defalutFilterSelectedListener
+            selectionListener = defaultFilterSelectedListener
         }
     }
 

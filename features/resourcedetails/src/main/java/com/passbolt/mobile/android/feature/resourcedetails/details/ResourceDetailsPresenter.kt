@@ -1,18 +1,24 @@
 package com.passbolt.mobile.android.feature.resourcedetails.details
 
+import com.passbolt.mobile.android.common.coroutinetimer.infiniteTimer
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsByIdUseCase
+import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
+import com.passbolt.mobile.android.serializers.SupportedContentTypes
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.isFavourite
@@ -21,12 +27,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.get
 import org.koin.core.component.getOrCreateScope
 import org.koin.core.parameter.parametersOf
 import org.koin.core.scope.Scope
+import java.util.UUID
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Passbolt - Open source password manager for teams
@@ -50,6 +59,7 @@ import org.koin.core.scope.Scope
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Suppress("TooManyFunctions")
 class ResourceDetailsPresenter(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     private val resourceMenuModelMapper: ResourceMenuModelMapper,
@@ -58,6 +68,9 @@ class ResourceDetailsPresenter(
     private val getLocalResourceTagsUseCase: GetLocalResourceTagsUseCase,
     private val getLocalFolderLocation: GetLocalFolderLocationUseCase,
     private val getResourceTypeWithFieldsByIdUseCase: GetResourceTypeWithFieldsByIdUseCase,
+    private val totpParametersProvider: TotpParametersProvider,
+    private val otpModelMapper: OtpModelMapper,
+    private val getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter, KoinScopeComponent {
@@ -81,6 +94,9 @@ class ResourceDetailsPresenter(
             view?.navigateBack()
         }
     }
+    private val tickerJob = SupervisorJob()
+    private val tickerScope = CoroutineScope(tickerJob + coroutineLaunchContext.ui)
+    private var otpModel: OtpListItemWrapper? = null
 
     // TODO consider resource types - for now only description can be both encrypted and unencrypted
     // TODO for future draw and set encrypted properties dynamically based on database input
@@ -90,6 +106,7 @@ class ResourceDetailsPresenter(
         this.permissionItemWidth = permissionItemWidth
         this.resourceId = resourceId
         getResourcesAndPermissions(resourceId)
+        updateOtpsCounterTime()
     }
 
     override fun refreshAction() {
@@ -97,7 +114,7 @@ class ResourceDetailsPresenter(
     }
 
     override fun refreshFailureAction() {
-        view?.showDataRefresError()
+        view?.showDataRefreshError()
     }
 
     private fun getResourcesAndPermissions(resourceId: String) {
@@ -121,6 +138,7 @@ class ResourceDetailsPresenter(
                     showPasswordHidden()
                     showPasswordHiddenIcon()
                     handleDescriptionField(resourceModel)
+                    handleTotpField(resourceModel)
                     handleFeatureFlags()
                 }
             }
@@ -161,6 +179,18 @@ class ResourceDetailsPresenter(
         }
     }
 
+    private fun handleTotpField(resourceModel: ResourceModel) {
+        coroutineScope.launch {
+            getResourceTypeIdToSlugMappingUseCase.execute(Unit)
+                .idToSlugMapping[UUID.fromString(resourceModel.resourceTypeId)]
+                .let { slug ->
+                    if (slug == SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG) {
+                        view?.showTotpSection()
+                    }
+                }
+        }
+    }
+
     private suspend fun handleFeatureFlags() {
         val isPasswordEyeIconVisible = getFeatureFlagsUseCase.execute(Unit).featureFlags.isPreviewPasswordAvailable
         if (!isPasswordEyeIconVisible) {
@@ -193,12 +223,14 @@ class ResourceDetailsPresenter(
     }
 
     override fun detach() {
+        tickerScope.coroutineContext.cancelChildren()
         coroutineScope.coroutineContext.cancelChildren()
         scope.close()
         super<DataRefreshViewReactivePresenter>.detach()
     }
 
     override fun moreClick() {
+        hideTotp()
         view?.navigateToMore(resourceMenuModelMapper.map(resourceModel))
     }
 
@@ -346,5 +378,81 @@ class ResourceDetailsPresenter(
 
     override fun locationClick() {
         view?.navigateToResourceLocation(resourceModel.resourceId)
+    }
+
+    override fun copyTotpClick() {
+        coroutineScope.launch {
+            resourceAuthenticatedActionsInteractor.provideOtp(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { label, otp ->
+                totpParametersProvider.provideOtpParameters(
+                    secretKey = otp.key,
+                    digits = otp.digits,
+                    period = otp.period,
+                    algorithm = otp.algorithm
+                ).apply {
+                    view?.addToClipboard(label, otpValue, isSecret = true)
+                }
+            }
+        }
+    }
+
+    override fun totpIconClick() {
+        if (otpModel == null) {
+            showTotp()
+        } else {
+            hideTotp()
+        }
+    }
+
+    private fun showTotp() {
+        coroutineScope.launch {
+            otpModel = otpModelMapper.map(resourceModel)
+                .copy(isRefreshing = true)
+                .also {
+                    view?.showTotp(it)
+                }
+            resourceAuthenticatedActionsInteractor.provideOtp(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { _, otp ->
+                val otpParameters = totpParametersProvider.provideOtpParameters(
+                    secretKey = otp.key,
+                    digits = otp.digits,
+                    period = otp.period,
+                    algorithm = otp.algorithm
+                )
+                otpModel = otpModelMapper.map(resourceModel)
+                    .copy(
+                        otpValue = otpParameters.otpValue,
+                        isVisible = true,
+                        otpExpirySeconds = otp.period,
+                        remainingSecondsCounter = otpParameters.secondsValid,
+                        isRefreshing = false
+                    )
+            }
+        }
+    }
+
+    private fun hideTotp() {
+        view?.showTotp(otpModelMapper.map(resourceModel))
+        otpModel = null
+    }
+
+    private fun updateOtpsCounterTime() {
+        tickerScope.launch {
+            infiniteTimer(tickDuration = 1.seconds).collectLatest {
+                if (otpModel != null && otpModel?.remainingSecondsCounter != null) {
+                    if (otpModel?.remainingSecondsCounter!! > 0) {
+                        otpModel = otpModel?.copy(remainingSecondsCounter = otpModel?.remainingSecondsCounter!! - 1)
+                        view?.showTotp(otpModel)
+                    } else {
+                        // restart if expired
+                        showTotp()
+                    }
+                }
+            }
+        }
     }
 }

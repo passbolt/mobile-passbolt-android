@@ -96,4 +96,56 @@ class SecretValidationTest : KoinTest {
 
         assertThat(results.none { it }).isTrue()
     }
+
+    @Test
+    fun `invalid secret for password description totp resource type should be rejected`() {
+        val tooLongPassword =
+            (0..PasswordDescriptionTotpSecretValidation.PASSWORD_DESCRIPTION_TOTP_PASSWORD_MAX_LENGTH + 1)
+                .joinToString { "a" }
+        val tooLongDescription =
+            (0..PasswordDescriptionTotpSecretValidation.PASSWORD_DESCRIPTION_TOTP_DESCRIPTION_MAX_LENGTH + 1)
+                .joinToString { "a" }
+        val invalidAlgorithm = "SHA2"
+        val tooLongKey = (0..PasswordDescriptionTotpSecretValidation.PASSWORD_DESCRIPTION_TOTP_TOTP_KEY_MAX_LENGTH + 1)
+            .joinToString { "a" }
+        val tooFewDigits =
+            PasswordDescriptionTotpSecretValidation.PASSWORD_DESCRIPTION_TOTP_TOTP_DIGITS_INCLUSIVE_MIN - 1
+        val tooManyDigits =
+            PasswordDescriptionTotpSecretValidation.PASSWORD_DESCRIPTION_TOTP_TOTP_DIGITS_INCLUSIVE_MAX + 1
+        val invalidSecrets = listOf(
+            DecryptedSecret.PasswordDescriptionTotp(
+                tooLongPassword,
+                "desc",
+                DecryptedSecret.StandaloneTotp.Totp("SHA-256", "A", 6, 1)
+            ), DecryptedSecret.PasswordDescriptionTotp(
+                tooLongDescription,
+                "pass",
+                DecryptedSecret.StandaloneTotp.Totp("SHA-256", "A", 6, 1)
+            ),
+            DecryptedSecret.PasswordDescriptionTotp(
+                "desc",
+                "pass",
+                DecryptedSecret.StandaloneTotp.Totp(invalidAlgorithm, "A", 6, 1)
+            ),
+            DecryptedSecret.PasswordDescriptionTotp(
+                "desc",
+                "pass",
+                DecryptedSecret.StandaloneTotp.Totp("SHA-256", tooLongKey, 6, 1)
+            ),
+            DecryptedSecret.PasswordDescriptionTotp(
+                "desc",
+                "pass",
+                DecryptedSecret.StandaloneTotp.Totp("SHA-256", "A", tooFewDigits, 1)
+            ),
+            DecryptedSecret.PasswordDescriptionTotp(
+                "desc",
+                "pass",
+                DecryptedSecret.StandaloneTotp.Totp("SHA-256", "A", tooManyDigits, 1)
+            )
+        )
+
+        val results = invalidSecrets.map { secretValidationRunner.isPasswordDescriptionTotpSecretValid(it) }
+
+        assertThat(results.none { it }).isTrue()
+    }
 }

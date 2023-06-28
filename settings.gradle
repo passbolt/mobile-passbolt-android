@@ -52,6 +52,7 @@ featureModule "logs"
 featureModule "resourcemoremenu"
 featureModule "transferaccounttoanotherdevice"
 featureModule "otp"
+featureModule "resourcepicker"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"
