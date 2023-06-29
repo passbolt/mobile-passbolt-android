@@ -498,6 +498,11 @@
     <string name="otp_otp_updated">TOTP successfully replaced.</string>
 
     <string name="resource_picker_title">Add TOTP to a password</string>
+    <string name="resource_picker_link_to_information">If you add TOTP to this resource, the TOTP will inherit the same sharing permissions.</string>
+    <string name="resource_picker_link_to_warning">A TOTP is already associated with this resource, do you want to override it?</string>
+    <string name="resource_picker_replace_totp_title">Replace TOTP?</string>
+    <string name="resource_picker_replace_totp">Replace TOTP</string>
+    <string name="resource_picker_add_totp">Add TOTP</string>
 
     <!--
     arrays can be inconsistent when in other languages

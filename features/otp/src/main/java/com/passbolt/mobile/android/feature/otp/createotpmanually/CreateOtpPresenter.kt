@@ -36,8 +36,10 @@ import com.passbolt.mobile.android.database.impl.resources.UpdateLocalResourceUs
 import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 import com.passbolt.mobile.android.ui.OtpResourceModel
+import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.UserModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -240,6 +242,10 @@ class CreateOtpPresenter(
                 digits = digits
             )
         )
+    }
+
+    override fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel) {
+        // TODO("Not yet implemented")
     }
 
     override fun linkToResourceClick() {

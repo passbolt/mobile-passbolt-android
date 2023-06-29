@@ -24,6 +24,9 @@
 package com.passbolt.mobile.android.resourcepicker
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
+import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModel
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
+import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.SelectableResourceModelWrapper
 
 interface ResourcePickerContract {
@@ -40,6 +43,8 @@ interface ResourcePickerContract {
         fun showDataRefreshError()
         fun enableApplyButton()
         fun clearSearchInput()
+        fun showConfirmation(confirmationModel: ConfirmationModel, pickAction: PickResourceAction)
+        fun setResultAndNavigateBack(pickAction: PickResourceAction, resourceModel: ResourceModel)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -48,5 +53,7 @@ interface ResourcePickerContract {
         fun argsRetrieved(suggestion: String)
         fun refreshSwipe()
         fun resourcePicked(selectableResourceModel: SelectableResourceModelWrapper, selected: Boolean)
+        fun applyClick()
+        fun otpLinkConfirmed(pickAction: PickResourceAction)
     }
 }

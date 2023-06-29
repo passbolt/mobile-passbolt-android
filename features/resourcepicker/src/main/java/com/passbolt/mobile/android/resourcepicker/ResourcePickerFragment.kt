@@ -25,8 +25,11 @@ package com.passbolt.mobile.android.resourcepicker
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,9 +48,12 @@ import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.resourcepicker.databinding.FragmentResourcePickerBinding
+import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModel
 import com.passbolt.mobile.android.resourcepicker.model.HeaderType
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.resourcepicker.recycler.HeaderItem
 import com.passbolt.mobile.android.resourcepicker.recycler.SelectableResourceItem
+import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.SelectableResourceModelWrapper
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -139,6 +145,9 @@ class ResourcePickerFragment :
             backButton.setDebouncingOnClick {
                 findNavController().popBackStack()
             }
+            applyButton.setDebouncingOnClick {
+                presenter.applyClick()
+            }
         }
     }
 
@@ -229,7 +238,30 @@ class ResourcePickerFragment :
         binding.searchEditText.setText("")
     }
 
+    override fun showConfirmation(confirmationModel: ConfirmationModel, pickAction: PickResourceAction) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(confirmationModel.titleResId)
+            .setMessage(confirmationModel.messageResId)
+            .setPositiveButton(confirmationModel.positiveButtonResId) { _, _ -> presenter.otpLinkConfirmed(pickAction) }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .show()
+    }
+
+    override fun setResultAndNavigateBack(pickAction: PickResourceAction, resourceModel: ResourceModel) {
+        setFragmentResult(
+            RESULT_PICKED_RESOURCE,
+            bundleOf(
+                RESULT_PICKED_ACTION to pickAction,
+                RESULT_PICKED_RESOURCE to resourceModel
+            )
+        )
+        findNavController().popBackStack()
+    }
+
     companion object {
+        const val REQUEST_PICK_RESOURCE_FOR_RESULT = "PICK_RESOURCE_FOR_RESULT"
+        const val RESULT_PICKED_RESOURCE = "PICKED_RESOURCE"
+        const val RESULT_PICKED_ACTION = "PICK_ACTION"
         private const val BUNDLE_PICKED_RESOURCE_SELECTION = "PICKED_RESOURCE_SELECTION"
     }
 }
