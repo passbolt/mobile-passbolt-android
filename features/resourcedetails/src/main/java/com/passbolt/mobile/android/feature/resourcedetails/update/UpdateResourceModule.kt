@@ -43,8 +43,6 @@ fun Module.updateResourceModule() {
                 createResourceUseCase = get(),
                 addLocalResourceUseCase = get(),
                 updateLocalResourceUseCase = get(),
-                updateResourceUseCase = get(),
-                fetchUsersUseCase = get(),
                 getResourceTypeWithFieldsBySlugUseCase = get(),
                 resourceTypeFactory = get(),
                 editFieldsModelCreator = get(),
@@ -55,7 +53,9 @@ fun Module.updateResourceModule() {
                 getLocalParentFolderPermissionsToApplyUseCase = get(),
                 addLocalResourcePermissionsUseCase = get(),
                 createResourceIdlingResource = get(),
-                updateResourceIdlingResource = get()
+                updateResourceIdlingResource = get(),
+                updateSimplePasswordResourceInteractor = get(),
+                updatePasswordAndDescriptionResourceInteractor = get()
             )
         }
 

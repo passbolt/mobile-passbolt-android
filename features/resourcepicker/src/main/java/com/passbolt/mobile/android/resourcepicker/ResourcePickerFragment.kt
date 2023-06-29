@@ -249,7 +249,7 @@ class ResourcePickerFragment :
 
     override fun setResultAndNavigateBack(pickAction: PickResourceAction, resourceModel: ResourceModel) {
         setFragmentResult(
-            RESULT_PICKED_RESOURCE,
+            REQUEST_PICK_RESOURCE_FOR_RESULT,
             bundleOf(
                 RESULT_PICKED_ACTION to pickAction,
                 RESULT_PICKED_RESOURCE to resourceModel

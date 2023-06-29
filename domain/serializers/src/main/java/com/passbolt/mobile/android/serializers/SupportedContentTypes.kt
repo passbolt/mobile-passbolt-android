@@ -29,13 +29,14 @@ object SupportedContentTypes {
     const val TOTP_SLUG = "totp"
     const val PASSWORD_DESCRIPTION_TOTP_SLUG = "password-description-totp"
 
-    val homeSlugs = listOf(
+    val homeSlugs = setOf(
         PASSWORD_STRING_SLUG,
         PASSWORD_AND_DESCRIPTION_SLUG,
         PASSWORD_DESCRIPTION_TOTP_SLUG
     )
-    val totpSlugs = listOf(
-        TOTP_SLUG
+    val totpSlugs = setOf(
+        TOTP_SLUG,
+        PASSWORD_DESCRIPTION_TOTP_SLUG
     )
 
     val allSlugs = homeSlugs + totpSlugs

@@ -47,7 +47,7 @@ class GetLocalResourcesWithTagUseCase(
 
     data class Input(
         val tag: HomeDisplayViewModel.Tags,
-        val slugs: List<String>
+        val slugs: Set<String>
     )
 
     data class Output(val resources: List<ResourceModel>)

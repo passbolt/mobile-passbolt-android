@@ -56,7 +56,7 @@ class GetLocalResourcesUseCase(
     }
 
     data class Input(
-        val slugs: List<String>,
+        val slugs: Set<String>,
         val homeDisplayView: HomeDisplayViewModel = HomeDisplayViewModel.AllItems
     )
 

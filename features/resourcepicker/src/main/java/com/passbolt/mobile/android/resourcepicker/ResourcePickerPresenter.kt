@@ -96,18 +96,24 @@ class ResourcePickerPresenter(
         fullDataRefreshExecutor.performFullDataRefresh()
     }
 
-    override fun resourcePicked(selectableResourceModel: SelectableResourceModelWrapper, selected: Boolean) {
+    override fun resourcePicked(selectableResourceModel: SelectableResourceModelWrapper, isSelected: Boolean) {
         pickedResource = selectableResourceModel
-        resourceList = resourceList
-            .map {
-                it.copy(
-                    isSelected = it.resourceModel.resourceId == selectableResourceModel.resourceModel.resourceId &&
-                            selected
-                )
-            }
+        suggestedResourceList = suggestedResourceList.updatedAfterSelectedResource(selectableResourceModel, isSelected)
+        resourceList = resourceList.updatedAfterSelectedResource(selectableResourceModel, isSelected)
         view?.showResources(suggestedResourceList, resourceList)
         view?.enableApplyButton()
     }
+
+    private fun List<SelectableResourceModelWrapper>.updatedAfterSelectedResource(
+        resource: SelectableResourceModelWrapper,
+        isSelected: Boolean
+    ) =
+        map {
+            it.copy(
+                isSelected = it.resourceModel.resourceId == resource.resourceModel.resourceId &&
+                        isSelected
+            )
+        }
 
     override fun searchTextChanged(text: String) {
         currentSearchText.value = text

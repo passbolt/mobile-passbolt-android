@@ -46,11 +46,9 @@ fun Module.otpModule() {
                 getLocalResourceUseCase = get(),
                 totpParametersProvider = get(),
                 resourceMenuModelMapper = get(),
-                fetchUsersUseCase = get(),
-                updateStandaloneTotpResourceUseCase = get(),
-                getResourceTypeWithFieldsBySlugUseCase = get(),
                 updateLocalResourceUseCase = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
+                updateStandaloneTotpResourceInteractor = get()
             )
         }
 

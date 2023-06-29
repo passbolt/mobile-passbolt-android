@@ -46,7 +46,7 @@ class GetLocalResourcesFilteredByTagUseCase(
 
     data class Input(
         val tagSearchQuery: String,
-        val slugs: List<String>
+        val slugs: Set<String>
     )
 
     data class Output(val resources: List<ResourceModel>)
