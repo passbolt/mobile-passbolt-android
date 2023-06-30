@@ -43,7 +43,12 @@ import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthentic
 import com.passbolt.mobile.android.feature.otp.R
 import com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings.CreateOtpAdvancedSettingsFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentCreateOtpBinding
+import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment
+import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment.Companion.RESULT_PICKED_RESOURCE
+import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment.Companion.RESULT_PICKED_ACTION
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
+import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 
 class CreateOtpFragment :
@@ -54,11 +59,20 @@ class CreateOtpFragment :
 
     override val presenter: CreateOtpContract.Presenter by inject()
     private val args: CreateOtpFragmentArgs by navArgs()
+
     private val otpSettingsModifiedListener = { _: String, bundle: Bundle ->
         val algorithm = requireNotNull(bundle.getString(CreateOtpAdvancedSettingsFragment.EXTRA_ALGORITHM))
         val period = requireNotNull(bundle.getLong(CreateOtpAdvancedSettingsFragment.EXTRA_PERIOD))
         val digits = requireNotNull(bundle.getInt(CreateOtpAdvancedSettingsFragment.EXTRA_DIGITS))
         presenter.otpSettingsModified(algorithm, period, digits)
+    }
+
+    private val linkedResourceReceivedListener = { _: String, result: Bundle ->
+        if (result.containsKey(RESULT_PICKED_ACTION) && result.containsKey(RESULT_PICKED_RESOURCE)) {
+            val action = result.getSerializable(RESULT_PICKED_ACTION) as PickResourceAction
+            val resource = result.getParcelable<ResourceModel>(RESULT_PICKED_RESOURCE)!!
+            presenter.linkedResourceReceived(action, resource)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -203,6 +217,10 @@ class CreateOtpFragment :
     }
 
     override fun navigateToResourcePicker(suggestion: String) {
+        setFragmentResultListener(
+            ResourcePickerFragment.REQUEST_PICK_RESOURCE_FOR_RESULT,
+            linkedResourceReceivedListener
+        )
         findNavController().navigate(
             NavDeepLinkProvider.resourceResourcePickerDeepLinkRequest(suggestion)
         )

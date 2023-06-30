@@ -24,8 +24,10 @@
 package com.passbolt.mobile.android.feature.otp.createotpmanually
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 import com.passbolt.mobile.android.ui.OtpResourceModel
+import com.passbolt.mobile.android.ui.ResourceModel
 
 interface CreateOtpContract {
 
@@ -57,5 +59,6 @@ interface CreateOtpContract {
         fun totpIssuerChanged(issuer: String)
         fun argsRetrieved(editedOtpData: OtpResourceModel?)
         fun linkToResourceClick()
+        fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel)
     }
 }

@@ -29,6 +29,8 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.mappers.ResourcePickerMapper
+import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModel
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.resourcepicker.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.serializers.SupportedContentTypes
 import com.passbolt.mobile.android.serializers.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
@@ -42,6 +44,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.UUID
 
 class ResourcePickerPresenter(
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
@@ -66,6 +69,10 @@ class ResourcePickerPresenter(
     private var resourceList: List<SelectableResourceModelWrapper> = emptyList()
     private var suggestedResourceList: List<SelectableResourceModelWrapper> = emptyList()
 
+    private lateinit var pickedResource: SelectableResourceModelWrapper
+    private val pickedResourceResourceTypeId
+        get() = UUID.fromString(pickedResource.resourceModel.resourceTypeId)
+
     override fun attach(view: ResourcePickerContract.View) {
         super<DataRefreshViewReactivePresenter>.attach(view)
         collectFilteringRefreshes()
@@ -86,11 +93,11 @@ class ResourcePickerPresenter(
     }
 
     override fun refreshSwipe() {
-        // TODO
-        // add after merge (new mechanism on develop)
+        fullDataRefreshExecutor.performFullDataRefresh()
     }
 
     override fun resourcePicked(selectableResourceModel: SelectableResourceModelWrapper, selected: Boolean) {
+        pickedResource = selectableResourceModel
         resourceList = resourceList
             .map {
                 it.copy(
@@ -162,6 +169,30 @@ class ResourcePickerPresenter(
             view?.hideEmptyState()
             view?.showResources(suggestedResourceList, resourceList)
         }
+    }
+
+    override fun applyClick() {
+        coroutineScope.launch {
+            val selectablesIdToSlugMapping = getResourceTypeIdToSlugMappingUseCase.execute(Unit)
+                .idToSlugMapping
+                .filter { it.value in selectableResourceTypesSlugs }
+
+            require(pickedResourceResourceTypeId in selectablesIdToSlugMapping.keys)
+            val (pickAction, confirmationModel) =
+                when (val slug = selectablesIdToSlugMapping[pickedResourceResourceTypeId]) {
+                    PASSWORD_AND_DESCRIPTION_SLUG ->
+                        PickResourceAction.TOTP_LINK to ConfirmationModel.LinkTotpModel()
+                    PASSWORD_DESCRIPTION_TOTP_SLUG ->
+                        PickResourceAction.TOTP_REPLACE to ConfirmationModel.ReplaceTotpModel()
+                    else -> throw IllegalStateException("Impossible resource slug: $slug")
+                }
+
+            view?.showConfirmation(confirmationModel, pickAction)
+        }
+    }
+
+    override fun otpLinkConfirmed(pickAction: PickResourceAction) {
+        view?.setResultAndNavigateBack(pickAction, pickedResource.resourceModel)
     }
 
     override fun detach() {
