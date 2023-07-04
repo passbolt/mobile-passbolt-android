@@ -1,13 +1,13 @@
 package com.passbolt.mobile.android.core.resources
 
 import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.resources.interactor.UpdatePasswordAndDescriptionResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.UpdateSimplePasswordResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.UpdateStandaloneTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.UpdateToLinkedTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.CreateResourceUseCase
-import com.passbolt.mobile.android.core.resources.usecase.CreateStandaloneTotpResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.GetResourcesUseCase
@@ -47,7 +47,6 @@ import org.koin.dsl.module
 val resourcesModule = module {
     singleOf(::GetResourcesUseCase)
     singleOf(::ResourceInteractor)
-    singleOf(::CreateResourceUseCase)
     singleOf(::SearchableMatcher)
     singleOf(::DeleteResourceUseCase)
     singleOf(::SecretInputCreator)
@@ -60,7 +59,6 @@ val resourcesModule = module {
     singleOf(::RemoveFromFavouritesUseCase)
     singleOf(::FavouritesInteractor)
     singleOf(::ResourceShareInteractor)
-    singleOf(::CreateStandaloneTotpResourceUseCase)
     singleOf(::UpdateSimplePasswordResourceInteractor)
     singleOf(::UpdatePasswordAndDescriptionResourceInteractor)
     singleOf(::UpdateStandaloneTotpResourceInteractor)
@@ -79,4 +77,6 @@ val resourcesModule = module {
             getResourceTypeIdToSlugMappingUseCase = get()
         )
     }
+    singleOf(::CreatePasswordAndDescriptionResourceInteractor)
+    singleOf(::CreateStandaloneTotpResourceInteractor)
 }
