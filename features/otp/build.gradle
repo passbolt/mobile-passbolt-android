@@ -39,6 +39,8 @@ dependencies {
     implementation project(':serializers')
     implementation project(':networking')
     implementation project(':resourcepicker')
+    implementation project(':resourcepicker')
+    implementation project(':gopenpgp')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

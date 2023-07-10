@@ -46,7 +46,7 @@ class GetLocalSubFolderResourcesFilteredUseCase(
     data class Input(
         val containingFolders: List<String>,
         val containingQuery: String,
-        val slugs: List<String>
+        val slugs: Set<String>
     )
 
     data class Output(val resources: List<ResourceModel>)

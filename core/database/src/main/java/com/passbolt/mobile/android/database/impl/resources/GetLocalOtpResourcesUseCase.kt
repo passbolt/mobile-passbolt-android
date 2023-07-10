@@ -44,7 +44,7 @@ class GetLocalOtpResourcesUseCase(
         return Output(resources.map { otpModelMapper.map(it) })
     }
 
-    data class Input(val slugs: List<String>)
+    data class Input(val slugs: Set<String>)
 
     data class Output(val otps: List<OtpModel>)
 }

@@ -1,6 +1,10 @@
 package com.passbolt.mobile.android.core.resources
 
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.resources.interactor.UpdatePasswordAndDescriptionResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.UpdateSimplePasswordResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.UpdateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.UpdateToLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.CreateResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.CreateStandaloneTotpResourceUseCase
@@ -15,8 +19,6 @@ import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.SimulateShareResourceUseCase
-import com.passbolt.mobile.android.core.resources.usecase.UpdateResourceUseCase
-import com.passbolt.mobile.android.core.resources.usecase.UpdateStandaloneTotpResourceUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -48,7 +50,6 @@ val resourcesModule = module {
     singleOf(::CreateResourceUseCase)
     singleOf(::SearchableMatcher)
     singleOf(::DeleteResourceUseCase)
-    singleOf(::UpdateResourceUseCase)
     singleOf(::SecretInputCreator)
     singleOf(::RebuildResourceTablesUseCase)
     singleOf(::RebuildTagsTablesUseCase)
@@ -60,5 +61,22 @@ val resourcesModule = module {
     singleOf(::FavouritesInteractor)
     singleOf(::ResourceShareInteractor)
     singleOf(::CreateStandaloneTotpResourceUseCase)
-    singleOf(::UpdateStandaloneTotpResourceUseCase)
+    singleOf(::UpdateSimplePasswordResourceInteractor)
+    singleOf(::UpdatePasswordAndDescriptionResourceInteractor)
+    singleOf(::UpdateStandaloneTotpResourceInteractor)
+    single {
+        UpdateToLinkedTotpResourceInteractor(
+            secretInputCreator = get(),
+            getSelectedAccountUseCase = get(),
+            getPrivateKeyUseCase = get(),
+            openPgp = get(),
+            secretParser = get(),
+            resourceTypeFactory = get(),
+            passphraseMemoryCache = get(),
+            resourceModelMapper = get(),
+            resourceRepository = get(),
+            fetchUsersUseCase = get(),
+            getResourceTypeIdToSlugMappingUseCase = get()
+        )
+    }
 }

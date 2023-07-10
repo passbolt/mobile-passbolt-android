@@ -10,16 +10,17 @@ import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResou
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
+import com.passbolt.mobile.android.core.resources.interactor.UpdatePasswordAndDescriptionResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.UpdateResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.UpdateSimplePasswordResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.CreateResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
-import com.passbolt.mobile.android.core.resources.usecase.UpdateResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.core.users.FetchUsersUseCase
 import com.passbolt.mobile.android.database.impl.folders.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
 import com.passbolt.mobile.android.database.impl.folders.ItemIdResourceId
 import com.passbolt.mobile.android.database.impl.resources.AddLocalResourcePermissionsUseCase
@@ -40,7 +41,6 @@ import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerato
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.NewFieldsModelCreator
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.ResourceUpdateType
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.UserModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -77,8 +77,8 @@ class UpdateResourcePresenter(
     private val createResourceUseCase: CreateResourceUseCase,
     private val addLocalResourceUseCase: AddLocalResourceUseCase,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
-    private val updateResourceUseCase: UpdateResourceUseCase,
-    private val fetchUsersUseCase: FetchUsersUseCase,
+    private val updateSimplePasswordResourceInteractor: UpdateSimplePasswordResourceInteractor,
+    private val updatePasswordAndDescriptionResourceInteractor: UpdatePasswordAndDescriptionResourceInteractor,
     private val getResourceTypeWithFieldsBySlugUseCase: GetResourceTypeWithFieldsBySlugUseCase,
     private val resourceTypeFactory: ResourceTypeFactory,
     private val editFieldsModelCreator: EditFieldsModelCreator,
@@ -288,6 +288,7 @@ class UpdateResourcePresenter(
         }
     }
 
+    // TODO refactor similarly to update resource
     private suspend fun createResource() {
         when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
             createResourceUseCase.execute(createResourceInput())
@@ -345,37 +346,66 @@ class UpdateResourcePresenter(
     private suspend fun editResource() {
         val existingResource = requireNotNull(existingResource) { "In edit mode but existing resource not present" }
 
-        when (val usersWhoHaveAccess = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            fetchUsersUseCase.execute(
-                FetchUsersUseCase.Input(listOf(existingResource.resourceId))
-            )
-        }) {
-            is FetchUsersUseCase.Output.Success -> {
-                when (val editResourceResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    updateResourceUseCase.execute(
-                        createUpdateResourceInput(usersWhoHaveAccess.users)
+        val updateOperation =
+            when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(existingResource.resourceTypeId)) {
+                SIMPLE_PASSWORD -> suspend {
+                    updateSimplePasswordResourceInteractor.execute(
+                        createCommonUpdateInput(existingResource),
+                        createSimplePasswordUpdateInput()
                     )
-                }) {
-                    is UpdateResourceUseCase.Output.Success -> {
-                        updateLocalResourceUseCase.execute(
-                            UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                        )
-                        view?.closeWithEditSuccessResult(existingResource.name)
-                    }
-                    is UpdateResourceUseCase.Output.Failure<*> -> view?.showError()
-                    is UpdateResourceUseCase.Output.PasswordExpired -> {
-                        /* will not happen in BaseAuthenticatedPresenter */
-                    }
-                    is UpdateResourceUseCase.Output.OpenPgpError ->
-                        view?.showEncryptionError(editResourceResult.message)
                 }
+                PASSWORD_WITH_DESCRIPTION -> suspend {
+                    updatePasswordAndDescriptionResourceInteractor.execute(
+                        createCommonUpdateInput(existingResource),
+                        createPasswordAndDescriptionUpdateInput()
+                    )
+                }
+                STANDALONE_TOTP, PASSWORD_DESCRIPTION_TOTP ->
+                    throw IllegalArgumentException("Unsupported resource type on update form: $resourceTypeEnum")
             }
-            is FetchUsersUseCase.Output.Failure<*> -> {
-                Timber.e(usersWhoHaveAccess.response.exception)
+
+        when (
+            val editResourceResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                updateOperation.invoke()
+            }) {
+            is UpdateResourceInteractor.Output.Failure<*> -> {
                 view?.showError()
+            }
+            is UpdateResourceInteractor.Output.OpenPgpError -> {
+                view?.showEncryptionError(editResourceResult.message)
+            }
+            is UpdateResourceInteractor.Output.PasswordExpired -> {
+                /* will not happen in BaseAuthenticatedPresenter */
+            }
+            is UpdateResourceInteractor.Output.Success -> {
+                updateLocalResourceUseCase.execute(
+                    UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                )
+                view?.closeWithEditSuccessResult(existingResource.name)
             }
         }
     }
+
+    private fun createCommonUpdateInput(existingResource: ResourceModel) =
+        UpdateResourceInteractor.CommonInput(
+            resourceId = existingResource.resourceId,
+            resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
+            resourceUsername = getFieldValue(USERNAME_FIELD),
+            resourceUri = getFieldValue(URI_FIELD),
+            resourceParentFolderId = resourceParentFolderId
+        )
+
+    private fun createSimplePasswordUpdateInput() =
+        UpdateSimplePasswordResourceInteractor.UpdateSimplePasswordInput(
+            password = getFieldValue(SECRET_FIELD)!!,
+            description = getFieldValue(DESCRIPTION_FIELD)
+        )
+
+    private fun createPasswordAndDescriptionUpdateInput() =
+        UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput(
+            password = getFieldValue(PASSWORD_FIELD)!!,
+            description = getFieldValue(DESCRIPTION_FIELD)
+        )
 
     private fun getFieldValue(fieldName: String) =
         fields.find { it.field.name == fieldName }?.value
@@ -391,28 +421,6 @@ class UpdateResourcePresenter(
             getFieldValue(DESCRIPTION_FIELD),
             getFieldValue(USERNAME_FIELD),
             getFieldValue(URI_FIELD),
-            resourceParentFolderId
-        )
-    }
-
-    private suspend fun createUpdateResourceInput(usersWhoHaveAccess: List<UserModel>): UpdateResourceUseCase.Input {
-        val password = when (resourceTypeFactory.getResourceTypeEnum(existingResource!!.resourceTypeId)) {
-            SIMPLE_PASSWORD -> getFieldValue(SECRET_FIELD)!!
-            PASSWORD_WITH_DESCRIPTION -> getFieldValue(PASSWORD_FIELD)!!
-            // TODO new refactor resource types handling
-            STANDALONE_TOTP -> throw IllegalArgumentException("Standalone totp is not create on update resource form")
-            // TODO
-            ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP -> throw NotImplementedError()
-        }
-        return UpdateResourceUseCase.Input(
-            existingResource!!.resourceId,
-            existingResource!!.resourceTypeId,
-            getFieldValue(NAME_FIELD)!!, // validated to be not null
-            password,
-            getFieldValue(DESCRIPTION_FIELD),
-            getFieldValue(USERNAME_FIELD),
-            getFieldValue(URI_FIELD),
-            usersWhoHaveAccess,
             resourceParentFolderId
         )
     }

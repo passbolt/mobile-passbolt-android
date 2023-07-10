@@ -47,7 +47,7 @@ class GetLocalResourcesWithGroupUseCase(
 
     data class Input(
         val tag: HomeDisplayViewModel.Groups,
-        val slugs: List<String>
+        val slugs: Set<String>
     )
 
     data class Output(val resources: List<ResourceModel>)

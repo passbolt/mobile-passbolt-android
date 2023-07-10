@@ -58,3 +58,9 @@ data class TotpSecretsDto(
         val period: Long
     )
 }
+
+data class PasswordDescriptionTotpSecretsDto(
+    val password: String,
+    val description: String,
+    val totp: TotpSecretsDto.Totp
+)

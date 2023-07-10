@@ -29,12 +29,10 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
-import com.passbolt.mobile.android.core.resources.usecase.UpdateStandaloneTotpResourceUseCase
-import com.passbolt.mobile.android.core.users.FetchUsersUseCase
+import com.passbolt.mobile.android.core.resources.interactor.UpdateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.database.impl.resources.GetLocalOtpResourcesUseCase
 import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.database.impl.resources.UpdateLocalResourceUseCase
-import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
@@ -51,10 +49,8 @@ internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockSelectedAccountDataCase = mock<GetSelectedAccountDataUseCase>()
 internal val mockGetLocalOtpResourcesUseCase = mock<GetLocalOtpResourcesUseCase>()
 internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
-internal val mockFetchUsersUseCase = mock<FetchUsersUseCase>()
 internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
-internal val mockUpdateStandaloneTotpResourceUse = mock<UpdateStandaloneTotpResourceUseCase>()
-internal val mockGetResourceTypeWithFieldsBySlugUseCase = mock<GetResourceTypeWithFieldsBySlugUseCase>()
+internal val mockUpdateStandaloneTotpResourceInteractor = mock<UpdateStandaloneTotpResourceInteractor>()
 
 @ExperimentalCoroutinesApi
 internal val testOtpModule = module {
@@ -77,10 +73,8 @@ internal val testOtpModule = module {
             searchableMatcher = get(),
             otpModelMapper = get(),
             resourceMenuModelMapper = get(),
-            fetchUsersUseCase = mockFetchUsersUseCase,
             updateLocalResourceUseCase = mockUpdateLocalResourceUseCase,
-            updateStandaloneTotpResourceUseCase = mockUpdateStandaloneTotpResourceUse,
-            getResourceTypeWithFieldsBySlugUseCase = mockGetResourceTypeWithFieldsBySlugUseCase
+            updateStandaloneTotpResourceInteractor = mockUpdateStandaloneTotpResourceInteractor
         )
     }
 }
