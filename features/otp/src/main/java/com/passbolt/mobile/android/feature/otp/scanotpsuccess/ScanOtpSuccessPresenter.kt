@@ -27,14 +27,24 @@ import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPres
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.database.impl.resources.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
+import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class ScanOtpSuccessPresenter(
     private val createStandaloneTotpResourceInteractor: CreateStandaloneTotpResourceInteractor,
+    private val secretInteractor: SecretInteractor,
+    private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
+    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ScanOtpSuccessContract.View>(coroutineLaunchContext),
     ScanOtpSuccessContract.Presenter {
@@ -53,8 +63,8 @@ class ScanOtpSuccessPresenter(
             view?.showProgress()
             when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                 createStandaloneTotpResourceInteractor.execute(
-                    createResourceCommonCreateInput(),
-                    createResourceCustomCreateInput()
+                    createTotpResourceCommonCreateInput(),
+                    createTotpResourceCustomCreateInput()
                 )
             }) {
                 is CreateResourceInteractor.Output.Failure<*> -> view?.showGenericError()
@@ -70,7 +80,79 @@ class ScanOtpSuccessPresenter(
         }
     }
 
-    private fun createResourceCommonCreateInput() =
+    override fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel) {
+        scope.launch {
+            view?.showProgress()
+
+            when (val fetchedSecret = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                secretInteractor.fetchAndDecrypt(resource.resourceId)
+            }) {
+                is SecretInteractor.Output.DecryptFailure -> {
+                    Timber.e("Failed to decrypt secret during linking totp resource")
+                    view?.showEncryptionError(fetchedSecret.error.message)
+                }
+                is SecretInteractor.Output.FetchFailure -> {
+                    Timber.e("Failed to fetch secret during linking totp resource")
+                    view?.showGenericError()
+                }
+                is SecretInteractor.Output.Success -> {
+                    when (val editResourceResult =
+                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                            updateToLinkedTotpResourceInteractor.execute(
+                                createCommonLinkToTotpUpdateInput(resource),
+                                createUpdateToLinkedTotpInput(resource.resourceTypeId, fetchedSecret.decryptedSecret)
+                            )
+                        }) {
+                        is UpdateResourceInteractor.Output.Success -> {
+                            updateLocalResourceUseCase.execute(
+                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                            )
+                            view?.navigateToOtpList(otpCreated = true)
+                        }
+                        is UpdateResourceInteractor.Output.Failure<*> ->
+                            view?.showError(editResourceResult.response.exception.message.orEmpty())
+                        is UpdateResourceInteractor.Output.PasswordExpired -> {
+                            /* will not happen in BaseAuthenticatedPresenter */
+                        }
+                        is UpdateResourceInteractor.Output.OpenPgpError ->
+                            view?.showEncryptionError(editResourceResult.message)
+                    }
+                }
+                is SecretInteractor.Output.Unauthorized -> {
+                    /* will not happen in BaseAuthenticatedPresenter */
+                }
+            }
+        }
+        view?.hideProgress()
+    }
+
+    private fun createUpdateToLinkedTotpInput(
+        resourceTypeId: String,
+        decryptedSecret: ByteArray
+    ) =
+        UpdateToLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
+            period = scannedTotp.period,
+            digits = scannedTotp.digits,
+            algorithm = scannedTotp.algorithm.name,
+            secretKey = scannedTotp.secret,
+            existingSecret = decryptedSecret,
+            existingResourceTypeId = resourceTypeId
+        )
+
+    private fun createCommonLinkToTotpUpdateInput(resource: ResourceModel) =
+        UpdateResourceInteractor.CommonInput(
+            resourceId = resource.resourceId,
+            resourceName = resource.name,
+            resourceUsername = resource.username,
+            resourceUri = resource.url,
+            resourceParentFolderId = resource.folderId
+        )
+
+    override fun linkToResourceClick() {
+        view?.navigateToResourcePicker(scannedTotp.label)
+    }
+
+    private fun createTotpResourceCommonCreateInput() =
         CreateResourceInteractor.CommonInput(
             resourceName = scannedTotp.label,
             resourceUsername = null,
@@ -78,7 +160,7 @@ class ScanOtpSuccessPresenter(
             resourceParentFolderId = null
         )
 
-    private fun createResourceCustomCreateInput() =
+    private fun createTotpResourceCustomCreateInput() =
         CreateStandaloneTotpResourceInteractor.CreateStandaloneTotpInput(
             period = scannedTotp.period,
             digits = scannedTotp.digits,
