@@ -111,7 +111,7 @@ class ScanOtpSuccessFragment :
     }
 
     override fun showEncryptionError(message: String) {
-        showSnackbar(R.string.resource_permissions_secret_encrypt_failure, backgroundColor = R.color.red)
+        showSnackbar(R.string.common_encryption_failure, backgroundColor = R.color.red)
     }
 
     override fun navigateToOtpList(otpCreated: Boolean) {

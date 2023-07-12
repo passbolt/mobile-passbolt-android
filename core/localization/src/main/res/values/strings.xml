@@ -40,6 +40,9 @@
     <string name="common_refresh">Refresh</string>
     <string name="common_sign_out">Sign out</string>
     <string name="common_data_refresh_error">There was an error during data refresh</string>
+    <string name="common_decryption_failure">Error during secret decryption</string>
+    <string name="common_fetch_failure">Error during downloading the secret</string>
+    <string name="common_encryption_failure">There was an error during secret encryption</string>
 
     <string name="common_message_resource_edited">%s password was successfully edited.</string>
     <string name="common_message_resource_deleted">%s password was deleted.</string>
@@ -220,8 +223,6 @@
     <string name="autofill_resources_create">Create&amp;fill</string>
 
     <string name="home_empty_list">Empty list</string>
-    <string name="home_decryption_failure">Error during secret decryption</string>
-    <string name="home_fetch_failure">Error during downloading the secret</string>
     <string name="home_create">Create</string>
     <string name="home_in_sub_folders">in subfolders:</string>
     <string name="home_in_current_folder">in \"%s\":</string>
@@ -258,8 +259,6 @@
         translatable="false">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">Description is encrypted</string>
     <string name="resource_details_see_description">See description</string>
-    <string name="resource_details_decryption_failure">Error during secret decryption</string>
-    <string name="resource_details_fetch_failure">Error during downloading the secret</string>
     <string name="resource_details_information">Information</string>
     <string name="resource_details_invalid_totp_scanned">Invalid TOTP QR code scanned</string>
 
@@ -381,9 +380,6 @@
     <string name="resource_permissions_one_owner">Please make sure there is at least one owner.</string>
     <string name="resource_permissions_share_simulation_failed">There was an error during share simulation</string>
     <string name="resource_permissions_share_failed">There was an error during share </string>
-    <string name="resource_permissions_secret_fetch_failure">There was an error during secret fetching</string>
-    <string name="resource_permissions_secret_encrypt_failure">There was an error during secret encryption</string>
-    <string name="resource_permissions_secret_decrypt_failure">There was an error during secret decryption</string>
     <string name="resource_permissions_edit_permissions">Edit permissions</string>
 
     <string name="group_permission_permission">Permission</string>
@@ -489,6 +485,7 @@
     <string name="otp_create_totp_field_secret">Secret</string>
     <string name="otp_create_totp_field_secret_hint">Secret</string>
     <string name="otp_create_totp_advanced_settings">Advanced settings</string>
+    <string name="otp_create_totp_overwrite">Editing name &amp; URL will also edit the associated resource.</string>
     <string name="otp_create_totp_create_standalone">Create a standalone TOTP</string>
     <string name="otp_create_totp_link_to_password">Link TOTP to a password</string>
 

@@ -625,7 +625,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `home should navigate to root when current folder cannot be retrieved`() {
         mockGetLocalResourcesAndFoldersUseCase.stub {
-            onBlocking { execute(any()) } doReturn com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase.Output.Failure
+            onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output.Failure
         }
         mockGetLocalFolderUseCase.stub {
             onBlocking { execute(any()) } doReturn com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase.Output(

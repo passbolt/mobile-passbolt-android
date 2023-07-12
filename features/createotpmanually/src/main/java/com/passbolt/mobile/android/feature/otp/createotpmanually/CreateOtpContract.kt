@@ -26,7 +26,6 @@ package com.passbolt.mobile.android.feature.otp.createotpmanually
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
-import com.passbolt.mobile.android.ui.OtpResourceModel
 import com.passbolt.mobile.android.ui.ResourceModel
 
 interface CreateOtpContract {
@@ -39,15 +38,18 @@ interface CreateOtpContract {
         fun showProgress()
         fun showGenericError()
         fun showEncryptionError(message: String)
-        fun navigateToOtpListInCreateFlow(otpCreated: Boolean)
+        fun navigateBackInCreateFlow(resourceName: String, otpCreated: Boolean)
         fun hideProgress()
         fun setValues(label: String, issuer: String, secret: String)
         fun setFormValues(label: String, issuer: String, secret: String)
         fun showError(message: String)
-        fun navigateToOtpListInUpdateFlow(otpUpdated: Boolean)
+        fun navigateBackInUpdateFlow(resourceName: String, otpUpdated: Boolean)
         fun setupEditUi()
         fun setupCreateUi()
         fun navigateToResourcePicker(suggestion: String)
+        fun showEditingValuesAlsoEditsResourceValuesWarning()
+        fun showDecryptionError()
+        fun showFetchError()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
@@ -57,7 +59,7 @@ interface CreateOtpContract {
         fun totpLabelChanged(label: String)
         fun totpSecretChanged(secret: String)
         fun totpIssuerChanged(issuer: String)
-        fun argsRetrieved(editedOtpData: OtpResourceModel?)
+        fun argsRetrieved(editedOtpResourceId: String?)
         fun linkToResourceClick()
         fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel)
     }

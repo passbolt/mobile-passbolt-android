@@ -35,7 +35,8 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
-val mockIdToSlugMappingUseCase = mock<GetResourceTypeIdToSlugMappingUseCase>()
+val mockIdToSlugMappingUseCase =
+    mock<GetResourceTypeIdToSlugMappingUseCase>()
 val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 
 val resourceListDeserializationTestModule = module {

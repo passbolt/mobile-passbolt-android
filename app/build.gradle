@@ -151,6 +151,8 @@ dependencies {
     implementation project(':resourcepicker')
     implementation project(':tags')
     implementation project(':scanotp')
+    implementation project(':otpmoremenu')
+    implementation project(':createotpmanually')
 
     debugImplementation libs.quality.leakcanary
 

@@ -13,7 +13,7 @@
         tools:layout="@layout/fragment_otp">
         <action
             android:id="@+id/action_otpFragment_to_createOtpManuallyFragment"
-            app:destination="@id/createOtpManuallyFragment"
+            app:destination="@id/createOtpManuallyNav"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -33,32 +33,7 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
-    <fragment
-        android:id="@+id/createOtpManuallyFragment"
-        android:name="com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment"
-        android:label="CreateOtpManuallyFragment"
-        tools:layout="@layout/fragment_create_otp">
-        <action
-            android:id="@+id/action_createOtpManuallyFragment_to_createOtpAdvancedSettingsFragment"
-            app:destination="@id/createOtpAdvancedSettingsFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <argument
-            android:name="editedOtpData"
-            app:argType="com.passbolt.mobile.android.ui.OtpResourceModel"
-            app:nullable="true" />
-    </fragment>
-    <fragment
-        android:id="@+id/createOtpAdvancedSettingsFragment"
-        android:name="com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings.CreateOtpAdvancedSettingsFragment"
-        android:label="CreateOtpAdvancedSettingsFragment"
-        tools:layout="@layout/fragment_create_otp_advanced_settings">
-        <argument
-            android:name="advancedSettingsModel"
-            app:argType="com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel" />
-    </fragment>
+
     <fragment
         android:id="@+id/scanOtpSuccessFragment"
         android:name="com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment"
@@ -72,4 +47,6 @@
     <include app:graph="@navigation/resource_picker" />
 
     <include app:graph="@navigation/scan_otp" />
+
+    <include app:graph="@navigation/createotpmanually"/>
 </navigation>

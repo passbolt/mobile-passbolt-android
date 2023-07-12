@@ -40,6 +40,7 @@ import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.core.ui.span.RoundedBackgroundSpan
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
@@ -150,6 +151,14 @@ class ResourceDetailsFragment :
             presenter.otpScanned(
                 result.getParcelable(ScanOtpFragment.EXTRA_SCANNED_OTP)
             )
+        }
+    }
+
+    private val otpEdited = { _: String, result: Bundle ->
+        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_UPDATED) &&
+            result.containsKey(CreateOtpFragment.EXTRA_RESOURCE_NAME)
+        ) {
+            presenter.resourceEdited(result.getString(CreateOtpFragment.EXTRA_RESOURCE_NAME).orEmpty())
         }
     }
 
@@ -291,12 +300,12 @@ class ResourceDetailsFragment :
     }
 
     override fun showDecryptionFailure() {
-        Toast.makeText(requireContext(), R.string.resource_details_decryption_failure, Toast.LENGTH_SHORT)
+        Toast.makeText(requireContext(), R.string.common_decryption_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showFetchFailure() {
-        Toast.makeText(requireContext(), R.string.resource_details_fetch_failure, Toast.LENGTH_SHORT)
+        Toast.makeText(requireContext(), R.string.common_fetch_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
@@ -429,7 +438,7 @@ class ResourceDetailsFragment :
 
     override fun showEncryptionError(message: String) {
         showSnackbar(
-            R.string.resource_permissions_secret_encrypt_failure,
+            R.string.common_encryption_failure,
             backgroundColor = R.color.red
         )
     }
@@ -580,7 +589,17 @@ class ResourceDetailsFragment :
     }
 
     override fun menuCreateOtpManuallyClick() {
-        // TODO
+        presenter.addTotpManuallyClick()
+    }
+
+    override fun navigateToOtpCreate(resourceId: String) {
+        setFragmentResultListener(
+            CreateOtpFragment.REQUEST_UPDATE_OTP,
+            otpEdited
+        )
+        findNavController().navigate(
+            NavDeepLinkProvider.otpManualFormDeepLinkRequest(resourceId)
+        )
     }
 
     override fun menuCreateByNewOtpScanClick() {

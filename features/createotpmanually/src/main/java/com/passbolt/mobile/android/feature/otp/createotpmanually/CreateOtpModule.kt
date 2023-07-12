@@ -21,29 +21,37 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.otpmoremenu
+package com.passbolt.mobile.android.feature.otp.createotpmanually
 
-import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
-import com.passbolt.mobile.android.ui.OtpModel
+import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
-class OtpAuthenticatedActionsInteractor(
-    private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-    private val sessionRefreshedFlow: StateFlow<Unit?>,
-    private val otpModel: OtpModel
-) {
-
-    suspend fun provideOtp(
-        success: (ClipboardLabel, String) -> Unit
-    ) {
-        // TODO integrate with API
-        success(OTP_LABEL, "123 456")
+fun Module.createOtpModule() {
+    scope<CreateOtpFragment> {
+        scopedOf(::CreateOtpPresenter) bind CreateOtpContract.Presenter::class
     }
-
-    companion object {
-        @VisibleForTesting
-        const val OTP_LABEL = "OTP"
+    scope<CreateOtpPresenter> {
+        scoped { (
+                     resource: ResourceModel,
+                     needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                     sessionRefreshedFlow: StateFlow<Unit?>
+                 ) ->
+            ResourceAuthenticatedActionsInteractor(
+                needSessionRefreshFlow,
+                sessionRefreshedFlow,
+                resource,
+                resourceTypeFactory = get(),
+                secretParser = get(),
+                secretInteractor = get(),
+                favouritesInteractor = get(),
+                deleteResourceUseCase = get()
+            )
+        }
     }
 }

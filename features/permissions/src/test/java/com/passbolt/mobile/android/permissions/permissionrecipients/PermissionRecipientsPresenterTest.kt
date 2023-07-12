@@ -72,10 +72,7 @@ class PermissionRecipientsPresenterTest : KoinTest {
         }
         mockGetLocalGroupsUseCase.stub {
             onBlocking { execute(GetLocalGroupsUseCase.Input(emptyList())) }
-                .doReturn(
-                    GetLocalGroupsUseCase.Output(listOf(
-                    GROUP
-                )))
+                .doReturn(GetLocalGroupsUseCase.Output(listOf(GROUP)))
         }
 
         presenter.attach(view)

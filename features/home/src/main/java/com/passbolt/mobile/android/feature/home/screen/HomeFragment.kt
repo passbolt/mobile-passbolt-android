@@ -58,6 +58,7 @@ import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordHeaderIt
 import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.TagWithCountItem
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
+import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
@@ -194,6 +195,14 @@ class HomeFragment :
                 presenter.resourceShared()
             }
         }
+
+    private val otpEdited = { _: String, result: Bundle ->
+        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_UPDATED) &&
+            result.containsKey(CreateOtpFragment.EXTRA_RESOURCE_NAME)
+        ) {
+            presenter.resourceEdited(result.getString(CreateOtpFragment.EXTRA_RESOURCE_NAME).orEmpty())
+        }
+    }
 
     private val otpQrScanned = { _: String, result: Bundle ->
         if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
@@ -543,12 +552,12 @@ class HomeFragment :
     }
 
     override fun showDecryptionFailure() {
-        Toast.makeText(requireContext(), R.string.home_decryption_failure, Toast.LENGTH_SHORT)
+        Toast.makeText(requireContext(), R.string.common_decryption_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showFetchFailure() {
-        Toast.makeText(requireContext(), R.string.home_fetch_failure, Toast.LENGTH_SHORT)
+        Toast.makeText(requireContext(), R.string.common_fetch_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
@@ -906,7 +915,18 @@ class HomeFragment :
     }
 
     override fun menuCreateOtpManuallyClick() {
-//        TODO("Not yet implemented")
+        presenter.menuAddTotpManuallyClick()
+    }
+
+    override fun navigateToOtpCreate(resourceId: String) {
+        setFragmentResultListener(
+            CreateOtpFragment.REQUEST_UPDATE_OTP,
+            otpEdited
+        )
+
+        findNavController().navigate(
+            NavDeepLinkProvider.otpManualFormDeepLinkRequest(resourceId)
+        )
     }
 
     override fun menuCreateByNewOtpScanClick() {
@@ -921,7 +941,7 @@ class HomeFragment :
 
     override fun showEncryptionError(message: String) {
         showSnackbar(
-            R.string.resource_permissions_secret_encrypt_failure,
+            R.string.common_encryption_failure,
             backgroundColor = R.color.red
         )
     }

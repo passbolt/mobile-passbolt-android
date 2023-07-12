@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.otpmoremenu
+package com.passbolt.mobile.android.otpmoremenu
 
 import android.content.Context
 import android.os.Bundle
@@ -33,7 +33,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismiss
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.feature.otp.databinding.BottomsheetOtpMoreMenuBinding
+import com.passbolt.mobile.android.otpmoremenu.databinding.BottomsheetOtpMoreMenuBinding
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope

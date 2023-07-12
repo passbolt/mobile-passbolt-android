@@ -57,6 +57,8 @@ featureModule "resourcepicker"
 featureModule "otpeditmoremenu"
 featureModule "otpcreatemoremenu"
 featureModule "scanotp"
+featureModule "otpmoremenu"
+featureModule "createotpmanually"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"

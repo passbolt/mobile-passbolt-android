@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.otp.otpmoremenu
+package com.passbolt.mobile.android.otpmoremenu
 
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 

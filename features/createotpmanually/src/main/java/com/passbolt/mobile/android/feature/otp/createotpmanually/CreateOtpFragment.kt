@@ -40,9 +40,9 @@ import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.otp.R
+import com.passbolt.mobile.android.feature.createotpmanually.R
+import com.passbolt.mobile.android.feature.createotpmanually.databinding.FragmentCreateOtpBinding
 import com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings.CreateOtpAdvancedSettingsFragment
-import com.passbolt.mobile.android.feature.otp.databinding.FragmentCreateOtpBinding
 import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment
 import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment.Companion.RESULT_PICKED_ACTION
 import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment.Companion.RESULT_PICKED_RESOURCE
@@ -81,7 +81,7 @@ class CreateOtpFragment :
         setListeners()
         initDefaultToolbar(binding.toolbar)
         presenter.attach(this)
-        presenter.argsRetrieved(args.editedOtpData)
+        presenter.argsRetrieved(args.editedOtpResourceId)
     }
 
     override fun setupEditUi() {
@@ -187,23 +187,29 @@ class CreateOtpFragment :
 
     override fun showEncryptionError(message: String) {
         showSnackbar(
-            R.string.resource_permissions_secret_encrypt_failure,
+            R.string.common_encryption_failure,
             backgroundColor = R.color.red
         )
     }
 
-    override fun navigateToOtpListInCreateFlow(otpCreated: Boolean) {
+    override fun navigateBackInCreateFlow(resourceName: String, otpCreated: Boolean) {
         setFragmentResult(
             REQUEST_CREATE_OTP,
-            bundleOf(EXTRA_OTP_CREATED to otpCreated)
+            bundleOf(
+                EXTRA_OTP_CREATED to otpCreated,
+                EXTRA_RESOURCE_NAME to resourceName
+            )
         )
         findNavController().popBackStack()
     }
 
-    override fun navigateToOtpListInUpdateFlow(otpUpdated: Boolean) {
+    override fun navigateBackInUpdateFlow(resourceName: String, otpUpdated: Boolean) {
         setFragmentResult(
             REQUEST_UPDATE_OTP,
-            bundleOf(EXTRA_OTP_UPDATED to otpUpdated)
+            bundleOf(
+                EXTRA_OTP_UPDATED to otpUpdated,
+                EXTRA_RESOURCE_NAME to resourceName
+            )
         )
         findNavController().popBackStack()
     }
@@ -226,10 +232,29 @@ class CreateOtpFragment :
         )
     }
 
+    override fun showEditingValuesAlsoEditsResourceValuesWarning() {
+        binding.alsoEditsResourceWarning.visible()
+    }
+
+    override fun showDecryptionError() {
+        showSnackbar(
+            messageResId = R.string.common_decryption_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showFetchError() {
+        showSnackbar(
+            messageResId = R.string.common_fetch_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
     companion object {
         const val REQUEST_CREATE_OTP = "CREATE_OTP"
         const val EXTRA_OTP_CREATED = "OTP_CREATED"
         const val REQUEST_UPDATE_OTP = "UPDATE_OTP"
         const val EXTRA_OTP_UPDATED = "OTP_UPDATED"
+        const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
     }
 }

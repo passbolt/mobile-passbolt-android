@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.tagsdetails
 
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase.Output
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -64,7 +64,7 @@ class ResourceTagsPresenterTest : KoinTest {
                 .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL))
         }
         mockResourceTagsUseCase.stub {
-            onBlocking { execute(any()) }.doReturn(GetLocalResourceTagsUseCase.Output(RESOURCE_TAGS))
+            onBlocking { execute(any()) }.doReturn(Output(RESOURCE_TAGS))
         }
         presenter.attach(view)
     }
