@@ -18,6 +18,7 @@ dependencies {
     implementation project(':authentication')
     implementation project(':coreui')
     implementation project(':groups')
+    implementation project(':users')
 
     implementation libs.di.koin
     implementation libs.androidx.navigationFragment

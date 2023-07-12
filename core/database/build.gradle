@@ -5,16 +5,11 @@ plugins {
 }
 
 dependencies {
-    implementation project(':common')
     implementation project(':entity')
     implementation project(':storage')
-    implementation project(':mappers')
-    implementation project(':ui')
-    implementation project(':dto')
+    implementation project(':common')
 
     implementation libs.di.koin
-    implementation libs.androidx.lifecycleAnnotationProcessor
-    implementation libs.androidx.processLifecycle
     implementation libs.room.core
     implementation libs.room.runtime
     implementation libs.room.cipher

@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.Validation
 import com.passbolt.mobile.android.common.validation.validation
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
@@ -16,17 +17,15 @@ import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswo
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
+import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.database.impl.folders.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
-import com.passbolt.mobile.android.database.impl.folders.ItemIdResourceId
-import com.passbolt.mobile.android.database.impl.resources.AddLocalResourcePermissionsUseCase
-import com.passbolt.mobile.android.database.impl.resources.AddLocalResourceUseCase
-import com.passbolt.mobile.android.database.impl.resources.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
@@ -323,7 +322,7 @@ class UpdateResourcePresenter(
         val newPermissionsToApply = getLocalParentFolderPermissionsToApplyUseCase.execute(
             GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input(
                 resourceParentFolderId,
-                ItemIdResourceId(resource.resourceId)
+                com.passbolt.mobile.android.core.commonfolders.usecase.db.ItemIdResourceId(resource.resourceId)
             )
         ).permissions
 

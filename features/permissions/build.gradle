@@ -17,6 +17,9 @@ dependencies {
     implementation project(':navigation')
     implementation project(':fulldatarefresh')
     implementation project(':resources')
+    implementation project(':groups')
+    implementation project(':users')
+    implementation project(':folders')
 
     implementation libs.di.koin
     implementation libs.fastAdapter.core

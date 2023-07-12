@@ -23,9 +23,13 @@
 
 package com.passbolt.mobile.android.serializers
 
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
-import com.passbolt.mobile.android.serializers.gson.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
+import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
 import com.passbolt.mobile.android.serializers.gson.validation.ResourceValidationRunner
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -33,6 +37,23 @@ import org.koin.dsl.module
 val serializersModule = module {
     singleOf(::ResourceValidationRunner)
     singleOf(::ResourceListDeserializer)
-    singleOf(::ResourceTypeIdToSlugMappingProvider)
     singleOf(::ResourceTypesListDeserializer)
+
+    single {
+        GsonBuilder()
+            .apply {
+                strictTypeAdapters.forEach {
+                    registerTypeAdapter(it.key, it.value)
+                }
+                registerTypeAdapter(
+                    object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
+                    get<ResourceListDeserializer>()
+                )
+                registerTypeAdapter(
+                    object : TypeToken<List<@JvmSuppressWildcards ResourceTypeDto>>() {}.type,
+                    get<ResourceTypesListDeserializer>()
+                )
+            }
+            .create()
+    }
 }

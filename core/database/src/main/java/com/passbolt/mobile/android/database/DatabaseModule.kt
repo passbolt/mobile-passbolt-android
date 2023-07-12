@@ -1,13 +1,5 @@
 package com.passbolt.mobile.android.database
 
-import com.passbolt.mobile.android.database.impl.folders.foldersModule
-import com.passbolt.mobile.android.database.impl.groups.groupsModule
-import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.resourceAndGroupsCrossRefModule
-import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.resourceAndTagsCrossRefModule
-import com.passbolt.mobile.android.database.impl.resources.resourcesModule
-import com.passbolt.mobile.android.database.impl.resourcetypes.resourceTypesModule
-import com.passbolt.mobile.android.database.impl.tags.tagsModule
-import com.passbolt.mobile.android.database.impl.users.usersModule
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
@@ -34,15 +26,6 @@ import org.koin.dsl.module
  * @since v1.0
  */
 val databaseModule = module {
-    resourcesModule()
-    resourceTypesModule()
-    resourceAndTagsCrossRefModule()
-    resourceAndGroupsCrossRefModule()
-    foldersModule()
-    tagsModule()
-    groupsModule()
-    usersModule()
-
     single {
         DatabaseProvider(
             getResourcesDatabasePassphraseUseCase = get(),

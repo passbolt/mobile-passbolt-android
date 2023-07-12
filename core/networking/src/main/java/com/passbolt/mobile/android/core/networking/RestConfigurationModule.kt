@@ -1,16 +1,9 @@
 package com.passbolt.mobile.android.core.networking
 
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.common.CookieExtractor
 import com.passbolt.mobile.android.core.networking.interceptor.AuthInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.ChangeableBaseUrlInterceptor
 import com.passbolt.mobile.android.core.networking.interceptor.CookiesInterceptor
-import com.passbolt.mobile.android.dto.response.ResourceResponseDto
-import com.passbolt.mobile.android.dto.response.ResourceTypeDto
-import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
-import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
-import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -83,21 +76,7 @@ val networkingModule = module {
         RetrofitRestService(
             client = get(named(DEFAULT_HTTP_CLIENT)),
             converterFactory = GsonConverterFactory.create(
-                GsonBuilder()
-                    .apply {
-                        strictTypeAdapters.forEach {
-                            registerTypeAdapter(it.key, it.value)
-                        }
-                        registerTypeAdapter(
-                            object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
-                            get<ResourceListDeserializer>()
-                        )
-                        registerTypeAdapter(
-                            object : TypeToken<List<@JvmSuppressWildcards ResourceTypeDto>>() {}.type,
-                            get<ResourceTypesListDeserializer>()
-                        )
-                    }
-                    .create()
+                get()
             )
         )
     }

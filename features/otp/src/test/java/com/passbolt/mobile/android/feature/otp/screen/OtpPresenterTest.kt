@@ -27,7 +27,7 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
-import com.passbolt.mobile.android.database.impl.resources.GetLocalOtpResourcesUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalOtpResourcesUseCase
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.OtpListItemWrapper

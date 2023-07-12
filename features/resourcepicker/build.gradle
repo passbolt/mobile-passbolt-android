@@ -16,6 +16,8 @@ dependencies {
     implementation project(':fulldatarefresh')
     implementation project(':authentication')
     implementation project(':serializers')
+    implementation project(':resources')
+    implementation project(':resourcetypes')
 
     implementation libs.androidx.core
     implementation libs.androidx.appcompat

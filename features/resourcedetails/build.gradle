@@ -37,6 +37,7 @@ dependencies {
     implementation project(':idlingresource')
     implementation project(':otpcore')
     implementation project(':serializers')
+    implementation project(':folders')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
