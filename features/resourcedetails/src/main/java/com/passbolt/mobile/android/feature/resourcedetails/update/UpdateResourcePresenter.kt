@@ -10,10 +10,11 @@ import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResou
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
-import com.passbolt.mobile.android.core.resources.interactor.UpdatePasswordAndDescriptionResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.UpdateResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.UpdateSimplePasswordResourceInteractor
-import com.passbolt.mobile.android.core.resources.usecase.CreateResourceUseCase
+import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
@@ -26,7 +27,6 @@ import com.passbolt.mobile.android.database.impl.folders.ItemIdResourceId
 import com.passbolt.mobile.android.database.impl.resources.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.database.impl.resources.AddLocalResourceUseCase
 import com.passbolt.mobile.android.database.impl.resources.UpdateLocalResourceUseCase
-import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
@@ -74,12 +74,11 @@ class UpdateResourcePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val passwordGenerator: PasswordGenerator,
     private val entropyViewMapper: EntropyViewMapper,
-    private val createResourceUseCase: CreateResourceUseCase,
+    private val createPasswordAndDescriptionResourceInteractor: CreatePasswordAndDescriptionResourceInteractor,
     private val addLocalResourceUseCase: AddLocalResourceUseCase,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     private val updateSimplePasswordResourceInteractor: UpdateSimplePasswordResourceInteractor,
     private val updatePasswordAndDescriptionResourceInteractor: UpdatePasswordAndDescriptionResourceInteractor,
-    private val getResourceTypeWithFieldsBySlugUseCase: GetResourceTypeWithFieldsBySlugUseCase,
     private val resourceTypeFactory: ResourceTypeFactory,
     private val editFieldsModelCreator: EditFieldsModelCreator,
     private val newFieldsModelCreator: NewFieldsModelCreator,
@@ -288,17 +287,19 @@ class UpdateResourcePresenter(
         }
     }
 
-    // TODO refactor similarly to update resource
     private suspend fun createResource() {
         when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            createResourceUseCase.execute(createResourceInput())
+            createPasswordAndDescriptionResourceInteractor.execute(
+                createResourceCommonCreateInput(),
+                createResourceCustomInput()
+            )
         }) {
-            is CreateResourceUseCase.Output.Failure<*> -> view?.showError()
-            is CreateResourceUseCase.Output.OpenPgpError -> view?.showEncryptionError(result.message)
-            is CreateResourceUseCase.Output.PasswordExpired -> {
+            is CreateResourceInteractor.Output.Failure<*> -> view?.showError()
+            is CreateResourceInteractor.Output.OpenPgpError -> view?.showEncryptionError(result.message)
+            is CreateResourceInteractor.Output.PasswordExpired -> {
                 /* will not happen in BaseAuthenticatedPresenter */
             }
-            is CreateResourceUseCase.Output.Success -> {
+            is CreateResourceInteractor.Output.Success -> {
                 addLocalResourceUseCase.execute(AddLocalResourceUseCase.Input(result.resource.resourceModel))
                 addLocalResourcePermissionsUseCase.execute(
                     AddLocalResourcePermissionsUseCase.Input(listOf(result.resource))
@@ -410,20 +411,19 @@ class UpdateResourcePresenter(
     private fun getFieldValue(fieldName: String) =
         fields.find { it.field.name == fieldName }?.value
 
-    private suspend fun createResourceInput(): CreateResourceUseCase.Input {
-        val defaultCreateResourceType = getResourceTypeWithFieldsBySlugUseCase.execute(
-            GetResourceTypeWithFieldsBySlugUseCase.Input()
+    private fun createResourceCommonCreateInput() =
+        CreateResourceInteractor.CommonInput(
+            resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
+            resourceUsername = getFieldValue(USERNAME_FIELD),
+            resourceUri = getFieldValue(URI_FIELD),
+            resourceParentFolderId = resourceParentFolderId
         )
-        return CreateResourceUseCase.Input(
-            defaultCreateResourceType.resourceTypeId,
-            getFieldValue(NAME_FIELD)!!, // validated to be not null
-            getFieldValue(PASSWORD_FIELD)!!, // validated to be not null
-            getFieldValue(DESCRIPTION_FIELD),
-            getFieldValue(USERNAME_FIELD),
-            getFieldValue(URI_FIELD),
-            resourceParentFolderId
+
+    private fun createResourceCustomInput() =
+        CreatePasswordAndDescriptionResourceInteractor.CreatePasswordAndDescriptionInput(
+            password = getFieldValue(PASSWORD_FIELD)!!, // validated to be not null
+            getFieldValue(DESCRIPTION_FIELD)
         )
-    }
 
     private fun Validation.ValueValidation<String>.validateRules(
         rule: Rule<String>,

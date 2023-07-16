@@ -21,70 +21,81 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.resources.interactor
+package com.passbolt.mobile.android.core.resources.interactor.create
 
 import com.passbolt.mobile.android.core.resources.SecretInputCreator
-import com.passbolt.mobile.android.core.users.FetchUsersUseCase
 import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
+import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.EncryptedSecretOrError
-import com.passbolt.mobile.android.ui.UserModel
 
-class UpdateStandaloneTotpResourceInteractor(
-    private val secretInputCreator: SecretInputCreator,
+class CreateStandaloneTotpResourceInteractor(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
+    private val secretInputCreator: SecretInputCreator,
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
     private val openPgp: OpenPgp,
-    passphraseMemoryCache: PassphraseMemoryCache,
-    resourceModelMapper: ResourceModelMapper,
+    private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     resourceRepository: ResourceRepository,
-    fetchUsersUseCase: FetchUsersUseCase,
+    resourceModelMapper: ResourceModelMapper,
+    passphraseMemoryCache: PassphraseMemoryCache,
+    permissionsModelMapper: PermissionsModelMapper,
     getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase
 ) :
-    UpdateResourceInteractor<UpdateStandaloneTotpResourceInteractor.UpdateStandaloneTotpInput>(
-        passphraseMemoryCache,
-        resourceModelMapper,
+    CreateResourceInteractor<CreateStandaloneTotpResourceInteractor.CreateStandaloneTotpInput>(
         resourceRepository,
-        fetchUsersUseCase,
+        resourceModelMapper,
+        passphraseMemoryCache,
+        permissionsModelMapper,
         getResourceTypeIdToSlugMappingUseCase
     ) {
 
     override val slug = "totp"
 
-    override suspend fun createSecrets(
+    override suspend fun createCommonDescription(customInput: CreateStandaloneTotpInput): String? =
+        null
+
+    override suspend fun createSecret(
         input: CommonInput,
-        customInput: UpdateStandaloneTotpInput,
-        passphrase: ByteArray,
-        usersWhoHaveAccess: List<UserModel>
-    ): List<EncryptedSecretOrError> {
-        return usersWhoHaveAccess.mapTo(mutableListOf()) {
-            val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-            val privateKey = getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
-            val publicKey = it.gpgKey.armoredKey
-            val secret = secretInputCreator.createTotpSecretInput(
-                customInput.algorithm,
-                customInput.secretKey,
-                customInput.digits,
-                customInput.period
-            )
-            when (val encryptedSecret = openPgp.encryptSignMessageArmored(publicKey, privateKey, passphrase, secret)) {
-                is OpenPgpResult.Error -> EncryptedSecretOrError.Error(encryptedSecret.error.message)
-                is OpenPgpResult.Result -> EncryptedSecretOrError.EncryptedSecret(it.id, encryptedSecret.result)
+        customInput: CreateStandaloneTotpInput,
+        passphrase: ByteArray
+    ): EncryptedSecretOrError {
+        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+        val userServerId = requireNotNull(getSelectedAccountDataUseCase.execute(Unit).serverId)
+        val privateKey = getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
+        val secret = secretInputCreator.createTotpSecretInput(
+            algorithm = customInput.algorithm,
+            key = customInput.secretKey,
+            digits = customInput.digits,
+            period = customInput.period
+        )
+
+        return when (val publicKey = openPgp.generatePublicKey(privateKey)) {
+            is OpenPgpResult.Error ->
+                EncryptedSecretOrError.Error(publicKey.error.message)
+            is OpenPgpResult.Result -> {
+                when (val encryptedSecret =
+                    openPgp.encryptSignMessageArmored(publicKey.result, privateKey, passphrase, secret)) {
+                    is OpenPgpResult.Error ->
+                        EncryptedSecretOrError.Error(encryptedSecret.error.message)
+                    is OpenPgpResult.Result ->
+                        EncryptedSecretOrError.EncryptedSecret(
+                            userServerId,
+                            encryptedSecret.result
+                        )
+                }
             }
         }
     }
 
-    override suspend fun createCommonDescription(customInput: UpdateStandaloneTotpInput): String? =
-        null
-
-    class UpdateStandaloneTotpInput(
+    class CreateStandaloneTotpInput(
         val period: Long,
         val digits: Int,
         val algorithm: String,

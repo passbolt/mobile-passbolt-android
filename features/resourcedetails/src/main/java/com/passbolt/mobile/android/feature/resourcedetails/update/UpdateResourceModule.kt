@@ -40,10 +40,8 @@ fun Module.updateResourceModule() {
                 coroutineLaunchContext = get(),
                 passwordGenerator = get(),
                 entropyViewMapper = get(),
-                createResourceUseCase = get(),
                 addLocalResourceUseCase = get(),
                 updateLocalResourceUseCase = get(),
-                getResourceTypeWithFieldsBySlugUseCase = get(),
                 resourceTypeFactory = get(),
                 editFieldsModelCreator = get(),
                 newFieldsModelCreator = get(),
@@ -55,7 +53,8 @@ fun Module.updateResourceModule() {
                 createResourceIdlingResource = get(),
                 updateResourceIdlingResource = get(),
                 updateSimplePasswordResourceInteractor = get(),
-                updatePasswordAndDescriptionResourceInteractor = get()
+                updatePasswordAndDescriptionResourceInteractor = get(),
+                createPasswordAndDescriptionResourceInteractor = get()
             )
         }
 

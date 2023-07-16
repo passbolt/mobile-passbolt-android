@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.resources.interactor
+package com.passbolt.mobile.android.core.resources.interactor.update
 
 import com.passbolt.mobile.android.core.resources.SecretInputCreator
 import com.passbolt.mobile.android.core.users.FetchUsersUseCase

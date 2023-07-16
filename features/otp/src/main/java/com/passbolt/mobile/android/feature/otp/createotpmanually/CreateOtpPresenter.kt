@@ -28,14 +28,13 @@ import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.resources.interactor.UpdateResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.UpdateStandaloneTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.UpdateToLinkedTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.usecase.CreateStandaloneTotpResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.database.impl.resources.UpdateLocalResourceUseCase
-import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
@@ -48,9 +47,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class CreateOtpPresenter(
-    private val createStandaloneTotpResourceUseCase: CreateStandaloneTotpResourceUseCase,
+    private val createStandaloneTotpResourceInteractor: CreateStandaloneTotpResourceInteractor,
     private val updateStandaloneTotpResourceInteractor: UpdateStandaloneTotpResourceInteractor,
-    private val getResourceTypeWithFieldsBySlugUseCase: GetResourceTypeWithFieldsBySlugUseCase,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
     private val secretInteractor: SecretInteractor,
@@ -150,14 +148,17 @@ class CreateOtpPresenter(
         scope.launch {
             view?.showProgress()
             when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                createStandaloneTotpResourceUseCase.execute(createStandaloneTotpResourceInput())
+                createStandaloneTotpResourceInteractor.execute(
+                    createCommonStandaloneTotpResourceCreateInput(),
+                    createStandaloneTotpResourceCreateInput()
+                    )
             }) {
-                is CreateStandaloneTotpResourceUseCase.Output.Failure<*> -> view?.showGenericError()
-                is CreateStandaloneTotpResourceUseCase.Output.OpenPgpError -> view?.showEncryptionError(result.message)
-                is CreateStandaloneTotpResourceUseCase.Output.PasswordExpired -> {
+                is CreateResourceInteractor.Output.Failure<*> -> view?.showGenericError()
+                is CreateResourceInteractor.Output.OpenPgpError -> view?.showEncryptionError(result.message)
+                is CreateResourceInteractor.Output.PasswordExpired -> {
                     /* will not happen in BaseAuthenticatedPresenter */
                 }
-                is CreateStandaloneTotpResourceUseCase.Output.Success -> {
+                is CreateResourceInteractor.Output.Success -> {
                     view?.navigateToOtpListInCreateFlow(otpCreated = true)
                 }
             }
@@ -226,20 +227,23 @@ class CreateOtpPresenter(
             resourceParentFolderId = resource.folderId
         )
 
-    private suspend fun createStandaloneTotpResourceInput(): CreateStandaloneTotpResourceUseCase.Input {
-        val totpResourceType = getResourceTypeWithFieldsBySlugUseCase.execute(
-            GetResourceTypeWithFieldsBySlugUseCase.Input(ResourceTypeFactory.SLUG_TOTP)
-        )
-        return CreateStandaloneTotpResourceUseCase.Input(
-            resourceTypeId = totpResourceType.resourceTypeId,
-            issuer = issuer,
-            label = label,
+    // creates standalone totp
+    private fun createStandaloneTotpResourceCreateInput() =
+        CreateStandaloneTotpResourceInteractor.CreateStandaloneTotpInput(
             period = period,
             digits = digits,
             algorithm = algorithm,
             secretKey = secret
         )
-    }
+
+    // updates existing resource to linked totp resource
+    private fun createCommonStandaloneTotpResourceCreateInput() =
+        CreateResourceInteractor.CommonInput(
+            resourceName = label,
+            resourceUsername = null,
+            resourceUri = issuer,
+            resourceParentFolderId = null
+        )
 
     override fun advancedSettingsClick() {
         view?.navigateToCreateOtpAdvancedSettings(
