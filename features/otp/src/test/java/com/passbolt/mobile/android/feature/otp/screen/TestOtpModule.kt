@@ -36,8 +36,8 @@ import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResource
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
-import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
+import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
@@ -51,6 +51,7 @@ internal val mockGetLocalOtpResourcesUseCase = mock<GetLocalOtpResourcesUseCase>
 internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
 internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
 internal val mockUpdateStandaloneTotpResourceInteractor = mock<UpdateStandaloneTotpResourceInteractor>()
+internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testOtpModule = module {
@@ -60,7 +61,6 @@ internal val testOtpModule = module {
     factoryOf(::UsersModelMapper)
     factoryOf(::GroupsModelMapper)
     factoryOf(::PermissionsModelMapper)
-    factoryOf(::ResourceMenuModelMapper)
     factoryOf(::InitialsProvider)
     single { mock<FullDataRefreshExecutor>() }
     factory<OtpContract.Presenter> {
@@ -72,7 +72,7 @@ internal val testOtpModule = module {
             coroutineLaunchContext = get(),
             searchableMatcher = get(),
             otpModelMapper = get(),
-            resourceMenuModelMapper = get(),
+            createResourceMoreMenuModelUseCase = mockCreateResourceMoreMenuModelUseCase,
             updateLocalResourceUseCase = mockUpdateLocalResourceUseCase,
             updateStandaloneTotpResourceInteractor = mockUpdateStandaloneTotpResourceInteractor
         )

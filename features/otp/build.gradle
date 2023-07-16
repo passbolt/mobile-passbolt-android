@@ -36,11 +36,14 @@ dependencies {
     implementation project(':resourcetypes')
     implementation project(':otpcore')
     implementation project(':users')
-    implementation project(':serializers')
+    implementation project(':supportedresourcetypes')
     implementation project(':networking')
     implementation project(':resourcepicker')
     implementation project(':resourcepicker')
     implementation project(':gopenpgp')
+    implementation project(':resourcemoremenu')
+    implementation project(':otpeditmoremenu')
+    implementation project(':scanotp')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

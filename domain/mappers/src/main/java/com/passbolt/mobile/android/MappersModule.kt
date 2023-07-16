@@ -30,7 +30,6 @@ import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
-import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.mappers.ResourcePickerMapper
 import com.passbolt.mobile.android.mappers.ResourceTypesModelMapper
@@ -54,7 +53,6 @@ val mappersModule = module {
     singleOf(::SignOutMapper)
     singleOf(::CreateResourceMapper)
     singleOf(::ResourceTypesModelMapper)
-    singleOf(::ResourceMenuModelMapper)
     singleOf(::UsersModelMapper)
     singleOf(::SwitchAccountUiModelComparator)
     singleOf(::SwitchAccountModelMapper)

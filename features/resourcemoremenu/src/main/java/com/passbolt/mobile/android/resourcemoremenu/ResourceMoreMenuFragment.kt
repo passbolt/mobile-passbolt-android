@@ -90,7 +90,9 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
             setDebouncingOnClickAndDismiss(favourite) { listener?.menuFavouriteClick(menuModel.favouriteOption) }
             setDebouncingOnClickAndDismiss(share) { listener?.menuShareClick() }
             setDebouncingOnClickAndDismiss(delete) { listener?.menuDeleteClick() }
-            setDebouncingOnClickAndDismiss(edit) { listener?.menuEditClick() }
+            setDebouncingOnClickAndDismiss(editPassword) { listener?.menuEditClick() }
+            setDebouncingOnClickAndDismiss(manageTotp) { listener?.menuManageTotpClick() }
+            setDebouncingOnClickAndDismiss(addTotp) { listener?.menuAddTotpClick() }
             setDebouncingOnClickAndDismiss(close)
         }
     }
@@ -132,11 +134,19 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
     }
 
     override fun showEditButton() {
-        binding.edit.visible()
+        binding.editPassword.visible()
     }
 
     override fun showShareButton() {
         binding.share.visible()
+    }
+
+    override fun showManageTotpButton() {
+        binding.manageTotp.visible()
+    }
+
+    override fun showAddTotpButton() {
+        binding.addTotp.visible()
     }
 
     companion object {
@@ -158,5 +168,7 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
         fun menuEditClick()
         fun menuShareClick()
         fun menuFavouriteClick(option: FavouriteOption)
+        fun menuAddTotpClick()
+        fun menuManageTotpClick()
     }
 }

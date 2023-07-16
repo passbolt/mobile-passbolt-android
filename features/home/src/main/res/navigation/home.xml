@@ -63,6 +63,14 @@
     </action>
 
     <action
+        android:id="@+id/action_home_to_scanOtp"
+        app:destination="@id/scanOtpNav"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <action
         android:id="@+id/action_homeChild_to_home"
         app:destination="@id/home"
         app:enterAnim="@anim/slide_in_right"
@@ -76,7 +84,9 @@
             app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel" />
     </action>
 
-    <include app:graph="@navigation/folder_details"/>
+    <include app:graph="@navigation/folder_details" />
 
-    <include app:graph="@navigation/createfolder"/>
+    <include app:graph="@navigation/createfolder" />
+
+    <include app:graph="@navigation/scan_otp" />
 </navigation>

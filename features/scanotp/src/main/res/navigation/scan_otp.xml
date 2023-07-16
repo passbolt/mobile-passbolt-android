@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scanOtpNav"
+    app:startDestination="@id/scanOtpFragment">
+
+    <fragment
+        android:id="@+id/scanOtpFragment"
+        android:name="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment"
+        android:label="ScanOtpFragment"
+        tools:layout="@layout/fragment_scan_otp" />
+
+</navigation>

@@ -16,6 +16,9 @@ dependencies {
     implementation project(':database')
     implementation project(':gopenpgp')
     implementation project(':localization')
+    implementation project(':resources')
+    implementation project(':resourcetypes')
+    implementation project(':supportedresourcetypes')
 
     implementation libs.androidx.core
     implementation libs.androidx.appcompat

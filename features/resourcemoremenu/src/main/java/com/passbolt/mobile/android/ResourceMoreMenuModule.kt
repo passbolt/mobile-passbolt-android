@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android
 
 import com.passbolt.mobile.android.resourcemoremenu.resourceMoreMenuModule
+import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 /**
@@ -27,5 +29,6 @@ import org.koin.dsl.module
  */
 
 val resourceMoreMenuModule = module {
+    singleOf(::CreateResourceMoreMenuModelUseCase)
     resourceMoreMenuModule()
 }

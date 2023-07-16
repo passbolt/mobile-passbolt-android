@@ -29,8 +29,8 @@ import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.dto.response.ResourceDefinition
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
-import com.passbolt.mobile.android.serializers.SupportedContentTypes
 import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_STRING_SLUG
 import org.junit.Test
 import org.koin.test.KoinTest
 import java.util.UUID
@@ -56,7 +56,7 @@ class ResourceTypesListDeserializerTest : KoinTest {
             ),
             ResourceTypeDto(
                 UUID.randomUUID(),
-                SupportedContentTypes.PASSWORD_STRING_SLUG,
+                PASSWORD_STRING_SLUG,
                 "name",
                 "description",
                 ResourceDefinition(JsonObject(), JsonObject())

@@ -24,7 +24,10 @@
 package com.passbolt.mobile.android.serializers.gson.validation
 
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
-import com.passbolt.mobile.android.serializers.SupportedContentTypes
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_STRING_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.TOTP_SLUG
 
 class ResourceValidationRunner {
 
@@ -33,10 +36,10 @@ class ResourceValidationRunner {
 
     private companion object {
         private val validations = mapOf(
-            SupportedContentTypes.PASSWORD_STRING_SLUG to PasswordStringResourceValidation(),
-            SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG to PasswordAndDescriptionResourceValidation(),
-            SupportedContentTypes.TOTP_SLUG to TotpResourceValidation(),
-            SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG to PasswordDescriptionTotpResourceValidation()
+            PASSWORD_STRING_SLUG to PasswordStringResourceValidation(),
+            PASSWORD_AND_DESCRIPTION_SLUG to PasswordAndDescriptionResourceValidation(),
+            TOTP_SLUG to TotpResourceValidation(),
+            PASSWORD_DESCRIPTION_TOTP_SLUG to PasswordDescriptionTotpResourceValidation()
         )
     }
 }

@@ -28,15 +28,14 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
-import com.passbolt.mobile.android.feature.otp.R
-import com.passbolt.mobile.android.feature.otp.databinding.FragmentScanOtpBinding
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.feature.scanotp.R
+import com.passbolt.mobile.android.feature.scanotp.databinding.FragmentScanOtpBinding
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -49,7 +48,6 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
     private lateinit var scanManagerScope: Scope
     private lateinit var scanManager: ScanManager
     private val flagSecureSetter: FlagSecureSetter by inject()
-    private val args: ScanOtpFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,7 +56,6 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
         scanManager = scanManagerScope.get()
 
         presenter.attach(this)
-        presenter.argsRetrieved(args.launchScanForResult)
     }
 
     override fun onResume() {
@@ -111,12 +108,6 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
 
     override fun showNotAnOtpBarcode() {
         binding.tooltip.text = getString(R.string.otp_scan_not_a_totp_qr)
-    }
-
-    override fun navigateToScanOtpSuccess(scannedTotp: OtpParseResult.OtpQr.TotpQr) {
-        findNavController().navigate(
-            ScanOtpFragmentDirections.actionScanOtpFragmentToScanOtpSuccessFragment(scannedTotp)
-        )
     }
 
     override fun setFlagSecure() {

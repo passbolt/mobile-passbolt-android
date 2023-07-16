@@ -32,9 +32,9 @@ import com.passbolt.mobile.android.mappers.ResourcePickerMapper
 import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModel
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.resourcepicker.model.SearchInputEndIconMode
-import com.passbolt.mobile.android.serializers.SupportedContentTypes
-import com.passbolt.mobile.android.serializers.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
-import com.passbolt.mobile.android.serializers.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.allSlugs
 import com.passbolt.mobile.android.ui.SelectableResourceModelWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -161,7 +161,7 @@ class ResourcePickerPresenter(
             .keys
 
         resourceList = getLocalResourcesUseCase.execute(
-            GetLocalResourcesUseCase.Input(SupportedContentTypes.allSlugs)
+            GetLocalResourcesUseCase.Input(allSlugs)
         )
             .resources
             .map { resourcePickerMapper.map(it, selectableResourceTypesIds) }

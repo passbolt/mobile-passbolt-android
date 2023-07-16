@@ -9,6 +9,7 @@ dependencies {
     implementation project(':database')
     implementation project(':storage')
     implementation project(':resourcetypes')
+    implementation project(':supportedresourcetypes')
 
     implementation libs.di.koin
     implementation libs.gson

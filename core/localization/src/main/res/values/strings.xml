@@ -76,6 +76,8 @@
     <string name="more_share">Share password</string>
     <string name="more_add_to_favourite">Add to favourite</string>
     <string name="more_remove_from_favourite">Remove from favourite</string>
+    <string name="more_add_totp">Add TOTP</string>
+    <string name="more_manage_totp">TOTP</string>
 
     <string name="folder_more_see_details">See details</string>
 
@@ -259,6 +261,7 @@
     <string name="resource_details_decryption_failure">Error during secret decryption</string>
     <string name="resource_details_fetch_failure">Error during downloading the secret</string>
     <string name="resource_details_information">Information</string>
+    <string name="resource_details_invalid_totp_scanned">Invalid TOTP QR code scanned</string>
 
     <string name="more_details_copy_password">Copy password</string>
     <string name="more_details_copy_description">Copy description</string>
@@ -464,6 +467,10 @@
     <string name="otp_edit_title">Edit TOTP</string>
     <string name="otp_edit_scan_new">Scan a new QR code</string>
     <string name="otp_edit_edit_manually">Edit the TOTP manually</string>
+
+    <string name="otp_create_title">Create TOTP</string>
+    <string name="otp_create_scan_new">Scan a new QR code</string>
+    <string name="otp_create_edit_manually">Create the TOTP manually</string>
 
     <string name="otp_delete_totp">Delete TOTP</string>
     <string name="otp_deleted">TOTP was deleted</string>

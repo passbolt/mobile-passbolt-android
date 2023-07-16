@@ -44,18 +44,25 @@ import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResou
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
-import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
-import com.passbolt.mobile.android.serializers.SupportedContentTypes
+import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
@@ -83,7 +90,7 @@ class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val searchableMatcher: SearchableMatcher,
-    private val resourceMenuModelMapper: ResourceMenuModelMapper,
+    private val createResourceMenuModelUseCase: CreateResourceMoreMenuModelUseCase,
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
     private val getLocalResourcesFilteredByTag: GetLocalResourcesFilteredByTagUseCase,
     private val getLocalSubFoldersForFolderUseCase: GetLocalSubFoldersForFolderUseCase,
@@ -97,7 +104,10 @@ class HomePresenter(
     private val homeModelMapper: HomeDisplayViewMapper,
     private val domainProvider: DomainProvider,
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
-    private val deleteResourceIdlingResource: DeleteResourceIdlingResource
+    private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
+    private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
+    private val secretInteractor: SecretInteractor,
+    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
     KoinScopeComponent {
 
@@ -325,7 +335,7 @@ class HomePresenter(
         coroutineScope.launch {
             runWithHandlingMissingItem({
                 suggestedResourceList = if (shouldShowSuggested()) {
-                    getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(SupportedContentTypes.homeSlugs))
+                    getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(homeSlugs))
                         .resources
                         .filter {
                             val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
@@ -393,7 +403,10 @@ class HomePresenter(
 
     private suspend fun showResourcesFromDatabase() {
         resourceList = getLocalResourcesUseCase.execute(
-            GetLocalResourcesUseCase.Input(SupportedContentTypes.homeSlugs, homeView)
+            GetLocalResourcesUseCase.Input(
+                homeSlugs,
+                homeView
+            )
         ).resources
         foldersList = emptyList()
         tagsList = emptyList()
@@ -412,7 +425,10 @@ class HomePresenter(
             foldersList = emptyList()
             groupsList = emptyList()
             resourceList = getLocalResourcesWithTagUseCase.execute(
-                GetLocalResourcesWithTagUseCase.Input(tags, SupportedContentTypes.homeSlugs)
+                GetLocalResourcesWithTagUseCase.Input(
+                    tags,
+                    homeSlugs
+                )
             ).resources
         }
         displayHomeData()
@@ -429,7 +445,10 @@ class HomePresenter(
             foldersList = emptyList()
             groupsList = emptyList()
             resourceList = getLocalResourcesWithGroupsUseCase.execute(
-                GetLocalResourcesWithGroupUseCase.Input(groups, SupportedContentTypes.homeSlugs)
+                GetLocalResourcesWithGroupUseCase.Input(
+                    groups,
+                    homeSlugs
+                )
             ).resources
         }
         displayHomeData()
@@ -440,7 +459,10 @@ class HomePresenter(
         groupsList = emptyList()
         when (
             val result = getLocalResourcesAndFoldersUseCase.execute(
-                GetLocalResourcesAndFoldersUseCase.Input(folders.activeFolder, SupportedContentTypes.homeSlugs)
+                GetLocalResourcesAndFoldersUseCase.Input(
+                    folders.activeFolder,
+                    homeSlugs
+                )
             )
         ) {
             is GetLocalResourcesAndFoldersUseCase.Output.Failure -> {
@@ -469,7 +491,7 @@ class HomePresenter(
                     groupsList,
                     filteredSubFolders,
                     filteredSubFolderResources,
-                    HomeFragment.HeaderSectionConfiguration(
+                    HeaderSectionConfiguration(
                         isInCurrentFolderSectionVisible = false,
                         isInSubFoldersSectionVisible = false,
                         isOtherItemsSectionVisible = !areListsEmpty(
@@ -525,7 +547,7 @@ class HomePresenter(
                 filteredGroups,
                 filteredSubFolders,
                 filteredSubFolderResources,
-                HomeFragment.HeaderSectionConfiguration(
+                HeaderSectionConfiguration(
                     isInCurrentFolderSectionVisible =
                     homeView is HomeDisplayViewModel.Folders && !areListsEmpty(filteredResources, filteredFolders),
                     isInSubFoldersSectionVisible =
@@ -542,7 +564,10 @@ class HomePresenter(
     }
 
     private suspend fun getResourcesFilteredByTag() = getLocalResourcesFilteredByTag.execute(
-        GetLocalResourcesFilteredByTagUseCase.Input(currentSearchText.value, SupportedContentTypes.homeSlugs)
+        GetLocalResourcesFilteredByTagUseCase.Input(
+            currentSearchText.value,
+            homeSlugs
+        )
     ).resources
 
     private suspend fun populateSubFoldersFilteringResults(folders: HomeDisplayViewModel.Folders) {
@@ -563,7 +588,9 @@ class HomePresenter(
     private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderWithCountAndPath>) =
         getLocalResourcesFiltered.execute(
             GetLocalSubFolderResourcesFilteredUseCase.Input(
-                allSubFolders.map { it.folderId }, currentSearchText.value, SupportedContentTypes.homeSlugs
+                allSubFolders.map { it.folderId },
+                currentSearchText.value,
+                homeSlugs
             )
         ).resources
 
@@ -591,7 +618,13 @@ class HomePresenter(
 
     override fun resourceMoreClick(resourceModel: ResourceModel) {
         currentMoreMenuResource = resourceModel
-        view?.navigateToMore(resourceMenuModelMapper.map(resourceModel))
+        coroutineScope.launch {
+            createResourceMenuModelUseCase.execute(
+                CreateResourceMoreMenuModelUseCase.Input(resourceModel.resourceId)
+            )
+                .resourceMenuModel
+                .let { view?.navigateToMore(it) }
+        }
     }
 
     override fun itemClick(resourceModel: ResourceModel) {
@@ -834,4 +867,82 @@ class HomePresenter(
         initRefresh()
         view?.showFolderCreated(name)
     }
+
+    override fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?) {
+        if (totpQr == null) {
+            view?.showInvalidTotpScanned()
+            return
+        }
+        coroutineScope.launch {
+            val resourceModel = requireNotNull(currentMoreMenuResource)
+            view?.showProgress()
+                when (val fetchedSecret = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    secretInteractor.fetchAndDecrypt(resourceModel.resourceId)
+                }) {
+                    is SecretInteractor.Output.DecryptFailure -> {
+                        Timber.e("Failed to decrypt secret during linking totp resource")
+                        view?.showEncryptionError(fetchedSecret.error.message)
+                    }
+                    is SecretInteractor.Output.FetchFailure -> {
+                        Timber.e("Failed to fetch secret during linking totp resource")
+                        view?.showGeneralError()
+                    }
+                    is SecretInteractor.Output.Success -> {
+                        when (val editResourceResult =
+                            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                                updateToLinkedTotpResourceInteractor.execute(
+                                    createCommonLinkToTotpUpdateInput(resourceModel),
+                                    createUpdateToLinkedTotpInput(
+                                        totpQr,
+                                        fetchedSecret.decryptedSecret,
+                                        resourceModel.resourceTypeId
+                                    )
+                                )
+                            }) {
+                            is UpdateResourceInteractor.Output.Success -> {
+                                updateLocalResourceUseCase.execute(
+                                    UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                                )
+                                fullDataRefreshExecutor.performFullDataRefresh()
+                            }
+                            is UpdateResourceInteractor.Output.Failure<*> ->
+                                view?.showGeneralError(editResourceResult.response.exception.message.orEmpty())
+                            is UpdateResourceInteractor.Output.PasswordExpired -> {
+                                /* will not happen in BaseAuthenticatedPresenter */
+                            }
+                            is UpdateResourceInteractor.Output.OpenPgpError ->
+                                view?.showEncryptionError(editResourceResult.message)
+                        }
+                    }
+                    is SecretInteractor.Output.Unauthorized -> {
+                        /* will not happen in BaseAuthenticatedPresenter */
+                    }
+                }
+            view?.hideProgress()
+        }
+    }
+
+    // updates existing resource to linked totp resource
+    private fun createCommonLinkToTotpUpdateInput(resource: ResourceModel) =
+        UpdateResourceInteractor.CommonInput(
+            resourceId = resource.resourceId,
+            resourceName = resource.name,
+            resourceUsername = resource.username,
+            resourceUri = resource.url,
+            resourceParentFolderId = resource.folderId
+        )
+
+    private fun createUpdateToLinkedTotpInput(
+        totpQr: OtpParseResult.OtpQr.TotpQr,
+        fetchedSecret: ByteArray,
+        existingResourceTypeId: String
+    ) =
+        UpdateToLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
+            period = totpQr.period,
+            digits = totpQr.digits,
+            algorithm = totpQr.algorithm.name,
+            secretKey = totpQr.secret,
+            existingSecret = fetchedSecret,
+            existingResourceTypeId = existingResourceTypeId
+        )
 }

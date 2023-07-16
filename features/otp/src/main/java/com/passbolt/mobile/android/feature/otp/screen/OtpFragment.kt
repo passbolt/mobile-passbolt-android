@@ -61,11 +61,12 @@ import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
-import com.passbolt.mobile.android.feature.otp.editmoremenu.OtpEditMoreMenuFragment
 import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
+import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import com.passbolt.mobile.android.ui.OtpResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -75,7 +76,7 @@ import org.koin.android.ext.android.inject
 class OtpFragment :
     BindingScopedAuthenticatedFragment<FragmentOtpBinding, OtpContract.View>(FragmentOtpBinding::inflate),
     OtpContract.View, SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener,
-    OtpEditMoreMenuFragment.Listener {
+    OtpUpdateMoreMenuFragment.Listener {
 
     override val presenter: OtpContract.Presenter by inject()
     private val otpAdapter: ItemAdapter<OtpItem> by inject()
@@ -119,9 +120,9 @@ class OtpFragment :
         }
     }
 
-    private val otpEditByScanningScannedResult = { _: String, result: Bundle ->
+    private val otpQrScannedResult = { _: String, result: Bundle ->
         if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
-            presenter.otpEditedByScanningNew(
+            presenter.otpQrScanned(
                 result.getParcelable(ScanOtpFragment.EXTRA_SCANNED_OTP)
             )
         }
@@ -246,8 +247,8 @@ class OtpFragment :
     }
 
     override fun navigateToEditOtpMenu() {
-        OtpEditMoreMenuFragment()
-            .show(childFragmentManager, OtpEditMoreMenuFragment::class.java.name)
+        OtpUpdateMoreMenuFragment()
+            .show(childFragmentManager, OtpUpdateMoreMenuFragment::class.java.name)
     }
 
     override fun showOtmMoreMenu(moreMenuModel: ResourceMoreMenuModel) {
@@ -328,13 +329,13 @@ class OtpFragment :
         Toast.makeText(requireContext(), getString(R.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }
 
-    override fun navigateToScanOtpQrCode() {
+    override fun navigateToScanOtpSuccess(totpQr: OtpParseResult.OtpQr.TotpQr) {
         setFragmentResultListener(
             ScanOtpSuccessFragment.REQUEST_SCAN_OTP,
-            otpScannedResult
+            otpCreatedResult
         )
         findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment(false)
+            OtpFragmentDirections.actionOtpFragmentToScanOtpSuccessFragment(totpQr)
         )
     }
 
@@ -403,10 +404,10 @@ class OtpFragment :
     override fun navigateToScanOtpCodeForResult() {
         setFragmentResultListener(
             ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
-            otpEditByScanningScannedResult
+            otpQrScannedResult
         )
         findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment(true)
+            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment()
         )
     }
 

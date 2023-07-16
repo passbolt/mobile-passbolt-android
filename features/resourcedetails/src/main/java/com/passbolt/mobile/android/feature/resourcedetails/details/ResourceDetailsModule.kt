@@ -46,7 +46,7 @@ fun Module.detailsModule() {
         scoped<ResourceDetailsContract.Presenter> {
             ResourceDetailsPresenter(
                 getFeatureFlagsUseCase = get(),
-                resourceMenuModelMapper = get(),
+                createResourceMenuModelUseCase = get(),
                 getLocalResourceUseCase = get(),
                 getLocalResourcePermissionsUseCase = get(),
                 getLocalResourceTagsUseCase = get(),
@@ -55,7 +55,10 @@ fun Module.detailsModule() {
                 totpParametersProvider = get(),
                 otpModelMapper = get(),
                 getResourceTypeIdToSlugMappingUseCase = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
+                updateLocalResourceUseCase = get(),
+                updateToLinkedTotpResourceInteractor = get(),
+                secretInteractor = get()
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {

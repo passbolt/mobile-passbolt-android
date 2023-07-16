@@ -41,15 +41,10 @@ class ScanOtpPresenter(
 
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private var isScanLaunchedForResult: Boolean = false
 
     override fun attach(view: ScanOtpContract.View) {
         super.attach(view)
         initQrScanning()
-    }
-
-    override fun argsRetrieved(isScanLaunchedForResult: Boolean) {
-        this.isScanLaunchedForResult = isScanLaunchedForResult
     }
 
     private fun initQrScanning() {
@@ -68,7 +63,7 @@ class ScanOtpPresenter(
             is OtpParseResult.OtpQr -> when (parserResult) {
                 is OtpParseResult.OtpQr.TotpQr -> {
                     scope.coroutineContext.cancelChildren()
-                    totpScanned(parserResult)
+                    view?.setResultAndNavigateBack(parserResult)
                 }
                 is OtpParseResult.OtpQr.HotpQr -> {} // HOTP is not supported yet
             }
@@ -80,23 +75,14 @@ class ScanOtpPresenter(
             is OtpParseResult.ScanFailure -> view?.showBarcodeScanError(parserResult.exception?.message)
             is OtpParseResult.IncompleteOtpParameters.IncompleteHotpParametrs -> {} // HOTP is not supported yet
             is OtpParseResult.IncompleteOtpParameters.IncompleteTotpParameters -> {
-                // TODO navigate to manual form entry
                 Timber.d("Incomplete TOTP parameters")
             }
         }
     }
 
-    private fun totpScanned(parserResult: OtpParseResult.OtpQr.TotpQr) {
-        if (isScanLaunchedForResult) {
-            view?.setResultAndNavigateBack(parserResult)
-        } else {
-            view?.navigateToScanOtpSuccess(parserResult)
-        }
-    }
-
     private fun parserFailure(exception: Throwable?) {
         exception?.let { Timber.e(it) }
-        // TODO show error?
+        view?.showBarcodeScanError(exception?.message)
     }
 
     override fun startCameraError(exc: Exception) {

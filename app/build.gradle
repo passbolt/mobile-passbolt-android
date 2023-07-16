@@ -150,6 +150,7 @@ dependencies {
     implementation project(':serializers')
     implementation project(':resourcepicker')
     implementation project(':tags')
+    implementation project(':scanotp')
 
     debugImplementation libs.quality.leakcanary
 

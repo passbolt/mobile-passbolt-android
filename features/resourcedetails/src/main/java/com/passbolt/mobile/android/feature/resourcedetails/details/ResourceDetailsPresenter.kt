@@ -7,17 +7,23 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
-import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
-import com.passbolt.mobile.android.serializers.SupportedContentTypes
+import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -34,6 +40,7 @@ import org.koin.core.component.get
 import org.koin.core.component.getOrCreateScope
 import org.koin.core.parameter.parametersOf
 import org.koin.core.scope.Scope
+import timber.log.Timber
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
@@ -62,7 +69,7 @@ import kotlin.time.Duration.Companion.seconds
 @Suppress("TooManyFunctions")
 class ResourceDetailsPresenter(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
-    private val resourceMenuModelMapper: ResourceMenuModelMapper,
+    private val createResourceMenuModelUseCase: CreateResourceMoreMenuModelUseCase,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
     private val getLocalResourceTagsUseCase: GetLocalResourceTagsUseCase,
@@ -71,6 +78,9 @@ class ResourceDetailsPresenter(
     private val totpParametersProvider: TotpParametersProvider,
     private val otpModelMapper: OtpModelMapper,
     private val getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
+    private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
+    private val secretInteractor: SecretInteractor,
+    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter, KoinScopeComponent {
@@ -184,7 +194,7 @@ class ResourceDetailsPresenter(
             getResourceTypeIdToSlugMappingUseCase.execute(Unit)
                 .idToSlugMapping[UUID.fromString(resourceModel.resourceTypeId)]
                 .let { slug ->
-                    if (slug == SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG) {
+                    if (slug == PASSWORD_DESCRIPTION_TOTP_SLUG) {
                         view?.showTotpSection()
                     }
                 }
@@ -231,7 +241,13 @@ class ResourceDetailsPresenter(
 
     override fun moreClick() {
         hideTotp()
-        view?.navigateToMore(resourceMenuModelMapper.map(resourceModel))
+        coroutineScope.launch {
+            createResourceMenuModelUseCase.execute(
+                CreateResourceMoreMenuModelUseCase.Input(resourceModel.resourceId)
+            )
+                .resourceMenuModel
+                .let { view?.navigateToMore(it) }
+        }
     }
 
     override fun backArrowClick() {
@@ -455,4 +471,81 @@ class ResourceDetailsPresenter(
             }
         }
     }
+
+    override fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?) {
+        if (totpQr == null) {
+            view?.showInvalidTotpScanned()
+            return
+        }
+        coroutineScope.launch {
+            runWhileShowingProgress {
+                when (val fetchedSecret = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    secretInteractor.fetchAndDecrypt(resourceModel.resourceId)
+                }) {
+                    is SecretInteractor.Output.DecryptFailure -> {
+                        Timber.e("Failed to decrypt secret during linking totp resource")
+                        view?.showEncryptionError(fetchedSecret.error.message)
+                    }
+                    is SecretInteractor.Output.FetchFailure -> {
+                        Timber.e("Failed to fetch secret during linking totp resource")
+                        view?.showGeneralError()
+                    }
+                    is SecretInteractor.Output.Success -> {
+                        when (val editResourceResult =
+                            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                                updateToLinkedTotpResourceInteractor.execute(
+                                    createCommonLinkToTotpUpdateInput(resourceModel),
+                                    createUpdateToLinkedTotpInput(
+                                        totpQr,
+                                        fetchedSecret.decryptedSecret,
+                                        resourceModel.resourceTypeId
+                                    )
+                                )
+                            }) {
+                            is UpdateResourceInteractor.Output.Success -> {
+                                updateLocalResourceUseCase.execute(
+                                    UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                                )
+                                getResourcesAndPermissions(editResourceResult.resource.resourceId)
+                            }
+                            is UpdateResourceInteractor.Output.Failure<*> ->
+                                view?.showGeneralError(editResourceResult.response.exception.message.orEmpty())
+                            is UpdateResourceInteractor.Output.PasswordExpired -> {
+                                /* will not happen in BaseAuthenticatedPresenter */
+                            }
+                            is UpdateResourceInteractor.Output.OpenPgpError ->
+                                view?.showEncryptionError(editResourceResult.message)
+                        }
+                    }
+                    is SecretInteractor.Output.Unauthorized -> {
+                        /* will not happen in BaseAuthenticatedPresenter */
+                    }
+                }
+            }
+        }
+    }
+
+    // updates existing resource to linked totp resource
+    private fun createCommonLinkToTotpUpdateInput(resource: ResourceModel) =
+        UpdateResourceInteractor.CommonInput(
+            resourceId = resource.resourceId,
+            resourceName = resource.name,
+            resourceUsername = resource.username,
+            resourceUri = resource.url,
+            resourceParentFolderId = resource.folderId
+        )
+
+    private fun createUpdateToLinkedTotpInput(
+        totpQr: OtpParseResult.OtpQr.TotpQr,
+        fetchedSecret: ByteArray,
+        existingResourceTypeId: String
+    ) =
+        UpdateToLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
+            period = totpQr.period,
+            digits = totpQr.digits,
+            algorithm = totpQr.algorithm.name,
+            secretKey = totpQr.secret,
+            existingSecret = fetchedSecret,
+            existingResourceTypeId = existingResourceTypeId
+        )
 }

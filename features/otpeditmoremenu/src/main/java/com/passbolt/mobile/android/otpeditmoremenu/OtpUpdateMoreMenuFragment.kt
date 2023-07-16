@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.editmoremenu
+package com.passbolt.mobile.android.otpeditmoremenu
 
 import android.content.Context
 import android.os.Bundle
@@ -30,9 +30,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismiss
-import com.passbolt.mobile.android.feature.otp.databinding.BottomsheetEditOtpMoreMenuBinding
+import com.passbolt.mobile.android.otpeditmoremenu.databinding.BottomsheetEditOtpMoreMenuBinding
 
-class OtpEditMoreMenuFragment : BottomSheetDialogFragment() {
+class OtpUpdateMoreMenuFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: BottomsheetEditOtpMoreMenuBinding
     private var listener: Listener? = null
