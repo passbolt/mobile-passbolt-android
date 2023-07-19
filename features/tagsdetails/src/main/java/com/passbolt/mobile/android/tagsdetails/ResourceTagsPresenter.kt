@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.tagsdetails
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.isFavourite
 import kotlinx.coroutines.CoroutineExceptionHandler

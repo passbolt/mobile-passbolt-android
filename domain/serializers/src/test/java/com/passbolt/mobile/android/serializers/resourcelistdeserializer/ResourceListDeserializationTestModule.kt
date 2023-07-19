@@ -25,10 +25,10 @@ package com.passbolt.mobile.android.serializers.resourcelistdeserializer
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeIdToSlugMappingUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
-import com.passbolt.mobile.android.serializers.gson.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.serializers.gson.validation.ResourceValidationRunner
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import org.koin.core.module.dsl.singleOf

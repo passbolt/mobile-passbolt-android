@@ -16,6 +16,8 @@ dependencies {
     implementation project(':mappers')
     implementation project(':navigation')
     implementation project(':fulldatarefresh')
+    implementation project(':folders')
+    implementation project(':resources')
 
     implementation libs.di.koin
     implementation libs.room.sqlite

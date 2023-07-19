@@ -13,12 +13,12 @@ import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RebuildResourcePermissionsTablesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.RebuildTagsTablesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RemoveFromFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.SimulateShareResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.resourcesDbModule
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -45,13 +45,14 @@ import org.koin.dsl.module
  * @since v1.0
  */
 val resourcesModule = module {
+    resourcesDbModule()
+
     singleOf(::GetResourcesUseCase)
     singleOf(::ResourceInteractor)
     singleOf(::SearchableMatcher)
     singleOf(::DeleteResourceUseCase)
     singleOf(::SecretInputCreator)
     singleOf(::RebuildResourceTablesUseCase)
-    singleOf(::RebuildTagsTablesUseCase)
     singleOf(::RebuildResourcePermissionsTablesUseCase)
     singleOf(::SimulateShareResourceUseCase)
     singleOf(::ShareResourceUseCase)

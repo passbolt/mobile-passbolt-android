@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.permissions.grouppermissiondetails
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.commongroups.usecase.db.GetGroupWithUsersUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.database.impl.groups.GetGroupWithUsersUseCase
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsContract
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsPresenter
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.resources.usecase
 
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.tags.RebuildTagsTablesUseCase
 import net.sqlcipher.SQLException
 import timber.log.Timber
 

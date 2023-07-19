@@ -12,6 +12,7 @@ dependencies {
     implementation project(':passboltapi')
     implementation project(':architecture')
     implementation project(':dto')
+    implementation project(':mappers')
 
     implementation libs.di.koin
     implementation libs.room.core

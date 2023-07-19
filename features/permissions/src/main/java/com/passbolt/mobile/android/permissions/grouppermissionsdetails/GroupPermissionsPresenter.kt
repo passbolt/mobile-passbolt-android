@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.permissions.grouppermissionsdetails
 
+import com.passbolt.mobile.android.core.commongroups.usecase.db.GetGroupWithUsersUseCase
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.database.impl.groups.GetGroupWithUsersUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.UsersDatasetCreator
 import com.passbolt.mobile.android.ui.PermissionModelUi
@@ -41,7 +41,11 @@ class GroupPermissionsPresenter(
             }
         }
         scope.launch {
-            getGroupWithUsersUseCase.execute(GetGroupWithUsersUseCase.Input(permission.group.groupId)).groupWithUsers
+            getGroupWithUsersUseCase.execute(
+                GetGroupWithUsersUseCase.Input(
+                    permission.group.groupId
+                )
+            ).groupWithUsers
                 .let {
                     view?.showGroupName(it.group.groupName)
 

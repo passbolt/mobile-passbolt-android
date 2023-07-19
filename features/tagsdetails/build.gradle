@@ -27,6 +27,7 @@ dependencies {
     implementation project(':locationdetails')
     implementation project(':fulldatarefresh')
     implementation project(':navigation')
+    implementation project(':resources')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

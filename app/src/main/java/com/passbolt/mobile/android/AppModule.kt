@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ProcessLifecycleOwner
 import coil.ImageLoader
-import com.google.gson.GsonBuilder
 import com.jakewharton.espresso.OkHttp3IdlingResource
 import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.InitialsProvider
@@ -49,9 +48,6 @@ internal val appModule = module {
     }
     factory(named<ProcessLifecycleOwner>()) {
         ProcessLifecycleOwner.get()
-    }
-    single {
-        GsonBuilder().create()
     }
     single { UuidProvider() }
     single {

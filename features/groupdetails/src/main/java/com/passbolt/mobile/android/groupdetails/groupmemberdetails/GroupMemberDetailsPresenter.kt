@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.groupdetails.groupmemberdetails
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.database.impl.users.GetLocalUserUseCase
+import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUserUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren

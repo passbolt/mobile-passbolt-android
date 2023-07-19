@@ -1,6 +1,7 @@
 package com.password.mobile.android.feature.home.screen
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
@@ -9,12 +10,10 @@ import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
-import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
@@ -614,10 +613,10 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `home should navigate to root when current folder cannot be retrieved`() {
         mockGetLocalResourcesAndFoldersUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output.Failure
+            onBlocking { execute(any()) } doReturn com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase.Output.Failure
         }
         mockGetLocalFolderUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalFolderDetailsUseCase.Output(
+            onBlocking { execute(any()) } doReturn com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase.Output(
                 FolderModel("childId", "root", "child folder", false, ResourcePermission.UPDATE)
             )
         }

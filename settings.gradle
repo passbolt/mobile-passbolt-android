@@ -30,6 +30,7 @@ coreModule "inappreview"
 coreModule "envinfo"
 coreModule "idlingresource"
 coreModule "otpcore"
+coreModule "tags"
 
 featureModule "startup"
 featureModule "setup"

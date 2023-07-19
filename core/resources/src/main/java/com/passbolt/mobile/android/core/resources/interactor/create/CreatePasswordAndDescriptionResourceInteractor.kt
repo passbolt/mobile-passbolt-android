@@ -24,7 +24,7 @@
 package com.passbolt.mobile.android.core.resources.interactor.create
 
 import com.passbolt.mobile.android.core.resources.SecretInputCreator
-import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeIdToSlugMappingUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
