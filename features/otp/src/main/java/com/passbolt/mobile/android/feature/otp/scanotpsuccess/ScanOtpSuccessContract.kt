@@ -25,6 +25,8 @@ package com.passbolt.mobile.android.feature.otp.scanotpsuccess
 
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
+import com.passbolt.mobile.android.ui.ResourceModel
 
 interface ScanOtpSuccessContract {
 
@@ -34,10 +36,14 @@ interface ScanOtpSuccessContract {
         fun navigateToOtpList(otpCreated: Boolean)
         fun showProgress()
         fun hideProgress()
+        fun navigateToResourcePicker(suggestion: String)
+        fun showError(message: String)
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {
         fun createStandaloneOtpClick()
         fun argsRetrieved(scannedTotp: OtpParseResult.OtpQr.TotpQr)
+        fun linkToResourceClick()
+        fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel)
     }
 }
