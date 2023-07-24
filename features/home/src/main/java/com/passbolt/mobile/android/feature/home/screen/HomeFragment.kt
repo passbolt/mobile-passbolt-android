@@ -40,12 +40,16 @@ import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.createfolder.CreateFolderFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
+import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.feature.home.screen.model.State
 import com.passbolt.mobile.android.feature.home.screen.recycler.FolderItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.GroupWithCountItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.InCurrentFoldersHeaderItem
@@ -54,9 +58,11 @@ import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordHeaderIt
 import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.TagWithCountItem
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
 import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
+import com.passbolt.mobile.android.otpcreatemoremenu.OtpCreateMoreMenuFragment
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder
@@ -97,7 +103,7 @@ import org.koin.core.qualifier.named
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
     HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener,
-    FiltersMenuFragment.Listener, FolderMoreMenuFragment.Listener {
+    FiltersMenuFragment.Listener, FolderMoreMenuFragment.Listener, OtpCreateMoreMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
     override val appContext = AppContext.APP
@@ -188,6 +194,14 @@ class HomeFragment :
                 presenter.resourceShared()
             }
         }
+
+    private val otpQrScanned = { _: String, result: Bundle ->
+        if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
+            presenter.otpScanned(
+                result.getParcelable(ScanOtpFragment.EXTRA_SCANNED_OTP)
+            )
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -515,6 +529,15 @@ class HomeFragment :
         presenter.menuShareClick()
     }
 
+    override fun menuAddTotpClick() {
+        OtpCreateMoreMenuFragment()
+            .show(childFragmentManager, OtpCreateMoreMenuFragment::class.java.name)
+    }
+
+    override fun menuManageTotpClick() {
+//        TODO("Not yet implemented")
+    }
+
     override fun openWebsite(url: String) {
         websiteOpener.open(requireContext(), url)
     }
@@ -529,11 +552,12 @@ class HomeFragment :
             .show()
     }
 
-    override fun showGeneralError() {
+    override fun showGeneralError(errorMessage: String?) {
         showSnackbar(
-            R.string.common_failure,
+            R.string.common_failure_format,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            backgroundColor = R.color.red,
+            messageArgs = arrayOf(errorMessage.orEmpty())
         )
     }
 
@@ -881,26 +905,43 @@ class HomeFragment :
         )
     }
 
+    override fun menuCreateOtpManuallyClick() {
+//        TODO("Not yet implemented")
+    }
+
+    override fun menuCreateByNewOtpScanClick() {
+        setFragmentResultListener(
+            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
+            otpQrScanned
+        )
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeToScanOtp()
+        )
+    }
+
+    override fun showEncryptionError(message: String) {
+        showSnackbar(
+            R.string.resource_permissions_secret_encrypt_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showInvalidTotpScanned() {
+        showSnackbar(
+            R.string.resource_details_invalid_totp_scanned,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showProgress() {
+        showProgressDialog(childFragmentManager)
+    }
+
+    override fun hideProgress() {
+        hideProgressDialog(childFragmentManager)
+    }
+
     companion object {
         private val AVATAR_SIZE = 30.px
     }
-
-    enum class State(
-        val errorVisible: Boolean,
-        val emptyVisible: Boolean,
-        val listVisible: Boolean
-    ) {
-        EMPTY(false, true, false),
-        SEARCH_EMPTY(false, true, false),
-        ERROR(true, false, false),
-        SUCCESS(false, false, true)
-    }
-
-    data class HeaderSectionConfiguration(
-        val isInCurrentFolderSectionVisible: Boolean,
-        val isInSubFoldersSectionVisible: Boolean,
-        val currentFolderName: String? = null,
-        val isSuggestedSectionVisible: Boolean,
-        val isOtherItemsSectionVisible: Boolean
-    )
 }

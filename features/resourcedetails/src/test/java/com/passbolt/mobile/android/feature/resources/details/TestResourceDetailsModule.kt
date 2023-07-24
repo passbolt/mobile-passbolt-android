@@ -9,11 +9,13 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
@@ -24,8 +26,8 @@ import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetai
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
-import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
+import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -63,7 +65,6 @@ internal val mockSecretInteractor = mock<SecretInteractor>()
 internal val mockSecretParser = mock<SecretParser>()
 internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
-internal val resourceMenuModelMapper = ResourceMenuModelMapper()
 internal val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
 internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
@@ -73,6 +74,9 @@ internal val mockGetFolderLocationUseCase = mock<GetLocalFolderLocationUseCase>(
 internal val mockGetResourceTypeWithFields = mock<GetResourceTypeWithFieldsByIdUseCase>()
 internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
 internal val mockGetResourceTypeIdToSlugMappingUseCase = mock<GetResourceTypeIdToSlugMappingUseCase>()
+internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
+internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
+internal val mockUpdateToLinkedTotpResourceInteractor = mock<UpdateToLinkedTotpResourceInteractor>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule = module {
@@ -86,7 +90,7 @@ internal val testResourceDetailsModule = module {
     factory<ResourceDetailsContract.Presenter> {
         ResourceDetailsPresenter(
             getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
-            resourceMenuModelMapper = resourceMenuModelMapper,
+            createResourceMenuModelUseCase = mockCreateResourceMoreMenuModelUseCase,
             getLocalResourceUseCase = mockGetLocalResourceUseCase,
             getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
             getLocalResourceTagsUseCase = mockResourceTagsUseCase,
@@ -95,7 +99,10 @@ internal val testResourceDetailsModule = module {
             getResourceTypeWithFieldsByIdUseCase = mockGetResourceTypeWithFields,
             totpParametersProvider = mockTotpParametersProvider,
             getResourceTypeIdToSlugMappingUseCase = mockGetResourceTypeIdToSlugMappingUseCase,
-            otpModelMapper = get()
+            otpModelMapper = get(),
+            updateLocalResourceUseCase = mockUpdateLocalResourceUseCase,
+            updateToLinkedTotpResourceInteractor = mockUpdateToLinkedTotpResourceInteractor,
+            secretInteractor = mockSecretInteractor
         )
     }
     scope<ResourceDetailsPresenter> {

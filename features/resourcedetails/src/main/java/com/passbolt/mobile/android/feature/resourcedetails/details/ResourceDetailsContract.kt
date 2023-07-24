@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.resourcedetails.details
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import com.passbolt.mobile.android.ui.PermissionModelUi
@@ -53,7 +54,7 @@ interface ResourceDetailsContract {
         fun showDescription(description: String, useSecretFont: Boolean)
         fun hidePasswordEyeIcon()
         fun openWebsite(url: String)
-        fun showGeneralError()
+        fun showGeneralError(errorMessage: String? = null)
         fun closeWithDeleteSuccessResult(name: String)
         fun navigateToEditResource(resourceModel: ResourceModel)
         fun showResourceEditedSnackbar(resourceName: String)
@@ -79,6 +80,8 @@ interface ResourceDetailsContract {
         fun showContentNotAvailable()
         fun showTotp(otpWrapper: OtpListItemWrapper?)
         fun showTotpSection()
+        fun showInvalidTotpScanned()
+        fun showEncryptionError(message: String)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -105,5 +108,6 @@ interface ResourceDetailsContract {
         fun locationClick()
         fun totpIconClick()
         fun copyTotpClick()
+        fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
     }
 }

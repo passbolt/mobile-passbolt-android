@@ -40,11 +40,13 @@ import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.core.ui.span.RoundedBackgroundSpan
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
 import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
 import com.passbolt.mobile.android.locationdetails.LocationItem
+import com.passbolt.mobile.android.otpcreatemoremenu.OtpCreateMoreMenuFragment
 import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
@@ -86,7 +88,7 @@ import org.koin.core.qualifier.named
 class ResourceDetailsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
         FragmentResourceDetailsBinding::inflate
-    ), ResourceDetailsContract.View, ResourceMoreMenuFragment.Listener {
+    ), ResourceDetailsContract.View, ResourceMoreMenuFragment.Listener, OtpCreateMoreMenuFragment.Listener {
 
     override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
@@ -142,6 +144,14 @@ class ResourceDetailsFragment :
     }
 
     private val totpViewController: TotpViewController by inject()
+
+    private val otpQrScanned = { _: String, result: Bundle ->
+        if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
+            presenter.otpScanned(
+                result.getParcelable(ScanOtpFragment.EXTRA_SCANNED_OTP)
+            )
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -352,6 +362,15 @@ class ResourceDetailsFragment :
         presenter.editClick()
     }
 
+    override fun menuAddTotpClick() {
+        OtpCreateMoreMenuFragment()
+            .show(childFragmentManager, OtpCreateMoreMenuFragment::class.java.name)
+    }
+
+    override fun menuManageTotpClick() {
+//        TODO("Not yet implemented")
+    }
+
     override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
         presenter.favouriteClick(option)
     }
@@ -400,9 +419,24 @@ class ResourceDetailsFragment :
         )
     }
 
-    override fun showGeneralError() {
+    override fun showGeneralError(errorMessage: String?) {
         showSnackbar(
-            R.string.common_failure,
+            R.string.common_failure_format,
+            backgroundColor = R.color.red,
+            messageArgs = arrayOf(errorMessage.orEmpty())
+        )
+    }
+
+    override fun showEncryptionError(message: String) {
+        showSnackbar(
+            R.string.resource_permissions_secret_encrypt_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showInvalidTotpScanned() {
+        showSnackbar(
+            R.string.resource_details_invalid_totp_scanned,
             backgroundColor = R.color.red
         )
     }
@@ -543,5 +577,19 @@ class ResourceDetailsFragment :
                 if (otpModel.isVisible) R.drawable.ic_eye_invisible else R.drawable.ic_eye_visible
             )
         }
+    }
+
+    override fun menuCreateOtpManuallyClick() {
+        // TODO
+    }
+
+    override fun menuCreateByNewOtpScanClick() {
+        setFragmentResultListener(
+            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
+            otpQrScanned
+        )
+        findNavController().navigate(
+            ResourceDetailsFragmentDirections.actionResourceDetailsToScanOtp()
+        )
     }
 }

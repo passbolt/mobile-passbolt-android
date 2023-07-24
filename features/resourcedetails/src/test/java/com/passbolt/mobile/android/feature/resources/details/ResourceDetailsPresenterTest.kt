@@ -19,8 +19,9 @@ import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
-import com.passbolt.mobile.android.serializers.SupportedContentTypes
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
@@ -133,7 +134,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         mockGetResourceTypeIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG)
+                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to PASSWORD_AND_DESCRIPTION_SLUG)
                 )
             )
         }
@@ -170,7 +171,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         mockGetResourceTypeIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
                 GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG)
+                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to PASSWORD_DESCRIPTION_TOTP_SLUG)
                 )
             )
         }

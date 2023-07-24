@@ -15,7 +15,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':fulldatarefresh')
     implementation project(':authentication')
-    implementation project(':serializers')
+    implementation project(':supportedresourcetypes')
     implementation project(':resources')
     implementation project(':resourcetypes')
 

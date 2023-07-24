@@ -29,12 +29,12 @@ import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.dto.response.PermissionDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
-import com.passbolt.mobile.android.serializers.SupportedContentTypes
 import com.passbolt.mobile.android.serializers.gson.validation.PasswordAndDescriptionResourceValidation
 import com.passbolt.mobile.android.serializers.gson.validation.PasswordDescriptionTotpResourceValidation
 import com.passbolt.mobile.android.serializers.gson.validation.PasswordStringResourceValidation
 import com.passbolt.mobile.android.serializers.gson.validation.TotpResourceValidation
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

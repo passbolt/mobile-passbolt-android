@@ -41,9 +41,9 @@ import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBotto
 import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
-import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
-import com.passbolt.mobile.android.serializers.SupportedContentTypes
+import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import com.passbolt.mobile.android.ui.OtpResourceModel
 import kotlinx.coroutines.CoroutineScope
@@ -69,7 +69,7 @@ class OtpPresenter(
     private val otpModelMapper: OtpModelMapper,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val totpParametersProvider: TotpParametersProvider,
-    private val resourceMenuModelMapper: ResourceMenuModelMapper,
+    private val createResourceMoreMenuModelUseCase: CreateResourceMoreMenuModelUseCase,
     private val updateStandaloneTotpResourceInteractor: UpdateStandaloneTotpResourceInteractor,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
@@ -96,6 +96,8 @@ class OtpPresenter(
 
     private var otpList = mutableListOf<OtpListItemWrapper>()
     private var visibleOtpId: String = ""
+
+    private lateinit var otpResultAction: OtpResultAction
 
     override fun attach(view: OtpContract.View) {
         super<DataRefreshViewReactivePresenter>.attach(view)
@@ -128,7 +130,7 @@ class OtpPresenter(
     }
 
     private suspend fun getAndShowOtpResources() {
-        getLocalOtpResourcesUseCase.execute(GetLocalOtpResourcesUseCase.Input(SupportedContentTypes.totpSlugs)).otps
+        getLocalOtpResourcesUseCase.execute(GetLocalOtpResourcesUseCase.Input(totpSlugs)).otps
             .map(otpModelMapper::map)
             .let {
                 otpList = it.toMutableList()
@@ -293,10 +295,11 @@ class OtpPresenter(
         hideCurrentlyVisibleItem()
         currentOtpItemForMenu = otpListWrapper
         presenterScope.launch {
-            val otpResource = getLocalResourceUseCase.execute(
-                GetLocalResourceUseCase.Input(otpListWrapper.otp.resourceId)
-            ).resource
-            view?.showOtmMoreMenu(resourceMenuModelMapper.map(otpResource))
+            createResourceMoreMenuModelUseCase.execute(
+                CreateResourceMoreMenuModelUseCase.Input(otpListWrapper.otp.resourceId)
+            )
+                .resourceMenuModel
+                .let { view?.showOtmMoreMenu(it) }
         }
     }
 
@@ -382,7 +385,8 @@ class OtpPresenter(
     }
 
     override fun scanOtpQrCodeClick() {
-        view?.navigateToScanOtpQrCode()
+        otpResultAction = OtpResultAction.CREATE
+        view?.navigateToScanOtpCodeForResult()
     }
 
     override fun createOtpManuallyClick() {
@@ -424,6 +428,7 @@ class OtpPresenter(
     }
 
     override fun menuEditByQrScanClick() {
+        otpResultAction = OtpResultAction.EDIT
         view?.navigateToScanOtpCodeForResult()
     }
 
@@ -457,43 +462,56 @@ class OtpPresenter(
         }
     }
 
-    override fun otpEditedByScanningNew(totpQr: OtpParseResult.OtpQr.TotpQr?) {
-        if (totpQr == null) {
-            Timber.e("No data scanned in the QR code")
-            view?.showInvalidQrCodeDataScanned()
-            return
-        }
-        presenterScope.launch {
-            view?.showProgress()
-            val existingResource = requireNotNull(currentOtpItemForMenu) {
-                "In edit by scanning new qr code mode but menu resource not present"
-            }
+    override fun otpQrScanned(totpQr: OtpParseResult.OtpQr.TotpQr?) {
+        when (otpResultAction) {
+            OtpResultAction.EDIT -> {
+                if (totpQr == null) {
+                    Timber.e("No data scanned in the QR code")
+                    view?.showInvalidQrCodeDataScanned()
+                    return
+                }
+                presenterScope.launch {
+                    view?.showProgress()
+                    val existingResource = requireNotNull(currentOtpItemForMenu) {
+                        "In edit by scanning new qr code mode but menu resource not present"
+                    }
 
-            when (val editResourceResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                updateStandaloneTotpResourceInteractor.execute(
-                    createCommonUpdateInput(existingResource, totpQr),
-                    createStandaloneTotpUpdateInput(totpQr)
-                )
-            }) {
-                is UpdateResourceInteractor.Output.Failure<*> -> {
-                    view?.showError(editResourceResult.response.exception.message.orEmpty())
-                }
-                is UpdateResourceInteractor.Output.OpenPgpError -> {
-                    view?.showEncryptionError(editResourceResult.message)
-                }
-                is UpdateResourceInteractor.Output.PasswordExpired -> {
-                    /* will not happen in BaseAuthenticatedPresenter */
-                }
-                is UpdateResourceInteractor.Output.Success -> {
-                    updateLocalResourceUseCase.execute(
-                        UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                    )
-                    view?.showOtpUpdate()
-                    refreshData()
+                    when (val editResourceResult =
+                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                            updateStandaloneTotpResourceInteractor.execute(
+                                createCommonUpdateInput(existingResource, totpQr),
+                                createStandaloneTotpUpdateInput(totpQr)
+                            )
+                        }) {
+                        is UpdateResourceInteractor.Output.Failure<*> -> {
+                            view?.showError(editResourceResult.response.exception.message.orEmpty())
+                        }
+                        is UpdateResourceInteractor.Output.OpenPgpError -> {
+                            view?.showEncryptionError(editResourceResult.message)
+                        }
+                        is UpdateResourceInteractor.Output.PasswordExpired -> {
+                            /* will not happen in BaseAuthenticatedPresenter */
+                        }
+                        is UpdateResourceInteractor.Output.Success -> {
+                            updateLocalResourceUseCase.execute(
+                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                            )
+                            view?.showOtpUpdate()
+                            refreshData()
+                        }
+                    }
+
+                    view?.hideProgress()
                 }
             }
-
-            view?.hideProgress()
+            OtpResultAction.CREATE -> {
+                totpQr
+                    ?.let { view?.navigateToScanOtpSuccess(totpQr) }
+                    ?: run {
+                        Timber.e("Invalid totp data scanned")
+                        view?.showInvalidQrCodeDataScanned()
+                    }
+            }
         }
     }
 
@@ -513,4 +531,9 @@ class OtpPresenter(
             resourceUri = totpQr.issuer,
             resourceParentFolderId = existingResource.otp.parentFolderId
         )
+
+    private enum class OtpResultAction {
+        EDIT,
+        CREATE
+    }
 }

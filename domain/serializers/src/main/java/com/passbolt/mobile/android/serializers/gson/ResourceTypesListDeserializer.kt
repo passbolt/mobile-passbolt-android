@@ -27,7 +27,7 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
-import com.passbolt.mobile.android.serializers.SupportedContentTypes
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.allSlugs
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import java.lang.reflect.Type
@@ -68,5 +68,5 @@ open class ResourceTypesListDeserializer : JsonDeserializer<List<ResourceTypeDto
     }
 
     private fun isSupported(resourceTypeSlug: String) =
-        SupportedContentTypes.allSlugs.contains(resourceTypeSlug)
+        allSlugs.contains(resourceTypeSlug)
 }

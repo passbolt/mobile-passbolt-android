@@ -28,6 +28,10 @@ import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import java.util.UUID
 
+/**
+ * Use ResourceTypeIdToSlugMappingProvider in client code
+ * @see ResourceTypeIdToSlugMappingProvider
+ */
 class GetResourceTypeIdToSlugMappingUseCase(
     private val databaseProvider: DatabaseProvider
 ) : AsyncUseCase<Unit, GetResourceTypeIdToSlugMappingUseCase.Output>,

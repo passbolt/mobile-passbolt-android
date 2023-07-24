@@ -9,14 +9,14 @@ class ResourceMoreMenuPresenter : ResourceMoreMenuContract.Presenter {
 
     override fun argsRetrieved(menuModel: ResourceMoreMenuModel) {
         view?.showTitle(menuModel.title)
-        processEditAndDeleteButtons(menuModel)
+        processDynamicButtons(menuModel)
         when (menuModel.favouriteOption) {
             ADD_TO_FAVOURITES -> view?.showAddToFavouritesButton()
             REMOVE_FROM_FAVOURITES -> view?.showRemoveFromFavouritesButton()
         }
     }
 
-    private fun processEditAndDeleteButtons(menuModel: ResourceMoreMenuModel) {
+    private fun processDynamicButtons(menuModel: ResourceMoreMenuModel) {
         if (menuModel.canDelete || menuModel.canEdit || menuModel.canShare) {
             view?.showSeparator()
         }
@@ -31,6 +31,13 @@ class ResourceMoreMenuPresenter : ResourceMoreMenuContract.Presenter {
 
         if (menuModel.canEdit) {
             view?.showEditButton()
+            when (menuModel.totpOption) {
+                ResourceMoreMenuModel.TotpOption.MANAGE_TOTP -> view?.showManageTotpButton()
+                ResourceMoreMenuModel.TotpOption.ADD_TOTP -> view?.showAddTotpButton()
+                else -> {
+                    // do nothing - totp buttons are initially hidden
+                }
+            }
         }
     }
 }

@@ -21,23 +21,31 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.serializers
+package com.passbolt.mobile.android.feature.otp.scanotp
 
-object SupportedContentTypes {
-    const val PASSWORD_STRING_SLUG = "password-string"
-    const val PASSWORD_AND_DESCRIPTION_SLUG = "password-and-description"
-    const val TOTP_SLUG = "totp"
-    const val PASSWORD_DESCRIPTION_TOTP_SLUG = "password-description-totp"
+import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.qrscan.analyzer.BarcodeScanResult
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import kotlinx.coroutines.flow.StateFlow
 
-    val homeSlugs = setOf(
-        PASSWORD_STRING_SLUG,
-        PASSWORD_AND_DESCRIPTION_SLUG,
-        PASSWORD_DESCRIPTION_TOTP_SLUG
-    )
-    val totpSlugs = setOf(
-        TOTP_SLUG,
-        PASSWORD_DESCRIPTION_TOTP_SLUG
-    )
+interface ScanOtpContract {
 
-    val allSlugs = homeSlugs + totpSlugs
+    interface View : BaseContract.View {
+        fun startAnalysis()
+        fun showStartCameraError()
+        fun scanResultChannel(): StateFlow<BarcodeScanResult>
+        fun showBarcodeScanError(message: String?)
+        fun showMultipleCodesInRange()
+        fun showCenterCameraOnBarcode()
+        fun setFlagSecure()
+        fun removeFlagSecure()
+        fun showNotAnOtpBarcode()
+        fun setResultAndNavigateBack(parserResult: OtpParseResult.OtpQr.TotpQr)
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun startCameraError(exc: Exception)
+        fun viewResumed()
+        fun viewPaused()
+    }
 }

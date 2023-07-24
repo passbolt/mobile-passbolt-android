@@ -48,7 +48,6 @@ interface OtpContract {
         fun clearSearchInput()
         fun showOtmMoreMenu(moreMenuModel: ResourceMoreMenuModel)
         fun copySecretToClipBoard(label: String, value: String)
-        fun navigateToScanOtpQrCode()
         fun navigateToCreateOtpManually()
         fun showDecryptionFailure()
         fun showFetchFailure()
@@ -67,6 +66,7 @@ interface OtpContract {
         fun showEncryptionError(message: String)
         fun showCreateButton()
         fun hideCreateButton()
+        fun navigateToScanOtpSuccess(totpQr: OtpParseResult.OtpQr.TotpQr)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -89,6 +89,6 @@ interface OtpContract {
         fun menuEditByQrScanClick()
         fun menuEditOtpManuallyClick()
         fun otpUpdated()
-        fun otpEditedByScanningNew(totpQr: OtpParseResult.OtpQr.TotpQr?)
+        fun otpQrScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
     }
 }

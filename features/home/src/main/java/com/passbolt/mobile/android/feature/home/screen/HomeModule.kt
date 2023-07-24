@@ -63,7 +63,7 @@ fun Module.homeModule() {
                 coroutineLaunchContext = get(),
                 getSelectedAccountDataUseCase = get(),
                 searchableMatcher = SearchableMatcher(),
-                resourceMenuModelMapper = get(),
+                createResourceMenuModelUseCase = get(),
                 getLocalResourcesUseCase = get(),
                 getLocalResourcesFilteredByTag = get(),
                 getLocalSubFoldersForFolderUseCase = get(),
@@ -77,7 +77,10 @@ fun Module.homeModule() {
                 homeModelMapper = get(),
                 domainProvider = get(),
                 getLocalFolderUseCase = get(),
-                deleteResourceIdlingResource = get()
+                deleteResourceIdlingResource = get(),
+                updateToLinkedTotpResourceInteractor = get(),
+                secretInteractor = get(),
+                updateLocalResourceUseCase = get()
             )
         }
         scopedOf(::HomeSpeedDialFabFactory)

@@ -12,36 +12,26 @@
         android:label="OtpFragment"
         tools:layout="@layout/fragment_otp">
         <action
-            android:id="@+id/action_otpFragment_to_scanOtpFragment"
-            app:destination="@id/scanOtpFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
             android:id="@+id/action_otpFragment_to_createOtpManuallyFragment"
             app:destination="@id/createOtpManuallyFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-    </fragment>
-    <fragment
-        android:id="@+id/scanOtpFragment"
-        android:name="com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment"
-        android:label="ScanOtpFragment"
-        tools:layout="@layout/fragment_scan_otp">
         <action
-            android:id="@+id/action_scanOtpFragment_to_scanOtpSuccessFragment"
+            android:id="@+id/action_otpFragment_to_scanOtpSuccessFragment"
             app:destination="@id/scanOtpSuccessFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/otpFragment" />
-        <argument
-            android:name="launchScanForResult"
-            app:argType="boolean" />
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_otpFragment_to_scanOtpFragment"
+            app:destination="@id/scanOtpNav"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/createOtpManuallyFragment"
@@ -80,4 +70,6 @@
     </fragment>
 
     <include app:graph="@navigation/resource_picker" />
+
+    <include app:graph="@navigation/scan_otp" />
 </navigation>

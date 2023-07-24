@@ -54,6 +54,9 @@ featureModule "resourcemoremenu"
 featureModule "transferaccounttoanotherdevice"
 featureModule "otp"
 featureModule "resourcepicker"
+featureModule "otpeditmoremenu"
+featureModule "otpcreatemoremenu"
+featureModule "scanotp"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"
@@ -63,6 +66,7 @@ domainModule "ui"
 domainModule "mappers"
 domainModule "entity"
 domainModule "serializers"
+domainModule "supportedresourcetypes"
 
 def featureModule(String name) {
     projectModule(name, "features/")

@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
+import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -27,6 +28,7 @@ import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -397,7 +399,14 @@ class HomePresenterTest : KoinTest {
             favouriteId = null,
             modified = ZonedDateTime.now()
         )
-        val menuModel = resourceMenuModelMapper.map(model)
+        val resourceMenuModel = ResourceMoreMenuModel(
+            title = "title",
+            canDelete = true,
+            canEdit = true,
+            canShare = true,
+            favouriteOption = ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES,
+            totpOption = ResourceMoreMenuModel.TotpOption.NONE
+        )
         whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
@@ -405,6 +414,9 @@ class HomePresenterTest : KoinTest {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
             flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         )
+        mockCreateResourceMoreMenuModelUseCase.stub {
+            onBlocking { execute(any()) } doReturn CreateResourceMoreMenuModelUseCase.Output(resourceMenuModel)
+        }
 
         presenter.attach(view)
         presenter.argsRetrieved(
@@ -418,7 +430,7 @@ class HomePresenterTest : KoinTest {
         reset(view)
         presenter.resourceMoreClick(model)
 
-        verify(view).navigateToMore(menuModel)
+        verify(view).navigateToMore(resourceMenuModel)
         verifyNoMoreInteractions(view)
     }
 
