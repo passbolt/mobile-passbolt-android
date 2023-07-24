@@ -85,6 +85,9 @@ class ResourcePickerPresenter(
     override fun refreshAction() {
         coroutineScope.launch {
             showResourcesFromDatabase()
+            if (::pickedResource.isInitialized) {
+                resourcePicked(pickedResource, isSelected = true)
+            }
         }
     }
 
@@ -100,7 +103,7 @@ class ResourcePickerPresenter(
         pickedResource = selectableResourceModel
         suggestedResourceList = suggestedResourceList.updatedAfterSelectedResource(selectableResourceModel, isSelected)
         resourceList = resourceList.updatedAfterSelectedResource(selectableResourceModel, isSelected)
-        view?.showResources(suggestedResourceList, resourceList)
+        filterHomeData()
         view?.enableApplyButton()
     }
 
