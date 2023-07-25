@@ -25,7 +25,7 @@ package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.entity.resource.Resource
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.OtpModel
 import com.passbolt.mobile.android.ui.ResourceModel
 
@@ -44,8 +44,8 @@ class OtpModelMapper(
             url = resourceEntity.url
         )
 
-    fun map(otpModel: OtpModel): OtpListItemWrapper =
-        OtpListItemWrapper(
+    fun map(otpModel: OtpModel): OtpItemWrapper =
+        OtpItemWrapper(
             otp = otpModel,
             isVisible = false,
             otpExpirySeconds = null,
@@ -53,8 +53,8 @@ class OtpModelMapper(
             isRefreshing = false
         )
 
-    fun map(resourceModel: ResourceModel): OtpListItemWrapper =
-        OtpListItemWrapper(
+    fun map(resourceModel: ResourceModel): OtpItemWrapper =
+        OtpItemWrapper(
             otp = OtpModel(
                 resourceId = resourceModel.resourceId,
                 parentFolderId = resourceModel.folderId,

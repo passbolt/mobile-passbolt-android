@@ -95,16 +95,25 @@ class CreateOtpPresenter(
 
     override fun argsRetrieved(editedOtpResourceId: String?) {
         coroutineScope.launch {
+            view?.showProgress()
             if (editedOtpResourceId != null && !argsConsumed) {
                 val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(editedOtpResourceId))
                     .resource
 
                 when (resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
-                    SIMPLE_PASSWORD, PASSWORD_WITH_DESCRIPTION -> {
+                    SIMPLE_PASSWORD -> {
                         setupEditForResourceWithoutTotp(resource)
                     }
-                    STANDALONE_TOTP, PASSWORD_DESCRIPTION_TOTP -> {
+                    PASSWORD_WITH_DESCRIPTION -> {
+                        setupEditForResourceWithoutTotp(resource)
+                        view?.showEditingValuesAlsoEditsResourceValuesWarning()
+                    }
+                    STANDALONE_TOTP -> {
                         setupEditForResourceContainingTotp(resource)
+                    }
+                    PASSWORD_DESCRIPTION_TOTP -> {
+                        setupEditForResourceContainingTotp(resource)
+                        view?.showEditingValuesAlsoEditsResourceValuesWarning()
                     }
                 }
                 argsConsumed = true
@@ -116,6 +125,7 @@ class CreateOtpPresenter(
                 view?.setupEditUi()
             }
             view?.setFormValues(label, issuer, secret)
+            view?.hideProgress()
         }
     }
 
@@ -155,7 +165,6 @@ class CreateOtpPresenter(
                 period = OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS
             )
         )
-        view?.showEditingValuesAlsoEditsResourceValuesWarning()
     }
 
     private fun initScreenData(model: OtpResourceModel) {
@@ -303,7 +312,7 @@ class CreateOtpPresenter(
                 "Unsupported resource type on manual totp form:" +
                         " $resourceTypeEnum"
             )
-            PASSWORD_WITH_DESCRIPTION -> suspend {
+            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> suspend {
                 updateToLinkedTotpResourceInteractor.execute(
                     createCommonLinkToTotpOverwriteInput(resource),
                     createUpdateToLinkedTotpInput(
@@ -312,7 +321,6 @@ class CreateOtpPresenter(
                     )
                 )
             }
-            PASSWORD_DESCRIPTION_TOTP -> throw NotImplementedError("Edit linked resource not done yet") // TODO
             STANDALONE_TOTP -> suspend {
                 updateStandaloneTotpResourceInteractor.execute(
                     createCommonTotpUpdateInput(

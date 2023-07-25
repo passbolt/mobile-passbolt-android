@@ -80,7 +80,7 @@
     <string name="more_add_to_favourite">Add to favourite</string>
     <string name="more_remove_from_favourite">Remove from favourite</string>
     <string name="more_add_totp">Add TOTP</string>
-    <string name="more_manage_totp">TOTP</string>
+    <string name="more_manage_totp">Manage TOTP</string>
 
     <string name="folder_more_see_details">See details</string>
 

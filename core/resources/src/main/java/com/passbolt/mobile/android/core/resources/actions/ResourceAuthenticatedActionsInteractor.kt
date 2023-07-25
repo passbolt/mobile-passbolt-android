@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.core.resources.actions
 
 import androidx.annotation.VisibleForTesting
+import com.passbolt.mobile.android.common.types.ClipboardLabel
+import com.passbolt.mobile.android.common.types.ResourceName
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor

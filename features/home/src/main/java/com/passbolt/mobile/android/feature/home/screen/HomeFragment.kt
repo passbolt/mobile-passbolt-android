@@ -64,12 +64,15 @@ import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
 import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
 import com.passbolt.mobile.android.otpcreatemoremenu.OtpCreateMoreMenuFragment
+import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
+import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceListUiModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -104,7 +107,8 @@ import org.koin.core.qualifier.named
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
     HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener,
-    FiltersMenuFragment.Listener, FolderMoreMenuFragment.Listener, OtpCreateMoreMenuFragment.Listener {
+    FiltersMenuFragment.Listener, FolderMoreMenuFragment.Listener, OtpCreateMoreMenuFragment.Listener,
+    OtpMoreMenuFragment.Listener, OtpUpdateMoreMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
     override val appContext = AppContext.APP
@@ -544,7 +548,13 @@ class HomeFragment :
     }
 
     override fun menuManageTotpClick() {
-//        TODO("Not yet implemented")
+        presenter.manageTotpClick()
+    }
+
+    override fun navigateToOtpMoreMenu(moreMenuModel: OtpMoreMenuModel) {
+        OtpMoreMenuFragment
+            .newInstance(moreMenuModel)
+            .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
     }
 
     override fun openWebsite(url: String) {
@@ -959,6 +969,41 @@ class HomeFragment :
 
     override fun hideProgress() {
         hideProgressDialog(childFragmentManager)
+    }
+
+    override fun menuCopyOtpClick() {
+        presenter.menuCopyOtpClick()
+    }
+
+    override fun menuEditOtpClick() {
+        presenter.menuEditOtpClick()
+    }
+
+    override fun menuDeleteOtpClick() {
+        // TODO
+    }
+
+    override fun navigateToOtpEdit() {
+        OtpUpdateMoreMenuFragment()
+            .show(childFragmentManager, OtpUpdateMoreMenuFragment::class.java.name)
+    }
+
+    override fun menuEditOtpManuallyClick() {
+        presenter.editOtpManuallyClick()
+    }
+
+    override fun menuEditByNewOtpScanClick() {
+        navigateToScanOtpForResult()
+    }
+
+    private fun navigateToScanOtpForResult() {
+        setFragmentResultListener(
+            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
+            otpQrScanned
+        )
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeToScanOtp()
+        )
     }
 
     companion object {

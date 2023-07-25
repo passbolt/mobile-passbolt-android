@@ -16,7 +16,7 @@ import com.passbolt.mobile.android.core.ui.controller.TotpViewController.ViewPar
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.otp.R
 import com.passbolt.mobile.android.feature.otp.databinding.ItemOtpBinding
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpItemWrapper
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -43,7 +43,7 @@ import org.koin.core.component.inject
  * @since v1.0
  */
 class OtpItem(
-    val otpModel: OtpListItemWrapper,
+    val otpModel: OtpItemWrapper,
     private val initialsIconGenerator: InitialsIconGenerator
 ) : AbstractBindingItem<ItemOtpBinding>(), KoinComponent {
 
@@ -71,7 +71,7 @@ class OtpItem(
     }
 
     class ItemClick(
-        private val clickListener: (OtpListItemWrapper) -> Unit
+        private val clickListener: (OtpItemWrapper) -> Unit
     ) : ClickEventHook<OtpItem>() {
 
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
@@ -91,7 +91,7 @@ class OtpItem(
     }
 
     class ItemMoreClick(
-        private val clickListener: (OtpListItemWrapper) -> Unit
+        private val clickListener: (OtpItemWrapper) -> Unit
     ) : ClickEventHook<OtpItem>() {
 
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {

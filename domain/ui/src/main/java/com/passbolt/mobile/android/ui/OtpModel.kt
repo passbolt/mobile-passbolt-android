@@ -49,7 +49,7 @@ data class OtpResourceModel(
     val period: Long
 ) : Parcelable
 
-data class OtpListItemWrapper(
+data class OtpItemWrapper(
     val otp: OtpModel,
     val isVisible: Boolean,
     val isRefreshing: Boolean,

@@ -30,7 +30,7 @@ import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalOtpResourcesUseCase
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.OtpModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -115,7 +115,7 @@ class OtpPresenterTest : KoinTest {
         presenter.resume(view)
 
         verify(view, times(2)).hideEmptyView()
-        argumentCaptor<List<OtpListItemWrapper>> {
+        argumentCaptor<List<OtpItemWrapper>> {
             verify(view, times(3)).showOtpList(capture())
             assertThat(firstValue).apply {
                 hasSize(mockTotpResources.size)

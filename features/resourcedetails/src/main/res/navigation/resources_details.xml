@@ -17,9 +17,10 @@
         <action
             android:id="@+id/action_resourceDetails_to_scanOtp"
             app:destination="@id/scanOtpNav" />
+
     </fragment>
 
-    <include app:graph="@navigation/tags_details"/>
+    <include app:graph="@navigation/tags_details" />
 
     <include app:graph="@navigation/permissions" />
 
@@ -27,6 +28,5 @@
 
     <include app:graph="@navigation/scan_otp" />
 
-    <include app:graph="@navigation/createotpmanually"/>
-
+    <include app:graph="@navigation/createotpmanually" />
 </navigation>

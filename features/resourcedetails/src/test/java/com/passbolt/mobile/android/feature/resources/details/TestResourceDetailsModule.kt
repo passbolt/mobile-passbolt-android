@@ -27,6 +27,7 @@ import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
+import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -77,6 +78,7 @@ internal val mockGetResourceTypeIdToSlugMappingUseCase = mock<GetResourceTypeIdT
 internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
 internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
 internal val mockUpdateToLinkedTotpResourceInteractor = mock<UpdateToLinkedTotpResourceInteractor>()
+internal val mockCreateOtpMoreMenuModelUseCase = mock<CreateOtpMoreMenuModelUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule = module {
@@ -102,7 +104,9 @@ internal val testResourceDetailsModule = module {
             otpModelMapper = get(),
             updateLocalResourceUseCase = mockUpdateLocalResourceUseCase,
             updateToLinkedTotpResourceInteractor = mockUpdateToLinkedTotpResourceInteractor,
-            secretInteractor = mockSecretInteractor
+            secretInteractor = mockSecretInteractor,
+            resourceTypeFactory = mockResourceTypeFactory,
+            createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase
         )
     }
     scope<ResourceDetailsPresenter> {

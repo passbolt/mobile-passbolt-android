@@ -21,22 +21,44 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.otpmoremenu
+package com.passbolt.mobile.android.otpmoremenu.usecase
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.ui.OtpMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourcePermission
 
-interface OtpMoreMenuContract {
+class CreateOtpMoreMenuModelUseCase(
+    private val getLocalResourceUseCase: GetLocalResourceUseCase
+) :
+    AsyncUseCase<CreateOtpMoreMenuModelUseCase.Input, CreateOtpMoreMenuModelUseCase.Output> {
 
-    interface View : BaseContract.View {
-        fun showTitle(title: String)
-        fun showSeparator()
-        fun showDeleteButton()
-        fun showEditButton()
-        fun showShowOtpButton()
+    override suspend fun execute(input: Input): Output {
+        val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(input.resourceId)).resource
+
+        return Output(
+            OtpMoreMenuModel(
+                title = resource.name,
+                canDelete = resource.permission in WRITE_PERMISSIONS,
+                canEdit = resource.permission in WRITE_PERMISSIONS,
+                canShow = input.canShowOtp
+            )
+        )
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(menuModel: OtpMoreMenuModel)
+    data class Input(
+        val resourceId: String,
+        val canShowOtp: Boolean
+    )
+
+    data class Output(
+        val otpMoreMenuModel: OtpMoreMenuModel
+    )
+
+    private companion object {
+        private val WRITE_PERMISSIONS = setOf(
+            ResourcePermission.OWNER,
+            ResourcePermission.UPDATE
+        )
     }
 }

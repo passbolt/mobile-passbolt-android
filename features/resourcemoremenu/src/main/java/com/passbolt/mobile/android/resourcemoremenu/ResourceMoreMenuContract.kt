@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.resourcemoremenu
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,6 +41,6 @@ interface ResourceMoreMenuContract {
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(menuModel: com.passbolt.mobile.android.ui.ResourceMoreMenuModel)
+        fun argsRetrieved(menuModel: ResourceMoreMenuModel)
     }
 }

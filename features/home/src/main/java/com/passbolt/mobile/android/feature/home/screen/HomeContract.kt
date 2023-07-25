@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
+import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.TagWithCount
@@ -106,6 +107,8 @@ interface HomeContract {
         fun showInvalidTotpScanned()
         fun showEncryptionError(message: String)
         fun navigateToOtpCreate(resourceId: String)
+        fun navigateToOtpMoreMenu(moreMenuModel: OtpMoreMenuModel)
+        fun navigateToOtpEdit()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -161,5 +164,9 @@ interface HomeContract {
         fun folderCreated(name: String)
         fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
         fun menuAddTotpManuallyClick()
+        fun manageTotpClick()
+        fun menuCopyOtpClick()
+        fun menuEditOtpClick()
+        fun editOtpManuallyClick()
     }
 }

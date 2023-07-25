@@ -48,6 +48,8 @@ import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
 import com.passbolt.mobile.android.locationdetails.LocationItem
 import com.passbolt.mobile.android.otpcreatemoremenu.OtpCreateMoreMenuFragment
+import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
 import com.passbolt.mobile.android.permissions.permissions.PermissionsFragment
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
@@ -56,7 +58,8 @@ import com.passbolt.mobile.android.permissions.recycler.CounterItem
 import com.passbolt.mobile.android.permissions.recycler.GroupItem
 import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -89,7 +92,8 @@ import org.koin.core.qualifier.named
 class ResourceDetailsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourceDetailsBinding, ResourceDetailsContract.View>(
         FragmentResourceDetailsBinding::inflate
-    ), ResourceDetailsContract.View, ResourceMoreMenuFragment.Listener, OtpCreateMoreMenuFragment.Listener {
+    ), ResourceDetailsContract.View, ResourceMoreMenuFragment.Listener, OtpCreateMoreMenuFragment.Listener,
+    OtpMoreMenuFragment.Listener, OtpUpdateMoreMenuFragment.Listener {
 
     override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
@@ -377,7 +381,13 @@ class ResourceDetailsFragment :
     }
 
     override fun menuManageTotpClick() {
-//        TODO("Not yet implemented")
+        presenter.manageTotpClick()
+    }
+
+    override fun navigateToOtpMoreMenu(model: OtpMoreMenuModel) {
+        OtpMoreMenuFragment
+            .newInstance(model)
+            .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
     }
 
     override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
@@ -574,7 +584,7 @@ class ResourceDetailsFragment :
         Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
     }
 
-    override fun showTotp(otpWrapper: OtpListItemWrapper?) {
+    override fun showTotp(otpWrapper: OtpItemWrapper?) {
         otpWrapper?.let { otpModel ->
             totpViewController.updateView(
                 ViewParameters(binding.totpProgress, binding.totpValue, binding.generationInProgress),
@@ -603,6 +613,39 @@ class ResourceDetailsFragment :
     }
 
     override fun menuCreateByNewOtpScanClick() {
+        navigateToScanOtpForResult()
+    }
+
+    override fun menuCopyOtpClick() {
+        presenter.menuCopyOtpClick()
+    }
+
+    override fun menuShowOtpClick() {
+        presenter.menuShowOtpClick()
+    }
+
+    override fun menuEditOtpClick() {
+        presenter.menuEditOtpClick()
+    }
+
+    override fun menuDeleteOtpClick() {
+        presenter.menuDeleteOtpClick()
+    }
+
+    override fun navigateToOtpEdit() {
+        OtpUpdateMoreMenuFragment()
+            .show(childFragmentManager, OtpUpdateMoreMenuFragment::class.java.name)
+    }
+
+    override fun menuEditOtpManuallyClick() {
+        presenter.editOtpManuallyClick()
+    }
+
+    override fun menuEditByNewOtpScanClick() {
+        navigateToScanOtpForResult()
+    }
+
+    private fun navigateToScanOtpForResult() {
         setFragmentResultListener(
             ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
             otpQrScanned

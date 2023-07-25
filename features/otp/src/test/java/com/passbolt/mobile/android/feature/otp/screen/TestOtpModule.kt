@@ -37,7 +37,7 @@ import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
-import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
+import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
@@ -51,7 +51,7 @@ internal val mockGetLocalOtpResourcesUseCase = mock<GetLocalOtpResourcesUseCase>
 internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
 internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
 internal val mockUpdateStandaloneTotpResourceInteractor = mock<UpdateStandaloneTotpResourceInteractor>()
-internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
+internal val mockCreateOtpMoreMenuModelUseCase = mock<CreateOtpMoreMenuModelUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testOtpModule = module {
@@ -72,9 +72,9 @@ internal val testOtpModule = module {
             coroutineLaunchContext = get(),
             searchableMatcher = get(),
             otpModelMapper = get(),
-            createResourceMoreMenuModelUseCase = mockCreateResourceMoreMenuModelUseCase,
             updateLocalResourceUseCase = mockUpdateLocalResourceUseCase,
-            updateStandaloneTotpResourceInteractor = mockUpdateStandaloneTotpResourceInteractor
+            updateStandaloneTotpResourceInteractor = mockUpdateStandaloneTotpResourceInteractor,
+            createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase
         )
     }
 }

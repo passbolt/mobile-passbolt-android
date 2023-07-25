@@ -26,15 +26,14 @@ package com.passbolt.mobile.android.feature.otp.screen
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
-import com.passbolt.mobile.android.ui.OtpResourceModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 
 interface OtpContract {
 
     @Suppress("TooManyFunctions")
     interface View : DataRefreshViewReactiveContract.View {
-        fun showOtpList(otpList: List<OtpListItemWrapper>)
+        fun showOtpList(otpList: List<OtpItemWrapper>)
         fun showEmptyView()
         fun hideEmptyView()
         fun displaySearchAvatar(avatarUrl: String?)
@@ -46,7 +45,7 @@ interface OtpContract {
         fun showPleaseWaitForDataRefresh()
         fun displaySearchClearIcon()
         fun clearSearchInput()
-        fun showOtmMoreMenu(moreMenuModel: ResourceMoreMenuModel)
+        fun showOtmMoreMenu(moreMenuModel: OtpMoreMenuModel)
         fun copySecretToClipBoard(label: String, value: String)
         fun navigateToCreateOtpManually()
         fun showDecryptionFailure()
@@ -57,7 +56,7 @@ interface OtpContract {
         fun showNewOtpCreated()
         fun navigateToEditOtpMenu()
         fun showProgress()
-        fun navigateToEditOtpManually(totp: OtpResourceModel)
+        fun navigateToEditOtpManually(resourceId: String)
         fun hideProgress()
         fun showOtpUpdate()
         fun navigateToScanOtpCodeForResult()
@@ -70,8 +69,8 @@ interface OtpContract {
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun otpItemClick(otpListItemWrapper: OtpListItemWrapper)
-        fun otpItemMoreClick(otpListWrapper: OtpListItemWrapper)
+        fun otpItemClick(otpItemWrapper: OtpItemWrapper)
+        fun otpItemMoreClick(otpListWrapper: OtpItemWrapper)
         fun refreshClick()
         fun searchAvatarClick()
         fun switchAccountManageAccountClick()
