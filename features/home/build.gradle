@@ -40,6 +40,9 @@ dependencies {
     implementation project(':otpcreatemoremenu')
     implementation project(':scanotp')
     implementation project(':createotpmanually')
+    implementation project(':otpmoremenu')
+    implementation project(':otpcore')
+    implementation project(':otpeditmoremenu')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

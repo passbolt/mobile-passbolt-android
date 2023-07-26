@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.core.resources.actions
 
+import com.passbolt.mobile.android.common.types.ClipboardLabel
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**

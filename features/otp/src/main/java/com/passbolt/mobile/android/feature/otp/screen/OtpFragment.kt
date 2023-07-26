@@ -68,9 +68,8 @@ import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFrag
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
 import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
-import com.passbolt.mobile.android.ui.OtpResourceModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import org.koin.android.ext.android.inject
 
 @Suppress("TooManyFunctions")
@@ -200,7 +199,7 @@ class OtpFragment :
         binding.swipeRefresh.isRefreshing = true
     }
 
-    override fun showOtpList(otpList: List<OtpListItemWrapper>) {
+    override fun showOtpList(otpList: List<OtpItemWrapper>) {
         otpAdapter.set(otpList.map { OtpItem(it, initialsIconGenerator) })
         fastAdapter.notifyAdapterDataSetChanged()
     }
@@ -252,7 +251,7 @@ class OtpFragment :
             .show(childFragmentManager, OtpUpdateMoreMenuFragment::class.java.name)
     }
 
-    override fun showOtmMoreMenu(moreMenuModel: ResourceMoreMenuModel) {
+    override fun showOtmMoreMenu(moreMenuModel: OtpMoreMenuModel) {
         OtpMoreMenuFragment.newInstance(moreMenuModel)
             .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
     }
@@ -392,13 +391,13 @@ class OtpFragment :
         showProgressDialog(childFragmentManager)
     }
 
-    override fun navigateToEditOtpManually(totp: OtpResourceModel) {
+    override fun navigateToEditOtpManually(resourceId: String) {
         setFragmentResultListener(
             CreateOtpFragment.REQUEST_UPDATE_OTP,
             otpUpdatedResult
         )
         findNavController().navigate(
-            NavDeepLinkProvider.otpManualFormDeepLinkRequest(totp.resourceId)
+            NavDeepLinkProvider.otpManualFormDeepLinkRequest(resourceId)
         )
     }
 

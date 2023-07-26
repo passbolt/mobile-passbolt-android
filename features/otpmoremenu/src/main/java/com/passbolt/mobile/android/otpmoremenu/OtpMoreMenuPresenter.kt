@@ -1,17 +1,17 @@
 package com.passbolt.mobile.android.otpmoremenu
 
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 
 class OtpMoreMenuPresenter : OtpMoreMenuContract.Presenter {
 
     override var view: OtpMoreMenuContract.View? = null
 
-    override fun argsRetrieved(menuModel: ResourceMoreMenuModel) {
+    override fun argsRetrieved(menuModel: OtpMoreMenuModel) {
         view?.showTitle(menuModel.title)
         processEditAndDeleteButtons(menuModel)
     }
 
-    private fun processEditAndDeleteButtons(menuModel: ResourceMoreMenuModel) {
+    private fun processEditAndDeleteButtons(menuModel: OtpMoreMenuModel) {
         if (menuModel.canDelete || menuModel.canEdit) {
             view?.showSeparator()
         }
@@ -22,6 +22,10 @@ class OtpMoreMenuPresenter : OtpMoreMenuContract.Presenter {
 
         if (menuModel.canDelete) {
             view?.showDeleteButton()
+        }
+
+        if (menuModel.canShow) {
+            view?.showShowOtpButton()
         }
     }
 }

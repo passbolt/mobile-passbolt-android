@@ -3,7 +3,8 @@ package com.passbolt.mobile.android.feature.resourcedetails.details
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -78,13 +79,16 @@ interface ResourceDetailsContract {
         fun navigateToResourceLocation(folderId: String)
         fun showDataRefreshError()
         fun showContentNotAvailable()
-        fun showTotp(otpWrapper: OtpListItemWrapper?)
+        fun showTotp(otpWrapper: OtpItemWrapper?)
         fun showTotpSection()
         fun showInvalidTotpScanned()
         fun showEncryptionError(message: String)
         fun navigateToOtpCreate(resourceId: String)
+        fun navigateToOtpEdit()
+        fun navigateToOtpMoreMenu(model: OtpMoreMenuModel)
     }
 
+    @Suppress("TooManyFunctions")
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun argsReceived(resourceId: String, permissionsListWidth: Int, permissionItemWidth: Float)
         fun usernameCopyClick()
@@ -111,5 +115,11 @@ interface ResourceDetailsContract {
         fun copyTotpClick()
         fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
         fun addTotpManuallyClick()
+        fun menuCopyOtpClick()
+        fun menuShowOtpClick()
+        fun menuEditOtpClick()
+        fun menuDeleteOtpClick()
+        fun editOtpManuallyClick()
+        fun manageTotpClick()
     }
 }

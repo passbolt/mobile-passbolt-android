@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.resources.actions
+package com.passbolt.mobile.android.common.types
 
 /**
  * Passbolt - Open source password manager for teams

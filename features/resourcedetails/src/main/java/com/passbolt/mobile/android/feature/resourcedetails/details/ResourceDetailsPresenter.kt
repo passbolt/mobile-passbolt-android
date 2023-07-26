@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.resourcedetails.details
 
 import com.passbolt.mobile.android.common.coroutinetimer.infiniteTimer
+import com.passbolt.mobile.android.common.types.ClipboardLabel
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -13,18 +14,25 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePer
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
+import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.isFavourite
@@ -81,6 +89,8 @@ class ResourceDetailsPresenter(
     private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
     private val secretInteractor: SecretInteractor,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
+    private val resourceTypeFactory: ResourceTypeFactory,
+    private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter, KoinScopeComponent {
@@ -106,7 +116,7 @@ class ResourceDetailsPresenter(
     }
     private val tickerJob = SupervisorJob()
     private val tickerScope = CoroutineScope(tickerJob + coroutineLaunchContext.ui)
-    private var otpModel: OtpListItemWrapper? = null
+    private var otpModel: OtpItemWrapper? = null
 
     // TODO consider resource types - for now only description can be both encrypted and unencrypted
     // TODO for future draw and set encrypted properties dynamically based on database input
@@ -247,6 +257,16 @@ class ResourceDetailsPresenter(
             )
                 .resourceMenuModel
                 .let { view?.navigateToMore(it) }
+        }
+    }
+
+    override fun manageTotpClick() {
+        coroutineScope.launch {
+            createOtpMoreMenuModelUseCase.execute(
+                CreateOtpMoreMenuModelUseCase.Input(resourceModel.resourceId, canShowOtp = true)
+            )
+                .otpMoreMenuModel
+                .let { view?.navigateToOtpMoreMenu(it) }
         }
     }
 
@@ -397,20 +417,8 @@ class ResourceDetailsPresenter(
     }
 
     override fun copyTotpClick() {
-        coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.provideOtp(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { label, otp ->
-                totpParametersProvider.provideOtpParameters(
-                    secretKey = otp.key,
-                    digits = otp.digits,
-                    period = otp.period,
-                    algorithm = otp.algorithm
-                ).apply {
-                    view?.addToClipboard(label, otpValue, isSecret = true)
-                }
-            }
+        doAfterOtpFetchAndDecrypt { label, _, otpParameters ->
+            view?.addToClipboard(label, otpParameters.otpValue, isSecret = true)
         }
     }
 
@@ -423,31 +431,21 @@ class ResourceDetailsPresenter(
     }
 
     private fun showTotp() {
-        coroutineScope.launch {
-            otpModel = otpModelMapper.map(resourceModel)
-                .copy(isRefreshing = true)
-                .also {
-                    view?.showTotp(it)
-                }
-            resourceAuthenticatedActionsInteractor.provideOtp(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { _, otp ->
-                val otpParameters = totpParametersProvider.provideOtpParameters(
-                    secretKey = otp.key,
-                    digits = otp.digits,
-                    period = otp.period,
-                    algorithm = otp.algorithm
-                )
-                otpModel = otpModelMapper.map(resourceModel)
-                    .copy(
-                        otpValue = otpParameters.otpValue,
-                        isVisible = true,
-                        otpExpirySeconds = otp.period,
-                        remainingSecondsCounter = otpParameters.secondsValid,
-                        isRefreshing = false
-                    )
+        otpModel = otpModelMapper.map(resourceModel)
+            .copy(isRefreshing = true)
+            .also {
+                view?.showTotp(it)
             }
+
+        doAfterOtpFetchAndDecrypt { _, otp, otpParameters ->
+            otpModel = otpModelMapper.map(resourceModel)
+                .copy(
+                    otpValue = otpParameters.otpValue,
+                    isVisible = true,
+                    otpExpirySeconds = otp.period,
+                    remainingSecondsCounter = otpParameters.secondsValid,
+                    isRefreshing = false
+                )
         }
     }
 
@@ -494,7 +492,7 @@ class ResourceDetailsPresenter(
                         when (val editResourceResult =
                             runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                                 updateToLinkedTotpResourceInteractor.execute(
-                                    createCommonLinkToTotpUpdateInput(resourceModel),
+                                    createTotpInputAfterScanning(totpQr),
                                     createUpdateToLinkedTotpInput(
                                         totpQr,
                                         fetchedSecret.decryptedSecret,
@@ -525,14 +523,33 @@ class ResourceDetailsPresenter(
         }
     }
 
-    // updates existing resource to linked totp resource
-    private fun createCommonLinkToTotpUpdateInput(resource: ResourceModel) =
+    private suspend fun createTotpInputAfterScanning(totpQr: OtpParseResult.OtpQr.TotpQr) =
+        when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
+            SIMPLE_PASSWORD, STANDALONE_TOTP -> throw IllegalArgumentException(
+                "Cannot edit simple password or standalone totp by scanning qr code on resource details form"
+            )
+            PASSWORD_WITH_DESCRIPTION -> createCommonLinkToTotpUpdateInput()
+            PASSWORD_DESCRIPTION_TOTP -> createCommonLinkToTotpOverwriteInput(totpQr)
+        }
+
+    // updates existing resource to linked totp resource with values from "Scan otp form" form
+    private fun createCommonLinkToTotpOverwriteInput(totpQr: OtpParseResult.OtpQr.TotpQr) =
         UpdateResourceInteractor.CommonInput(
-            resourceId = resource.resourceId,
-            resourceName = resource.name,
-            resourceUsername = resource.username,
-            resourceUri = resource.url,
-            resourceParentFolderId = resource.folderId
+            resourceId = resourceModel.resourceId,
+            resourceName = totpQr.label,
+            resourceUsername = resourceModel.username,
+            resourceUri = totpQr.issuer,
+            resourceParentFolderId = resourceModel.folderId
+        )
+
+    // updates existing resource to linked totp resource
+    private fun createCommonLinkToTotpUpdateInput() =
+        UpdateResourceInteractor.CommonInput(
+            resourceId = resourceModel.resourceId,
+            resourceName = resourceModel.name,
+            resourceUsername = resourceModel.username,
+            resourceUri = resourceModel.url,
+            resourceParentFolderId = resourceModel.folderId
         )
 
     private fun createUpdateToLinkedTotpInput(
@@ -550,6 +567,51 @@ class ResourceDetailsPresenter(
         )
 
     override fun addTotpManuallyClick() {
+        view?.navigateToOtpCreate(resourceModel.resourceId)
+    }
+
+    override fun menuCopyOtpClick() {
+        doAfterOtpFetchAndDecrypt { label, _, otpParameters ->
+            view?.addToClipboard(label, otpParameters.otpValue, isSecret = true)
+        }
+    }
+
+    override fun menuShowOtpClick() {
+        showTotp()
+    }
+
+    override fun menuEditOtpClick() {
+        view?.navigateToOtpEdit()
+    }
+
+    override fun menuDeleteOtpClick() {
+//        TODO("Not yet implemented")
+    }
+
+    private fun doAfterOtpFetchAndDecrypt(
+        action: (
+            ClipboardLabel,
+            DecryptedSecret.StandaloneTotp.Totp,
+            TotpParametersProvider.OtpParameters
+        ) -> Unit
+    ) {
+        coroutineScope.launch {
+            resourceAuthenticatedActionsInteractor.provideOtp(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { label, otp ->
+                val otpParameters = totpParametersProvider.provideOtpParameters(
+                    secretKey = otp.key,
+                    digits = otp.digits,
+                    period = otp.period,
+                    algorithm = otp.algorithm
+                )
+                action(label, otp, otpParameters)
+            }
+        }
+    }
+
+    override fun editOtpManuallyClick() {
         view?.navigateToOtpCreate(resourceModel.resourceId)
     }
 }

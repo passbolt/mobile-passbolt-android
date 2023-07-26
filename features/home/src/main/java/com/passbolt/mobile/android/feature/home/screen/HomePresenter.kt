@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.common.types.ClipboardLabel
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredUseCase
@@ -42,6 +43,7 @@ import com.passbolt.mobile.android.core.commongroups.usecase.db.GetLocalGroupsWi
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
@@ -51,7 +53,13 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUs
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
@@ -59,6 +67,7 @@ import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewMode
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
+import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
@@ -107,7 +116,10 @@ class HomePresenter(
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
     private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
     private val secretInteractor: SecretInteractor,
-    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase
+    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
+    private val totpParametersProvider: TotpParametersProvider,
+    private val resourceTypeFactory: ResourceTypeFactory,
+    private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
     KoinScopeComponent {
 
@@ -620,7 +632,7 @@ class HomePresenter(
         currentMoreMenuResource = resourceModel
         coroutineScope.launch {
             createResourceMenuModelUseCase.execute(
-                CreateResourceMoreMenuModelUseCase.Input(resourceModel.resourceId)
+                CreateResourceMoreMenuModelUseCase.Input(currentMoreMenuResource!!.resourceId)
             )
                 .resourceMenuModel
                 .let { view?.navigateToMore(it) }
@@ -891,7 +903,7 @@ class HomePresenter(
                     when (val editResourceResult =
                         runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                             updateToLinkedTotpResourceInteractor.execute(
-                                createCommonLinkToTotpUpdateInput(resourceModel),
+                                createTotpInputAfterScanning(resourceModel, totpQr),
                                 createUpdateToLinkedTotpInput(
                                     totpQr,
                                     fetchedSecret.decryptedSecret,
@@ -922,6 +934,31 @@ class HomePresenter(
         }
     }
 
+    private suspend fun createTotpInputAfterScanning(
+        resourceModel: ResourceModel,
+        totpQr: OtpParseResult.OtpQr.TotpQr
+    ) =
+        when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
+            SIMPLE_PASSWORD, STANDALONE_TOTP -> throw IllegalArgumentException(
+                "Cannot edit simple password or standalone totp by scanning qr code on resource list"
+            )
+            PASSWORD_WITH_DESCRIPTION -> createCommonLinkToTotpUpdateInput(resourceModel)
+            PASSWORD_DESCRIPTION_TOTP -> createCommonLinkToTotpOverwriteInput(resourceModel, totpQr)
+        }
+
+    // updates existing resource to linked totp resource with values from "Scan otp" form
+    private fun createCommonLinkToTotpOverwriteInput(
+        resourceModel: ResourceModel,
+        totpQr: OtpParseResult.OtpQr.TotpQr
+    ) =
+        UpdateResourceInteractor.CommonInput(
+            resourceId = resourceModel.resourceId,
+            resourceName = totpQr.label,
+            resourceUsername = resourceModel.username,
+            resourceUri = totpQr.issuer,
+            resourceParentFolderId = resourceModel.folderId
+        )
+
     // updates existing resource to linked totp resource
     private fun createCommonLinkToTotpUpdateInput(resource: ResourceModel) =
         UpdateResourceInteractor.CommonInput(
@@ -947,6 +984,53 @@ class HomePresenter(
         )
 
     override fun menuAddTotpManuallyClick() {
+        view?.navigateToOtpCreate(currentMoreMenuResource!!.resourceId)
+    }
+
+    override fun manageTotpClick() {
+        coroutineScope.launch {
+            createOtpMoreMenuModelUseCase.execute(
+                CreateOtpMoreMenuModelUseCase.Input(currentMoreMenuResource!!.resourceId, canShowOtp = false)
+            )
+                .otpMoreMenuModel
+                .let { view?.navigateToOtpMoreMenu(it) }
+        }
+    }
+
+    override fun menuCopyOtpClick() {
+        doAfterOtpFetchAndDecrypt { label, _, otpParameters ->
+            view?.addToClipboard(label, otpParameters.otpValue, isSecret = true)
+        }
+    }
+
+    override fun menuEditOtpClick() {
+        view?.navigateToOtpEdit()
+    }
+
+    private fun doAfterOtpFetchAndDecrypt(
+        action: (
+            ClipboardLabel,
+            DecryptedSecret.StandaloneTotp.Totp,
+            TotpParametersProvider.OtpParameters
+        ) -> Unit
+    ) {
+        coroutineScope.launch {
+            resourceAuthenticatedActionsInteractor.provideOtp(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { label, otp ->
+                val otpParameters = totpParametersProvider.provideOtpParameters(
+                    secretKey = otp.key,
+                    digits = otp.digits,
+                    period = otp.period,
+                    algorithm = otp.algorithm
+                )
+                action(label, otp, otpParameters)
+            }
+        }
+    }
+
+    override fun editOtpManuallyClick() {
         view?.navigateToOtpCreate(currentMoreMenuResource!!.resourceId)
     }
 }

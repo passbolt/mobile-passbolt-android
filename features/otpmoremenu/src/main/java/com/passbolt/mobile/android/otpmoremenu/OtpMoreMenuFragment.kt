@@ -34,7 +34,7 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismi
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.otpmoremenu.databinding.BottomsheetOtpMoreMenuBinding
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
 
@@ -42,7 +42,7 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
 
     override val scope by fragmentScope()
     private val presenter: OtpMoreMenuContract.Presenter by scope.inject()
-    private val menuModel: ResourceMoreMenuModel by lifecycleAwareLazy {
+    private val menuModel: OtpMoreMenuModel by lifecycleAwareLazy {
         requireNotNull(requireArguments().getParcelable(EXTRA_OTP_MENU_MODEL))
     }
     private lateinit var binding: BottomsheetOtpMoreMenuBinding
@@ -104,10 +104,14 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
         binding.editOtp.visible()
     }
 
+    override fun showShowOtpButton() {
+        binding.showOtp.visible()
+    }
+
     companion object {
         private const val EXTRA_OTP_MENU_MODEL = "OTP_MENU_MODEL"
 
-        fun newInstance(model: ResourceMoreMenuModel) =
+        fun newInstance(model: OtpMoreMenuModel) =
             OtpMoreMenuFragment().apply {
                 arguments = bundleOf(EXTRA_OTP_MENU_MODEL to model)
             }
@@ -115,7 +119,7 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
 
     interface Listener {
         fun menuCopyOtpClick()
-        fun menuShowOtpClick()
+        fun menuShowOtpClick() {} // on some flows show OTP is hidden
         fun menuEditOtpClick()
         fun menuDeleteOtpClick()
     }

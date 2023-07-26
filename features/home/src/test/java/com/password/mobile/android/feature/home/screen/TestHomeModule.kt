@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
@@ -32,6 +33,7 @@ import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
+import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
@@ -66,6 +68,8 @@ internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()
 internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
 internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
 internal val mockUpdateToLinkedTotpResourceInteractor = mock<UpdateToLinkedTotpResourceInteractor>()
+internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
+internal val mockCreateOtpMoreMenuModelUseCase = mock<CreateOtpMoreMenuModelUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -104,7 +108,10 @@ val testHomeModule = module {
             deleteResourceIdlingResource = get(),
             updateToLinkedTotpResourceInteractor = mockUpdateToLinkedTotpResourceInteractor,
             secretInteractor = mockSecretInteractor,
-            updateLocalResourceUseCase = mockUpdateLocalResourceUseCase
+            updateLocalResourceUseCase = mockUpdateLocalResourceUseCase,
+            totpParametersProvider = mockTotpParametersProvider,
+            resourceTypeFactory = mockResourceTypeFactory,
+            createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase
         )
     }
     scope<HomePresenter> {

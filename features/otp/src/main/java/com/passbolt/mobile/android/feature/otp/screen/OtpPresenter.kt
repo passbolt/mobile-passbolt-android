@@ -41,11 +41,10 @@ import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBotto
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
-import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
+import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
-import com.passbolt.mobile.android.ui.OtpResourceModel
+import com.passbolt.mobile.android.ui.OtpItemWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -69,9 +68,9 @@ class OtpPresenter(
     private val otpModelMapper: OtpModelMapper,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val totpParametersProvider: TotpParametersProvider,
-    private val createResourceMoreMenuModelUseCase: CreateResourceMoreMenuModelUseCase,
     private val updateStandaloneTotpResourceInteractor: UpdateStandaloneTotpResourceInteractor,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
+    private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<OtpContract.View>(coroutineLaunchContext), OtpContract.Presenter,
     SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener, KoinScopeComponent {
@@ -92,9 +91,9 @@ class OtpPresenter(
     private var currentSearchText = MutableStateFlow("")
     private val searchInputEndIconMode
         get() = if (currentSearchText.value.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
-    private var currentOtpItemForMenu: OtpListItemWrapper? = null
+    private var currentOtpItemForMenu: OtpItemWrapper? = null
 
-    private var otpList = mutableListOf<OtpListItemWrapper>()
+    private var otpList = mutableListOf<OtpItemWrapper>()
     private var visibleOtpId: String = ""
 
     private lateinit var otpResultAction: OtpResultAction
@@ -236,16 +235,16 @@ class OtpPresenter(
         showOtps()
     }
 
-    override fun otpItemClick(otpListItemWrapper: OtpListItemWrapper) {
-        visibleOtpId = otpListItemWrapper.otp.resourceId
+    override fun otpItemClick(otpItemWrapper: OtpItemWrapper) {
+        visibleOtpId = otpItemWrapper.otp.resourceId
         hideCurrentlyVisibleItem(isCurrentItemRefreshing = true)
-        showTotp(otpListItemWrapper, copyToClipboard = true)
+        showTotp(otpItemWrapper, copyToClipboard = true)
     }
 
-    private fun showTotp(otpListItemWrapper: OtpListItemWrapper, copyToClipboard: Boolean) {
+    private fun showTotp(otpItemWrapper: OtpItemWrapper, copyToClipboard: Boolean) {
         presenterScope.launch {
             val otpResource = getLocalResourceUseCase.execute(
-                GetLocalResourceUseCase.Input(otpListItemWrapper.otp.resourceId)
+                GetLocalResourceUseCase.Input(otpItemWrapper.otp.resourceId)
             ).resource
             val resourceAuthenticatedActionsInteractor = get<ResourceAuthenticatedActionsInteractor> {
                 parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
@@ -262,7 +261,7 @@ class OtpPresenter(
                         algorithm = otp.algorithm
                     )
 
-                    val newOtp = otpListItemWrapper.copy(
+                    val newOtp = otpItemWrapper.copy(
                         otpValue = otpParameters.otpValue,
                         isVisible = true,
                         otpExpirySeconds = otp.period,
@@ -270,9 +269,9 @@ class OtpPresenter(
                         isRefreshing = false
                     )
                     with(newOtp) {
-                        val indexOfOld = otpList.indexOfFirst { it.otp.resourceId == otpListItemWrapper.otp.resourceId }
+                        val indexOfOld = otpList.indexOfFirst { it.otp.resourceId == otpItemWrapper.otp.resourceId }
                         otpList[indexOfOld] = this
-                        visibleOtpId = otpListItemWrapper.otp.resourceId
+                        visibleOtpId = otpItemWrapper.otp.resourceId
                     }
                     showOtps()
                     if (copyToClipboard) {
@@ -291,14 +290,14 @@ class OtpPresenter(
         }
     }
 
-    override fun otpItemMoreClick(otpListWrapper: OtpListItemWrapper) {
+    override fun otpItemMoreClick(otpListWrapper: OtpItemWrapper) {
         hideCurrentlyVisibleItem()
         currentOtpItemForMenu = otpListWrapper
         presenterScope.launch {
-            createResourceMoreMenuModelUseCase.execute(
-                CreateResourceMoreMenuModelUseCase.Input(otpListWrapper.otp.resourceId)
+            createOtpMoreMenuModelUseCase.execute(
+                CreateOtpMoreMenuModelUseCase.Input(otpListWrapper.otp.resourceId, canShowOtp = true)
             )
-                .resourceMenuModel
+                .otpMoreMenuModel
                 .let { view?.showOtmMoreMenu(it) }
         }
     }
@@ -354,16 +353,14 @@ class OtpPresenter(
                 decryptionFailure = { view?.showDecryptionFailure() },
                 fetchFailure = { view?.showFetchFailure() }
             ) { label, otp ->
-                view?.apply {
-                    val otpParameters = totpParametersProvider.provideOtpParameters(
-                        secretKey = otp.key,
-                        digits = otp.digits,
-                        period = otp.period,
-                        algorithm = otp.algorithm
-                    )
+                val otpParameters = totpParametersProvider.provideOtpParameters(
+                    secretKey = otp.key,
+                    digits = otp.digits,
+                    period = otp.period,
+                    algorithm = otp.algorithm
+                )
 
-                    view?.copySecretToClipBoard(label, otpParameters.otpValue)
-                }
+                view?.copySecretToClipBoard(label, otpParameters.otpValue)
             }
         }
     }
@@ -433,33 +430,7 @@ class OtpPresenter(
     }
 
     override fun menuEditOtpManuallyClick() {
-        presenterScope.launch {
-            view?.showProgress()
-            val otpResource = getLocalResourceUseCase.execute(
-                GetLocalResourceUseCase.Input(currentOtpItemForMenu!!.otp.resourceId)
-            ).resource
-            val resourceAuthenticatedActionsInteractor = get<ResourceAuthenticatedActionsInteractor> {
-                parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
-            }
-            resourceAuthenticatedActionsInteractor.provideOtp(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { _, otp ->
-                view?.navigateToEditOtpManually(
-                    OtpResourceModel(
-                        currentOtpItemForMenu!!.otp.resourceId,
-                        currentOtpItemForMenu!!.otp.parentFolderId,
-                        currentOtpItemForMenu!!.otp.name,
-                        otp.key,
-                        currentOtpItemForMenu!!.otp.url,
-                        otp.algorithm,
-                        otp.digits,
-                        otp.period
-                    )
-                )
-            }
-            view?.hideProgress()
-        }
+        view?.navigateToEditOtpManually(currentOtpItemForMenu!!.otp.resourceId)
     }
 
     override fun otpQrScanned(totpQr: OtpParseResult.OtpQr.TotpQr?) {
@@ -523,7 +494,7 @@ class OtpPresenter(
             secretKey = totpQr.secret
         )
 
-    private fun createCommonUpdateInput(existingResource: OtpListItemWrapper, totpQr: OtpParseResult.OtpQr.TotpQr) =
+    private fun createCommonUpdateInput(existingResource: OtpItemWrapper, totpQr: OtpParseResult.OtpQr.TotpQr) =
         UpdateResourceInteractor.CommonInput(
             resourceId = existingResource.otp.resourceId,
             resourceName = totpQr.label,
