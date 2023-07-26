@@ -26,7 +26,7 @@ package com.passbolt.mobile.android.serializers.resourcelistdeserializer
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase.Output
 import com.passbolt.mobile.android.dto.response.PermissionDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.serializers.gson.validation.PasswordAndDescriptionResourceValidation
@@ -35,6 +35,9 @@ import com.passbolt.mobile.android.serializers.gson.validation.PasswordStringRes
 import com.passbolt.mobile.android.serializers.gson.validation.TotpResourceValidation
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_STRING_SLUG
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -67,8 +70,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for password string type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to SupportedContentTypes.PASSWORD_STRING_SLUG)
+                Output(
+                    mapOf(testedResourceTypeUuid to PASSWORD_STRING_SLUG)
                 )
             )
         }
@@ -103,8 +106,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for password and description type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG)
+                Output(
+                    mapOf(testedResourceTypeUuid to PASSWORD_AND_DESCRIPTION_SLUG)
                 )
             )
         }
@@ -136,7 +139,7 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for totp type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
+                Output(
                     mapOf(testedResourceTypeUuid to SupportedContentTypes.TOTP_SLUG)
                 )
             )
@@ -165,8 +168,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for password description totp type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG)
+                Output(
+                    mapOf(testedResourceTypeUuid to PASSWORD_DESCRIPTION_TOTP_SLUG)
                 )
             )
         }
@@ -198,8 +201,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `optional fields should pass validation`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(testedResourceTypeUuid to SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG)
+                Output(
+                    mapOf(testedResourceTypeUuid to PASSWORD_AND_DESCRIPTION_SLUG)
                 )
             )
         }

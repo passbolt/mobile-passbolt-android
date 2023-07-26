@@ -70,6 +70,21 @@
                 android:layout_height="0dp"
                 android:layout_weight="@integer/material_motion_duration_long_1" />
 
+            <!-- do not use textPrimary color here as the background is yellow -->
+            <TextView
+                android:id="@+id/alsoEditsResourceWarning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_yellow_rectangle_corners"
+                android:drawablePadding="@dimen/dp_16"
+                android:padding="@dimen/dp_16"
+                android:text="@string/otp_create_totp_overwrite"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_alert_triangle"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <Button
                 android:id="@+id/mainButton"
                 style="@style/PrimaryBlueButton"

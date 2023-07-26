@@ -876,48 +876,48 @@ class HomePresenter(
         coroutineScope.launch {
             val resourceModel = requireNotNull(currentMoreMenuResource)
             view?.showProgress()
-                when (val fetchedSecret = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    secretInteractor.fetchAndDecrypt(resourceModel.resourceId)
-                }) {
-                    is SecretInteractor.Output.DecryptFailure -> {
-                        Timber.e("Failed to decrypt secret during linking totp resource")
-                        view?.showEncryptionError(fetchedSecret.error.message)
-                    }
-                    is SecretInteractor.Output.FetchFailure -> {
-                        Timber.e("Failed to fetch secret during linking totp resource")
-                        view?.showGeneralError()
-                    }
-                    is SecretInteractor.Output.Success -> {
-                        when (val editResourceResult =
-                            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                                updateToLinkedTotpResourceInteractor.execute(
-                                    createCommonLinkToTotpUpdateInput(resourceModel),
-                                    createUpdateToLinkedTotpInput(
-                                        totpQr,
-                                        fetchedSecret.decryptedSecret,
-                                        resourceModel.resourceTypeId
-                                    )
+            when (val fetchedSecret = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                secretInteractor.fetchAndDecrypt(resourceModel.resourceId)
+            }) {
+                is SecretInteractor.Output.DecryptFailure -> {
+                    Timber.e("Failed to decrypt secret during linking totp resource")
+                    view?.showEncryptionError(fetchedSecret.error.message)
+                }
+                is SecretInteractor.Output.FetchFailure -> {
+                    Timber.e("Failed to fetch secret during linking totp resource")
+                    view?.showGeneralError()
+                }
+                is SecretInteractor.Output.Success -> {
+                    when (val editResourceResult =
+                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                            updateToLinkedTotpResourceInteractor.execute(
+                                createCommonLinkToTotpUpdateInput(resourceModel),
+                                createUpdateToLinkedTotpInput(
+                                    totpQr,
+                                    fetchedSecret.decryptedSecret,
+                                    resourceModel.resourceTypeId
                                 )
-                            }) {
-                            is UpdateResourceInteractor.Output.Success -> {
-                                updateLocalResourceUseCase.execute(
-                                    UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                                )
-                                fullDataRefreshExecutor.performFullDataRefresh()
-                            }
-                            is UpdateResourceInteractor.Output.Failure<*> ->
-                                view?.showGeneralError(editResourceResult.response.exception.message.orEmpty())
-                            is UpdateResourceInteractor.Output.PasswordExpired -> {
-                                /* will not happen in BaseAuthenticatedPresenter */
-                            }
-                            is UpdateResourceInteractor.Output.OpenPgpError ->
-                                view?.showEncryptionError(editResourceResult.message)
+                            )
+                        }) {
+                        is UpdateResourceInteractor.Output.Success -> {
+                            updateLocalResourceUseCase.execute(
+                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                            )
+                            fullDataRefreshExecutor.performFullDataRefresh()
                         }
-                    }
-                    is SecretInteractor.Output.Unauthorized -> {
-                        /* will not happen in BaseAuthenticatedPresenter */
+                        is UpdateResourceInteractor.Output.Failure<*> ->
+                            view?.showGeneralError(editResourceResult.response.exception.message.orEmpty())
+                        is UpdateResourceInteractor.Output.PasswordExpired -> {
+                            /* will not happen in BaseAuthenticatedPresenter */
+                        }
+                        is UpdateResourceInteractor.Output.OpenPgpError ->
+                            view?.showEncryptionError(editResourceResult.message)
                     }
                 }
+                is SecretInteractor.Output.Unauthorized -> {
+                    /* will not happen in BaseAuthenticatedPresenter */
+                }
+            }
             view?.hideProgress()
         }
     }
@@ -945,4 +945,8 @@ class HomePresenter(
             existingSecret = fetchedSecret,
             existingResourceTypeId = existingResourceTypeId
         )
+
+    override fun menuAddTotpManuallyClick() {
+        view?.navigateToOtpCreate(currentMoreMenuResource!!.resourceId)
+    }
 }

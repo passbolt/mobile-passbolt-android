@@ -262,7 +262,7 @@ class PermissionsFragment :
 
     override fun showSecretFetchFailure() {
         showSnackbar(
-            R.string.resource_permissions_secret_fetch_failure,
+            R.string.common_fetch_failure,
             anchorView = snackbarAnchorView,
             backgroundColor = R.color.red
         )
@@ -270,7 +270,7 @@ class PermissionsFragment :
 
     override fun showSecretEncryptFailure() {
         showSnackbar(
-            R.string.resource_permissions_secret_encrypt_failure,
+            R.string.common_encryption_failure,
             anchorView = snackbarAnchorView,
             backgroundColor = R.color.red
         )
@@ -278,7 +278,7 @@ class PermissionsFragment :
 
     override fun showSecretDecryptFailure() {
         showSnackbar(
-            R.string.resource_permissions_secret_decrypt_failure,
+            R.string.common_decryption_failure,
             anchorView = snackbarAnchorView,
             backgroundColor = R.color.red
         )

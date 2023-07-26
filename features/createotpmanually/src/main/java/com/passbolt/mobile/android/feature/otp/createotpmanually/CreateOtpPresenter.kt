@@ -28,13 +28,20 @@ import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
@@ -44,6 +51,11 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.get
+import org.koin.core.component.getOrCreateScope
+import org.koin.core.parameter.parametersOf
+import org.koin.core.scope.Scope
 import timber.log.Timber
 
 class CreateOtpPresenter(
@@ -51,15 +63,20 @@ class CreateOtpPresenter(
     private val updateStandaloneTotpResourceInteractor: UpdateStandaloneTotpResourceInteractor,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
+    private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val secretInteractor: SecretInteractor,
+    private val resourceTypeFactory: ResourceTypeFactory,
     coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedPresenter<CreateOtpContract.View>(coroutineLaunchContext), CreateOtpContract.Presenter {
+) : BaseAuthenticatedPresenter<CreateOtpContract.View>(coroutineLaunchContext), CreateOtpContract.Presenter,
+    KoinScopeComponent {
 
     override var view: CreateOtpContract.View? = null
     private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private var algorithm = OtpParseResult.OtpQr.Algorithm.DEFAULT.name
+    private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
+    override val scope: Scope
+        get() = getOrCreateScope().value
 
+    private var algorithm = OtpParseResult.OtpQr.Algorithm.DEFAULT.name
     private var period = OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS
     private var digits = OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS
     private var secret = ""
@@ -76,23 +93,79 @@ class CreateOtpPresenter(
         view.setValues(label, issuer, secret)
     }
 
-    override fun argsRetrieved(editedOtpData: OtpResourceModel?) {
-        this.editedOtpData = editedOtpData
-        if (editedOtpData != null && !argsConsumed) {
-            algorithm = editedOtpData.algorithm
-            period = editedOtpData.period
-            digits = editedOtpData.digits
-            secret = editedOtpData.secret
-            label = editedOtpData.label
-            issuer = editedOtpData.issuer.orEmpty()
-            argsConsumed = true
+    override fun argsRetrieved(editedOtpResourceId: String?) {
+        coroutineScope.launch {
+            if (editedOtpResourceId != null && !argsConsumed) {
+                val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(editedOtpResourceId))
+                    .resource
+
+                when (resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
+                    SIMPLE_PASSWORD, PASSWORD_WITH_DESCRIPTION -> {
+                        setupEditForResourceWithoutTotp(resource)
+                    }
+                    STANDALONE_TOTP, PASSWORD_DESCRIPTION_TOTP -> {
+                        setupEditForResourceContainingTotp(resource)
+                    }
+                }
+                argsConsumed = true
+            }
+
+            if (editedOtpResourceId == null) {
+                view?.setupCreateUi()
+            } else {
+                view?.setupEditUi()
+            }
+            view?.setFormValues(label, issuer, secret)
         }
-        if (editedOtpData == null) {
-            view?.setupCreateUi()
-        } else {
-            view?.setupEditUi()
+    }
+
+    private suspend fun setupEditForResourceContainingTotp(resource: ResourceModel) {
+        get<ResourceAuthenticatedActionsInteractor> {
+            parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
         }
-        view?.setFormValues(label, issuer, secret)
+            .provideOtp(
+                decryptionFailure = { view?.showDecryptionError() },
+                fetchFailure = { view?.showFetchError() }
+            ) { _, fetchedSecret ->
+                initScreenData(
+                    OtpResourceModel(
+                        resourceId = resource.resourceId,
+                        parentFolderId = resource.folderId,
+                        label = resource.name,
+                        secret = fetchedSecret.key,
+                        issuer = resource.url,
+                        algorithm = fetchedSecret.algorithm,
+                        digits = fetchedSecret.digits,
+                        period = fetchedSecret.period
+                    )
+                )
+            }
+    }
+
+    private fun setupEditForResourceWithoutTotp(resource: ResourceModel) {
+        initScreenData(
+            OtpResourceModel(
+                resourceId = resource.resourceId,
+                parentFolderId = resource.folderId,
+                label = resource.name,
+                secret = "",
+                issuer = resource.url,
+                algorithm = OtpParseResult.OtpQr.Algorithm.DEFAULT.name,
+                digits = OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS,
+                period = OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS
+            )
+        )
+        view?.showEditingValuesAlsoEditsResourceValuesWarning()
+    }
+
+    private fun initScreenData(model: OtpResourceModel) {
+        algorithm = model.algorithm
+        period = model.period
+        digits = model.digits
+        secret = model.secret
+        label = model.label
+        issuer = model.issuer.orEmpty()
+        editedOtpData = model
     }
 
     override fun otpSettingsModified(algorithm: String, period: Long, digits: Int) {
@@ -145,13 +218,13 @@ class CreateOtpPresenter(
     }
 
     private fun createTotp() {
-        scope.launch {
+        coroutineScope.launch {
             view?.showProgress()
             when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                 createStandaloneTotpResourceInteractor.execute(
                     createCommonStandaloneTotpResourceCreateInput(),
                     createStandaloneTotpResourceCreateInput()
-                    )
+                )
             }) {
                 is CreateResourceInteractor.Output.Failure<*> -> view?.showGenericError()
                 is CreateResourceInteractor.Output.OpenPgpError -> view?.showEncryptionError(result.message)
@@ -159,7 +232,10 @@ class CreateOtpPresenter(
                     /* will not happen in BaseAuthenticatedPresenter */
                 }
                 is CreateResourceInteractor.Output.Success -> {
-                    view?.navigateToOtpListInCreateFlow(otpCreated = true)
+                    view?.navigateBackInCreateFlow(
+                        result.resource.resourceModel.name,
+                        otpCreated = true
+                    )
                 }
             }
             view?.hideProgress()
@@ -167,37 +243,86 @@ class CreateOtpPresenter(
     }
 
     private fun editTotp() {
-        scope.launch {
+        coroutineScope.launch {
             view?.showProgress()
             val existingResource = requireNotNull(editedOtpData) { "In edit mode but existing resource not present" }
+            val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(editedOtpData!!.resourceId))
+                .resource
 
-            when (val editResourceResult =
-                runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    updateStandaloneTotpResourceInteractor.execute(
-                        createCommonTotpUpdateInput(existingResource.resourceId, existingResource.parentFolderId),
-                        createStandaloneTotpUpdateInput()
-                    )
-                }) {
-                is UpdateResourceInteractor.Output.Failure<*> -> {
-                    view?.showError(editResourceResult.response.exception.message.orEmpty())
+            when (val fetchedSecret = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                secretInteractor.fetchAndDecrypt(editedOtpData!!.resourceId)
+            }) {
+                is SecretInteractor.Output.DecryptFailure -> {
+                    Timber.e("Failed to decrypt secret during linking totp resource")
+                    view?.showEncryptionError(fetchedSecret.error.message)
                 }
-                is UpdateResourceInteractor.Output.OpenPgpError -> {
-                    view?.showEncryptionError(editResourceResult.message)
+                is SecretInteractor.Output.FetchFailure -> {
+                    Timber.e("Failed to fetch secret during linking totp resource")
+                    view?.showGenericError()
                 }
-                is UpdateResourceInteractor.Output.PasswordExpired -> {
+                is SecretInteractor.Output.Success -> {
+                    val operation = getEditOperation(resource, fetchedSecret.decryptedSecret, existingResource)
+
+                    when (val editResourceResult =
+                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                            operation.invoke()
+                        }) {
+                        is UpdateResourceInteractor.Output.Failure<*> -> {
+                            view?.showError(editResourceResult.response.exception.message.orEmpty())
+                        }
+                        is UpdateResourceInteractor.Output.OpenPgpError -> {
+                            view?.showEncryptionError(editResourceResult.message)
+                        }
+                        is UpdateResourceInteractor.Output.PasswordExpired -> {
+                            /* will not happen in BaseAuthenticatedPresenter */
+                        }
+                        is UpdateResourceInteractor.Output.Success -> {
+                            updateLocalResourceUseCase.execute(
+                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                            )
+                            view?.navigateBackInUpdateFlow(editResourceResult.resource.name, otpUpdated = true)
+                        }
+                    }
+                }
+                is SecretInteractor.Output.Unauthorized -> {
                     /* will not happen in BaseAuthenticatedPresenter */
-                }
-                is UpdateResourceInteractor.Output.Success -> {
-                    updateLocalResourceUseCase.execute(
-                        UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                    )
-                    view?.navigateToOtpListInUpdateFlow(otpUpdated = true)
                 }
             }
 
             view?.hideProgress()
         }
     }
+
+    private suspend fun getEditOperation(
+        resource: ResourceModel,
+        fetchedSecret: ByteArray,
+        existingResource: OtpResourceModel
+    ) =
+        when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
+            SIMPLE_PASSWORD -> throw IllegalArgumentException(
+                "Unsupported resource type on manual totp form:" +
+                        " $resourceTypeEnum"
+            )
+            PASSWORD_WITH_DESCRIPTION -> suspend {
+                updateToLinkedTotpResourceInteractor.execute(
+                    createCommonLinkToTotpOverwriteInput(resource),
+                    createUpdateToLinkedTotpInput(
+                        resource.resourceTypeId,
+                        fetchedSecret
+                    )
+                )
+            }
+            PASSWORD_DESCRIPTION_TOTP -> throw NotImplementedError("Edit linked resource not done yet") // TODO
+            STANDALONE_TOTP -> suspend {
+                updateStandaloneTotpResourceInteractor.execute(
+                    createCommonTotpUpdateInput(
+                        existingResource.resourceId,
+                        existingResource.parentFolderId
+                    ),
+                    createStandaloneTotpUpdateInput()
+                )
+            }
+        }
 
     private fun createStandaloneTotpUpdateInput() =
         UpdateStandaloneTotpResourceInteractor.UpdateStandaloneTotpInput(
@@ -224,6 +349,16 @@ class CreateOtpPresenter(
             resourceName = resource.name,
             resourceUsername = resource.username,
             resourceUri = resource.url,
+            resourceParentFolderId = resource.folderId
+        )
+
+    // updates existing resource to linked totp resource with values from this form (used in "Add totp flow")
+    private fun createCommonLinkToTotpOverwriteInput(resource: ResourceModel) =
+        UpdateResourceInteractor.CommonInput(
+            resourceId = resource.resourceId,
+            resourceName = label,
+            resourceUsername = resource.username,
+            resourceUri = issuer,
             resourceParentFolderId = resource.folderId
         )
 
@@ -256,7 +391,7 @@ class CreateOtpPresenter(
     }
 
     override fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel) {
-        scope.launch {
+        coroutineScope.launch {
             view?.showProgress()
 
             when (val fetchedSecret = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
@@ -282,7 +417,10 @@ class CreateOtpPresenter(
                             updateLocalResourceUseCase.execute(
                                 UpdateLocalResourceUseCase.Input(editResourceResult.resource)
                             )
-                            view?.navigateToOtpListInCreateFlow(otpCreated = true)
+                            view?.navigateBackInCreateFlow(
+                                resourceName = editResourceResult.resource.name,
+                                otpCreated = true
+                            )
                         }
                         is UpdateResourceInteractor.Output.Failure<*> ->
                             view?.showError(editResourceResult.response.exception.message.orEmpty())

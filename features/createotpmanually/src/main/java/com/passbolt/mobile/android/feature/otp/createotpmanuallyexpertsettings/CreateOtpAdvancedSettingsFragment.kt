@@ -34,8 +34,8 @@ import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
-import com.passbolt.mobile.android.feature.otp.R
-import com.passbolt.mobile.android.feature.otp.databinding.FragmentCreateOtpAdvancedSettingsBinding
+import com.passbolt.mobile.android.feature.createotpmanually.R
+import com.passbolt.mobile.android.feature.createotpmanually.databinding.FragmentCreateOtpAdvancedSettingsBinding
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 import org.koin.android.ext.android.inject

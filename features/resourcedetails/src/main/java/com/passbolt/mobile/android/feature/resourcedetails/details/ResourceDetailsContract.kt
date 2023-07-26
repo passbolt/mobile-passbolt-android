@@ -82,6 +82,7 @@ interface ResourceDetailsContract {
         fun showTotpSection()
         fun showInvalidTotpScanned()
         fun showEncryptionError(message: String)
+        fun navigateToOtpCreate(resourceId: String)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -109,5 +110,6 @@ interface ResourceDetailsContract {
         fun totpIconClick()
         fun copyTotpClick()
         fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
+        fun addTotpManuallyClick()
     }
 }

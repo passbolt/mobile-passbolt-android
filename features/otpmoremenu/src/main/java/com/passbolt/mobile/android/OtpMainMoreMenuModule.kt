@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.feature.otp.otpmoremenu
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,5 +21,11 @@ package com.passbolt.mobile.android.feature.otp.otpmoremenu
  * @since v1.0
  */
 
-typealias ClipboardLabel = String
-typealias OtpName = String
+package com.passbolt.mobile.android
+
+import com.passbolt.mobile.android.otpmoremenu.otpMoreMenuModule
+import org.koin.dsl.module
+
+val otpMainMoreMenuModule = module {
+    otpMoreMenuModule()
+}

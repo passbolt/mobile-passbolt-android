@@ -32,6 +32,7 @@ import com.passbolt.mobile.android.feature.authenticationModule
 import com.passbolt.mobile.android.feature.autofill.autofillResourcesModule
 import com.passbolt.mobile.android.feature.home.homeModule
 import com.passbolt.mobile.android.feature.main.mainModule
+import com.passbolt.mobile.android.feature.otp.createOtpManuallyMainModule
 import com.passbolt.mobile.android.feature.otp.otpMainModule
 import com.passbolt.mobile.android.feature.otp.scanOtpMainModule
 import com.passbolt.mobile.android.feature.resourcedetails.resourceDetailsModule
@@ -47,6 +48,7 @@ import com.passbolt.mobile.android.helpMenuModule
 import com.passbolt.mobile.android.locationDetailsModule
 import com.passbolt.mobile.android.logsModule
 import com.passbolt.mobile.android.mappersModule
+import com.passbolt.mobile.android.otpMainMoreMenuModule
 import com.passbolt.mobile.android.passboltapi.passboltApiModule
 import com.passbolt.mobile.android.resourceMoreMenuModule
 import com.passbolt.mobile.android.resourcePickerModule
@@ -149,7 +151,9 @@ class KoinInitializer : Initializer<Unit> {
             serializersModule,
             resourcePickerModule,
             tagsModule,
-            scanOtpMainModule
+            scanOtpMainModule,
+            otpMainMoreMenuModule,
+            createOtpManuallyMainModule
         )
     }
 }

@@ -53,6 +53,7 @@ import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
@@ -61,12 +62,12 @@ import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
 import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.ui.OtpListItemWrapper
 import com.passbolt.mobile.android.ui.OtpResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -345,16 +346,16 @@ class OtpFragment :
             otpCreatedResult
         )
         findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToCreateOtpManuallyFragment(null)
+            NavDeepLinkProvider.otpManualFormDeepLinkRequest(null)
         )
     }
 
     override fun showDecryptionFailure() {
-        showSnackbar(R.string.home_decryption_failure, backgroundColor = R.color.red)
+        showSnackbar(R.string.common_decryption_failure, backgroundColor = R.color.red)
     }
 
     override fun showFetchFailure() {
-        showSnackbar(R.string.home_fetch_failure, backgroundColor = R.color.red)
+        showSnackbar(R.string.common_fetch_failure, backgroundColor = R.color.red)
     }
 
     override fun showConfirmDeleteDialog() {
@@ -397,7 +398,7 @@ class OtpFragment :
             otpUpdatedResult
         )
         findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToCreateOtpManuallyFragment(totp)
+            NavDeepLinkProvider.otpManualFormDeepLinkRequest(totp.resourceId)
         )
     }
 
@@ -413,7 +414,7 @@ class OtpFragment :
 
     override fun showInvalidQrCodeDataScanned() {
         showSnackbar(
-            R.string.resource_permissions_secret_encrypt_failure,
+            R.string.otp_invalid_itp_data_scanned,
             backgroundColor = R.color.red
         )
     }
@@ -424,7 +425,7 @@ class OtpFragment :
 
     override fun showEncryptionError(message: String) {
         showSnackbar(
-            R.string.resource_permissions_secret_encrypt_failure,
+            R.string.common_encryption_failure,
             backgroundColor = R.color.red
         )
     }

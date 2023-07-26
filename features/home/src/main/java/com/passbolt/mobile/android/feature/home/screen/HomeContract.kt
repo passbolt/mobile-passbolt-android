@@ -105,6 +105,7 @@ interface HomeContract {
         fun hideProgress()
         fun showInvalidTotpScanned()
         fun showEncryptionError(message: String)
+        fun navigateToOtpCreate(resourceId: String)
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -159,5 +160,6 @@ interface HomeContract {
         fun createFolderClick()
         fun folderCreated(name: String)
         fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
+        fun menuAddTotpManuallyClick()
     }
 }

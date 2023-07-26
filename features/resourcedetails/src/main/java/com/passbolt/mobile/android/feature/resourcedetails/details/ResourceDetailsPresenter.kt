@@ -548,4 +548,8 @@ class ResourceDetailsPresenter(
             existingSecret = fetchedSecret,
             existingResourceTypeId = existingResourceTypeId
         )
+
+    override fun addTotpManuallyClick() {
+        view?.navigateToOtpCreate(resourceModel.resourceId)
+    }
 }
