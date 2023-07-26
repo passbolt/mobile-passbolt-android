@@ -52,7 +52,7 @@ interface ResourcePickerContract {
         fun searchClearClick()
         fun argsRetrieved(suggestion: String)
         fun refreshSwipe()
-        fun resourcePicked(selectableResourceModel: SelectableResourceModelWrapper, selected: Boolean)
+        fun resourcePicked(selectableResourceModel: SelectableResourceModelWrapper, isSelected: Boolean)
         fun applyClick()
         fun otpLinkConfirmed(pickAction: PickResourceAction)
     }
