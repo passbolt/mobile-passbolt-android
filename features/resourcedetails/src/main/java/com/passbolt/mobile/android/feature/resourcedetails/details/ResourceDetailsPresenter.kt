@@ -528,19 +528,8 @@ class ResourceDetailsPresenter(
             SIMPLE_PASSWORD, STANDALONE_TOTP -> throw IllegalArgumentException(
                 "Cannot edit simple password or standalone totp by scanning qr code on resource details form"
             )
-            PASSWORD_WITH_DESCRIPTION -> createCommonLinkToTotpUpdateInput()
-            PASSWORD_DESCRIPTION_TOTP -> createCommonLinkToTotpOverwriteInput(totpQr)
+            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> createCommonLinkToTotpUpdateInput()
         }
-
-    // updates existing resource to linked totp resource with values from "Scan otp form" form
-    private fun createCommonLinkToTotpOverwriteInput(totpQr: OtpParseResult.OtpQr.TotpQr) =
-        UpdateResourceInteractor.CommonInput(
-            resourceId = resourceModel.resourceId,
-            resourceName = totpQr.label,
-            resourceUsername = resourceModel.username,
-            resourceUri = totpQr.issuer,
-            resourceParentFolderId = resourceModel.folderId
-        )
 
     // updates existing resource to linked totp resource
     private fun createCommonLinkToTotpUpdateInput() =
