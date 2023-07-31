@@ -1,14 +1,18 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update
 
+import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.common.validation.Rule
 import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.Validation
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.ItemIdResourceId
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
@@ -16,6 +20,7 @@ import com.passbolt.mobile.android.core.resources.interactor.create.CreateResour
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourceUseCase
@@ -26,6 +31,7 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
@@ -39,9 +45,11 @@ import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerato
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.FieldNamesMapper.Companion.USERNAME_FIELD
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.NewFieldsModelCreator
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.ResourceUpdateType
+import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import timber.log.Timber
@@ -78,6 +86,7 @@ class UpdateResourcePresenter(
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     private val updateSimplePasswordResourceInteractor: UpdateSimplePasswordResourceInteractor,
     private val updatePasswordAndDescriptionResourceInteractor: UpdatePasswordAndDescriptionResourceInteractor,
+    private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
     private val resourceTypeFactory: ResourceTypeFactory,
     private val editFieldsModelCreator: EditFieldsModelCreator,
     private val newFieldsModelCreator: NewFieldsModelCreator,
@@ -87,7 +96,8 @@ class UpdateResourcePresenter(
     private val getLocalParentFolderPermissionsToApplyUseCase: GetLocalParentFolderPermissionsToApplyToNewItemUseCase,
     private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase,
     private val createResourceIdlingResource: CreateResourceIdlingResource,
-    private val updateResourceIdlingResource: UpdateResourceIdlingResource
+    private val updateResourceIdlingResource: UpdateResourceIdlingResource,
+    private val secretParser: SecretParser
 ) : DataRefreshViewReactivePresenter<UpdateResourceContract.View>(coroutineLaunchContext),
     UpdateResourceContract.Presenter {
 
@@ -99,6 +109,7 @@ class UpdateResourcePresenter(
     private lateinit var fields: List<ResourceValue>
     private lateinit var resourceUpdateType: ResourceUpdateType
     private var existingResource: ResourceModel? = null
+    private var existingSecret: ByteArray? = null
     private var resourceParentFolderId: String? = null
 
     override fun argsRetrieved(mode: ResourceMode, resource: ResourceModel?, resourceParentFolderId: String?) {
@@ -120,6 +131,7 @@ class UpdateResourcePresenter(
                     val existingResource = requireNotNull(existingResource)
                     doAfterFetchAndDecrypt(existingResource.resourceId,
                         action = {
+                            existingSecret = it
                             createInputFields(existingResource, it)
                         },
                         itemMissingErrorAction = {
@@ -322,7 +334,7 @@ class UpdateResourcePresenter(
         val newPermissionsToApply = getLocalParentFolderPermissionsToApplyUseCase.execute(
             GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input(
                 resourceParentFolderId,
-                com.passbolt.mobile.android.core.commonfolders.usecase.db.ItemIdResourceId(resource.resourceId)
+                ItemIdResourceId(resource.resourceId)
             )
         ).permissions
 
@@ -360,7 +372,21 @@ class UpdateResourcePresenter(
                         createPasswordAndDescriptionUpdateInput()
                     )
                 }
-                STANDALONE_TOTP, PASSWORD_DESCRIPTION_TOTP ->
+                PASSWORD_DESCRIPTION_TOTP -> suspend {
+                    try {
+                        updateToLinkedTotpResourceInteractor.execute(
+                            createCommonUpdateInput(existingResource),
+                            createPasswordDescriptionTotpUpdateInput()
+                        )
+                    } catch (exception: ClassCastException) {
+                        Timber.e("Secret data has invalid type, quitting edit form")
+                        view?.showInvalidSecretDataAndNavigateBack()
+                        object : AuthenticatedUseCaseOutput {
+                            override val authenticationState = AuthenticationState.Authenticated
+                        }
+                    }
+                }
+                STANDALONE_TOTP ->
                     throw IllegalArgumentException("Unsupported resource type on update form: $resourceTypeEnum")
             }
 
@@ -384,6 +410,26 @@ class UpdateResourcePresenter(
                 view?.closeWithEditSuccessResult(existingResource.name)
             }
         }
+    }
+
+    @Throws(ClassCastException::class)
+    private suspend fun createPasswordDescriptionTotpUpdateInput():
+            UpdateToLinkedTotpResourceInteractor.UpdateToLinkedTotpInput {
+
+        val existingTotpSecret = secretParser.extractTotpData(
+            resourceTypeFactory.getResourceTypeEnum(existingResource!!.resourceTypeId),
+            existingSecret!!
+        ) as DecryptedSecretOrError.DecryptedSecret
+        return UpdateToLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
+            period = existingTotpSecret.secret.period,
+            digits = existingTotpSecret.secret.digits,
+            algorithm = existingTotpSecret.secret.algorithm,
+            secretKey = existingTotpSecret.secret.key,
+            existingSecret = existingSecret!!,
+            existingResourceTypeId = existingResource!!.resourceTypeId,
+            password = getFieldValue(PASSWORD_FIELD)!!,
+            description = getFieldValue(DESCRIPTION_FIELD)
+        )
     }
 
     private fun createCommonUpdateInput(existingResource: ResourceModel) =
@@ -468,6 +514,12 @@ class UpdateResourcePresenter(
             rules.add(StringMaxLength(it))
         }
         return rules
+    }
+
+    override fun detach() {
+        existingSecret?.erase()
+        scope.coroutineContext.cancelChildren()
+        super<DataRefreshViewReactivePresenter>.detach()
     }
 
     // TODO add support for fully dynamic request model

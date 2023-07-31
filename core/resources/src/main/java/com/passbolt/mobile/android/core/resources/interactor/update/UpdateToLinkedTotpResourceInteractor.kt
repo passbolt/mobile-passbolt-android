@@ -25,9 +25,9 @@ package com.passbolt.mobile.android.core.resources.interactor.update
 
 import com.passbolt.mobile.android.core.resources.SecretInputCreator
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.core.users.usecase.FetchUsersUseCase
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
@@ -78,8 +78,8 @@ class UpdateToLinkedTotpResourceInteractor(
 
             try {
                 val secret = secretInputCreator.createPasswordDescriptionTotpSecretInput(
-                    password = createSecretPassword(customInput.existingSecret, resourceTypeEnum),
-                    description = createSecretDescription(customInput.existingSecret, resourceTypeEnum),
+                    password = createSecretPassword(customInput, resourceTypeEnum),
+                    description = createSecretDescription(customInput, resourceTypeEnum),
                     algorithm = customInput.algorithm,
                     key = customInput.secretKey,
                     digits = customInput.digits,
@@ -98,29 +98,31 @@ class UpdateToLinkedTotpResourceInteractor(
 
     @Throws(RuntimeException::class)
     private fun createSecretPassword(
-        existingSecret: ByteArray,
+        customInput: UpdateToLinkedTotpInput,
         resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum
     ) =
-        when (val password = secretParser.extractPassword(resourceTypeEnum, existingSecret)) {
-            is DecryptedSecretOrError.DecryptedSecret -> password.secret
-            else -> {
-                Timber.e("Could not parse password for existing resource or password is invalid")
-                throw RuntimeException()
+        customInput.password
+            ?: when (val password = secretParser.extractPassword(resourceTypeEnum, customInput.existingSecret)) {
+                is DecryptedSecretOrError.DecryptedSecret -> password.secret
+                else -> {
+                    Timber.e("Could not parse password for existing resource or password is invalid")
+                    throw RuntimeException()
+                }
             }
-        }
 
     @Throws(RuntimeException::class)
     private fun createSecretDescription(
-        existingSecret: ByteArray,
+        customInput: UpdateToLinkedTotpInput,
         resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum
     ) =
-        when (val description = secretParser.extractDescription(resourceTypeEnum, existingSecret)) {
-            is DecryptedSecretOrError.DecryptedSecret -> description.secret
-            else -> {
-                Timber.e("Could not parse description for existing resource or description is invalid")
-                throw RuntimeException()
+        customInput.description
+            ?: when (val description = secretParser.extractDescription(resourceTypeEnum, customInput.existingSecret)) {
+                is DecryptedSecretOrError.DecryptedSecret -> description.secret
+                else -> {
+                    Timber.e("Could not parse description for existing resource or description is invalid")
+                    throw RuntimeException()
+                }
             }
-        }
 
     override suspend fun createCommonDescription(customInput: UpdateToLinkedTotpInput): String? =
         null
@@ -131,6 +133,8 @@ class UpdateToLinkedTotpResourceInteractor(
         val algorithm: String,
         val secretKey: String,
         val existingSecret: ByteArray,
-        val existingResourceTypeId: String
+        val existingResourceTypeId: String,
+        val description: String?, // if description is null it's taken from existing secret
+        val password: String? // if password is null it's taken from existing secret
     )
 }

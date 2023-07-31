@@ -454,7 +454,9 @@ class CreateOtpPresenter(
             algorithm = algorithm,
             secretKey = secret,
             existingSecret = fetchedSecret,
-            existingResourceTypeId = existingResourceTypeId
+            existingResourceTypeId = existingResourceTypeId,
+            password = null,
+            description = null
         )
 
     override fun linkToResourceClick() {
