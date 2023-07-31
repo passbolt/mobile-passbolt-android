@@ -122,13 +122,13 @@ class ScanOtpSuccessFragment :
         findNavController().popBackStack()
     }
 
-    override fun navigateToResourcePicker(suggestion: String) {
+    override fun navigateToResourcePicker() {
         setFragmentResultListener(
             ResourcePickerFragment.REQUEST_PICK_RESOURCE_FOR_RESULT,
             linkedResourceReceivedListener
         )
         findNavController().navigate(
-            NavDeepLinkProvider.resourceResourcePickerDeepLinkRequest(suggestion)
+            NavDeepLinkProvider.resourceResourcePickerDeepLinkRequest(null)
         )
     }
 

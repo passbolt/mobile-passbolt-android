@@ -50,7 +50,7 @@ interface ResourcePickerContract {
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun searchTextChanged(text: String)
         fun searchClearClick()
-        fun argsRetrieved(suggestion: String)
+        fun argsRetrieved(suggestionUri: String?)
         fun refreshSwipe()
         fun resourcePicked(selectableResourceModel: SelectableResourceModelWrapper, isSelected: Boolean)
         fun applyClick()

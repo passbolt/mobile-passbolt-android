@@ -92,7 +92,7 @@ class ResourcePickerFragment :
         initRecycler(savedInstanceState)
         setUpListeners()
         presenter.attach(this)
-        presenter.argsRetrieved(args.suggestion)
+        presenter.argsRetrieved(args.suggestionUri)
     }
 
     override fun onDestroyView() {

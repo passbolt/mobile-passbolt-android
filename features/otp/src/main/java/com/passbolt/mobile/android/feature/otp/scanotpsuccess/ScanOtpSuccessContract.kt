@@ -36,7 +36,7 @@ interface ScanOtpSuccessContract {
         fun navigateToOtpList(otpCreated: Boolean)
         fun showProgress()
         fun hideProgress()
-        fun navigateToResourcePicker(suggestion: String)
+        fun navigateToResourcePicker()
         fun showError(message: String)
     }
 

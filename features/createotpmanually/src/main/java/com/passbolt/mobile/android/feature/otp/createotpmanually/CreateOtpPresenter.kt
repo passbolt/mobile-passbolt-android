@@ -461,7 +461,7 @@ class CreateOtpPresenter(
 
     override fun linkToResourceClick() {
         validateFields {
-            view?.navigateToResourcePicker(label)
+            view?.navigateToResourcePicker(issuer)
         }
     }
 

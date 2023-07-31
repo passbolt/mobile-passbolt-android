@@ -64,7 +64,7 @@ class ResourcePickerPresenter(
     private var currentSearchText = MutableStateFlow("")
     private val searchInputEndIconMode
         get() = if (currentSearchText.value.isBlank()) SearchInputEndIconMode.NONE else SearchInputEndIconMode.CLEAR
-    private lateinit var suggestion: String
+    private var suggestionUri: String? = null
 
     private var resourceList: List<SelectableResourceModelWrapper> = emptyList()
     private var suggestedResourceList: List<SelectableResourceModelWrapper> = emptyList()
@@ -78,8 +78,8 @@ class ResourcePickerPresenter(
         collectFilteringRefreshes()
     }
 
-    override fun argsRetrieved(suggestion: String) {
-        this.suggestion = suggestion
+    override fun argsRetrieved(suggestionUri: String?) {
+        this.suggestionUri = suggestionUri
     }
 
     override fun refreshAction() {
@@ -169,8 +169,13 @@ class ResourcePickerPresenter(
             .resources
             .map { resourcePickerMapper.map(it, selectableResourceTypesIds) }
 
-        suggestedResourceList = resourceList
-            .filter { it.resourceModel.name.lowercase() == suggestion.lowercase() }
+        suggestionUri?.let { suggestionUri ->
+            suggestedResourceList = resourceList
+                .filter {
+                    !it.resourceModel.url.isNullOrBlank() &&
+                            it.resourceModel.url!!.lowercase() == suggestionUri.lowercase()
+                }
+        }
 
         if (resourceList.isEmpty()) {
             view?.showEmptyState()
@@ -182,13 +187,13 @@ class ResourcePickerPresenter(
 
     override fun applyClick() {
         coroutineScope.launch {
-            val selectablesIdToSlugMapping = getResourceTypeIdToSlugMappingUseCase.execute(Unit)
+            val selectableIdToSlugMapping = getResourceTypeIdToSlugMappingUseCase.execute(Unit)
                 .idToSlugMapping
                 .filter { it.value in selectableResourceTypesSlugs }
 
-            require(pickedResourceResourceTypeId in selectablesIdToSlugMapping.keys)
+            require(pickedResourceResourceTypeId in selectableIdToSlugMapping.keys)
             val (pickAction, confirmationModel) =
-                when (val slug = selectablesIdToSlugMapping[pickedResourceResourceTypeId]) {
+                when (val slug = selectableIdToSlugMapping[pickedResourceResourceTypeId]) {
                     PASSWORD_AND_DESCRIPTION_SLUG ->
                         PickResourceAction.TOTP_LINK to ConfirmationModel.LinkTotpModel()
                     PASSWORD_DESCRIPTION_TOTP_SLUG ->
