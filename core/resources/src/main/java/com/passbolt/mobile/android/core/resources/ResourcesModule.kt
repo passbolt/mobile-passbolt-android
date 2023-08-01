@@ -6,7 +6,7 @@ import com.passbolt.mobile.android.core.resources.interactor.create.CreateStanda
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
@@ -64,7 +64,7 @@ val resourcesModule = module {
     singleOf(::UpdatePasswordAndDescriptionResourceInteractor)
     singleOf(::UpdateStandaloneTotpResourceInteractor)
     single {
-        UpdateToLinkedTotpResourceInteractor(
+        UpdateLinkedTotpResourceInteractor(
             secretInputCreator = get(),
             getSelectedAccountUseCase = get(),
             getPrivateKeyUseCase = get(),

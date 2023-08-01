@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.core.resources.actions
 
 import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.common.types.ClipboardLabel
+import com.passbolt.mobile.android.common.types.Description
+import com.passbolt.mobile.android.common.types.Password
 import com.passbolt.mobile.android.common.types.ResourceName
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
@@ -112,6 +114,24 @@ class ResourceAuthenticatedActionsInteractor(
             when (val totp = secretParser.extractTotpData(resourceTypeEnum, it)) {
                 is DecryptedSecretOrError.DecryptedSecret -> success(OTP_LABEL, totp.secret)
                 is DecryptedSecretOrError.Error -> decryptionFailure()
+            }
+        }
+    }
+
+    suspend fun providePasswordAndDescription(
+        decryptionFailure: () -> Unit,
+        fetchFailure: () -> Unit,
+        success: suspend (Password, Description) -> Unit
+    ) {
+        fetchAndDecrypt(decryptionFailure, fetchFailure) {
+            val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)
+            val password = secretParser.extractPassword(resourceTypeEnum, it)
+            val description = secretParser.extractDescription(resourceTypeEnum, it)
+
+            if (password is DecryptedSecretOrError.DecryptedSecret && description is DecryptedSecretOrError.DecryptedSecret) {
+                success(password.secret, description.secret)
+            } else {
+                decryptionFailure()
             }
         }
     }

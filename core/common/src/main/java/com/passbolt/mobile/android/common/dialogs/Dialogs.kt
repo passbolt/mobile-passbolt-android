@@ -91,10 +91,25 @@ fun keyChangesDetectedAlertDialog(context: Context, confirmAction: () -> Unit) =
         .setCancelable(false)
         .create()
 
+fun confirmResourceDeletionAlertDialog(context: Context, confirmAction: () -> Unit) =
+    AlertDialog.Builder(context)
+        .setTitle(R.string.are_you_sure)
+        .setMessage(R.string.resource_will_be_deleted)
+        .setPositiveButton(R.string.cancel) { _, _ -> }
+        .setNegativeButton(R.string.delete) { _, _ -> confirmAction() }
+        .create()
+
 fun confirmTotpDeletionAlertDialog(context: Context, confirmAction: () -> Unit) =
     AlertDialog.Builder(context)
         .setTitle(R.string.are_you_sure)
         .setMessage(R.string.otp_delete_confirmation)
         .setPositiveButton(R.string.cancel) { _, _ -> }
         .setNegativeButton(R.string.otp_delete_totp) { _, _ -> confirmAction() }
+        .create()
+
+fun serverNotReachableAlertDialog(context: Context, domain: String) =
+    AlertDialog.Builder(context)
+        .setTitle(R.string.dialog_server_not_reachable_title)
+        .setMessage(context.getString(R.string.dialog_server_not_reachable_message, domain))
+        .setPositiveButton(context.getString(R.string.dialog_server_not_reachable_got_it)) { _, _ -> }
         .create()

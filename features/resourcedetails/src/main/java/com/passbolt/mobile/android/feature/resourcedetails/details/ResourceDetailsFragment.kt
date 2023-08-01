@@ -11,7 +11,6 @@ import android.text.SpannableStringBuilder
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnLayout
@@ -23,6 +22,8 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
+import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
@@ -249,6 +250,10 @@ class ResourceDetailsFragment :
         (totpFields + binding.totpIcon).forEach { it.visible() }
     }
 
+    override fun hideTotpSection() {
+        (totpFields + binding.totpIcon).forEach { it.gone() }
+    }
+
     override fun navigateBack() {
         requireActivity().finish()
     }
@@ -401,6 +406,10 @@ class ResourceDetailsFragment :
         )
     }
 
+    override fun showTotpDeleted() {
+        showSnackbar(R.string.otp_deleted)
+    }
+
     override fun showFavouriteStar() {
         binding.favouriteIcon.visible()
     }
@@ -486,12 +495,16 @@ class ResourceDetailsFragment :
     }
 
     override fun showDeleteConfirmationDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.are_you_sure)
-            .setMessage(R.string.resource_will_be_deleted)
-            .setPositiveButton(R.string.delete) { _, _ -> presenter.deleteResourceConfirmed() }
-            .setNegativeButton(R.string.cancel) { _, _ -> }
-            .setCancelable(false)
+        confirmResourceDeletionAlertDialog(requireContext()) {
+            presenter.deleteResourceConfirmed()
+        }
+            .show()
+    }
+
+    override fun showTotpDeleteConfirmationDialog() {
+        confirmTotpDeletionAlertDialog(requireContext()) {
+            presenter.totpDeleteConfirmed()
+        }
             .show()
     }
 

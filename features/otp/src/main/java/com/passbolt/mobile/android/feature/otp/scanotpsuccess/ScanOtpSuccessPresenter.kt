@@ -28,7 +28,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
@@ -43,7 +43,7 @@ import timber.log.Timber
 class ScanOtpSuccessPresenter(
     private val createStandaloneTotpResourceInteractor: CreateStandaloneTotpResourceInteractor,
     private val secretInteractor: SecretInteractor,
-    private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
+    private val updateLinkedTotpResourceInteractor: UpdateLinkedTotpResourceInteractor,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ScanOtpSuccessContract.View>(coroutineLaunchContext),
@@ -98,7 +98,7 @@ class ScanOtpSuccessPresenter(
                 is SecretInteractor.Output.Success -> {
                     when (val editResourceResult =
                         runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                            updateToLinkedTotpResourceInteractor.execute(
+                            updateLinkedTotpResourceInteractor.execute(
                                 createCommonLinkToTotpUpdateInput(resource),
                                 createUpdateToLinkedTotpInput(resource.resourceTypeId, fetchedSecret.decryptedSecret)
                             )
@@ -130,7 +130,7 @@ class ScanOtpSuccessPresenter(
         resourceTypeId: String,
         decryptedSecret: ByteArray
     ) =
-        UpdateToLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
+        UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
             period = scannedTotp.period,
             digits = scannedTotp.digits,
             algorithm = scannedTotp.algorithm.name,

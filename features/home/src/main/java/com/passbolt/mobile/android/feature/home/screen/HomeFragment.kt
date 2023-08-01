@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -28,6 +27,8 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
+import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
@@ -657,12 +658,9 @@ class HomeFragment :
     }
 
     override fun showDeleteConfirmationDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.are_you_sure)
-            .setMessage(R.string.resource_will_be_deleted)
-            .setPositiveButton(R.string.delete) { _, _ -> presenter.deleteResourceConfirmed() }
-            .setNegativeButton(R.string.cancel) { _, _ -> }
-            .setCancelable(false)
+        confirmResourceDeletionAlertDialog(requireContext()) {
+            presenter.deleteResourceConfirmed()
+        }
             .show()
     }
 
@@ -980,7 +978,7 @@ class HomeFragment :
     }
 
     override fun menuDeleteOtpClick() {
-        // TODO
+        presenter.menuDeleteOtpClick()
     }
 
     override fun navigateToOtpEdit() {
@@ -1004,6 +1002,17 @@ class HomeFragment :
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToScanOtp()
         )
+    }
+
+    override fun showDeleteTotpConfirmationDialog() {
+        confirmTotpDeletionAlertDialog(requireContext()) {
+            presenter.totpDeletionConfirmed()
+        }
+            .show()
+    }
+
+    override fun showTotpDeleted() {
+        showSnackbar(R.string.otp_deleted)
     }
 
     companion object {

@@ -55,7 +55,7 @@ fun Module.updateResourceModule() {
                 updateSimplePasswordResourceInteractor = get(),
                 updatePasswordAndDescriptionResourceInteractor = get(),
                 createPasswordAndDescriptionResourceInteractor = get(),
-                updateToLinkedTotpResourceInteractor = get(),
+                updateLinkedTotpResourceInteractor = get(),
                 secretParser = get()
             )
         }

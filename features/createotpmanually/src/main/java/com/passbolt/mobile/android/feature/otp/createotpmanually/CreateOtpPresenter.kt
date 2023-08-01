@@ -33,7 +33,7 @@ import com.passbolt.mobile.android.core.resources.interactor.create.CreateResour
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
@@ -62,7 +62,7 @@ class CreateOtpPresenter(
     private val createStandaloneTotpResourceInteractor: CreateStandaloneTotpResourceInteractor,
     private val updateStandaloneTotpResourceInteractor: UpdateStandaloneTotpResourceInteractor,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
-    private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
+    private val updateLinkedTotpResourceInteractor: UpdateLinkedTotpResourceInteractor,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val secretInteractor: SecretInteractor,
     private val resourceTypeFactory: ResourceTypeFactory,
@@ -313,7 +313,7 @@ class CreateOtpPresenter(
                         " $resourceTypeEnum"
             )
             PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> suspend {
-                updateToLinkedTotpResourceInteractor.execute(
+                updateLinkedTotpResourceInteractor.execute(
                     createCommonLinkToTotpOverwriteInput(resource),
                     createUpdateToLinkedTotpInput(
                         resource.resourceTypeId,
@@ -416,7 +416,7 @@ class CreateOtpPresenter(
                 is SecretInteractor.Output.Success -> {
                     when (val editResourceResult =
                         runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                            updateToLinkedTotpResourceInteractor.execute(
+                            updateLinkedTotpResourceInteractor.execute(
                                 createCommonLinkToTotpUpdateInput(resource),
                                 createUpdateToLinkedTotpInput(resource.resourceTypeId, fetchedSecret.decryptedSecret)
                             )
@@ -448,7 +448,7 @@ class CreateOtpPresenter(
     }
 
     private fun createUpdateToLinkedTotpInput(existingResourceTypeId: String, fetchedSecret: ByteArray) =
-        UpdateToLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
+        UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
             period = period,
             digits = digits,
             algorithm = algorithm,

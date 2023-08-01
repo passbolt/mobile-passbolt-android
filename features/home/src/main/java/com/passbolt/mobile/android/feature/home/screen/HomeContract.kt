@@ -109,6 +109,8 @@ interface HomeContract {
         fun navigateToOtpCreate(resourceId: String)
         fun navigateToOtpMoreMenu(moreMenuModel: OtpMoreMenuModel)
         fun navigateToOtpEdit()
+        fun showDeleteTotpConfirmationDialog()
+        fun showTotpDeleted()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -168,5 +170,7 @@ interface HomeContract {
         fun menuCopyOtpClick()
         fun menuEditOtpClick()
         fun editOtpManuallyClick()
+        fun menuDeleteOtpClick()
+        fun totpDeletionConfirmed()
     }
 }

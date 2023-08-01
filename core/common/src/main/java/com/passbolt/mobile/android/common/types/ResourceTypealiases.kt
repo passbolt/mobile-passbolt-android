@@ -23,5 +23,7 @@ package com.passbolt.mobile.android.common.types
  * @since v1.0
  */
 
+typealias Password = String
+typealias Description = String
 typealias ClipboardLabel = String
 typealias ResourceName = String
