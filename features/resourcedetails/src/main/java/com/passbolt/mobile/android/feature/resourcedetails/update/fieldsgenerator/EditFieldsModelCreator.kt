@@ -60,7 +60,7 @@ class EditFieldsModelCreator(
                     in listOf(FieldNamesMapper.PASSWORD_FIELD, FieldNamesMapper.SECRET_FIELD) -> {
                         // there can be parsing errors when secret data is invalid - do not create the input then
                         (secretParser.extractPassword(
-                            resourceTypeEnum,
+                            existingResource.resourceTypeId,
                             secret
                         ) as DecryptedSecretOrError.DecryptedSecret<String>).secret
                     }
@@ -68,9 +68,8 @@ class EditFieldsModelCreator(
                         when (resourceTypeEnum) {
                             SIMPLE_PASSWORD -> existingResource.description
                             // there can be parsing errors when secret data is invalid - do not create the input then
-                            // TODO confirm if this will be reused for PASSWORD_DESCRIPTION_TOTP
                             PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> (secretParser.extractDescription(
-                                resourceTypeEnum,
+                                existingResource.resourceTypeId,
                                 secret
                             ) as DecryptedSecretOrError.DecryptedSecret<String>).secret
                             STANDALONE_TOTP -> {

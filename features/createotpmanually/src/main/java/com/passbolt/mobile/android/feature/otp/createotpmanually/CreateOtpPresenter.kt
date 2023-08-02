@@ -28,12 +28,13 @@ import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
@@ -51,11 +52,9 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import org.koin.core.component.getOrCreateScope
 import org.koin.core.parameter.parametersOf
-import org.koin.core.scope.Scope
 import timber.log.Timber
 
 class CreateOtpPresenter(
@@ -68,13 +67,11 @@ class CreateOtpPresenter(
     private val resourceTypeFactory: ResourceTypeFactory,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<CreateOtpContract.View>(coroutineLaunchContext), CreateOtpContract.Presenter,
-    KoinScopeComponent {
+    KoinComponent {
 
     override var view: CreateOtpContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
-    override val scope: Scope
-        get() = getOrCreateScope().value
 
     private var algorithm = OtpParseResult.OtpQr.Algorithm.DEFAULT.name
     private var period = OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS
@@ -130,26 +127,28 @@ class CreateOtpPresenter(
     }
 
     private suspend fun setupEditForResourceContainingTotp(resource: ResourceModel) {
-        get<ResourceAuthenticatedActionsInteractor> {
+        val secretPropertiesActionsInteractor = get<SecretPropertiesActionsInteractor> {
             parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
         }
-            .provideOtp(
-                decryptionFailure = { view?.showDecryptionError() },
-                fetchFailure = { view?.showFetchError() }
-            ) { _, fetchedSecret ->
+        performSecretPropertyAction(
+            action = { secretPropertiesActionsInteractor.provideOtp() },
+            doOnDecryptionFailure = { view?.showDecryptionError() },
+            doOnFetchFailure = { view?.showFetchError() },
+            doOnSuccess = {
                 initScreenData(
                     OtpResourceModel(
                         resourceId = resource.resourceId,
                         parentFolderId = resource.folderId,
                         label = resource.name,
-                        secret = fetchedSecret.key,
+                        secret = it.result.key,
                         issuer = resource.url,
-                        algorithm = fetchedSecret.algorithm,
-                        digits = fetchedSecret.digits,
-                        period = fetchedSecret.period
+                        algorithm = it.result.algorithm,
+                        digits = it.result.digits,
+                        period = it.result.period
                     )
                 )
             }
+        )
     }
 
     private fun setupEditForResourceWithoutTotp(resource: ResourceModel) {

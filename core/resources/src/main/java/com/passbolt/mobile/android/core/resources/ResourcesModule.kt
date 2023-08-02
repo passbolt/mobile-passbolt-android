@@ -1,12 +1,16 @@
 package com.passbolt.mobile.android.core.resources
 
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
@@ -19,6 +23,9 @@ import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteracto
 import com.passbolt.mobile.android.core.resources.usecase.ShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.SimulateShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.resourcesDbModule
+import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -70,7 +77,6 @@ val resourcesModule = module {
             getPrivateKeyUseCase = get(),
             openPgp = get(),
             secretParser = get(),
-            resourceTypeFactory = get(),
             passphraseMemoryCache = get(),
             resourceModelMapper = get(),
             resourceRepository = get(),
@@ -80,4 +86,34 @@ val resourcesModule = module {
     }
     singleOf(::CreatePasswordAndDescriptionResourceInteractor)
     singleOf(::CreateStandaloneTotpResourceInteractor)
+
+    factory { (resource: ResourceModel) ->
+        ResourcePropertiesActionsInteractor(resource)
+    }
+    factory { (
+                  resource: ResourceModel,
+                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                  sessionRefreshedFlow: StateFlow<Unit?>
+              ) ->
+        ResourceCommonActionsInteractor(
+            needSessionRefreshFlow,
+            sessionRefreshedFlow,
+            resource,
+            favouritesInteractor = get(),
+            deleteResourceUseCase = get()
+        )
+    }
+    factory { (
+                  resource: ResourceModel,
+                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                  sessionRefreshedFlow: StateFlow<Unit?>
+              ) ->
+        SecretPropertiesActionsInteractor(
+            needSessionRefreshFlow,
+            sessionRefreshedFlow,
+            resource,
+            secretParser = get(),
+            secretInteractor = get()
+        )
+    }
 }

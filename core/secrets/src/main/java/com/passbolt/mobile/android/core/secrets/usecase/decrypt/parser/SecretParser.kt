@@ -35,14 +35,15 @@ import timber.log.Timber
 
 class SecretParser(
     private val gson: Gson,
-    private val secretValidationRunner: SecretValidationRunner
+    private val secretValidationRunner: SecretValidationRunner,
+    private val resourceTypeFactory: ResourceTypeFactory
 ) {
 
-    fun extractPassword(
-        resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum,
+    suspend fun extractPassword(
+        resourceTypeId: String,
         decryptedSecret: ByteArray
     ): DecryptedSecretOrError<String> {
-        return when (resourceTypeEnum) {
+        return when (resourceTypeFactory.getResourceTypeEnum(resourceTypeId)) {
             SIMPLE_PASSWORD -> {
                 try {
                     val parsedSecret = DecryptedSecret.SimplePassword(String(decryptedSecret))
@@ -99,11 +100,11 @@ class SecretParser(
         }
     }
 
-    fun extractDescription(
-        resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum,
+    suspend fun extractDescription(
+        resourceTypeId: String,
         decryptedSecret: ByteArray
     ): DecryptedSecretOrError<String> {
-        return when (resourceTypeEnum) {
+        return when (resourceTypeFactory.getResourceTypeEnum(resourceTypeId)) {
             SIMPLE_PASSWORD -> {
                 throw IllegalArgumentException("Simple password resource type does not contain description secret")
             }
@@ -147,11 +148,11 @@ class SecretParser(
         }
     }
 
-    fun extractTotpData(
-        resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum,
+    suspend fun extractTotpData(
+        resourceTypeId: String,
         decryptedSecret: ByteArray
     ): DecryptedSecretOrError<DecryptedSecret.StandaloneTotp.Totp> {
-        return when (resourceTypeEnum) {
+        return when (resourceTypeFactory.getResourceTypeEnum(resourceTypeId)) {
             SIMPLE_PASSWORD -> {
                 throw IllegalArgumentException("Simple password resource type does not contain totp data")
             }

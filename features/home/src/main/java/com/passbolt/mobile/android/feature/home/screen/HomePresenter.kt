@@ -35,8 +35,6 @@ import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.common.types.ClipboardLabel
-import com.passbolt.mobile.android.common.types.Description
-import com.passbolt.mobile.android.common.types.Password
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredUseCase
@@ -46,10 +44,18 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
-import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult.DecryptionFailure
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult.FetchFailure
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult.Success
+import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
+import com.passbolt.mobile.android.core.resources.actions.performResourcePropertyAction
+import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
@@ -89,12 +95,11 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import org.koin.core.component.getOrCreateScope
 import org.koin.core.parameter.parametersOf
-import org.koin.core.scope.Scope
 import timber.log.Timber
 
 @Suppress("TooManyFunctions", "LargeClass", "LongParameterList") // TODO MOB-321
@@ -125,15 +130,13 @@ class HomePresenter(
     private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
     private val updatePasswordAndDescriptionResourceInteractor: UpdatePasswordAndDescriptionResourceInteractor
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
-    KoinScopeComponent {
+    KoinComponent {
 
     override var view: HomeContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
     private val filteringJob = SupervisorJob()
     private val filteringScope = CoroutineScope(filteringJob + coroutineLaunchContext.ui)
-    override val scope: Scope
-        get() = getOrCreateScope().value
     private lateinit var homeView: HomeDisplayViewModel
 
     private var currentSearchText = MutableStateFlow("")
@@ -154,9 +157,13 @@ class HomePresenter(
     private val searchInputEndIconMode
         get() = if (currentSearchText.value.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
 
-    private val resourceActionsInteractor: ResourceActionsInteractor
+    private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
         get() = get { parametersOf(requireNotNull(currentMoreMenuResource)) }
-    private val resourceAuthenticatedActionsInteractor: ResourceAuthenticatedActionsInteractor
+    private val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor
+        get() = get {
+            parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
+        }
+    private val resourceCommonActionsInteractor: ResourceCommonActionsInteractor
         get() = get {
             parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
         }
@@ -398,7 +405,6 @@ class HomePresenter(
     override fun detach() {
         filteringScope.coroutineContext.cancelChildren()
         coroutineScope.coroutineContext.cancelChildren()
-        scope.close()
         super<DataRefreshViewReactivePresenter>.detach()
     }
 
@@ -647,45 +653,61 @@ class HomePresenter(
         view?.navigateToDetails(resourceModel)
     }
 
-    override fun menuLaunchWebsiteClick() {
-        resourceActionsInteractor
-            .provideWebsiteUrl { _, url ->
-                view?.openWebsite(url)
-            }
+    override fun menuCopyUsernameClick() {
+        coroutineScope.launch {
+            performResourcePropertyAction(
+                action = { resourcePropertiesActionsInteractor.provideUsername() },
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+            )
+        }
     }
 
-    override fun menuCopyUsernameClick() {
-        resourceActionsInteractor
-            .provideUsername { label, username ->
-                view?.addToClipboard(label, username, isSecret = false)
-            }
+    override fun menuLaunchWebsiteClick() {
+        coroutineScope.launch {
+            performResourcePropertyAction(
+                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+                doOnResult = { view?.openWebsite(it.result) }
+            )
+        }
     }
 
     override fun menuCopyUrlClick() {
-        resourceActionsInteractor
-            .provideWebsiteUrl { label, url ->
-                view?.addToClipboard(label, url, isSecret = false)
-            }
+        coroutineScope.launch {
+            performResourcePropertyAction(
+                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+            )
+        }
     }
 
     override fun menuCopyPasswordClick() {
         coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.providePassword(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { label, password ->
-                view?.addToClipboard(label, password, isSecret = true)
-            }
+            performSecretPropertyAction(
+                action = { secretPropertiesActionsInteractor.providePassword() },
+                doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+            )
         }
     }
 
     override fun menuCopyDescriptionClick() {
         coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.provideDescription(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { label, description, isSecret ->
-                view?.addToClipboard(label, description, isSecret = isSecret)
+            when (resourceTypeFactory.getResourceTypeEnum(currentMoreMenuResource!!.resourceTypeId)) {
+                SIMPLE_PASSWORD -> {
+                    performResourcePropertyAction(
+                        action = { resourcePropertiesActionsInteractor.provideDescription() },
+                        doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                    )
+                }
+                else -> {
+                    performSecretPropertyAction(
+                        action = { secretPropertiesActionsInteractor.provideDescription() },
+                        doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                        doOnFetchFailure = { view?.showFetchFailure() },
+                        doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                    )
+                }
             }
         }
     }
@@ -705,11 +727,11 @@ class HomePresenter(
     override fun deleteResourceConfirmed() {
         coroutineScope.launch {
             deleteResourceIdlingResource.setIdle(false)
-            resourceAuthenticatedActionsInteractor.deleteResource(
-                failure = { view?.showDeleteResourceFailure() }
-            ) {
-                resourceDeleted(it)
-            }
+            performCommonResourceAction(
+                action = { resourceCommonActionsInteractor.deleteResource() },
+                doOnFailure = { view?.showDeleteResourceFailure() },
+                doOnSuccess = { resourceDeleted(it.resourceName) }
+            )
             deleteResourceIdlingResource.setIdle(true)
         }
     }
@@ -845,12 +867,11 @@ class HomePresenter(
 
     override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
         coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.toggleFavourite(
-                option,
-                failure = { view?.showToggleFavouriteFailure() }
-            ) {
-                showActiveHomeView()
-            }
+            performCommonResourceAction(
+                action = { resourceCommonActionsInteractor.toggleFavourite(option) },
+                doOnFailure = { view?.showToggleFavouriteFailure() },
+                doOnSuccess = { showActiveHomeView() }
+            )
         }
     }
 
@@ -907,7 +928,7 @@ class HomePresenter(
                     when (val editResourceResult =
                         runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
                             updateLinkedTotpResourceInteractor.execute(
-                                createTotpInputAfterScanning(resourceModel, totpQr),
+                                createTotpInputAfterScanning(resourceModel),
                                 createUpdateToLinkedTotpInput(
                                     totpQr,
                                     fetchedSecret.decryptedSecret,
@@ -938,10 +959,7 @@ class HomePresenter(
         }
     }
 
-    private suspend fun createTotpInputAfterScanning(
-        resourceModel: ResourceModel,
-        totpQr: OtpParseResult.OtpQr.TotpQr
-    ) =
+    private suspend fun createTotpInputAfterScanning(resourceModel: ResourceModel) =
         when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
             SIMPLE_PASSWORD, STANDALONE_TOTP -> throw IllegalArgumentException(
                 "Cannot edit simple password or standalone totp by scanning qr code on resource list"
@@ -1007,18 +1025,20 @@ class HomePresenter(
         ) -> Unit
     ) {
         coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.provideOtp(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { label, otp ->
-                val otpParameters = totpParametersProvider.provideOtpParameters(
-                    secretKey = otp.key,
-                    digits = otp.digits,
-                    period = otp.period,
-                    algorithm = otp.algorithm
-                )
-                action(label, otp, otpParameters)
-            }
+            performSecretPropertyAction(
+                action = { secretPropertiesActionsInteractor.provideOtp() },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                doOnSuccess = {
+                    val otpParameters = totpParametersProvider.provideOtpParameters(
+                        secretKey = it.result.key,
+                        digits = it.result.digits,
+                        period = it.result.period,
+                        algorithm = it.result.algorithm
+                    )
+                    action(it.label, it.result, otpParameters)
+                }
+            )
         }
     }
 
@@ -1033,37 +1053,41 @@ class HomePresenter(
     override fun totpDeletionConfirmed() {
         coroutineScope.launch {
             view?.showProgress()
-            resourceAuthenticatedActionsInteractor.providePasswordAndDescription(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { password: Password, description: Description ->
-                when (val editResourceResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    updatePasswordAndDescriptionResourceInteractor.execute(
-                        createCommonUpdateInput(currentMoreMenuResource!!),
-                        UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput(
-                            password = password,
-                            description = description
-                        )
-                    )
-                }) {
-                    is UpdateResourceInteractor.Output.Success -> {
-                        updateLocalResourceUseCase.execute(
-                            UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                        )
-                        updateLocalResourceUseCase.execute(
-                            UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                        )
-                        fullDataRefreshExecutor.performFullDataRefresh()
-                        view?.showTotpDeleted()
+            val password = secretPropertiesActionsInteractor.providePassword().single()
+            val description = secretPropertiesActionsInteractor.provideDescription().single()
+            when {
+                password is Success && description is Success -> {
+                    when (val editResourceResult =
+                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                            updatePasswordAndDescriptionResourceInteractor.execute(
+                                createCommonUpdateInput(currentMoreMenuResource!!),
+                                UpdatePasswordAndDescriptionInput(
+                                    password = password.result,
+                                    description = description.result
+                                )
+                            )
+                        }) {
+                        is UpdateResourceInteractor.Output.Success -> {
+                            updateLocalResourceUseCase.execute(
+                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                            )
+                            fullDataRefreshExecutor.performFullDataRefresh()
+                            view?.showTotpDeleted()
+                        }
+                        is UpdateResourceInteractor.Output.Failure<*> ->
+                            view?.showGeneralError(editResourceResult.response.exception.message.orEmpty())
+                        is UpdateResourceInteractor.Output.PasswordExpired -> {
+                            /* will not happen in BaseAuthenticatedPresenter */
+                        }
+                        is UpdateResourceInteractor.Output.OpenPgpError ->
+                            view?.showEncryptionError(editResourceResult.message)
                     }
-                    is UpdateResourceInteractor.Output.Failure<*> ->
-                        view?.showGeneralError(editResourceResult.response.exception.message.orEmpty())
-                    is UpdateResourceInteractor.Output.PasswordExpired -> {
-                        /* will not happen in BaseAuthenticatedPresenter */
-                    }
-                    is UpdateResourceInteractor.Output.OpenPgpError ->
-                        view?.showEncryptionError(editResourceResult.message)
                 }
+                listOf(password, description).any { it is FetchFailure } ->
+                    view?.showFetchFailure()
+                listOf(password, description).any { it is DecryptionFailure } ->
+                    view?.showDecryptionFailure()
+                else -> view?.showGeneralError()
             }
             view?.hideProgress()
         }

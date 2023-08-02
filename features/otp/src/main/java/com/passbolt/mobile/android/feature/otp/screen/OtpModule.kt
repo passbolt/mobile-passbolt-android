@@ -25,12 +25,7 @@ package com.passbolt.mobile.android.feature.otp.screen
 
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
-import com.passbolt.mobile.android.ui.ResourceModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 
@@ -48,31 +43,15 @@ fun Module.otpModule() {
                 updateLocalResourceUseCase = get(),
                 coroutineLaunchContext = get(),
                 updateStandaloneTotpResourceInteractor = get(),
-                createOtpMoreMenuModelUseCase = get()
+                createOtpMoreMenuModelUseCase = get(),
+                resourceTypeFactory = get(),
+                updatePasswordAndDescriptionResourceInteractor = get()
             )
         }
 
         scoped { FastAdapter.with(get<ItemAdapter<OtpItem>>()) }
         scoped<ItemAdapter<OtpItem>> {
             ItemAdapter.items()
-        }
-    }
-    scope<OtpPresenter> {
-        factory { (
-                      resource: ResourceModel,
-                      needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-                      sessionRefreshedFlow: StateFlow<Unit?>
-                  ) ->
-            ResourceAuthenticatedActionsInteractor(
-                needSessionRefreshFlow,
-                sessionRefreshedFlow,
-                resource,
-                resourceTypeFactory = get(),
-                secretParser = get(),
-                secretInteractor = get(),
-                favouritesInteractor = get(),
-                deleteResourceUseCase = get()
-            )
         }
     }
 }

@@ -6,29 +6,20 @@ import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
-import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
-import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -384,245 +375,6 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `3 dots clicked should open more screen`() = runTest {
-        val model = ResourceModel(
-            resourceId = "id",
-            resourceTypeId = "resTypeId",
-            folderId = "folderId",
-            name = "title",
-            username = "subtitle",
-            icon = null,
-            initials = "T",
-            url = "",
-            description = "desc",
-            permission = ResourcePermission.READ,
-            favouriteId = null,
-            modified = ZonedDateTime.now()
-        )
-        val resourceMenuModel = ResourceMoreMenuModel(
-            title = "title",
-            canDelete = true,
-            canEdit = true,
-            canShare = true,
-            favouriteOption = ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES,
-            totpOption = ResourceMoreMenuModel.TotpOption.NONE
-        )
-        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
-            ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
-        )
-        mockAccountData(null)
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-        mockCreateResourceMoreMenuModelUseCase.stub {
-            onBlocking { execute(any()) } doReturn CreateResourceMoreMenuModelUseCase.Output(resourceMenuModel)
-        }
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        reset(view)
-        presenter.resourceMoreClick(model)
-
-        verify(view).navigateToMore(resourceMenuModel)
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `view should show decrypt error correct`() {
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.DecryptFailure(OpenPgpError("message"))
-            )
-        }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-        mockAccountData(null)
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuCopyPasswordClick()
-
-        verify(view).showDecryptionFailure()
-    }
-
-    @Test
-    fun `view should show fetch error correct`() {
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.FetchFailure(RuntimeException())
-            )
-        }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-        mockAccountData(null)
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuCopyPasswordClick()
-
-        verify(view).showFetchFailure()
-    }
-
-    @Test
-    fun `view should show auth when passphrase not in cache`() {
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.Unauthorized(AuthenticationState.Unauthenticated.Reason.Session)
-            )
-        }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-        mockAccountData(null)
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuCopyPasswordClick()
-
-        verify(view).showAuth(AuthenticationState.Unauthenticated.Reason.Passphrase)
-    }
-
-    @Test
-    fun `view should copy secret after successful decrypt`() = runTest {
-        mockAccountData(null)
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.Success(DECRYPTED_SECRET)
-            )
-        }
-        mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(any()) }.doReturn(
-                ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-            )
-        }
-        whenever(mockSecretParser.extractPassword(any(), any()))
-            .doReturn(DecryptedSecretOrError.DecryptedSecret(String(DECRYPTED_SECRET)))
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuCopyPasswordClick()
-
-        verify(view).addToClipboard(
-            ResourceAuthenticatedActionsInteractor.SECRET_LABEL,
-            String(DECRYPTED_SECRET),
-            true
-        )
-    }
-
-    @Test
-    fun `delete resource should show confirmation dialog, delete and show snackbar`() = runTest {
-        mockAccountData(null)
-        whenever(mockDeleteResourceUseCase.execute(any()))
-            .thenReturn(DeleteResourceUseCase.Output.Success)
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.Success(DECRYPTED_SECRET)
-            )
-        }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuDeleteClick()
-        presenter.deleteResourceConfirmed()
-
-        verify(view).showDeleteConfirmationDialog()
-        verify(view).showResourceDeletedSnackbar(RESOURCE_MODEL.name)
-    }
-
-    @Test
-    fun `delete resource should show error when there is deletion error`() = runTest {
-        mockAccountData(null)
-        whenever(mockDeleteResourceUseCase.execute(any()))
-            .thenReturn(
-                DeleteResourceUseCase.Output.Failure<String>(
-                    NetworkResult.Failure.NetworkError(
-                        RuntimeException(),
-                        ""
-                    )
-                )
-            )
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.Success(DECRYPTED_SECRET)
-            )
-        }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuDeleteClick()
-        presenter.deleteResourceConfirmed()
-
-        verify(view).showDeleteConfirmationDialog()
-        verify(view).showDeleteResourceFailure()
-    }
-
-    @Test
     fun `home should navigate to root when current folder cannot be retrieved`() {
         mockGetLocalResourcesAndFoldersUseCase.stub {
             onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output.Failure
@@ -868,7 +620,6 @@ class HomePresenterTest : KoinTest {
         )
     )
 
-
     private fun mockAccountData(avatarUrl: String?) {
         whenever(getSelectedAccountDataUseCase.execute(anyOrNull())).thenReturn(
             GetSelectedAccountDataUseCase.Output(
@@ -881,32 +632,5 @@ class HomePresenterTest : KoinTest {
                 label = "label"
             )
         )
-    }
-
-    private companion object {
-        private const val NAME = "name"
-        private const val USERNAME = "username"
-        private const val INITIALS = "NN"
-        private const val URL = "https://www.passbolt.com"
-        private const val ID = "id"
-        private const val RESOURCE_TYPE_ID = "resTypeId"
-        private const val FOLDER_ID = "folderId"
-        private const val DESCRIPTION = "desc"
-
-        private val RESOURCE_MODEL = ResourceModel(
-            ID,
-            RESOURCE_TYPE_ID,
-            FOLDER_ID,
-            NAME,
-            USERNAME,
-            null,
-            INITIALS,
-            URL,
-            DESCRIPTION,
-            ResourcePermission.READ,
-            null,
-            ZonedDateTime.now()
-        )
-        private val DECRYPTED_SECRET = "secret".toByteArray()
     }
 }

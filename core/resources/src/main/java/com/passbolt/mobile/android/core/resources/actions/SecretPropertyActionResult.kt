@@ -21,14 +21,21 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.createotpmanually
+package com.passbolt.mobile.android.core.resources.actions
 
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
+import com.passbolt.mobile.android.common.types.ClipboardLabel
 
-fun Module.createOtpModule() {
-    scope<CreateOtpFragment> {
-        scopedOf(::CreateOtpPresenter) bind CreateOtpContract.Presenter::class
-    }
+sealed class SecretPropertyActionResult<T> {
+
+    data class Success<T>(
+        val label: ClipboardLabel,
+        val isSecret: Boolean,
+        val result: T
+    ) : SecretPropertyActionResult<T>()
+
+    class FetchFailure<T> : SecretPropertyActionResult<T>()
+
+    class Unauthorized<T> : SecretPropertyActionResult<T>()
+
+    class DecryptionFailure<T> : SecretPropertyActionResult<T>()
 }

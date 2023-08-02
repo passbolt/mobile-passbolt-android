@@ -23,11 +23,9 @@
 
 package com.passbolt.mobile.android.feature.otp.screen
 
-import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
@@ -37,13 +35,11 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.Decrypted
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.OtpModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -54,17 +50,15 @@ import org.koin.test.get
 import org.koin.test.inject
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OtpPresenterTest : KoinTest {
+class OtpMenuTest : KoinTest {
 
     private val presenter: OtpContract.Presenter by inject()
     private val view: OtpContract.View = mock()
@@ -96,80 +90,27 @@ class OtpPresenterTest : KoinTest {
     }
 
     @Test
-    fun `view should show user avatar after attach`() {
-        presenter.attach(view)
-        presenter.resume(view)
-
-        verify(view).displaySearchAvatar(SEARCH_AVATAR_URL)
-    }
-
-    @Test
-    fun `view should show empty state if otp list is empty`() {
-        mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(emptyList())
-        }
-
-        presenter.attach(view)
-        presenter.resume(view)
-
-        verify(view, times(2)).showEmptyView()
-    }
-
-    @Test
-    fun `view should show otp resources`() {
-        mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
-        }
+    fun `copy otp should copy otp successfully`() {
         val mapper = get<OtpModelMapper>()
-
-        presenter.attach(view)
-        presenter.resume(view)
-
-        verify(view, times(2)).hideEmptyView()
-        argumentCaptor<List<OtpItemWrapper>> {
-            verify(view, times(3)).showOtpList(capture())
-            assertThat(firstValue).apply {
-                hasSize(mockTotpResources.size)
-                containsExactly(*(mockTotpResources.map(mapper::map)).toTypedArray())
-            }
-        }
-    }
-
-    @Test
-    fun `view should show empty list when search term not found`() {
-        mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
-        }
-
-        presenter.attach(view)
-        presenter.resume(view)
-        presenter.searchTextChanged("show empty result")
-
-        verify(view).showEmptyView()
-    }
-
-    @Test
-    fun `view should reveal selected otp`() = runTest(get<CoroutineLaunchContext>().ui) {
-        val mapper = get<OtpModelMapper>()
-        val clickedItem = mapper.map(mockTotpResources[0])
+        val menuItem = mapper.map(mockTotpResources[0])
         mockGetLocalOtpResourcesUseCase.stub {
             onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
         }
         mockGetLocalResourceUseCase.stub {
             onBlocking { execute(any()) } doReturn GetLocalResourceUseCase.Output(
                 ResourceModel(
-                    resourceId = clickedItem.otp.resourceId,
-                    resourceTypeId = "resTypeId",
-                    folderId = clickedItem.otp.parentFolderId,
-                    name = clickedItem.otp.name,
-                    username = null,
-                    icon = null,
-                    initials = "in",
-                    url = clickedItem.otp.url,
-                    description = null,
-                    permission = ResourcePermission.OWNER,
-                    favouriteId = null,
-                    modified = ZonedDateTime.now()
+                    menuItem.otp.resourceId,
+                    "resTypeId",
+                    menuItem.otp.parentFolderId,
+                    menuItem.otp.name,
+                    null,
+                    null,
+                    "in",
+                    menuItem.otp.url,
+                    null,
+                    ResourcePermission.OWNER,
+                    null,
+                    ZonedDateTime.now()
                 )
             )
         }
@@ -179,10 +120,10 @@ class OtpPresenterTest : KoinTest {
                     SecretPropertiesActionsInteractor.OTP_LABEL,
                     isSecret = true,
                     DecryptedSecret.StandaloneTotp.Totp(
-                        algorithm = OtpParseResult.OtpQr.Algorithm.SHA1.name,
-                        key = "aaa",
-                        digits = 6,
-                        period = 100
+                        OtpParseResult.OtpQr.Algorithm.SHA1.name,
+                        "aaa",
+                        6,
+                        100
                     )
                 )
             )
@@ -195,12 +136,12 @@ class OtpPresenterTest : KoinTest {
 
         presenter.attach(view)
         presenter.resume(view)
-        presenter.otpItemClick(clickedItem)
+        presenter.otpItemMoreClick(menuItem)
+        presenter.menuCopyOtpClick()
 
-        argumentCaptor<List<OtpItemWrapper>> {
-            verify(view, times(5)).showOtpList(capture())
-            assertThat(lastValue.any { it.otpValue == otpValue }).isTrue()
-        }
+        verify(view).copySecretToClipBoard(
+            SecretPropertiesActionsInteractor.OTP_LABEL, otpValue
+        )
     }
 
     private companion object {

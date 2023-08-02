@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.google.gson.GsonBuilder
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordAndDescriptionSecretValidation
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordDescriptionTotpSecretValidation
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordStringSecretValidation
@@ -31,6 +32,9 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validatio
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.TotpSecretValidation
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.mockito.kotlin.mock
+
+internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 
 val testParserModule = module {
     single { GsonBuilder().create() }
@@ -40,4 +44,5 @@ val testParserModule = module {
     singleOf(::TotpSecretValidation)
     singleOf(::PasswordDescriptionTotpSecretValidation)
     singleOf(::SecretParser)
+    factory { mockResourceTypeFactory }
 }

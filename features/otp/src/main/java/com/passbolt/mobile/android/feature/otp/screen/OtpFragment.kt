@@ -318,6 +318,10 @@ class OtpFragment :
         presenter.menuDeleteOtpClick()
     }
 
+    override fun showTotpDeleted() {
+        showSnackbar(R.string.otp_deleted)
+    }
+
     override fun copySecretToClipBoard(label: String, value: String) {
         clipboardManager?.setPrimaryClip(
             ClipData.newPlainText(label, value).apply {
@@ -359,7 +363,7 @@ class OtpFragment :
 
     override fun showConfirmDeleteDialog() {
         confirmTotpDeletionAlertDialog(requireContext()) {
-            presenter.topDeletionConfirmed()
+            presenter.totpDeletionConfirmed()
         }.show()
     }
 
