@@ -980,7 +980,9 @@ class HomePresenter(
             algorithm = totpQr.algorithm.name,
             secretKey = totpQr.secret,
             existingSecret = fetchedSecret,
-            existingResourceTypeId = existingResourceTypeId
+            existingResourceTypeId = existingResourceTypeId,
+            password = null,
+            description = null
         )
 
     override fun menuAddTotpManuallyClick() {

@@ -29,8 +29,8 @@ import com.passbolt.mobile.android.core.resources.interactor.create.CreateResour
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
@@ -136,7 +136,9 @@ class ScanOtpSuccessPresenter(
             algorithm = scannedTotp.algorithm.name,
             secretKey = scannedTotp.secret,
             existingSecret = decryptedSecret,
-            existingResourceTypeId = resourceTypeId
+            existingResourceTypeId = resourceTypeId,
+            password = null,
+            description = null
         )
 
     private fun createCommonLinkToTotpUpdateInput(resource: ResourceModel) =

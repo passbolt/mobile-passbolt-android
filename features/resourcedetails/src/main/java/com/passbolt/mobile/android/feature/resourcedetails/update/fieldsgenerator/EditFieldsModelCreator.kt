@@ -54,6 +54,7 @@ class EditFieldsModelCreator(
         return editedResourceType
             .fields
             .sortedWith(resourceFieldsComparator)
+            .filter { it.name in updateResourceFormSupportedFieldNames }
             .map { field ->
                 val initialValue = when (field.name) {
                     in listOf(FieldNamesMapper.PASSWORD_FIELD, FieldNamesMapper.SECRET_FIELD) -> {
@@ -88,5 +89,23 @@ class EditFieldsModelCreator(
                 }
                 ResourceValue(field, initialValue)
             }
+    }
+
+    private companion object {
+        /*
+        currently on update resource form the following resource types can be edited:
+         * "simple password" (can be edited in whole)
+         * "password with description" (can be edited in whole)
+         * "password with description and totp" can be edited (only common fields can be edited; the totp fields have a
+            separate form)
+        */
+        private val updateResourceFormSupportedFieldNames = listOf(
+            FieldNamesMapper.NAME_FIELD,
+            FieldNamesMapper.DESCRIPTION_FIELD,
+            FieldNamesMapper.USERNAME_FIELD,
+            FieldNamesMapper.URI_FIELD,
+            FieldNamesMapper.PASSWORD_FIELD,
+            FieldNamesMapper.SECRET_FIELD
+        )
     }
 }

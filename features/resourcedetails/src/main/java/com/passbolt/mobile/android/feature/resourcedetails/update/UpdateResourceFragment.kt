@@ -85,6 +85,11 @@ class UpdateResourceFragment :
         super.onPause()
     }
 
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
     private fun setListeners() {
         with(binding) {
             updateButton.setDebouncingOnClick {
