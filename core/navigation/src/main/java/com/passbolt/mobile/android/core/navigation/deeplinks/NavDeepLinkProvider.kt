@@ -94,13 +94,17 @@ object NavDeepLinkProvider {
                     .build()
             ).build()
 
-    fun resourceResourcePickerDeepLinkRequest(suggestion: String) =
+    fun resourceResourcePickerDeepLinkRequest(suggestionUri: String?) =
         NavDeepLinkRequest.Builder
             .fromUri(
                 Uri.Builder()
                     .scheme(NAV_DEEP_LINK_SCHEME)
                     .authority(AUTHORITY_RESOURCE_PICKER)
-                    .appendQueryParameter(QUERY_SUGGESTION, suggestion)
+                    .apply {
+                        suggestionUri?.let {
+                            appendQueryParameter(QUERY_SUGGESTION_URI, suggestionUri)
+                        }
+                    }
                     .build()
             ).build()
 
@@ -131,6 +135,6 @@ object NavDeepLinkProvider {
     private const val QUERY_PERMISSIONS_MODE = "mode"
     private const val QUERY_NAVIGATION_ORIGIN = "navigationOrigin"
     private const val QUERY_PARENT_FOLDER_ID = "parentFolderId"
-    private const val QUERY_SUGGESTION = "suggestion"
+    private const val QUERY_SUGGESTION_URI = "suggestionUri"
     private const val QUERY_EDITED_RESOURCE_ID = "editedOtpResourceId"
 }

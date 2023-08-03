@@ -46,7 +46,7 @@ interface CreateOtpContract {
         fun navigateBackInUpdateFlow(resourceName: String, otpUpdated: Boolean)
         fun setupEditUi()
         fun setupCreateUi()
-        fun navigateToResourcePicker(suggestion: String)
+        fun navigateToResourcePicker(suggestionUri: String)
         fun showEditingValuesAlsoEditsResourceValuesWarning()
         fun showDecryptionError()
         fun showFetchError()

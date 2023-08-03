@@ -151,7 +151,7 @@ class ScanOtpSuccessPresenter(
         )
 
     override fun linkToResourceClick() {
-        view?.navigateToResourcePicker(scannedTotp.label)
+        view?.navigateToResourcePicker()
     }
 
     private fun createTotpResourceCommonCreateInput() =
