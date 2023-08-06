@@ -41,7 +41,7 @@ import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 import com.passbolt.mobile.android.ui.UserModel
 import timber.log.Timber
 
-class UpdateToLinkedTotpResourceInteractor(
+class UpdateLinkedTotpResourceInteractor(
     private val secretInputCreator: SecretInputCreator,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
@@ -54,7 +54,7 @@ class UpdateToLinkedTotpResourceInteractor(
     fetchUsersUseCase: FetchUsersUseCase,
     getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase
 ) :
-    UpdateResourceInteractor<UpdateToLinkedTotpResourceInteractor.UpdateToLinkedTotpInput>(
+    UpdateResourceInteractor<UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput>(
         passphraseMemoryCache,
         resourceModelMapper,
         resourceRepository,

@@ -20,7 +20,7 @@ import com.passbolt.mobile.android.core.resources.interactor.create.CreateResour
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourceUseCase
@@ -86,7 +86,7 @@ class UpdateResourcePresenter(
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     private val updateSimplePasswordResourceInteractor: UpdateSimplePasswordResourceInteractor,
     private val updatePasswordAndDescriptionResourceInteractor: UpdatePasswordAndDescriptionResourceInteractor,
-    private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
+    private val updateLinkedTotpResourceInteractor: UpdateLinkedTotpResourceInteractor,
     private val resourceTypeFactory: ResourceTypeFactory,
     private val editFieldsModelCreator: EditFieldsModelCreator,
     private val newFieldsModelCreator: NewFieldsModelCreator,
@@ -374,7 +374,7 @@ class UpdateResourcePresenter(
                 }
                 PASSWORD_DESCRIPTION_TOTP -> suspend {
                     try {
-                        updateToLinkedTotpResourceInteractor.execute(
+                        updateLinkedTotpResourceInteractor.execute(
                             createCommonUpdateInput(existingResource),
                             createPasswordDescriptionTotpUpdateInput()
                         )
@@ -414,13 +414,13 @@ class UpdateResourcePresenter(
 
     @Throws(ClassCastException::class)
     private suspend fun createPasswordDescriptionTotpUpdateInput():
-            UpdateToLinkedTotpResourceInteractor.UpdateToLinkedTotpInput {
+            UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput {
 
         val existingTotpSecret = secretParser.extractTotpData(
             resourceTypeFactory.getResourceTypeEnum(existingResource!!.resourceTypeId),
             existingSecret!!
         ) as DecryptedSecretOrError.DecryptedSecret
-        return UpdateToLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
+        return UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
             period = existingTotpSecret.secret.period,
             digits = existingTotpSecret.secret.digits,
             algorithm = existingTotpSecret.secret.algorithm,

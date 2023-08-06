@@ -9,7 +9,8 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
@@ -77,8 +78,9 @@ internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
 internal val mockGetResourceTypeIdToSlugMappingUseCase = mock<GetResourceTypeIdToSlugMappingUseCase>()
 internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
 internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
-internal val mockUpdateToLinkedTotpResourceInteractor = mock<UpdateToLinkedTotpResourceInteractor>()
+internal val mockUpdateLinkedTotpResourceInteractor = mock<UpdateLinkedTotpResourceInteractor>()
 internal val mockCreateOtpMoreMenuModelUseCase = mock<CreateOtpMoreMenuModelUseCase>()
+internal val mockUpdatePasswordAndDescriptionResourceInteractor = mock<UpdatePasswordAndDescriptionResourceInteractor>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule = module {
@@ -103,10 +105,11 @@ internal val testResourceDetailsModule = module {
             getResourceTypeIdToSlugMappingUseCase = mockGetResourceTypeIdToSlugMappingUseCase,
             otpModelMapper = get(),
             updateLocalResourceUseCase = mockUpdateLocalResourceUseCase,
-            updateToLinkedTotpResourceInteractor = mockUpdateToLinkedTotpResourceInteractor,
+            updateLinkedTotpResourceInteractor = mockUpdateLinkedTotpResourceInteractor,
             secretInteractor = mockSecretInteractor,
             resourceTypeFactory = mockResourceTypeFactory,
-            createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase
+            createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase,
+            updatePasswordAndDescriptionResourceInteractor = mockUpdatePasswordAndDescriptionResourceInteractor
         )
     }
     scope<ResourceDetailsPresenter> {

@@ -6,11 +6,11 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.common.dialogs.serverNotReachableAlertDialog
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
-import com.passbolt.mobile.android.core.ui.dialog.CoreDialogFactory
 import com.passbolt.mobile.android.feature.setup.AccountSetupDataHolder
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
@@ -188,7 +188,7 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
 
     override fun showServerNotReachable(serverDomain: String) {
         if (serverNotReachableDialog == null) {
-            serverNotReachableDialog = CoreDialogFactory.serverNotReachableDialog(requireContext(), serverDomain)
+            serverNotReachableDialog = serverNotReachableAlertDialog(requireContext(), serverDomain)
         }
         serverNotReachableDialog?.show()
     }

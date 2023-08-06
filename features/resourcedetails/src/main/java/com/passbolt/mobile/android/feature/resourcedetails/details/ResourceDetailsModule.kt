@@ -57,10 +57,11 @@ fun Module.detailsModule() {
                 getResourceTypeIdToSlugMappingUseCase = get(),
                 coroutineLaunchContext = get(),
                 updateLocalResourceUseCase = get(),
-                updateToLinkedTotpResourceInteractor = get(),
+                updateLinkedTotpResourceInteractor = get(),
                 secretInteractor = get(),
                 resourceTypeFactory = get(),
-                createOtpMoreMenuModelUseCase = get()
+                createOtpMoreMenuModelUseCase = get(),
+                updatePasswordAndDescriptionResourceInteractor = get()
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {

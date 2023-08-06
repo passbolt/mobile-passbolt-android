@@ -43,7 +43,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -161,8 +160,8 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
         verify(view, times(2)).showDescription(RESOURCE_MODEL.description!!, useSecretFont = false)
         verify(view, times(2)).showFolderLocation(emptyList())
+        verify(view, times(2)).hideTotpSection()
         verify(view).hideRefreshProgress()
-        verify(view, never()).showTotpSection()
         verifyNoMoreInteractions(view)
     }
 

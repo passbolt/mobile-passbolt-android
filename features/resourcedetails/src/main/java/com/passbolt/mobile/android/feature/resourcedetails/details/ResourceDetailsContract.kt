@@ -86,6 +86,9 @@ interface ResourceDetailsContract {
         fun navigateToOtpCreate(resourceId: String)
         fun navigateToOtpEdit()
         fun navigateToOtpMoreMenu(model: OtpMoreMenuModel)
+        fun hideTotpSection()
+        fun showTotpDeleted()
+        fun showTotpDeleteConfirmationDialog()
     }
 
     @Suppress("TooManyFunctions")
@@ -121,5 +124,6 @@ interface ResourceDetailsContract {
         fun menuDeleteOtpClick()
         fun editOtpManuallyClick()
         fun manageTotpClick()
+        fun totpDeleteConfirmed()
     }
 }

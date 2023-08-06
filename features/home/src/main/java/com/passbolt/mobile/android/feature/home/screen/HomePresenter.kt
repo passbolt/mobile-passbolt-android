@@ -35,6 +35,8 @@ import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.common.types.ClipboardLabel
+import com.passbolt.mobile.android.common.types.Description
+import com.passbolt.mobile.android.common.types.Password
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredUseCase
@@ -46,8 +48,9 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateToLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
@@ -94,7 +97,7 @@ import org.koin.core.parameter.parametersOf
 import org.koin.core.scope.Scope
 import timber.log.Timber
 
-@Suppress("TooManyFunctions", "LargeClass") // TODO MOB-321
+@Suppress("TooManyFunctions", "LargeClass", "LongParameterList") // TODO MOB-321
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
@@ -114,12 +117,13 @@ class HomePresenter(
     private val domainProvider: DomainProvider,
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
-    private val updateToLinkedTotpResourceInteractor: UpdateToLinkedTotpResourceInteractor,
+    private val updateLinkedTotpResourceInteractor: UpdateLinkedTotpResourceInteractor,
     private val secretInteractor: SecretInteractor,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     private val totpParametersProvider: TotpParametersProvider,
     private val resourceTypeFactory: ResourceTypeFactory,
-    private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase
+    private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
+    private val updatePasswordAndDescriptionResourceInteractor: UpdatePasswordAndDescriptionResourceInteractor
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
     KoinScopeComponent {
 
@@ -902,7 +906,7 @@ class HomePresenter(
                 is SecretInteractor.Output.Success -> {
                     when (val editResourceResult =
                         runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                            updateToLinkedTotpResourceInteractor.execute(
+                            updateLinkedTotpResourceInteractor.execute(
                                 createTotpInputAfterScanning(resourceModel, totpQr),
                                 createUpdateToLinkedTotpInput(
                                     totpQr,
@@ -942,11 +946,11 @@ class HomePresenter(
             SIMPLE_PASSWORD, STANDALONE_TOTP -> throw IllegalArgumentException(
                 "Cannot edit simple password or standalone totp by scanning qr code on resource list"
             )
-            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> createCommonLinkToTotpUpdateInput(resourceModel)
+            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> createCommonUpdateInput(resourceModel)
         }
 
     // updates existing resource to linked totp resource
-    private fun createCommonLinkToTotpUpdateInput(resource: ResourceModel) =
+    private fun createCommonUpdateInput(resource: ResourceModel) =
         UpdateResourceInteractor.CommonInput(
             resourceId = resource.resourceId,
             resourceName = resource.name,
@@ -960,7 +964,7 @@ class HomePresenter(
         fetchedSecret: ByteArray,
         existingResourceTypeId: String
     ) =
-        UpdateToLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
+        UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
             period = totpQr.period,
             digits = totpQr.digits,
             algorithm = totpQr.algorithm.name,
@@ -1020,5 +1024,48 @@ class HomePresenter(
 
     override fun editOtpManuallyClick() {
         view?.navigateToOtpCreate(currentMoreMenuResource!!.resourceId)
+    }
+
+    override fun menuDeleteOtpClick() {
+        view?.showDeleteTotpConfirmationDialog()
+    }
+
+    override fun totpDeletionConfirmed() {
+        coroutineScope.launch {
+            view?.showProgress()
+            resourceAuthenticatedActionsInteractor.providePasswordAndDescription(
+                decryptionFailure = { view?.showDecryptionFailure() },
+                fetchFailure = { view?.showFetchFailure() }
+            ) { password: Password, description: Description ->
+                when (val editResourceResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                    updatePasswordAndDescriptionResourceInteractor.execute(
+                        createCommonUpdateInput(currentMoreMenuResource!!),
+                        UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput(
+                            password = password,
+                            description = description
+                        )
+                    )
+                }) {
+                    is UpdateResourceInteractor.Output.Success -> {
+                        updateLocalResourceUseCase.execute(
+                            UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                        )
+                        updateLocalResourceUseCase.execute(
+                            UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                        )
+                        fullDataRefreshExecutor.performFullDataRefresh()
+                        view?.showTotpDeleted()
+                    }
+                    is UpdateResourceInteractor.Output.Failure<*> ->
+                        view?.showGeneralError(editResourceResult.response.exception.message.orEmpty())
+                    is UpdateResourceInteractor.Output.PasswordExpired -> {
+                        /* will not happen in BaseAuthenticatedPresenter */
+                    }
+                    is UpdateResourceInteractor.Output.OpenPgpError ->
+                        view?.showEncryptionError(editResourceResult.message)
+                }
+            }
+            view?.hideProgress()
+        }
     }
 }
