@@ -49,13 +49,9 @@ fun Module.detailsModule() {
                 totpParametersProvider = get(),
                 otpModelMapper = get(),
                 getResourceTypeIdToSlugMappingUseCase = get(),
-                coroutineLaunchContext = get(),
-                updateLocalResourceUseCase = get(),
-                updateLinkedTotpResourceInteractor = get(),
-                secretInteractor = get(),
                 resourceTypeFactory = get(),
                 createOtpMoreMenuModelUseCase = get(),
-                updatePasswordAndDescriptionResourceInteractor = get()
+                coroutineLaunchContext = get()
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {

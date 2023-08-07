@@ -28,21 +28,19 @@ import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionResult
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
@@ -51,19 +49,15 @@ import com.passbolt.mobile.android.ui.OtpResourceModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
-import timber.log.Timber
 
 class CreateOtpPresenter(
     private val createStandaloneTotpResourceInteractor: CreateStandaloneTotpResourceInteractor,
-    private val updateStandaloneTotpResourceInteractor: UpdateStandaloneTotpResourceInteractor,
-    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
-    private val updateLinkedTotpResourceInteractor: UpdateLinkedTotpResourceInteractor,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
-    private val secretInteractor: SecretInteractor,
     private val resourceTypeFactory: ResourceTypeFactory,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<CreateOtpContract.View>(coroutineLaunchContext), CreateOtpContract.Presenter,
@@ -253,49 +247,19 @@ class CreateOtpPresenter(
     private fun editTotp() {
         coroutineScope.launch {
             view?.showProgress()
+
             val existingResource = requireNotNull(editedOtpData) { "In edit mode but existing resource not present" }
             val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(editedOtpData!!.resourceId))
                 .resource
-
-            when (val fetchedSecret = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                secretInteractor.fetchAndDecrypt(editedOtpData!!.resourceId)
-            }) {
-                is SecretInteractor.Output.DecryptFailure -> {
-                    Timber.e("Failed to decrypt secret during linking totp resource")
-                    view?.showEncryptionError(fetchedSecret.error.message)
+            performResourceUpdateAction(
+                action = { getEditOperation(resource, existingResource) },
+                doOnCryptoFailure = { view?.showEncryptionError(it) },
+                doOnFetchFailure = { view?.showFetchError() },
+                doOnFailure = { view?.showError(it) },
+                doOnSuccess = {
+                    view?.navigateBackInUpdateFlow(it.resourceName, otpUpdated = true)
                 }
-                is SecretInteractor.Output.FetchFailure -> {
-                    Timber.e("Failed to fetch secret during linking totp resource")
-                    view?.showGenericError()
-                }
-                is SecretInteractor.Output.Success -> {
-                    val operation = getEditOperation(resource, fetchedSecret.decryptedSecret, existingResource)
-
-                    when (val editResourceResult =
-                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                            operation.invoke()
-                        }) {
-                        is UpdateResourceInteractor.Output.Failure<*> -> {
-                            view?.showError(editResourceResult.response.exception.message.orEmpty())
-                        }
-                        is UpdateResourceInteractor.Output.OpenPgpError -> {
-                            view?.showEncryptionError(editResourceResult.message)
-                        }
-                        is UpdateResourceInteractor.Output.PasswordExpired -> {
-                            /* will not happen in BaseAuthenticatedPresenter */
-                        }
-                        is UpdateResourceInteractor.Output.Success -> {
-                            updateLocalResourceUseCase.execute(
-                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                            )
-                            view?.navigateBackInUpdateFlow(editResourceResult.resource.name, otpUpdated = true)
-                        }
-                    }
-                }
-                is SecretInteractor.Output.Unauthorized -> {
-                    /* will not happen in BaseAuthenticatedPresenter */
-                }
-            }
+            )
 
             view?.hideProgress()
         }
@@ -303,73 +267,38 @@ class CreateOtpPresenter(
 
     private suspend fun getEditOperation(
         resource: ResourceModel,
-        fetchedSecret: ByteArray,
         existingResource: OtpResourceModel
-    ) =
-        when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
+    ): Flow<ResourceUpdateActionResult> {
+        val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
+            parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
+        }
+        return when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
             SIMPLE_PASSWORD -> throw IllegalArgumentException(
                 "Unsupported resource type on manual totp form:" +
                         " $resourceTypeEnum"
             )
-            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> suspend {
-                updateLinkedTotpResourceInteractor.execute(
-                    createCommonLinkToTotpOverwriteInput(resource),
-                    createUpdateToLinkedTotpInput(
-                        resource.resourceTypeId,
-                        fetchedSecret
-                    )
+            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP ->
+                resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
+                    label = label,
+                    issuer = issuer,
+                    period = period,
+                    digits = digits,
+                    algorithm = algorithm,
+                    secretKey = secret
                 )
-            }
-            STANDALONE_TOTP -> suspend {
-                updateStandaloneTotpResourceInteractor.execute(
-                    createCommonTotpUpdateInput(
-                        existingResource.resourceId,
-                        existingResource.parentFolderId
-                    ),
-                    createStandaloneTotpUpdateInput()
+            STANDALONE_TOTP ->
+                resourceUpdateActionsInteractor.updateStandaloneTotpResource(
+                    label = label,
+                    issuer = issuer,
+                    period = period,
+                    digits = digits,
+                    algorithm = algorithm,
+                    secretKey = secret
                 )
-            }
         }
+    }
 
-    private fun createStandaloneTotpUpdateInput() =
-        UpdateStandaloneTotpResourceInteractor.UpdateStandaloneTotpInput(
-            period = period,
-            digits = digits,
-            algorithm = algorithm,
-            secretKey = secret
-        )
-
-    // updates standalone totp
-    private fun createCommonTotpUpdateInput(resourceId: String, resourceParentFolderId: String?) =
-        UpdateResourceInteractor.CommonInput(
-            resourceId = resourceId,
-            resourceName = label,
-            resourceUsername = null,
-            resourceUri = issuer,
-            resourceParentFolderId = resourceParentFolderId
-        )
-
-    // updates existing resource to linked totp resource
-    private fun createCommonLinkToTotpUpdateInput(resource: ResourceModel) =
-        UpdateResourceInteractor.CommonInput(
-            resourceId = resource.resourceId,
-            resourceName = resource.name,
-            resourceUsername = resource.username,
-            resourceUri = resource.url,
-            resourceParentFolderId = resource.folderId
-        )
-
-    // updates existing resource to linked totp resource with values from this form (used in "Add totp flow")
-    private fun createCommonLinkToTotpOverwriteInput(resource: ResourceModel) =
-        UpdateResourceInteractor.CommonInput(
-            resourceId = resource.resourceId,
-            resourceName = label,
-            resourceUsername = resource.username,
-            resourceUri = issuer,
-            resourceParentFolderId = resource.folderId
-        )
-
-    // creates standalone totp
+    // creates standalone totp resource input
     private fun createStandaloneTotpResourceCreateInput() =
         CreateStandaloneTotpResourceInteractor.CreateStandaloneTotpInput(
             period = period,
@@ -378,7 +307,7 @@ class CreateOtpPresenter(
             secretKey = secret
         )
 
-    // updates existing resource to linked totp resource
+    // creates standalone totp common input
     private fun createCommonStandaloneTotpResourceCreateInput() =
         CreateResourceInteractor.CommonInput(
             resourceName = label,
@@ -401,62 +330,33 @@ class CreateOtpPresenter(
         coroutineScope.launch {
             view?.showProgress()
 
-            when (val fetchedSecret = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                secretInteractor.fetchAndDecrypt(resource.resourceId)
-            }) {
-                is SecretInteractor.Output.DecryptFailure -> {
-                    Timber.e("Failed to decrypt secret during linking totp resource")
-                    view?.showEncryptionError(fetchedSecret.error.message)
-                }
-                is SecretInteractor.Output.FetchFailure -> {
-                    Timber.e("Failed to fetch secret during linking totp resource")
-                    view?.showGenericError()
-                }
-                is SecretInteractor.Output.Success -> {
-                    when (val editResourceResult =
-                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                            updateLinkedTotpResourceInteractor.execute(
-                                createCommonLinkToTotpUpdateInput(resource),
-                                createUpdateToLinkedTotpInput(resource.resourceTypeId, fetchedSecret.decryptedSecret)
-                            )
-                        }) {
-                        is UpdateResourceInteractor.Output.Success -> {
-                            updateLocalResourceUseCase.execute(
-                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                            )
-                            view?.navigateBackInCreateFlow(
-                                resourceName = editResourceResult.resource.name,
-                                otpCreated = true
-                            )
-                        }
-                        is UpdateResourceInteractor.Output.Failure<*> ->
-                            view?.showError(editResourceResult.response.exception.message.orEmpty())
-                        is UpdateResourceInteractor.Output.PasswordExpired -> {
-                            /* will not happen in BaseAuthenticatedPresenter */
-                        }
-                        is UpdateResourceInteractor.Output.OpenPgpError ->
-                            view?.showEncryptionError(editResourceResult.message)
-                    }
-                }
-                is SecretInteractor.Output.Unauthorized -> {
-                    /* will not happen in BaseAuthenticatedPresenter */
-                }
+            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
+                parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
             }
+            performResourceUpdateAction(
+                action = {
+                    resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
+                        label = resource.name,
+                        issuer = resource.url,
+                        period = period,
+                        digits = digits,
+                        algorithm = algorithm,
+                        secretKey = secret
+                    )
+                },
+                doOnCryptoFailure = { view?.showEncryptionError(it) },
+                doOnFetchFailure = { view?.showGenericError() },
+                doOnFailure = { view?.showError(it) },
+                doOnSuccess = {
+                    view?.navigateBackInCreateFlow(
+                        resourceName = it.resourceName,
+                        otpCreated = true
+                    )
+                }
+            )
         }
         view?.hideProgress()
     }
-
-    private fun createUpdateToLinkedTotpInput(existingResourceTypeId: String, fetchedSecret: ByteArray) =
-        UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
-            period = period,
-            digits = digits,
-            algorithm = algorithm,
-            secretKey = secret,
-            existingSecret = fetchedSecret,
-            existingResourceTypeId = existingResourceTypeId,
-            password = null,
-            description = null
-        )
 
     override fun linkToResourceClick() {
         validateFields {

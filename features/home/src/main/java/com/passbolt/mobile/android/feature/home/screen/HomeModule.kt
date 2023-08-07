@@ -72,13 +72,9 @@ fun Module.homeModule() {
                 domainProvider = get(),
                 getLocalFolderUseCase = get(),
                 deleteResourceIdlingResource = get(),
-                updateLinkedTotpResourceInteractor = get(),
-                secretInteractor = get(),
-                updateLocalResourceUseCase = get(),
                 totpParametersProvider = get(),
                 resourceTypeFactory = get(),
-                createOtpMoreMenuModelUseCase = get(),
-                updatePasswordAndDescriptionResourceInteractor = get()
+                createOtpMoreMenuModelUseCase = get()
             )
         }
         scopedOf(::HomeSpeedDialFabFactory)

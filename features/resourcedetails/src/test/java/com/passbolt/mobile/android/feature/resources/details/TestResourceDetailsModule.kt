@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
@@ -37,34 +38,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-
-internal val mockSecretInteractor = mock<SecretInteractor>()
-internal val mockSecretParser = mock<SecretParser>()
 internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
-internal val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
 internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
 internal val mockFavouritesInteractor = mock<FavouritesInteractor>()
@@ -74,13 +49,11 @@ internal val mockGetResourceTypeWithFields = mock<GetResourceTypeWithFieldsByIdU
 internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
 internal val mockGetResourceTypeIdToSlugMappingUseCase = mock<GetResourceTypeIdToSlugMappingUseCase>()
 internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
-internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
-internal val mockUpdateLinkedTotpResourceInteractor = mock<UpdateLinkedTotpResourceInteractor>()
 internal val mockCreateOtpMoreMenuModelUseCase = mock<CreateOtpMoreMenuModelUseCase>()
-internal val mockUpdatePasswordAndDescriptionResourceInteractor = mock<UpdatePasswordAndDescriptionResourceInteractor>()
 internal val mockSecretPropertiesActionsInteractor = mock<SecretPropertiesActionsInteractor>()
 internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesActionsInteractor>()
 internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
+internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule = module {
@@ -98,21 +71,18 @@ internal val testResourceDetailsModule = module {
             getLocalResourceUseCase = mockGetLocalResourceUseCase,
             getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
             getLocalResourceTagsUseCase = mockResourceTagsUseCase,
-            coroutineLaunchContext = get(),
             getLocalFolderLocation = mockGetFolderLocationUseCase,
             getResourceTypeWithFieldsByIdUseCase = mockGetResourceTypeWithFields,
             totpParametersProvider = mockTotpParametersProvider,
-            getResourceTypeIdToSlugMappingUseCase = mockGetResourceTypeIdToSlugMappingUseCase,
             otpModelMapper = get(),
-            updateLocalResourceUseCase = mockUpdateLocalResourceUseCase,
-            updateLinkedTotpResourceInteractor = mockUpdateLinkedTotpResourceInteractor,
-            secretInteractor = mockSecretInteractor,
+            getResourceTypeIdToSlugMappingUseCase = mockGetResourceTypeIdToSlugMappingUseCase,
             resourceTypeFactory = mockResourceTypeFactory,
             createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase,
-            updatePasswordAndDescriptionResourceInteractor = mockUpdatePasswordAndDescriptionResourceInteractor
+            coroutineLaunchContext = get()
         )
     }
     factory { mockResourceCommonActionsInteractor }
     factory { mockResourcePropertiesActionsInteractor }
     factory { mockSecretPropertiesActionsInteractor }
+    factory { mockResourceUpdateActionsInteractor }
 }

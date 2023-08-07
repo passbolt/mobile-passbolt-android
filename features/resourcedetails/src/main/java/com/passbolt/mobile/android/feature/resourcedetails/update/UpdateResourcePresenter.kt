@@ -11,27 +11,21 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.ItemIdResourceI
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourceUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
@@ -45,12 +39,13 @@ import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerato
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.FieldNamesMapper.Companion.USERNAME_FIELD
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.NewFieldsModelCreator
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.ResourceUpdateType
-import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 import retrofit2.HttpException
 import timber.log.Timber
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
@@ -83,10 +78,6 @@ class UpdateResourcePresenter(
     private val entropyViewMapper: EntropyViewMapper,
     private val createPasswordAndDescriptionResourceInteractor: CreatePasswordAndDescriptionResourceInteractor,
     private val addLocalResourceUseCase: AddLocalResourceUseCase,
-    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
-    private val updateSimplePasswordResourceInteractor: UpdateSimplePasswordResourceInteractor,
-    private val updatePasswordAndDescriptionResourceInteractor: UpdatePasswordAndDescriptionResourceInteractor,
-    private val updateLinkedTotpResourceInteractor: UpdateLinkedTotpResourceInteractor,
     private val resourceTypeFactory: ResourceTypeFactory,
     private val editFieldsModelCreator: EditFieldsModelCreator,
     private val newFieldsModelCreator: NewFieldsModelCreator,
@@ -96,8 +87,7 @@ class UpdateResourcePresenter(
     private val getLocalParentFolderPermissionsToApplyUseCase: GetLocalParentFolderPermissionsToApplyToNewItemUseCase,
     private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase,
     private val createResourceIdlingResource: CreateResourceIdlingResource,
-    private val updateResourceIdlingResource: UpdateResourceIdlingResource,
-    private val secretParser: SecretParser
+    private val updateResourceIdlingResource: UpdateResourceIdlingResource
 ) : DataRefreshViewReactivePresenter<UpdateResourceContract.View>(coroutineLaunchContext),
     UpdateResourceContract.Presenter {
 
@@ -357,101 +347,52 @@ class UpdateResourcePresenter(
 
     private suspend fun editResource() {
         val existingResource = requireNotNull(existingResource) { "In edit mode but existing resource not present" }
-
-        val updateOperation =
-            when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(existingResource.resourceTypeId)) {
-                SIMPLE_PASSWORD -> suspend {
-                    updateSimplePasswordResourceInteractor.execute(
-                        createCommonUpdateInput(existingResource),
-                        createSimplePasswordUpdateInput()
-                    )
-                }
-                PASSWORD_WITH_DESCRIPTION -> suspend {
-                    updatePasswordAndDescriptionResourceInteractor.execute(
-                        createCommonUpdateInput(existingResource),
-                        createPasswordAndDescriptionUpdateInput()
-                    )
-                }
-                PASSWORD_DESCRIPTION_TOTP -> suspend {
-                    try {
-                        updateLinkedTotpResourceInteractor.execute(
-                            createCommonUpdateInput(existingResource),
-                            createPasswordDescriptionTotpUpdateInput()
-                        )
-                    } catch (exception: ClassCastException) {
-                        Timber.e("Secret data has invalid type, quitting edit form")
-                        view?.showInvalidSecretDataAndNavigateBack()
-                        object : AuthenticatedUseCaseOutput {
-                            override val authenticationState = AuthenticationState.Authenticated
-                        }
-                    }
-                }
-                STANDALONE_TOTP ->
-                    throw IllegalArgumentException("Unsupported resource type on update form: $resourceTypeEnum")
-            }
-
-        when (
-            val editResourceResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                updateOperation.invoke()
-            }) {
-            is UpdateResourceInteractor.Output.Failure<*> -> {
-                view?.showError()
-            }
-            is UpdateResourceInteractor.Output.OpenPgpError -> {
-                view?.showEncryptionError(editResourceResult.message)
-            }
-            is UpdateResourceInteractor.Output.PasswordExpired -> {
-                /* will not happen in BaseAuthenticatedPresenter */
-            }
-            is UpdateResourceInteractor.Output.Success -> {
-                updateLocalResourceUseCase.execute(
-                    UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                )
-                view?.closeWithEditSuccessResult(existingResource.name)
-            }
+        val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
+            parametersOf(existingResource, needSessionRefreshFlow, sessionRefreshedFlow)
         }
-    }
-
-    @Throws(ClassCastException::class)
-    private suspend fun createPasswordDescriptionTotpUpdateInput():
-            UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput {
-
-        val existingTotpSecret = secretParser.extractTotpData(
-            existingResource!!.resourceTypeId,
-            existingSecret!!
-        ) as DecryptedSecretOrError.DecryptedSecret
-        return UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
-            period = existingTotpSecret.secret.period,
-            digits = existingTotpSecret.secret.digits,
-            algorithm = existingTotpSecret.secret.algorithm,
-            secretKey = existingTotpSecret.secret.key,
-            existingSecret = existingSecret!!,
-            existingResourceTypeId = existingResource!!.resourceTypeId,
-            password = getFieldValue(PASSWORD_FIELD)!!,
-            description = getFieldValue(DESCRIPTION_FIELD)
+        performResourceUpdateAction(
+            action = { getUpdateOperation(existingResource, resourceUpdateActionsInteractor) },
+            doOnFailure = { view?.showError() },
+            doOnCryptoFailure = { view?.showEncryptionError(it) },
+            doOnSuccess = { view?.closeWithEditSuccessResult(existingResource.name) }
         )
     }
 
-    private fun createCommonUpdateInput(existingResource: ResourceModel) =
-        UpdateResourceInteractor.CommonInput(
-            resourceId = existingResource.resourceId,
-            resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
-            resourceUsername = getFieldValue(USERNAME_FIELD),
-            resourceUri = getFieldValue(URI_FIELD),
-            resourceParentFolderId = resourceParentFolderId
-        )
+    private suspend fun getUpdateOperation(
+        existingResource: ResourceModel,
+        resourceUpdateActionsInteractor: ResourceUpdateActionsInteractor
+    ) = when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(existingResource.resourceTypeId)) {
+        SIMPLE_PASSWORD ->
+            resourceUpdateActionsInteractor.updateSimplePasswordResource(
+                resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
+                resourceUsername = getFieldValue(USERNAME_FIELD),
+                resourceUri = getFieldValue(URI_FIELD),
+                resourceParentFolderId = resourceParentFolderId,
+                password = getFieldValue(SECRET_FIELD)!!, // validated to be not null
+                description = getFieldValue(DESCRIPTION_FIELD)
+            )
+        PASSWORD_WITH_DESCRIPTION ->
+            resourceUpdateActionsInteractor.updatePasswordAndDescriptionResource(
+                resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
+                resourceUsername = getFieldValue(USERNAME_FIELD),
+                resourceUri = getFieldValue(URI_FIELD),
+                password = getFieldValue(PASSWORD_FIELD)!!, // validated to be not null
+                description = getFieldValue(DESCRIPTION_FIELD),
+                resourceParentFolderId = resourceParentFolderId
+            )
 
-    private fun createSimplePasswordUpdateInput() =
-        UpdateSimplePasswordResourceInteractor.UpdateSimplePasswordInput(
-            password = getFieldValue(SECRET_FIELD)!!,
-            description = getFieldValue(DESCRIPTION_FIELD)
-        )
-
-    private fun createPasswordAndDescriptionUpdateInput() =
-        UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput(
-            password = getFieldValue(PASSWORD_FIELD)!!,
-            description = getFieldValue(DESCRIPTION_FIELD)
-        )
+        PASSWORD_DESCRIPTION_TOTP ->
+            resourceUpdateActionsInteractor.updateLinkedTotpResourcePasswordFields(
+                resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
+                resourceUsername = getFieldValue(USERNAME_FIELD),
+                resourceUri = getFieldValue(URI_FIELD),
+                resourceParentFolderId = resourceParentFolderId,
+                password = getFieldValue(PASSWORD_FIELD)!!, // validated to be not null
+                description = getFieldValue(DESCRIPTION_FIELD)
+            )
+        STANDALONE_TOTP ->
+            throw IllegalArgumentException("Unsupported resource type on update form: $resourceTypeEnum")
+    }
 
     private fun getFieldValue(fieldName: String) =
         fields.find { it.field.name == fieldName }?.value

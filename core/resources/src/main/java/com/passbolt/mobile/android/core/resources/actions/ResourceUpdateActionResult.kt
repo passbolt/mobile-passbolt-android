@@ -21,23 +21,17 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.feature.otp.screen
+package com.passbolt.mobile.android.core.resources.actions
 
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.scopedOf
-import org.koin.dsl.bind
+sealed class ResourceUpdateActionResult {
 
-fun Module.otpModule() {
-    scope<OtpFragment> {
-        scopedOf(::OtpSpeedDialFabFactory)
-        scopedOf(::OtpPresenter) bind OtpContract.Presenter::class
+    data class Success(val resourceId: String, val resourceName: String) : ResourceUpdateActionResult()
 
-        scoped { FastAdapter.with(get<ItemAdapter<OtpItem>>()) }
-        scoped<ItemAdapter<OtpItem>> {
-            ItemAdapter.items()
-        }
-    }
+    data class Failure(val message: String? = null) : ResourceUpdateActionResult()
+
+    object FetchFailure : ResourceUpdateActionResult()
+
+    object Unauthorized : ResourceUpdateActionResult()
+
+    class CryptoFailure(val message: String? = null) : ResourceUpdateActionResult()
 }

@@ -30,20 +30,16 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
+import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalOtpResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
@@ -60,7 +56,6 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.get
@@ -78,11 +73,8 @@ class OtpPresenter(
     private val otpModelMapper: OtpModelMapper,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val totpParametersProvider: TotpParametersProvider,
-    private val updateStandaloneTotpResourceInteractor: UpdateStandaloneTotpResourceInteractor,
-    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
     private val resourceTypeFactory: ResourceTypeFactory,
-    private val updatePasswordAndDescriptionResourceInteractor: UpdatePasswordAndDescriptionResourceInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<OtpContract.View>(coroutineLaunchContext), OtpContract.Presenter,
     SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener, KoinScopeComponent {
@@ -425,55 +417,23 @@ class OtpPresenter(
     }
 
     private suspend fun downgradeToPasswordAndDescriptionResource(otpResource: ResourceModel) {
-        val secretPropertiesActionsInteractor = get<SecretPropertiesActionsInteractor> {
+        val resourceUpdateActionInteractor = get<ResourceUpdateActionsInteractor> {
             parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
         }
-        val password = secretPropertiesActionsInteractor.providePassword().single()
-        val description = secretPropertiesActionsInteractor.provideDescription().single()
-        when {
-            password is SecretPropertyActionResult.Success && description is SecretPropertyActionResult.Success -> {
-                when (val editResourceResult =
-                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                        updatePasswordAndDescriptionResourceInteractor.execute(
-                            createPasswordAndDescriptionUpdateInput(otpResource),
-                            UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput(
-                                password = password.result,
-                                description = description.result
-                            )
-                        )
-                    }) {
-                    is UpdateResourceInteractor.Output.Success -> {
-                        updateLocalResourceUseCase.execute(
-                            UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                        )
-                        view?.showResourceDeleted()
-                        refreshData()
-                    }
-                    is UpdateResourceInteractor.Output.Failure<*> ->
-                        view?.showError(editResourceResult.response.exception.message.orEmpty())
-                    is UpdateResourceInteractor.Output.PasswordExpired -> {
-                        /* will not happen in BaseAuthenticatedPresenter */
-                    }
-                    is UpdateResourceInteractor.Output.OpenPgpError ->
-                        view?.showEncryptionError(editResourceResult.message)
-                }
-            }
-            listOf(password, description).any { it is SecretPropertyActionResult.FetchFailure } ->
-                view?.showFetchFailure()
-            listOf(password, description).any { it is SecretPropertyActionResult.DecryptionFailure } ->
-                view?.showDecryptionFailure()
-            else -> view?.showError("")
-        }
-    }
 
-    private fun createPasswordAndDescriptionUpdateInput(otpResource: ResourceModel) =
-        UpdateResourceInteractor.CommonInput(
-            resourceId = otpResource.resourceId,
-            resourceName = otpResource.name,
-            resourceUsername = otpResource.username,
-            resourceUri = otpResource.url,
-            resourceParentFolderId = otpResource.folderId
+        performResourceUpdateAction(
+            action = {
+                resourceUpdateActionInteractor.downgradeToPasswordAndDescriptionResource()
+            },
+            doOnCryptoFailure = { view?.showEncryptionError(it) },
+            doOnFailure = { view?.showError(it) },
+            doOnSuccess = {
+                view?.showResourceDeleted()
+                refreshData()
+            },
+            doOnFetchFailure = { view?.showFetchFailure() }
         )
+    }
 
     private suspend fun deleteStandaloneTotpResource(otpResource: ResourceModel) {
         val resourceCommonActionsInteractor = get<ResourceCommonActionsInteractor> {
@@ -524,34 +484,31 @@ class OtpPresenter(
                 }
                 presenterScope.launch {
                     view?.showProgress()
-                    val existingResource = requireNotNull(currentOtpItemForMenu) {
-                        "In edit by scanning new qr code mode but menu resource not present"
-                    }
+                    val otpResource = getLocalResourceUseCase.execute(
+                        GetLocalResourceUseCase.Input(currentOtpItemForMenu!!.otp.resourceId)
+                    ).resource
 
-                    when (val editResourceResult =
-                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                            updateStandaloneTotpResourceInteractor.execute(
-                                createCommonUpdateInput(existingResource, totpQr),
-                                createStandaloneTotpUpdateInput(totpQr)
+                    val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
+                        parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
+                    }
+                    performResourceUpdateAction(
+                        action = {
+                            resourceUpdateActionsInteractor.updateStandaloneTotpResource(
+                                label = otpResource.name,
+                                issuer = otpResource.url,
+                                period = totpQr.period,
+                                digits = totpQr.digits,
+                                algorithm = totpQr.algorithm.name,
+                                secretKey = totpQr.secret
                             )
-                        }) {
-                        is UpdateResourceInteractor.Output.Failure<*> -> {
-                            view?.showError(editResourceResult.response.exception.message.orEmpty())
-                        }
-                        is UpdateResourceInteractor.Output.OpenPgpError -> {
-                            view?.showEncryptionError(editResourceResult.message)
-                        }
-                        is UpdateResourceInteractor.Output.PasswordExpired -> {
-                            /* will not happen in BaseAuthenticatedPresenter */
-                        }
-                        is UpdateResourceInteractor.Output.Success -> {
-                            updateLocalResourceUseCase.execute(
-                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                            )
+                        },
+                        doOnCryptoFailure = { view?.showEncryptionError(it) },
+                        doOnFailure = { view?.showError(it) },
+                        doOnSuccess = {
                             view?.showOtpUpdate()
                             refreshData()
                         }
-                    }
+                    )
 
                     view?.hideProgress()
                 }
@@ -566,23 +523,6 @@ class OtpPresenter(
             }
         }
     }
-
-    private fun createStandaloneTotpUpdateInput(totpQr: OtpParseResult.OtpQr.TotpQr) =
-        UpdateStandaloneTotpResourceInteractor.UpdateStandaloneTotpInput(
-            period = totpQr.period,
-            digits = totpQr.digits,
-            algorithm = totpQr.algorithm.name,
-            secretKey = totpQr.secret
-        )
-
-    private fun createCommonUpdateInput(existingResource: OtpItemWrapper, totpQr: OtpParseResult.OtpQr.TotpQr) =
-        UpdateResourceInteractor.CommonInput(
-            resourceId = existingResource.otp.resourceId,
-            resourceName = totpQr.label,
-            resourceUsername = null,
-            resourceUri = totpQr.issuer,
-            resourceParentFolderId = existingResource.otp.parentFolderId
-        )
 
     private enum class OtpResultAction {
         EDIT,
