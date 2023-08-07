@@ -37,8 +37,10 @@ import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateA
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
@@ -364,11 +366,7 @@ class OtpPresenter(
     }
 
     override fun menuEditOtpClick() {
-        if (refreshInProgress) {
-            view?.showPleaseWaitForDataRefresh()
-        } else {
-            view?.navigateToEditOtpMenu()
-        }
+        view?.navigateToEditOtpMenu()
     }
 
     override fun scanOtpQrCodeClick() {
@@ -387,9 +385,9 @@ class OtpPresenter(
             when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(otpResource.resourceTypeId)) {
                 SIMPLE_PASSWORD, PASSWORD_WITH_DESCRIPTION ->
                     throw IllegalArgumentException("${resourceTypeEnum.name} type should not be presented on totp list")
-                ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP ->
+                STANDALONE_TOTP ->
                     deleteStandaloneTotpResource(otpResource)
-                ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP ->
+                PASSWORD_DESCRIPTION_TOTP ->
                     downgradeToPasswordAndDescriptionResource(otpResource)
             }
             view?.hideProgress()
@@ -464,21 +462,35 @@ class OtpPresenter(
                 }
                 presenterScope.launch {
                     view?.showProgress()
-
+                    val resource = currentOtpItemForMenu!!.resource
                     val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
-                        parametersOf(currentOtpItemForMenu!!.resource, needSessionRefreshFlow, sessionRefreshedFlow)
+                        parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
                     }
+                    val updateOperation =
+                        when (resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
+                            SIMPLE_PASSWORD, PASSWORD_WITH_DESCRIPTION ->
+                                throw IllegalArgumentException("These resource types are not shown on TOTP tab")
+                            STANDALONE_TOTP ->
+                                resourceUpdateActionsInteractor.updateStandaloneTotpResource(
+                                    label = resource.name,
+                                    issuer = resource.url,
+                                    period = totpQr.period,
+                                    digits = totpQr.digits,
+                                    algorithm = totpQr.algorithm.name,
+                                    secretKey = totpQr.secret
+                                )
+                            PASSWORD_DESCRIPTION_TOTP ->
+                                resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
+                                    label = resource.name,
+                                    issuer = resource.url,
+                                    period = totpQr.period,
+                                    digits = totpQr.digits,
+                                    algorithm = totpQr.algorithm.name,
+                                    secretKey = totpQr.secret
+                                )
+                        }
                     performResourceUpdateAction(
-                        action = {
-                            resourceUpdateActionsInteractor.updateStandaloneTotpResource(
-                                label = currentOtpItemForMenu!!.resource.name,
-                                issuer = currentOtpItemForMenu!!.resource.url,
-                                period = totpQr.period,
-                                digits = totpQr.digits,
-                                algorithm = totpQr.algorithm.name,
-                                secretKey = totpQr.secret
-                            )
-                        },
+                        action = { updateOperation },
                         doOnCryptoFailure = { view?.showEncryptionError(it) },
                         doOnFailure = { view?.showError(it) },
                         doOnSuccess = {
