@@ -60,7 +60,6 @@ import com.passbolt.mobile.android.permissions.recycler.GroupItem
 import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -258,12 +257,10 @@ class ResourceDetailsFragment :
         requireActivity().finish()
     }
 
-    override fun navigateToMore(menuModel: ResourceMoreMenuModel) {
-        ResourceMoreMenuFragment.newInstance(menuModel)
-            .show(
-                childFragmentManager,
-                ResourceMoreMenuFragment::class.java.name
-            )
+    override fun navigateToMore(resourceId: String, resourceName: String) {
+        presenter.pause()
+        ResourceMoreMenuFragment.newInstance(resourceId, resourceName)
+            .show(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
     }
 
     override fun displayUrl(url: String) {
@@ -389,9 +386,9 @@ class ResourceDetailsFragment :
         presenter.manageTotpClick()
     }
 
-    override fun navigateToOtpMoreMenu(model: OtpMoreMenuModel) {
-        OtpMoreMenuFragment
-            .newInstance(model)
+    override fun navigateToOtpMoreMenu(resourceId: String, resourceName: String) {
+        presenter.pause()
+        OtpMoreMenuFragment.newInstance(resourceId, resourceName, canShowTotp = true)
             .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
     }
 
@@ -656,6 +653,14 @@ class ResourceDetailsFragment :
 
     override fun menuEditByNewOtpScanClick() {
         navigateToScanOtpForResult()
+    }
+
+    override fun resourceMoreMenuDismissed() {
+        presenter.resume(this)
+    }
+
+    override fun otpMenuDismissed() {
+        presenter.resume(this)
     }
 
     private fun navigateToScanOtpForResult() {

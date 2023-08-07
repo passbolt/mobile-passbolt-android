@@ -69,7 +69,6 @@ import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
 import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import org.koin.android.ext.android.inject
 
 @Suppress("TooManyFunctions")
@@ -251,8 +250,9 @@ class OtpFragment :
             .show(childFragmentManager, OtpUpdateMoreMenuFragment::class.java.name)
     }
 
-    override fun showOtmMoreMenu(moreMenuModel: OtpMoreMenuModel) {
-        OtpMoreMenuFragment.newInstance(moreMenuModel)
+    override fun showOtmMoreMenu(resourceId: String, resourceName: String) {
+        presenter.pause()
+        OtpMoreMenuFragment.newInstance(resourceId, resourceName, true)
             .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
     }
 
@@ -389,6 +389,10 @@ class OtpFragment :
 
     override fun menuEditByNewOtpScanClick() {
         presenter.menuEditByQrScanClick()
+    }
+
+    override fun otpMenuDismissed() {
+        presenter.resume(this)
     }
 
     override fun showProgress() {

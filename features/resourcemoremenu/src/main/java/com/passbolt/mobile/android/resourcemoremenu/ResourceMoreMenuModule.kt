@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.resourcemoremenu
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,8 +29,6 @@ import org.koin.core.module.Module
 
 fun Module.resourceMoreMenuModule() {
     scope<ResourceMoreMenuFragment> {
-        scoped<ResourceMoreMenuContract.Presenter> {
-            ResourceMoreMenuPresenter()
-        }
+        scopedOf(::ResourceMoreMenuPresenter) bind ResourceMoreMenuContract.Presenter::class
     }
 }

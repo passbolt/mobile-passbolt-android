@@ -10,19 +10,13 @@ import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsI
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
-import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsPresenter
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
@@ -67,7 +61,6 @@ internal val testResourceDetailsModule = module {
     factory<ResourceDetailsContract.Presenter> {
         ResourceDetailsPresenter(
             getFeatureFlagsUseCase = mockGetFeatureFlagsUseCase,
-            createResourceMenuModelUseCase = mockCreateResourceMoreMenuModelUseCase,
             getLocalResourceUseCase = mockGetLocalResourceUseCase,
             getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
             getLocalResourceTagsUseCase = mockResourceTagsUseCase,
@@ -77,7 +70,6 @@ internal val testResourceDetailsModule = module {
             otpModelMapper = get(),
             getResourceTypeIdToSlugMappingUseCase = mockGetResourceTypeIdToSlugMappingUseCase,
             resourceTypeFactory = mockResourceTypeFactory,
-            createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase,
             coroutineLaunchContext = get()
         )
     }

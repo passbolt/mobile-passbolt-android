@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -40,7 +39,7 @@ interface ResourceDetailsContract {
         fun addToClipboard(label: String, value: String, isSecret: Boolean)
         fun displayUrl(url: String)
         fun displayInitialsIcon(name: String, initials: String)
-        fun navigateToMore(menuModel: ResourceMoreMenuModel)
+        fun navigateToMore(resourceId: String, resourceName: String)
         fun navigateBack()
         fun showProgress()
         fun showPasswordVisibleIcon()
@@ -85,7 +84,7 @@ interface ResourceDetailsContract {
         fun showEncryptionError(message: String)
         fun navigateToOtpCreate(resourceId: String)
         fun navigateToOtpEdit()
-        fun navigateToOtpMoreMenu(model: OtpMoreMenuModel)
+        fun navigateToOtpMoreMenu(resourceId: String, resourceName: String)
         fun hideTotpSection()
         fun showTotpDeleted()
         fun showTotpDeleteConfirmationDialog()

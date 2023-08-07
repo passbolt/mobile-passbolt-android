@@ -113,7 +113,7 @@ class SecretParser(
                     val parsedSecret =
                         gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordWithDescription::class.java)
                     if (secretValidationRunner.isPasswordAndDescriptionSecretValid(parsedSecret)) {
-                        DecryptedSecretOrError.DecryptedSecret(parsedSecret.description)
+                        DecryptedSecretOrError.DecryptedSecret(parsedSecret.description.orEmpty())
                     } else {
                         val errorMessage = "Invalid secret in password and description resource type"
                         Timber.e(errorMessage)
@@ -133,7 +133,7 @@ class SecretParser(
                     val parsedSecret =
                         gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordDescriptionTotp::class.java)
                     if (secretValidationRunner.isPasswordDescriptionTotpSecretValid(parsedSecret)) {
-                        DecryptedSecretOrError.DecryptedSecret(parsedSecret.description)
+                        DecryptedSecretOrError.DecryptedSecret(parsedSecret.description.orEmpty())
                     } else {
                         val errorMessage = "Invalid secret in password description totp resource type"
                         Timber.e(errorMessage)

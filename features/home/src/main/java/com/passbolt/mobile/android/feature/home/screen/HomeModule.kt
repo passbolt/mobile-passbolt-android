@@ -57,7 +57,6 @@ fun Module.homeModule() {
                 coroutineLaunchContext = get(),
                 getSelectedAccountDataUseCase = get(),
                 searchableMatcher = SearchableMatcher(),
-                createResourceMenuModelUseCase = get(),
                 getLocalResourcesUseCase = get(),
                 getLocalResourcesFilteredByTag = get(),
                 getLocalSubFoldersForFolderUseCase = get(),
@@ -73,8 +72,7 @@ fun Module.homeModule() {
                 getLocalFolderUseCase = get(),
                 deleteResourceIdlingResource = get(),
                 totpParametersProvider = get(),
-                resourceTypeFactory = get(),
-                createOtpMoreMenuModelUseCase = get()
+                resourceTypeFactory = get()
             )
         }
         scopedOf(::HomeSpeedDialFabFactory)

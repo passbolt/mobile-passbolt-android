@@ -40,5 +40,4 @@ internal fun Module.resourcesDbModule() {
     singleOf(::GetLocalResourcePermissionsUseCase)
     singleOf(::GetLocalResourcesFilteredByTagUseCase)
     singleOf(::GetLocalResourceTagsUseCase)
-    singleOf(::GetLocalOtpResourcesUseCase)
 }

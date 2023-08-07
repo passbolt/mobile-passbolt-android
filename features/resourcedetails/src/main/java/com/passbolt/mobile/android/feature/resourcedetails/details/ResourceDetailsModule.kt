@@ -40,7 +40,6 @@ fun Module.detailsModule() {
         scoped<ResourceDetailsContract.Presenter> {
             ResourceDetailsPresenter(
                 getFeatureFlagsUseCase = get(),
-                createResourceMenuModelUseCase = get(),
                 getLocalResourceUseCase = get(),
                 getLocalResourcePermissionsUseCase = get(),
                 getLocalResourceTagsUseCase = get(),
@@ -50,7 +49,6 @@ fun Module.detailsModule() {
                 otpModelMapper = get(),
                 getResourceTypeIdToSlugMappingUseCase = get(),
                 resourceTypeFactory = get(),
-                createOtpMoreMenuModelUseCase = get(),
                 coroutineLaunchContext = get()
             )
         }

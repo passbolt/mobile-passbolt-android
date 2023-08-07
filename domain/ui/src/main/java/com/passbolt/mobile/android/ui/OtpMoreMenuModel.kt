@@ -7,6 +7,5 @@ import kotlinx.parcelize.Parcelize
 data class OtpMoreMenuModel(
     val title: String,
     val canDelete: Boolean,
-    val canEdit: Boolean,
-    val canShow: Boolean
+    val canEdit: Boolean
 ) : Parcelable

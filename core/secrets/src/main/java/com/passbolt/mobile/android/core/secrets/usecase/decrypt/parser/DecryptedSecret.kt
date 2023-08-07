@@ -32,7 +32,7 @@ sealed class DecryptedSecret(val password: String) {
     ) : DecryptedSecret(password)
 
     class PasswordWithDescription(
-        val description: String,
+        val description: String?,
         password: String
     ) : DecryptedSecret(password)
 
@@ -50,7 +50,7 @@ sealed class DecryptedSecret(val password: String) {
 
     class PasswordDescriptionTotp(
         password: String,
-        val description: String,
+        val description: String?,
         val totp: StandaloneTotp.Totp
     ) : DecryptedSecret(password)
 }

@@ -8,7 +8,6 @@ import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
-import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.TagWithCount
@@ -50,7 +49,7 @@ interface HomeContract {
             sectionsConfiguration: HeaderSectionConfiguration
         )
 
-        fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel)
+        fun navigateToMore(resourceId: String, resourceName: String)
         fun navigateToDetails(resourceModel: ResourceModel)
         fun showError()
         fun showEmptyList()
@@ -107,7 +106,7 @@ interface HomeContract {
         fun showInvalidTotpScanned()
         fun showEncryptionError(message: String)
         fun navigateToOtpCreate(resourceId: String)
-        fun navigateToOtpMoreMenu(moreMenuModel: OtpMoreMenuModel)
+        fun navigateToOtpMoreMenu(resourceId: String, resourceName: String)
         fun navigateToOtpEdit()
         fun showDeleteTotpConfirmationDialog()
         fun showTotpDeleted()

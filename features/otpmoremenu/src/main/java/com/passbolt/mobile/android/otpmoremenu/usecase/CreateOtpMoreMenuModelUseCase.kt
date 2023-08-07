@@ -40,15 +40,13 @@ class CreateOtpMoreMenuModelUseCase(
             OtpMoreMenuModel(
                 title = resource.name,
                 canDelete = resource.permission in WRITE_PERMISSIONS,
-                canEdit = resource.permission in WRITE_PERMISSIONS,
-                canShow = input.canShowOtp
+                canEdit = resource.permission in WRITE_PERMISSIONS
             )
         )
     }
 
     data class Input(
-        val resourceId: String,
-        val canShowOtp: Boolean
+        val resourceId: String
     )
 
     data class Output(

@@ -1,3 +1,12 @@
+package com.passbolt.mobile.android.core.mvp.viewbinding
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.viewbinding.ViewBinding
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -21,19 +30,22 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.mappers
+abstract class BindingBottomSheetFragment<T : ViewBinding>(
+    private val viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T
+) :
+    BottomSheetDialogFragment() {
 
-import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.ResourceModel
+    private var _binding: T? = null
+    protected val binding: T
+        get() = _binding!!
 
-class OtpModelMapper {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = viewInflater.invoke(inflater, container, false)
+        return binding.root
+    }
 
-    fun map(otpModel: ResourceModel): OtpItemWrapper =
-        OtpItemWrapper(
-            resource = otpModel,
-            isVisible = false,
-            otpExpirySeconds = null,
-            otpValue = null,
-            isRefreshing = false
-        )
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
 }

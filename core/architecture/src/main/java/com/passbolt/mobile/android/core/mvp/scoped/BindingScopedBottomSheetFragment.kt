@@ -1,10 +1,12 @@
-package com.passbolt.mobile.android.core.resources.usecase.db
+package com.passbolt.mobile.android.core.mvp.scoped
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.mappers.OtpModelMapper
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.OtpModel
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.viewbinding.ViewBinding
+import com.passbolt.mobile.android.core.mvp.viewbinding.BindingBottomSheetFragment
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
+import org.koin.core.scope.Scope
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,23 +30,11 @@ import com.passbolt.mobile.android.ui.OtpModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetLocalOtpResourcesUseCase(
-    private val databaseProvider: DatabaseProvider,
-    private val otpModelMapper: OtpModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<GetLocalOtpResourcesUseCase.Input, GetLocalOtpResourcesUseCase.Output> {
 
-    override suspend fun execute(input: Input): Output {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        val resources = databaseProvider
-            .get(userId)
-            .resourcesDao()
-            .getAllOrderedByName(input.slugs)
+abstract class BindingScopedBottomSheetFragment<T : ViewBinding>(
+    viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T
+) :
+    BindingBottomSheetFragment<T>(viewInflater), AndroidScopeComponent {
 
-        return Output(resources.map { otpModelMapper.map(it) })
-    }
-
-    data class Input(val slugs: Set<String>)
-
-    data class Output(val otps: List<OtpModel>)
+    override val scope: Scope by fragmentScope()
 }

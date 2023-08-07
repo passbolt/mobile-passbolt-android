@@ -31,14 +31,12 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalOtpResourcesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.OtpModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -105,8 +103,8 @@ class OtpPresenterTest : KoinTest {
 
     @Test
     fun `view should show empty state if otp list is empty`() {
-        mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(emptyList())
+        mockGetLocalResourcesUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(emptyList())
         }
 
         presenter.attach(view)
@@ -117,8 +115,8 @@ class OtpPresenterTest : KoinTest {
 
     @Test
     fun `view should show otp resources`() {
-        mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
+        mockGetLocalResourcesUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(mockTotpResources)
         }
         val mapper = get<OtpModelMapper>()
 
@@ -137,8 +135,8 @@ class OtpPresenterTest : KoinTest {
 
     @Test
     fun `view should show empty list when search term not found`() {
-        mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
+        mockGetLocalResourcesUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(mockTotpResources)
         }
 
         presenter.attach(view)
@@ -152,26 +150,8 @@ class OtpPresenterTest : KoinTest {
     fun `view should reveal selected otp`() = runTest(get<CoroutineLaunchContext>().ui) {
         val mapper = get<OtpModelMapper>()
         val clickedItem = mapper.map(mockTotpResources[0])
-        mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
-        }
-        mockGetLocalResourceUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalResourceUseCase.Output(
-                ResourceModel(
-                    resourceId = clickedItem.otp.resourceId,
-                    resourceTypeId = "resTypeId",
-                    folderId = clickedItem.otp.parentFolderId,
-                    name = clickedItem.otp.name,
-                    username = null,
-                    icon = null,
-                    initials = "in",
-                    url = clickedItem.otp.url,
-                    description = null,
-                    permission = ResourcePermission.OWNER,
-                    favouriteId = null,
-                    modified = ZonedDateTime.now()
-                )
-            )
+        mockGetLocalResourcesUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(mockTotpResources)
         }
         mockSecretPropertiesActionsInteractor.stub {
             onBlocking { provideOtp() } doReturn flowOf(
@@ -206,7 +186,20 @@ class OtpPresenterTest : KoinTest {
     private companion object {
         private const val SEARCH_AVATAR_URL = "url"
         private val mockTotpResources = listOf(
-            OtpModel("resId", null, "name", "url", "N", ResourcePermission.READ)
+            ResourceModel(
+                resourceId = "resId",
+                resourceTypeId = "resTypeId",
+                folderId = null,
+                name = "name",
+                username = "username",
+                icon = "N",
+                initials = "in",
+                url = "url",
+                description = "desc",
+                permission = ResourcePermission.READ,
+                favouriteId = null,
+                modified = ZonedDateTime.now()
+            )
         )
     }
 }
