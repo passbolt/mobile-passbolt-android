@@ -29,10 +29,15 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
+import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalOtpResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
@@ -52,6 +57,11 @@ internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
 internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
 internal val mockUpdateStandaloneTotpResourceInteractor = mock<UpdateStandaloneTotpResourceInteractor>()
 internal val mockCreateOtpMoreMenuModelUseCase = mock<CreateOtpMoreMenuModelUseCase>()
+internal val mockSecretPropertiesActionsInteractor = mock<SecretPropertiesActionsInteractor>()
+internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesActionsInteractor>()
+internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
+internal val mockUpdatePasswordAndDescriptionResourceInteractor = mock<UpdatePasswordAndDescriptionResourceInteractor>()
+internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 
 @ExperimentalCoroutinesApi
 internal val testOtpModule = module {
@@ -74,7 +84,12 @@ internal val testOtpModule = module {
             otpModelMapper = get(),
             updateLocalResourceUseCase = mockUpdateLocalResourceUseCase,
             updateStandaloneTotpResourceInteractor = mockUpdateStandaloneTotpResourceInteractor,
-            createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase
+            createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase,
+            resourceTypeFactory = mockResourceTypeFactory,
+            updatePasswordAndDescriptionResourceInteractor = mockUpdatePasswordAndDescriptionResourceInteractor
         )
     }
+    factory { mockResourceCommonActionsInteractor }
+    factory { mockResourcePropertiesActionsInteractor }
+    factory { mockSecretPropertiesActionsInteractor }
 }

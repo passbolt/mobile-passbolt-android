@@ -4,11 +4,11 @@ import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
-import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
@@ -31,10 +31,7 @@ import com.passbolt.mobile.android.mappers.UsersModelMapper
 import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -81,6 +78,9 @@ internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
 internal val mockUpdateLinkedTotpResourceInteractor = mock<UpdateLinkedTotpResourceInteractor>()
 internal val mockCreateOtpMoreMenuModelUseCase = mock<CreateOtpMoreMenuModelUseCase>()
 internal val mockUpdatePasswordAndDescriptionResourceInteractor = mock<UpdatePasswordAndDescriptionResourceInteractor>()
+internal val mockSecretPropertiesActionsInteractor = mock<SecretPropertiesActionsInteractor>()
+internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesActionsInteractor>()
+internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule = module {
@@ -112,25 +112,7 @@ internal val testResourceDetailsModule = module {
             updatePasswordAndDescriptionResourceInteractor = mockUpdatePasswordAndDescriptionResourceInteractor
         )
     }
-    scope<ResourceDetailsPresenter> {
-        factory { (resource: ResourceModel) ->
-            ResourceActionsInteractor(resource)
-        }
-        factory { (
-                      resource: ResourceModel,
-                      needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-                      sessionRefreshedFlow: StateFlow<Unit?>
-                  ) ->
-            ResourceAuthenticatedActionsInteractor(
-                needSessionRefreshFlow,
-                sessionRefreshedFlow,
-                resource,
-                resourceTypeFactory = mockResourceTypeFactory,
-                secretParser = mockSecretParser,
-                secretInteractor = mockSecretInteractor,
-                favouritesInteractor = mockFavouritesInteractor,
-                deleteResourceUseCase = mockDeleteResourceUseCase
-            )
-        }
-    }
+    factory { mockResourceCommonActionsInteractor }
+    factory { mockResourcePropertiesActionsInteractor }
+    factory { mockSecretPropertiesActionsInteractor }
 }

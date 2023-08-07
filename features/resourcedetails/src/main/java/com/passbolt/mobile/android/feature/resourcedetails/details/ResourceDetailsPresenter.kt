@@ -2,16 +2,22 @@ package com.passbolt.mobile.android.feature.resourcedetails.details
 
 import com.passbolt.mobile.android.common.coroutinetimer.infiniteTimer
 import com.passbolt.mobile.android.common.types.ClipboardLabel
-import com.passbolt.mobile.android.common.types.Description
-import com.passbolt.mobile.android.common.types.Password
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
-import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult.DecryptionFailure
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult.FetchFailure
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult.Success
+import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
+import com.passbolt.mobile.android.core.resources.actions.performResourcePropertyAction
+import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
@@ -45,12 +51,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinScopeComponent
+import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import org.koin.core.component.getOrCreateScope
 import org.koin.core.parameter.parametersOf
-import org.koin.core.scope.Scope
 import timber.log.Timber
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
@@ -97,17 +102,13 @@ class ResourceDetailsPresenter(
     private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
-    ResourceDetailsContract.Presenter, KoinScopeComponent {
+    ResourceDetailsContract.Presenter, KoinComponent {
 
     override var view: ResourceDetailsContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
-    override val scope: Scope
-        get() = getOrCreateScope().value
     private lateinit var resourceModel: ResourceModel
 
-    private lateinit var resourceActionsInteractor: ResourceActionsInteractor
-    private lateinit var resourceAuthenticatedActionsInteractor: ResourceAuthenticatedActionsInteractor
     private var isPasswordVisible = false
     private var permissionsListWidth: Int = -1
     private var permissionItemWidth: Float = -1f
@@ -122,8 +123,16 @@ class ResourceDetailsPresenter(
     private val tickerScope = CoroutineScope(tickerJob + coroutineLaunchContext.ui)
     private var otpModel: OtpItemWrapper? = null
 
-    // TODO consider resource types - for now only description can be both encrypted and unencrypted
-    // TODO for future draw and set encrypted properties dynamically based on database input
+    private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
+        get() = get { parametersOf(resourceModel) }
+    private val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor
+        get() = get {
+            parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
+        }
+    private val resourceCommonActionsInteractor: ResourceCommonActionsInteractor
+        get() = get {
+            parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
+        }
 
     override fun argsReceived(resourceId: String, permissionsListWidth: Int, permissionItemWidth: Float) {
         this.permissionsListWidth = permissionsListWidth
@@ -145,10 +154,6 @@ class ResourceDetailsPresenter(
         coroutineScope.launch(missingItemExceptionHandler) {
             val resourceInitializationDeferred = async { // get and display resource
                 resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
-                resourceActionsInteractor = get { parametersOf(resourceModel) }
-                resourceAuthenticatedActionsInteractor = get {
-                    parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
-                }
                 view?.apply {
                     displayTitle(resourceModel.name)
                     displayUsername(resourceModel.username.orEmpty())
@@ -251,7 +256,6 @@ class ResourceDetailsPresenter(
     override fun detach() {
         tickerScope.coroutineContext.cancelChildren()
         coroutineScope.coroutineContext.cancelChildren()
-        scope.close()
         super<DataRefreshViewReactivePresenter>.detach()
     }
 
@@ -283,17 +287,19 @@ class ResourceDetailsPresenter(
     override fun secretIconClick() {
         if (!isPasswordVisible) {
             coroutineScope.launch {
-                resourceAuthenticatedActionsInteractor.providePassword(
-                    decryptionFailure = { view?.showDecryptionFailure() },
-                    fetchFailure = { view?.showFetchFailure() }
-                ) { _, password ->
-                    view?.apply {
-                        showPasswordVisibleIcon()
-                        showPassword(password)
+                performSecretPropertyAction(
+                    action = { secretPropertiesActionsInteractor.providePassword() },
+                    doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                    doOnFetchFailure = { view?.showFetchFailure() },
+                    doOnSuccess = {
+                        view?.apply {
+                            showPasswordVisibleIcon()
+                            showPassword(it.result)
+                        }
+                        isPasswordVisible = true
                     }
-                }
+                )
             }
-            isPasswordVisible = true
         } else {
             view?.apply {
                 clearPasswordInput()
@@ -306,52 +312,81 @@ class ResourceDetailsPresenter(
 
     override fun seeDescriptionButtonClick() {
         coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.provideDescription(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { _, description, isSecret ->
-                view?.showDescription(description, useSecretFont = isSecret)
+            when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
+                SIMPLE_PASSWORD -> {
+                    performResourcePropertyAction(
+                        action = { resourcePropertiesActionsInteractor.provideDescription() },
+                        doOnResult = { view?.showDescription(it.result, useSecretFont = it.isSecret) }
+                    )
+                }
+                else -> {
+                    performSecretPropertyAction(
+                        action = { secretPropertiesActionsInteractor.provideDescription() },
+                        doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                        doOnFetchFailure = { view?.showFetchFailure() },
+                        doOnSuccess = { view?.showDescription(it.result, useSecretFont = it.isSecret) }
+                    )
+                }
             }
         }
     }
 
     override fun usernameCopyClick() {
-        resourceActionsInteractor.provideUsername { label, username ->
-            view?.addToClipboard(label, username, isSecret = false)
+        coroutineScope.launch {
+            performResourcePropertyAction(
+                action = { resourcePropertiesActionsInteractor.provideUsername() },
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+            )
         }
     }
 
     override fun urlCopyClick() {
-        resourceActionsInteractor.provideWebsiteUrl { label, url ->
-            view?.addToClipboard(label, url, isSecret = false)
+        coroutineScope.launch {
+            performResourcePropertyAction(
+                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+            )
         }
     }
 
     override fun copyPasswordClick() {
         coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.providePassword(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { label, password ->
-                view?.addToClipboard(label, password, isSecret = true)
-            }
+            performSecretPropertyAction(
+                action = { secretPropertiesActionsInteractor.providePassword() },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+            )
         }
     }
 
     override fun copyDescriptionClick() {
         coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.provideDescription(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { label, description, isSecret ->
-                view?.addToClipboard(label, description, isSecret = isSecret)
+            when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
+                SIMPLE_PASSWORD -> {
+                    performResourcePropertyAction(
+                        action = { resourcePropertiesActionsInteractor.provideDescription() },
+                        doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                    )
+                }
+                else -> {
+                    performSecretPropertyAction(
+                        action = { secretPropertiesActionsInteractor.provideDescription() },
+                        doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                        doOnFetchFailure = { view?.showFetchFailure() },
+                        doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                    )
+                }
             }
         }
     }
 
     override fun launchWebsiteClick() {
-        resourceActionsInteractor.provideWebsiteUrl { _, url ->
-            view?.openWebsite(url)
+        coroutineScope.launch {
+            performResourcePropertyAction(
+                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+                doOnResult = { view?.openWebsite(it.result) }
+            )
         }
     }
 
@@ -361,11 +396,11 @@ class ResourceDetailsPresenter(
 
     override fun deleteResourceConfirmed() {
         runWhileShowingProgress {
-            resourceAuthenticatedActionsInteractor.deleteResource(
-                failure = { view?.showGeneralError() }
-            ) {
-                view?.closeWithDeleteSuccessResult(resourceModel.name)
-            }
+            performCommonResourceAction(
+                action = { resourceCommonActionsInteractor.deleteResource() },
+                doOnFailure = { view?.showGeneralError() },
+                doOnSuccess = { view?.closeWithDeleteSuccessResult(it.resourceName) }
+            )
         }
     }
 
@@ -407,13 +442,11 @@ class ResourceDetailsPresenter(
 
     override fun favouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
         runWhileShowingProgress {
-            resourceAuthenticatedActionsInteractor.toggleFavourite(
-                favouriteOption = option,
-                failure = {
-                    view?.showToggleFavouriteFailure()
-                }) {
-                view?.setResourceEditedResult(resourceModel.name)
-            }
+            performCommonResourceAction(
+                action = { resourceCommonActionsInteractor.toggleFavourite(option) },
+                doOnFailure = { view?.showToggleFavouriteFailure() },
+                doOnSuccess = { view?.setResourceEditedResult(resourceModel.name) }
+            )
             getResourcesAndPermissions(resourceModel.resourceId)
         }
     }
@@ -588,35 +621,42 @@ class ResourceDetailsPresenter(
     override fun totpDeleteConfirmed() {
         coroutineScope.launch {
             view?.showProgress()
-            resourceAuthenticatedActionsInteractor.providePasswordAndDescription(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { password: Password, description: Description ->
-                when (val editResourceResult = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                    updatePasswordAndDescriptionResourceInteractor.execute(
-                        createCommonUpdateInput(),
-                        UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput(
-                            password = password,
-                            description = description
-                        )
-                    )
-                }) {
-                    is UpdateResourceInteractor.Output.Success -> {
-                        updateLocalResourceUseCase.execute(
-                            UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                        )
-                        getResourcesAndPermissions(editResourceResult.resource.resourceId)
-                        view?.showTotpDeleted()
-                        view?.setResourceEditedResult(editResourceResult.resource.name)
+            val password = secretPropertiesActionsInteractor.providePassword().single()
+            val description = secretPropertiesActionsInteractor.provideDescription().single()
+            when {
+                password is Success && description is Success -> {
+                    when (val editResourceResult =
+                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                            updatePasswordAndDescriptionResourceInteractor.execute(
+                                createCommonUpdateInput(),
+                                UpdatePasswordAndDescriptionInput(
+                                    password = password.result,
+                                    description = description.result
+                                )
+                            )
+                        }) {
+                        is UpdateResourceInteractor.Output.Success -> {
+                            updateLocalResourceUseCase.execute(
+                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                            )
+                            getResourcesAndPermissions(editResourceResult.resource.resourceId)
+                            view?.showTotpDeleted()
+                            view?.setResourceEditedResult(editResourceResult.resource.name)
+                        }
+                        is UpdateResourceInteractor.Output.Failure<*> ->
+                            view?.showGeneralError(editResourceResult.response.exception.message.orEmpty())
+                        is UpdateResourceInteractor.Output.PasswordExpired -> {
+                            /* will not happen in BaseAuthenticatedPresenter */
+                        }
+                        is UpdateResourceInteractor.Output.OpenPgpError ->
+                            view?.showEncryptionError(editResourceResult.message)
                     }
-                    is UpdateResourceInteractor.Output.Failure<*> ->
-                        view?.showGeneralError(editResourceResult.response.exception.message.orEmpty())
-                    is UpdateResourceInteractor.Output.PasswordExpired -> {
-                        /* will not happen in BaseAuthenticatedPresenter */
-                    }
-                    is UpdateResourceInteractor.Output.OpenPgpError ->
-                        view?.showEncryptionError(editResourceResult.message)
                 }
+                listOf(password, description).any { it is FetchFailure } ->
+                    view?.showFetchFailure()
+                listOf(password, description).any { it is DecryptionFailure } ->
+                    view?.showDecryptionFailure()
+                else -> view?.showGeneralError()
             }
             view?.hideProgress()
         }
@@ -630,18 +670,20 @@ class ResourceDetailsPresenter(
         ) -> Unit
     ) {
         coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.provideOtp(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { label, otp ->
-                val otpParameters = totpParametersProvider.provideOtpParameters(
-                    secretKey = otp.key,
-                    digits = otp.digits,
-                    period = otp.period,
-                    algorithm = otp.algorithm
-                )
-                action(label, otp, otpParameters)
-            }
+            performSecretPropertyAction(
+                action = { secretPropertiesActionsInteractor.provideOtp() },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                doOnSuccess = {
+                    val otpParameters = totpParametersProvider.provideOtpParameters(
+                        secretKey = it.result.key,
+                        digits = it.result.digits,
+                        period = it.result.period,
+                        algorithm = it.result.algorithm
+                    )
+                    action(it.label, it.result, otpParameters)
+                }
+            )
         }
     }
 

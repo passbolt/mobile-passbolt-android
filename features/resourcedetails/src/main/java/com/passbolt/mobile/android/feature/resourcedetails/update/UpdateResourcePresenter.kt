@@ -17,10 +17,10 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourceUseCase
@@ -417,7 +417,7 @@ class UpdateResourcePresenter(
             UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput {
 
         val existingTotpSecret = secretParser.extractTotpData(
-            resourceTypeFactory.getResourceTypeEnum(existingResource!!.resourceTypeId),
+            existingResource!!.resourceTypeId,
             existingSecret!!
         ) as DecryptedSecretOrError.DecryptedSecret
         return UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(

@@ -29,13 +29,18 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.stub
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SecretParserTest : KoinTest {
 
     @get:Rule
@@ -47,21 +52,27 @@ class SecretParserTest : KoinTest {
     private val secretParser: SecretParser by inject()
 
     @Test
-    fun `password should parse correct for password string secret`() {
+    fun `password should parse correct for password string secret`() = runTest {
         val secret = "\\\"!@#_$%^&*()".toByteArray()
+        mockResourceTypeFactory.stub {
+            onBlocking { getResourceTypeEnum(resourceId) } doReturn SIMPLE_PASSWORD
+        }
 
-        val extracted = secretParser.extractPassword(SIMPLE_PASSWORD, secret)
+        val extracted = secretParser.extractPassword(resourceId, secret)
 
         assertThat(extracted).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
         assertThat((extracted as DecryptedSecretOrError.DecryptedSecret).secret).isEqualTo(String(secret))
     }
 
     @Test
-    fun `password and description should parse correct for password description secret`() {
+    fun `password and description should parse correct for password description secret`() = runTest {
         val secret = "{\"password\":\"\\\"!@#_\$%^&*()\", \"description\":\"desc\"}".toByteArray()
+        mockResourceTypeFactory.stub {
+            onBlocking { getResourceTypeEnum(resourceId) } doReturn PASSWORD_WITH_DESCRIPTION
+        }
 
-        val password = secretParser.extractPassword(PASSWORD_WITH_DESCRIPTION, secret)
-        val description = secretParser.extractDescription(PASSWORD_WITH_DESCRIPTION, secret)
+        val password = secretParser.extractPassword(resourceId, secret)
+        val description = secretParser.extractDescription(resourceId, secret)
 
         assertThat(password).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
         assertThat((password as DecryptedSecretOrError.DecryptedSecret).secret).isEqualTo("\"!@#_\$%^&*()")
@@ -70,7 +81,7 @@ class SecretParserTest : KoinTest {
     }
 
     @Test
-    fun `totp should parse correct for standalone totp secret`() {
+    fun `totp should parse correct for standalone totp secret`() = runTest {
         val secret = ("{" +
                 "\"totp\":{" +
                 "\"digits\":6," +
@@ -78,8 +89,11 @@ class SecretParserTest : KoinTest {
                 "\"algorithm\":\"SHA256\"," +
                 "\"secret_key\":\"secret\"" + "}" +
                 "}").toByteArray()
+        mockResourceTypeFactory.stub {
+            onBlocking { getResourceTypeEnum(resourceId) } doReturn STANDALONE_TOTP
+        }
 
-        val totp = secretParser.extractTotpData(STANDALONE_TOTP, secret)
+        val totp = secretParser.extractTotpData(resourceId, secret)
 
         assertThat(totp).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
         val totpData = (totp as DecryptedSecretOrError.DecryptedSecret).secret
@@ -90,7 +104,7 @@ class SecretParserTest : KoinTest {
     }
 
     @Test
-    fun `password description and totp should parse correct for password description totp secret`() {
+    fun `password description and totp should parse correct for password description totp secret`() = runTest {
         val secret = ("{" +
                 "\"password\":\"pass\"," +
                 "\"description\":\"desc\"," +
@@ -101,10 +115,13 @@ class SecretParserTest : KoinTest {
                 "\"secret_key\":\"secret\"" +
                 "}" +
                 "}").toByteArray()
+        mockResourceTypeFactory.stub {
+            onBlocking { getResourceTypeEnum(resourceId) } doReturn PASSWORD_DESCRIPTION_TOTP
+        }
 
-        val password = secretParser.extractPassword(PASSWORD_DESCRIPTION_TOTP, secret)
-        val description = secretParser.extractDescription(PASSWORD_DESCRIPTION_TOTP, secret)
-        val totp = secretParser.extractTotpData(PASSWORD_DESCRIPTION_TOTP, secret)
+        val password = secretParser.extractPassword(resourceId, secret)
+        val description = secretParser.extractDescription(resourceId, secret)
+        val totp = secretParser.extractTotpData(resourceId, secret)
 
         assertThat(password).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
         assertThat((password as DecryptedSecretOrError.DecryptedSecret).secret).isEqualTo("pass")
@@ -116,5 +133,9 @@ class SecretParserTest : KoinTest {
         assertThat(totpData.period).isEqualTo(30)
         assertThat(totpData.algorithm).isEqualTo("SHA256")
         assertThat(totpData.key).isEqualTo("secret")
+    }
+
+    private companion object {
+        private const val resourceId = "resourceId"
     }
 }

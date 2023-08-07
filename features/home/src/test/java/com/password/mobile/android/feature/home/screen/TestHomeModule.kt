@@ -11,15 +11,13 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFold
 import com.passbolt.mobile.android.core.commongroups.usecase.db.GetLocalGroupsWithShareItemsCountUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
-import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
-import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
-import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
@@ -39,10 +37,7 @@ import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMe
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
@@ -53,7 +48,6 @@ internal val fetchAndUpdateDatabaseUseCase = mock<RebuildResourceTablesUseCase>(
 internal val mockSecretInteractor = mock<SecretInteractor>()
 internal val mockSecretParser = mock<SecretParser>()
 internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
-internal val mockDeleteResourceUseCase = mock<DeleteResourceUseCase>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
 internal val mockGetSubFoldersUseCase = mock<GetLocalSubFoldersForFolderUseCase>()
 internal val mockGetSubFoldersResourcesUseCase = mock<GetLocalSubFolderResourcesFilteredUseCase>()
@@ -64,7 +58,6 @@ internal val mockGetLocalGroupsWithItemCountUseCase = mock<GetLocalGroupsWithSha
 internal val mockGetLocalResourcesWithGroupsUseCase = mock<GetLocalResourcesWithGroupUseCase>()
 internal val mockGetLocalResourcesFilteredByTagUseCase = mock<GetLocalResourcesFilteredByTagUseCase>()
 internal val mockGetHomeDisplayPrefsUseCase = mock<GetHomeDisplayViewPrefsUseCase>()
-internal val mockFavouritesInteractor = mock<FavouritesInteractor>()
 internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()
 internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
 internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
@@ -72,6 +65,9 @@ internal val mockUpdateLinkedTotpResourceInteractor = mock<UpdateLinkedTotpResou
 internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
 internal val mockCreateOtpMoreMenuModelUseCase = mock<CreateOtpMoreMenuModelUseCase>()
 internal val mockUpdatePasswordAndDescriptionResourceInteractor = mock<UpdatePasswordAndDescriptionResourceInteractor>()
+internal val mockSecretPropertiesActionsInteractor = mock<SecretPropertiesActionsInteractor>()
+internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesActionsInteractor>()
+internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -117,25 +113,7 @@ val testHomeModule = module {
             updatePasswordAndDescriptionResourceInteractor = mockUpdatePasswordAndDescriptionResourceInteractor
         )
     }
-    scope<HomePresenter> {
-        factory { (resource: ResourceModel) ->
-            ResourceActionsInteractor(resource)
-        }
-        factory { (
-                      resource: ResourceModel,
-                      needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
-                      sessionRefreshedFlow: StateFlow<Unit?>
-                  ) ->
-            ResourceAuthenticatedActionsInteractor(
-                needSessionRefreshFlow,
-                sessionRefreshedFlow,
-                resource,
-                resourceTypeFactory = mockResourceTypeFactory,
-                secretParser = mockSecretParser,
-                secretInteractor = mockSecretInteractor,
-                favouritesInteractor = mockFavouritesInteractor,
-                deleteResourceUseCase = mockDeleteResourceUseCase
-            )
-        }
-    }
+    factory { mockResourceCommonActionsInteractor }
+    factory { mockResourcePropertiesActionsInteractor }
+    factory { mockSecretPropertiesActionsInteractor }
 }

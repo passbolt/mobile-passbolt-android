@@ -29,12 +29,20 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
+import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
+import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalOtpResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
@@ -45,12 +53,14 @@ import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUse
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
 import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinScopeComponent
 import org.koin.core.component.get
@@ -71,6 +81,8 @@ class OtpPresenter(
     private val updateStandaloneTotpResourceInteractor: UpdateStandaloneTotpResourceInteractor,
     private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
+    private val resourceTypeFactory: ResourceTypeFactory,
+    private val updatePasswordAndDescriptionResourceInteractor: UpdatePasswordAndDescriptionResourceInteractor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<OtpContract.View>(coroutineLaunchContext), OtpContract.Presenter,
     SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener, KoinScopeComponent {
@@ -246,39 +258,42 @@ class OtpPresenter(
             val otpResource = getLocalResourceUseCase.execute(
                 GetLocalResourceUseCase.Input(otpItemWrapper.otp.resourceId)
             ).resource
-            val resourceAuthenticatedActionsInteractor = get<ResourceAuthenticatedActionsInteractor> {
+            val secretPropertiesActionsInteractor = get<SecretPropertiesActionsInteractor> {
                 parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
             }
-            resourceAuthenticatedActionsInteractor.provideOtp(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { label, otp ->
-                view?.apply {
-                    val otpParameters = totpParametersProvider.provideOtpParameters(
-                        secretKey = otp.key,
-                        digits = otp.digits,
-                        period = otp.period,
-                        algorithm = otp.algorithm
-                    )
+            performSecretPropertyAction(
+                action = { secretPropertiesActionsInteractor.provideOtp() },
+                doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnSuccess = {
+                    view?.apply {
+                        val otpParameters = totpParametersProvider.provideOtpParameters(
+                            secretKey = it.result.key,
+                            digits = it.result.digits,
+                            period = it.result.period,
+                            algorithm = it.result.algorithm
+                        )
 
-                    val newOtp = otpItemWrapper.copy(
-                        otpValue = otpParameters.otpValue,
-                        isVisible = true,
-                        otpExpirySeconds = otp.period,
-                        remainingSecondsCounter = otpParameters.secondsValid,
-                        isRefreshing = false
-                    )
-                    with(newOtp) {
-                        val indexOfOld = otpList.indexOfFirst { it.otp.resourceId == otpItemWrapper.otp.resourceId }
-                        otpList[indexOfOld] = this
-                        visibleOtpId = otpItemWrapper.otp.resourceId
-                    }
-                    showOtps()
-                    if (copyToClipboard) {
-                        view?.copySecretToClipBoard(label, otpParameters.otpValue)
+                        val newOtp = otpItemWrapper.copy(
+                            otpValue = otpParameters.otpValue,
+                            isVisible = true,
+                            otpExpirySeconds = it.result.period,
+                            remainingSecondsCounter = otpParameters.secondsValid,
+                            isRefreshing = false
+                        )
+                        with(newOtp) {
+                            val indexOfOld = otpList
+                                .indexOfFirst { it.otp.resourceId == otpItemWrapper.otp.resourceId }
+                            otpList[indexOfOld] = this
+                            visibleOtpId = otpItemWrapper.otp.resourceId
+                        }
+                        showOtps()
+                        if (copyToClipboard) {
+                            view?.copySecretToClipBoard(it.label, otpParameters.otpValue)
+                        }
                     }
                 }
-            }
+            )
         }
     }
 
@@ -346,22 +361,23 @@ class OtpPresenter(
             val otpResource = getLocalResourceUseCase.execute(
                 GetLocalResourceUseCase.Input(requireNotNull(currentOtpItemForMenu).otp.resourceId)
             ).resource
-            val resourceAuthenticatedActionsInteractor = get<ResourceAuthenticatedActionsInteractor> {
+            val secretPropertiesActionsInteractor = get<SecretPropertiesActionsInteractor> {
                 parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
             }
-            resourceAuthenticatedActionsInteractor.provideOtp(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { label, otp ->
-                val otpParameters = totpParametersProvider.provideOtpParameters(
-                    secretKey = otp.key,
-                    digits = otp.digits,
-                    period = otp.period,
-                    algorithm = otp.algorithm
-                )
-
-                view?.copySecretToClipBoard(label, otpParameters.otpValue)
-            }
+            performSecretPropertyAction(
+                action = { secretPropertiesActionsInteractor.provideOtp() },
+                doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnSuccess = {
+                    val otpParameters = totpParametersProvider.provideOtpParameters(
+                        secretKey = it.result.key,
+                        digits = it.result.digits,
+                        period = it.result.period,
+                        algorithm = it.result.algorithm
+                    )
+                    view?.copySecretToClipBoard(it.label, otpParameters.otpValue)
+                }
+            )
         }
     }
 
@@ -390,22 +406,87 @@ class OtpPresenter(
         view?.navigateToCreateOtpManually()
     }
 
-    override fun topDeletionConfirmed() {
+    override fun totpDeletionConfirmed() {
         presenterScope.launch {
+            view?.showProgress()
             val otpResource = getLocalResourceUseCase.execute(
                 GetLocalResourceUseCase.Input(requireNotNull(currentOtpItemForMenu).otp.resourceId)
             ).resource
-            val resourceAuthenticatedActionsInteractor = get<ResourceAuthenticatedActionsInteractor> {
-                parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
+            when (val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(otpResource.resourceTypeId)) {
+                SIMPLE_PASSWORD, PASSWORD_WITH_DESCRIPTION ->
+                    throw IllegalArgumentException("${resourceTypeEnum.name} type should not be presented on totp list")
+                ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP ->
+                    deleteStandaloneTotpResource(otpResource)
+                ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP ->
+                    downgradeToPasswordAndDescriptionResource(otpResource)
             }
-            resourceAuthenticatedActionsInteractor.deleteResource(
-                failure = { view?.showFailedToDeleteResource() },
-                success = {
-                    view?.showResourceDeleted()
-                    refreshData()
-                }
-            )
+            view?.hideProgress()
         }
+    }
+
+    private suspend fun downgradeToPasswordAndDescriptionResource(otpResource: ResourceModel) {
+        val secretPropertiesActionsInteractor = get<SecretPropertiesActionsInteractor> {
+            parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
+        }
+        val password = secretPropertiesActionsInteractor.providePassword().single()
+        val description = secretPropertiesActionsInteractor.provideDescription().single()
+        when {
+            password is SecretPropertyActionResult.Success && description is SecretPropertyActionResult.Success -> {
+                when (val editResourceResult =
+                    runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+                        updatePasswordAndDescriptionResourceInteractor.execute(
+                            createPasswordAndDescriptionUpdateInput(otpResource),
+                            UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput(
+                                password = password.result,
+                                description = description.result
+                            )
+                        )
+                    }) {
+                    is UpdateResourceInteractor.Output.Success -> {
+                        updateLocalResourceUseCase.execute(
+                            UpdateLocalResourceUseCase.Input(editResourceResult.resource)
+                        )
+                        view?.showResourceDeleted()
+                        refreshData()
+                    }
+                    is UpdateResourceInteractor.Output.Failure<*> ->
+                        view?.showError(editResourceResult.response.exception.message.orEmpty())
+                    is UpdateResourceInteractor.Output.PasswordExpired -> {
+                        /* will not happen in BaseAuthenticatedPresenter */
+                    }
+                    is UpdateResourceInteractor.Output.OpenPgpError ->
+                        view?.showEncryptionError(editResourceResult.message)
+                }
+            }
+            listOf(password, description).any { it is SecretPropertyActionResult.FetchFailure } ->
+                view?.showFetchFailure()
+            listOf(password, description).any { it is SecretPropertyActionResult.DecryptionFailure } ->
+                view?.showDecryptionFailure()
+            else -> view?.showError("")
+        }
+    }
+
+    private fun createPasswordAndDescriptionUpdateInput(otpResource: ResourceModel) =
+        UpdateResourceInteractor.CommonInput(
+            resourceId = otpResource.resourceId,
+            resourceName = otpResource.name,
+            resourceUsername = otpResource.username,
+            resourceUri = otpResource.url,
+            resourceParentFolderId = otpResource.folderId
+        )
+
+    private suspend fun deleteStandaloneTotpResource(otpResource: ResourceModel) {
+        val resourceCommonActionsInteractor = get<ResourceCommonActionsInteractor> {
+            parametersOf(otpResource, needSessionRefreshFlow, sessionRefreshedFlow)
+        }
+        performCommonResourceAction(
+            action = { resourceCommonActionsInteractor.deleteResource() },
+            doOnFailure = { view?.showFailedToDeleteResource() },
+            doOnSuccess = {
+                view?.showResourceDeleted()
+                refreshData()
+            }
+        )
     }
 
     override fun otpCreated() {

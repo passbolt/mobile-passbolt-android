@@ -4,13 +4,13 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderL
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
-import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
+import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionResult
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertyActionResult
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
@@ -18,7 +18,6 @@ import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -37,12 +36,9 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -70,7 +66,7 @@ import java.util.UUID
  * @since v1.0
  */
 
-class ResourceDetailsPresenterTest : KoinTest {
+class ResourceMenuTest : KoinTest {
 
     private val presenter: ResourceDetailsContract.Presenter by inject()
     private val view: ResourceDetailsContract.View = mock()
@@ -136,173 +132,12 @@ class ResourceDetailsPresenterTest : KoinTest {
         presenter.attach(view)
     }
 
-    @Test
-    fun `password details should be shown correct`() {
-        presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-
-        verify(view, times(2)).showFavouriteStar()
-        verify(view, times(2)).displayTitle(NAME)
-        verify(view, times(2)).displayUsername(USERNAME)
-        verify(view, times(2)).displayInitialsIcon(NAME, INITIALS)
-        verify(view, times(2)).displayUrl(URL)
-        verify(view, times(2)).showPasswordHidden()
-        verify(view, times(2)).showPasswordHiddenIcon()
-        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
-        verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
-        verify(view, times(2)).showDescription(RESOURCE_MODEL.description!!, useSecretFont = false)
-        verify(view, times(2)).showFolderLocation(emptyList())
-        verify(view, times(2)).hideTotpSection()
-        verify(view).hideRefreshProgress()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `top should show on appropriate content type`() {
-        mockGetResourceTypeIdToSlugMappingUseCase.stub {
-            onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to PASSWORD_DESCRIPTION_TOTP_SLUG)
-                )
-            )
-        }
-
-        presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-
-        verify(view, times(2)).showTotpSection()
-    }
-
-    @Test
-    fun `password details description encryption state should be shown correct for simple password`() {
-        mockGetResourceTypeWithFields.stub {
-            onBlocking { execute(any()) }.doReturn(
-                GetResourceTypeWithFieldsByIdUseCase.Output(
-                    resourceTypeId = RESOURCE_MODEL.resourceTypeId,
-                    listOf(ResourceField(0, "description", false, null, false, "string"))
-                )
-            )
-        }
-
-        presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-
-        verify(view, times(2)).showDescription(DESCRIPTION, useSecretFont = false)
-    }
-
-    @Test
-    fun `password details description encryption state should be shown correct for default password`() {
-        mockGetResourceTypeWithFields.stub {
-            onBlocking { execute(any()) }.doReturn(
-                GetResourceTypeWithFieldsByIdUseCase.Output(
-                    resourceTypeId = RESOURCE_MODEL.resourceTypeId,
-                    listOf(ResourceField(1, name = "description", isSecret = true, null, false, "string"))
-                )
-            )
-        }
-
-        presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-
-        verify(view, times(2)).showDescriptionIsEncrypted()
-    }
-
-    @Test
-    fun `eye icon should react to password visibility change correct`() {
-        mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(any()) }.doReturn(PASSWORD_WITH_DESCRIPTION)
-        }
-        val password = "pass"
-        mockSecretPropertiesActionsInteractor.stub {
-            onBlocking { providePassword() } doReturn flowOf(
-                SecretPropertyActionResult.Success(
-                    SecretPropertiesActionsInteractor.SECRET_LABEL,
-                    isSecret = true,
-                    password
-                )
-            )
-        }
-
-        presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-        presenter.secretIconClick()
-        presenter.secretIconClick()
-
-        verify(view).showPasswordVisibleIcon()
-        verify(view).showPassword(password)
-        verify(view, times(3)).showPasswordHiddenIcon()
-        verify(view, times(3)).showPasswordHidden()
-    }
-
-    @Test
     @ExperimentalCoroutinesApi
-    fun `view should show decrypt error correct`() = runTest {
-        mockSecretPropertiesActionsInteractor.stub {
-            onBlocking { providePassword() } doReturn flowOf(SecretPropertyActionResult.DecryptionFailure())
-        }
-
-        presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-        presenter.secretIconClick()
-
-        verify(view).showDecryptionFailure()
-    }
-
     @Test
-    fun `view should show fetch error correct`() {
-        mockSecretPropertiesActionsInteractor.stub {
-            onBlocking { providePassword() } doReturn flowOf(SecretPropertyActionResult.FetchFailure())
-        }
-
-        presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-        presenter.secretIconClick()
-
-        verify(view).showFetchFailure()
-    }
-
-    @Test
-    fun `view should hide preview password when appropriate feature flag is set`() {
-        mockGetFeatureFlagsUseCase.stub {
-            onBlocking { execute(Unit) }.doReturn(
-                GetFeatureFlagsUseCase.Output(
-                    FeatureFlagsModel(
-                        null,
-                        null,
-                        isPreviewPasswordAvailable = false,
-                        areFoldersAvailable = false,
-                        areTagsAvailable = false,
-                        isTotpAvailable = true
-                    )
-                )
+    fun `delete resource should show confirmation dialog, delete and close details`() = runTest {
+        mockResourceCommonActionsInteractor.stub {
+            onBlocking { deleteResource() } doReturn flowOf(
+                ResourceCommonActionResult.Success(RESOURCE_MODEL.name)
             )
         }
 
@@ -312,21 +147,112 @@ class ResourceDetailsPresenterTest : KoinTest {
             20f
         )
         presenter.resume(view)
+        presenter.moreClick()
+        presenter.deleteClick()
+        presenter.deleteResourceConfirmed()
 
-        verify(view, times(2)).hidePasswordEyeIcon()
+        verify(view).showDeleteConfirmationDialog()
+        verify(view).closeWithDeleteSuccessResult(RESOURCE_MODEL.name)
     }
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `resource permissions should be displayed`() = runTest {
+    fun `delete resource should show error when there is deletion error`() = runTest {
+        mockResourceCommonActionsInteractor.stub {
+            onBlocking { deleteResource() } doReturn flowOf(ResourceCommonActionResult.Failure)
+        }
+
         presenter.argsReceived(
             RESOURCE_MODEL.resourceId,
             100,
             20f
         )
         presenter.resume(view)
+        presenter.moreClick()
+        presenter.deleteClick()
+        presenter.deleteResourceConfirmed()
 
-        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view).showDeleteConfirmationDialog()
+        verify(view).showGeneralError()
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `resource url website should be opened if not empty`() = runTest {
+        mockResourcePropertiesActionsInteractor.stub {
+            onBlocking { provideWebsiteUrl() } doReturn flowOf(
+                ResourcePropertyActionResult(
+                    ResourcePropertiesActionsInteractor.URL_LABEL,
+                    isSecret = false,
+                    RESOURCE_MODEL.url.orEmpty()
+                )
+            )
+        }
+
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
+        presenter.resume(view)
+        presenter.moreClick()
+        presenter.launchWebsiteClick()
+
+        verify(view).openWebsite(RESOURCE_MODEL.url.orEmpty())
+    }
+
+    @Test
+    fun `resource username should be copied correct if not empty`() {
+        mockResourcePropertiesActionsInteractor.stub {
+            onBlocking { provideUsername() } doReturn flowOf(
+                ResourcePropertyActionResult(
+                    ResourcePropertiesActionsInteractor.USERNAME_LABEL,
+                    isSecret = false,
+                    RESOURCE_MODEL.username.orEmpty()
+                )
+            )
+        }
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
+        presenter.resume(view)
+        presenter.moreClick()
+        presenter.usernameCopyClick()
+
+        verify(view).addToClipboard(
+            ResourcePropertiesActionsInteractor.USERNAME_LABEL,
+            RESOURCE_MODEL.username.orEmpty(),
+            isSecret = false
+        )
+    }
+
+    @Test
+    fun `resource url should be copied correct if not empty`() {
+        mockResourcePropertiesActionsInteractor.stub {
+            onBlocking { provideWebsiteUrl() } doReturn flowOf(
+                ResourcePropertyActionResult(
+                    ResourcePropertiesActionsInteractor.URL_LABEL,
+                    isSecret = false,
+                    RESOURCE_MODEL.url.orEmpty()
+                )
+            )
+        }
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
+        presenter.resume(view)
+        presenter.moreClick()
+        presenter.urlCopyClick()
+
+        verify(view).addToClipboard(
+            ResourcePropertiesActionsInteractor.URL_LABEL,
+            RESOURCE_MODEL.url.orEmpty(),
+            isSecret = false
+        )
     }
 
     private companion object {
@@ -352,7 +278,6 @@ class ResourceDetailsPresenterTest : KoinTest {
             "fav-id",
             ZonedDateTime.now()
         )
-        private val DECRYPTED_SECRET = "decrypted".toByteArray()
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
             ResourcePermission.READ, "permId1", GroupModel("grId", "grName")
         )

@@ -24,7 +24,6 @@
 package com.passbolt.mobile.android.core.resources.interactor.update
 
 import com.passbolt.mobile.android.core.resources.SecretInputCreator
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.core.users.usecase.FetchUsersUseCase
@@ -47,7 +46,6 @@ class UpdateLinkedTotpResourceInteractor(
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
     private val openPgp: OpenPgp,
     private val secretParser: SecretParser,
-    private val resourceTypeFactory: ResourceTypeFactory,
     passphraseMemoryCache: PassphraseMemoryCache,
     resourceModelMapper: ResourceModelMapper,
     resourceRepository: ResourceRepository,
@@ -74,12 +72,11 @@ class UpdateLinkedTotpResourceInteractor(
             val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
             val privateKey = getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
             val publicKey = it.gpgKey.armoredKey
-            val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(customInput.existingResourceTypeId)
 
             try {
                 val secret = secretInputCreator.createPasswordDescriptionTotpSecretInput(
-                    password = createSecretPassword(customInput, resourceTypeEnum),
-                    description = createSecretDescription(customInput, resourceTypeEnum),
+                    password = createSecretPassword(customInput, customInput.existingResourceTypeId),
+                    description = createSecretDescription(customInput, customInput.existingResourceTypeId),
                     algorithm = customInput.algorithm,
                     key = customInput.secretKey,
                     digits = customInput.digits,
@@ -97,12 +94,12 @@ class UpdateLinkedTotpResourceInteractor(
     }
 
     @Throws(RuntimeException::class)
-    private fun createSecretPassword(
+    private suspend fun createSecretPassword(
         customInput: UpdateToLinkedTotpInput,
-        resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum
+        resourceTypeId: String
     ) =
         customInput.password
-            ?: when (val password = secretParser.extractPassword(resourceTypeEnum, customInput.existingSecret)) {
+            ?: when (val password = secretParser.extractPassword(resourceTypeId, customInput.existingSecret)) {
                 is DecryptedSecretOrError.DecryptedSecret -> password.secret
                 else -> {
                     Timber.e("Could not parse password for existing resource or password is invalid")
@@ -111,12 +108,12 @@ class UpdateLinkedTotpResourceInteractor(
             }
 
     @Throws(RuntimeException::class)
-    private fun createSecretDescription(
+    private suspend fun createSecretDescription(
         customInput: UpdateToLinkedTotpInput,
-        resourceTypeEnum: ResourceTypeFactory.ResourceTypeEnum
+        resourceTypeId: String
     ) =
         customInput.description
-            ?: when (val description = secretParser.extractDescription(resourceTypeEnum, customInput.existingSecret)) {
+            ?: when (val description = secretParser.extractDescription(resourceTypeId, customInput.existingSecret)) {
                 is DecryptedSecretOrError.DecryptedSecret -> description.secret
                 else -> {
                     Timber.e("Could not parse description for existing resource or description is invalid")

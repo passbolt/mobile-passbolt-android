@@ -66,6 +66,7 @@ interface OtpContract {
         fun showCreateButton()
         fun hideCreateButton()
         fun navigateToScanOtpSuccess(totpQr: OtpParseResult.OtpQr.TotpQr)
+        fun showTotpDeleted()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -83,7 +84,7 @@ interface OtpContract {
         fun menuEditOtpClick()
         fun scanOtpQrCodeClick()
         fun createOtpManuallyClick()
-        fun topDeletionConfirmed()
+        fun totpDeletionConfirmed()
         fun otpCreated()
         fun menuEditByQrScanClick()
         fun menuEditOtpManuallyClick()

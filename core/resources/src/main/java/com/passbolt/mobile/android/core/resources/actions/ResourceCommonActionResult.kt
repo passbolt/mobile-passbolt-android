@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.core.resources.actions
-
-import com.passbolt.mobile.android.common.types.ClipboardLabel
-import com.passbolt.mobile.android.ui.ResourceModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,24 +20,14 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ResourceActionsInteractor(
-    private val resource: ResourceModel
-) {
 
-    fun provideWebsiteUrl(onUrlReady: (ClipboardLabel, String) -> Unit) {
-        resource.url?.let {
-            onUrlReady(URL_LABEL, it)
-        }
-    }
+package com.passbolt.mobile.android.core.resources.actions
 
-    fun provideUsername(onUsernameReady: (ClipboardLabel, String) -> Unit) {
-        resource.username?.let {
-            onUsernameReady(USERNAME_LABEL, it)
-        }
-    }
+sealed class ResourceCommonActionResult {
 
-    companion object {
-        private const val USERNAME_LABEL = "Username"
-        private const val URL_LABEL = "Url"
-    }
+    data class Success(
+        val resourceName: String
+    ) : ResourceCommonActionResult()
+
+    object Failure : ResourceCommonActionResult()
 }
