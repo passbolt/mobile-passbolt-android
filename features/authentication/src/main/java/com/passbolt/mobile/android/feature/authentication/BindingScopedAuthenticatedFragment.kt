@@ -5,16 +5,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.viewbinding.ViewBinding
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpDialog
-import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyDialog
-import java.lang.IllegalStateException
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpListener
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
+import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyListener
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import org.koin.android.ext.android.inject
@@ -58,20 +57,17 @@ abstract class BindingScopedAuthenticatedFragment
     }
 
     override fun showAuth(reason: UnauthenticatedReason) {
-        if (reason is Reason.Mfa) {
-            mfaProviderHandler.run(reason, ::showYubikeyDialog, ::showTotpDialog, ::showUnknownProvider)
-        } else {
-            val authType = when (reason) {
-                Reason.Passphrase -> ActivityIntents.AuthConfig.RefreshPassphrase
-                Reason.Session -> ActivityIntents.AuthConfig.SignIn
-                else -> {
-                    throw IllegalStateException("Wrong reason")
-                }
-            }
-
-            authenticationResult.launch(
-                ActivityIntents.authentication(requireContext(), authType)
-            )
+        when (reason) {
+            is Reason.Mfa ->
+                mfaProviderHandler.run(reason, ::showYubikeyDialog, ::showTotpDialog, ::showUnknownProvider)
+            is Reason.Passphrase ->
+                authenticationResult.launch(
+                    ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.RefreshPassphrase)
+                )
+            is Reason.Session ->
+                authenticationResult.launch(
+                    ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.SignIn)
+                )
         }
     }
 
@@ -89,7 +85,7 @@ abstract class BindingScopedAuthenticatedFragment
             token = getSessionUseCase.execute(Unit).accessToken,
             hasTotpProvider = hasTotpProvider
         ).show(
-            childFragmentManager, EnterTotpDialog::class.java.name
+            childFragmentManager, ScanYubikeyDialog::class.java.name
         )
     }
 

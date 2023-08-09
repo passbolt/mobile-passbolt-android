@@ -57,20 +57,17 @@ abstract class BindingScopedAuthenticatedBottomSheetFragment
     }
 
     override fun showAuth(reason: UnauthenticatedReason) {
-        if (reason is Reason.Mfa) {
-            mfaProviderHandler.run(reason, ::showYubikeyDialog, ::showTotpDialog, ::showUnknownProvider)
-        } else {
-            val authType = when (reason) {
-                Reason.Passphrase -> ActivityIntents.AuthConfig.RefreshPassphrase
-                Reason.Session -> ActivityIntents.AuthConfig.SignIn
-                else -> {
-                    throw IllegalStateException("Wrong reason")
-                }
-            }
-
-            authenticationResult.launch(
-                ActivityIntents.authentication(requireContext(), authType)
-            )
+        when (reason) {
+            is Reason.Mfa ->
+                mfaProviderHandler.run(reason, ::showYubikeyDialog, ::showTotpDialog, ::showUnknownProvider)
+            is Reason.Passphrase ->
+                authenticationResult.launch(
+                    ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.RefreshPassphrase)
+                )
+            is Reason.Session ->
+                authenticationResult.launch(
+                    ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.SignIn)
+                )
         }
     }
 
@@ -88,7 +85,7 @@ abstract class BindingScopedAuthenticatedBottomSheetFragment
             token = getSessionUseCase.execute(Unit).accessToken,
             hasTotpProvider = hasTotpProvider
         ).show(
-            childFragmentManager, EnterTotpDialog::class.java.name
+            childFragmentManager, ScanYubikeyDialog::class.java.name
         )
     }
 
