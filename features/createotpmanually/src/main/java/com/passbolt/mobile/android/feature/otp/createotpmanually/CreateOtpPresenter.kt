@@ -252,7 +252,7 @@ class CreateOtpPresenter(
             val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(editedOtpData!!.resourceId))
                 .resource
             performResourceUpdateAction(
-                action = { getEditOperation(resource, existingResource) },
+                action = { getEditOperation(resource) },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnFetchFailure = { view?.showFetchError() },
                 doOnFailure = { view?.showError(it) },
@@ -266,8 +266,7 @@ class CreateOtpPresenter(
     }
 
     private suspend fun getEditOperation(
-        resource: ResourceModel,
-        existingResource: OtpResourceModel
+        resource: ResourceModel
     ): Flow<ResourceUpdateActionResult> {
         val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
             parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
