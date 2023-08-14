@@ -14,24 +14,18 @@ import com.passbolt.mobile.android.core.resources.actions.performCommonResourceA
 import com.passbolt.mobile.android.core.resources.actions.performResourcePropertyAction
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
-import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
-import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
 import com.passbolt.mobile.android.ui.OtpItemWrapper
@@ -76,7 +70,6 @@ import kotlin.time.Duration.Companion.seconds
 @Suppress("TooManyFunctions")
 class ResourceDetailsPresenter(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
-    private val createResourceMenuModelUseCase: CreateResourceMoreMenuModelUseCase,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
     private val getLocalResourceTagsUseCase: GetLocalResourceTagsUseCase,
@@ -86,7 +79,6 @@ class ResourceDetailsPresenter(
     private val otpModelMapper: OtpModelMapper,
     private val getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
     private val resourceTypeFactory: ResourceTypeFactory,
-    private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter, KoinComponent {
@@ -248,23 +240,11 @@ class ResourceDetailsPresenter(
 
     override fun moreClick() {
         hideTotp()
-        coroutineScope.launch {
-            createResourceMenuModelUseCase.execute(
-                CreateResourceMoreMenuModelUseCase.Input(resourceModel.resourceId)
-            )
-                .resourceMenuModel
-                .let { view?.navigateToMore(it) }
-        }
+        view?.navigateToMore(resourceModel.resourceId, resourceModel.name)
     }
 
     override fun manageTotpClick() {
-        coroutineScope.launch {
-            createOtpMoreMenuModelUseCase.execute(
-                CreateOtpMoreMenuModelUseCase.Input(resourceModel.resourceId, canShowOtp = true)
-            )
-                .otpMoreMenuModel
-                .let { view?.navigateToOtpMoreMenu(it) }
-        }
+        view?.navigateToOtpMoreMenu(resourceModel.resourceId, resourceModel.name)
     }
 
     override fun backArrowClick() {
@@ -525,24 +505,6 @@ class ResourceDetailsPresenter(
             }
         }
     }
-
-    private suspend fun createTotpInputAfterScanning() =
-        when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
-            SIMPLE_PASSWORD, STANDALONE_TOTP -> throw IllegalArgumentException(
-                "Cannot edit simple password or standalone totp by scanning qr code on resource details form"
-            )
-            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> createCommonUpdateInput()
-        }
-
-    // updates existing resource to linked totp resource
-    private fun createCommonUpdateInput() =
-        UpdateResourceInteractor.CommonInput(
-            resourceId = resourceModel.resourceId,
-            resourceName = resourceModel.name,
-            resourceUsername = resourceModel.username,
-            resourceUri = resourceModel.url,
-            resourceParentFolderId = resourceModel.folderId
-        )
 
     override fun addTotpManuallyClick() {
         view?.navigateToOtpCreate(resourceModel.resourceId)

@@ -73,11 +73,9 @@ import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
-import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceListUiModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
 import com.passbolt.mobile.android.ui.TagWithCount
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -493,9 +491,10 @@ class HomeFragment :
         binding.appBar.setExpanded(true)
     }
 
-    override fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel) {
-        ResourceMoreMenuFragment.newInstance(resourceMoreMenuModel)
-            .show(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
+    override fun navigateToMore(resourceId: String, resourceName: String) {
+        presenter.pause()
+        ResourceMoreMenuFragment.newInstance(resourceId, resourceName)
+            .show(this@HomeFragment.childFragmentManager, ResourceMoreMenuFragment::class.java.name)
     }
 
     override fun navigateToDetails(resourceModel: ResourceModel) {
@@ -552,9 +551,16 @@ class HomeFragment :
         presenter.manageTotpClick()
     }
 
-    override fun navigateToOtpMoreMenu(moreMenuModel: OtpMoreMenuModel) {
-        OtpMoreMenuFragment
-            .newInstance(moreMenuModel)
+    override fun resourceMoreMenuDismissed() {
+        presenter.resume(this)
+    }
+
+    override fun otpMenuDismissed() {
+        presenter.resume(this)
+    }
+
+    override fun navigateToOtpMoreMenu(resourceId: String, resourceName: String) {
+        OtpMoreMenuFragment.newInstance(resourceId, resourceName, canShowTotp = false)
             .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
     }
 
@@ -628,7 +634,7 @@ class HomeFragment :
         presenter.menuEditClick()
     }
 
-    override fun menuFavouriteClick(option: FavouriteOption) {
+    override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
         presenter.menuFavouriteClick(option)
     }
 

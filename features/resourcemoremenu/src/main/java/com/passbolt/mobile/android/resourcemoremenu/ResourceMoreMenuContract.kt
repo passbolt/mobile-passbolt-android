@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.resourcemoremenu
 
-import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 
 /**
@@ -28,7 +28,7 @@ import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 
 interface ResourceMoreMenuContract {
 
-    interface View : BaseContract.View {
+    interface View : DataRefreshViewReactiveContract.View {
         fun showTitle(title: String)
         fun showSeparator()
         fun showDeleteButton()
@@ -38,9 +38,13 @@ interface ResourceMoreMenuContract {
         fun showRemoveFromFavouritesButton()
         fun showManageTotpButton()
         fun showAddTotpButton()
+        fun showRefreshFailure()
+        fun notifyFavouriteClick(favouriteOption: ResourceMoreMenuModel.FavouriteOption)
+        fun hideMenu()
     }
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(menuModel: ResourceMoreMenuModel)
+    interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
+        fun argsRetrieved(resourceId: String)
+        fun menuFavouriteClick()
     }
 }

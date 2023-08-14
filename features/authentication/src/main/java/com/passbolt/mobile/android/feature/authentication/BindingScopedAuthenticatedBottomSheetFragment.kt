@@ -2,12 +2,13 @@ package com.passbolt.mobile.android.feature.authentication
 
 import android.app.Activity
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.viewbinding.ViewBinding
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
+import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedBottomSheetFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpListener
@@ -16,9 +17,6 @@ import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubik
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.ScanYubikeyListener
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import org.koin.android.ext.android.inject
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
-import org.koin.core.scope.Scope
 
 /**
  * Passbolt - Open source password manager for teams
@@ -43,12 +41,11 @@ import org.koin.core.scope.Scope
  * @since v1.0
  */
 
-abstract class BindingScopedAuthenticatedActivity<T : ViewBinding,
-        V : BaseAuthenticatedContract.View>(viewInflater: (LayoutInflater) -> T) :
-    BindingActivity<T>(viewInflater), AndroidScopeComponent, BaseAuthenticatedContract.View, EnterTotpListener,
+abstract class BindingScopedAuthenticatedBottomSheetFragment
+<T : ViewBinding, V : BaseAuthenticatedContract.View>(viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
+    BindingScopedBottomSheetFragment<T>(viewInflater), BaseAuthenticatedContract.View, EnterTotpListener,
     ScanYubikeyListener {
 
-    override val scope: Scope by activityScope()
     abstract val presenter: BaseAuthenticatedContract.Presenter<V>
     private val mfaProviderHandler: MfaProviderHandler by inject()
     private val getSessionUseCase: GetSessionUseCase by inject()
@@ -65,19 +62,13 @@ abstract class BindingScopedAuthenticatedActivity<T : ViewBinding,
                 mfaProviderHandler.run(reason, ::showYubikeyDialog, ::showTotpDialog, ::showUnknownProvider)
             is Reason.Passphrase ->
                 authenticationResult.launch(
-                    ActivityIntents.authentication(this, ActivityIntents.AuthConfig.RefreshPassphrase)
+                    ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.RefreshPassphrase)
                 )
             is Reason.Session ->
                 authenticationResult.launch(
-                    ActivityIntents.authentication(this, ActivityIntents.AuthConfig.SignIn)
+                    ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.SignIn)
                 )
         }
-    }
-
-    private fun showUnknownProvider() {
-        UnknownProviderDialog().show(
-            supportFragmentManager, UnknownProviderDialog::class.java.name
-        )
     }
 
     private fun showTotpDialog(hasYubikeyProvider: Boolean) {
@@ -85,7 +76,7 @@ abstract class BindingScopedAuthenticatedActivity<T : ViewBinding,
             token = getSessionUseCase.execute(Unit).accessToken,
             hasYubikeyProvider = hasYubikeyProvider
         ).show(
-            supportFragmentManager, EnterTotpDialog::class.java.name
+            childFragmentManager, EnterTotpDialog::class.java.name
         )
     }
 
@@ -94,7 +85,13 @@ abstract class BindingScopedAuthenticatedActivity<T : ViewBinding,
             token = getSessionUseCase.execute(Unit).accessToken,
             hasTotpProvider = hasTotpProvider
         ).show(
-            supportFragmentManager, ScanYubikeyDialog::class.java.name
+            childFragmentManager, ScanYubikeyDialog::class.java.name
+        )
+    }
+
+    private fun showUnknownProvider() {
+        UnknownProviderDialog().show(
+            childFragmentManager, UnknownProviderDialog::class.java.name
         )
     }
 

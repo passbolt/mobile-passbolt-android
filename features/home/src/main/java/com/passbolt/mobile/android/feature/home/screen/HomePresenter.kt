@@ -65,8 +65,6 @@ import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewMode
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
-import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
-import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
@@ -95,7 +93,6 @@ class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val searchableMatcher: SearchableMatcher,
-    private val createResourceMenuModelUseCase: CreateResourceMoreMenuModelUseCase,
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
     private val getLocalResourcesFilteredByTag: GetLocalResourcesFilteredByTagUseCase,
     private val getLocalSubFoldersForFolderUseCase: GetLocalSubFoldersForFolderUseCase,
@@ -111,8 +108,7 @@ class HomePresenter(
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
     private val totpParametersProvider: TotpParametersProvider,
-    private val resourceTypeFactory: ResourceTypeFactory,
-    private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase
+    private val resourceTypeFactory: ResourceTypeFactory
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
     KoinComponent {
 
@@ -624,13 +620,7 @@ class HomePresenter(
 
     override fun resourceMoreClick(resourceModel: ResourceModel) {
         currentMoreMenuResource = resourceModel
-        coroutineScope.launch {
-            createResourceMenuModelUseCase.execute(
-                CreateResourceMoreMenuModelUseCase.Input(currentMoreMenuResource!!.resourceId)
-            )
-                .resourceMenuModel
-                .let { view?.navigateToMore(it) }
-        }
+        view?.navigateToMore(resourceModel.resourceId, resourceModel.name)
     }
 
     override fun itemClick(resourceModel: ResourceModel) {
@@ -927,13 +917,10 @@ class HomePresenter(
     }
 
     override fun manageTotpClick() {
-        coroutineScope.launch {
-            createOtpMoreMenuModelUseCase.execute(
-                CreateOtpMoreMenuModelUseCase.Input(currentMoreMenuResource!!.resourceId, canShowOtp = false)
-            )
-                .otpMoreMenuModel
-                .let { view?.navigateToOtpMoreMenu(it) }
-        }
+        view?.navigateToOtpMoreMenu(
+            resourceId = currentMoreMenuResource!!.resourceId,
+            resourceName = currentMoreMenuResource!!.name
+        )
     }
 
     override fun menuCopyOtpClick() {

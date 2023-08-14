@@ -172,7 +172,8 @@ class ResourceUpdateActionsInteractor(
         algorithm: String,
         secretKey: String
     ): Flow<ResourceUpdateActionResult> {
-        val passwordAndDescriptionSecret = secretPropertiesActionsInteractor.providePasswordAndSecretDescription().single()
+        val passwordAndDescriptionSecret =
+            secretPropertiesActionsInteractor.providePasswordAndSecretDescription().single()
         return flowOf(
             when (passwordAndDescriptionSecret) {
                 is SecretPropertyActionResult.DecryptionFailure -> ResourceUpdateActionResult.CryptoFailure()
@@ -193,7 +194,7 @@ class ResourceUpdateActionsInteractor(
                                 digits = digits,
                                 algorithm = algorithm,
                                 secretKey = secretKey,
-                                description = passwordAndDescriptionSecret.result.description,
+                                description = passwordAndDescriptionSecret.result.description.orEmpty(),
                                 password = passwordAndDescriptionSecret.result.password
                             )
                         )

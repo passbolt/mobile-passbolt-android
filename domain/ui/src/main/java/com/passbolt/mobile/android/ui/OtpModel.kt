@@ -27,16 +27,6 @@ import android.os.Parcelable
 import com.passbolt.mobile.android.common.search.Searchable
 import kotlinx.parcelize.Parcelize
 
-data class OtpModel(
-    val resourceId: String,
-    val parentFolderId: String?,
-    val name: String,
-    val url: String?,
-    val initials: String,
-    val permission: ResourcePermission,
-    override val searchCriteria: String = name
-) : Searchable
-
 @Parcelize
 data class OtpResourceModel(
     val resourceId: String,
@@ -50,13 +40,13 @@ data class OtpResourceModel(
 ) : Parcelable
 
 data class OtpItemWrapper(
-    val otp: OtpModel,
+    val resource: ResourceModel,
     val isVisible: Boolean,
     val isRefreshing: Boolean,
     val otpExpirySeconds: Long?,
     val otpValue: String?,
     val remainingSecondsCounter: Long? = otpExpirySeconds
-) : Searchable by otp
+) : Searchable by resource
 
 @Parcelize
 data class OtpAdvancedSettingsModel(

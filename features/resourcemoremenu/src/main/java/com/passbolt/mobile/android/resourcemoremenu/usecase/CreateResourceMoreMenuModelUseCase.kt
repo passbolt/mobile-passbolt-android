@@ -26,6 +26,7 @@ package com.passbolt.mobile.android.resourcemoremenu.usecase
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -38,7 +39,8 @@ import java.util.UUID
 
 class CreateResourceMoreMenuModelUseCase(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
-    private val getResourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val getResourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
+    private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase
 ) :
     AsyncUseCase<CreateResourceMoreMenuModelUseCase.Input, CreateResourceMoreMenuModelUseCase.Output> {
 
@@ -46,6 +48,7 @@ class CreateResourceMoreMenuModelUseCase(
         val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(input.resourceId)).resource
         val resourceSlug = getResourceTypeIdToSlugMappingProvider
             .provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
+        val isTotpFeatureFlagEnabled = getFeatureFlagsUseCase.execute(Unit).featureFlags.isTotpAvailable
 
         return Output(
             ResourceMoreMenuModel(
@@ -58,10 +61,14 @@ class CreateResourceMoreMenuModelUseCase(
                 } else {
                     ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
                 },
-                totpOption = when (resourceSlug) {
-                    PASSWORD_DESCRIPTION_TOTP_SLUG -> MANAGE_TOTP
-                    PASSWORD_AND_DESCRIPTION_SLUG -> ADD_TOTP
-                    else -> NONE
+                totpOption = if (isTotpFeatureFlagEnabled) {
+                    when (resourceSlug) {
+                        PASSWORD_DESCRIPTION_TOTP_SLUG -> MANAGE_TOTP
+                        PASSWORD_AND_DESCRIPTION_SLUG -> ADD_TOTP
+                        else -> NONE
+                    }
+                } else {
+                    NONE
                 }
             )
         )

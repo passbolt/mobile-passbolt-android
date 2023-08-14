@@ -102,7 +102,7 @@ class HomeMenuTest : KoinTest {
         presenter.resume(view)
         presenter.resourceMoreClick(RESOURCE_MODEL)
 
-        verify(view).navigateToMore(resourceMenuModel)
+        verify(view).navigateToMore(RESOURCE_MODEL.resourceId, RESOURCE_MODEL.name)
     }
 
     @Test

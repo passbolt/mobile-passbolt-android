@@ -27,7 +27,6 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.ui.OtpItemWrapper
-import com.passbolt.mobile.android.ui.OtpMoreMenuModel
 
 interface OtpContract {
 
@@ -45,7 +44,7 @@ interface OtpContract {
         fun showPleaseWaitForDataRefresh()
         fun displaySearchClearIcon()
         fun clearSearchInput()
-        fun showOtmMoreMenu(moreMenuModel: OtpMoreMenuModel)
+        fun showOtmMoreMenu(resourceId: String, resourceName: String)
         fun copySecretToClipBoard(label: String, value: String)
         fun navigateToCreateOtpManually()
         fun showDecryptionFailure()

@@ -83,7 +83,6 @@ val testHomeModule = module {
             coroutineLaunchContext = get(),
             getSelectedAccountDataUseCase = get(),
             searchableMatcher = get(),
-            createResourceMenuModelUseCase = get(),
             getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
             getLocalResourcesFilteredByTag = mockGetLocalResourcesFilteredByTagUseCase,
             getLocalSubFoldersForFolderUseCase = mockGetSubFoldersUseCase,
@@ -99,8 +98,7 @@ val testHomeModule = module {
             getLocalFolderUseCase = mockGetLocalFolderUseCase,
             deleteResourceIdlingResource = get(),
             totpParametersProvider = mockTotpParametersProvider,
-            resourceTypeFactory = mockResourceTypeFactory,
-            createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase
+            resourceTypeFactory = mockResourceTypeFactory
         )
     }
     factory { mockResourceCommonActionsInteractor }

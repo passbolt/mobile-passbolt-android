@@ -58,8 +58,8 @@ class OtpItem(
     override fun bindView(binding: ItemOtpBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            name.text = otpModel.otp.name
-            icon.setImageDrawable(initialsIconGenerator.generate(otpModel.otp.name, otpModel.otp.initials))
+            name.text = otpModel.resource.name
+            icon.setImageDrawable(initialsIconGenerator.generate(otpModel.resource.name, otpModel.resource.initials))
             eye.isVisible = !otpModel.isVisible && !otpModel.isRefreshing
 
             totpViewController.updateView(

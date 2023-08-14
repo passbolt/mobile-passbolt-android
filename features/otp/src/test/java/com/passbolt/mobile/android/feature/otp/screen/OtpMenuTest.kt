@@ -29,13 +29,10 @@ import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalOtpResourcesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.ui.OtpModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -93,27 +90,6 @@ class OtpMenuTest : KoinTest {
     fun `copy otp should copy otp successfully`() {
         val mapper = get<OtpModelMapper>()
         val menuItem = mapper.map(mockTotpResources[0])
-        mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
-        }
-        mockGetLocalResourceUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalResourceUseCase.Output(
-                ResourceModel(
-                    menuItem.otp.resourceId,
-                    "resTypeId",
-                    menuItem.otp.parentFolderId,
-                    menuItem.otp.name,
-                    null,
-                    null,
-                    "in",
-                    menuItem.otp.url,
-                    null,
-                    ResourcePermission.OWNER,
-                    null,
-                    ZonedDateTime.now()
-                )
-            )
-        }
         mockSecretPropertiesActionsInteractor.stub {
             onBlocking { provideOtp() } doReturn flowOf(
                 SecretPropertyActionResult.Success(
@@ -147,7 +123,20 @@ class OtpMenuTest : KoinTest {
     private companion object {
         private const val SEARCH_AVATAR_URL = "url"
         private val mockTotpResources = listOf(
-            OtpModel("resId", null, "name", "url", "N", ResourcePermission.READ)
+            ResourceModel(
+                resourceId = "resId",
+                resourceTypeId = "resTypeId",
+                folderId = null,
+                name = "name",
+                username = "username",
+                icon = "N",
+                initials = "in",
+                url = "url",
+                description = "desc",
+                permission = ResourcePermission.READ,
+                favouriteId = null,
+                modified = ZonedDateTime.now()
+            )
         )
     }
 }

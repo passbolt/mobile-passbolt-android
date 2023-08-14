@@ -25,43 +25,40 @@ package com.passbolt.mobile.android.otpmoremenu
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismiss
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedBottomSheetFragment
 import com.passbolt.mobile.android.otpmoremenu.databinding.BottomsheetOtpMoreMenuBinding
-import com.passbolt.mobile.android.ui.OtpMoreMenuModel
+import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.fragmentScope
 
-class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.View, AndroidScopeComponent {
+class OtpMoreMenuFragment :
+    BindingScopedAuthenticatedBottomSheetFragment<BottomsheetOtpMoreMenuBinding, OtpMoreMenuContract.View>(
+        BottomsheetOtpMoreMenuBinding::inflate
+    ), OtpMoreMenuContract.View, AndroidScopeComponent {
 
-    override val scope by fragmentScope()
-    private val presenter: OtpMoreMenuContract.Presenter by scope.inject()
-    private val menuModel: OtpMoreMenuModel by lifecycleAwareLazy {
-        requireNotNull(requireArguments().getParcelable(EXTRA_OTP_MENU_MODEL))
+    override val presenter: OtpMoreMenuContract.Presenter by inject()
+    private val resourceId: String by lifecycleAwareLazy {
+        requireNotNull(requireArguments().getString(EXTRA_RESOURCE_ID))
     }
-    private lateinit var binding: BottomsheetOtpMoreMenuBinding
+    private val initialResourceName: String by lifecycleAwareLazy {
+        requireNotNull(requireArguments().getString(EXTRA_RESOURCE_NAME))
+    }
+    private val canShowTotp: Boolean by lifecycleAwareLazy {
+        requireNotNull(requireArguments().getBoolean(EXTRA_CAN_SHOW_TOTP))
+    }
     private var listener: Listener? = null
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = BottomsheetOtpMoreMenuBinding.inflate(inflater)
-        presenter.attach(this)
-        presenter.argsRetrieved(menuModel)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        showTitle(initialResourceName)
         setListeners()
+        presenter.attach(this)
+        presenter.argsRetrieved(resourceId, canShowTotp = canShowTotp)
     }
 
     override fun onAttach(context: Context) {
@@ -73,7 +70,19 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        presenter.resume(this)
+    }
+
+    override fun onPause() {
+        presenter.pause()
+        super.onPause()
+    }
+
     override fun onDetach() {
+        presenter.detach()
+        listener?.otpMenuDismissed()
         listener = null
         super.onDetach()
     }
@@ -89,7 +98,7 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
     }
 
     override fun showTitle(title: String) {
-        binding.title.text = menuModel.title
+        binding.title.text = title
     }
 
     override fun showSeparator() {
@@ -108,12 +117,33 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
         binding.showOtp.visible()
     }
 
-    companion object {
-        private const val EXTRA_OTP_MENU_MODEL = "OTP_MENU_MODEL"
+    override fun showRefreshFailure() {
+        showSnackbar(
+            messageResId = R.string.common_data_refresh_error,
+            backgroundColor = R.color.red
+        )
+    }
 
-        fun newInstance(model: OtpMoreMenuModel) =
+    override fun hideRefreshProgress() {
+        // ignored - progress indicator should not be shown on the menu fragment
+    }
+
+    override fun showRefreshProgress() {
+        // ignored - progress indicator should not be shown on the menu fragment
+    }
+
+    companion object {
+        private const val EXTRA_RESOURCE_ID = "RESOURCE_ID"
+        private const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
+        private const val EXTRA_CAN_SHOW_TOTP = "CAN_SHOW_TOTP"
+
+        fun newInstance(resourceId: String, resourceName: String, canShowTotp: Boolean) =
             OtpMoreMenuFragment().apply {
-                arguments = bundleOf(EXTRA_OTP_MENU_MODEL to model)
+                arguments = bundleOf(
+                    EXTRA_RESOURCE_ID to resourceId,
+                    EXTRA_RESOURCE_NAME to resourceName,
+                    EXTRA_CAN_SHOW_TOTP to canShowTotp
+                )
             }
     }
 
@@ -122,5 +152,6 @@ class OtpMoreMenuFragment : BottomSheetDialogFragment(), OtpMoreMenuContract.Vie
         fun menuShowOtpClick() {} // on some flows show OTP is hidden
         fun menuEditOtpClick()
         fun menuDeleteOtpClick()
+        fun otpMenuDismissed()
     }
 }
