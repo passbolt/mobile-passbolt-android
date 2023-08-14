@@ -46,31 +46,20 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult.DecryptionFailure
-import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult.FetchFailure
-import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult.Success
 import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
 import com.passbolt.mobile.android.core.resources.actions.performResourcePropertyAction
+import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
-import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
@@ -95,7 +84,6 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -122,13 +110,9 @@ class HomePresenter(
     private val domainProvider: DomainProvider,
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
-    private val updateLinkedTotpResourceInteractor: UpdateLinkedTotpResourceInteractor,
-    private val secretInteractor: SecretInteractor,
-    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
     private val totpParametersProvider: TotpParametersProvider,
     private val resourceTypeFactory: ResourceTypeFactory,
-    private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
-    private val updatePasswordAndDescriptionResourceInteractor: UpdatePasswordAndDescriptionResourceInteractor
+    private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
     KoinComponent {
 
@@ -913,85 +897,30 @@ class HomePresenter(
         coroutineScope.launch {
             val resourceModel = requireNotNull(currentMoreMenuResource)
             view?.showProgress()
-            when (val fetchedSecret = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                secretInteractor.fetchAndDecrypt(resourceModel.resourceId)
-            }) {
-                is SecretInteractor.Output.DecryptFailure -> {
-                    Timber.e("Failed to decrypt secret during linking totp resource")
-                    view?.showEncryptionError(fetchedSecret.error.message)
-                }
-                is SecretInteractor.Output.FetchFailure -> {
-                    Timber.e("Failed to fetch secret during linking totp resource")
-                    view?.showGeneralError()
-                }
-                is SecretInteractor.Output.Success -> {
-                    when (val editResourceResult =
-                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                            updateLinkedTotpResourceInteractor.execute(
-                                createTotpInputAfterScanning(resourceModel),
-                                createUpdateToLinkedTotpInput(
-                                    totpQr,
-                                    fetchedSecret.decryptedSecret,
-                                    resourceModel.resourceTypeId
-                                )
-                            )
-                        }) {
-                        is UpdateResourceInteractor.Output.Success -> {
-                            updateLocalResourceUseCase.execute(
-                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                            )
-                            fullDataRefreshExecutor.performFullDataRefresh()
-                        }
-                        is UpdateResourceInteractor.Output.Failure<*> ->
-                            view?.showGeneralError(editResourceResult.response.exception.message.orEmpty())
-                        is UpdateResourceInteractor.Output.PasswordExpired -> {
-                            /* will not happen in BaseAuthenticatedPresenter */
-                        }
-                        is UpdateResourceInteractor.Output.OpenPgpError ->
-                            view?.showEncryptionError(editResourceResult.message)
-                    }
-                }
-                is SecretInteractor.Output.Unauthorized -> {
-                    /* will not happen in BaseAuthenticatedPresenter */
-                }
+
+            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
+                parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
             }
+            performResourceUpdateAction(
+                action = {
+                    resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
+                        label = resourceModel.name,
+                        issuer = resourceModel.url,
+                        period = totpQr.period,
+                        digits = totpQr.digits,
+                        algorithm = totpQr.algorithm.name,
+                        secretKey = totpQr.secret
+                    )
+                },
+                doOnFailure = { view?.showGeneralError(it) },
+                doOnCryptoFailure = { view?.showEncryptionError(it) },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnSuccess = { fullDataRefreshExecutor.performFullDataRefresh() }
+            )
+
             view?.hideProgress()
         }
     }
-
-    private suspend fun createTotpInputAfterScanning(resourceModel: ResourceModel) =
-        when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
-            SIMPLE_PASSWORD, STANDALONE_TOTP -> throw IllegalArgumentException(
-                "Cannot edit simple password or standalone totp by scanning qr code on resource list"
-            )
-            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> createCommonUpdateInput(resourceModel)
-        }
-
-    // updates existing resource to linked totp resource
-    private fun createCommonUpdateInput(resource: ResourceModel) =
-        UpdateResourceInteractor.CommonInput(
-            resourceId = resource.resourceId,
-            resourceName = resource.name,
-            resourceUsername = resource.username,
-            resourceUri = resource.url,
-            resourceParentFolderId = resource.folderId
-        )
-
-    private fun createUpdateToLinkedTotpInput(
-        totpQr: OtpParseResult.OtpQr.TotpQr,
-        fetchedSecret: ByteArray,
-        existingResourceTypeId: String
-    ) =
-        UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
-            period = totpQr.period,
-            digits = totpQr.digits,
-            algorithm = totpQr.algorithm.name,
-            secretKey = totpQr.secret,
-            existingSecret = fetchedSecret,
-            existingResourceTypeId = existingResourceTypeId,
-            password = null,
-            description = null
-        )
 
     override fun menuAddTotpManuallyClick() {
         view?.navigateToOtpCreate(currentMoreMenuResource!!.resourceId)
@@ -1053,42 +982,21 @@ class HomePresenter(
     override fun totpDeletionConfirmed() {
         coroutineScope.launch {
             view?.showProgress()
-            val password = secretPropertiesActionsInteractor.providePassword().single()
-            val description = secretPropertiesActionsInteractor.provideDescription().single()
-            when {
-                password is Success && description is Success -> {
-                    when (val editResourceResult =
-                        runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                            updatePasswordAndDescriptionResourceInteractor.execute(
-                                createCommonUpdateInput(currentMoreMenuResource!!),
-                                UpdatePasswordAndDescriptionInput(
-                                    password = password.result,
-                                    description = description.result
-                                )
-                            )
-                        }) {
-                        is UpdateResourceInteractor.Output.Success -> {
-                            updateLocalResourceUseCase.execute(
-                                UpdateLocalResourceUseCase.Input(editResourceResult.resource)
-                            )
-                            fullDataRefreshExecutor.performFullDataRefresh()
-                            view?.showTotpDeleted()
-                        }
-                        is UpdateResourceInteractor.Output.Failure<*> ->
-                            view?.showGeneralError(editResourceResult.response.exception.message.orEmpty())
-                        is UpdateResourceInteractor.Output.PasswordExpired -> {
-                            /* will not happen in BaseAuthenticatedPresenter */
-                        }
-                        is UpdateResourceInteractor.Output.OpenPgpError ->
-                            view?.showEncryptionError(editResourceResult.message)
-                    }
-                }
-                listOf(password, description).any { it is FetchFailure } ->
-                    view?.showFetchFailure()
-                listOf(password, description).any { it is DecryptionFailure } ->
-                    view?.showDecryptionFailure()
-                else -> view?.showGeneralError()
+            val resourceUpdateActionInteractor = get<ResourceUpdateActionsInteractor> {
+                parametersOf(currentMoreMenuResource!!, needSessionRefreshFlow, sessionRefreshedFlow)
             }
+            performResourceUpdateAction(
+                action = {
+                    resourceUpdateActionInteractor.downgradeToPasswordAndDescriptionResource()
+                },
+                doOnCryptoFailure = { view?.showEncryptionError(it) },
+                doOnFailure = { view?.showError() },
+                doOnSuccess = {
+                    fullDataRefreshExecutor.performFullDataRefresh()
+                    view?.showTotpDeleted()
+                },
+                doOnFetchFailure = { view?.showFetchFailure() }
+            )
             view?.hideProgress()
         }
     }

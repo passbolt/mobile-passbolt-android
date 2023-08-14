@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
@@ -27,6 +28,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 /**
@@ -76,7 +78,6 @@ val resourcesModule = module {
             getSelectedAccountUseCase = get(),
             getPrivateKeyUseCase = get(),
             openPgp = get(),
-            secretParser = get(),
             passphraseMemoryCache = get(),
             resourceModelMapper = get(),
             resourceRepository = get(),
@@ -114,6 +115,29 @@ val resourcesModule = module {
             resource,
             secretParser = get(),
             secretInteractor = get()
+        )
+    }
+    factory { (
+                  resource: ResourceModel,
+                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                  sessionRefreshedFlow: StateFlow<Unit?>
+              ) ->
+        ResourceUpdateActionsInteractor(
+            resource,
+            needSessionRefreshFlow,
+            sessionRefreshedFlow,
+            secretPropertiesActionsInteractor = get {
+                parametersOf(
+                    resource,
+                    needSessionRefreshFlow,
+                    sessionRefreshedFlow
+                )
+            },
+            updatePasswordAndDescriptionResourceInteractor = get(),
+            updateLinkedTotpResourceInteractor = get(),
+            updateSimplePasswordResourceInteractor = get(),
+            updateStandaloneTotpResourceInteractor = get(),
+            updateLocalResourceUseCase = get()
         )
     }
 }

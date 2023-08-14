@@ -15,18 +15,15 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
@@ -45,7 +42,6 @@ internal val resourcesInteractor = mock<ResourceInteractor>()
 internal val getSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseCase>()
 internal val getSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val fetchAndUpdateDatabaseUseCase = mock<RebuildResourceTablesUseCase>()
-internal val mockSecretInteractor = mock<SecretInteractor>()
 internal val mockSecretParser = mock<SecretParser>()
 internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
@@ -60,14 +56,12 @@ internal val mockGetLocalResourcesFilteredByTagUseCase = mock<GetLocalResourcesF
 internal val mockGetHomeDisplayPrefsUseCase = mock<GetHomeDisplayViewPrefsUseCase>()
 internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()
 internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
-internal val mockUpdateLocalResourceUseCase = mock<UpdateLocalResourceUseCase>()
-internal val mockUpdateLinkedTotpResourceInteractor = mock<UpdateLinkedTotpResourceInteractor>()
 internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
 internal val mockCreateOtpMoreMenuModelUseCase = mock<CreateOtpMoreMenuModelUseCase>()
-internal val mockUpdatePasswordAndDescriptionResourceInteractor = mock<UpdatePasswordAndDescriptionResourceInteractor>()
 internal val mockSecretPropertiesActionsInteractor = mock<SecretPropertiesActionsInteractor>()
 internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesActionsInteractor>()
 internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
+internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -104,16 +98,13 @@ val testHomeModule = module {
             domainProvider = get(),
             getLocalFolderUseCase = mockGetLocalFolderUseCase,
             deleteResourceIdlingResource = get(),
-            updateLinkedTotpResourceInteractor = mockUpdateLinkedTotpResourceInteractor,
-            secretInteractor = mockSecretInteractor,
-            updateLocalResourceUseCase = mockUpdateLocalResourceUseCase,
             totpParametersProvider = mockTotpParametersProvider,
             resourceTypeFactory = mockResourceTypeFactory,
-            createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase,
-            updatePasswordAndDescriptionResourceInteractor = mockUpdatePasswordAndDescriptionResourceInteractor
+            createOtpMoreMenuModelUseCase = mockCreateOtpMoreMenuModelUseCase
         )
     }
     factory { mockResourceCommonActionsInteractor }
     factory { mockResourcePropertiesActionsInteractor }
     factory { mockSecretPropertiesActionsInteractor }
+    factory { mockResourceUpdateActionsInteractor }
 }

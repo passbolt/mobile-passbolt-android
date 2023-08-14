@@ -1,3 +1,26 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
 package com.passbolt.mobile.android.core.resources.actions
 
 import androidx.annotation.VisibleForTesting
@@ -70,6 +93,30 @@ class SecretPropertiesActionsInteractor(
                 }
             }
 
+    // this method extracts description from secret (cannot be used for "simple password" resource type)
+    suspend fun providePasswordAndSecretDescription():
+            Flow<SecretPropertyActionResult<DecryptedSecret.PasswordWithDescription>> =
+        fetchAndDecrypt()
+            .mapSuccess {
+                val password = secretParser.extractPassword(resource.resourceTypeId, it.secret)
+                val description = secretParser.extractDescription(resource.resourceTypeId, it.secret)
+
+                if (password is DecryptedSecretOrError.DecryptedSecret &&
+                    description is DecryptedSecretOrError.DecryptedSecret
+                ) {
+                    SecretPropertyActionResult.Success(
+                        PASSWORD_AND_DESCRIPTION,
+                        isSecret = true,
+                        DecryptedSecret.PasswordWithDescription(
+                            description = description.secret,
+                            password = password.secret
+                        )
+                    )
+                } else {
+                    SecretPropertyActionResult.DecryptionFailure()
+                }
+            }
+
     private suspend fun fetchAndDecrypt(): Flow<SecretFetchAndDecryptResult> = flowOf(
         when (val output =
             runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
@@ -126,6 +173,8 @@ class SecretPropertiesActionsInteractor(
 
         @VisibleForTesting
         const val OTP_LABEL = "TOTP"
+
+        private const val PASSWORD_AND_DESCRIPTION = "PasswordAndDescription"
     }
 }
 

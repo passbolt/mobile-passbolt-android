@@ -25,7 +25,6 @@ package com.passbolt.mobile.android.core.resources.interactor.update
 
 import com.passbolt.mobile.android.core.resources.SecretInputCreator
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.core.users.usecase.FetchUsersUseCase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
@@ -35,17 +34,14 @@ import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCach
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 import com.passbolt.mobile.android.ui.UserModel
-import timber.log.Timber
 
 class UpdateLinkedTotpResourceInteractor(
     private val secretInputCreator: SecretInputCreator,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
     private val openPgp: OpenPgp,
-    private val secretParser: SecretParser,
     passphraseMemoryCache: PassphraseMemoryCache,
     resourceModelMapper: ResourceModelMapper,
     resourceRepository: ResourceRepository,
@@ -75,8 +71,8 @@ class UpdateLinkedTotpResourceInteractor(
 
             try {
                 val secret = secretInputCreator.createPasswordDescriptionTotpSecretInput(
-                    password = createSecretPassword(customInput, customInput.existingResourceTypeId),
-                    description = createSecretDescription(customInput, customInput.existingResourceTypeId),
+                    password = customInput.password,
+                    description = customInput.description,
                     algorithm = customInput.algorithm,
                     key = customInput.secretKey,
                     digits = customInput.digits,
@@ -93,34 +89,6 @@ class UpdateLinkedTotpResourceInteractor(
         }
     }
 
-    @Throws(RuntimeException::class)
-    private suspend fun createSecretPassword(
-        customInput: UpdateToLinkedTotpInput,
-        resourceTypeId: String
-    ) =
-        customInput.password
-            ?: when (val password = secretParser.extractPassword(resourceTypeId, customInput.existingSecret)) {
-                is DecryptedSecretOrError.DecryptedSecret -> password.secret
-                else -> {
-                    Timber.e("Could not parse password for existing resource or password is invalid")
-                    throw RuntimeException()
-                }
-            }
-
-    @Throws(RuntimeException::class)
-    private suspend fun createSecretDescription(
-        customInput: UpdateToLinkedTotpInput,
-        resourceTypeId: String
-    ) =
-        customInput.description
-            ?: when (val description = secretParser.extractDescription(resourceTypeId, customInput.existingSecret)) {
-                is DecryptedSecretOrError.DecryptedSecret -> description.secret
-                else -> {
-                    Timber.e("Could not parse description for existing resource or description is invalid")
-                    throw RuntimeException()
-                }
-            }
-
     override suspend fun createCommonDescription(customInput: UpdateToLinkedTotpInput): String? =
         null
 
@@ -129,9 +97,7 @@ class UpdateLinkedTotpResourceInteractor(
         val digits: Int,
         val algorithm: String,
         val secretKey: String,
-        val existingSecret: ByteArray,
-        val existingResourceTypeId: String,
-        val description: String?, // if description is null it's taken from existing secret
-        val password: String? // if password is null it's taken from existing secret
+        val description: String,
+        val password: String
     )
 }
