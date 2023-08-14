@@ -16,6 +16,8 @@ import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.leinardi.android.speeddial.SpeedDialOverlayLayout
 import com.leinardi.android.speeddial.SpeedDialView
 import com.passbolt.mobile.android.feature.home.R
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -46,10 +48,10 @@ class OtpSpeedDialFabFactory(
     var scanQrCodeClick: (() -> Unit)? = null
     var createManuallyClick: (() -> Unit)? = null
 
-    private val backgroundColor = ResourcesCompat.getColor(context.resources, R.color.background, context.theme)
-    private val tintColor = ResourcesCompat.getColor(context.resources, R.color.icon_tint, context.theme)
-    private val primaryColor = ResourcesCompat.getColor(context.resources, R.color.primary, context.theme)
-    private val textColor = ResourcesCompat.getColor(context.resources, R.color.text_primary, context.theme)
+    private val backgroundColor = ResourcesCompat.getColor(context.resources, CoreUiR.color.background, context.theme)
+    private val tintColor = ResourcesCompat.getColor(context.resources, CoreUiR.color.icon_tint, context.theme)
+    private val primaryColor = ResourcesCompat.getColor(context.resources, CoreUiR.color.primary, context.theme)
+    private val textColor = ResourcesCompat.getColor(context.resources, CoreUiR.color.text_primary, context.theme)
 
     fun getSpeedDialFab(context: Context, overlay: SpeedDialOverlayLayout) =
         otpSpeedDial(context, overlay)
@@ -59,7 +61,7 @@ class OtpSpeedDialFabFactory(
      */
     private fun mainFab(context: Context, overlay: SpeedDialOverlayLayout) =
         SpeedDialView(context).apply {
-            val margin = context.resources.getDimension(R.dimen.dp_16).toInt()
+            val margin = context.resources.getDimension(CoreUiR.dimen.dp_16).toInt()
             id = R.id.otpSpeedDialViewId
             overlayLayout = overlay
 
@@ -76,7 +78,7 @@ class OtpSpeedDialFabFactory(
             mainFabOpenedBackgroundColor = backgroundColor
 
             setMainFabClosedDrawable(
-                ContextCompat.getDrawable(context, R.drawable.ic_plus)
+                ContextCompat.getDrawable(context, CoreUiR.drawable.ic_plus)
                     ?.mutate()
                     ?.apply {
                         colorFilter = PorterDuffColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
@@ -94,13 +96,13 @@ class OtpSpeedDialFabFactory(
         mainFab(context, overlay).apply {
             addSpeedDialItem(
                 R.id.otpSpeedDialViewCreateManually,
-                R.drawable.ic_write,
-                R.string.otp_speed_dial_create_manually
+                CoreUiR.drawable.ic_write,
+                LocalizationR.string.otp_speed_dial_create_manually
             )
             addSpeedDialItem(
                 R.id.otpSpeedDialViewScanQr,
-                R.drawable.ic_camera,
-                R.string.otp_speed_dial_scan_qr
+                CoreUiR.drawable.ic_camera,
+                LocalizationR.string.otp_speed_dial_scan_qr
             )
 
             setOnChangeListener(null)
@@ -131,7 +133,9 @@ class OtpSpeedDialFabFactory(
                 .setFabBackgroundColor(backgroundColor)
                 .setLabelColor(textColor)
                 .setLabelBackgroundColor(backgroundColor)
-                .setFabImageTintColor(ResourcesCompat.getColor(context.resources, R.color.icon_tint, context.theme))
+                .setFabImageTintColor(
+                    ResourcesCompat.getColor(context.resources, CoreUiR.color.icon_tint, context.theme)
+                )
                 .setLabel(context.getString(labelId))
                 .create()
         )

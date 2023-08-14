@@ -5,19 +5,19 @@ plugins {
 
 dependencies {
     implementation project(':localization')
+    implementation project(':coreui')
 
     implementation libs.androidx.core
     implementation libs.androidx.appcompat
     implementation libs.androidx.biometric
     implementation libs.material
-    implementation libs.fastAdapter.binding
-    implementation libs.fastAdapter.core
     implementation libs.networking.retrofit
     implementation libs.networking.okHttp
     implementation libs.di.koin
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.common"
     buildFeatures {
         viewBinding true
     }

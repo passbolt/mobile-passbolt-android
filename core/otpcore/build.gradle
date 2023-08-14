@@ -8,3 +8,7 @@ dependencies {
     implementation libs.otp
     implementation libs.apacheCommonsCodec
 }
+
+android {
+    namespace = "com.passbolt.mobile.android.core.otp"
+}

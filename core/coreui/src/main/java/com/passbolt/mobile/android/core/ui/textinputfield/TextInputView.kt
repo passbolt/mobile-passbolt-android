@@ -15,6 +15,7 @@ import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputLayout
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewTextInputBinding
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -105,7 +106,7 @@ open class TextInputView @JvmOverloads constructor(
     }
 
     fun setDefaultHint(name: String) {
-        hint = String.format(resources.getString(R.string.input_default_hint), name)
+        hint = String.format(resources.getString(LocalizationR.string.input_default_hint), name)
     }
 
     private fun parseAttributes(attrs: AttributeSet?) {

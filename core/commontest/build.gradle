@@ -11,3 +11,7 @@ dependencies {
     implementation libs.test.espressoCore
     implementation libs.test.androidTestKtx
 }
+
+android {
+    namespace = "com.passbolt.mobile.android.core.commontest"
+}

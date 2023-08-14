@@ -6,7 +6,6 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
-import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.accountslist.item.AccountUiItemsMapper
 import com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy.AccountListStrategyFactory
 import com.passbolt.mobile.android.ui.AccountModelUi
@@ -14,6 +13,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -62,7 +62,7 @@ fun Module.accountsListModule() {
         }
         scoped {
             DrawableListDivider(
-                ContextCompat.getDrawable(androidContext(), R.drawable.grey_divider)
+                ContextCompat.getDrawable(androidContext(), CoreUiR.drawable.grey_divider)
             )
         }
         scoped { (accountListFragment: AccountsListFragment, type: ActivityIntents.AuthConfig) ->

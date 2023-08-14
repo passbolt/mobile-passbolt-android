@@ -4,7 +4,6 @@ plugins {
 }
 
 dependencies {
-    implementation project(':common')
     implementation project(':localization')
 
     implementation libs.androidx.core
@@ -16,9 +15,12 @@ dependencies {
     implementation libs.balloon
     implementation libs.di.koin
     implementation libs.textDrawable
+    implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.core
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.ui"
     buildFeatures {
         viewBinding true
     }

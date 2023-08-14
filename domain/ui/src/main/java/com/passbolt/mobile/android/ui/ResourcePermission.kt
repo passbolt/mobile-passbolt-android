@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.ui
 
 import android.content.Context
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,17 +34,17 @@ enum class ResourcePermission {
     companion object {
         fun getPermissionTextValue(context: Context, permission: ResourcePermission) = context.getString(
             when (permission) {
-                READ -> R.string.resource_permissions_can_read
-                UPDATE -> R.string.resource_permissions_can_update
-                OWNER -> R.string.resource_permissions_is_owner
+                READ -> LocalizationR.string.resource_permissions_can_read
+                UPDATE -> LocalizationR.string.resource_permissions_can_update
+                OWNER -> LocalizationR.string.resource_permissions_is_owner
             }
         )
 
         fun getPermissionIcon(context: Context, permission: ResourcePermission) = context.getDrawable(
             when (permission) {
-                READ -> R.drawable.ic_permission_read
-                UPDATE -> R.drawable.ic_permission_edit
-                OWNER -> R.drawable.ic_permission_owner
+                READ -> CoreUiR.drawable.ic_permission_read
+                UPDATE -> CoreUiR.drawable.ic_permission_edit
+                OWNER -> CoreUiR.drawable.ic_permission_owner
             }
         )
     }

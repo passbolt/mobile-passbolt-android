@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import com.passbolt.mobile.android.common.extension.gone
+import androidx.core.view.isVisible
 import com.passbolt.mobile.android.core.ui.databinding.ViewCircleStepRowBinding
 
 /**
@@ -49,7 +49,7 @@ class CircleStepsView @JvmOverloads constructor(
                 model.icon?.let { setImageResource(it) }
             }
             if (index == list.size - 1) {
-                row.line.gone()
+                row.line.isVisible = false
             }
             addView(row.root)
         }

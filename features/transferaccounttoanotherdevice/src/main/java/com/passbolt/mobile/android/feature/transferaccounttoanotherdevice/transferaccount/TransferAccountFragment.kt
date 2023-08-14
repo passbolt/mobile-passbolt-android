@@ -8,14 +8,15 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.passbolt.mobile.android.common.dialogs.cancelTransferAccountAlertDialog
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.databinding.FragmentTransferAccountBinding
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountStatus
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -92,30 +93,30 @@ class TransferAccountFragment :
 
     override fun showCouldNotInitializeTransferParameters() {
         showSnackbar(
-            R.string.transfer_account_could_not_initialize_parameters,
-            backgroundColor = R.color.red
+            LocalizationR.string.transfer_account_could_not_initialize_parameters,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showCouldNotCreateTransfer(message: String) {
         showSnackbar(
-            R.string.transfer_account_could_not_create_transfer_format,
-            backgroundColor = R.color.red,
+            LocalizationR.string.transfer_account_could_not_create_transfer_format,
+            backgroundColor = CoreUiR.color.red,
             messageArgs = arrayOf(message)
         )
     }
 
     override fun showCouldNotGenerateQrTransferData() {
         showSnackbar(
-            R.string.transfer_account_could_not_initialize_qr_code_page_data,
-            backgroundColor = R.color.red
+            LocalizationR.string.transfer_account_could_not_initialize_qr_code_page_data,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showErrorDuringTransferDetailsFetch(message: String) {
         showSnackbar(
-            R.string.transfer_account_error_during_fetch_transfer_format,
-            backgroundColor = R.color.red,
+            LocalizationR.string.transfer_account_error_during_fetch_transfer_format,
+            backgroundColor = CoreUiR.color.red,
             messageArgs = arrayOf(message)
         )
     }

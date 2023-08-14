@@ -20,7 +20,6 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.first
 import com.passbolt.mobile.android.hasDrawable
 import com.passbolt.mobile.android.instrumentationTestsModule
@@ -35,6 +34,9 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.BeforeTest
+import com.google.android.material.R as MaterialR
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -96,50 +98,50 @@ class ResourcesDeletionTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.input)).perform(
+        onView(withId(CoreUiR.id.input)).perform(
             typeText(managedAccountIntentCreator.getUsername()),
             ViewActions.pressKey(KeyEvent.KEYCODE_ENTER)
         )
-        onView(withId(R.id.authButton)).perform(click())
-        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
         createNewPasswordFromHomeScreen()
-        onView(withId(R.id.text_input_start_icon)).perform(click())
-        onView(withId(R.id.allItems)).perform(click())
+        onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.home.R.id.allItems)).perform(click())
     }
 
     @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/8140
     fun onTheActionMenuDrawerICanClickDeletePasswordElement() {
         //    Given that I am on the resource’s action menu drawer
-        onView(withId(R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
-        onView(first(withId(R.id.more))).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         //    And I see ‘Delete password’ element enabled
-        onView(withId(R.id.delete))
+        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete))
             .check(matches(isDisplayed()))
-            .check(matches(hasDrawable(id = R.drawable.ic_trash)))
+            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_trash)))
         //    When I click ‘Delete password’
-        onView(withId(R.id.delete)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
         //    Then I see a popup with ‘Are you sure?’ information
-        onView(withText(R.string.are_you_sure)).check(matches(isDisplayed()))
+        onView(withText(LocalizationR.string.are_you_sure)).check(matches(isDisplayed()))
         //    And I see description of this popup
-        onView(withText(R.string.resource_will_be_deleted)).check(matches(isDisplayed()))
+        onView(withText(LocalizationR.string.resource_will_be_deleted)).check(matches(isDisplayed()))
         //    And I see ‘Cancel’ button in @blue
-        onView(withText(R.string.cancel)).check(matches(isDisplayed()))
+        onView(withText(LocalizationR.string.cancel)).check(matches(isDisplayed()))
         //    And I see ‘Delete’ button in @blue
-        onView(withText(R.string.delete)).check(matches(isDisplayed()))
+        onView(withText(LocalizationR.string.delete)).check(matches(isDisplayed()))
     }
 
     @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/8141
     fun onThePasswordRemovalPopupICanClickTheCancelButton() {
         //    Given that I am on removal popup
-        onView(withId(R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
-        onView(first(withId(R.id.more))).perform(click())
-        onView(withId(R.id.delete)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
         //    When I click ‘Cancel’ button in @blue
-        onView(withText(R.string.cancel)).perform(click())
+        onView(withText(LocalizationR.string.cancel)).perform(click())
         //    Then I am back on the resource view page
-        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -150,15 +152,15 @@ class ResourcesDeletionTest : KoinTest {
         IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
 
         //    Given that I am on removal popup
-        onView(withId(R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
-        onView(first(withId(R.id.more))).perform(click())
-        onView(withId(R.id.delete)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
         //    When I click ‘Delete’ button in @blue
-        onView(withText(R.string.delete)).perform(click())
+        onView(withText(LocalizationR.string.delete)).perform(click())
         //    Then I am back on the homepage
-        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
         //    And I see a popup "<password name> password was deleted." in @green
-        onView(withId(com.google.android.material.R.id.snackbar_text))
+        onView(withId(MaterialR.id.snackbar_text))
             .check(matches(withText(endsWith("password was deleted."))))
     }
 }

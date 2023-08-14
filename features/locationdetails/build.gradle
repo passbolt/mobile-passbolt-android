@@ -18,6 +18,7 @@ dependencies {
     implementation project(':fulldatarefresh')
     implementation project(':folders')
     implementation project(':resources')
+    implementation project(':localization')
 
     implementation libs.di.koin
     implementation libs.room.sqlite
@@ -38,6 +39,7 @@ dependencies {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.locationdetails"
     buildFeatures {
         viewBinding true
     }

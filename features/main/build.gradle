@@ -22,6 +22,9 @@ dependencies {
     implementation project(':resourcetypes')
     implementation project(':storage')
     implementation project(':entity')
+    implementation project(':scanotp')
+    implementation project(':createotpmanually')
+    implementation project(':resourcepicker')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -33,6 +36,7 @@ dependencies {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.main"
     buildFeatures {
         viewBinding true
     }

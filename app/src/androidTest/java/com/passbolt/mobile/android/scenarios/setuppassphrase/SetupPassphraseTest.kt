@@ -32,6 +32,9 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.BeforeTest
+import com.google.android.material.R as MaterialR
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 
 /**
@@ -86,9 +89,9 @@ class SetupPassphraseTest : KoinTest {
     fun asAMobileUserIShouldSeeTheEnterMyPassphraseScreenAfterISuccessfullyScannedQrCodes() {
         //    Given     the user is on the "Success feedback" screen at the end of the QR code scanning process
         //    When      the user clicks the "Continue" button
-        onView(withId(R.id.button)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
         //    Then      an "Enter your passphrase" page is presented
-        onView(withText(R.string.auth_enter_passphrase)).check(matches(isDisplayed()))
+        onView(withText(LocalizationR.string.auth_enter_passphrase)).check(matches(isDisplayed()))
         //    And       a back arrow button is presented
         onView(isAssignableFrom(Toolbar::class.java))
             .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
@@ -103,49 +106,49 @@ class SetupPassphraseTest : KoinTest {
         val url = managedAccountIntentCreator.getDomain()
         onView(withText(url)).check(matches(isDisplayed()))
         //    And       current user's avatar or the default avatar is presented
-        onView(withId(R.id.avatarImage)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.accountdetails.R.id.avatarImage)).check(matches(isDisplayed()))
         //    And       a passphrase input field is presented
-        onView(withId(R.id.input)).check(matches(isDisplayed()))
+        onView(withId(CoreUiR.id.input)).check(matches(isDisplayed()))
         //    And       an eye icon to toggle passphrase visibility is presented
-        onView(withId(R.id.text_input_end_icon)).check(matches(isDisplayed()))
+        onView(withId(MaterialR.id.text_input_end_icon)).check(matches(isDisplayed()))
         //    And       a sign in the primary action button is presented
-        onView(withId(R.id.authButton)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).check(matches(isDisplayed()))
         //    And       “I forgot my passphrase” link is presented
-        onView(withId(R.id.forgotPasswordButton)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.forgotPasswordButton)).check(matches(isDisplayed()))
     }
 
     @Test
     fun asAMobileUserICanPreviewMyPassphrase() {
         //    Given     I am on the "Enter your passphrase" page
-        onView(withId(R.id.button)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
         //    And       there is some <initial text> inside the passphrase field
-        onView(withId(R.id.input)).perform(typeText("SomeRandomText\n"))
+        onView(withId(CoreUiR.id.input)).perform(typeText("SomeRandomText\n"))
         //    When      I click the "eye" button inside the passphrase field
-        onView(withId(R.id.text_input_end_icon)).perform(click())
+        onView(withId(MaterialR.id.text_input_end_icon)).perform(click())
         //    Then      I see the content of the passphrase field in <output format>
         //              |initial text | output format |
         //              |hidden text  | plain text |
         //              |plain text   | hidden text |
-        onView(withId(R.id.input)).check(matches(not(isTextHidden())))
-        onView(withId(R.id.text_input_end_icon)).perform(click())
+        onView(withId(CoreUiR.id.input)).check(matches(not(isTextHidden())))
+        onView(withId(MaterialR.id.text_input_end_icon)).perform(click())
         onView(withText(managedAccountIntentCreator.getUsername())).check(matches(isDisplayed()))
     }
 
     @Test
     fun asAMobileUserICanSeeAFeedbackMessageIfIEnteredTheWrongPassphrase() {
         //    Given     I am on the “Enter your passphrase" page
-        onView(withId(R.id.button)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
         //    When      I submit a wrong passphrase
-        onView(withId(R.id.input)).perform(typeText("wrongPass1!@\n"))
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(CoreUiR.id.input)).perform(typeText("wrongPass1!@\n"))
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
         //    Then      I see a toast notification with error message
         //    And       the toast is at the bottom of the screen #Not automated
-        onView(withText(R.string.auth_enter_passphrase))
+        onView(withText(LocalizationR.string.auth_enter_passphrase))
             .inRoot(hasToast())
             .check(matches(isDisplayed()))
         //    And       the input and label are still in the same colors
-        onView(withId(R.id.titleLabel)).check(matches(hasTextColor(R.color.text_primary)))
-        onView(withId(R.id.input)).check(matches(hasTextColor(R.color.common_google_signin_btn_text_light_pressed)))
+        onView(withId(R.id.titleLabel)).check(matches(hasTextColor(CoreUiR.color.text_primary)))
+        onView(withId(CoreUiR.id.input)).check(matches(hasTextColor(com.google.android.gms.base.R.color.common_google_signin_btn_text_light_pressed)))
         //    And       the message says "The passphrase is invalid"
         // TODO: uncomment when correct message will be implemented https://app.clickup.com/t/2593179/MOB-746
         //       onView(withText("The passphrase is invalid")).inRoot(hasToast()).check(matches(isDisplayed)))
@@ -154,13 +157,13 @@ class SetupPassphraseTest : KoinTest {
     @Test
     fun asAMobileUserICanGetSomeHelpIfIForgotMyPassphrase() {
         //    Given     I am on the "Enter your passphrase" page
-        onView(withId(R.id.button)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
         //    When      I click the "forgot my passphrase" link
-        onView(withId(R.id.forgotPasswordButton)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.forgotPasswordButton)).perform(click())
         //    Then      I see a dialog with a help
-        onView(withId(R.id.parentPanel)).check(matches(isDisplayed()))
+        onView(withId(androidx.appcompat.R.id.parentPanel)).check(matches(isDisplayed()))
         //    And       help text says the setup process can't be completed without a passphrase
-        onView(withId(R.id.alertTitle)).check(matches(isDisplayed()))
+        onView(withId(androidx.appcompat.R.id.alertTitle)).check(matches(isDisplayed()))
         //    And        I see a message telling me to contact my administrator
         onView(withId(android.R.id.message)).check(matches(isDisplayed()))
         //    And       a “Got it” button to close the dialog is presented

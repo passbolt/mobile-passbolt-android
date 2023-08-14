@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.autofill.enabled
 
 import androidx.annotation.StringRes
-import com.passbolt.mobile.android.feature.autofill.R
 import java.io.Serializable
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,10 +31,10 @@ sealed class DialogMode(
 ) : Serializable {
 
     object Settings : DialogMode(
-        R.string.dialog_autofill_enabled_go_to_app
+        LocalizationR.string.dialog_autofill_enabled_go_to_app
     )
 
     object Setup : DialogMode(
-        R.string.dialog_autofill_enabled_got_it
+        LocalizationR.string.dialog_autofill_enabled_got_it
     )
 }

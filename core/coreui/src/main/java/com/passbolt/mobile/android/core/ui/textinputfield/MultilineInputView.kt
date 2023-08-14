@@ -4,13 +4,14 @@ import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.Gravity
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
-import com.passbolt.mobile.android.common.px
+import com.passbolt.mobile.android.core.extension.px
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.ui.R
 import com.skydoves.balloon.ArrowOrientation
 import com.skydoves.balloon.createBalloon
 import com.skydoves.balloon.showAlignLeft
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -67,7 +68,7 @@ class MultilineInputView @JvmOverloads constructor(
     private fun showIconTooltip() {
         binding.icon.showAlignLeft(createBalloon(context) {
             setArrowOrientation(ArrowOrientation.END)
-            setTextResource(R.string.password_description_encrypted)
+            setTextResource(LocalizationR.string.password_description_encrypted)
             paddingBottom = TOOLTIP_PADDING
             paddingLeft = TOOLTIP_PADDING
             paddingTop = TOOLTIP_PADDING

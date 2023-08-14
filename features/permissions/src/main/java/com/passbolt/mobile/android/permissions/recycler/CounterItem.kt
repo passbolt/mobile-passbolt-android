@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.permissions.recycler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.passbolt.mobile.android.permissions.R
-import com.passbolt.mobile.android.permissions.databinding.ItemCounterBinding
+import com.passbolt.mobile.android.feature.permissions.R
+import com.passbolt.mobile.android.feature.permissions.databinding.ItemCounterBinding
 
 /**
  * Passbolt - Open source password manager for teams

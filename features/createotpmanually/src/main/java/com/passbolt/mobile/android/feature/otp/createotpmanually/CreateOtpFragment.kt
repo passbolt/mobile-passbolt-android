@@ -30,17 +30,16 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Error
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.createotpmanually.R
 import com.passbolt.mobile.android.feature.createotpmanually.databinding.FragmentCreateOtpBinding
 import com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings.CreateOtpAdvancedSettingsFragment
 import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment
@@ -50,6 +49,8 @@ import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class CreateOtpFragment :
     BindingScopedAuthenticatedFragment<FragmentCreateOtpBinding, CreateOtpContract.View>(
@@ -86,16 +87,16 @@ class CreateOtpFragment :
 
     override fun setupEditUi() {
         with(binding) {
-            toolbar.toolbarTitle = getString(R.string.otp_edit_title)
-            mainButton.text = getString(R.string.save)
+            toolbar.toolbarTitle = getString(LocalizationR.string.otp_edit_title)
+            mainButton.text = getString(LocalizationR.string.save)
             linkToButton.gone()
         }
     }
 
     override fun setupCreateUi() {
         with(binding) {
-            toolbar.toolbarTitle = getString(R.string.otp_create_totp_title)
-            mainButton.text = getString(R.string.otp_create_totp_create_standalone)
+            toolbar.toolbarTitle = getString(LocalizationR.string.otp_create_totp_title)
+            mainButton.text = getString(LocalizationR.string.otp_create_totp_create_standalone)
             linkToButton.visible()
         }
     }
@@ -137,7 +138,10 @@ class CreateOtpFragment :
     }
 
     override fun showError(message: String) {
-        showSnackbar(getString(R.string.common_failure_format, message), backgroundColor = R.color.red)
+        showSnackbar(
+            getString(LocalizationR.string.common_failure_format, message),
+            backgroundColor = CoreUiR.color.red
+        )
     }
 
     override fun navigateToCreateOtpAdvancedSettings(advancedSettingsModel: OtpAdvancedSettingsModel) {
@@ -154,19 +158,19 @@ class CreateOtpFragment :
 
     override fun showLabelValidationError(maxLength: Int) {
         binding.totpLabelInput.setState(
-            Error(getString(R.string.validation_required_with_max_length, maxLength))
+            Error(getString(LocalizationR.string.validation_required_with_max_length, maxLength))
         )
     }
 
     override fun showSecretValidationError(maxLength: Int) {
         binding.totpSecretInput.setState(
-            Error(getString(R.string.validation_required_with_max_length, maxLength))
+            Error(getString(LocalizationR.string.validation_required_with_max_length, maxLength))
         )
     }
 
     override fun showIssuerValidationError(maxLength: Int) {
         binding.totpIssuerInput.setState(
-            Error(getString(R.string.validation_required_with_max_length, maxLength))
+            Error(getString(LocalizationR.string.validation_required_with_max_length, maxLength))
         )
     }
 
@@ -180,15 +184,15 @@ class CreateOtpFragment :
 
     override fun showGenericError() {
         showSnackbar(
-            R.string.common_failure,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showEncryptionError(message: String) {
         showSnackbar(
-            R.string.common_encryption_failure,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_encryption_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -238,15 +242,15 @@ class CreateOtpFragment :
 
     override fun showDecryptionError() {
         showSnackbar(
-            messageResId = R.string.common_decryption_failure,
-            backgroundColor = R.color.red
+            messageResId = LocalizationR.string.common_decryption_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showFetchError() {
         showSnackbar(
-            messageResId = R.string.common_fetch_failure,
-            backgroundColor = R.color.red
+            messageResId = LocalizationR.string.common_fetch_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 

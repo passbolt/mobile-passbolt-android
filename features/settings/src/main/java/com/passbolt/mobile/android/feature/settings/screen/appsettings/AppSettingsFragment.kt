@@ -37,18 +37,19 @@ import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.dialogs.configureFingerprintFirstDialog
 import com.passbolt.mobile.android.common.dialogs.disableFingerprintConfirmationDialog
 import com.passbolt.mobile.android.common.dialogs.keyChangesDetectedAlertDialog
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.authentication.auth.AuthBiometricCallback
-import com.passbolt.mobile.android.feature.settings.R
 import com.passbolt.mobile.android.feature.settings.databinding.FragmentAppSettingsBinding
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import org.koin.android.ext.android.inject
 import java.util.concurrent.Executor
 import javax.crypto.Cipher
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class AppSettingsFragment :
     BindingScopedFragment<FragmentAppSettingsBinding>(FragmentAppSettingsBinding::inflate),
@@ -85,9 +86,9 @@ class AppSettingsFragment :
         )
 
         val promptInfo = biometricPromptBuilder
-            .setTitle(getString(R.string.settings_turn_on_biometric_title))
-            .setSubtitle(getString(R.string.settings_turn_on_biometric_subtitle))
-            .setNegativeButtonText(getString(R.string.cancel))
+            .setTitle(getString(LocalizationR.string.settings_turn_on_biometric_title))
+            .setSubtitle(getString(LocalizationR.string.settings_turn_on_biometric_subtitle))
+            .setNegativeButtonText(getString(LocalizationR.string.cancel))
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()
         biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingerprintEncryptionCipher))
@@ -137,16 +138,16 @@ class AppSettingsFragment :
 
     override fun showAuthenticationError(@StringRes errorMessage: Int) {
         showSnackbar(
-            R.string.common_failure,
-            backgroundColor = R.color.red,
+            LocalizationR.string.common_failure,
+            backgroundColor = CoreUiR.color.red,
             length = Snackbar.LENGTH_LONG
         )
     }
 
     override fun showBiometryError(message: String?) {
         showSnackbar(
-            R.string.settings_app_settings_biometry_error,
-            backgroundColor = R.color.red,
+            LocalizationR.string.settings_app_settings_biometry_error,
+            backgroundColor = CoreUiR.color.red,
             length = Snackbar.LENGTH_LONG,
             messageArgs = if (message != null) arrayOf(message) else emptyArray()
         )

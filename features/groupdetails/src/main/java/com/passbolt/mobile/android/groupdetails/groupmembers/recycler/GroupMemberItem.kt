@@ -9,10 +9,11 @@ import coil.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
-import com.passbolt.mobile.android.common.extension.asBinding
-import com.passbolt.mobile.android.groupdetails.R
-import com.passbolt.mobile.android.groupdetails.databinding.ItemGroupMemberBinding
+import com.passbolt.mobile.android.core.extension.asBinding
+import com.passbolt.mobile.android.feature.groupdetails.R
+import com.passbolt.mobile.android.feature.groupdetails.databinding.ItemGroupMemberBinding
 import com.passbolt.mobile.android.ui.UserModel
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -46,9 +47,9 @@ class GroupMemberItem(
     override fun bindView(binding: ItemGroupMemberBinding, payloads: List<Any>) {
         with(binding) {
             icon.load(model.profile.avatarUrl) {
-                error(R.drawable.ic_user_avatar)
+                error(CoreUiR.drawable.ic_user_avatar)
                 transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_user_avatar)
+                placeholder(CoreUiR.drawable.ic_user_avatar)
             }
             name.text = String.format("%s %s", model.profile.firstName, model.profile.lastName)
             userName.apply {

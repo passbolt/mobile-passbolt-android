@@ -4,15 +4,15 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.common.dialogs.rootWarningAlertDialog
+import com.passbolt.mobile.android.core.extension.gone
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.core.security.rootdetection.rootWarningAlertDialog
-import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBinding
 import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -71,10 +71,10 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     }
 
     override fun showAccountCreationInfoDialog() {
-        AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme)
-            .setTitle(R.string.welcome_create_account_dialog_title)
-            .setMessage(R.string.welcome_create_account_dialog_message)
-            .setPositiveButton(R.string.got_it) { _, _ -> }
+        AlertDialog.Builder(requireContext(), com.passbolt.mobile.android.core.ui.R.style.AlertDialogTheme)
+            .setTitle(LocalizationR.string.welcome_create_account_dialog_title)
+            .setMessage(LocalizationR.string.welcome_create_account_dialog_message)
+            .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
             .show()
     }
 

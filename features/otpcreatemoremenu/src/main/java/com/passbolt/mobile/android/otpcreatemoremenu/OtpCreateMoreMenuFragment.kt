@@ -29,8 +29,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismiss
-import com.passbolt.mobile.android.otpcreatemoremenu.databinding.BottomsheetCreateOtpMoreMenuBinding
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClickAndDismiss
+import com.passbolt.mobile.android.feature.otpcreatemoremenu.databinding.BottomsheetCreateOtpMoreMenuBinding
 
 class OtpCreateMoreMenuFragment : BottomSheetDialogFragment() {
 

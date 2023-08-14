@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.common.extension
+package com.passbolt.mobile.android.core.extension
 
 import android.view.View
 import androidx.fragment.app.DialogFragment

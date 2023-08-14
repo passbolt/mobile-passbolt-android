@@ -5,8 +5,8 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.view.View
 import androidx.annotation.ArrayRes
-import com.passbolt.mobile.android.coreautofill.R
 import java.util.Locale
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class AutofillHintsFactory(
     private val resources: Resources,
@@ -14,9 +14,9 @@ class AutofillHintsFactory(
 ) {
 
     fun getHintValues(field: AutofillField) = when (field) {
-        AutofillField.USERNAME -> getLocalizedOrEnglishValues(R.array.username_hint_values) +
+        AutofillField.USERNAME -> getLocalizedOrEnglishValues(LocalizationR.array.username_hint_values) +
                 View.AUTOFILL_HINT_USERNAME
-        AutofillField.PASSWORD -> getLocalizedOrEnglishValues(R.array.password_hint_values) +
+        AutofillField.PASSWORD -> getLocalizedOrEnglishValues(LocalizationR.array.password_hint_values) +
                 View.AUTOFILL_HINT_PASSWORD
     }
 

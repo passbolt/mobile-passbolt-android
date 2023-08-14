@@ -1,7 +1,7 @@
 plugins {
     id "com.android.library"
     id "kotlin-android"
-    id ("kotlinx-serialization")
+    id("kotlinx-serialization")
 }
 
 apply plugin: "androidx.navigation.safeargs"
@@ -26,6 +26,7 @@ dependencies {
     implementation project(':logger')
     implementation project(':localization')
     implementation project(':helpmenu')
+    implementation project(':logs')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
@@ -48,6 +49,7 @@ dependencies {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.setup"
     buildFeatures {
         viewBinding true
     }

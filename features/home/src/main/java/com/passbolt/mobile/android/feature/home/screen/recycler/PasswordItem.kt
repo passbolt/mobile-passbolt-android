@@ -11,12 +11,14 @@ import coil.load
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
-import com.passbolt.mobile.android.common.extension.DebounceClickEventHook
-import com.passbolt.mobile.android.common.extension.asBinding
+import com.passbolt.mobile.android.core.extension.DebounceClickEventHook
+import com.passbolt.mobile.android.core.extension.asBinding
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.ItemPasswordBinding
 import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -73,11 +75,11 @@ class PasswordItem(
     }
 
     private fun setupUsername(binding: ItemPasswordBinding) = with(binding) {
-        val fontFamily = ResourcesCompat.getFont(binding.root.context, R.font.inter)
+        val fontFamily = ResourcesCompat.getFont(binding.root.context, CoreUiR.font.inter)
 
         if (resourceModel.username.isNullOrBlank()) {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
-            subtitle.text = binding.root.context.getString(R.string.no_username)
+            subtitle.text = binding.root.context.getString(LocalizationR.string.no_username)
         } else {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
             subtitle.text = resourceModel.username

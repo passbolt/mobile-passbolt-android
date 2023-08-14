@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.scenarios.setupautofill
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -25,6 +24,7 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.BeforeTest
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -78,9 +78,9 @@ class SetupAutofillConfiguredTest : KoinTest {
     fun setup() {
         onView(withId(R.id.connectToAccountButton)).perform(click())
         onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
-        onView(withId(R.id.button)).perform(click())
-        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
-        onView(withId(R.id.authButton)).perform(scrollTo(), click())
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
     }
 
     @Test
@@ -90,6 +90,6 @@ class SetupAutofillConfiguredTest : KoinTest {
         onView(withId(R.id.maybeLaterButton)).perform((click()))
         //    Then      I do not see the page explaining the autofill configuration
         //    And       I see the home page
-        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
     }
 }

@@ -24,7 +24,7 @@
 package com.passbolt.mobile.android.resourcepicker.model
 
 import androidx.annotation.StringRes
-import com.passbolt.mobile.android.resourcepicker.R
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 sealed class ConfirmationModel(
     @StringRes val titleResId: Int,
@@ -33,14 +33,14 @@ sealed class ConfirmationModel(
 ) {
 
     class LinkTotpModel : ConfirmationModel(
-        titleResId = R.string.are_you_sure,
-        messageResId = R.string.resource_picker_link_to_information,
-        positiveButtonResId = R.string.resource_picker_add_totp
+        titleResId = LocalizationR.string.are_you_sure,
+        messageResId = LocalizationR.string.resource_picker_link_to_information,
+        positiveButtonResId = LocalizationR.string.resource_picker_add_totp
     )
 
     class ReplaceTotpModel : ConfirmationModel(
-        titleResId = R.string.resource_picker_replace_totp_title,
-        messageResId = R.string.resource_picker_link_to_warning,
-        positiveButtonResId = R.string.resource_picker_replace_totp
+        titleResId = LocalizationR.string.resource_picker_replace_totp_title,
+        messageResId = LocalizationR.string.resource_picker_link_to_warning,
+        positiveButtonResId = LocalizationR.string.resource_picker_replace_totp
     )
 }

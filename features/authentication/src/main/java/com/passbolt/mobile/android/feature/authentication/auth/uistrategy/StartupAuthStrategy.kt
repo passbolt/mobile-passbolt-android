@@ -4,8 +4,8 @@ import android.app.Activity
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class StartupAuthStrategy(
     override var authFragment: AuthFragment?,
@@ -13,7 +13,7 @@ class StartupAuthStrategy(
 ) : AuthStrategy {
 
     override fun title() =
-        activeAuthFragment.getString(R.string.auth_sign_in)
+        activeAuthFragment.getString(LocalizationR.string.auth_sign_in)
 
     override fun navigateBack() {
         activeAuthFragment.findNavController().popBackStack()

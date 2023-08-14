@@ -13,16 +13,17 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
-import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.databinding.DialogScanYubikeyBinding
 import com.yubico.yubikit.android.ui.OtpActivity
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -75,7 +76,7 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.FullscreenDialogTheme)
+        setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -117,7 +118,7 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     override fun showSessionExpired() {
-        Toast.makeText(requireContext(), R.string.session_expired, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), LocalizationR.string.session_expired, Toast.LENGTH_SHORT).show()
     }
 
     override fun showChangeProviderButton(bundledHasTotpProvider: Boolean) {
@@ -139,14 +140,14 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     override fun showScanOtpCancelled() {
-        Snackbar.make(requireView(), R.string.dialog_mfa_scan_cancelled, Snackbar.LENGTH_SHORT)
+        Snackbar.make(requireView(), LocalizationR.string.dialog_mfa_scan_cancelled, Snackbar.LENGTH_SHORT)
             .show()
     }
 
     override fun showEmptyScannedOtp() {
-        Snackbar.make(requireView(), R.string.dialog_mfa_scan_empty_otp, Snackbar.LENGTH_SHORT)
+        Snackbar.make(requireView(), LocalizationR.string.dialog_mfa_scan_empty_otp, Snackbar.LENGTH_SHORT)
             .apply {
-                view.setBackgroundColor(context.getColor(R.color.red))
+                view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
             }
     }
@@ -183,9 +184,9 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     override fun showError() {
-        Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_LONG)
+        Snackbar.make(binding.root, LocalizationR.string.unknown_error, Snackbar.LENGTH_LONG)
             .apply {
-                view.setBackgroundColor(context.getColor(R.color.red))
+                view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
             }
     }

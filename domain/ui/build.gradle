@@ -7,4 +7,9 @@ plugins {
 dependencies {
     implementation project(':common')
     implementation project(':coreui')
+    implementation project(':localization')
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.domain.ui"
 }

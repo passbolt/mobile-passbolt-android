@@ -9,9 +9,6 @@ import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityCommunicator
 import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider
 import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition
@@ -19,6 +16,9 @@ import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOper
 import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.InBoundsBottomAnchor
 import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.InBoundsTopAnchor
 import com.passbolt.mobile.android.core.autofill.accessibility.AccessibilityOperationsProvider.OverlayPosition.OutBoundsHide
+import com.passbolt.mobile.android.core.extension.gone
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AutofillMode

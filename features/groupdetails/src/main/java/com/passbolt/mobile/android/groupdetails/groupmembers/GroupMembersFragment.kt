@@ -12,7 +12,7 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.groupdetails.databinding.FragmentGroupMembersBinding
+import com.passbolt.mobile.android.feature.groupdetails.databinding.FragmentGroupMembersBinding
 import com.passbolt.mobile.android.groupdetails.groupmembers.recycler.GroupMemberItem
 import com.passbolt.mobile.android.ui.UserModel
 import org.koin.android.ext.android.inject

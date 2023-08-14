@@ -5,7 +5,6 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.passbolt.mobile.android.core.ui.recyclerview.DrawableListDivider
-import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.home.switchaccount.recycler.SwitchAccountUiItemsMapper
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 import org.koin.android.ext.koin.androidContext
@@ -53,7 +52,7 @@ fun Module.switchAccountModule() {
         }
         scoped {
             DrawableListDivider(
-                ContextCompat.getDrawable(androidContext(), R.drawable.grey_divider)
+                ContextCompat.getDrawable(androidContext(), com.passbolt.mobile.android.core.ui.R.drawable.grey_divider)
             )
         }
     }

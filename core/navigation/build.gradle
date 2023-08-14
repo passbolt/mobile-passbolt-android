@@ -11,12 +11,13 @@ quadrantConfig {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.navigation"
     buildFeatures {
         viewBinding true
     }
 }
 
-dependencies{
+dependencies {
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi
 }

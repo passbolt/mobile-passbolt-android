@@ -9,13 +9,14 @@ import coil.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
-import com.passbolt.mobile.android.common.extension.asBinding
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.visible
-import com.passbolt.mobile.android.permissions.R
-import com.passbolt.mobile.android.permissions.databinding.ItemPermissionBinding
+import com.passbolt.mobile.android.core.extension.asBinding
+import com.passbolt.mobile.android.core.extension.gone
+import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.feature.permissions.R
+import com.passbolt.mobile.android.feature.permissions.databinding.ItemPermissionBinding
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -51,15 +52,15 @@ class PermissionItem(
             permissionValue.text = ResourcePermission.getPermissionTextValue(binding.root.context, model.permission)
             when (model) {
                 is PermissionModelUi.GroupPermissionModel -> {
-                    icon.load(R.drawable.ic_filled_group_with_bg)
+                    icon.load(CoreUiR.drawable.ic_filled_group_with_bg)
                     name.text = model.group.groupName
                     userName.gone()
                 }
                 is PermissionModelUi.UserPermissionModel -> {
                     icon.load(model.user.avatarUrl) {
-                        error(R.drawable.ic_user_avatar)
+                        error(CoreUiR.drawable.ic_user_avatar)
                         transformations(CircleCropTransformation())
-                        placeholder(R.drawable.ic_user_avatar)
+                        placeholder(CoreUiR.drawable.ic_user_avatar)
                     }
                     name.text = String.format("%s %s", model.user.firstName, model.user.lastName)
                     userName.apply {

@@ -34,3 +34,7 @@ dependencies {
     implementation libs.networking.retrofitGsonConverter
     implementation libs.kotlin.serializationJson
 }
+
+android {
+    namespace = "com.passbolt.mobile.android.domain.dto"
+}

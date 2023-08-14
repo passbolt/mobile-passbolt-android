@@ -4,9 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import coil.load
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.passbolt.mobile.android.permissions.R
-import com.passbolt.mobile.android.permissions.databinding.ItemPermissionRecipientGroupBinding
+import com.passbolt.mobile.android.feature.permissions.R
+import com.passbolt.mobile.android.feature.permissions.databinding.ItemPermissionRecipientGroupBinding
 import com.passbolt.mobile.android.ui.GroupModel
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,7 +40,7 @@ class GroupRecipientItem(
 
     override fun bindView(binding: ItemPermissionRecipientGroupBinding, payloads: List<Any>) {
         with(binding) {
-            icon.load(R.drawable.ic_filled_group_with_bg)
+            icon.load(CoreUiR.drawable.ic_filled_group_with_bg)
             name.text = model.groupName
             radio.isChecked = root.isSelected
         }

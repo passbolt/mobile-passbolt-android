@@ -9,11 +9,12 @@ import coil.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
-import com.passbolt.mobile.android.common.extension.asBinding
-import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.core.extension.asBinding
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.ItemSwitchAccountHeaderBinding
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -50,9 +51,9 @@ class SwitchAccountHeaderItem(
             title.text = model.label
             email.text = model.email
             icon.load(model.avatarUrl) {
-                error(R.drawable.ic_avatar_placeholder)
+                error(CoreUiR.drawable.ic_avatar_placeholder)
                 transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_avatar_placeholder)
+                placeholder(CoreUiR.drawable.ic_avatar_placeholder)
             }
         }
     }

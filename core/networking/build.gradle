@@ -8,6 +8,7 @@ dependencies {
     implementation project(':storage')
     implementation project(':dto')
     implementation project(':architecture')
+    implementation project(':localization')
 
     api libs.networking.retrofit
     api libs.networking.okHttp
@@ -17,4 +18,8 @@ dependencies {
     implementation libs.di.koin
     implementation libs.gson
     implementation libs.coil.core
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.core.networking"
 }

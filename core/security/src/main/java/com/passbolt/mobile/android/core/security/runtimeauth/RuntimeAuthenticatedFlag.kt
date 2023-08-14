@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.core.security.runtimeauth
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.security.R
 import timber.log.Timber
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,7 +40,7 @@ class RuntimeAuthenticatedFlag(
             with(activity) {
                 val message = "Started ${this.javaClass.name} without authenticating first"
                 Timber.e(NoRuntimeAuthException(message))
-                Toast.makeText(this, this.getString(R.string.authentication_required), Toast.LENGTH_SHORT)
+                Toast.makeText(this, this.getString(LocalizationR.string.authentication_required), Toast.LENGTH_SHORT)
                     .show()
                 startActivity(ActivityIntents.start(this))
                 finish()

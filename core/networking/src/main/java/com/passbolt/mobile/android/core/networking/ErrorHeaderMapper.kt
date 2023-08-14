@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.dto.response.BaseResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import timber.log.Timber
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -46,7 +47,7 @@ class ErrorHeaderMapper(
         }
 
     fun getMessage(baseResponse: BaseResponse<*>? = null) =
-        baseResponse?.header?.message ?: context.getString(R.string.common_failure)
+        baseResponse?.header?.message ?: context.getString(LocalizationR.string.common_failure)
 
     fun getValidationFieldsError(responseBody: ResponseBody?): List<String>? =
         responseBody?.let {

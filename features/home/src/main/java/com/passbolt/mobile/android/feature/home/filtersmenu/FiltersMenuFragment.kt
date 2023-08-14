@@ -7,11 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.selectableBackgroundResourceId
-import com.passbolt.mobile.android.feature.home.R
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.feature.home.databinding.FiletrsBottomsheetBinding
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import org.koin.android.scope.AndroidScopeComponent
@@ -178,7 +177,7 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
     }
 
     private fun setBackgroundPrimaryColor(view: View) {
-        view.setBackgroundColor(requireContext().getColor(R.color.primary))
+        view.setBackgroundColor(requireContext().getColor(com.passbolt.mobile.android.core.ui.R.color.primary))
     }
 
     override fun showFoldersMenuItem() {

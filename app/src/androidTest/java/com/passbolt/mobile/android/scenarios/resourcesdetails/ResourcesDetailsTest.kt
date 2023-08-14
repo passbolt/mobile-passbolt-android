@@ -26,13 +26,14 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.not
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -86,11 +87,11 @@ class ResourcesDetailsTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.input)).perform(
+        onView(withId(CoreUiR.id.input)).perform(
             typeText(managedAccountIntentCreator.getUsername()),
             pressKey(KeyEvent.KEYCODE_ENTER)
         )
-        onView(withId(R.id.authButton)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
     }
 
     @Test
@@ -99,45 +100,45 @@ class ResourcesDetailsTest : KoinTest {
         //    And       the Passbolt application is already opened
         //    And       I completed the login step
         //    And       I am on the homepage
-        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
-        onView(withId(R.id.searchEditText)).perform(click(), typeText("cake"))
+        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click(), typeText("cake"))
         //    When      I click on a resource
         onView(withText("cakephp")).perform(click())
         //    Then      I see the resource display screen
         //    And       I see an arrow on the top left corner to go back to the previous page
-        onView(withId(R.id.backArrow))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.backArrow))
             .check(matches(isDisplayed()))
-            .check(matches(hasDrawable(id = R.drawable.ic_arrow_left, tint = R.color.icon_tint)))
+            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_arrow_left, tint = CoreUiR.color.icon_tint)))
         //    And       I see a “3 dots” icon on the top right corner
-        onView(withId(R.id.moreIcon))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.moreIcon))
             .check(matches(isDisplayed()))
-            .check(matches(hasDrawable(id = R.drawable.ic_more, tint = R.color.icon_tint)))
+            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_more, tint = CoreUiR.color.icon_tint)))
         //    And       I see the resource favicon or a default icon
         onView(withId(R.id.icon)).check(matches(isDisplayed()))
         //    And       I see the resource name
-        onView(allOf(withId(R.id.name), withText("cakephp"))).check(matches(isDisplayed()))
+        onView(allOf(withId(com.passbolt.mobile.android.feature.otp.R.id.name), withText("cakephp"))).check(matches(isDisplayed()))
         //    And       I see the “Website URL” list item with title, value and a copy icon
-        onView(withText(R.string.resource_details_url_header)).check(matches(isDisplayed()))
-        onView(withId(R.id.urlValue)).check(matches(isDisplayed()))
-        onView(withId(R.id.urlIcon))
+        onView(withText(LocalizationR.string.resource_details_url_header)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.urlValue)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.urlIcon))
             .check(matches(isDisplayed()))
-            .check(matches(hasDrawable(id = R.drawable.ic_copy, tint = R.color.icon_tint)))
+            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_copy, tint = CoreUiR.color.icon_tint)))
         //    And       I see the “Username” list item with title, value and a copy icon
-        onView(withText(R.string.resource_details_username_header)).check(matches(isDisplayed()))
-        onView(withId(R.id.usernameValue)).check(matches(isDisplayed()))
-        onView(withId(R.id.usernameIcon))
+        onView(withText(LocalizationR.string.resource_details_username_header)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.usernameValue)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.usernameIcon))
             .check(matches(isDisplayed()))
-            .check(matches(hasDrawable(id = R.drawable.ic_copy, tint = R.color.icon_tint)))
+            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_copy, tint = CoreUiR.color.icon_tint)))
         //    And       I see the “Password” list item with title, hidden value and a show icon
-        onView(withText(R.string.resource_details_password_header)).check(matches(isDisplayed()))
-        onView(withId(R.id.passwordValue)).check(matches(isDisplayed()))
-        onView(withId(R.id.passwordIcon))
+        onView(withText(LocalizationR.string.resource_details_password_header)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.passwordValue)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.passwordIcon))
             .check(matches(isDisplayed()))
-            .check(matches(hasDrawable(id = R.drawable.ic_eye_visible, tint = R.color.icon_tint)))
+            .check(matches(hasDrawable(id = CoreUiR.drawable.ic_eye_visible, tint = CoreUiR.color.icon_tint)))
         //    And       I see the “Description” list item with title, hidden value and a show icon
-        onView(withText(R.string.resource_details_description_header)).check(matches(isDisplayed()))
-        onView(withId(R.id.descriptionValue)).check(matches(isDisplayed()))
-        onView(withText(R.string.resource_details_see_description)).check(matches(isDisplayed()))
+        onView(withText(LocalizationR.string.resource_details_description_header)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.descriptionValue)).check(matches(isDisplayed()))
+        onView(withText(LocalizationR.string.resource_details_see_description)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -147,10 +148,10 @@ class ResourcesDetailsTest : KoinTest {
         //    And       the Passbolt application is already opened
         //    And       I completed the login step
         //    And       I am on a resource display screen
-        onView(withId(R.id.searchEditText)).perform(click(), typeText("TestResourceDesc"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click(), typeText("TestResourceDesc"))
         onView(withText("TestResourceDescription")).perform(click())
         //    When      I click on the show icon in the “Description” item list
-        onView(withText(R.string.resource_details_see_description)).perform(click())
+        onView(withText(LocalizationR.string.resource_details_see_description)).perform(click())
         //    Then      I see the description
         onView(withText("Luxembourg")).check(matches(isDisplayed()))
     }
@@ -158,30 +159,30 @@ class ResourcesDetailsTest : KoinTest {
     @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanSeeTheRestOfALongDescriptionThatIsHigherThanTheScreen() {
         //    Given     that I am a mobile user with the application installed
-        onView(withId(R.id.searchEditText)).perform(click(), typeText("long d"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click(), typeText("long d"))
         //    When      I click on a resource
         onView(withText("long desc")).perform(click())
-        onView(withText(R.string.resource_details_see_description)).perform(click())
+        onView(withText(LocalizationR.string.resource_details_see_description)).perform(click())
         //    And       the description is unhidden
         //    And       the description height is taller than the height of the page
         //    When      I scroll the page
-        onView(withId(R.id.root)).perform(swipeUp())
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.root)).perform(swipeUp())
         //    Then      I see the rest of the description
     }
 
     @Test
     fun asALoggedInMobileUserOnTheResourceDisplayICanTriggerTheActionMenuAndCopyCredentialsToTheClipboard() {
         //    Given     that I am a mobile user with the application installed
-        onView(withId(R.id.searchEditText)).perform(click(), typeText("face"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click(), typeText("face"))
         //    When      I click on a resource
         onView(withText("facebook")).perform(click())
         //    When      I click on the “3 dots” icon
-        onView(withId(R.id.moreIcon)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.moreIcon)).perform(click())
         //    Then      I see the action menu drawer
         //    And       I see the name of the resource
         onView(withId(R.id.title)).check(matches(isDisplayed()))
         //    And       I see a cross button to go back to the resource display
-        onView(withId(R.id.close)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.close)).check(matches(isDisplayed()))
         //    And       I see a { “Launch website”, "Copy url", "Copy password", "Copy username", "Copy description",
         //              "Add to favourite", "Share password", "Edit password", "Delete password" } item
         ResourcesDetailsItemModel.values().forEach { resourceItem ->

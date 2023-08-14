@@ -5,15 +5,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismiss
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClickAndDismiss
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedBottomSheetFragment
-import com.passbolt.mobile.android.resourcemoremenu.databinding.ViewPasswordBottomsheetBinding
+import com.passbolt.mobile.android.feature.resourcemoremenu.databinding.ViewPasswordBottomsheetBinding
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -112,9 +114,9 @@ class ResourceMoreMenuFragment :
     override fun showAddToFavouritesButton() {
         with(binding.favourite) {
             visible()
-            text = getString(R.string.more_add_to_favourite)
+            text = getString(LocalizationR.string.more_add_to_favourite)
             setCompoundDrawablesRelativeWithIntrinsicBounds(
-                ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_to_favourite),
+                ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_add_to_favourite),
                 null,
                 null,
                 null
@@ -125,9 +127,9 @@ class ResourceMoreMenuFragment :
     override fun showRemoveFromFavouritesButton() {
         with(binding.favourite) {
             visible()
-            text = getString(R.string.more_remove_from_favourite)
+            text = getString(LocalizationR.string.more_remove_from_favourite)
             setCompoundDrawablesRelativeWithIntrinsicBounds(
-                ContextCompat.getDrawable(requireContext(), R.drawable.ic_remove_favourite),
+                ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_remove_favourite),
                 null,
                 null,
                 null
@@ -177,8 +179,8 @@ class ResourceMoreMenuFragment :
 
     override fun showRefreshFailure() {
         showSnackbar(
-            messageResId = R.string.common_data_refresh_error,
-            backgroundColor = R.color.red
+            messageResId = LocalizationR.string.common_data_refresh_error,
+            backgroundColor = CoreUiR.color.red
         )
     }
 

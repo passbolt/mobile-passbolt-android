@@ -3,11 +3,11 @@ package com.passbolt.mobile.android.feature.resourcedetails.update
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import com.passbolt.mobile.android.common.px
+import com.passbolt.mobile.android.core.extension.px
 import com.passbolt.mobile.android.core.ui.textinputfield.MultilineInputView
 import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
 import com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
-import com.passbolt.mobile.android.feature.resources.R
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -44,8 +44,8 @@ class ViewProvider {
         context: Context
     ): Pair<PasswordGenerateInputView, ViewGroup.LayoutParams> =
         Pair(PasswordGenerateInputView(context).apply {
-            this.title = context.resources.getString(R.string.resource_update_password)
-            this.hint = context.resources.getString(R.string.resource_update_password_hint)
+            this.title = context.resources.getString(LocalizationR.string.resource_update_password)
+            this.hint = context.resources.getString(LocalizationR.string.resource_update_password_hint)
         }, getDefaultParams())
 
     fun getDescriptionInput(
@@ -54,7 +54,7 @@ class ViewProvider {
     ): Pair<MultilineInputView, ViewGroup.LayoutParams> =
         Pair(MultilineInputView(context).apply {
             updateLockIconVisibility(isSecret)
-            this.title = context.resources.getString(R.string.resource_update_description)
+            this.title = context.resources.getString(LocalizationR.string.resource_update_description)
             setDefaultHint(this.title)
         }, getDefaultParams())
 

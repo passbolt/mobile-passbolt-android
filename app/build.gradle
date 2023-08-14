@@ -16,6 +16,7 @@ def getVersionCode = { ->
 }
 
 android {
+    namespace = "com.passbolt.mobile.android"
     defaultConfig {
         applicationId "com.passbolt.mobile.android"
         versionCode getVersionCode()

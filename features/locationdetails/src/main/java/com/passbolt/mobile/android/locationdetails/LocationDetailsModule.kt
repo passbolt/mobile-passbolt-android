@@ -8,6 +8,7 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,7 +39,7 @@ fun Module.locationDetailsModule() {
     scope<LocationDetailsFragment> {
         scopedOf(::LocationDetailsPresenter) bind LocationDetailsContract.Presenter::class
         scoped(named(ROOT_FOLDER_NAME)) {
-            androidContext().getString(R.string.folder_root)
+            androidContext().getString(LocalizationR.string.folder_root)
         }
         scoped { ExpandableFolderDatasetCreator(get(named(ROOT_FOLDER_NAME))) }
         scoped { FastItemAdapter<GenericItem>() }

@@ -13,6 +13,7 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsL
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
 import com.passbolt.mobile.android.feature.authentication.databinding.ActivityAuthenticationMainBinding
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -99,10 +100,10 @@ class AuthenticationMainActivity :
             R.id.authFragment,
             AuthFragment.newBundle(authConfig, context, currentAccount),
             NavOptions.Builder()
-                .setEnterAnim(R.anim.slide_in_right)
-                .setExitAnim(R.anim.slide_out_left)
-                .setPopEnterAnim(R.anim.slide_in_left)
-                .setPopExitAnim(R.anim.slide_out_right)
+                .setEnterAnim(CoreUiR.anim.slide_in_right)
+                .setExitAnim(CoreUiR.anim.slide_out_left)
+                .setPopEnterAnim(CoreUiR.anim.slide_in_left)
+                .setPopExitAnim(CoreUiR.anim.slide_out_right)
                 .build()
         )
     }

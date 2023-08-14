@@ -7,7 +7,7 @@ ext {
     projectTargetSdk = 33
 
     versions = [
-        androidGradlePlugin: '7.3.1',
+        androidGradlePlugin: '8.1.0',
         gradleVersionsPlugin: "0.28.0",
         desugarJdkLibs: "1.0.9",
         kotlin: "1.7.22",

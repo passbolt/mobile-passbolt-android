@@ -42,6 +42,7 @@ dependencies {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.tagsdetails"
     buildFeatures {
         viewBinding true
     }

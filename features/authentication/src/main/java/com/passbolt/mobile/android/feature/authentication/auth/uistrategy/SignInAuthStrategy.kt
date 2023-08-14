@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.feature.authentication.auth.uistrategy
 import android.app.Activity
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.auth.AuthFragment
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class SignInAuthStrategy(
     override var authFragment: AuthFragment?,
@@ -12,7 +12,7 @@ class SignInAuthStrategy(
 ) : AuthStrategy {
 
     override fun title() =
-        activeAuthFragment.getString(R.string.auth_enter_passphrase)
+        activeAuthFragment.getString(LocalizationR.string.auth_enter_passphrase)
 
     override fun navigateBack() {
         activeAuthFragment.findNavController().popBackStack()

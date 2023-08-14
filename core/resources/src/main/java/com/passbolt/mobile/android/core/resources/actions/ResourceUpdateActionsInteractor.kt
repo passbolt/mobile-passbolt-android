@@ -94,7 +94,7 @@ class ResourceUpdateActionsInteractor(
                 updatePasswordAndDescriptionResourceInteractor.execute(
                     UpdateResourceInteractor.CommonInput(
                         resourceId = resource.resourceId,
-                        resourceName = resourceName, // validated to be not null
+                        resourceName = resourceName,
                         resourceUsername = resourceUsername,
                         resourceUri = resourceUri,
                         resourceParentFolderId = resourceParentFolderId
