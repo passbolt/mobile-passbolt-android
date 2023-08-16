@@ -9,3 +9,7 @@ dependencies {
     implementation libs.room.runtime
     ksp libs.room.compiler
 }
+
+android {
+    namespace = "com.passbolt.mobile.android.domain.entity"
+}

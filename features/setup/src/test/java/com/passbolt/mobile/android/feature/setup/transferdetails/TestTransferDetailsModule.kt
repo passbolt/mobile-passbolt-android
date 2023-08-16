@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.transferdetails
 
-import org.mockito.kotlin.mock
 import org.koin.dsl.module
+import org.mockito.kotlin.mock
 
 /**
  * Passbolt - Open source password manager for teams

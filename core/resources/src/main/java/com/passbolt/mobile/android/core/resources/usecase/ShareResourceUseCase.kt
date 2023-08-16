@@ -6,8 +6,8 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.request.EncryptedSharedSecret
-import com.passbolt.mobile.android.dto.request.SharePermission
 import com.passbolt.mobile.android.dto.request.ResourceShareRequest
+import com.passbolt.mobile.android.dto.request.SharePermission
 import com.passbolt.mobile.android.passboltapi.share.ShareRepository
 import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 

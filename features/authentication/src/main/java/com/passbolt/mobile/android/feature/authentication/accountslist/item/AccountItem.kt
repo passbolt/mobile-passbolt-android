@@ -10,6 +10,7 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.databinding.ItemAccountBinding
 import com.passbolt.mobile.android.ui.AccountModelUi
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -52,15 +53,15 @@ class AccountItem(
             trashImage.visibility = if (accountModel.isTrashIconVisible) View.VISIBLE else View.GONE
             root.setBackgroundResource(
                 if (accountModel.isFirstItem) {
-                    R.drawable.background_ripple_top_radius
+                    CoreUiR.drawable.background_ripple_top_radius
                 } else {
-                    R.drawable.background_ripple
+                    CoreUiR.drawable.background_ripple
                 }
             )
             icon.load(accountModel.avatar) {
-                error(R.drawable.ic_avatar_placeholder)
+                error(CoreUiR.drawable.ic_avatar_placeholder)
                 transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_avatar_placeholder)
+                placeholder(CoreUiR.drawable.ic_avatar_placeholder)
             }
             currentAccountIcon.isVisible = accountModel.isCurrentUser
         }

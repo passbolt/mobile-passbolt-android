@@ -6,8 +6,8 @@ import androidx.biometric.BiometricPrompt.ERROR_LOCKOUT_PERMANENT
 import androidx.biometric.BiometricPrompt.ERROR_NEGATIVE_BUTTON
 import androidx.biometric.BiometricPrompt.ERROR_TIMEOUT
 import androidx.biometric.BiometricPrompt.ERROR_USER_CANCELED
-import com.passbolt.mobile.android.feature.setup.R
 import javax.crypto.Cipher
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -52,12 +52,18 @@ class SetupBiometricCallback(
 
     private fun handleError(errorCode: Int) {
         when (errorCode) {
-            ERROR_LOCKOUT -> authError.invoke(R.string.fingerprint_biometric_error_blocked)
-            ERROR_LOCKOUT_PERMANENT -> authError.invoke(R.string.fingerprint_biometric_error_too_many_attempts)
+            ERROR_LOCKOUT -> {
+                authError.invoke(LocalizationR.string.fingerprint_biometric_error_blocked)
+            }
+            ERROR_LOCKOUT_PERMANENT -> {
+                authError.invoke(LocalizationR.string.fingerprint_biometric_error_too_many_attempts)
+            }
             ERROR_NEGATIVE_BUTTON, ERROR_USER_CANCELED, ERROR_TIMEOUT -> {
                 // ignoring
             }
-            else -> authError.invoke(R.string.fingerprint_biometric_error_generic)
+            else -> {
+                authError.invoke(LocalizationR.string.fingerprint_biometric_error_generic)
+            }
         }
     }
 }

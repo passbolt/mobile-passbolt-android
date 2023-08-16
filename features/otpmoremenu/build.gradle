@@ -11,6 +11,7 @@ dependencies {
     implementation project(':authentication')
     implementation project(':fulldatarefresh')
     implementation project(':coreui')
+    implementation project(':localization')
 
     implementation libs.androidx.core
     implementation libs.androidx.appcompat
@@ -20,6 +21,7 @@ dependencies {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.otpmoremenu"
     buildFeatures {
         viewBinding true
     }

@@ -20,6 +20,7 @@ dependencies {
     implementation project(':mappers')
     implementation project(':ui')
     implementation project(':idlingresource')
+    implementation project(':localization')
 
     implementation libs.di.koin
     implementation libs.androidx.fragment
@@ -38,6 +39,7 @@ dependencies {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.transferaccounttoanotherdevice"
     buildFeatures {
         viewBinding true
     }

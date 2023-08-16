@@ -4,7 +4,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.listeners.ClickEventHook
-import com.passbolt.mobile.android.common.extension.asBinding
+import com.passbolt.mobile.android.core.extension.asBinding
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.databinding.ItemAccountBinding
 import com.passbolt.mobile.android.ui.AccountModelUi

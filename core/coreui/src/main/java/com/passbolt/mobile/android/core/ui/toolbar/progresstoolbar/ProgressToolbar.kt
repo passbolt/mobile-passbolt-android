@@ -13,9 +13,10 @@ import android.widget.Toolbar
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.updatePadding
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.selectableBackgroundBorderlessResourceId
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -105,7 +106,7 @@ class ProgressToolbar @JvmOverloads constructor(
             setImageResource(iconRes)
             setBackgroundResource(context.selectableBackgroundBorderlessResourceId())
             setDebouncingOnClick { clickListener.invoke() }
-            contentDescription = context.getString(R.string.help_button_description)
+            contentDescription = context.getString(LocalizationR.string.help_button_description)
         }.let {
             rootLayout.addView(
                 it,

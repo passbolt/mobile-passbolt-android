@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator
 
 import android.content.Context
-import com.passbolt.mobile.android.feature.resources.R
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -42,12 +42,12 @@ class FieldNamesMapper(
         const val NAME_FIELD = "name"
 
         private val mapping = mapOf(
-            PASSWORD_FIELD to R.string.resource_update_field_password,
-            SECRET_FIELD to R.string.resource_update_field_password,
-            DESCRIPTION_FIELD to R.string.resource_update_field_description,
-            USERNAME_FIELD to R.string.resource_update_field_username,
-            URI_FIELD to R.string.resource_update_field_uri,
-            NAME_FIELD to R.string.resource_update_field_name
+            PASSWORD_FIELD to LocalizationR.string.resource_update_field_password,
+            SECRET_FIELD to LocalizationR.string.resource_update_field_password,
+            DESCRIPTION_FIELD to LocalizationR.string.resource_update_field_description,
+            USERNAME_FIELD to LocalizationR.string.resource_update_field_username,
+            URI_FIELD to LocalizationR.string.resource_update_field_uri,
+            NAME_FIELD to LocalizationR.string.resource_update_field_name
         )
     }
 }

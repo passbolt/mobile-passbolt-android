@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.feature.settings.screen.accounts
 
 import android.os.Bundle
 import android.view.View
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.feature.settings.databinding.FragmentAccountsSettingsBinding

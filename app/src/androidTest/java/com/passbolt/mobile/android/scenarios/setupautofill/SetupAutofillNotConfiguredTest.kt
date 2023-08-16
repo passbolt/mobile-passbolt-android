@@ -32,6 +32,8 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -85,9 +87,9 @@ class SetupAutofillNotConfiguredTest : KoinTest {
     fun setup() {
         onView(withId(R.id.connectToAccountButton)).perform(click())
         onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
-        onView(withId(R.id.button)).perform(click())
-        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
-        onView(withId(R.id.authButton)).perform(scrollTo(), click())
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         Intents.init()
     }
 
@@ -103,10 +105,10 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         onView(withId(R.id.maybeLaterButton)).perform((click()))
         //    Then      I am on the page explaining the Autofill configuration
         //    And       I see a "Go to settings" primary button
-        onView(withId(R.id.goToSettingsButton)).check(matches(isDisplayed()))
-        onView(withId(R.id.closeButton)).check(matches(isDisplayed()))
-        onView(withId(R.id.stepsView)).check(matches(isDisplayed()))
-        onView(withText(R.string.dialog_encourage_autofill_header)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.goToSettingsButton)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.closeButton)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.stepsView)).check(matches(isDisplayed()))
+        onView(withText(LocalizationR.string.dialog_encourage_autofill_header)).check(matches(isDisplayed()))
         //    And       I see a "Maybe later" button
         onView(withId(R.id.maybeLaterButton)).check(matches(isDisplayed()))
     }
@@ -116,7 +118,7 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         //    Given     I am on the Autofill setup page
         onView(withId(R.id.maybeLaterButton)).perform((click()))
         //    When      I click on the "Go to settings" button
-        onView(withId(R.id.goToSettingsButton)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.goToSettingsButton)).perform(click())
         //    Then      I am redirected to the settings of the page for Autofill or to the Settings where I can enable the autofill
         val expectedIntent: Matcher<Intent> = AllOf.allOf(
             IntentMatchers.hasAction(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE),
@@ -132,6 +134,6 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         //    When      I click on the "Maybe later" button
         onView(withId(R.id.maybeLaterButton)).perform(click())
         //    Then      I am redirected to the home page
-        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
     }
 }

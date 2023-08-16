@@ -5,9 +5,10 @@ import android.view.ViewGroup
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.passbolt.mobile.android.permissions.R
-import com.passbolt.mobile.android.permissions.databinding.ItemUserBinding
+import com.passbolt.mobile.android.feature.permissions.R
+import com.passbolt.mobile.android.feature.permissions.databinding.ItemUserBinding
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -41,9 +42,9 @@ class UserItem(
     override fun bindView(binding: ItemUserBinding, payloads: List<Any>) {
         with(binding) {
             root.load(model.user.avatarUrl) {
-                error(R.drawable.ic_user_avatar)
+                error(CoreUiR.drawable.ic_user_avatar)
                 transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_user_avatar)
+                placeholder(CoreUiR.drawable.ic_user_avatar)
             }
         }
     }

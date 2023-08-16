@@ -9,10 +9,11 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.google.android.material.progressindicator.CircularProgressIndicator
-import com.passbolt.mobile.android.common.OtpFormatter
 import com.passbolt.mobile.android.core.ui.R
+import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class TotpViewController : KoinComponent {
 
@@ -41,7 +42,7 @@ class TotpViewController : KoinComponent {
         }
 
         viewParameters.otpText.text = otpFormatter.format(
-            stateParameters.otpValue ?: viewParameters.otpText.context.getString(R.string.otp_hide_otp)
+            stateParameters.otpValue ?: viewParameters.otpText.context.getString(LocalizationR.string.otp_hide_otp)
         )
         viewParameters.progressIndicator.isVisible = stateParameters.isOtpVisible
 

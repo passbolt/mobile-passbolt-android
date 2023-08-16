@@ -25,7 +25,7 @@ Run verifications:
       ./gradlew --no-daemon --build-cache 
       detekt 
       ktlint 
-      lintDebug 
+      lintRelease 
       unitTest 
       koverMergedHtmlReport 
       licenseeRelease 

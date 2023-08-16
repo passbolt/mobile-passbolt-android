@@ -45,12 +45,12 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
-import com.passbolt.mobile.android.common.px
+import com.passbolt.mobile.android.core.extension.gone
+import com.passbolt.mobile.android.core.extension.px
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
@@ -58,7 +58,6 @@ import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
@@ -70,6 +69,8 @@ import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
 import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 @Suppress("TooManyFunctions")
 class OtpFragment :
@@ -216,11 +217,11 @@ class OtpFragment :
             .data(avatarUrl)
             .transformations(CircleCropTransformation())
             .size(AVATAR_SIZE, AVATAR_SIZE)
-            .placeholder(R.drawable.ic_avatar_placeholder)
+            .placeholder(CoreUiR.drawable.ic_avatar_placeholder)
             .target(
                 onError = {
                     binding.searchTextInput.setSearchEndIconWithListener(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_avatar_placeholder)!!,
+                        ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_avatar_placeholder)!!,
                         presenter::searchAvatarClick
                     )
                 },
@@ -288,12 +289,12 @@ class OtpFragment :
     }
 
     override fun showPleaseWaitForDataRefresh() {
-        Toast.makeText(requireContext(), R.string.home_please_wait_for_refresh, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), LocalizationR.string.home_please_wait_for_refresh, Toast.LENGTH_SHORT).show()
     }
 
     override fun displaySearchClearIcon() {
         binding.searchTextInput.setSearchEndIconWithListener(
-            ContextCompat.getDrawable(requireContext(), R.drawable.ic_close)!!,
+            ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_close)!!,
             presenter::searchClearClick
         )
     }
@@ -319,7 +320,7 @@ class OtpFragment :
     }
 
     override fun showTotpDeleted() {
-        showSnackbar(R.string.otp_deleted)
+        showSnackbar(LocalizationR.string.otp_deleted)
     }
 
     override fun copySecretToClipBoard(label: String, value: String) {
@@ -330,7 +331,7 @@ class OtpFragment :
                 }
             }
         )
-        Toast.makeText(requireContext(), getString(R.string.copied_info, label), Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(LocalizationR.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }
 
     override fun navigateToScanOtpSuccess(totpQr: OtpParseResult.OtpQr.TotpQr) {
@@ -354,11 +355,11 @@ class OtpFragment :
     }
 
     override fun showDecryptionFailure() {
-        showSnackbar(R.string.common_decryption_failure, backgroundColor = R.color.red)
+        showSnackbar(LocalizationR.string.common_decryption_failure, backgroundColor = CoreUiR.color.red)
     }
 
     override fun showFetchFailure() {
-        showSnackbar(R.string.common_fetch_failure, backgroundColor = R.color.red)
+        showSnackbar(LocalizationR.string.common_fetch_failure, backgroundColor = CoreUiR.color.red)
     }
 
     override fun showConfirmDeleteDialog() {
@@ -368,19 +369,19 @@ class OtpFragment :
     }
 
     override fun showResourceDeleted() {
-        showSnackbar(R.string.otp_deleted, backgroundColor = R.color.green)
+        showSnackbar(LocalizationR.string.otp_deleted, backgroundColor = CoreUiR.color.green)
     }
 
     override fun showFailedToDeleteResource() {
-        showSnackbar(R.string.otp_failed_to_delete, backgroundColor = R.color.red)
+        showSnackbar(LocalizationR.string.otp_failed_to_delete, backgroundColor = CoreUiR.color.red)
     }
 
     override fun showNewOtpCreated() {
-        showSnackbar(R.string.otp_new_otp_created, backgroundColor = R.color.green)
+        showSnackbar(LocalizationR.string.otp_new_otp_created, backgroundColor = CoreUiR.color.green)
     }
 
     override fun showOtpUpdate() {
-        showSnackbar(R.string.otp_otp_updated, backgroundColor = R.color.green)
+        showSnackbar(LocalizationR.string.otp_otp_updated, backgroundColor = CoreUiR.color.green)
     }
 
     override fun menuEditOtpManuallyClick() {
@@ -421,8 +422,8 @@ class OtpFragment :
 
     override fun showInvalidQrCodeDataScanned() {
         showSnackbar(
-            R.string.otp_invalid_itp_data_scanned,
-            backgroundColor = R.color.red
+            LocalizationR.string.otp_invalid_itp_data_scanned,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -432,15 +433,15 @@ class OtpFragment :
 
     override fun showEncryptionError(message: String) {
         showSnackbar(
-            R.string.common_encryption_failure,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_encryption_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showError(message: String) {
         showSnackbar(
-            getString(R.string.common_failure_format, message),
-            backgroundColor = R.color.red
+            getString(LocalizationR.string.common_failure_format, message),
+            backgroundColor = CoreUiR.color.red
         )
     }
 

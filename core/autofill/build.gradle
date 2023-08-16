@@ -5,6 +5,12 @@ plugins {
 
 dependencies {
     implementation project(':common')
+    implementation project(':coreui')
+    implementation project(':localization')
 
     implementation libs.di.koin
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.core.autofill"
 }

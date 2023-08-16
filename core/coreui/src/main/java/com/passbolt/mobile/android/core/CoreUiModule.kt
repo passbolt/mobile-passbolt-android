@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.core.ui
 import com.passbolt.mobile.android.core.font.Font
 import com.passbolt.mobile.android.core.font.fontModule
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController
+import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -40,4 +41,5 @@ val coreUiModule = module {
         )
     }
     singleOf(::TotpViewController)
+    singleOf(::OtpFormatter)
 }

@@ -15,16 +15,17 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
-import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.databinding.DialogEnterTotpBinding
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -70,7 +71,7 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.FullscreenDialogTheme)
+        setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -129,17 +130,17 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     }
 
     override fun showError() {
-        Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_SHORT)
+        Snackbar.make(binding.root, LocalizationR.string.unknown_error, Snackbar.LENGTH_SHORT)
             .apply {
-                view.setBackgroundColor(context.getColor(R.color.red))
+                view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
             }
     }
 
     override fun showNetworkError() {
-        Snackbar.make(binding.root, R.string.common_network_failure, Snackbar.LENGTH_SHORT)
+        Snackbar.make(binding.root, LocalizationR.string.common_network_failure, Snackbar.LENGTH_SHORT)
             .apply {
-                view.setBackgroundColor(context.getColor(R.color.red))
+                view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
             }
     }
@@ -158,17 +159,17 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     }
 
     override fun setTotpInputRed() {
-        binding.otpInput.setCustomTextColor(ContextCompat.getColor(binding.root.context, R.color.red))
+        binding.otpInput.setCustomTextColor(ContextCompat.getColor(binding.root.context, CoreUiR.color.red))
     }
 
     override fun setTotpInputBlack() {
-        binding.otpInput.setCustomTextColor(ContextCompat.getColor(binding.root.context, R.color.text_primary))
+        binding.otpInput.setCustomTextColor(ContextCompat.getColor(binding.root.context, CoreUiR.color.text_primary))
     }
 
     override fun showWrongCodeError() {
-        Snackbar.make(binding.root, R.string.dialog_mfa_wrong_code, Snackbar.LENGTH_LONG)
+        Snackbar.make(binding.root, LocalizationR.string.dialog_mfa_wrong_code, Snackbar.LENGTH_LONG)
             .apply {
-                view.setBackgroundColor(context.getColor(R.color.red))
+                view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
             }
     }
@@ -209,7 +210,7 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
     }
 
     override fun showSessionExpired() {
-        Toast.makeText(requireContext(), R.string.session_expired, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), LocalizationR.string.session_expired, Toast.LENGTH_SHORT).show()
     }
 
     companion object {

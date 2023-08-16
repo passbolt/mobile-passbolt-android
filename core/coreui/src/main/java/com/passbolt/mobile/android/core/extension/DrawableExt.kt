@@ -1,10 +1,9 @@
-package com.passbolt.mobile.android.common.extension
+package com.passbolt.mobile.android.core.extension
 
-import android.os.SystemClock
-import android.view.View
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.listeners.ClickEventHook
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import androidx.core.graphics.drawable.toBitmap
+import java.io.ByteArrayOutputStream
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,18 +27,10 @@ import com.mikepenz.fastadapter.listeners.ClickEventHook
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-abstract class DebounceClickEventHook<T : GenericItem> : ClickEventHook<T>() {
-    private var lastClickTime: Long = 0
-
-    override fun onClick(v: View, position: Int, fastAdapter: FastAdapter<T>, item: T) {
-        if (shouldClickBeIgnored()) return else onDebounceClick(v, position, fastAdapter, item)
-
-        lastClickTime = SystemClock.elapsedRealtime()
-    }
-
-    private fun shouldClickBeIgnored() = SystemClock.elapsedRealtime() - lastClickTime < DEBOUNCE_DELAY_MILLIS
-
-    abstract fun onDebounceClick(v: View, position: Int, fastAdapter: FastAdapter<T>, item: T)
+fun Drawable.toByteArray(): ByteArray {
+    val outputStream = ByteArrayOutputStream()
+    toBitmap().compress(Bitmap.CompressFormat.PNG, QUALITY, outputStream)
+    return outputStream.toByteArray()
 }
 
-private const val DEBOUNCE_DELAY_MILLIS = 600L
+private const val QUALITY = 100

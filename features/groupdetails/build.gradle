@@ -19,6 +19,7 @@ dependencies {
     implementation project(':coreui')
     implementation project(':groups')
     implementation project(':users')
+    implementation project(':localization')
 
     implementation libs.di.koin
     implementation libs.androidx.navigationFragment
@@ -31,6 +32,7 @@ dependencies {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.groupdetails"
     buildFeatures {
         viewBinding true
     }

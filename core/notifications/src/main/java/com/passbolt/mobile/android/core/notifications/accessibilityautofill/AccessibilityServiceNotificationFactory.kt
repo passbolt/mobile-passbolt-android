@@ -3,7 +3,8 @@ package com.passbolt.mobile.android.core.notifications.accessibilityautofill
 import android.app.Notification
 import android.content.Context
 import com.passbolt.mobile.android.core.notifications.NotificationChannelManager
-import com.passbolt.mobile.android.notifications.R
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,12 +35,12 @@ class AccessibilityServiceNotificationFactory(
     fun getNotification(context: Context): Notification {
         notificationChannelManager.createNotificationChannel(
             CHANNEL_ID,
-            context.getString(R.string.autofill_service_channel_name)
+            context.getString(LocalizationR.string.autofill_service_channel_name)
         )
         return Notification.Builder(context, CHANNEL_ID)
-            .setContentTitle(context.getString(R.string.autofill_service_title))
-            .setContentText(context.getString(R.string.autofill_service_content))
-            .setSmallIcon(R.drawable.ic_key)
+            .setContentTitle(context.getString(LocalizationR.string.autofill_service_title))
+            .setContentText(context.getString(LocalizationR.string.autofill_service_content))
+            .setSmallIcon(CoreUiR.drawable.ic_key)
             .build()
     }
 

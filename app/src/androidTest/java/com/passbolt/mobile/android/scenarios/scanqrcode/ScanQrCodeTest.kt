@@ -27,7 +27,7 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -80,29 +80,29 @@ class ScanQrCodeTest : KoinTest {
     fun asAMobileUserICanGetHelpDuringTheQrCodeScanningProcess() {
         //        Given   the user is on the “Scanning QR codes” screen
         //        When    the user clicks on the “information” icon next to the progress bar
-        onView(withContentDescription(CoreUiR.string.help_button_description)).perform(click())
+        onView(withContentDescription(LocalizationR.string.help_button_description)).perform(click())
         //        Then    a modal with help options is presented
         onView(withId(R.id.title)).check(matches(isDisplayed()))
         //        And     a "Why scanning QR codes?” button is available
-        onView(withId(R.id.whyScanQrCodes)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.whyScanQrCodes)).check(matches(isDisplayed()))
         //        And     an "Enable debug logs" switch is available (on Android only)
-        onView(withId(R.id.enableLogsSwitch)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.enableLogsSwitch)).check(matches(isDisplayed()))
         //        And     an "Access the logs" button is available
-        onView(withId(R.id.accessLogs)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.accessLogs)).check(matches(isDisplayed()))
         //        And     a "Visit help site" button is available
-        onView(withId(R.id.visitHelpWebsite)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.visitHelpWebsite)).check(matches(isDisplayed()))
     }
 
     @Test
     fun asAMobileUserICanOpenHelpWebpageDuringTheQrCodeScanningProcess() {
         //        Given   the user is on the “Help” modal
-        onView(withContentDescription(CoreUiR.string.help_button_description)).perform(click())
+        onView(withContentDescription(LocalizationR.string.help_button_description)).perform(click())
         //        When    the user clicks on the “Visit help site” button
-        onView(withId(R.id.visitHelpWebsite)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.visitHelpWebsite)).perform(click())
         //        Then    a webpage with help is presented
         val expectedIntent: Matcher<Intent> = AllOf.allOf(
             IntentMatchers.hasAction(Intent.ACTION_VIEW),
-            IntentMatchers.hasData(getString(R.string.help_website))
+            IntentMatchers.hasData(getString(LocalizationR.string.help_website))
         )
         Intents.intended(expectedIntent)
     }
@@ -110,11 +110,11 @@ class ScanQrCodeTest : KoinTest {
     @Test
     fun asAMobileUserICanSeeAnExplanationWhyScanningQrCodes() {
         //      Given   the user is on the “Help” modal
-        onView(withContentDescription(CoreUiR.string.help_button_description)).perform(click())
+        onView(withContentDescription(LocalizationR.string.help_button_description)).perform(click())
         //      When    the user clicks on the "Why scanning QR codes" button
-        onView(withId(R.id.whyScanQrCodes)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.whyScanQrCodes)).perform(click())
         //      Then    a dialog explaining the process of scanning QR codes is presented
-        onView(withId(R.id.alertTitle)).check(matches(isDisplayed()))
+        onView(withId(androidx.appcompat.R.id.alertTitle)).check(matches(isDisplayed()))
         //      And     the message says how the process would look like
         onView(withId(android.R.id.message)).check(matches(isDisplayed()))
         //      And     a “Got it” button to close the dialog is presented

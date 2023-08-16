@@ -13,21 +13,23 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
-import com.passbolt.mobile.android.createfolder.databinding.FragmentCreateFolderBinding
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
+import com.passbolt.mobile.android.feature.createfolder.databinding.FragmentCreateFolderBinding
 import com.passbolt.mobile.android.permissions.recycler.CounterItem
 import com.passbolt.mobile.android.permissions.recycler.GroupItem
 import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -74,7 +76,7 @@ class CreateFolderFragment :
             presenter.argsRetrieved(
                 args.parentFolderId,
                 it.width,
-                resources.getDimension(R.dimen.dp_40)
+                resources.getDimension(CoreUiR.dimen.dp_40)
             )
         }
     }
@@ -98,8 +100,10 @@ class CreateFolderFragment :
     override fun showFolderLocation(parentFolders: List<String>) {
         binding.locationValue.text = parentFolders.let {
             val mutable = it.toMutableList()
-            mutable.add(0, getString(R.string.folder_root))
-            mutable.joinToString(separator = " %s ".format(getString(R.string.folder_details_location_separator)))
+            mutable.add(0, getString(LocalizationR.string.folder_root))
+            mutable.joinToString(
+                separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator))
+            )
         }
     }
 
@@ -120,7 +124,7 @@ class CreateFolderFragment :
     override fun showFolderNameLenghtValidationError(folderNameMaxLength: Int) {
         binding.folderNameInput.setState(
             StatefulInput.State.Error(
-                getString(R.string.validation_required_with_max_length, folderNameMaxLength)
+                getString(LocalizationR.string.validation_required_with_max_length, folderNameMaxLength)
             )
         )
     }
@@ -139,18 +143,18 @@ class CreateFolderFragment :
 
     override fun showCreateFolderError(errorMessage: String) {
         showSnackbar(
-            messageResId = R.string.create_folder_error_format,
+            messageResId = LocalizationR.string.create_folder_error_format,
             messageArgs = arrayOf(errorMessage),
-            backgroundColor = R.color.red,
+            backgroundColor = CoreUiR.color.red,
             length = Snackbar.LENGTH_LONG
         )
     }
 
     override fun showShareFailure(errorMessage: String) {
         showSnackbar(
-            messageResId = R.string.share_folder_error_format,
+            messageResId = LocalizationR.string.share_folder_error_format,
             messageArgs = arrayOf(errorMessage),
-            backgroundColor = R.color.red,
+            backgroundColor = CoreUiR.color.red,
             length = Snackbar.LENGTH_LONG
         )
     }

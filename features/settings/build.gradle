@@ -38,6 +38,7 @@ dependencies {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.settings"
     buildFeatures {
         viewBinding true
     }

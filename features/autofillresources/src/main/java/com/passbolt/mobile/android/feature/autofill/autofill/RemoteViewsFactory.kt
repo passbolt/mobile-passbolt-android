@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.RemoteViews
 import androidx.annotation.StringRes
 import com.passbolt.mobile.android.feature.autofill.R
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,10 +34,10 @@ class RemoteViewsFactory(
 ) {
 
     fun getAutofillSelectDropdown(packageName: String) =
-        createAutofillDropdownWithText(packageName, R.string.autofill_dropdown_select)
+        createAutofillDropdownWithText(packageName, LocalizationR.string.autofill_dropdown_select)
 
     fun getAutofillFillDropdown(packageName: String) =
-        createAutofillDropdownWithText(packageName, R.string.autofill_dropdown_fill)
+        createAutofillDropdownWithText(packageName, LocalizationR.string.autofill_dropdown_fill)
 
     private fun createAutofillDropdownWithText(packageName: String, @StringRes textResId: Int) =
         RemoteViews(packageName, R.layout.view_autofill_auth_required_dropdown).apply {

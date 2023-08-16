@@ -1,9 +1,10 @@
-package com.passbolt.mobile.android.common.extension
+package com.passbolt.mobile.android.core.extension
 
+import android.os.SystemClock
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
-import com.mikepenz.fastadapter.binding.BindingViewHolder
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.GenericItem
+import com.mikepenz.fastadapter.listeners.ClickEventHook
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,10 +28,18 @@ import com.mikepenz.fastadapter.binding.BindingViewHolder
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-inline fun <reified T : ViewBinding> RecyclerView.ViewHolder.asBinding(block: (T) -> View): View? {
-    return if (this is BindingViewHolder<*> && this.binding is T) {
-        block(this.binding as T)
-    } else {
-        null
+abstract class DebounceClickEventHook<T : GenericItem> : ClickEventHook<T>() {
+    private var lastClickTime: Long = 0
+
+    override fun onClick(v: View, position: Int, fastAdapter: FastAdapter<T>, item: T) {
+        if (shouldClickBeIgnored()) return else onDebounceClick(v, position, fastAdapter, item)
+
+        lastClickTime = SystemClock.elapsedRealtime()
     }
+
+    private fun shouldClickBeIgnored() = SystemClock.elapsedRealtime() - lastClickTime < DEBOUNCE_DELAY_MILLIS
+
+    abstract fun onDebounceClick(v: View, position: Int, fastAdapter: FastAdapter<T>, item: T)
 }
+
+private const val DEBOUNCE_DELAY_MILLIS = 600L

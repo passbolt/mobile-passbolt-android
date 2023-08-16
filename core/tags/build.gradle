@@ -15,3 +15,7 @@ dependencies {
     implementation libs.room.core
     implementation libs.room.cipher
 }
+
+android {
+    namespace = "com.passbolt.mobile.android.core.tags"
+}

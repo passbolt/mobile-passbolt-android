@@ -7,10 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
-import com.passbolt.mobile.android.common.extension.asBinding
+import com.passbolt.mobile.android.core.extension.asBinding
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.ItemTagWithCountBinding
 import com.passbolt.mobile.android.ui.TagWithCount
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -51,9 +52,9 @@ class TagWithCountItem(
             taggedItemsCount.text = tagWithCount.taggedResourcesCount.toString()
             icon.setImageResource(
                 if (tagWithCount.isShared) {
-                    R.drawable.ic_filled_shared_tag_with_bg
+                    CoreUiR.drawable.ic_filled_shared_tag_with_bg
                 } else {
-                    R.drawable.ic_filled_tag_with_bg
+                    CoreUiR.drawable.ic_filled_tag_with_bg
                 }
             )
         }

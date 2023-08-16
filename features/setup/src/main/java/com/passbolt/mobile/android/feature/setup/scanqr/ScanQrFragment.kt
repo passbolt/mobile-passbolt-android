@@ -12,7 +12,6 @@ import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import com.passbolt.mobile.android.feature.setup.AccountSetupDataHolder
-import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
@@ -21,6 +20,8 @@ import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -95,26 +96,26 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
 
     override fun showExitConfirmation() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.are_you_sure)
-            .setMessage(R.string.scan_qr_exit_confirmation_dialog_message)
-            .setPositiveButton(R.string.cancel) { _, _ -> }
-            .setNegativeButton(R.string.stop_scanning) { _, _ -> presenter.exitConfirmClick() }
+            .setTitle(LocalizationR.string.are_you_sure)
+            .setMessage(LocalizationR.string.scan_qr_exit_confirmation_dialog_message)
+            .setPositiveButton(LocalizationR.string.cancel) { _, _ -> }
+            .setNegativeButton(LocalizationR.string.stop_scanning) { _, _ -> presenter.exitConfirmClick() }
             .show()
     }
 
     override fun showInformationDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.scan_qr_exit_information_dialog_title)
-            .setMessage(R.string.scan_qr_exit_information_dialog_message)
-            .setPositiveButton(R.string.got_it) { _, _ -> }
+            .setTitle(LocalizationR.string.scan_qr_exit_information_dialog_title)
+            .setMessage(LocalizationR.string.scan_qr_exit_information_dialog_message)
+            .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
             .show()
     }
 
     private fun initToolbar() {
         with(binding.progressToolbar) {
-            setNavigationIcon(R.drawable.ic_back)
+            setNavigationIcon(CoreUiR.drawable.ic_back)
             setNavigationOnClickListener { presenter.backClick() }
-            addIconEnd(R.drawable.ic_help) { presenter.infoIconClick() }
+            addIconEnd(CoreUiR.drawable.ic_help) { presenter.infoIconClick() }
         }
     }
 
@@ -138,11 +139,11 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     }
 
     override fun showStartCameraError() {
-        binding.tooltip.text = getString(R.string.scan_qr_camera_error)
+        binding.tooltip.text = getString(LocalizationR.string.scan_qr_camera_error)
     }
 
     override fun showBarcodeScanError(message: String?) {
-        val messageBuilder = StringBuilder(getString(R.string.scan_qr_scanning_error)).apply {
+        val messageBuilder = StringBuilder(getString(LocalizationR.string.scan_qr_scanning_error)).apply {
             if (!message.isNullOrBlank()) {
                 append("(%s)".format(message))
             }
@@ -151,19 +152,19 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     }
 
     override fun showMultipleCodesInRange() {
-        binding.tooltip.text = getString(R.string.scan_qr_multiple_codes_in_range)
+        binding.tooltip.text = getString(LocalizationR.string.scan_qr_multiple_codes_in_range)
     }
 
     override fun showCenterCameraOnBarcode() {
-        binding.tooltip.text = getString(R.string.scan_qr_aim_at_qr_code)
+        binding.tooltip.text = getString(LocalizationR.string.scan_qr_aim_at_qr_code)
     }
 
     override fun showKeepGoing() {
-        binding.tooltip.text = getString(R.string.scan_qr_keep_going)
+        binding.tooltip.text = getString(LocalizationR.string.scan_qr_keep_going)
     }
 
     override fun showUpdateTransferError(headerMessage: String) {
-        val messageBuilder = StringBuilder(getString(R.string.scan_qr_update_transfer_error)).apply {
+        val messageBuilder = StringBuilder(getString(LocalizationR.string.scan_qr_update_transfer_error)).apply {
             if (headerMessage.isNotBlank()) {
                 append("(%s)".format(headerMessage))
             }
@@ -173,7 +174,7 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     }
 
     override fun showNotAPassboltQr() {
-        binding.tooltip.text = getString(R.string.scan_qr_not_a_passbolt_qr)
+        binding.tooltip.text = getString(LocalizationR.string.scan_qr_not_a_passbolt_qr)
     }
 
     override fun navigateBack() {

@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.common
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
 import org.junit.Test
 
 

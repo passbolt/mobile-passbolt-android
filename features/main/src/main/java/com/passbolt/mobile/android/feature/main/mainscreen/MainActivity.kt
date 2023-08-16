@@ -17,11 +17,15 @@ import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.extension.getRootView
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
-import com.passbolt.mobile.android.feature.main.R
 import com.passbolt.mobile.android.feature.main.databinding.ActivityMainBinding
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
 import org.koin.android.ext.android.inject
 import timber.log.Timber
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.feature.createotpmanually.R as CreateOtpManuallyR
+import com.passbolt.mobile.android.feature.otp.R as OtpR
+import com.passbolt.mobile.android.feature.resourcepicker.R as ResourcePickerR
+import com.passbolt.mobile.android.feature.scanotp.R as ScanOtpR
 
 class MainActivity :
     BindingScopedAuthenticatedActivity<ActivityMainBinding, MainContract.View>(ActivityMainBinding::inflate),
@@ -54,7 +58,7 @@ class MainActivity :
     override fun setupBottomNavigation(navigationModel: MainBottomNavigationModel) {
         with(binding.mainNavigation) {
             setupWithNavController(bottomNavController)
-            menu.findItem(R.id.otpNav).isVisible = navigationModel.isOtpTabVisible
+            menu.findItem(OtpR.id.otpNav).isVisible = navigationModel.isOtpTabVisible
         }
 
         bottomNavController.addOnDestinationChangedListener { _, destination, _ ->
@@ -105,11 +109,15 @@ class MainActivity :
     override fun showAppUpdateDownloadedSnackbar() {
         Snackbar.make(
             getRootView(),
-            getString(R.string.main_update_downloaded),
+            getString(LocalizationR.string.main_update_downloaded),
             Snackbar.LENGTH_INDEFINITE
         ).apply {
             anchorView = binding.mainNavigation
-            setAction(getString(R.string.main_update_downloaded_install)) { appUpdateManager.completeUpdate() }
+            setAction(
+                getString(LocalizationR.string.main_update_downloaded_install)
+            ) {
+                appUpdateManager.completeUpdate()
+            }
             show()
         }
     }
@@ -129,11 +137,11 @@ class MainActivity :
     private companion object {
         private const val REQUEST_APP_UPDATE = 8000
         private val noBottomNavFragmentIds = listOf(
-            R.id.scanOtpFragment,
-            R.id.createOtpManuallyFragment,
-            R.id.createOtpAdvancedSettingsFragment,
-            R.id.scanOtpSuccessFragment,
-            R.id.resourcePickerFragment
+            ScanOtpR.id.scanOtpFragment,
+            CreateOtpManuallyR.id.createOtpManuallyFragment,
+            CreateOtpManuallyR.id.createOtpAdvancedSettingsFragment,
+            OtpR.id.scanOtpSuccessFragment,
+            ResourcePickerR.id.resourcePickerFragment
         )
     }
 }

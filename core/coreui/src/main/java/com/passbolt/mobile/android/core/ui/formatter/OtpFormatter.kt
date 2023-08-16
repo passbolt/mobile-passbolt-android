@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.core.security.rootdetection
-
-import android.content.Context
-import androidx.appcompat.app.AlertDialog
-import com.passbolt.mobile.android.core.security.R
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -27,10 +21,22 @@ import com.passbolt.mobile.android.core.security.R
  * @since v1.0
  */
 
-fun rootWarningAlertDialog(context: Context, onApprove: () -> Unit = {}): AlertDialog =
-    AlertDialog.Builder(context)
-        .setTitle(R.string.root_warning_title)
-        .setMessage(R.string.root_warning_message)
-        .setPositiveButton(R.string.root_warning_ackowledge) { _, _ -> onApprove() }
-        .setCancelable(false)
-        .create()
+package com.passbolt.mobile.android.core.ui.formatter
+
+@Suppress("MagicNumber")
+class OtpFormatter {
+
+    fun format(otp: String) =
+        when (otp.length) {
+            6 -> "%s %s".format(
+                otp.substring(0..2),
+                otp.substring(3..5)
+            )
+            7, 8 -> "%s %s %s".format(
+                otp.substring(0..2),
+                otp.substring(3..5),
+                otp.substring(6)
+            )
+            else -> "%s".format(otp)
+        }
+}

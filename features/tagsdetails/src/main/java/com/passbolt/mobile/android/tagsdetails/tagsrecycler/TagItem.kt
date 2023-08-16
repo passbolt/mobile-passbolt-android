@@ -3,9 +3,10 @@ package com.passbolt.mobile.android.tagsdetails.tagsrecycler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.passbolt.mobile.android.tagsdetails.R
-import com.passbolt.mobile.android.tagsdetails.databinding.ItemTagBinding
+import com.passbolt.mobile.android.feature.tagsdetails.R
+import com.passbolt.mobile.android.feature.tagsdetails.databinding.ItemTagBinding
 import com.passbolt.mobile.android.ui.TagModel
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,9 +46,9 @@ class TagItem(
             name.text = tagModel.slug
             icon.setImageResource(
                 if (tagModel.isShared) {
-                    R.drawable.ic_filled_shared_tag_with_bg
+                    CoreUiR.drawable.ic_filled_shared_tag_with_bg
                 } else {
-                    R.drawable.ic_filled_tag_with_bg
+                    CoreUiR.drawable.ic_filled_tag_with_bg
                 }
             )
         }

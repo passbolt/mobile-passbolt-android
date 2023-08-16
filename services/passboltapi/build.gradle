@@ -9,3 +9,7 @@ dependencies {
 
     implementation libs.di.koin
 }
+
+android {
+    namespace = "com.passbolt.mobile.android.services.passboltapi"
+}

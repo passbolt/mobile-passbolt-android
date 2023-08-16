@@ -7,3 +7,7 @@ dependencies {
     implementation libs.di.koin
     implementation libs.test.espressoIdlingResource
 }
+
+android {
+    namespace = "com.passbolt.mobile.android.core.idlingresource"
+}

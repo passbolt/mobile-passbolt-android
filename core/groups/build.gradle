@@ -23,6 +23,7 @@ dependencies {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.groups"
     buildFeatures {
         viewBinding true
     }

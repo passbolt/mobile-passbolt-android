@@ -14,10 +14,12 @@ import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.locationdetails.databinding.FragmentFolderLocationDetailsBinding
+import com.passbolt.mobile.android.feature.locationdetails.databinding.FragmentFolderLocationDetailsBinding
 import com.passbolt.mobile.android.locationdetails.recyclerview.ExpandableFolderDatasetCreator
 import com.passbolt.mobile.android.ui.FolderModel
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -96,11 +98,11 @@ class LocationDetailsFragment :
     }
 
     override fun showFolderSharedIcon() {
-        binding.icon.setImageResource(R.drawable.ic_filled_shared_folder_with_bg)
+        binding.icon.setImageResource(CoreUiR.drawable.ic_filled_shared_folder_with_bg)
     }
 
     override fun showFolderIcon() {
-        binding.icon.setImageResource(R.drawable.ic_filled_folder_with_bg)
+        binding.icon.setImageResource(CoreUiR.drawable.ic_filled_folder_with_bg)
     }
 
     override fun showFolderLocation(parentFolders: List<FolderModel>) {
@@ -128,13 +130,13 @@ class LocationDetailsFragment :
 
     override fun showDataRefreshError() {
         showSnackbar(
-            R.string.common_data_refresh_error,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_data_refresh_error,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showContentNotAvailable() {
-        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), LocalizationR.string.content_not_available, Toast.LENGTH_SHORT).show()
     }
 
     override fun navigateToHome() {

@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.gopenpgp
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.gopenpgp.test.R
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -12,7 +13,6 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import kotlin.test.assertTrue
-import com.passbolt.mobile.android.core.gopenpgp.test.R
 
 /**
  * Passbolt - Open source password manager for teams

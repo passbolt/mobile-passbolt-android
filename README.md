@@ -72,7 +72,7 @@ The passbolt team will take the following actions:
 
 You can also run each check individually if needed:
 * `detekt` and `ktlint` - run static analysis for kotlin
-* `lintDebug` - run Android linter
+* `lintRelease` - run Android linter
 * `unitTest` - execute all unit tests
 * `koverMergedHtmlReport` - generate unit test coverage report
 * `licenseeRelease` - check if all dependencies have appropriate licenses

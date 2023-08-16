@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.fulldatarefresh"
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

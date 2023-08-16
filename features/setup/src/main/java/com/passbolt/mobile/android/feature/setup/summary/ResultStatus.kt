@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.feature.setup.summary
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.passbolt.mobile.android.feature.setup.R
 import java.io.Serializable
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,34 +35,34 @@ sealed class ResultStatus(
     class Success(
         val userId: String
     ) : ResultStatus(
-        R.drawable.ic_success,
-        R.string.scan_qr_summary_success_title,
-        R.string.continue_label
+        com.passbolt.mobile.android.core.ui.R.drawable.ic_success,
+        LocalizationR.string.scan_qr_summary_success_title,
+        LocalizationR.string.continue_label
     )
 
     class Failure(
         val message: String
     ) : ResultStatus(
-        R.drawable.ic_failed,
-        R.string.scan_qr_summary_failure_title,
-        R.string.try_again
+        com.passbolt.mobile.android.core.ui.R.drawable.ic_failed,
+        LocalizationR.string.scan_qr_summary_failure_title,
+        LocalizationR.string.try_again
     )
 
     class NoNetwork : ResultStatus(
-        R.drawable.ic_failed,
-        R.string.scan_qr_summary_no_network_title,
-        R.string.try_again
+        com.passbolt.mobile.android.core.ui.R.drawable.ic_failed,
+        LocalizationR.string.scan_qr_summary_no_network_title,
+        LocalizationR.string.try_again
     )
 
     class HttpNotSupported : ResultStatus(
-        R.drawable.ic_failed,
-        R.string.scan_qr_summary_http_not_supported_title,
-        R.string.try_again
+        com.passbolt.mobile.android.core.ui.R.drawable.ic_failed,
+        LocalizationR.string.scan_qr_summary_http_not_supported_title,
+        LocalizationR.string.try_again
     )
 
     class AlreadyLinked : ResultStatus(
-        R.drawable.ic_already_connected,
-        R.string.scan_qr_summary_already_linked_title,
-        R.string.continue_label
+        com.passbolt.mobile.android.core.ui.R.drawable.ic_already_connected,
+        LocalizationR.string.scan_qr_summary_already_linked_title,
+        LocalizationR.string.continue_label
     )
 }

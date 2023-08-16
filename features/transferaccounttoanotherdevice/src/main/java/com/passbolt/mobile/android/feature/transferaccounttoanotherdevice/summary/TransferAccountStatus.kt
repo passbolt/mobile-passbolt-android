@@ -2,8 +2,9 @@ package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summa
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R
 import java.io.Serializable
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,22 +35,22 @@ sealed class TransferAccountStatus(
 ) : Serializable {
 
     class Success : TransferAccountStatus(
-        R.drawable.ic_success,
-        R.string.transfer_account_summary_success,
-        R.string.transfer_account_summary_go_back
+        CoreUiR.drawable.ic_success,
+        LocalizationR.string.transfer_account_summary_success,
+        LocalizationR.string.transfer_account_summary_go_back
     )
 
     class Failure(
         val message: String
     ) : TransferAccountStatus(
-        R.drawable.ic_failed,
-        R.string.common_failure,
-        R.string.transfer_account_summary_go_back
+        CoreUiR.drawable.ic_failed,
+        LocalizationR.string.common_failure,
+        LocalizationR.string.transfer_account_summary_go_back
     )
 
     class Canceled : TransferAccountStatus(
-        R.drawable.ic_failed,
-        R.string.transfer_account_summary_cancelled,
-        R.string.transfer_account_summary_go_back
+        CoreUiR.drawable.ic_failed,
+        LocalizationR.string.transfer_account_summary_cancelled,
+        LocalizationR.string.transfer_account_summary_go_back
     )
 }

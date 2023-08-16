@@ -27,14 +27,16 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismiss
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClickAndDismiss
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedBottomSheetFragment
-import com.passbolt.mobile.android.otpmoremenu.databinding.BottomsheetOtpMoreMenuBinding
+import com.passbolt.mobile.android.feature.otpmoremenu.databinding.BottomsheetOtpMoreMenuBinding
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class OtpMoreMenuFragment :
     BindingScopedAuthenticatedBottomSheetFragment<BottomsheetOtpMoreMenuBinding, OtpMoreMenuContract.View>(
@@ -119,8 +121,8 @@ class OtpMoreMenuFragment :
 
     override fun showRefreshFailure() {
         showSnackbar(
-            messageResId = R.string.common_data_refresh_error,
-            backgroundColor = R.color.red
+            messageResId = LocalizationR.string.common_data_refresh_error,
+            backgroundColor = CoreUiR.color.red
         )
     }
 

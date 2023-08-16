@@ -6,12 +6,12 @@ import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.passbolt.mobile.android.common.FingerprintFormatter
-import com.passbolt.mobile.android.commongroups.R
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.groupdetails.databinding.FragmentGroupMemberDetailsBinding
+import com.passbolt.mobile.android.feature.groupdetails.databinding.FragmentGroupMemberDetailsBinding
 import com.passbolt.mobile.android.ui.UserModel
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class GroupMemberDetailsFragment :
     BindingScopedAuthenticatedFragment<FragmentGroupMemberDetailsBinding, GroupMemberDetailsContract.View>(
@@ -35,9 +35,9 @@ class GroupMemberDetailsFragment :
             emailLabel.text = user.userName
             fingerprintLabel.text = fingerprintFormatter.formatWithRawFallback(user.gpgKey.fingerprint)
             avatarImage.load(user.profile.avatarUrl) {
-                error(R.drawable.ic_user_avatar)
+                error(CoreUiR.drawable.ic_user_avatar)
                 transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_user_avatar)
+                placeholder(CoreUiR.drawable.ic_user_avatar)
             }
         }
     }

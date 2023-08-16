@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.WebsiteOpener
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.feature.settings.R
 import com.passbolt.mobile.android.feature.settings.databinding.FragmentDebugLogsSettingsBinding
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -99,6 +99,6 @@ class DebugLogsSettingsFragment :
     }
 
     override fun openHelpWebsite() {
-        websiteOpener.open(requireContext(), getString(R.string.help_website))
+        websiteOpener.open(requireContext(), getString(LocalizationR.string.help_website))
     }
 }

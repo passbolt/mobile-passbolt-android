@@ -8,15 +8,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.logger.LogFilesManager
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
-import com.passbolt.mobile.android.logs.databinding.FragmentLogsBinding
+import com.passbolt.mobile.android.feature.logs.databinding.FragmentLogsBinding
 import com.passbolt.mobile.android.logs.recycler.LogItem
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import java.io.File
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class LogsFragment : BindingScopedFragment<FragmentLogsBinding>(FragmentLogsBinding::inflate), LogsContract.View {
 
@@ -68,7 +69,7 @@ class LogsFragment : BindingScopedFragment<FragmentLogsBinding>(FragmentLogsBind
         startActivity(
             Intent.createChooser(
                 sendIntent,
-                getString(R.string.logs_share_title)
+                getString(LocalizationR.string.logs_share_title)
             )
         )
     }

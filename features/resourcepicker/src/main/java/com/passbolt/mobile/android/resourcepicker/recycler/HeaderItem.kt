@@ -26,9 +26,10 @@ package com.passbolt.mobile.android.resourcepicker.recycler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.passbolt.mobile.android.resourcepicker.R
-import com.passbolt.mobile.android.resourcepicker.databinding.ItemHeaderBinding
+import com.passbolt.mobile.android.feature.resourcepicker.R
+import com.passbolt.mobile.android.feature.resourcepicker.databinding.ItemHeaderBinding
 import com.passbolt.mobile.android.resourcepicker.model.HeaderType
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class HeaderItem(
     private val headerType: HeaderType
@@ -45,8 +46,8 @@ class HeaderItem(
         with(binding) {
             title.text = title.context.getString(
                 when (headerType) {
-                    HeaderType.OTHER -> R.string.other
-                    HeaderType.SUGGESTED -> R.string.suggested
+                    HeaderType.OTHER -> LocalizationR.string.other
+                    HeaderType.SUGGESTED -> LocalizationR.string.suggested
                 }
             )
         }

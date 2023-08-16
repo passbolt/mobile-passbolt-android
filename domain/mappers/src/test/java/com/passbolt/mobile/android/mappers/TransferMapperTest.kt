@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.mappers
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
 import com.passbolt.mobile.android.dto.request.StatusRequest
+import com.passbolt.mobile.android.dto.request.UpdateTransferRequestDto
 import com.passbolt.mobile.android.ui.Status
 import org.junit.Before
 import org.junit.Test

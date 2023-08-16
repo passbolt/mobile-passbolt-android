@@ -53,6 +53,9 @@ import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
+import com.google.android.material.R as MaterialR
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -113,14 +116,14 @@ class ResourcesCreationTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.input)).perform(
+        onView(withId(CoreUiR.id.input)).perform(
             typeText(managedAccountIntentCreator.getUsername()),
             pressKey(KeyEvent.KEYCODE_ENTER)
         )
-        onView(withId(R.id.authButton)).perform(click())
-        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
-        onView(withId(R.id.text_input_start_icon)).perform(click())
-        onView(withId(R.id.allItems)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
+        onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.home.R.id.allItems)).perform(click())
     }
 
     @Test
@@ -139,11 +142,11 @@ class ResourcesCreationTest : KoinTest {
         //           | “Owned by me”       |
         //           | “Folders”           |
         VisibleCreateButton.values().forEach { visibleCreateButton ->
-            onView(withId(R.id.text_input_start_icon)).perform(click())
+            onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
             onView(withId(visibleCreateButton.filterId)).perform(click())
-            onView(withId(R.id.homeSpeedDialViewId))
+            onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
                 .check(matches(isDisplayed()))
-                .check(matches(hasDrawable(id = R.drawable.ic_plus, tint = R.color.icon_tint)))
+                .check(matches(hasDrawable(id = CoreUiR.drawable.ic_plus, tint = CoreUiR.color.icon_tint)))
         }
         //    And       I am on the <filter> filter
         //    And       I do not have any Passbolt version
@@ -153,9 +156,9 @@ class ResourcesCreationTest : KoinTest {
         //           | “Tags”              |
         //           | “Groups”            |
         HiddenCreateButton.values().forEach { hiddenCreateButton ->
-            onView(withId(R.id.text_input_start_icon)).perform(click())
+            onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
             onView(withId(hiddenCreateButton.filterId)).perform(click())
-            onView(withId(R.id.homeSpeedDialViewId))
+            onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
                 .check(matches(not(isDisplayed())))
         }
     }
@@ -167,7 +170,7 @@ class ResourcesCreationTest : KoinTest {
         //    And       I see the create button
         //    When      I click on the create button
         //    Then      I see the New password page with "New password" title
-        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
         //    And       I see a back arrow to go back to the previous page
         onView(isAssignableFrom(Toolbar::class.java))
@@ -191,22 +194,22 @@ class ResourcesCreationTest : KoinTest {
         onView(
             allOf(
                 isDescendantOfA(withHint(hasToString("Enter password"))),
-                withId(R.id.text_input_end_icon)
+                withId(MaterialR.id.text_input_end_icon)
             )
         )
             .check(matches(isDisplayed()))
-            .check(matches(withContentDescription(R.string.password_toggle_content_description)))
+            .check(matches(withContentDescription(MaterialR.string.password_toggle_content_description)))
         //    And       I see a "Random" button on the right of the password field
-        onView(withId(R.id.generatePasswordLayout)).check(matches(isDisplayed()))
+        onView(withId(CoreUiR.id.generatePasswordLayout)).check(matches(isDisplayed()))
         //    And       I see a "Strength" bar under the password field
-        onView(withId(R.id.progressBar)).check(matches(isDisplayed()))
+        onView(withId(CoreUiR.id.progressBar)).check(matches(isDisplayed()))
         //    And       I see a "Password strength" indicator under the "Strength" bar
-        onView(withId(R.id.strengthDescription)).check(matches(isDisplayed()))
+        onView(withId(CoreUiR.id.strengthDescription)).check(matches(isDisplayed()))
         //    And       I see a "Lock" button above the description field
         onView(allOf(hasSibling(withText("Description")), withId(R.id.icon)))
             .check(matches(isDisplayed()))
         //    And       I see a "Create" primary button
-        onView(withId(R.id.updateButton)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -216,32 +219,32 @@ class ResourcesCreationTest : KoinTest {
         IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
 
         //    Given     I am a logged in mobile user on the new password page
-        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
         //    And       I filled out all mandatory fields
-        onView(allOf(isDescendantOfA(withHint(hasToString("Enter Name"))), withId(R.id.input)))
+        onView(allOf(isDescendantOfA(withHint(hasToString("Enter Name"))), withId(CoreUiR.id.input)))
             .perform(typeText("PasswordNameTest"))
-        onView(withId(R.id.generatePasswordLayout)).perform(click())
+        onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
         //    When      I click on the create button
-        onView(withId(R.id.updateButton))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton))
             .perform(scrollTo(), click())
         //    Then      I see a "Loading" box
         //    And       I am redirected to the password workspace
-        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
         //    And       I see a toaster message with "New Password created"
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.resource_update_create_success)))
+        onView(withId(MaterialR.id.snackbar_text))
+            .check(matches(withText(LocalizationR.string.resource_update_create_success)))
     }
 
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageIShouldSeeAnErrorMessageAfterClickingTheCreateButtonWithAnEmptyMandatoryField() {
         //    Given     I am a logged in mobile user on the new password page
-        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
         //    And       I didn't filled out the Name and Password fields
         //    When      I click on the create button
-        onView(withId(R.id.updateButton)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(click())
         //    Then      I see the label of the Name and Password fields in @red
-        onView(withText("Name *")).check(matches(hasTextColor(R.color.red)))
-        onView(withText("Password *")).check(matches(hasTextColor(R.color.red)))
+        onView(withText("Name *")).check(matches(hasTextColor(CoreUiR.color.red)))
+        onView(withText("Password *")).check(matches(hasTextColor(CoreUiR.color.red)))
         //    And       I see the stroke of the Name and Password fields in @red
         onView(
             allOf(
@@ -249,21 +252,21 @@ class ResourcesCreationTest : KoinTest {
                 isAssignableFrom(TextInputLayout::class.java)
             )
         )
-            .check(matches(withTextInputStrokeColorOf(R.color.red)))
+            .check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
         onView(
             allOf(
                 isDescendantOfA(withHint(hasToString("Enter password"))),
                 isAssignableFrom(TextInputLayout::class.java)
             )
         )
-            .check(matches(withTextInputStrokeColorOf(R.color.red)))
+            .check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
         //    And       I see a error <Error> below the field in @red
         onView(withText("The name cannot be empty"))
             .check(matches(isDisplayed()))
-            .check(matches(hasTextColor(R.color.red)))
+            .check(matches(hasTextColor(CoreUiR.color.red)))
         onView(withText("The password cannot be empty"))
             .check(matches(isDisplayed()))
-            .check(matches(hasTextColor(R.color.red)))
+            .check(matches(hasTextColor(CoreUiR.color.red)))
         //    | Field       | Error                            |
         //    | Name        | "The name cannot be empty"       |
         //    | Password    | "The password cannot be empty"  |
@@ -272,12 +275,12 @@ class ResourcesCreationTest : KoinTest {
     @Test
     fun asALoggedInMobileUserOnTheNewPasswordPageICanGenerateARandomPassword() {
         //    Given     I am a logged in mobile user on the new password page
-        onView(withId(R.id.homeSpeedDialViewId)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
         //    When      I click on the "Random" button
-        onView(withId(R.id.generatePasswordLayout)).perform(click())
+        onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
         //    Then      I see the "Password" field is automatically filled in
         //    And       I see the password is obfuscated
-        onView(allOf(isDescendantOfA(withHint(hasToString("Enter password"))), withId(R.id.input)))
+        onView(allOf(isDescendantOfA(withHint(hasToString("Enter password"))), withId(CoreUiR.id.input)))
             .check(matches(isTextHidden()))
         //    And       I see the "Strength" bar is green
         onView(
@@ -289,7 +292,7 @@ class ResourcesCreationTest : KoinTest {
             .check(matches(isDisplayed()))
             .check(matches(withProgressBarOfMinimumProgress(VeryStrong.progress)))
         //    And       I see the "password strength" text is "Very strong"
-        onView(withId(R.id.strengthDescription))
+        onView(withId(CoreUiR.id.strengthDescription))
             .check(matches(withText(VeryStrong.text)))
     }
 
@@ -298,7 +301,7 @@ class ResourcesCreationTest : KoinTest {
         val password = "password"
 
         //    Given     I am a logged in mobile user on the new password page
-        onView(withId(R.id.homeSpeedDialViewId))
+        onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
             .perform(click())
         //    And       the password field is not empty
         onPasswordInputView()
@@ -319,8 +322,8 @@ class ResourcesCreationTest : KoinTest {
     private fun onPasswordInputView() =
         onView(
             allOf(
-                isDescendantOfA(withHint(equalTo(getString(R.string.resource_update_password_hint)))),
-                withId(R.id.input)
+                isDescendantOfA(withHint(equalTo(getString(LocalizationR.string.resource_update_password_hint)))),
+                withId(CoreUiR.id.input)
             )
         )
 }

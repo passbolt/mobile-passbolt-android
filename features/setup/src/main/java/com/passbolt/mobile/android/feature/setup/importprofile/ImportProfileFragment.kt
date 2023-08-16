@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.View
 import androidx.navigation.fragment.findNavController
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
-import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentImportProfileBinding
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -84,7 +84,7 @@ class ImportProfileFragment :
     override fun showIncorrectUuid() {
         binding.userIdInput.setState(
             StatefulInput.State.Error(
-                getString(R.string.import_profile_invalid_uuid)
+                getString(LocalizationR.string.import_profile_invalid_uuid)
             )
         )
     }
@@ -92,7 +92,7 @@ class ImportProfileFragment :
     override fun showIncorrectAccountUrl() {
         binding.accountUrlInput.setState(
             StatefulInput.State.Error(
-                getString(R.string.import_profile_invalid_account_url)
+                getString(LocalizationR.string.import_profile_invalid_account_url)
             )
         )
     }
@@ -100,7 +100,7 @@ class ImportProfileFragment :
     override fun showIncorrectPrivateKey() {
         binding.privateKeyInput.setState(
             StatefulInput.State.Error(
-                getString(R.string.import_profile_invalid_private_key)
+                getString(LocalizationR.string.import_profile_invalid_private_key)
             )
         )
     }

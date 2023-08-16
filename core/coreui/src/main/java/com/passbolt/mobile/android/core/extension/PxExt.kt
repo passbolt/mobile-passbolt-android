@@ -1,3 +1,7 @@
+package com.passbolt.mobile.android.core.extension
+
+import android.content.res.Resources
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,23 +24,5 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-package com.passbolt.mobile.android.common
-
-@Suppress("MagicNumber")
-class OtpFormatter {
-
-    fun format(otp: String) =
-        when (otp.length) {
-            6 -> "%s %s".format(
-                otp.substring(0..2),
-                otp.substring(3..5)
-            )
-            7, 8 -> "%s %s %s".format(
-                otp.substring(0..2),
-                otp.substring(3..5),
-                otp.substring(6)
-            )
-            else -> "%s".format(otp)
-        }
-}
+val Int.px: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()

@@ -21,6 +21,7 @@ dependencies {
     implementation project(':storage')
     implementation project(':idlingresource')
     implementation project(':users')
+    implementation project(':localization')
 
     implementation libs.di.koin
     implementation libs.room.sqlite
@@ -39,6 +40,7 @@ dependencies {
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.createfolder"
     buildFeatures {
         viewBinding true
     }

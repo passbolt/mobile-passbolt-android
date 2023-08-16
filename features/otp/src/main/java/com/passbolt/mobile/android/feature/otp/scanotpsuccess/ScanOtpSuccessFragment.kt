@@ -7,13 +7,12 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentCreateOtpSuccessBinding
 import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment
 import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment.Companion.RESULT_PICKED_ACTION
@@ -21,6 +20,8 @@ import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment.Compani
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -70,9 +71,9 @@ class ScanOtpSuccessFragment :
 
     private fun setupView() {
         with(binding.resultView) {
-            setIcon(R.drawable.ic_success)
-            setTitle(getString(R.string.otp_create_success))
-            setButtonLabel(getString(R.string.otp_create_totp_create_standalone))
+            setIcon(CoreUiR.drawable.ic_success)
+            setTitle(getString(LocalizationR.string.otp_create_success))
+            setButtonLabel(getString(LocalizationR.string.otp_create_totp_create_standalone))
         }
     }
 
@@ -97,21 +98,21 @@ class ScanOtpSuccessFragment :
 
     override fun showGenericError() {
         showSnackbar(
-            messageResId = R.string.common_failure,
-            backgroundColor = R.color.red
+            messageResId = LocalizationR.string.common_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showError(message: String) {
         showSnackbar(
-            messageResId = R.string.common_failure_format,
-            backgroundColor = R.color.red,
+            messageResId = LocalizationR.string.common_failure_format,
+            backgroundColor = CoreUiR.color.red,
             messageArgs = arrayOf(message)
         )
     }
 
     override fun showEncryptionError(message: String) {
-        showSnackbar(R.string.common_encryption_failure, backgroundColor = R.color.red)
+        showSnackbar(LocalizationR.string.common_encryption_failure, backgroundColor = CoreUiR.color.red)
     }
 
     override fun navigateToOtpList(otpCreated: Boolean) {
