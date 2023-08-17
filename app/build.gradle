@@ -1,12 +1,12 @@
 import com.github.triplet.gradle.androidpublisher.ReleaseStatus
 
 plugins {
-    id "com.android.application"
-    id "kotlin-android"
-    id "kotlin-parcelize"
-    id "com.google.firebase.appdistribution"
+    alias libs.plugins.android.application
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.parcelize
+    alias libs.plugins.app.distribution
+    alias libs.plugins.playstore.publisher
     id "com.starter.easylauncher"
-    id "com.github.triplet.play"
 }
 
 apply from: "../gradle/licensee.gradle"
@@ -62,10 +62,6 @@ android {
 
     buildFeatures {
         viewBinding true
-    }
-
-    dexOptions {
-        javaMaxHeapSize "4G"
     }
 }
 
@@ -155,26 +151,26 @@ dependencies {
     implementation project(':otpmoremenu')
     implementation project(':createotpmanually')
 
-    debugImplementation libs.quality.leakcanary
+    debugImplementation libs.leakcanary
 
-    implementation libs.androidx.processLifecycle
+    implementation libs.lifecycle.process
     implementation libs.coil.core
     implementation libs.coil.base
-    implementation libs.di.koin
+    implementation libs.koin
     implementation libs.gson
-    implementation libs.androidx.appStartUp
-    implementation libs.test.espressoOkHttpIdlingResource
+    implementation libs.app.startup
+    implementation libs.espresso.okhttp.idling.resource
 
     androidTestImplementation project(':commontest')
-    androidTestImplementation libs.androidx.appcompat
+    androidTestImplementation libs.appcompat
     androidTestImplementation libs.material
-    androidTestImplementation libs.test.androidTestsRunner
-    androidTestImplementation libs.test.androidTestRules
-    androidTestImplementation libs.test.espressoCore
-    androidTestImplementation libs.test.androidTestKtx
-    androidTestImplementation libs.di.koinTest
-    androidTestImplementation libs.di.koinTestJUnit
-    androidTestImplementation libs.test.androidTestIntents
-    androidTestImplementation libs.test.mockitoAndroid
-    androidTestImplementation libs.fabSpeedDial
+    androidTestImplementation libs.android.tests.runner
+    androidTestImplementation libs.android.test.rules
+    androidTestImplementation libs.espresso.core
+    androidTestImplementation libs.android.test.ktx
+    androidTestImplementation libs.koin.test
+    androidTestImplementation libs.koin.test.junit
+    androidTestImplementation libs.android.test.intents
+    androidTestImplementation libs.mockito.android
+    androidTestImplementation libs.fab.speeddial
 }

@@ -1,17 +1,23 @@
+apply plugin: "io.gitlab.arturbosch.detekt"
+
 configurations {
     detekt
 }
-dependencies {
-    detekt libs.quality.detekt
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom("$rootDir/gradle/detekt-config.yml")
+    source = files(
+        "src/main/java"
+    )
+    parallel = true
 }
 
-task detekt(type: JavaExec, group: "verification") {
-    description = "Code smell analysis for Kotlin."
-    classpath = configurations.detekt
-    main = "io.gitlab.arturbosch.detekt.cli.Main"
 
-    args "--input", "src/main/java",
-        "--excludes", "**/build/**,**/resources/**",
-        "--config", "$rootDir/gradle/detekt-config.yml",
-        "--report", "xml:build/reports/detekt-report.xml,html:build/reports/detekt-report.html"
+tasks.named("detekt").configure {
+    reports {
+        html.required.set(true)
+        html.outputLocation.set(file("build/reports/detekt-report.html"))
+    }
 }

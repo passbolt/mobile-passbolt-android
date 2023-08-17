@@ -1,6 +1,6 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 android {
@@ -24,7 +24,7 @@ dependencies {
     implementation project(':authentication')
     implementation project(':resourcetypes')
 
-    implementation libs.di.koin
+    implementation libs.koin
     implementation libs.room.core
-    implementation libs.test.espressoIdlingResource
+    implementation libs.espresso.idling.resource
 }

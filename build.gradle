@@ -1,41 +1,26 @@
 buildscript {
     apply from: "gradle/versions.gradle"
-    apply from: "gradle/repositories.gradle"
 
-    repositories {
-        maven { url projectRepositories.google }
-        maven { url projectRepositories.mavenCentral }
-        maven { url projectRepositories.jitPack }
-        maven { url projectRepositories.gradlePlugins }
-    }
     dependencies {
-        classpath libs.androidGradlePlugin
-        classpath libs.kotlin.gradlePlugin
-        classpath libs.kotlin.serializationPlugin
-        classpath libs.gradleVersionsPlugin
-        classpath libs.quadrant
-        classpath libs.androidx.navigation_safe_args
-        classpath libs.appDistribution
         classpath libs.easylauncher
         classpath libs.licensee
-        classpath libs.playStorePublisher
-        classpath libs.dokka
-        classpath libs.quality.kover
-        classpath libs.quality.dependencyAnalysis
     }
 }
 
-apply plugin: "org.jetbrains.dokka"
-apply plugin: "kover"
-apply plugin: "com.autonomousapps.dependency-analysis"
-
-allprojects {
-    repositories {
-        maven { url projectRepositories.google }
-        maven { url projectRepositories.mavenCentral }
-        maven { url projectRepositories.jitPack }
-        flatDir { dirs "${rootProject.projectDir}/core/gopenpgp/libs" }
-    }
+plugins {
+    alias libs.plugins.android.application apply false
+    alias libs.plugins.android.library apply false
+    alias libs.plugins.kotlin.gradle apply false
+    alias libs.plugins.gradle.versions apply false
+    alias libs.plugins.quadrant apply false
+    alias libs.plugins.navigation.safeargs apply false
+    alias libs.plugins.kotlin.parcelize apply false
+    alias libs.plugins.playstore.publisher apply false
+    alias libs.plugins.dependency.analysis
+    alias libs.plugins.kover
+    alias libs.plugins.dokka
+    alias libs.plugins.detekt
+    alias libs.plugins.kotlin.ksp
 }
 
 subprojects {

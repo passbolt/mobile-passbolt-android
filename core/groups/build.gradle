@@ -1,9 +1,8 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.navigation.safeargs
 }
-
-apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     implementation project(':common')
@@ -17,8 +16,8 @@ dependencies {
     implementation project(':database')
     implementation project(':entity')
 
-    implementation libs.di.koin
-    implementation libs.room.cipher
+    implementation libs.koin
+    implementation(libs.sqlite.cipher) { artifact { type = "aar" } }
     implementation libs.room.core
 }
 

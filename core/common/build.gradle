@@ -1,6 +1,6 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
@@ -8,12 +8,12 @@ dependencies {
     implementation project(':coreui')
 
     implementation libs.androidx.core
-    implementation libs.androidx.appcompat
-    implementation libs.androidx.biometric
+    implementation libs.appcompat
+    implementation libs.biometric
     implementation libs.material
-    implementation libs.networking.retrofit
-    implementation libs.networking.okHttp
-    implementation libs.di.koin
+    implementation libs.retrofit
+    implementation libs.okhttp
+    implementation libs.koin
 }
 
 android {

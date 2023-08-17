@@ -1,10 +1,9 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
-    id "kotlin-parcelize"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.parcelize
+    alias libs.plugins.quadrant
 }
-
-apply plugin: "com.gaelmarhic.quadrant"
 
 quadrantConfig {
     perModule true
@@ -18,6 +17,6 @@ android {
 }
 
 dependencies {
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
 }

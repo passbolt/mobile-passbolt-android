@@ -80,6 +80,7 @@ complexity:
     threshold: 600
   LongMethod:
     active: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
     threshold: 60
   LongParameterList:
     active: true
@@ -425,6 +426,7 @@ style:
     active: false
   MaxLineLength:
     active: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
     maxLineLength: 120
     excludePackageStatements: true
     excludeImportStatements: true

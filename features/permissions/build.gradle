@@ -1,9 +1,8 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.navigation.safeargs
 }
-
-apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     implementation project(':common')
@@ -22,16 +21,16 @@ dependencies {
     implementation project(':folders')
     implementation project(':localization')
 
-    implementation libs.di.koin
-    implementation libs.fastAdapter.core
-    implementation libs.fastAdapter.binding
-    implementation libs.fastAdapter.diff
+    implementation libs.koin
+    implementation libs.fastadapter.core
+    implementation libs.fastadapter.binding
+    implementation libs.fastadapter.diff
     implementation libs.coil.core
     implementation libs.coil.base
-    implementation libs.androidx.constraintLayout
+    implementation libs.constraintlayout
     implementation libs.material
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
 
     testImplementation project(':commontest')
 }
