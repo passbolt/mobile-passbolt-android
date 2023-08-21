@@ -153,7 +153,10 @@ class AutofillResourcesActivity :
     }
 
     override fun showError(message: String?) {
-        Snackbar.make(binding.root, getString(LocalizationR.string.common_failure_format, message), Snackbar.LENGTH_LONG)
+        Snackbar.make(
+            binding.root,
+            getString(LocalizationR.string.common_failure_format, message), Snackbar.LENGTH_LONG
+        )
             .apply {
                 view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()

@@ -1,10 +1,9 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
-    id "kotlin-parcelize"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.parcelize
+    alias libs.plugins.navigation.safeargs
 }
-
-apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     implementation project(':architecture')
@@ -25,14 +24,14 @@ dependencies {
     implementation project(':logs')
     implementation project(':transferaccounttoanotherdevice')
 
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
-    implementation libs.di.koin
-    implementation libs.androidx.biometric
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation libs.koin
+    implementation libs.biometric
     implementation libs.gson
-    implementation libs.fastAdapter.binding
-    implementation libs.fastAdapter.core
-    implementation libs.fastAdapter.diff
+    implementation libs.fastadapter.binding
+    implementation libs.fastadapter.core
+    implementation libs.fastadapter.diff
 
     testImplementation project(':commontest')
 }

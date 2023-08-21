@@ -1,9 +1,8 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.navigation.safeargs
 }
-
-apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     implementation project(':common')
@@ -26,16 +25,16 @@ dependencies {
     implementation project(':folders')
     implementation project(':localization')
 
-    implementation libs.di.koin
+    implementation libs.koin
     implementation libs.material
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
-    implementation libs.androidx.navigationUi
-    implementation libs.fastAdapter.binding
-    implementation libs.fastAdapter.core
-    implementation libs.fastAdapter.diff
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation libs.navigation.ui
+    implementation libs.fastadapter.binding
+    implementation libs.fastadapter.core
+    implementation libs.fastadapter.diff
     implementation libs.room.core
-    implementation libs.androidx.swiperefresh
+    implementation libs.swiperefresh
 
     testImplementation project(':commontest')
 }

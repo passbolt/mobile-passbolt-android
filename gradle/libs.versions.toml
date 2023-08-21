@@ -1,0 +1,180 @@
+[versions]
+androidGradlePlugin = '8.1.0'
+gradleVersionsPlugin = "0.28.0"
+desugarJdkLibs = "1.0.9"
+kotlin = "1.7.22"
+kotlinKsp = "1.7.22-1.0.8"
+coroutines = "1.6.4"
+koin = "3.2.0"
+quadrant = "1.7"
+junit = "4.13.2"
+mockitoCore = "4.6.1"
+mockitoKotlin = "4.0.0"
+truth = "1.1.3"
+androidxJUnit = "1.1.3"
+espresso = "3.5.0-alpha07"
+turbine = "0.5.1"
+coroutinesTest = "1.6.4"
+androidTestsRunner = "1.4.0"
+androidTestRules = "1.4.0"
+androidTestKtx = "1.5.0"
+androidTestIntents = "3.5.0-alpha07"
+mockitoAndroid = "4.8.0"
+espressoOkHttpIdlingResource = "1.0.0"
+espressoIdlingResource = "3.5.0-alpha07"
+ktlint = "0.36.0"
+detekt = "1.21.0"
+leakcanary = "2.9.1"
+kover = "0.5.1"
+dependencyAnalysis = "1.10.0"
+licensee = "1.5.0"
+dokka = "1.6.10"
+androidXcore = "1.8.0"
+appcompat = "1.6.1"
+constraintLayout = "2.1.4"
+navigation = "2.5.0"
+security = "1.1.0-alpha03"
+biometric = "1.2.0-alpha03"
+fragment = "1.5.0"
+activity = "1.5.0"
+cameraX = "1.2.0"
+cameraView = "1.2.0"
+lifecycle = "2.5.0"
+swiperefresh = "1.1.0"
+appStartUp = "1.1.1"
+splashScreen = "1.0.0-beta02"
+cameraXMlVision = "1.2.0-beta02"
+material = "1.6.1"
+retrofit = "2.9.0"
+okHttp = "4.7.2"
+timber = "5.0.1"
+mlkit = "17.0.3"
+zxing = "4.3.0"
+gson = "2.9.0"
+appDistribution = "3.0.2"
+coil = "2.1.0"
+fastAdapterCore = "5.6.0"
+fastAdapterCoreAnimators = "1.1.0"
+easylauncher = "6.1.0"
+fusionauthJwt = "4.2.0"
+textDrawable = "558677ea31"
+serializationJson = "1.3.3"
+roomCore = "2.4.3"
+sqliteCipher = "4.5.2"
+sqlite = "2.2.0"
+roomTesting = "2.4.3"
+yubikitAndroid = "2.3.0"
+pinentry = "2.0.6"
+balloon = "1.4.6"
+rootbeer = "0.1.0"
+playStorePublisher = "3.7.0"
+inAppUpdate = "2.0.0"
+fabSpeedDial = "3.3.0"
+inAppReview = "2.0.0"
+okio = "3.2.0"
+otp = "2.4.0"
+apacheCommonsCodec = "1.15"
+
+[libraries]
+android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
+desugar-jdklibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
+licensee = { group = "app.cash.licensee", name = "licensee-gradle-plugin", version.ref = "licensee" }
+koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
+koin-test-junit = { group = "io.insert-koin", name = "koin-test-junit4", version.ref = "koin" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlin-io = { group = "org.jetbrains.kotlin", name = "kotlin-util-io", version.ref = "kotlin" }
+kotlin-serializationjson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockitoCore" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
+mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockitoAndroid" }
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJUnit" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+android-tests-runner = { group = "androidx.test", name = "runner", version.ref = "androidTestsRunner" }
+android-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidTestRules" }
+android-test-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidTestKtx" }
+android-test-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "androidTestIntents" }
+espresso-okhttp-idling-resource = { group = "com.jakewharton.espresso", name = "okhttp3-idling-resource", version.ref = "espressoOkHttpIdlingResource" }
+espresso-idling-resource = { group = "androidx.test.espresso", name = "espresso-idling-resource", version.ref = "espressoIdlingResource" }
+ktlint = { group = "com.pinterest", name = "ktlint", version.ref = "ktlint" }
+leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
+androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidXcore" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
+navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
+navigation-ui = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
+security = { group = "androidx.security", name = "security-crypto", version.ref = "security" }
+biometric = { group = "androidx.biometric", name = "biometric-ktx", version.ref = "biometric" }
+fragment = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
+activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
+camerax = { group = "androidx.camera", name = "camera-camera2", version.ref = "cameraX" }
+camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "cameraX" }
+camerax-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraView" }
+camerax-mlvision = { group = "androidx.camera", name = "camera-mlkit-vision", version.ref = "cameraXMlVision" }
+lifecycle-annotationprocessor = { group = "androidx.lifecycle", name = "lifecycle-common-java8", version.ref = "lifecycle" }
+lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle" }
+swiperefresh = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefresh" }
+app-startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "appStartUp" }
+splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-gsonconverter = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okHttp" }
+okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okHttp" }
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+qr-scan = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlkit" }
+qr-generation = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxing" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+coil-core = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
+coil-base = { group = "io.coil-kt", name = "coil-base", version.ref = "coil" }
+fastadapter-core = { group = "com.mikepenz", name = "fastadapter", version.ref = "fastAdapterCore" }
+fastadapter-binding = { group = "com.mikepenz", name = "fastadapter-extensions-binding", version.ref = "fastAdapterCore" }
+fastadapter-utils = { group = "com.mikepenz", name = "fastadapter-extensions-utils", version.ref = "fastAdapterCore" }
+fastadapter-diff = { group = "com.mikepenz", name = "fastadapter-extensions-diff", version.ref = "fastAdapterCore" }
+fastadapter-expandable = { group = "com.mikepenz", name = "fastadapter-extensions-expandable", version.ref = "fastAdapterCore" }
+fastadapter-ui = { group = "com.mikepenz", name = "fastadapter-extensions-ui", version.ref = "fastAdapterCore" }
+fastadapter-animators = { group = "com.mikepenz", name = "itemanimators", version.ref = "fastAdapterCoreAnimators" }
+easylauncher = { group = "com.project.starter", name = "easylauncher", version.ref = "easylauncher" }
+fusionauth-jwt = { group = "io.fusionauth", name = "fusionauth-jwt", version.ref = "fusionauthJwt" }
+textdrawable = { group = "com.github.amulyakhare", name = "TextDrawable", version.ref = "textDrawable" }
+room-core = { group = "androidx.room", name = "room-ktx", version.ref = "roomCore" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomCore" }
+sqlite-cipher = { group = "net.zetetic", name = "android-database-sqlcipher", version.ref = "sqliteCipher" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCore" }
+room-testing = { group = "androidx.room", name = "room-testing", version.ref = "roomTesting" }
+sqlite = { group = "androidx.sqlite", name = "sqlite-ktx", version.ref = "sqlite" }
+yubikit-android = { group = "com.yubico.yubikit", name = "android", version.ref = "yubikitAndroid" }
+balloon = { group = "com.github.skydoves", name = "balloon", version.ref = "balloon" }
+pinentry = { group = "com.alimuzaffar.lib", name = "pinentryedittext", version.ref = "pinentry" }
+rootbeer = { group = "com.scottyab", name = "rootbeer-lib", version.ref = "rootbeer" }
+inappupdate-core = { group = "com.google.android.play", name = "app-update", version.ref = "inAppUpdate" }
+inappupdate-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "inAppUpdate" }
+inappreview-core = { group = "com.google.android.play", name = "review", version.ref = "inAppReview" }
+inappreview-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "inAppReview" }
+fab-speeddial = { group = "com.leinardi.android", name = "speed-dial", version.ref = "fabSpeedDial" }
+okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
+otp = { group = "dev.turingcomplete", name = "kotlin-onetimepassword", version.ref = "otp" }
+apache-commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "apacheCommonsCodec" }
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+kotlin-gradle = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+gradle-versions = { id = "com.github.ben-manes.versions", version.ref = "gradleVersionsPlugin" }
+quadrant = { id = "com.gaelmarhic.quadrant", version.ref = "quadrant" }
+navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
+app-distribution = { id = "com.google.firebase.appdistribution", version.ref = "appDistribution" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+playstore-publisher = { id = "com.github.triplet.play", version.ref = "playStorePublisher" }
+dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinKsp" }

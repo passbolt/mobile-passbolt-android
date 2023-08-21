@@ -1,13 +1,13 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
     implementation project(':storage')
     implementation project(':common')
 
-    implementation libs.di.koin
+    implementation libs.koin
 }
 
 android {

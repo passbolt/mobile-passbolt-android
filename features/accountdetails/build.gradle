@@ -1,9 +1,8 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.navigation.safeargs
 }
-
-apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     api project(':architecture')
@@ -18,9 +17,9 @@ dependencies {
     implementation project(':transferaccounttoanotherdevice')
     implementation project(':navigation')
 
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
-    implementation libs.di.koin
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation libs.koin
     implementation libs.coil.core
     implementation libs.coil.base
 
