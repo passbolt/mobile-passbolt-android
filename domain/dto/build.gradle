@@ -37,4 +37,13 @@ dependencies {
 
 android {
     namespace = "com.passbolt.mobile.android.domain.dto"
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

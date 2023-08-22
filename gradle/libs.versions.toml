@@ -2,8 +2,8 @@
 androidGradlePlugin = '8.1.0'
 gradleVersionsPlugin = "0.28.0"
 desugarJdkLibs = "1.0.9"
-kotlin = "1.7.22"
-kotlinKsp = "1.7.22-1.0.8"
+kotlin = "1.8.22"
+kotlinKsp = "1.8.22-1.0.11"
 coroutines = "1.6.4"
 koin = "3.2.0"
 quadrant = "1.7"

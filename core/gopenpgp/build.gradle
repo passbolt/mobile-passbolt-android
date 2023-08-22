@@ -26,4 +26,13 @@ android {
     packagingOptions {
         exclude "META-INF/{AL2.0,LGPL2.1}"
     }
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
