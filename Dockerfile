@@ -1,4 +1,4 @@
-FROM openjdk:18.0.2.1-slim-bullseye
+FROM openjdk:17-slim-bullseye
 
 ENV ANDROID_HOME="/usr/local/android-sdk" \
     ANDROID_SDK_ROOT="/usr/local/android-sdk" \

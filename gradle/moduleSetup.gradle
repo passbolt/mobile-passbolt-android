@@ -21,6 +21,12 @@ def setupModule(isAndroid, isAndroidComponent) {
                 targetSdk projectTargetSdk
             }
 
+            compileOptions {
+                coreLibraryDesugaringEnabled true
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
+            }
+
             if (isAndroidComponent) {
                 buildTypes {
                     release {
