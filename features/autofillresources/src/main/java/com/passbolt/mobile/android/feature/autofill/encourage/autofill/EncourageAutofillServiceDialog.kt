@@ -45,7 +45,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContract.View, AndroidScopeComponent {
 
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private var listener: Listener? = null
     private val presenter: EncourageAutofillContract.Presenter by scope.inject()
     private var autofillSystemSettingsLauncher = registerForActivityResult(

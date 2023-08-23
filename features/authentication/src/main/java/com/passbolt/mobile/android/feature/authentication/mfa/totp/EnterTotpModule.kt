@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.feature.authentication.mfa.totp
 
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyTotpUseCase
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,20 +31,7 @@ import org.koin.core.qualifier.named
 
 fun Module.enterTotpModuleModule() {
     scope(named<EnterTotpDialog>()) {
-        scoped<EnterTotpContract.Presenter> {
-            EnterTotpPresenter(
-                signOutUseCase = get(),
-                coroutineLaunchContext = get(),
-                verifyTotpUseCase = get(),
-                refreshSessionUseCase = get()
-            )
-        }
-        scoped {
-            VerifyTotpUseCase(
-                mfaRepository = get(),
-                cookieExtractor = get(),
-                errorHeaderMapper = get()
-            )
-        }
+        scopedOf(::EnterTotpPresenter) bind EnterTotpContract.Presenter::class
+        scopedOf(::VerifyTotpUseCase)
     }
 }

@@ -26,21 +26,35 @@ import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
  */
 class MfaStatusProvider {
 
-    fun provideMfaStatus(
-        challengeResponseDto: ChallengeResponseDto,
-        mfaToken: String?,
-        currentMfaToken: String?
-    ) =
-        challengeResponseDto.mfaProviders.let {
-            if (it.isNullOrEmpty() || (mfaToken != null && mfaToken == currentMfaToken)) {
-                MfaStatus.NotRequired
+    private lateinit var state: MfaState
+
+    fun setState(mfaState: MfaState) {
+        this.state = mfaState
+    }
+
+    fun provideMfaStatus(): MfaStatus {
+        require(::state.isInitialized) { "Update with latest state using #setState before usage" }
+        state.challengeResponseDto.mfaProviders.let { mfaProviders ->
+            return if (mfaProviders.isNullOrEmpty() || currentMfaTokenIsValid()) {
+                MfaStatus.NOT_REQUIRED
             } else {
-                MfaStatus.Required(it)
+                MfaStatus.REQUIRED
             }
         }
+    }
+
+    private fun currentMfaTokenIsValid() =
+        state.newMfaToken != null && state.newMfaToken == state.currentMfaToken
 
     companion object {
         const val MFA_PROVIDER_TOTP = "totp"
         const val MFA_PROVIDER_YUBIKEY = "yubikey"
+        const val MFA_PROVIDER_DUO = "duo"
     }
+
+    data class MfaState(
+        val challengeResponseDto: ChallengeResponseDto,
+        val newMfaToken: String?,
+        val currentMfaToken: String?
+    )
 }

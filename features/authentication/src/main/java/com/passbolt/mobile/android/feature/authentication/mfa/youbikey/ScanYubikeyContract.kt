@@ -8,7 +8,6 @@ interface ScanYubikeyContract {
         fun showScanYubikey()
         fun showEmptyScannedOtp()
         fun showScanOtpCancelled()
-        fun navigateToTotp()
         fun closeAndNavigateToStartup()
         fun showProgress()
         fun hideProgress()
@@ -23,11 +22,10 @@ interface ScanYubikeyContract {
 
     interface Presenter : BaseContract.Presenter<View> {
         fun scanYubikeyClick()
-        fun otherProviderClick()
         fun yubikeyScanned(otp: String?, authToken: String?, rememberChecked: Boolean)
         fun yubikeyScanCancelled()
         fun closeClick()
-        fun onViewCreated(bundledHasTotpProvider: Boolean)
+        fun onViewCreated(bundledOtherProvider: Boolean)
         fun authenticationSucceeded()
     }
 }

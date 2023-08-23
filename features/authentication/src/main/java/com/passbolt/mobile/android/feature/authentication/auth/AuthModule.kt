@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.feature.authentication.auth
 import androidx.biometric.BiometricPrompt
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.feature.authentication.MfaProviderHandler
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeDecryptor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeProvider
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.ChallengeVerifier
@@ -74,7 +73,6 @@ fun Module.authModule() {
             BiometricPrompt.PromptInfo.Builder()
         }
     }
-    singleOf(::MfaProviderHandler)
     singleOf(::SignOutUseCase)
     singleOf(::BiometryInteractor)
     singleOf(::SignInIdlingResource)

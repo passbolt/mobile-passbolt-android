@@ -1,12 +1,12 @@
-package com.passbolt.mobile.android.core.mvp.scoped
+package com.passbolt.mobile.android.core.mvp
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.viewbinding.ViewBinding
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.fragmentScope
-import org.koin.core.scope.Scope
+import com.passbolt.mobile.android.core.mvp.authentication.MfaProvidersHandler
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.AppCoroutineContext
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,9 +30,7 @@ import org.koin.core.scope.Scope
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-abstract class BindingScopedFragment<T : ViewBinding>(viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
-    BindingFragment<T>(viewInflater), AndroidScopeComponent {
-
-    override val scope: Scope by fragmentScope(useParentActivityScope = false)
+val architectureModule = module {
+    factoryOf(::MfaProvidersHandler)
+    singleOf(::AppCoroutineContext) bind CoroutineLaunchContext::class
 }

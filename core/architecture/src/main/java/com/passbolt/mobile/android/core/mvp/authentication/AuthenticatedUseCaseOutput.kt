@@ -15,15 +15,17 @@ sealed class AuthenticationState {
             object Passphrase : Reason()
             object Session : Reason()
             class Mfa(val providers: List<MfaProvider?>?) : Reason() {
-                enum class MfaProvider {
-                    YUBIKEY,
-                    TOTP;
+                enum class MfaProvider(val providerName: String) {
+                    YUBIKEY("yubikey"),
+                    TOTP("totp"),
+                    DUO("duo");
 
                     companion object {
                         fun parse(provider: String?) =
                             when (provider) {
                                 "yubikey" -> YUBIKEY
                                 "totp" -> TOTP
+                                "duo" -> DUO
                                 else -> null
                             }
                     }

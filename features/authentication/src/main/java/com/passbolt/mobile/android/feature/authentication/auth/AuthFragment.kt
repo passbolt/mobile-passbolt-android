@@ -21,6 +21,9 @@ import com.passbolt.mobile.android.core.extension.hideSoftInput
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.DUO
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.TOTP
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.YUBIKEY
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -31,6 +34,8 @@ import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInP
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategy
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
 import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAuthBinding
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoDialog
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoListener
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpListener
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
@@ -72,7 +77,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 @Suppress("TooManyFunctions")
 class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate), AuthContract.View,
     FeatureFlagsFetchErrorDialog.Listener, ServerFingerprintChangedDialog.Listener, AccountDoesNotExistDialog.Listener,
-    EnterTotpListener, ScanYubikeyListener, HelpMenuFragment.Listener {
+    EnterTotpListener, ScanYubikeyListener, AuthWithDuoListener, HelpMenuFragment.Listener {
 
     private val strategyFactory: AuthStrategyFactory by inject()
     private lateinit var authStrategy: AuthStrategy
@@ -284,21 +289,21 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         )
     }
 
-    override fun showTotpDialog(jwtToken: String, hasYubikeyProvider: Boolean) {
-        EnterTotpDialog.newInstance(token = jwtToken, hasYubikeyProvider = hasYubikeyProvider).show(
+    override fun showTotpDialog(jwtToken: String?, hasOtherProviders: Boolean) {
+        EnterTotpDialog.newInstance(token = jwtToken, hasOtherProvider = hasOtherProviders).show(
             childFragmentManager, EnterTotpDialog::class.java.name
         )
     }
 
-    override fun showYubikeyDialog(jwtToken: String, hasTotpProvider: Boolean) {
-        ScanYubikeyDialog.newInstance(token = jwtToken, hasTotpProvider = hasTotpProvider).show(
-            childFragmentManager, EnterTotpDialog::class.java.name
+    override fun showDuoDialog(jwtToken: String?, hasOtherProviders: Boolean) {
+        AuthWithDuoDialog.newInstance(token = jwtToken, hasOtherProvider = hasOtherProviders).show(
+            childFragmentManager, AuthWithDuoDialog::class.java.name
         )
     }
 
-    override fun changeProviderToTotp(jwtToken: String?) {
-        EnterTotpDialog.newInstance(token = jwtToken, hasYubikeyProvider = true).show(
-            childFragmentManager, EnterTotpDialog::class.java.name
+    override fun showYubikeyDialog(jwtToken: String?, hasOtherProviders: Boolean) {
+        ScanYubikeyDialog.newInstance(token = jwtToken, hasOtherProvider = hasOtherProviders).show(
+            childFragmentManager, ScanYubikeyDialog::class.java.name
         )
     }
 
@@ -420,21 +425,28 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
             .show()
     }
 
-    override fun changeProviderToYubikey(bearer: String) {
-        ScanYubikeyDialog.newInstance(
-            hasTotpProvider = true,
-            token = bearer
-        ).show(
-            childFragmentManager, EnterTotpDialog::class.java.name
-        )
+    override fun totpOtherProviderClick(bearer: String) {
+        presenter.otherProviderClick(bearer, TOTP)
+    }
+
+    override fun yubikeyOtherProviderClick(jwtToken: String?) {
+        presenter.otherProviderClick(jwtToken, YUBIKEY)
+    }
+
+    override fun duoOtherProviderClick(jwtToken: String?) {
+        presenter.otherProviderClick(jwtToken, DUO)
     }
 
     override fun totpVerificationSucceeded(mfaHeader: String?) {
-        presenter.totpSucceeded(mfaHeader)
+        presenter.mfaSucceeded(mfaHeader)
     }
 
     override fun yubikeyVerificationSucceeded(mfaHeader: String?) {
-        presenter.yubikeySucceeded(mfaHeader)
+        presenter.mfaSucceeded(mfaHeader)
+    }
+
+    override fun duoAuthSucceeded(mfaHeader: String?) {
+        presenter.mfaSucceeded(mfaHeader)
     }
 
     override fun showServerNotReachable(serverDomain: String) {

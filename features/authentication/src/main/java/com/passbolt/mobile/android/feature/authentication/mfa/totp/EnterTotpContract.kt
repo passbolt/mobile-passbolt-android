@@ -7,7 +7,6 @@ interface EnterTotpContract {
     interface View : BaseContract.View {
         fun showProgress()
         fun hideProgress()
-        fun navigateToYubikey()
         fun closeAndNavigateToStartup()
         fun pasteOtp(otp: String)
         fun notifyVerificationSucceeded(mfaHeader: String)
@@ -25,11 +24,10 @@ interface EnterTotpContract {
     }
 
     interface Presenter : BaseContract.Presenter<View> {
-        fun otherProviderClick()
         fun closeClick()
         fun otpEntered(otp: String, authToken: String, rememberMeChecked: Boolean)
         fun pasteButtonClick(pasteData: CharSequence?)
-        fun viewCreated(hasYubikeyProvider: Boolean)
+        fun viewCreated(hasOtherProvider: Boolean)
         fun authenticationSucceeded()
     }
 }

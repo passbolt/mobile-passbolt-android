@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.feature.authentication.mfa.youbikey
 
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyYubikeyUseCase
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,19 +31,7 @@ import org.koin.core.qualifier.named
 
 fun Module.scanYubikeyModule() {
     scope(named<ScanYubikeyDialog>()) {
-        scoped<ScanYubikeyContract.Presenter> {
-            ScanYubikeyPresenter(
-                signOutUseCase = get(),
-                coroutineLaunchContext = get(),
-                verifyYubikeyUseCase = get(),
-                refreshSessionUseCase = get()
-            )
-        }
-        scoped {
-            VerifyYubikeyUseCase(
-                mfaRepository = get(),
-                cookieExtractor = get()
-            )
-        }
+        scopedOf(::ScanYubikeyPresenter) bind ScanYubikeyContract.Presenter::class
+        scopedOf(::VerifyYubikeyUseCase)
     }
 }

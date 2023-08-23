@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.core.mvp.authentication
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,10 +28,20 @@ import com.passbolt.mobile.android.core.mvp.BaseContract
 interface BaseAuthenticatedContract {
 
     interface View : BaseContract.View {
-        fun showAuth(reason: UnauthenticatedReason)
+        fun showRefreshPassphraseAuth()
+        fun showSignInAuth()
+        fun showMfaAuth(
+            mfaReason: MfaProvider?,
+            hasMultipleProviders: Boolean
+        )
+        fun showUnknownProvider()
+        fun showTotpDialog(hasOtherProviders: Boolean)
+        fun showYubikeyDialog(hasOtherProviders: Boolean)
+        fun showDuoDialog(hasOtherProviders: Boolean)
     }
 
     interface Presenter<T : View> : BaseContract.Presenter<T> {
         fun authenticationRefreshed()
+        fun otherProviderClick(currentProvider: MfaProvider)
     }
 }

@@ -23,12 +23,8 @@ class EnterTotpPresenter(
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    override fun otherProviderClick() {
-        view?.navigateToYubikey()
-    }
-
-    override fun viewCreated(hasYubikeyProvider: Boolean) {
-        view?.showChangeProviderButton(hasYubikeyProvider)
+    override fun viewCreated(hasOtherProvider: Boolean) {
+        view?.showChangeProviderButton(hasOtherProvider)
     }
 
     override fun closeClick() {

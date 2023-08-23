@@ -1,30 +1,3 @@
-package com.passbolt.mobile.android.feature.authentication.mfa.youbikey
-
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
-import com.google.android.material.snackbar.Snackbar
-import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
-import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
-import com.passbolt.mobile.android.feature.authentication.databinding.DialogScanYubikeyBinding
-import com.yubico.yubikit.android.ui.OtpActivity
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.fragmentScope
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -48,25 +21,43 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 
-class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyContract.View {
+package com.passbolt.mobile.android.feature.authentication.mfa.duo
+
+import android.app.Activity
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
+import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
+import com.passbolt.mobile.android.feature.authentication.databinding.DialogAuthWithDuoBinding
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.fragmentScope
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
+
+class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoContract.View {
 
     override val scope by fragmentScope(useParentActivityScope = false)
-    private var listener: ScanYubikeyListener? = null
-    private val presenter: ScanYubikeyContract.Presenter by scope.inject()
-    private lateinit var binding: DialogScanYubikeyBinding
+    private var listener: AuthWithDuoListener? = null
+    private val presenter: AuthWithDuoContract.Presenter by scope.inject()
+    private lateinit var binding: DialogAuthWithDuoBinding
     private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             presenter.authenticationSucceeded()
         }
     }
-    private val scanYubikeyResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            val otp = it.data?.getStringExtra(OtpActivity.EXTRA_OTP)
-            presenter.yubikeyScanned(otp, bundledAuthToken, binding.rememberMeCheckBox.isChecked)
-        } else {
-            presenter.yubikeyScanCancelled()
-        }
-    }
+
     private val bundledAuthToken by lifecycleAwareLazy {
         requireArguments().getString(EXTRA_AUTH_KEY)
     }
@@ -86,7 +77,7 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DialogScanYubikeyBinding.inflate(inflater)
+        binding = DialogAuthWithDuoBinding.inflate(inflater)
         return binding.root
     }
 
@@ -94,9 +85,9 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         super.onAttach(context)
         isCancelable = false
         listener = when {
-            activity is ScanYubikeyListener -> activity as ScanYubikeyListener
-            parentFragment is ScanYubikeyListener -> parentFragment as ScanYubikeyListener
-            else -> error("Parent must implement ${ScanYubikeyListener::class.java.name}")
+            activity is AuthWithDuoListener -> activity as AuthWithDuoListener
+            parentFragment is AuthWithDuoListener -> parentFragment as AuthWithDuoListener
+            else -> error("Parent must implement ${AuthWithDuoListener::class.java.name}")
         }
         presenter.attach(this)
     }
@@ -127,35 +118,16 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
 
     private fun setupListeners() {
         with(binding) {
-            scanYubikeyButton.setDebouncingOnClick {
-                presenter.scanYubikeyClick()
+            authWithDuoButton.setDebouncingOnClick {
+                presenter.authWithDuoClick()
             }
             otherProviderButton.setDebouncingOnClick {
-                listener?.yubikeyOtherProviderClick(bundledAuthToken)
+                listener?.duoOtherProviderClick(bundledAuthToken)
             }
             closeButton.setDebouncingOnClick {
                 presenter.closeClick()
             }
         }
-    }
-
-    override fun showScanYubikey() {
-        scanYubikeyResult.launch(
-            Intent(requireContext(), OtpActivity::class.java)
-        )
-    }
-
-    override fun showScanOtpCancelled() {
-        Snackbar.make(requireView(), LocalizationR.string.dialog_mfa_scan_cancelled, Snackbar.LENGTH_SHORT)
-            .show()
-    }
-
-    override fun showEmptyScannedOtp() {
-        Snackbar.make(requireView(), LocalizationR.string.dialog_mfa_scan_empty_otp, Snackbar.LENGTH_SHORT)
-            .apply {
-                view.setBackgroundColor(context.getColor(CoreUiR.color.red))
-                show()
-            }
     }
 
     override fun closeAndNavigateToStartup() {
@@ -173,12 +145,12 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
 
     override fun notifyVerificationSucceeded(mfaHeader: String) {
         dismiss()
-        listener?.yubikeyVerificationSucceeded(mfaHeader)
+        listener?.duoAuthSucceeded(mfaHeader)
     }
 
     override fun notifyLoginSucceeded() {
         dismiss()
-        listener?.yubikeyVerificationSucceeded()
+        listener?.duoAuthSucceeded()
     }
 
     override fun close() {
@@ -201,7 +173,7 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
             token: String? = null,
             hasOtherProvider: Boolean
         ) =
-            ScanYubikeyDialog().apply {
+            AuthWithDuoDialog().apply {
                 arguments = bundleOf(
                     EXTRA_AUTH_KEY to token,
                     EXTRA_OTHER_PROVIDER to hasOtherProvider
@@ -210,7 +182,7 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
     }
 }
 
-interface ScanYubikeyListener {
-    fun yubikeyOtherProviderClick(jwtToken: String?)
-    fun yubikeyVerificationSucceeded(mfaHeader: String? = null)
+interface AuthWithDuoListener {
+    fun duoOtherProviderClick(jwtToken: String?)
+    fun duoAuthSucceeded(mfaHeader: String? = null)
 }

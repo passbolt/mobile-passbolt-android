@@ -1,6 +1,10 @@
 package com.passbolt.mobile.android.core.mvp.authentication
 
 import androidx.annotation.CallSuper
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.DUO
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.TOTP
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.YUBIKEY
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -10,6 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
 /**
@@ -39,7 +45,7 @@ import timber.log.Timber
 // TODO fetching resources and folders on start in parallel
 abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
     coroutineLaunchContext: CoroutineLaunchContext
-) : BaseAuthenticatedContract.Presenter<T> {
+) : BaseAuthenticatedContract.Presenter<T>, KoinComponent {
 
     private var _sessionRefreshFlow = MutableStateFlow<Unit?>(null)
     val sessionRefreshedFlow
@@ -48,6 +54,8 @@ abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
     lateinit var needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
+
+    private val mfaProvidersHandler: MfaProvidersHandler by inject()
 
     @CallSuper
     override fun attach(view: T) {
@@ -65,7 +73,23 @@ abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
                 .take(1)
                 .collect {
                     Timber.d("[Session] Session refresh needed - showing auth")
-                    it?.let { view?.showAuth(it) }
+                    it?.let {
+                        when (it) {
+                            is AuthenticationState.Unauthenticated.Reason.Mfa -> {
+                                mfaProvidersHandler.setProviders(it.providers.orEmpty())
+                                view?.showMfaAuth(
+                                    mfaProvidersHandler.firstMfaProvider(),
+                                    mfaProvidersHandler.hasMultipleProviders()
+                                )
+                            }
+                            is AuthenticationState.Unauthenticated.Reason.Passphrase -> {
+                                view?.showRefreshPassphraseAuth()
+                            }
+                            is AuthenticationState.Unauthenticated.Reason.Session -> {
+                                view?.showSignInAuth()
+                            }
+                        }
+                    }
                     listenForRefreshSessionEvents()
                 }
         }
@@ -81,5 +105,14 @@ abstract class BaseAuthenticatedPresenter<T : BaseAuthenticatedContract.View>(
     override fun authenticationRefreshed() {
         _sessionRefreshFlow.value = Unit
         _sessionRefreshFlow = MutableStateFlow(null)
+    }
+
+    override fun otherProviderClick(currentProvider: MfaProvider) {
+        when (mfaProvidersHandler.nextMfaProvider(currentProvider)) {
+            YUBIKEY -> view?.showYubikeyDialog(mfaProvidersHandler.hasMultipleProviders())
+            TOTP -> view?.showTotpDialog(mfaProvidersHandler.hasMultipleProviders())
+            DUO -> view?.showDuoDialog(mfaProvidersHandler.hasMultipleProviders())
+            null -> view?.showUnknownProvider()
+        }
     }
 }

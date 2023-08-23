@@ -49,7 +49,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class EncourageAccessibilityAutofillDialog : DialogFragment(), EncourageAccessibilityAutofillContract.View,
     AndroidScopeComponent, AutofillTutorialDialog.Listener {
 
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private var listener: Listener? = null
     private val presenter: EncourageAccessibilityAutofillContract.Presenter by scope.inject()
     private lateinit var binding: DialogAccessibilityEncourageAutofillBinding

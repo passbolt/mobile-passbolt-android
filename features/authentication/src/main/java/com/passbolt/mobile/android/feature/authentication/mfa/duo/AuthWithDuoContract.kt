@@ -1,13 +1,3 @@
-package com.passbolt.mobile.android.core.mvp.scoped
-
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.viewbinding.ViewBinding
-import com.passbolt.mobile.android.core.mvp.viewbinding.BindingFragment
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.fragmentScope
-import org.koin.core.scope.Scope
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -31,8 +21,29 @@ import org.koin.core.scope.Scope
  * @since v1.0
  */
 
-abstract class BindingScopedFragment<T : ViewBinding>(viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
-    BindingFragment<T>(viewInflater), AndroidScopeComponent {
+package com.passbolt.mobile.android.feature.authentication.mfa.duo
 
-    override val scope: Scope by fragmentScope(useParentActivityScope = false)
+import com.passbolt.mobile.android.core.mvp.BaseContract
+
+interface AuthWithDuoContract {
+
+    interface View : BaseContract.View {
+        fun closeAndNavigateToStartup()
+        fun showProgress()
+        fun hideProgress()
+        fun notifyVerificationSucceeded(mfaHeader: String)
+        fun showError()
+        fun showChangeProviderButton(bundledHasTotpProvider: Boolean)
+        fun close()
+        fun navigateToLogin()
+        fun notifyLoginSucceeded()
+        fun showSessionExpired()
+    }
+
+    interface Presenter : BaseContract.Presenter<View> {
+        fun authWithDuoClick()
+        fun closeClick()
+        fun onViewCreated(bundledHasOtherProvider: Boolean)
+        fun authenticationSucceeded()
+    }
 }
