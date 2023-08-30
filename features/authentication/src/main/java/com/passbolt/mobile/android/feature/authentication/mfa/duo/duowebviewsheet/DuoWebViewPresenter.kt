@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.passboltapi.mfa
-
-import com.passbolt.mobile.android.dto.request.HotpRequest
-import com.passbolt.mobile.android.dto.request.TotpRequest
-import retrofit2.Response
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,33 +20,13 @@ import retrofit2.Response
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-internal class MfaRemoteDataSource(
-    private val mfaApi: MfaApi
-) : MfaDataSource {
 
-    override suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String?): Response<Void> {
-        return mfaApi.verifyTotp(totpRequest, authHeader)
-    }
+package com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewsheet
 
-    override suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String?): Response<Void> {
-        return mfaApi.verifyYubikeyOtp(hotpRequest, authHeader)
-    }
+class DuoWebViewPresenter : DuoWebViewContract.Presenter {
+    override var view: DuoWebViewContract.View? = null
 
-    override suspend fun getDuoPromptUrl(authHeader: String?): Response<Void> {
-        return mfaApi.getDuoPromptUrl(authHeader)
-    }
-
-    override suspend fun verifyDuoCallback(
-        authHeader: String?,
-        passboltDuoStateUuid: String,
-        state: String?,
-        code: String?
-    ): Response<Void> {
-        return mfaApi.verifyDuoCallback(
-            authHeader = authHeader,
-            passboltDuoState = "passbolt_duo_state=%s".format(passboltDuoStateUuid),
-            state = state,
-            code = code
-        )
+    override fun argsRetrieved(duoPromptUrl: String) {
+        view?.loadUrl(duoPromptUrl)
     }
 }

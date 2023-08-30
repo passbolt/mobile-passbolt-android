@@ -4,8 +4,10 @@ import com.passbolt.mobile.android.dto.request.HotpRequest
 import com.passbolt.mobile.android.dto.request.TotpRequest
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 /**
  * Passbolt - Open source password manager for teams
@@ -48,11 +50,36 @@ internal interface MfaApi {
         @Header(MFA_AUTH_HEADER) authHeader: String?
     ): Response<Void>
 
+    @POST(MFA_VERIFICATION_DUO_PROMPT)
+    suspend fun getDuoPromptUrl(
+        // auth header needs to be added manually because this request
+        // requires auth token and is before user is signed in
+        @Header(MFA_AUTH_HEADER) authHeader: String?,
+        @Query(QUERY_MOBILE) isMobile: Int = 1
+    ): Response<Void>
+
+    @GET(MFA_VERIFICATION_DUO_CALLBACK)
+    suspend fun verifyDuoCallback(
+        // auth header needs to be added manually because this request
+        // requires auth token and is before user is signed in
+        @Header(MFA_AUTH_HEADER) authHeader: String?,
+        @Query(QUERY_STATE) state: String?,
+        @Query(QUERY_DUO_CODE) code: String?,
+        @Header("Cookie") passboltDuoState: String?,
+        @Query(QUERY_MOBILE) isMobile: Int = 1
+    ): Response<Void>
+
     private companion object {
+        private const val QUERY_MOBILE = "mobile"
+        private const val QUERY_STATE = "state"
+        private const val QUERY_DUO_CODE = "duo_code"
         private const val MFA = "mfa"
         private const val MFA_VERIFICATION = "$MFA/verify"
         private const val MFA_VERIFICATION_TOTP = "$MFA_VERIFICATION/totp.json"
         private const val MFA_VERIFICATION_YUBIKEY = "$MFA_VERIFICATION/yubikey.json"
+        private const val MFA_VERIFICATION_DUO = "$MFA_VERIFICATION/duo"
+        private const val MFA_VERIFICATION_DUO_PROMPT = "$MFA_VERIFICATION_DUO/prompt"
+        private const val MFA_VERIFICATION_DUO_CALLBACK = "$MFA_VERIFICATION_DUO/callback"
         private const val MFA_AUTH_HEADER = "Authorization"
     }
 }

@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.passboltapi.mfa
 
 import com.passbolt.mobile.android.dto.request.HotpRequest
 import com.passbolt.mobile.android.dto.request.TotpRequest
+import retrofit2.Response
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,6 +29,16 @@ import com.passbolt.mobile.android.dto.request.TotpRequest
 
 interface MfaDataSource {
 
-    suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String?): retrofit2.Response<Void>
-    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String?): retrofit2.Response<Void>
+    suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String?): Response<Void>
+
+    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String?): Response<Void>
+
+    suspend fun getDuoPromptUrl(authHeader: String?): Response<Void>
+
+    suspend fun verifyDuoCallback(
+        authHeader: String?,
+        passboltDuoStateUuid: String,
+        state: String?,
+        code: String?
+    ): Response<Void>
 }

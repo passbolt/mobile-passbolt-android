@@ -32,11 +32,28 @@ class MfaRepository(
     private val responseHandler: ResponseHandler
 ) {
 
-    suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String?) = callWithHandler(responseHandler) {
-        mfaDataSource.verifyTotp(totpRequest, authHeader)
-    }
+    suspend fun verifyTotp(totpRequest: TotpRequest, authHeader: String?) =
+        callWithHandler(responseHandler) {
+            mfaDataSource.verifyTotp(totpRequest, authHeader)
+        }
 
-    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String?) = callWithHandler(responseHandler) {
-        mfaDataSource.verifyYubikeyOtp(hotpRequest, authHeader)
-    }
+    suspend fun verifyYubikeyOtp(hotpRequest: HotpRequest, authHeader: String?) =
+        callWithHandler(responseHandler) {
+            mfaDataSource.verifyYubikeyOtp(hotpRequest, authHeader)
+        }
+
+    suspend fun getDuoPromptUrl(authHeader: String?) =
+        callWithHandler(responseHandler) {
+            mfaDataSource.getDuoPromptUrl(authHeader)
+        }
+
+    suspend fun verifyDuoCallback(authHeader: String?, passboltDuoStateUuid: String, state: String?, code: String?) =
+        callWithHandler(responseHandler) {
+            mfaDataSource.verifyDuoCallback(
+                authHeader = authHeader,
+                passboltDuoStateUuid = passboltDuoStateUuid,
+                state = state,
+                code = code
+            )
+        }
 }

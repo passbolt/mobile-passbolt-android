@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.duo
 
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewsheet.DuoState
 
 interface AuthWithDuoContract {
 
@@ -38,12 +39,14 @@ interface AuthWithDuoContract {
         fun navigateToLogin()
         fun notifyLoginSucceeded()
         fun showSessionExpired()
+        fun navigateToDuoPrompt(duoPromptUrl: String)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun authWithDuoClick()
         fun closeClick()
-        fun onViewCreated(bundledHasOtherProvider: Boolean)
+        fun onViewCreated(hasOtherProvider: Boolean, authToken: String?)
         fun authenticationSucceeded()
+        fun verifyDuoAuth(state: DuoState)
     }
 }

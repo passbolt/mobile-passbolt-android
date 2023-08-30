@@ -41,12 +41,15 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.databinding.DialogAuthWithDuoBinding
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewsheet.DuoState
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewsheet.DuoWebViewBottomSheetFragment
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoContract.View {
+class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoContract.View,
+    DuoWebViewBottomSheetFragment.Listener {
 
     override val scope by fragmentScope(useParentActivityScope = false)
     private var listener: AuthWithDuoListener? = null
@@ -73,7 +76,7 @@ class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoCo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupListeners()
-        presenter.onViewCreated(bundledHasOtherProvider)
+        presenter.onViewCreated(bundledHasOtherProvider, bundledAuthToken)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -112,6 +115,11 @@ class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoCo
         Toast.makeText(requireContext(), LocalizationR.string.session_expired, Toast.LENGTH_SHORT).show()
     }
 
+    override fun navigateToDuoPrompt(duoPromptUrl: String) {
+        DuoWebViewBottomSheetFragment.newInstance(duoPromptUrl)
+            .show(childFragmentManager, DuoWebViewBottomSheetFragment::class.java.name)
+    }
+
     override fun showChangeProviderButton(bundledHasTotpProvider: Boolean) {
         binding.otherProviderButton.isVisible = bundledHasTotpProvider
     }
@@ -128,6 +136,10 @@ class AuthWithDuoDialog : DialogFragment(), AndroidScopeComponent, AuthWithDuoCo
                 presenter.closeClick()
             }
         }
+    }
+
+    override fun duoAuthFinished(state: DuoState) {
+        presenter.verifyDuoAuth(state)
     }
 
     override fun closeAndNavigateToStartup() {

@@ -37,6 +37,8 @@ internal class AuthInterceptor(
             AuthPaths.AUTH_SIGN_IN,
             AuthPaths.MFA_VERIFICATION_TOTP,
             AuthPaths.MFA_VERIFICATION_YUBIKEY,
+            AuthPaths.MFA_VERIFICATION_DUO_PROMPT,
+            AuthPaths.MFA_VERIFICATION_DUO_VERIFY,
             AuthPaths.AUTH_RSA,
             AuthPaths.AUTH_VERIFY,
             AuthPaths.AUTH_JWT_REFRESH

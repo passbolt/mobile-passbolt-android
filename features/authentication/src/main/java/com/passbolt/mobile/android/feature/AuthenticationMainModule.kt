@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.accountsL
 import com.passbolt.mobile.android.feature.authentication.auth.authModule
 import com.passbolt.mobile.android.feature.authentication.authenticationMainModule
 import com.passbolt.mobile.android.feature.authentication.mfa.duo.authWithDuoModule
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewsheet.duoWebViewModule
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.enterTotpModuleModule
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.unknownProviderModule
 import com.passbolt.mobile.android.feature.authentication.mfa.youbikey.scanYubikeyModule
@@ -39,4 +40,5 @@ val authenticationModule = module {
     enterTotpModuleModule()
     unknownProviderModule()
     authWithDuoModule()
+    duoWebViewModule()
 }
