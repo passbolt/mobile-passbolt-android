@@ -41,7 +41,7 @@ import org.koin.androidx.scope.fragmentScope
 
 class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.View, AndroidScopeComponent {
 
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: FiltersMenuContract.Presenter by scope.inject()
     private lateinit var binding: FiletrsBottomsheetBinding
     private var listener: Listener? = null

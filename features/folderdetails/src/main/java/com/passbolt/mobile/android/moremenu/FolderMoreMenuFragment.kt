@@ -40,7 +40,7 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class FolderMoreMenuFragment : BottomSheetDialogFragment(), FolderMoreMenuContract.View, AndroidScopeComponent {
 
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: FolderMoreMenuContract.Presenter by scope.inject()
     private lateinit var binding: ViewFolderMoreMenuBottomsheetBinding
     private var listener: Listener? = null

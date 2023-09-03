@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.core.mvp
-
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.AppCoroutineContext
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,6 +20,16 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val mvpModule = module {
-    singleOf(::AppCoroutineContext) bind CoroutineLaunchContext::class
+
+package com.passbolt.mobile.android.feature.authentication.mfa.duo
+
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+
+fun Module.authWithDuoModule() {
+    scope(named<AuthWithDuoDialog>()) {
+        scopedOf(::AuthWithDuoPresenter) bind AuthWithDuoContract.Presenter::class
+    }
 }

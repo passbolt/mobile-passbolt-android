@@ -45,7 +45,7 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, HelpMenuContract.View {
 
-    override val scope: Scope by fragmentScope()
+    override val scope: Scope by fragmentScope(useParentActivityScope = false)
     private lateinit var binding: ViewHelpBottomsheetBinding
     private var listener: Listener? = null
     private val websiteOpener: WebsiteOpener by inject()

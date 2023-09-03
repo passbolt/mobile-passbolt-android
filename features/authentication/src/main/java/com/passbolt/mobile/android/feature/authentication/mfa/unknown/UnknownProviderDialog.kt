@@ -41,7 +41,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class UnknownProviderDialog : DialogFragment(), AndroidScopeComponent, UnknownProviderContract.View {
 
     private lateinit var binding: DialogUnknownProviderBinding
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: UnknownProviderContract.Presenter by scope.inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {

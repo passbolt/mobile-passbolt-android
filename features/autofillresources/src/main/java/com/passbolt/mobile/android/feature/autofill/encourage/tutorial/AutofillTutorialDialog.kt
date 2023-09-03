@@ -40,7 +40,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  */
 class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, AndroidScopeComponent {
 
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: AutofillTutorialContract.Presenter by scope.inject()
     private val tutorialMode: TutorialMode by lifecycleAwareLazy {
         requireArguments().getSerializable(TUTORIAL_MODE_KEY) as TutorialMode

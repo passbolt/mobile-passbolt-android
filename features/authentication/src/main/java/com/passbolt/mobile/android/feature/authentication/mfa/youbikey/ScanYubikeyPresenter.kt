@@ -26,8 +26,8 @@ class ScanYubikeyPresenter(
         view?.showScanYubikey()
     }
 
-    override fun onViewCreated(bundledHasTotpProvider: Boolean) {
-        view?.showChangeProviderButton(bundledHasTotpProvider)
+    override fun onViewCreated(bundledOtherProvider: Boolean) {
+        view?.showChangeProviderButton(bundledOtherProvider)
     }
 
     override fun yubikeyScanned(otp: String?, authToken: String?, rememberChecked: Boolean) {
@@ -81,10 +81,6 @@ class ScanYubikeyPresenter(
 
     override fun yubikeyScanCancelled() {
         view?.showScanOtpCancelled()
-    }
-
-    override fun otherProviderClick() {
-        view?.navigateToTotp()
     }
 
     override fun closeClick() {

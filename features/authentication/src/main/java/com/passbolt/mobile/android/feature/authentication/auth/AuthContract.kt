@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth
 
 import androidx.annotation.StringRes
 import com.passbolt.mobile.android.core.mvp.BaseContract
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import javax.crypto.Cipher
 
@@ -62,8 +63,8 @@ interface AuthContract {
         fun showServerFingerprintChanged(newFingerprint: String)
         fun showDecryptionError(message: String?)
         fun showServerNotReachable(serverDomain: String)
-        fun showTotpDialog(jwtToken: String, hasYubikeyProvider: Boolean)
-        fun showYubikeyDialog(jwtToken: String, hasTotpProvider: Boolean)
+        fun showTotpDialog(jwtToken: String?, hasOtherProviders: Boolean)
+        fun showYubikeyDialog(jwtToken: String?, hasOtherProviders: Boolean)
         fun showUnknownProvider()
         fun showDeviceRootedDialog()
         fun showHelpMenu()
@@ -76,6 +77,8 @@ interface AuthContract {
         enum class RefreshAuthReason {
             SESSION, PASSPHRASE
         }
+
+        fun showDuoDialog(jwtToken: String?, hasOtherProviders: Boolean)
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -91,9 +94,9 @@ interface AuthContract {
         fun biometricAuthClick()
         fun connectToExistingAccountClick()
         fun fingerprintServerConfirmationClick(fingerprint: String)
-        fun totpSucceeded(mfaHeader: String?)
-        fun yubikeySucceeded(mfaHeader: String?)
+        fun mfaSucceeded(mfaHeader: String?)
         fun onRootedDeviceAcknowledged()
         fun helpClick()
+        fun otherProviderClick(bearer: String?, currentProvider: MfaProvider)
     }
 }

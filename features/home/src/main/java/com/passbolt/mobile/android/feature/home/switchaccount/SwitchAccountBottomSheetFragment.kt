@@ -35,7 +35,7 @@ import org.koin.core.qualifier.named
 class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidScopeComponent,
     SwitchAccountContract.View {
 
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: SwitchAccountContract.Presenter by scope.inject()
     private lateinit var binding: FragmentSwitchAccountBinding
     private val modelAdapter: ModelAdapter<SwitchAccountUiModel, GenericItem> by inject()

@@ -36,5 +36,5 @@ abstract class BindingScopedBottomSheetFragment<T : ViewBinding>(
 ) :
     BindingBottomSheetFragment<T>(viewInflater), AndroidScopeComponent {
 
-    override val scope: Scope by fragmentScope()
+    override val scope: Scope by fragmentScope(useParentActivityScope = false)
 }

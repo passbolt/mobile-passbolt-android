@@ -166,7 +166,9 @@
 
     <string name="dialog_mfa_mfa">Multi Factor Authentication</string>
     <string name="dialog_mfa_yubikey_otp">YubiKey OTP</string>
+    <string name="dialog_mfa_duo">Duo multi-factor authentication</string>
     <string name="dialog_mfa_scan_youbikey">Scan your YubiKey</string>
+    <string name="dialog_mfa_auth_with_duo">Authenticate with Duo</string>
     <string name="dialog_mfa_other_provider">Try with another provider</string>
     <string name="dialog_mfa_remember_me">Remember this device for 30 days</string>
     <string name="dialog_mfa_scan_cancelled">Scanning cancelled</string>

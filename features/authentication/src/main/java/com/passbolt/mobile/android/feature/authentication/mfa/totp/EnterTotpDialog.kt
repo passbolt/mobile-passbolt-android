@@ -52,7 +52,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContract.View {
 
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private var listener: EnterTotpListener? = null
     val presenter: EnterTotpContract.Presenter by scope.inject()
     private val clipboardManager: ClipboardManager? by inject()
@@ -66,7 +66,7 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         }
     }
     private val bundledHasYubikeyProvider by lifecycleAwareLazy {
-        requireArguments().getBoolean(EXTRA_YUBIKEY_PROVIDER)
+        requireArguments().getBoolean(EXTRA_OTHER_PROVIDER)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,8 +110,12 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
 
     private fun setupListeners() {
         with(binding) {
-            otherProviderButton.setDebouncingOnClick { presenter.otherProviderClick() }
-            closeButton.setDebouncingOnClick { presenter.closeClick() }
+            otherProviderButton.setDebouncingOnClick {
+                listener?.totpOtherProviderClick(bundledAuthToken)
+            }
+            closeButton.setDebouncingOnClick {
+                presenter.closeClick()
+            }
             pasteCodeButton.setDebouncingOnClick {
                 presenter.pasteButtonClick(getPasteData())
             }
@@ -178,10 +182,6 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
         binding.otpInput.setText(otp)
     }
 
-    override fun navigateToYubikey() {
-        listener?.changeProviderToYubikey(bundledAuthToken)
-    }
-
     override fun closeAndNavigateToStartup() {
         dismiss()
         startActivity(ActivityIntents.start(requireContext()))
@@ -215,22 +215,22 @@ class EnterTotpDialog : DialogFragment(), AndroidScopeComponent, EnterTotpContra
 
     companion object {
         private const val EXTRA_AUTH_KEY = "EXTRA_AUTH_KEY"
-        private const val EXTRA_YUBIKEY_PROVIDER = "EXTRA_YUBIKEY_PROVIDER"
+        private const val EXTRA_OTHER_PROVIDER = "EXTRA_OTHER_PROVIDER"
 
         fun newInstance(
             token: String? = null,
-            hasYubikeyProvider: Boolean
+            hasOtherProvider: Boolean
         ) =
             EnterTotpDialog().apply {
                 arguments = bundleOf(
                     EXTRA_AUTH_KEY to token,
-                    EXTRA_YUBIKEY_PROVIDER to hasYubikeyProvider
+                    EXTRA_OTHER_PROVIDER to hasOtherProvider
                 )
             }
     }
 }
 
 interface EnterTotpListener {
-    fun changeProviderToYubikey(bearer: String)
+    fun totpOtherProviderClick(bearer: String)
     fun totpVerificationSucceeded(mfaHeader: String? = null)
 }

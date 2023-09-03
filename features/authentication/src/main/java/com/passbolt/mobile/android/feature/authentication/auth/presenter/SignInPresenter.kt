@@ -8,8 +8,6 @@ import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticate
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider.Companion.MFA_PROVIDER_TOTP
-import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider.Companion.MFA_PROVIDER_YUBIKEY
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.ChallengeVerificationErrorType
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
@@ -185,18 +183,21 @@ open class SignInPresenter(
                 mfaToken = it.mfaToken
             )
             Timber.d("Checking MFA status")
-            when (val mfaStatus = mfaStatusProvider.provideMfaStatus(
-                it.challengeResponseDto,
-                it.mfaToken,
-                it.currentMfaToken
-            )) {
-                MfaStatus.NotRequired -> {
+            mfaStatusProvider.setState(
+                MfaStatusProvider.MfaState(
+                    challengeResponseDto = it.challengeResponseDto,
+                    newMfaToken = it.mfaToken,
+                    currentMfaToken = it.currentMfaToken
+                )
+            )
+            when (mfaStatusProvider.provideMfaStatus()) {
+                MfaStatus.NOT_REQUIRED -> {
                     Timber.d("MFA not required")
                     signInSuccess()
                 }
-                is MfaStatus.Required -> {
+                MfaStatus.REQUIRED -> {
                     Timber.d("MFA required")
-                    mfaRequired(mfaStatus.mfaProviders, it.accessToken)
+                    mfaRequired(it.accessToken, it.challengeResponseDto.mfaProviders)
                 }
             }
         }
@@ -206,28 +207,8 @@ open class SignInPresenter(
         saveServerFingerprintUseCase.execute(SaveServerFingerprintUseCase.Input(userId, fingerprint))
     }
 
-    private fun mfaRequired(mfaProviders: List<String>, jwtToken: String) {
-        when (val provider = mfaProviders.first()) {
-            MFA_PROVIDER_TOTP -> view?.showTotpDialog(jwtToken, mfaProviders.contains(MFA_PROVIDER_YUBIKEY))
-            MFA_PROVIDER_YUBIKEY -> view?.showYubikeyDialog(jwtToken, mfaProviders.contains(MFA_PROVIDER_TOTP))
-            else -> {
-                view?.showUnknownProvider()
-                Timber.e("Unknown provider: $provider")
-            }
-        }
-        view?.hideProgress()
-    }
-
-    override fun totpSucceeded(mfaHeader: String?) {
-        Timber.d("TOTP succeeded")
-        mfaHeader?.let {
-            loginState?.mfaToken = it
-        }
-        signInSuccess(mfaHeader != null)
-    }
-
-    override fun yubikeySucceeded(mfaHeader: String?) {
-        Timber.d("Yubikey succeeded")
+    override fun mfaSucceeded(mfaHeader: String?) {
+        Timber.d("MFA succeeded")
         mfaHeader?.let {
             loginState?.mfaToken = it
         }
