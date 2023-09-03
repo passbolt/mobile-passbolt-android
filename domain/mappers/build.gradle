@@ -18,3 +18,7 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.domain.mappers"
 }
+
+kotlin {
+    jvmToolchain(17)
+}

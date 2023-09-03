@@ -18,3 +18,7 @@ android {
         viewBinding true
     }
 }
+
+kotlin {
+    jvmToolchain(17)
+}

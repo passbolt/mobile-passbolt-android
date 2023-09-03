@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "com.passbolt.mobile.android.domain.supportedresourcetypes"
 }
+
+kotlin {
+    jvmToolchain(17)
+}

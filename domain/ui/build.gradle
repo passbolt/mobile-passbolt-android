@@ -13,3 +13,7 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.domain.ui"
 }
+
+kotlin {
+    jvmToolchain(17)
+}

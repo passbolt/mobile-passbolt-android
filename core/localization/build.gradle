@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "com.passbolt.mobile.android.core.localization"
 }
+
+kotlin {
+    jvmToolchain(17)
+}

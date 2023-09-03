@@ -14,6 +14,10 @@ android {
     useLibrary("android.test.mock")
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
     implementation project(':groups')
     implementation project(':users')

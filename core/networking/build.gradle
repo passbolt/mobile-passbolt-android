@@ -23,3 +23,7 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.core.networking"
 }
+
+kotlin {
+    jvmToolchain(17)
+}
