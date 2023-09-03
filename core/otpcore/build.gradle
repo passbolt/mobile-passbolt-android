@@ -12,3 +12,7 @@ dependencies {
 android {
     namespace = "com.passbolt.mobile.android.core.otp"
 }
+
+kotlin {
+    jvmToolchain(17)
+}

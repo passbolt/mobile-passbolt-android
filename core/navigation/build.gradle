@@ -16,6 +16,10 @@ android {
     }
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

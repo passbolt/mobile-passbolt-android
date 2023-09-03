@@ -65,6 +65,10 @@ android {
     }
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 play {
     track = "production"
     releaseStatus = ReleaseStatus.DRAFT
