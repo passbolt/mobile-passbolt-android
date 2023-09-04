@@ -26,5 +26,5 @@ class PassphraseAuthStrategy(
         }
     }
 
-    override fun showLeaveConfirmationDialog(): Boolean = true
+    override fun showLeaveConfirmationDialog(): Boolean = false
 }
