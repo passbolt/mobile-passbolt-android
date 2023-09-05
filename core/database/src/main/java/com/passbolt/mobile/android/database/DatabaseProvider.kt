@@ -17,6 +17,8 @@ import com.passbolt.mobile.android.storage.usecase.database.GetResourcesDatabase
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SupportFactory
 import java.security.MessageDigest
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Passbolt - Open source password manager for teams
@@ -69,6 +71,19 @@ class DatabaseProvider(
 
         instance[currentUser] = newInstance
         return newInstance
+    }
+
+    suspend fun delete(userId: String) {
+        val currentUser = hashString(userId)
+        if (currentUser in instance.keys) {
+            suspendCoroutine { continuation ->
+                Thread {
+                    instance[currentUser]?.clearAllTables()
+                    continuation.resume(Unit)
+                }.start()
+            }
+            instance.remove(currentUser)
+        }
     }
 
     private fun hashString(input: String, algorithm: String = "SHA-256"): String {

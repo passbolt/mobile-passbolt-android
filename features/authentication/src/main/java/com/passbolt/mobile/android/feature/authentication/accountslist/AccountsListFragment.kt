@@ -236,6 +236,10 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
             .show()
     }
 
+    override fun notifySelectedAccountChanged() {
+        uiStrategy.notifySelectedAccountChanged()
+    }
+
     override fun navigateBack(isSelectedAccountAvailable: Boolean) {
         uiStrategy.navigateBack(isSelectedAccountAvailable)
     }

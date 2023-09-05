@@ -40,4 +40,8 @@ class AuthAccountListStrategy(
     override fun navigateBack(isSelectedAccountAvailable: Boolean) {
         activeAccountListFragment.finishAffinity()
     }
+
+    override fun notifySelectedAccountChanged() {
+        // no-op
+    }
 }
