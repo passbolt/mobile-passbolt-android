@@ -73,7 +73,7 @@ import com.passbolt.mobile.android.entity.user.User
         FolderAndUsersCrossRef::class,
         FolderAndGroupsCrossRef::class
     ],
-    version = 12
+    version = 13
 )
 @TypeConverters(Converters::class)
 abstract class ResourceDatabase : RoomDatabase() {

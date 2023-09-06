@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.settings.screen.accounts
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
@@ -42,6 +43,9 @@ class AccountsSettingsFragment :
 
     private fun setListeners() {
         with(binding) {
+            keyInspectorSetting.setDebouncingOnClick {
+                navigateToKeyInspector()
+            }
             manageAccountsSetting.setDebouncingOnClick {
                 navigateToManageAccounts()
             }
@@ -49,6 +53,12 @@ class AccountsSettingsFragment :
                 navigateToTransferAccountOnboarding()
             }
         }
+    }
+
+    private fun navigateToKeyInspector() {
+        findNavController().navigate(
+            AccountsSettingsFragmentDirections.actionAccountsSettingsFragmentToKeyInspectorFragment()
+        )
     }
 
     private fun navigateToManageAccounts() {

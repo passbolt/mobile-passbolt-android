@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.feature.settings
 
+import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyInspectorModule
+import com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu.keyInspectorMoreMenuModule
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.appSettingsModule
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.autofill.settingsAutofillModule
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter.defaultFilterModule
@@ -44,4 +46,6 @@ val settingsModule = module {
     settingsAutofillModule()
     licensesModule()
     defaultFilterModule()
+    keyInspectorModule()
+    keyInspectorMoreMenuModule()
 }

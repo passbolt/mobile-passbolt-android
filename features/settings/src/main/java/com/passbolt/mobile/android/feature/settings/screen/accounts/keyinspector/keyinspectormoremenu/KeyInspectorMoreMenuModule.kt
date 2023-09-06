@@ -1,16 +1,8 @@
-package com.passbolt.mobile.android.core.ui
+package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.keyinspectormoremenu
 
-import com.passbolt.mobile.android.core.font.Font
-import com.passbolt.mobile.android.core.font.fontModule
-import com.passbolt.mobile.android.core.ui.controller.TotpViewController
-import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
-import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
-import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
-import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
-import java.time.format.DateTimeFormatter
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,20 +27,8 @@ import java.time.format.DateTimeFormatter
  * @since v1.0
  */
 
-val coreUiModule = module {
-    fontModule()
-
-    singleOf(::TotpViewController)
-    singleOf(::OtpFormatter)
-    singleOf(::FingerprintFormatter)
-    singleOf(::DateFormatter)
-
-    single {
-        DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")
-    }
-    factory {
-        InitialsIconGenerator(
-            font = get(named<Font.InterMedium>())
-        )
+fun Module.keyInspectorMoreMenuModule() {
+    scope<KeyInspectorMoreMenuFragment> {
+        scopedOf(::KeyInspectorMoreMenuPresenter) bind KeyInspectorMoreMenuContract.Presenter::class
     }
 }

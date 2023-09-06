@@ -22,7 +22,9 @@ dependencies {
     implementation project(':localization')
     implementation project(':entity')
     implementation project(':logs')
+    implementation project(':users')
     implementation project(':transferaccounttoanotherdevice')
+    implementation project(':gopenpgp')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -32,6 +34,7 @@ dependencies {
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.core
     implementation libs.fastadapter.diff
+    implementation libs.coil.core
 
     testImplementation project(':commontest')
 }

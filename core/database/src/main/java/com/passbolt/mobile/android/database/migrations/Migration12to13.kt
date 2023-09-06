@@ -1,16 +1,7 @@
-package com.passbolt.mobile.android.core.ui
+package com.passbolt.mobile.android.database.migrations
 
-import com.passbolt.mobile.android.core.font.Font
-import com.passbolt.mobile.android.core.font.fontModule
-import com.passbolt.mobile.android.core.ui.controller.TotpViewController
-import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
-import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
-import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
-import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
-import java.time.format.DateTimeFormatter
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,20 +26,15 @@ import java.time.format.DateTimeFormatter
  * @since v1.0
  */
 
-val coreUiModule = module {
-    fontModule()
+@Suppress("MagicNumber", "MaxLineLength")
+object Migration12to13 : Migration(12, 13) {
 
-    singleOf(::TotpViewController)
-    singleOf(::OtpFormatter)
-    singleOf(::FingerprintFormatter)
-    singleOf(::DateFormatter)
+    private const val ADD_KEY_CREATION_DATE_COLUMN =
+        "ALTER TABLE User ADD COLUMN created INTEGER"
 
-    single {
-        DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")
-    }
-    factory {
-        InitialsIconGenerator(
-            font = get(named<Font.InterMedium>())
-        )
+    override fun migrate(database: SupportSQLiteDatabase) {
+        with(database) {
+            execSQL(ADD_KEY_CREATION_DATE_COLUMN)
+        }
     }
 }

@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.common
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,27 +20,12 @@ package com.passbolt.mobile.android.common
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class FingerprintFormatter {
 
-    fun format(fingerprint: String): String? {
-        if (fingerprint.length != FINGERPRINT_LENGTH) {
-            return null
-        }
+package com.passbolt.mobile.android.core.ui.labelledtext
 
-        val parsedString = buildString {
-            append(fingerprint.substring(0, fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
-            appendLine()
-            appendLine()
-            append(fingerprint.substring(fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
-        }
+import androidx.annotation.DrawableRes
 
-        return parsedString
-    }
-
-    fun formatWithRawFallback(fingerprint: String) = format(fingerprint) ?: fingerprint
-
-    companion object {
-        private const val FINGERPRINT_LENGTH = 40
-        private const val FINGERPRINT_BLOCK_LENGTH = 4
-    }
-}
+data class LabelledTextEndAction(
+    @DrawableRes val icon: Int,
+    val action: () -> Unit
+)
