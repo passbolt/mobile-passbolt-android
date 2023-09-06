@@ -44,6 +44,7 @@ interface AccountsListContract {
         fun navigateToStartUp()
         fun navigateToNewAccountSignIn(model: AccountModelUi.AccountModel)
         fun navigateBack(isSelectedAccountAvailable: Boolean)
+        fun notifySelectedAccountChanged()
     }
 
     interface Presenter : BaseContract.Presenter<View> {

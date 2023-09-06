@@ -30,6 +30,8 @@ class ManageAccountListStrategy(
     override var accountListFragment: AccountsListFragment?
 ) : AccountListStrategy {
 
+    private var selectedAccountChanged: Boolean = false
+
     override fun getTitleRes(): Int = R.string.accounts_list_manage_accounts
 
     override fun logoVisibility() = View.GONE
@@ -39,10 +41,14 @@ class ManageAccountListStrategy(
     override fun toolbarVisibility() = View.VISIBLE
 
     override fun navigateBack(isSelectedAccountAvailable: Boolean) {
-        if (isSelectedAccountAvailable) {
+        if (isSelectedAccountAvailable && !selectedAccountChanged) {
             activeAccountListFragment.finish()
         } else {
             activeAccountListFragment.finishAffinity()
         }
+    }
+
+    override fun notifySelectedAccountChanged() {
+        this.selectedAccountChanged = true
     }
 }
