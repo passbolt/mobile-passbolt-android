@@ -41,4 +41,6 @@ interface AccountListStrategy {
     fun headerVisibility(): Int
 
     fun navigateBack(isSelectedAccountAvailable: Boolean)
+
+    fun notifySelectedAccountChanged()
 }

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.RemoveAllAccountDataUseCase
@@ -45,7 +46,8 @@ class AccountsListPresenter(
     private val removeAllAccountDataUseCase: RemoveAllAccountDataUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase,
-    coroutineLaunchContext: CoroutineLaunchContext
+    private val databaseProvider: DatabaseProvider,
+    private val coroutineLaunchContext: CoroutineLaunchContext
 ) : AccountsListContract.Presenter {
 
     override var view: AccountsListContract.View? = null
@@ -81,6 +83,7 @@ class AccountsListPresenter(
                 // save selected account has to after signing out the user
                 saveSelectedAccountUseCase.execute(UserIdInput(model.userId))
                 saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(model.url))
+                view?.notifySelectedAccountChanged()
                 view?.navigateToNewAccountSignIn(model)
             } else {
                 saveSelectedAccountUseCase.execute(UserIdInput(model.userId))
@@ -130,6 +133,7 @@ class AccountsListPresenter(
 
     override fun confirmRemoveAccountClick(model: AccountModelUi.AccountModel) {
         val accountToRemoveId = model.userId
+        view?.showProgress()
         scope.launch {
             getSelectedAccountUseCase.execute(Unit).selectedAccount?.let { selectedAccount ->
                 if (accountToRemoveId == selectedAccount) {
@@ -138,7 +142,9 @@ class AccountsListPresenter(
                 }
             }
             removeAllAccountDataUseCase.execute(UserIdInput(accountToRemoveId))
+            databaseProvider.delete(accountToRemoveId)
 
+            view?.hideProgress()
             view?.showAccountRemovedSnackbar()
             displayAccounts()
             removeModeOn(isOn = true)

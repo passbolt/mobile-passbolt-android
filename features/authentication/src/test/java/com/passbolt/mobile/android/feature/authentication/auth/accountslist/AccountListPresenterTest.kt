@@ -64,6 +64,9 @@ class AccountListPresenterTest : KoinTest {
     @Before
     fun setUp() {
         whenever(mockGetSelectedAccountUseCase.execute(Unit)).doReturn(GetSelectedAccountUseCase.Output("id"))
+        mockDatapaseProvider.stub {
+            onBlocking { delete(any()) } doReturn Unit
+        }
     }
 
     @Test
@@ -149,9 +152,11 @@ class AccountListPresenterTest : KoinTest {
             verify(view, times(3)).showAccounts(capture())
             assertThat(thirdValue.size).isEqualTo(1)
         }
+        verify(view).showProgress()
         verify(view).showAccountRemovedSnackbar()
         verify(view).hideRemoveAccounts()
         verify(view).showDoneRemovingAccounts()
+        verify(view).hideProgress()
         verify(view, never()).navigateToStartUp()
         verifyNoMoreInteractions(view)
     }
