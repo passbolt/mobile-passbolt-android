@@ -22,6 +22,7 @@ import com.passbolt.mobile.android.core.resources.resourcesModule
 import com.passbolt.mobile.android.core.resourcetypes.resourceTypesModule
 import com.passbolt.mobile.android.core.secrets.secretsModule
 import com.passbolt.mobile.android.core.security.securityModule
+import com.passbolt.mobile.android.core.tags.tagsModule
 import com.passbolt.mobile.android.core.ui.coreUiModule
 import com.passbolt.mobile.android.core.users.usersModule
 import com.passbolt.mobile.android.createFolderModule
@@ -31,7 +32,9 @@ import com.passbolt.mobile.android.feature.authenticationModule
 import com.passbolt.mobile.android.feature.autofill.autofillResourcesModule
 import com.passbolt.mobile.android.feature.home.homeModule
 import com.passbolt.mobile.android.feature.main.mainModule
+import com.passbolt.mobile.android.feature.otp.createOtpManuallyMainModule
 import com.passbolt.mobile.android.feature.otp.otpMainModule
+import com.passbolt.mobile.android.feature.otp.scanOtpMainModule
 import com.passbolt.mobile.android.feature.resourcedetails.resourceDetailsModule
 import com.passbolt.mobile.android.feature.settings.settingsModule
 import com.passbolt.mobile.android.feature.setup.setupModule
@@ -45,9 +48,12 @@ import com.passbolt.mobile.android.helpMenuModule
 import com.passbolt.mobile.android.locationDetailsModule
 import com.passbolt.mobile.android.logsModule
 import com.passbolt.mobile.android.mappersModule
+import com.passbolt.mobile.android.otpMainMoreMenuModule
 import com.passbolt.mobile.android.passboltapi.passboltApiModule
 import com.passbolt.mobile.android.resourceMoreMenuModule
+import com.passbolt.mobile.android.resourcePickerModule
 import com.passbolt.mobile.android.resourceTagsModule
+import com.passbolt.mobile.android.serializers.serializersModule
 import com.passbolt.mobile.android.service.linksApiModule
 import com.passbolt.mobile.android.storage.storageModule
 import org.koin.android.ext.koin.androidContext
@@ -141,7 +147,13 @@ class KoinInitializer : Initializer<Unit> {
             idlingResourcesModule,
             transferAccountToAnotherDeviceModule,
             otpMainModule,
-            otpCoreModule
+            otpCoreModule,
+            serializersModule,
+            resourcePickerModule,
+            tagsModule,
+            scanOtpMainModule,
+            otpMainMoreMenuModule,
+            createOtpManuallyMainModule
         )
     }
 }

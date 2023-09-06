@@ -8,7 +8,13 @@ dependencies {
     implementation project(':storage')
     implementation project(':database')
     implementation project(':entity')
+    implementation project(':networking')
+    implementation project(':passboltapi')
+    implementation project(':architecture')
+    implementation project(':dto')
+    implementation project(':mappers')
 
     implementation libs.di.koin
     implementation libs.room.core
+    implementation libs.room.cipher
 }

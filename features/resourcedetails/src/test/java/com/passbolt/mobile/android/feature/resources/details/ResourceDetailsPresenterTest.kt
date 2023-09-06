@@ -1,24 +1,24 @@
 package com.passbolt.mobile.android.feature.resources.details
 
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
-import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceTagsUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
-import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsByIdUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -45,6 +45,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.time.ZonedDateTime
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -125,6 +126,13 @@ class ResourceDetailsPresenterTest : KoinTest {
                 )
             )
         }
+        mockGetResourceTypeIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to PASSWORD_AND_DESCRIPTION_SLUG)
+                )
+            )
+        }
         presenter.attach(view)
     }
 
@@ -148,8 +156,29 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
         verify(view, times(2)).showDescription(RESOURCE_MODEL.description!!, useSecretFont = false)
         verify(view, times(2)).showFolderLocation(emptyList())
+        verify(view, times(2)).hideTotpSection()
         verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `top should show on appropriate content type`() {
+        mockGetResourceTypeIdToSlugMappingUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to PASSWORD_DESCRIPTION_TOTP_SLUG)
+                )
+            )
+        }
+
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
+        presenter.resume(view)
+
+        verify(view, times(2)).showTotpSection()
     }
 
     @Test
@@ -196,16 +225,19 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     fun `eye icon should react to password visibility change correct`() {
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.Success(DECRYPTED_SECRET))
-        }
         mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(any()) }.doReturn(
-                ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+            onBlocking { getResourceTypeEnum(any()) }.doReturn(PASSWORD_WITH_DESCRIPTION)
+        }
+        val password = "pass"
+        mockSecretPropertiesActionsInteractor.stub {
+            onBlocking { providePassword() } doReturn flowOf(
+                SecretPropertyActionResult.Success(
+                    SecretPropertiesActionsInteractor.SECRET_LABEL,
+                    isSecret = true,
+                    password
+                )
             )
         }
-        whenever(mockSecretParser.extractPassword(any(), any()))
-            .doReturn(String(DECRYPTED_SECRET))
 
         presenter.argsReceived(
             RESOURCE_MODEL.resourceId,
@@ -217,7 +249,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         presenter.secretIconClick()
 
         verify(view).showPasswordVisibleIcon()
-        verify(view).showPassword(String(DECRYPTED_SECRET))
+        verify(view).showPassword(password)
         verify(view, times(3)).showPasswordHiddenIcon()
         verify(view, times(3)).showPasswordHidden()
     }
@@ -225,12 +257,8 @@ class ResourceDetailsPresenterTest : KoinTest {
     @Test
     @ExperimentalCoroutinesApi
     fun `view should show decrypt error correct`() = runTest {
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.DecryptFailure(
-                    OpenPgpError("errorMessage")
-                )
-            )
+        mockSecretPropertiesActionsInteractor.stub {
+            onBlocking { providePassword() } doReturn flowOf(SecretPropertyActionResult.DecryptionFailure())
         }
 
         presenter.argsReceived(
@@ -246,8 +274,8 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     fun `view should show fetch error correct`() {
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(SecretInteractor.Output.FetchFailure(RuntimeException()))
+        mockSecretPropertiesActionsInteractor.stub {
+            onBlocking { providePassword() } doReturn flowOf(SecretPropertyActionResult.FetchFailure())
         }
 
         presenter.argsReceived(
@@ -259,27 +287,6 @@ class ResourceDetailsPresenterTest : KoinTest {
         presenter.secretIconClick()
 
         verify(view).showFetchFailure()
-    }
-
-    @Test
-    fun `view should show auth when passphrase not in cache`() {
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.Unauthorized(
-                    AuthenticationState.Unauthenticated.Reason.Session
-                )
-            )
-        }
-
-        presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-        presenter.secretIconClick()
-
-        verify(view).showAuth(AuthenticationState.Unauthenticated.Reason.Passphrase)
     }
 
     @Test
@@ -311,53 +318,6 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `delete resource should show confirmation dialog, delete and close details`() = runTest {
-        whenever(mockDeleteResourceUseCase.execute(any()))
-            .thenReturn(DeleteResourceUseCase.Output.Success)
-
-        presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-        presenter.moreClick()
-        presenter.deleteClick()
-        presenter.deleteResourceConfirmed()
-
-        verify(view).showDeleteConfirmationDialog()
-        verify(view).closeWithDeleteSuccessResult(RESOURCE_MODEL.name)
-    }
-
-    @ExperimentalCoroutinesApi
-    @Test
-    fun `delete resource should show error when there is deletion error`() = runTest {
-        whenever(mockDeleteResourceUseCase.execute(any()))
-            .thenReturn(
-                DeleteResourceUseCase.Output.Failure<String>(
-                    NetworkResult.Failure.NetworkError(
-                        RuntimeException(),
-                        ""
-                    )
-                )
-            )
-
-        presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
-            100,
-            20f
-        )
-        presenter.resume(view)
-        presenter.moreClick()
-        presenter.deleteClick()
-        presenter.deleteResourceConfirmed()
-
-        verify(view).showDeleteConfirmationDialog()
-        verify(view).showGeneralError()
-    }
-
-    @ExperimentalCoroutinesApi
-    @Test
     fun `resource permissions should be displayed`() = runTest {
         presenter.argsReceived(
             RESOURCE_MODEL.resourceId,
@@ -374,9 +334,9 @@ class ResourceDetailsPresenterTest : KoinTest {
         private const val USERNAME = "username"
         private const val INITIALS = "NN"
         private const val URL = "https://www.passbolt.com"
-        private const val ID = "id"
+        private val ID = UUID.randomUUID().toString()
         private const val DESCRIPTION = "desc"
-        private const val RESOURCE_TYPE_ID = "resTypeId"
+        private val RESOURCE_TYPE_ID = UUID.randomUUID().toString()
         private const val FOLDER_ID_ID = "folderId"
         private val RESOURCE_MODEL = ResourceModel(
             ID,

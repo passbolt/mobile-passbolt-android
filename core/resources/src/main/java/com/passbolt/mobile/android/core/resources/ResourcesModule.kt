@@ -1,24 +1,34 @@
 package com.passbolt.mobile.android.core.resources
 
 import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.CreateResourceUseCase
-import com.passbolt.mobile.android.core.resources.usecase.CreateTotpResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
-import com.passbolt.mobile.android.core.resources.usecase.GetResourceTypesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.GetResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RebuildResourcePermissionsTablesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RebuildResourceTablesUseCase
-import com.passbolt.mobile.android.core.resources.usecase.RebuildTagsTablesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.RemoveFromFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ShareResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.SimulateShareResourceUseCase
-import com.passbolt.mobile.android.core.resources.usecase.UpdateResourceUseCase
-import com.passbolt.mobile.android.core.resources.validation.resourceValidationModule
+import com.passbolt.mobile.android.core.resources.usecase.db.resourcesDbModule
+import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 /**
@@ -44,17 +54,14 @@ import org.koin.dsl.module
  * @since v1.0
  */
 val resourcesModule = module {
-    resourceValidationModule()
+    resourcesDbModule()
+
     singleOf(::GetResourcesUseCase)
-    singleOf(::GetResourceTypesUseCase)
     singleOf(::ResourceInteractor)
-    singleOf(::CreateResourceUseCase)
     singleOf(::SearchableMatcher)
     singleOf(::DeleteResourceUseCase)
-    singleOf(::UpdateResourceUseCase)
     singleOf(::SecretInputCreator)
     singleOf(::RebuildResourceTablesUseCase)
-    singleOf(::RebuildTagsTablesUseCase)
     singleOf(::RebuildResourcePermissionsTablesUseCase)
     singleOf(::SimulateShareResourceUseCase)
     singleOf(::ShareResourceUseCase)
@@ -62,5 +69,75 @@ val resourcesModule = module {
     singleOf(::RemoveFromFavouritesUseCase)
     singleOf(::FavouritesInteractor)
     singleOf(::ResourceShareInteractor)
-    singleOf(::CreateTotpResourceUseCase)
+    singleOf(::UpdateSimplePasswordResourceInteractor)
+    singleOf(::UpdatePasswordAndDescriptionResourceInteractor)
+    singleOf(::UpdateStandaloneTotpResourceInteractor)
+    single {
+        UpdateLinkedTotpResourceInteractor(
+            secretInputCreator = get(),
+            getSelectedAccountUseCase = get(),
+            getPrivateKeyUseCase = get(),
+            openPgp = get(),
+            passphraseMemoryCache = get(),
+            resourceModelMapper = get(),
+            resourceRepository = get(),
+            fetchUsersUseCase = get(),
+            getResourceTypeIdToSlugMappingUseCase = get()
+        )
+    }
+    singleOf(::CreatePasswordAndDescriptionResourceInteractor)
+    singleOf(::CreateStandaloneTotpResourceInteractor)
+
+    factory { (resource: ResourceModel) ->
+        ResourcePropertiesActionsInteractor(resource)
+    }
+    factory { (
+                  resource: ResourceModel,
+                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                  sessionRefreshedFlow: StateFlow<Unit?>
+              ) ->
+        ResourceCommonActionsInteractor(
+            needSessionRefreshFlow,
+            sessionRefreshedFlow,
+            resource,
+            favouritesInteractor = get(),
+            deleteResourceUseCase = get()
+        )
+    }
+    factory { (
+                  resource: ResourceModel,
+                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                  sessionRefreshedFlow: StateFlow<Unit?>
+              ) ->
+        SecretPropertiesActionsInteractor(
+            needSessionRefreshFlow,
+            sessionRefreshedFlow,
+            resource,
+            secretParser = get(),
+            secretInteractor = get()
+        )
+    }
+    factory { (
+                  resource: ResourceModel,
+                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                  sessionRefreshedFlow: StateFlow<Unit?>
+              ) ->
+        ResourceUpdateActionsInteractor(
+            resource,
+            needSessionRefreshFlow,
+            sessionRefreshedFlow,
+            secretPropertiesActionsInteractor = get {
+                parametersOf(
+                    resource,
+                    needSessionRefreshFlow,
+                    sessionRefreshedFlow
+                )
+            },
+            updatePasswordAndDescriptionResourceInteractor = get(),
+            updateLinkedTotpResourceInteractor = get(),
+            updateSimplePasswordResourceInteractor = get(),
+            updateStandaloneTotpResourceInteractor = get(),
+            updateLocalResourceUseCase = get()
+        )
+    }
 }

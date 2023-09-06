@@ -147,6 +147,12 @@ dependencies {
     implementation project(':transferaccounttoanotherdevice')
     implementation project(':otp')
     implementation project(':otpcore')
+    implementation project(':serializers')
+    implementation project(':resourcepicker')
+    implementation project(':tags')
+    implementation project(':scanotp')
+    implementation project(':otpmoremenu')
+    implementation project(':createotpmanually')
 
     debugImplementation libs.quality.leakcanary
 

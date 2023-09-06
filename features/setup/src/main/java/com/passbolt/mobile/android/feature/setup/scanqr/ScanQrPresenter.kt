@@ -109,12 +109,12 @@ class ScanQrPresenter(
 
     private suspend fun parserFirstPage(firstPage: ParseResult.PassboltQr.FirstPage) {
         val userId = firstPage.content.userId
-        transferUuid = firstPage.content.transferId
+        transferUuid = firstPage.content.transferId.toString()
         authToken = firstPage.content.authenticationToken
         totalPages = firstPage.content.totalPages
         serverDomain = firstPage.content.domain
 
-        val userExistsResult = checkAccountExistsUseCase.execute(CheckAccountExistsUseCase.Input(userId))
+        val userExistsResult = checkAccountExistsUseCase.execute(CheckAccountExistsUseCase.Input(userId.toString()))
         if (userExistsResult.exist) {
             currentPage = totalPages - 1
             updateTransferAlreadyLinked(currentPage)
@@ -126,7 +126,7 @@ class ScanQrPresenter(
             } else {
                 view?.initializeProgress(totalPages)
                 view?.showKeepGoing()
-                saveAccountDetails(userId, firstPage.content.domain)
+                saveAccountDetails(userId.toString(), firstPage.content.domain)
                 updateTransfer(pageNumber = firstPage.reservedBytesDto.page + 1)
             }
         }

@@ -264,7 +264,7 @@ class SettingsTest : KoinTest {
         //    Then      I see the “Accounts” title
         //    And 	    I see the back button to go to the main settings page
         onView(withId(R.id.settingsNav)).perform(click())
-        //    And 	    I see a Manage accounts with an peronas icon and a caret on the right
+        //    And 	    I see a Manage accounts with an personas icon and a caret on the right
         onView(withId(R.id.accountsSettings)).perform(click())
         onView(withId(R.id.manageAccountsSetting)).perform(click())
         //    And 	    I see a Transfer account to another device with an lorry icon and a caret on the right

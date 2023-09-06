@@ -12,6 +12,9 @@ dependencies {
     implementation project(':mappers')
     implementation project(':storage')
     implementation project(':database')
+    implementation project(':entity')
 
     implementation libs.di.koin
+    implementation libs.room.core
+    implementation libs.room.cipher
 }

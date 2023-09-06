@@ -3,6 +3,8 @@ package com.passbolt.mobile.android.core.commonfolders.usecase
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import net.sqlcipher.SQLException
+import timber.log.Timber
 
 /**
  * Passbolt - Open source password manager for teams
@@ -38,14 +40,22 @@ class FoldersInteractor(
             when (val fetched = fetchUserFoldersUseCase.execute(Unit)) {
                 is FetchUserFoldersUseCase.Output.Failure -> Output.Failure(fetched.authenticationState)
                 is FetchUserFoldersUseCase.Output.Success -> {
-                    rebuildLocalFoldersUseCase.execute(
-                        RebuildFoldersTablesUseCase.Input(
-                            fetched.foldersWithAttributes.map { it.folderModel })
-                    )
-                    rebuildLocalFolderPermissionsUseCase.execute(
-                        RebuildFolderPermissionsTablesUseCase.Input(fetched.foldersWithAttributes)
-                    )
-                    Output.Success
+                    try {
+                        rebuildLocalFoldersUseCase.execute(
+                            RebuildFoldersTablesUseCase.Input(
+                                fetched.foldersWithAttributes.map { it.folderModel })
+                        )
+                        rebuildLocalFolderPermissionsUseCase.execute(
+                            RebuildFolderPermissionsTablesUseCase.Input(fetched.foldersWithAttributes)
+                        )
+                        Output.Success
+                    } catch (exception: SQLException) {
+                        Timber.e(
+                            exception, "There was an error during folders and folders " +
+                                    "permissions db insert"
+                        )
+                        Output.Failure(fetched.authenticationState)
+                    }
                 }
             }
         } else {

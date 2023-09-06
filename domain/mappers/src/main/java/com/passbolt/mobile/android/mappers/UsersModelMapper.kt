@@ -18,7 +18,7 @@ class UsersModelMapper {
             .map {
                 val usersGpgKey = requireNotNull(it.gpgKey)
                 UserModel(
-                    it.id,
+                    it.id.toString(),
                     it.username,
                     GpgKeyModel(
                         usersGpgKey.armoredKey,

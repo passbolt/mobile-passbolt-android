@@ -28,4 +28,5 @@ import org.koin.dsl.module
 
 val otpCoreModule = module {
     singleOf(::TotpParametersProvider)
+    singleOf(::OtpMapper)
 }

@@ -1,11 +1,12 @@
-package com.passbolt.mobile.android.feature.resources.userspermissiondetails
+package com.passbolt.mobile.android.permissions.permissionrecipients
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsUseCase
-import com.passbolt.mobile.android.database.impl.users.GetLocalUsersUseCase
+import com.passbolt.mobile.android.core.commongroups.usecase.db.GetLocalGroupsUseCase
+import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUsersUseCase
+import com.passbolt.mobile.android.feature.resources.userspermissiondetails.mockGetLocalGroupsUseCase
+import com.passbolt.mobile.android.feature.resources.userspermissiondetails.mockGetLocalUsersUseCase
+import com.passbolt.mobile.android.feature.resources.userspermissiondetails.testPermissionRecipientsModule
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
-import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsContract
-import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsPresenter
 import com.passbolt.mobile.android.ui.GpgKeyModel
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi

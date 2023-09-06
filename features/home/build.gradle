@@ -33,6 +33,16 @@ dependencies {
     implementation project(':fulldatarefresh')
     implementation project(':resourcetypes')
     implementation project(':idlingresource')
+    implementation project(':supportedresourcetypes')
+    implementation project(':folders')
+    implementation project(':groups')
+    implementation project(':tags')
+    implementation project(':otpcreatemoremenu')
+    implementation project(':scanotp')
+    implementation project(':createotpmanually')
+    implementation project(':otpmoremenu')
+    implementation project(':otpcore')
+    implementation project(':otpeditmoremenu')
 
     implementation libs.androidx.navigationFragment
     implementation libs.androidx.navigationUi

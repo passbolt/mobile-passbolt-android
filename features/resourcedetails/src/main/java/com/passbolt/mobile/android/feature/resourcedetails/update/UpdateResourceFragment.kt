@@ -85,6 +85,11 @@ class UpdateResourceFragment :
         super.onPause()
     }
 
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
     private fun setListeners() {
         with(binding) {
             updateButton.setDebouncingOnClick {
@@ -247,21 +252,21 @@ class UpdateResourceFragment :
 
     override fun showSecretFetchFailure() {
         showSnackbar(
-            R.string.resource_permissions_secret_fetch_failure,
+            R.string.common_fetch_failure,
             backgroundColor = R.color.red
         )
     }
 
     override fun showSecretEncryptFailure() {
         showSnackbar(
-            R.string.resource_permissions_secret_encrypt_failure,
+            R.string.common_encryption_failure,
             backgroundColor = R.color.red
         )
     }
 
     override fun showSecretDecryptFailure() {
         showSnackbar(
-            R.string.resource_permissions_secret_decrypt_failure,
+            R.string.common_decryption_failure,
             backgroundColor = R.color.red
         )
     }
@@ -291,5 +296,11 @@ class UpdateResourceFragment :
 
     override fun clearInputFields() {
         binding.container.removeAllViews()
+    }
+
+    override fun showInvalidSecretDataAndNavigateBack() {
+        Toast.makeText(requireContext(), R.string.resource_update_invalid_secret_data, Toast.LENGTH_SHORT)
+            .show()
+        requireActivity().finish()
     }
 }

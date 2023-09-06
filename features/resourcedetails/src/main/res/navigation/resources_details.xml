@@ -14,12 +14,19 @@
         <argument
             android:name="resourceModel"
             app:argType="com.passbolt.mobile.android.ui.ResourceModel" />
+        <action
+            android:id="@+id/action_resourceDetails_to_scanOtp"
+            app:destination="@id/scanOtpNav" />
+
     </fragment>
 
-    <include app:graph="@navigation/tags_details"/>
+    <include app:graph="@navigation/tags_details" />
 
     <include app:graph="@navigation/permissions" />
 
     <include app:graph="@navigation/locationdetails" />
 
+    <include app:graph="@navigation/scan_otp" />
+
+    <include app:graph="@navigation/createotpmanually" />
 </navigation>

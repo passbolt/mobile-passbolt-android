@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.feature.resourcedetails.details
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
+import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -37,7 +39,7 @@ interface ResourceDetailsContract {
         fun addToClipboard(label: String, value: String, isSecret: Boolean)
         fun displayUrl(url: String)
         fun displayInitialsIcon(name: String, initials: String)
-        fun navigateToMore(menuModel: ResourceMoreMenuModel)
+        fun navigateToMore(resourceId: String, resourceName: String)
         fun navigateBack()
         fun showProgress()
         fun showPasswordVisibleIcon()
@@ -52,7 +54,7 @@ interface ResourceDetailsContract {
         fun showDescription(description: String, useSecretFont: Boolean)
         fun hidePasswordEyeIcon()
         fun openWebsite(url: String)
-        fun showGeneralError()
+        fun showGeneralError(errorMessage: String? = null)
         fun closeWithDeleteSuccessResult(name: String)
         fun navigateToEditResource(resourceModel: ResourceModel)
         fun showResourceEditedSnackbar(resourceName: String)
@@ -74,10 +76,21 @@ interface ResourceDetailsContract {
         fun navigateToResourceTags(resourceId: String, mode: PermissionsMode)
         fun showFolderLocation(locationPathSegments: List<String>)
         fun navigateToResourceLocation(folderId: String)
-        fun showDataRefresError()
+        fun showDataRefreshError()
         fun showContentNotAvailable()
+        fun showTotp(otpWrapper: OtpItemWrapper?)
+        fun showTotpSection()
+        fun showInvalidTotpScanned()
+        fun showEncryptionError(message: String)
+        fun navigateToOtpCreate(resourceId: String)
+        fun navigateToOtpEdit()
+        fun navigateToOtpMoreMenu(resourceId: String, resourceName: String)
+        fun hideTotpSection()
+        fun showTotpDeleted()
+        fun showTotpDeleteConfirmationDialog()
     }
 
+    @Suppress("TooManyFunctions")
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun argsReceived(resourceId: String, permissionsListWidth: Int, permissionItemWidth: Float)
         fun usernameCopyClick()
@@ -100,5 +113,16 @@ interface ResourceDetailsContract {
         fun shareClick()
         fun tagsClick()
         fun locationClick()
+        fun totpIconClick()
+        fun copyTotpClick()
+        fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
+        fun addTotpManuallyClick()
+        fun menuCopyOtpClick()
+        fun menuShowOtpClick()
+        fun menuEditOtpClick()
+        fun menuDeleteOtpClick()
+        fun editOtpManuallyClick()
+        fun manageTotpClick()
+        fun totpDeleteConfirmed()
     }
 }

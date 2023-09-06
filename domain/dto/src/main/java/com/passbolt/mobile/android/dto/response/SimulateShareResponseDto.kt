@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.dto.response
 
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,5 +40,5 @@ data class ShareRecipientDto(
 )
 
 data class ShareChangeUser(
-    val id: String
+    val id: UUID
 )

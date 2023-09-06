@@ -1,6 +1,9 @@
 package com.passbolt.mobile.android.core.users
 
 import com.passbolt.mobile.android.core.users.profile.userProfileModule
+import com.passbolt.mobile.android.core.users.usecase.FetchUsersUseCase
+import com.passbolt.mobile.android.core.users.usecase.RebuildUsersTablesUseCase
+import com.passbolt.mobile.android.core.users.usecase.db.usersDbModule
 import org.koin.dsl.module
 
 /**
@@ -28,6 +31,7 @@ import org.koin.dsl.module
 
 val usersModule = module {
     userProfileModule()
+    usersDbModule()
 
     single {
         FetchUsersUseCase(

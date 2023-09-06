@@ -250,3 +250,17 @@ fun withSpeedDialViewOpenState(isOpen: Boolean): Matcher<View?> =
             } ?: false
         }
     }
+
+fun withImageViewContainingAnyImage(): Matcher<View?> =
+    object : BoundedMatcher<View, ImageView>(ImageView::class.java) {
+
+        override fun describeTo(description: Description) {
+            description.appendText("ImageView with any image set")
+        }
+
+        override fun matchesSafely(imageView: ImageView?): Boolean {
+            return imageView?.let {
+                it.drawable != null
+            } ?: false
+        }
+    }

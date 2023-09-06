@@ -42,3 +42,12 @@ internal val PASSBOLT_SUBSEQUENT_PAGE_SCAN = ("101{" +
 
 internal val SAMPLE_BYTE_ARRAY = "www.passbolt.com".toByteArray()
 
+internal val PASSBOLT_FIRST_PAGE_SCAN_WITH_INVALID_UUIDS = ("100{" +
+        "\"transfer_id\":\"invalid_uuid\"," +
+        "\"user_id\":\"invalid_uuid\"," +
+        "\"domain\":\"https://localhost:8443\"," +
+        "\"total_pages\":7," +
+        "\"hash\":\"3d84155d3ea079c17221587bbd1fce285b8b636014025e484da01867cf28c0bc22079cac9a268e2ca76d075189065e5426044244b6d0e1a440adda4d89e148fb\"," +
+        "\"authentication_token\":\"af32cb1f-c1ae-4753-9982-7cc0d2178355\"" +
+        "}")
+    .toByteArray()

@@ -20,6 +20,7 @@ dependencies {
     implementation project(':folders')
     implementation project(':storage')
     implementation project(':idlingresource')
+    implementation project(':users')
 
     implementation libs.di.koin
     implementation libs.room.sqlite

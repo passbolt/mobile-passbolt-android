@@ -60,6 +60,17 @@
         app:layout_constraintStart_toEndOf="@id/otp"
         app:layout_constraintTop_toTopOf="@id/otp" />
 
+    <ImageView
+        android:id="@+id/generationInProgress"
+        android:layout_width="@dimen/dp_20"
+        android:layout_height="@dimen/dp_20"
+        android:layout_marginStart="@dimen/dp_16"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/otp"
+        app:layout_constraintStart_toEndOf="@id/otp"
+        app:layout_constraintTop_toTopOf="@id/otp"
+        android:src="@drawable/ic_refresh" />
+
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress"
         android:layout_width="@dimen/dp_20"

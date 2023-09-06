@@ -2,7 +2,9 @@ package com.passbolt.mobile.android.core.ui
 
 import com.passbolt.mobile.android.core.font.Font
 import com.passbolt.mobile.android.core.font.fontModule
+import com.passbolt.mobile.android.core.ui.controller.TotpViewController
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -37,4 +39,5 @@ val coreUiModule = module {
             font = get(named<Font.InterMedium>())
         )
     }
+    singleOf(::TotpViewController)
 }

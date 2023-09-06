@@ -53,23 +53,29 @@ import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
+import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentOtpBinding
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.OtpMoreMenuFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.feature.otp.scanotpsuccess.ScanOtpSuccessFragment
 import com.passbolt.mobile.android.feature.otp.screen.recycler.OtpItem
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
+import com.passbolt.mobile.android.ui.OtpItemWrapper
 import org.koin.android.ext.android.inject
 
 @Suppress("TooManyFunctions")
 class OtpFragment :
     BindingScopedAuthenticatedFragment<FragmentOtpBinding, OtpContract.View>(FragmentOtpBinding::inflate),
-    OtpContract.View, SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener {
+    OtpContract.View, SwitchAccountBottomSheetFragment.Listener, OtpMoreMenuFragment.Listener,
+    OtpUpdateMoreMenuFragment.Listener {
 
     override val presenter: OtpContract.Presenter by inject()
     private val otpAdapter: ItemAdapter<OtpItem> by inject()
@@ -102,6 +108,22 @@ class OtpFragment :
             result.getBoolean(CreateOtpFragment.EXTRA_OTP_CREATED)
         ) {
             presenter.otpCreated()
+        }
+    }
+
+    private val otpUpdatedResult = { _: String, result: Bundle ->
+        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_UPDATED) &&
+            result.getBoolean(CreateOtpFragment.EXTRA_OTP_UPDATED)
+        ) {
+            presenter.otpUpdated()
+        }
+    }
+
+    private val otpQrScannedResult = { _: String, result: Bundle ->
+        if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
+            presenter.otpQrScanned(
+                result.getParcelable(ScanOtpFragment.EXTRA_SCANNED_OTP)
+            )
         }
     }
 
@@ -176,7 +198,7 @@ class OtpFragment :
         binding.swipeRefresh.isRefreshing = true
     }
 
-    override fun showOtpList(otpList: List<OtpListItemWrapper>) {
+    override fun showOtpList(otpList: List<OtpItemWrapper>) {
         otpAdapter.set(otpList.map { OtpItem(it, initialsIconGenerator) })
         fastAdapter.notifyAdapterDataSetChanged()
     }
@@ -223,8 +245,14 @@ class OtpFragment :
             .show(childFragmentManager, SwitchAccountBottomSheetFragment::class.java.name)
     }
 
-    override fun showOtmMoreMenu(moreMenuModel: ResourceMoreMenuModel) {
-        OtpMoreMenuFragment.newInstance(moreMenuModel)
+    override fun navigateToEditOtpMenu() {
+        OtpUpdateMoreMenuFragment()
+            .show(childFragmentManager, OtpUpdateMoreMenuFragment::class.java.name)
+    }
+
+    override fun showOtmMoreMenu(resourceId: String, resourceName: String) {
+        presenter.pause()
+        OtpMoreMenuFragment.newInstance(resourceId, resourceName, true)
             .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
     }
 
@@ -290,6 +318,10 @@ class OtpFragment :
         presenter.menuDeleteOtpClick()
     }
 
+    override fun showTotpDeleted() {
+        showSnackbar(R.string.otp_deleted)
+    }
+
     override fun copySecretToClipBoard(label: String, value: String) {
         clipboardManager?.setPrimaryClip(
             ClipData.newPlainText(label, value).apply {
@@ -301,13 +333,13 @@ class OtpFragment :
         Toast.makeText(requireContext(), getString(R.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }
 
-    override fun navigateToScanOtpQrCode() {
+    override fun navigateToScanOtpSuccess(totpQr: OtpParseResult.OtpQr.TotpQr) {
         setFragmentResultListener(
             ScanOtpSuccessFragment.REQUEST_SCAN_OTP,
-            otpScannedResult
+            otpCreatedResult
         )
         findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment()
+            OtpFragmentDirections.actionOtpFragmentToScanOtpSuccessFragment(totpQr)
         )
     }
 
@@ -317,21 +349,21 @@ class OtpFragment :
             otpCreatedResult
         )
         findNavController().navigate(
-            OtpFragmentDirections.actionOtpFragmentToCreateOtpManuallyFragment()
+            NavDeepLinkProvider.otpManualFormDeepLinkRequest(null)
         )
     }
 
     override fun showDecryptionFailure() {
-        showSnackbar(R.string.home_decryption_failure, backgroundColor = R.color.red)
+        showSnackbar(R.string.common_decryption_failure, backgroundColor = R.color.red)
     }
 
     override fun showFetchFailure() {
-        showSnackbar(R.string.home_fetch_failure, backgroundColor = R.color.red)
+        showSnackbar(R.string.common_fetch_failure, backgroundColor = R.color.red)
     }
 
     override fun showConfirmDeleteDialog() {
         confirmTotpDeletionAlertDialog(requireContext()) {
-            presenter.totpDeletetionConfirmed()
+            presenter.totpDeletionConfirmed()
         }.show()
     }
 
@@ -345,6 +377,71 @@ class OtpFragment :
 
     override fun showNewOtpCreated() {
         showSnackbar(R.string.otp_new_otp_created, backgroundColor = R.color.green)
+    }
+
+    override fun showOtpUpdate() {
+        showSnackbar(R.string.otp_otp_updated, backgroundColor = R.color.green)
+    }
+
+    override fun menuEditOtpManuallyClick() {
+        presenter.menuEditOtpManuallyClick()
+    }
+
+    override fun menuEditByNewOtpScanClick() {
+        presenter.menuEditByQrScanClick()
+    }
+
+    override fun otpMenuDismissed() {
+        presenter.resume(this)
+    }
+
+    override fun showProgress() {
+        showProgressDialog(childFragmentManager)
+    }
+
+    override fun navigateToEditOtpManually(resourceId: String) {
+        setFragmentResultListener(
+            CreateOtpFragment.REQUEST_UPDATE_OTP,
+            otpUpdatedResult
+        )
+        findNavController().navigate(
+            NavDeepLinkProvider.otpManualFormDeepLinkRequest(resourceId)
+        )
+    }
+
+    override fun navigateToScanOtpCodeForResult() {
+        setFragmentResultListener(
+            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
+            otpQrScannedResult
+        )
+        findNavController().navigate(
+            OtpFragmentDirections.actionOtpFragmentToScanOtpFragment()
+        )
+    }
+
+    override fun showInvalidQrCodeDataScanned() {
+        showSnackbar(
+            R.string.otp_invalid_itp_data_scanned,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun hideProgress() {
+        hideProgressDialog(childFragmentManager)
+    }
+
+    override fun showEncryptionError(message: String) {
+        showSnackbar(
+            R.string.common_encryption_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showError(message: String) {
+        showSnackbar(
+            getString(R.string.common_failure_format, message),
+            backgroundColor = R.color.red
+        )
     }
 
     override fun showCreateButton() {

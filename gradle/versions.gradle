@@ -1,6 +1,6 @@
 ext {
-    projectVersionName = "1.14.1"
-    projectVersionCode = 23
+    projectVersionName = "1.15.0"
+    projectVersionCode = 24
 
     projectCompileSdk = 33
     projectMinSdk = 29
@@ -25,7 +25,7 @@ ext {
             coroutinesTest: "1.6.4",
             androidTestsRunner: "1.4.0",
             androidTestRules: "1.4.0",
-            androidTestKtx: "1.4.0",
+            androidTestKtx: "1.5.0",
             androidTestIntents: "3.5.0-alpha07",
             mockitoAndroid: "4.8.0",
             espressoOkHttpIdlingResource: "1.0.0",
@@ -40,7 +40,7 @@ ext {
         ],
         androidx: [
             core: "1.8.0",
-            appcompat: "1.4.2",
+            appcompat: "1.6.1",
             constraintLayout: "2.1.4",
             navigation: "2.5.0",
             security: "1.1.0-alpha03",
@@ -81,7 +81,7 @@ ext {
             testing: "2.4.3"
         ],
         yubikit: [
-            android: "2.2.0"
+            android: "2.3.0"
         ],
         pinentry: "2.0.6",
         balloon: "1.4.6",

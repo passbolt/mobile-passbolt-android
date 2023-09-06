@@ -1,14 +1,14 @@
 package com.passbolt.mobile.android.permissions.permissions
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 import org.mockito.kotlin.mock

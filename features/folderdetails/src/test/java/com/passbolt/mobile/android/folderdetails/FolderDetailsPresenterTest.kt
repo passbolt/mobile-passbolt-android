@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.folderdetails
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderLocationUseCase
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderPermissionsUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase.Output
 import com.passbolt.mobile.android.ui.FolderModel
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
@@ -71,7 +71,7 @@ class FolderDetailsPresenterTest : KoinTest {
             )
         }
         mockGetLocalFolderPermissionsUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalFolderPermissionsUseCase.Output(
+            onBlocking { execute(any()) } doReturn Output(
                 MOCK_PERMISSIONS
             )
         }

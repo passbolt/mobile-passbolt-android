@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount
 
+import com.passbolt.mobile.android.core.idlingresource.TransferAccountIdlingResource
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
@@ -46,6 +47,7 @@ class TransferAccountPresenter(
     private val createTransferUseCase: CreateTransferUseCase,
     private val viewTransferUseCase: ViewTransferUseCase,
     private val getSessionUseCase: GetSessionUseCase,
+    private val transferAccountIdlingResource: TransferAccountIdlingResource,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : TransferAccountContract.Presenter,
     BaseAuthenticatedPresenter<TransferAccountContract.View>(coroutineLaunchContext) {
@@ -63,12 +65,14 @@ class TransferAccountPresenter(
     override fun attach(view: TransferAccountContract.View) {
         super<BaseAuthenticatedPresenter>.attach(view)
         coroutineScope.launch {
+            transferAccountIdlingResource.setIdle(false)
             when (val parameters = createTransferInputParametersGenerator.calculateCreateTransferParameters()) {
                 is CreateTransferInputParametersGenerator.Output.Error ->
                     view.showCouldNotInitializeTransferParameters()
                 is CreateTransferInputParametersGenerator.Output.Parameters ->
                     createTransfer(parameters)
             }
+            transferAccountIdlingResource.setIdle(true)
         }
     }
 

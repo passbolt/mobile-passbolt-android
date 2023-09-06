@@ -25,16 +25,12 @@ package com.passbolt.mobile.android.feature.otp
 
 import com.passbolt.mobile.android.feature.otp.createotpmanually.createOtpModule
 import com.passbolt.mobile.android.feature.otp.createotpmanuallyexpertsettings.createOtpAdvancedSettingsModule
-import com.passbolt.mobile.android.feature.otp.otpmoremenu.otpMoreMenuModule
-import com.passbolt.mobile.android.feature.otp.scanotp.scanOtpModule
 import com.passbolt.mobile.android.feature.otp.scanotpsuccess.scanOtpSuccessModule
 import com.passbolt.mobile.android.feature.otp.screen.otpModule
 import org.koin.dsl.module
 
 val otpMainModule = module {
     otpModule()
-    otpMoreMenuModule()
-    scanOtpModule()
     createOtpModule()
     createOtpAdvancedSettingsModule()
     scanOtpSuccessModule()

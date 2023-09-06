@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.core.secrets.usecase.decrypt
-
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.passboltapi.secrets.SecretsRepository
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,6 +20,13 @@ import com.passbolt.mobile.android.passboltapi.secrets.SecretsRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.core.secrets.usecase.decrypt
+
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.passboltapi.secrets.SecretsRepository
+
 class FetchSecretUseCase(
     private val secretsRepository: SecretsRepository
 ) : AsyncUseCase<FetchSecretUseCase.Input, FetchSecretUseCase.Output> {

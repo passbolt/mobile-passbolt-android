@@ -37,10 +37,10 @@ class GroupsModelMapper {
     fun map(group: GroupsResponseDto): GroupModelWithUsers =
         GroupModelWithUsers(
             GroupModel(
-                groupId = group.id,
+                groupId = group.id.toString(),
                 groupName = group.name
             ),
-            group.users?.map { GroupUser(it.id) }.orEmpty()
+            group.users?.map { GroupUser(it.id.toString()) }.orEmpty()
         )
 
     fun map(group: GroupModel): UsersGroup =
@@ -58,7 +58,7 @@ class GroupsModelMapper {
 
     fun map(permission: PermissionGroupDto) =
         GroupModel(
-            permission.id,
+            permission.id.toString(),
             permission.name
         )
 

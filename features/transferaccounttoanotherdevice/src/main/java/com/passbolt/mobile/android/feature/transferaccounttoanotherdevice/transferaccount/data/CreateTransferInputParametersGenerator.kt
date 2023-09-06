@@ -11,6 +11,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okio.Buffer
 import timber.log.Timber
+import java.util.UUID
 import kotlin.math.ceil
 
 /**
@@ -55,7 +56,7 @@ class CreateTransferInputParametersGenerator(
             val keyJson = Json.encodeToString(
                 AssembledKeyDto(
                     armoredPrivateKey,
-                    userServerId,
+                    UUID.fromString(userServerId),
                     privateKeyFingerprint.result
                 )
             )

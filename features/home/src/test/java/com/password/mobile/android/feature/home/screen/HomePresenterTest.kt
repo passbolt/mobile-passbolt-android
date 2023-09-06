@@ -1,25 +1,18 @@
 package com.password.mobile.android.feature.home.screen
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
-import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
-import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
@@ -87,7 +80,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `user avatar should be displayed when provided`() = runTest {
-        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
         )
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
@@ -139,7 +132,7 @@ class HomePresenterTest : KoinTest {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
             flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         )
-        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
         )
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -173,7 +166,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `refresh swiped should reload data with filter applied when search text entered`() = runTest {
         mockResourcesList()
-        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
         )
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -218,7 +211,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `empty view should be displayed when search is empty`() = runTest {
-        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
         )
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -250,7 +243,7 @@ class HomePresenterTest : KoinTest {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
             flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         )
-        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
         )
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -314,7 +307,7 @@ class HomePresenterTest : KoinTest {
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
             GetLocalResourcesUseCase.Output(emptyList())
         )
-        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
@@ -345,7 +338,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `item clicked should open details screen`() = runTest {
-        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
+        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
@@ -382,241 +375,12 @@ class HomePresenterTest : KoinTest {
     }
 
     @Test
-    fun `3 dots clicked should open more screen`() = runTest {
-        val model = ResourceModel(
-            resourceId = "id",
-            resourceTypeId = "resTypeId",
-            folderId = "folderId",
-            name = "title",
-            username = "subtitle",
-            icon = null,
-            initials = "T",
-            url = "",
-            description = "desc",
-            permission = ResourcePermission.READ,
-            favouriteId = null,
-            modified = ZonedDateTime.now()
-        )
-        val menuModel = resourceMenuModelMapper.map(model)
-        whenever(resourcesInteractor.updateResourcesWithTypes()).thenReturn(
-            ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
-        )
-        mockAccountData(null)
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        reset(view)
-        presenter.resourceMoreClick(model)
-
-        verify(view).navigateToMore(menuModel)
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `view should show decrypt error correct`() {
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.DecryptFailure(OpenPgpError("message"))
-            )
-        }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-        mockAccountData(null)
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuCopyPasswordClick()
-
-        verify(view).showDecryptionFailure()
-    }
-
-    @Test
-    fun `view should show fetch error correct`() {
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.FetchFailure(RuntimeException())
-            )
-        }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-        mockAccountData(null)
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuCopyPasswordClick()
-
-        verify(view).showFetchFailure()
-    }
-
-    @Test
-    fun `view should show auth when passphrase not in cache`() {
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.Unauthorized(AuthenticationState.Unauthenticated.Reason.Session)
-            )
-        }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-        mockAccountData(null)
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuCopyPasswordClick()
-
-        verify(view).showAuth(AuthenticationState.Unauthenticated.Reason.Passphrase)
-    }
-
-    @Test
-    fun `view should copy secret after successful decrypt`() = runTest {
-        mockAccountData(null)
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.Success(DECRYPTED_SECRET)
-            )
-        }
-        mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(any()) }.doReturn(
-                ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-            )
-        }
-        whenever(mockSecretParser.extractPassword(any(), any()))
-            .doReturn(String(DECRYPTED_SECRET))
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuCopyPasswordClick()
-
-        verify(view).addToClipboard(
-            ResourceAuthenticatedActionsInteractor.SECRET_LABEL,
-            String(DECRYPTED_SECRET),
-            true
-        )
-    }
-
-    @Test
-    fun `delete resource should show confirmation dialog, delete and show snackbar`() = runTest {
-        mockAccountData(null)
-        whenever(mockDeleteResourceUseCase.execute(any()))
-            .thenReturn(DeleteResourceUseCase.Output.Success)
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.Success(DECRYPTED_SECRET)
-            )
-        }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuDeleteClick()
-        presenter.deleteResourceConfirmed()
-
-        verify(view).showDeleteConfirmationDialog()
-        verify(view).showResourceDeletedSnackbar(RESOURCE_MODEL.name)
-    }
-
-    @Test
-    fun `delete resource should show error when there is deletion error`() = runTest {
-        mockAccountData(null)
-        whenever(mockDeleteResourceUseCase.execute(any()))
-            .thenReturn(
-                DeleteResourceUseCase.Output.Failure<String>(
-                    NetworkResult.Failure.NetworkError(
-                        RuntimeException(),
-                        ""
-                    )
-                )
-            )
-        mockSecretInteractor.stub {
-            onBlocking { fetchAndDecrypt(ID) }.doReturn(
-                SecretInteractor.Output.Success(DECRYPTED_SECRET)
-            )
-        }
-        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
-            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
-        )
-
-        presenter.attach(view)
-        presenter.argsRetrieved(
-            ShowSuggestedModel.DoNotShow,
-            HomeDisplayViewModel.AllItems,
-            hasPreviousEntry = false,
-            shouldShowCloseButton = false,
-            shouldShowResourceMoreMenu = false
-        )
-        presenter.resume(view)
-        presenter.resourceMoreClick(RESOURCE_MODEL)
-        presenter.menuDeleteClick()
-        presenter.deleteResourceConfirmed()
-
-        verify(view).showDeleteConfirmationDialog()
-        verify(view).showDeleteResourceFailure()
-    }
-
-    @Test
     fun `home should navigate to root when current folder cannot be retrieved`() {
         mockGetLocalResourcesAndFoldersUseCase.stub {
             onBlocking { execute(any()) } doReturn GetLocalResourcesAndFoldersUseCase.Output.Failure
         }
         mockGetLocalFolderUseCase.stub {
-            onBlocking { execute(any()) } doReturn GetLocalFolderDetailsUseCase.Output(
+            onBlocking { execute(any()) } doReturn com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase.Output(
                 FolderModel("childId", "root", "child folder", false, ResourcePermission.UPDATE)
             )
         }
@@ -856,7 +620,6 @@ class HomePresenterTest : KoinTest {
         )
     )
 
-
     private fun mockAccountData(avatarUrl: String?) {
         whenever(getSelectedAccountDataUseCase.execute(anyOrNull())).thenReturn(
             GetSelectedAccountDataUseCase.Output(
@@ -869,32 +632,5 @@ class HomePresenterTest : KoinTest {
                 label = "label"
             )
         )
-    }
-
-    private companion object {
-        private const val NAME = "name"
-        private const val USERNAME = "username"
-        private const val INITIALS = "NN"
-        private const val URL = "https://www.passbolt.com"
-        private const val ID = "id"
-        private const val RESOURCE_TYPE_ID = "resTypeId"
-        private const val FOLDER_ID = "folderId"
-        private const val DESCRIPTION = "desc"
-
-        private val RESOURCE_MODEL = ResourceModel(
-            ID,
-            RESOURCE_TYPE_ID,
-            FOLDER_ID,
-            NAME,
-            USERNAME,
-            null,
-            INITIALS,
-            URL,
-            DESCRIPTION,
-            ResourcePermission.READ,
-            null,
-            ZonedDateTime.now()
-        )
-        private val DECRYPTED_SECRET = "secret".toByteArray()
     }
 }

@@ -23,29 +23,17 @@
 
 package com.passbolt.mobile.android.mappers
 
-import com.passbolt.mobile.android.common.InitialsProvider
-import com.passbolt.mobile.android.entity.resource.Resource
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
-import com.passbolt.mobile.android.ui.OtpModel
+import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.ResourceModel
 
-class OtpModelMapper(
-    private val initialsProvider: InitialsProvider,
-    private val permissionsModelMapper: PermissionsModelMapper
-) {
+class OtpModelMapper {
 
-    fun map(resourceEntity: Resource): OtpModel =
-        OtpModel(
-            resourceId = resourceEntity.resourceId,
-            name = resourceEntity.resourceName,
-            initials = initialsProvider.get(resourceEntity.resourceName),
-            permission = permissionsModelMapper.map(resourceEntity.resourcePermission)
-        )
-
-    fun map(otpModel: OtpModel): OtpListItemWrapper =
-        OtpListItemWrapper(
-            otp = otpModel,
+    fun map(otpModel: ResourceModel): OtpItemWrapper =
+        OtpItemWrapper(
+            resource = otpModel,
             isVisible = false,
             otpExpirySeconds = null,
-            otpValue = null
+            otpValue = null,
+            isRefreshing = false
         )
 }

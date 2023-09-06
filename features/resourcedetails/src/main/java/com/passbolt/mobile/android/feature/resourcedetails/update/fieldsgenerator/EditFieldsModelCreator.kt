@@ -1,11 +1,13 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator
 
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
-import com.passbolt.mobile.android.database.impl.resourcetypes.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.feature.resourcedetails.update.ResourceValue
+import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -37,6 +39,7 @@ class EditFieldsModelCreator(
     private val resourceFieldsComparator: ResourceFieldsComparator
 ) {
 
+    @Throws(ClassCastException::class)
     suspend fun create(
         existingResource: ResourceModel,
         secret: ByteArray
@@ -51,15 +54,24 @@ class EditFieldsModelCreator(
         return editedResourceType
             .fields
             .sortedWith(resourceFieldsComparator)
+            .filter { it.name in updateResourceFormSupportedFieldNames }
             .map { field ->
                 val initialValue = when (field.name) {
                     in listOf(FieldNamesMapper.PASSWORD_FIELD, FieldNamesMapper.SECRET_FIELD) -> {
-                        secretParser.extractPassword(resourceTypeEnum, secret)
+                        // there can be parsing errors when secret data is invalid - do not create the input then
+                        (secretParser.extractPassword(
+                            existingResource.resourceTypeId,
+                            secret
+                        ) as DecryptedSecretOrError.DecryptedSecret<String>).secret
                     }
                     FieldNamesMapper.DESCRIPTION_FIELD -> {
                         when (resourceTypeEnum) {
                             SIMPLE_PASSWORD -> existingResource.description
-                            PASSWORD_WITH_DESCRIPTION -> secretParser.extractDescription(resourceTypeEnum, secret)
+                            // there can be parsing errors when secret data is invalid - do not create the input then
+                            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> (secretParser.extractDescription(
+                                existingResource.resourceTypeId,
+                                secret
+                            ) as DecryptedSecretOrError.DecryptedSecret<String>).secret
                             STANDALONE_TOTP -> {
                                 throw IllegalArgumentException("Standalone totp does not contain description field")
                             }
@@ -76,5 +88,23 @@ class EditFieldsModelCreator(
                 }
                 ResourceValue(field, initialValue)
             }
+    }
+
+    private companion object {
+        /*
+        currently on update resource form the following resource types can be edited:
+         * "simple password" (can be edited in whole)
+         * "password with description" (can be edited in whole)
+         * "password with description and totp" can be edited (only common fields can be edited; the totp fields have a
+            separate form)
+        */
+        private val updateResourceFormSupportedFieldNames = listOf(
+            FieldNamesMapper.NAME_FIELD,
+            FieldNamesMapper.DESCRIPTION_FIELD,
+            FieldNamesMapper.USERNAME_FIELD,
+            FieldNamesMapper.URI_FIELD,
+            FieldNamesMapper.PASSWORD_FIELD,
+            FieldNamesMapper.SECRET_FIELD
+        )
     }
 }

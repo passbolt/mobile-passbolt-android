@@ -3,12 +3,13 @@ package com.passbolt.mobile.android.feature.autofill.resources
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAccountsUseCase
+import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -80,24 +81,31 @@ class AutofillResourcesPresenter(
     override fun itemClick(resourceModel: ResourceModel) {
         view?.showProgress()
         scope.launch {
-            val resourceTypeEnum = resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)
             doAfterFetchAndDecrypt(
                 resourceModel.resourceId,
                 successAction = {
                     view?.hideProgress()
-                    val password = secretParser.extractPassword(resourceTypeEnum, it)
-                    view?.autofillReturn(resourceModel.username.orEmpty(), password, uri)
+                    when (val password = secretParser.extractPassword(resourceModel.resourceTypeId, it)) {
+                        is DecryptedSecretOrError.DecryptedSecret -> view?.autofillReturn(
+                            resourceModel.username.orEmpty(),
+                            password.secret,
+                            uri
+                        )
+                        is DecryptedSecretOrError.Error -> error(password.message)
+                    }
                 },
-                errorAction = {
-                    view?.hideProgress()
-                    view?.showError(it)
-                })
+                errorAction = { error(it) })
         }
+    }
+
+    private fun error(message: String?) {
+        view?.hideProgress()
+        view?.showError(message)
     }
 
     private suspend fun doAfterFetchAndDecrypt(
         resourceId: String,
-        successAction: (ByteArray) -> Unit,
+        successAction: suspend (ByteArray) -> Unit,
         errorAction: (String?) -> Unit
     ) {
         when (val output =

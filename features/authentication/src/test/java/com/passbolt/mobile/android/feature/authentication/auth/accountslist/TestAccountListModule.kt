@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.accountslist
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListContract
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -44,6 +45,7 @@ internal val mockRemoveAllAccountsDataUseCase = mock<RemoveAllAccountDataUseCase
 internal val saveCurrentApiUrlUseCase = mock<SaveCurrentApiUrlUseCase>()
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
 internal val mockSaveSelectedAccountUseCase = mock<SaveSelectedAccountUseCase>()
+internal val mockDatapaseProvider = mock<DatabaseProvider>()
 
 @ExperimentalCoroutinesApi
 val testAccountListModule = module {
@@ -56,7 +58,8 @@ val testAccountListModule = module {
             signOutUseCase = mockSignOutUseCase,
             coroutineLaunchContext = get(),
             saveCurrentApiUrlUseCase = get(),
-            saveSelectedAccountUseCase = get()
+            saveSelectedAccountUseCase = get(),
+            databaseProvider = mockDatapaseProvider
         )
     }
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }

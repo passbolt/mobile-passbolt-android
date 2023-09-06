@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.core.resourcetypes
 
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.resourceTypesDbModule
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -27,5 +28,9 @@ import org.koin.dsl.module
  */
 
 val resourceTypesModule = module {
+    resourceTypesDbModule()
+
     singleOf(::ResourceTypeFactory)
+    singleOf(::GetResourceTypesUseCase)
+    singleOf(::ResourceTypesInteractor)
 }

@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -28,6 +27,8 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.WebsiteOpener
+import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
+import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
 import com.passbolt.mobile.android.common.extension.gone
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.visible
@@ -40,12 +41,16 @@ import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.createfolder.CreateFolderFragment
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
+import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.feature.home.screen.model.State
 import com.passbolt.mobile.android.feature.home.screen.recycler.FolderItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.GroupWithCountItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.InCurrentFoldersHeaderItem
@@ -54,9 +59,14 @@ import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordHeaderIt
 import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.TagWithCountItem
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
+import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
 import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
+import com.passbolt.mobile.android.otpcreatemoremenu.OtpCreateMoreMenuFragment
+import com.passbolt.mobile.android.otpeditmoremenu.OtpUpdateMoreMenuFragment
+import com.passbolt.mobile.android.otpmoremenu.OtpMoreMenuFragment
 import com.passbolt.mobile.android.resourcemoremenu.ResourceMoreMenuFragment
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.Folder
@@ -66,7 +76,6 @@ import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.ResourceListUiModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
 import com.passbolt.mobile.android.ui.TagWithCount
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -97,7 +106,8 @@ import org.koin.core.qualifier.named
 class HomeFragment :
     BindingScopedAuthenticatedFragment<FragmentHomeBinding, HomeContract.View>(FragmentHomeBinding::inflate),
     HomeContract.View, ResourceMoreMenuFragment.Listener, SwitchAccountBottomSheetFragment.Listener,
-    FiltersMenuFragment.Listener, FolderMoreMenuFragment.Listener {
+    FiltersMenuFragment.Listener, FolderMoreMenuFragment.Listener, OtpCreateMoreMenuFragment.Listener,
+    OtpMoreMenuFragment.Listener, OtpUpdateMoreMenuFragment.Listener {
 
     override val presenter: HomeContract.Presenter by inject()
     override val appContext = AppContext.APP
@@ -188,6 +198,22 @@ class HomeFragment :
                 presenter.resourceShared()
             }
         }
+
+    private val otpEdited = { _: String, result: Bundle ->
+        if (result.containsKey(CreateOtpFragment.EXTRA_OTP_UPDATED) &&
+            result.containsKey(CreateOtpFragment.EXTRA_RESOURCE_NAME)
+        ) {
+            presenter.resourceEdited(result.getString(CreateOtpFragment.EXTRA_RESOURCE_NAME).orEmpty())
+        }
+    }
+
+    private val otpQrScanned = { _: String, result: Bundle ->
+        if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
+            presenter.otpScanned(
+                result.getParcelable(ScanOtpFragment.EXTRA_SCANNED_OTP)
+            )
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -465,9 +491,10 @@ class HomeFragment :
         binding.appBar.setExpanded(true)
     }
 
-    override fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel) {
-        ResourceMoreMenuFragment.newInstance(resourceMoreMenuModel)
-            .show(childFragmentManager, ResourceMoreMenuFragment::class.java.name)
+    override fun navigateToMore(resourceId: String, resourceName: String) {
+        presenter.pause()
+        ResourceMoreMenuFragment.newInstance(resourceId, resourceName)
+            .show(this@HomeFragment.childFragmentManager, ResourceMoreMenuFragment::class.java.name)
     }
 
     override fun navigateToDetails(resourceModel: ResourceModel) {
@@ -515,25 +542,48 @@ class HomeFragment :
         presenter.menuShareClick()
     }
 
+    override fun menuAddTotpClick() {
+        OtpCreateMoreMenuFragment()
+            .show(childFragmentManager, OtpCreateMoreMenuFragment::class.java.name)
+    }
+
+    override fun menuManageTotpClick() {
+        presenter.manageTotpClick()
+    }
+
+    override fun resourceMoreMenuDismissed() {
+        presenter.resume(this)
+    }
+
+    override fun otpMenuDismissed() {
+        presenter.resume(this)
+    }
+
+    override fun navigateToOtpMoreMenu(resourceId: String, resourceName: String) {
+        OtpMoreMenuFragment.newInstance(resourceId, resourceName, canShowTotp = false)
+            .show(childFragmentManager, OtpMoreMenuFragment::class.java.name)
+    }
+
     override fun openWebsite(url: String) {
         websiteOpener.open(requireContext(), url)
     }
 
     override fun showDecryptionFailure() {
-        Toast.makeText(requireContext(), R.string.home_decryption_failure, Toast.LENGTH_SHORT)
+        Toast.makeText(requireContext(), R.string.common_decryption_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showFetchFailure() {
-        Toast.makeText(requireContext(), R.string.home_fetch_failure, Toast.LENGTH_SHORT)
+        Toast.makeText(requireContext(), R.string.common_fetch_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
-    override fun showGeneralError() {
+    override fun showGeneralError(errorMessage: String?) {
         showSnackbar(
-            R.string.common_failure,
+            R.string.common_failure_format,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            backgroundColor = R.color.red,
+            messageArgs = arrayOf(errorMessage.orEmpty())
         )
     }
 
@@ -584,7 +634,7 @@ class HomeFragment :
         presenter.menuEditClick()
     }
 
-    override fun menuFavouriteClick(option: FavouriteOption) {
+    override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
         presenter.menuFavouriteClick(option)
     }
 
@@ -614,12 +664,9 @@ class HomeFragment :
     }
 
     override fun showDeleteConfirmationDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.are_you_sure)
-            .setMessage(R.string.resource_will_be_deleted)
-            .setPositiveButton(R.string.delete) { _, _ -> presenter.deleteResourceConfirmed() }
-            .setNegativeButton(R.string.cancel) { _, _ -> }
-            .setCancelable(false)
+        confirmResourceDeletionAlertDialog(requireContext()) {
+            presenter.deleteResourceConfirmed()
+        }
             .show()
     }
 
@@ -881,26 +928,100 @@ class HomeFragment :
         )
     }
 
+    override fun menuCreateOtpManuallyClick() {
+        presenter.menuAddTotpManuallyClick()
+    }
+
+    override fun navigateToOtpCreate(resourceId: String) {
+        setFragmentResultListener(
+            CreateOtpFragment.REQUEST_UPDATE_OTP,
+            otpEdited
+        )
+
+        findNavController().navigate(
+            NavDeepLinkProvider.otpManualFormDeepLinkRequest(resourceId)
+        )
+    }
+
+    override fun menuCreateByNewOtpScanClick() {
+        setFragmentResultListener(
+            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
+            otpQrScanned
+        )
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeToScanOtp()
+        )
+    }
+
+    override fun showEncryptionError(message: String) {
+        showSnackbar(
+            R.string.common_encryption_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showInvalidTotpScanned() {
+        showSnackbar(
+            R.string.resource_details_invalid_totp_scanned,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showProgress() {
+        showProgressDialog(childFragmentManager)
+    }
+
+    override fun hideProgress() {
+        hideProgressDialog(childFragmentManager)
+    }
+
+    override fun menuCopyOtpClick() {
+        presenter.menuCopyOtpClick()
+    }
+
+    override fun menuEditOtpClick() {
+        presenter.menuEditOtpClick()
+    }
+
+    override fun menuDeleteOtpClick() {
+        presenter.menuDeleteOtpClick()
+    }
+
+    override fun navigateToOtpEdit() {
+        OtpUpdateMoreMenuFragment()
+            .show(childFragmentManager, OtpUpdateMoreMenuFragment::class.java.name)
+    }
+
+    override fun menuEditOtpManuallyClick() {
+        presenter.editOtpManuallyClick()
+    }
+
+    override fun menuEditByNewOtpScanClick() {
+        navigateToScanOtpForResult()
+    }
+
+    private fun navigateToScanOtpForResult() {
+        setFragmentResultListener(
+            ScanOtpFragment.REQUEST_SCAN_OTP_FOR_RESULT,
+            otpQrScanned
+        )
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeToScanOtp()
+        )
+    }
+
+    override fun showDeleteTotpConfirmationDialog() {
+        confirmTotpDeletionAlertDialog(requireContext()) {
+            presenter.totpDeletionConfirmed()
+        }
+            .show()
+    }
+
+    override fun showTotpDeleted() {
+        showSnackbar(R.string.otp_deleted)
+    }
+
     companion object {
         private val AVATAR_SIZE = 30.px
     }
-
-    enum class State(
-        val errorVisible: Boolean,
-        val emptyVisible: Boolean,
-        val listVisible: Boolean
-    ) {
-        EMPTY(false, true, false),
-        SEARCH_EMPTY(false, true, false),
-        ERROR(true, false, false),
-        SUCCESS(false, false, true)
-    }
-
-    data class HeaderSectionConfiguration(
-        val isInCurrentFolderSectionVisible: Boolean,
-        val isInSubFoldersSectionVisible: Boolean,
-        val currentFolderName: String? = null,
-        val isSuggestedSectionVisible: Boolean,
-        val isOtherItemsSectionVisible: Boolean
-    )
 }

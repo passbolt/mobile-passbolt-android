@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.dto.response.qrcode
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,10 +29,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class QrFirstPageDto(
+    @Serializable(with = UUIDSerializer::class)
     @SerialName("transfer_id")
-    val transferId: String,
+    val transferId: UUID,
+    @Serializable(with = UUIDSerializer::class)
     @SerialName("user_id")
-    val userId: String,
+    val userId: UUID,
     @SerialName("total_pages")
     val totalPages: Int,
     @SerialName("authentication_token")

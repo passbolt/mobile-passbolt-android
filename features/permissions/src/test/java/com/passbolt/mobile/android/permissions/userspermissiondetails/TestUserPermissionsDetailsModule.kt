@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.permissions.userspermissiondetails
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.database.impl.users.GetLocalUserUseCase
+import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUserUseCase
 import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsContract
 import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsPresenter
 import org.koin.dsl.module

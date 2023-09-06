@@ -18,9 +18,13 @@ dependencies {
     implementation project(':secrets')
     implementation project(':resourcetypes')
     implementation project(':authentication')
+    implementation project(':users')
+    implementation project(':entity')
+    implementation project(':tags')
 
     implementation libs.gson
     implementation libs.room.core
+    implementation libs.room.cipher
     implementation libs.di.koin
 }
 

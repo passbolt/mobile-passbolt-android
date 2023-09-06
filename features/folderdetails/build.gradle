@@ -23,6 +23,7 @@ dependencies {
     implementation project(':locationdetails')
     implementation project(':navigation')
     implementation project(':fulldatarefresh')
+    implementation project(':folders')
 
     implementation libs.di.koin
     implementation libs.material

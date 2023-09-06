@@ -1,0 +1,42 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "androidx.navigation.safeargs"
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':architecture')
+    implementation project(':storage')
+    implementation project(':mappers')
+    implementation project(':ui')
+    implementation project(':coreui')
+    implementation project(':database')
+    implementation project(':localization')
+    implementation project(':fulldatarefresh')
+    implementation project(':authentication')
+    implementation project(':supportedresourcetypes')
+    implementation project(':resources')
+    implementation project(':resourcetypes')
+
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintLayout
+    implementation libs.material
+    implementation libs.di.koin
+    implementation libs.room.core
+    implementation libs.fastAdapter.core
+    implementation libs.fastAdapter.binding
+    implementation libs.fastAdapter.diff
+    implementation libs.androidx.navigationFragment
+    implementation libs.androidx.navigationUi
+    implementation libs.androidx.swiperefresh
+    implementation libs.coil.core
+    implementation libs.coil.base
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

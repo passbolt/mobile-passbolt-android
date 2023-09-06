@@ -39,7 +39,7 @@ class TransferMapper {
 
     fun mapUpdateResponseToUi(pageResponseDto: TransferResponseDto): UpdateTransferModel =
         UpdateTransferModel(
-            id = pageResponseDto.id,
+            id = pageResponseDto.id.toString(),
             firstName = pageResponseDto.user?.profile?.firstName,
             lastName = pageResponseDto.user?.profile?.lastName,
             email = pageResponseDto.user?.email,
@@ -48,7 +48,7 @@ class TransferMapper {
 
     fun mapViewResponseToUi(transfer: TransferResponseDto): TransferModel =
         TransferModel(
-            id = transfer.id,
+            id = transfer.id.toString(),
             status = mapStatus(transfer.status),
             currentPage = transfer.currentPage,
             totalPages = transfer.totalPages,
@@ -57,7 +57,7 @@ class TransferMapper {
 
     fun mapCreateResponseToUi(transfer: CreateTransferResponseDto): CreateTransferModel =
         CreateTransferModel(
-            id = transfer.id,
+            id = transfer.id.toString(),
             status = mapStatus(transfer.status),
             currentPage = transfer.currentPage,
             totalPages = transfer.totalPages,

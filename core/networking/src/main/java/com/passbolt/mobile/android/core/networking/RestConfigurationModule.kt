@@ -75,7 +75,9 @@ val networkingModule = module {
     single<RestService> {
         RetrofitRestService(
             client = get(named(DEFAULT_HTTP_CLIENT)),
-            converterFactory = GsonConverterFactory.create()
+            converterFactory = GsonConverterFactory.create(
+                get()
+            )
         )
     }
     single {

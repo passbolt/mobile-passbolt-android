@@ -2,20 +2,18 @@ package com.passbolt.mobile.android.resourcemoremenu
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismiss
 import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedBottomSheetFragment
 import com.passbolt.mobile.android.resourcemoremenu.databinding.ViewPasswordBottomsheetBinding
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.fragmentScope
+import org.koin.android.ext.android.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,30 +38,27 @@ import org.koin.androidx.scope.fragmentScope
  * @since v1.0
  */
 
-class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuContract.View, AndroidScopeComponent {
+class ResourceMoreMenuFragment :
+    BindingScopedAuthenticatedBottomSheetFragment<ViewPasswordBottomsheetBinding, ResourceMoreMenuContract.View>(
+        ViewPasswordBottomsheetBinding::inflate
+    ),
+    ResourceMoreMenuContract.View {
 
-    override val scope by fragmentScope()
-    private val presenter: ResourceMoreMenuContract.Presenter by scope.inject()
-    private lateinit var binding: ViewPasswordBottomsheetBinding
+    override val presenter: ResourceMoreMenuContract.Presenter by inject()
     private var listener: Listener? = null
-    private val menuModel: ResourceMoreMenuModel by lifecycleAwareLazy {
-        requireNotNull(requireArguments().getParcelable(EXTRA_RESOURCE_MENU_MODEL))
+    private val resourceId: String by lifecycleAwareLazy {
+        requireNotNull(requireArguments().getString(EXTRA_RESOURCE_ID))
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = ViewPasswordBottomsheetBinding.inflate(inflater)
-        presenter.attach(this)
-        presenter.argsRetrieved(menuModel)
-        return binding.root
+    private val initialResourceName: String by lifecycleAwareLazy {
+        requireNotNull(requireArguments().getString(EXTRA_RESOURCE_NAME))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        showTitle(initialResourceName)
         setListeners()
+        presenter.attach(this)
+        presenter.argsRetrieved(resourceId)
     }
 
     override fun onAttach(context: Context) {
@@ -75,7 +70,19 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        presenter.resume(this)
+    }
+
+    override fun onPause() {
+        presenter.pause()
+        super.onPause()
+    }
+
     override fun onDetach() {
+        presenter.detach()
+        listener?.resourceMoreMenuDismissed()
         listener = null
         super.onDetach()
     }
@@ -87,16 +94,24 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
             setDebouncingOnClickAndDismiss(copyUrl) { listener?.menuCopyUrlClick() }
             setDebouncingOnClickAndDismiss(copyUsername) { listener?.menuCopyUsernameClick() }
             setDebouncingOnClickAndDismiss(launchWebsite) { listener?.menuLaunchWebsiteClick() }
-            setDebouncingOnClickAndDismiss(favourite) { listener?.menuFavouriteClick(menuModel.favouriteOption) }
             setDebouncingOnClickAndDismiss(share) { listener?.menuShareClick() }
             setDebouncingOnClickAndDismiss(delete) { listener?.menuDeleteClick() }
-            setDebouncingOnClickAndDismiss(edit) { listener?.menuEditClick() }
+            setDebouncingOnClickAndDismiss(editPassword) { listener?.menuEditClick() }
+            setDebouncingOnClickAndDismiss(manageTotp) { listener?.menuManageTotpClick() }
+            setDebouncingOnClickAndDismiss(addTotp) { listener?.menuAddTotpClick() }
             setDebouncingOnClickAndDismiss(close)
+            favourite.setDebouncingOnClick { presenter.menuFavouriteClick() }
         }
+    }
+
+    override fun notifyFavouriteClick(favouriteOption: ResourceMoreMenuModel.FavouriteOption) {
+        listener?.menuFavouriteClick(favouriteOption)
+        dismiss()
     }
 
     override fun showAddToFavouritesButton() {
         with(binding.favourite) {
+            visible()
             text = getString(R.string.more_add_to_favourite)
             setCompoundDrawablesRelativeWithIntrinsicBounds(
                 ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_to_favourite),
@@ -109,6 +124,7 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
 
     override fun showRemoveFromFavouritesButton() {
         with(binding.favourite) {
+            visible()
             text = getString(R.string.more_remove_from_favourite)
             setCompoundDrawablesRelativeWithIntrinsicBounds(
                 ContextCompat.getDrawable(requireContext(), R.drawable.ic_remove_favourite),
@@ -120,7 +136,7 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
     }
 
     override fun showTitle(title: String) {
-        binding.title.text = menuModel.title
+        binding.title.text = title
     }
 
     override fun showSeparator() {
@@ -132,19 +148,50 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
     }
 
     override fun showEditButton() {
-        binding.edit.visible()
+        binding.editPassword.visible()
     }
 
     override fun showShareButton() {
         binding.share.visible()
     }
 
-    companion object {
-        private const val EXTRA_RESOURCE_MENU_MODEL = "RESOURCE_MENU_MODEL"
+    override fun showManageTotpButton() {
+        binding.manageTotp.visible()
+    }
 
-        fun newInstance(model: ResourceMoreMenuModel) =
+    override fun showAddTotpButton() {
+        binding.addTotp.visible()
+    }
+
+    override fun hideMenu() {
+        dismiss()
+    }
+
+    override fun hideRefreshProgress() {
+        // ignored - progress indicator should not be shown on the menu fragment
+    }
+
+    override fun showRefreshProgress() {
+        // ignored - progress indicator should not be shown on the menu fragment
+    }
+
+    override fun showRefreshFailure() {
+        showSnackbar(
+            messageResId = R.string.common_data_refresh_error,
+            backgroundColor = R.color.red
+        )
+    }
+
+    companion object {
+        private const val EXTRA_RESOURCE_ID = "RESOURCE_ID"
+        private const val EXTRA_RESOURCE_NAME = "RESOURCE_NAME"
+
+        fun newInstance(resourceId: String, resourceName: String) =
             ResourceMoreMenuFragment().apply {
-                arguments = bundleOf(EXTRA_RESOURCE_MENU_MODEL to model)
+                arguments = bundleOf(
+                    EXTRA_RESOURCE_ID to resourceId,
+                    EXTRA_RESOURCE_NAME to resourceName
+                )
             }
     }
 
@@ -157,6 +204,9 @@ class ResourceMoreMenuFragment : BottomSheetDialogFragment(), ResourceMoreMenuCo
         fun menuDeleteClick()
         fun menuEditClick()
         fun menuShareClick()
-        fun menuFavouriteClick(option: FavouriteOption)
+        fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption)
+        fun menuAddTotpClick()
+        fun menuManageTotpClick()
+        fun resourceMoreMenuDismissed()
     }
 }

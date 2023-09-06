@@ -4,8 +4,8 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcePermissionsUseCase
-import com.passbolt.mobile.android.database.impl.users.GetLocalUserUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUserUseCase
 import com.passbolt.mobile.android.dto.response.ShareRecipientDto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
@@ -158,7 +158,7 @@ class ResourceShareInteractor(
     ): List<EncryptedSecretOrError> {
         val encryptedSecretsForAddedUsers = mutableListOf<EncryptedSecretOrError>()
         addedUsers
-            .map { getLocalUserUseCase.execute(GetLocalUserUseCase.Input(it.user.id)).user }
+            .map { getLocalUserUseCase.execute(GetLocalUserUseCase.Input(it.user.id.toString())).user }
             .forEach { user ->
                 val currentUserId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
                 val privateKey = getPrivateKeyUseCase.execute(UserIdInput(currentUserId)).privateKey

@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.core.resources.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.database.impl.resources.AddLocalResourcePermissionsUseCase
-import com.passbolt.mobile.android.database.impl.resources.RemoveLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.RemoveLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.ui.ResourceModelWithAttributes

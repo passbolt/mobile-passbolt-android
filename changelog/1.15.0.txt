@@ -1,0 +1,19 @@
+# Passbolt 1.15.0-24 Android app release notes
+
+## Added
+- Linked TOTP resource type - contains encrypted password, description and TOTP
+- Linked TOTPs can be viewed on both home and TOTP tab; resource details screens are also updated
+- Linked TOTPs can be created from resource more menu or after QR scanning and selecting "link"
+- Edit linked TOTP along with deleting TOTP only from the linked resource
+- Edit standalone TOTPs (both manually and via QR code scanning)
+
+## Security
+- Add all grade D validations from the mobile app document:
+* resource secret fields and metadata fields are validated according to JSON schema
+* UUIDs ale validated in all input data
+* strong JSON typing is enforced when parsing input data
+* invalid resources are filtered out
+
+## Maintenance
+- Refactored all resource update  and resource create use cases
+- Updated resource more menu logic

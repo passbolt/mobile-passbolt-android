@@ -43,7 +43,7 @@ interface ResourcesDao : BaseDao<Resource> {
                 "ORDER BY resourceName " +
                 "COLLATE NOCASE ASC"
     )
-    suspend fun getAllOrderedByName(slugs: List<String>): List<Resource>
+    suspend fun getAllOrderedByName(slugs: Set<String>): List<Resource>
 
     @Transaction
     @Query(
@@ -53,7 +53,7 @@ interface ResourcesDao : BaseDao<Resource> {
                 ") " +
                 "ORDER BY modified DESC"
     )
-    suspend fun getFavourites(slugs: List<String>): List<Resource>
+    suspend fun getFavourites(slugs: Set<String>): List<Resource>
 
     @Transaction
     @Query(
@@ -63,7 +63,7 @@ interface ResourcesDao : BaseDao<Resource> {
                 ") " +
                 "ORDER BY modified DESC"
     )
-    suspend fun getAllOrderedByModifiedDate(slugs: List<String>): List<Resource>
+    suspend fun getAllOrderedByModifiedDate(slugs: Set<String>): List<Resource>
 
     @Transaction
     @Query(
@@ -73,7 +73,7 @@ interface ResourcesDao : BaseDao<Resource> {
                 ")" +
                 "ORDER BY modified DESC"
     )
-    suspend fun getWithPermissions(permissions: Set<Permission>, slugs: List<String>): List<Resource>
+    suspend fun getWithPermissions(permissions: Set<Permission>, slugs: Set<String>): List<Resource>
 
     @Transaction
     @Query(
@@ -92,7 +92,7 @@ interface ResourcesDao : BaseDao<Resource> {
     suspend fun getFilteredForChildFolders(
         searchQuery: String,
         inOneOfFolders: List<String>,
-        slugs: List<String>
+        slugs: Set<String>
     ): List<Resource>
 
     @Transaction
@@ -106,7 +106,7 @@ interface ResourcesDao : BaseDao<Resource> {
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ")"
     )
-    suspend fun getResourcesForFolderWithId(folderId: String?, slugs: List<String>): List<Resource>
+    suspend fun getResourcesForFolderWithId(folderId: String?, slugs: Set<String>): List<Resource>
 
     @Transaction
     @Query(
@@ -117,7 +117,7 @@ interface ResourcesDao : BaseDao<Resource> {
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ")"
     )
-    suspend fun getResourcesWithTag(tagId: String, slugs: List<String>): List<Resource>
+    suspend fun getResourcesWithTag(tagId: String, slugs: Set<String>): List<Resource>
 
     @Transaction
     @Query(
@@ -128,7 +128,7 @@ interface ResourcesDao : BaseDao<Resource> {
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ")"
     )
-    suspend fun getResourcesWithGroup(groupId: String, slugs: List<String>): List<Resource>
+    suspend fun getResourcesWithGroup(groupId: String, slugs: Set<String>): List<Resource>
 
     @Transaction
     @Query(
@@ -167,26 +167,9 @@ interface ResourcesDao : BaseDao<Resource> {
                 "GROUP BY r.resourceId " +
                 "ORDER BY resourceName COLLATE NOCASE ASC "
     )
-    suspend fun getAllThatHaveTagContaining(tagSearchQuery: String, slugs: List<String>): List<Resource>
-
-    @Transaction
-    @Query(
-        "SELECT * FROM Resource " +
-                "WHERE resourceTypeId IN(" +
-                "SELECT resourceTypeId FROM ResourceType WHERE slug IN (:otpSlugs)" +
-                ")" +
-                "ORDER BY resourceName " +
-                "COLLATE NOCASE ASC"
-    )
-    suspend fun getAllOtpResources(otpSlugs: List<String> = otpResourceTypeSlugs): List<Resource>
+    suspend fun getAllThatHaveTagContaining(tagSearchQuery: String, slugs: Set<String>): List<Resource>
 
     @Transaction
     @Query("DELETE FROM Resource")
     suspend fun deleteAll()
-
-    private companion object {
-        private val otpResourceTypeSlugs = listOf(
-            "totp", "password-description-totp"
-        )
-    }
 }

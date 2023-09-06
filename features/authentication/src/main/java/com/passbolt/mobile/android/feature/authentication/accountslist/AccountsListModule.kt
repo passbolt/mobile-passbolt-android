@@ -12,8 +12,10 @@ import com.passbolt.mobile.android.feature.authentication.accountslist.uistrateg
 import com.passbolt.mobile.android.ui.AccountModelUi
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,19 +41,10 @@ import org.koin.core.qualifier.named
  */
 fun Module.accountsListModule() {
     scope(named<AccountsListFragment>()) {
-        scoped<AccountsListContract.Presenter> {
-            AccountsListPresenter(
-                getAllAccountsDataUseCase = get(),
-                accountModelMapper = get(),
-                coroutineLaunchContext = get(),
-                getSelectedAccountUseCase = get(),
-                signOutUseCase = get(),
-                removeAllAccountDataUseCase = get(),
-                saveCurrentApiUrlUseCase = get(),
-                saveSelectedAccountUseCase = get()
-            )
-        }
-        scoped { AccountUiItemsMapper() }
+        scopedOf(::AccountsListPresenter) bind AccountsListContract.Presenter::class
+        scopedOf(::AccountUiItemsMapper)
+        scopedOf(::AccountListStrategyFactory)
+
         scoped { (accountUiItemsMapper: AccountUiItemsMapper) ->
             ModelAdapter(accountUiItemsMapper::mapModelToItem)
         }
@@ -67,9 +60,6 @@ fun Module.accountsListModule() {
         }
         scoped { (accountListFragment: AccountsListFragment, type: ActivityIntents.AuthConfig) ->
             get<AccountListStrategyFactory>().get(accountListFragment, type)
-        }
-        scoped {
-            AccountListStrategyFactory()
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.permissions.grouppermissiondetails
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.database.impl.groups.GetGroupWithUsersUseCase
+import com.passbolt.mobile.android.core.commongroups.usecase.db.GetGroupWithUsersUseCase
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsContract
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.ui.GpgKeyModel

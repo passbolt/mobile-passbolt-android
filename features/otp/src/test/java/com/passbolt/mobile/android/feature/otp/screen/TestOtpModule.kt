@@ -29,12 +29,15 @@ import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
-import com.passbolt.mobile.android.database.impl.resources.GetLocalOtpResourcesUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourceUseCase
+import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
-import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,10 +46,14 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
-internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockSelectedAccountDataCase = mock<GetSelectedAccountDataUseCase>()
-internal val mockGetLocalOtpResourcesUseCase = mock<GetLocalOtpResourcesUseCase>()
 internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
+internal val mockSecretPropertiesActionsInteractor = mock<SecretPropertiesActionsInteractor>()
+internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesActionsInteractor>()
+internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
+internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
+internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
+internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testOtpModule = module {
@@ -56,19 +63,21 @@ internal val testOtpModule = module {
     factoryOf(::UsersModelMapper)
     factoryOf(::GroupsModelMapper)
     factoryOf(::PermissionsModelMapper)
-    factoryOf(::ResourceMenuModelMapper)
     factoryOf(::InitialsProvider)
     single { mock<FullDataRefreshExecutor>() }
     factory<OtpContract.Presenter> {
         OtpPresenter(
-            getLocalResourceUseCase = mockGetLocalResourceUseCase,
             getSelectedAccountDataUseCase = mockSelectedAccountDataCase,
-            getLocalOtpResourcesUseCase = mockGetLocalOtpResourcesUseCase,
-            totpParametersProvider = mockTotpParametersProvider,
-            coroutineLaunchContext = get(),
             searchableMatcher = get(),
+            getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
             otpModelMapper = get(),
-            resourceMenuModelMapper = get()
+            totpParametersProvider = mockTotpParametersProvider,
+            resourceTypeFactory = mockResourceTypeFactory,
+            coroutineLaunchContext = get()
         )
     }
+    factory { mockResourceCommonActionsInteractor }
+    factory { mockResourcePropertiesActionsInteractor }
+    factory { mockSecretPropertiesActionsInteractor }
+    factory { mockResourceUpdateActionsInteractor }
 }

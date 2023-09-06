@@ -4,14 +4,22 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.otp.databinding.FragmentCreateOtpSuccessBinding
+import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment
+import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment.Companion.RESULT_PICKED_ACTION
+import com.passbolt.mobile.android.resourcepicker.ResourcePickerFragment.Companion.RESULT_PICKED_RESOURCE
+import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
+import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 
 /**
@@ -44,9 +52,18 @@ class ScanOtpSuccessFragment :
     override val presenter: ScanOtpSuccessContract.Presenter by inject()
     private val navArgs: ScanOtpSuccessFragmentArgs by navArgs()
 
+    private val linkedResourceReceivedListener = { _: String, result: Bundle ->
+        if (result.containsKey(RESULT_PICKED_ACTION) && result.containsKey(RESULT_PICKED_RESOURCE)) {
+            val action = result.getSerializable(RESULT_PICKED_ACTION) as PickResourceAction
+            val resource = result.getParcelable<ResourceModel>(RESULT_PICKED_RESOURCE)!!
+            presenter.linkedResourceReceived(action, resource)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
+        setListeners()
         presenter.attach(this)
         presenter.argsRetrieved(navArgs.scannedTotp)
     }
@@ -56,8 +73,16 @@ class ScanOtpSuccessFragment :
             setIcon(R.drawable.ic_success)
             setTitle(getString(R.string.otp_create_success))
             setButtonLabel(getString(R.string.otp_create_totp_create_standalone))
-            setButtonAction {
+        }
+    }
+
+    private fun setListeners() {
+        with(binding) {
+            resultView.setButtonAction {
                 presenter.createStandaloneOtpClick()
+            }
+            linkToButton.setDebouncingOnClick {
+                presenter.linkToResourceClick()
             }
         }
     }
@@ -71,11 +96,22 @@ class ScanOtpSuccessFragment :
     }
 
     override fun showGenericError() {
-        showSnackbar(R.string.common_failure, backgroundColor = R.color.red)
+        showSnackbar(
+            messageResId = R.string.common_failure,
+            backgroundColor = R.color.red
+        )
+    }
+
+    override fun showError(message: String) {
+        showSnackbar(
+            messageResId = R.string.common_failure_format,
+            backgroundColor = R.color.red,
+            messageArgs = arrayOf(message)
+        )
     }
 
     override fun showEncryptionError(message: String) {
-        showSnackbar(R.string.resource_permissions_secret_encrypt_failure, backgroundColor = R.color.red)
+        showSnackbar(R.string.common_encryption_failure, backgroundColor = R.color.red)
     }
 
     override fun navigateToOtpList(otpCreated: Boolean) {
@@ -84,6 +120,16 @@ class ScanOtpSuccessFragment :
             bundleOf(EXTRA_OTP_CREATED to otpCreated)
         )
         findNavController().popBackStack()
+    }
+
+    override fun navigateToResourcePicker() {
+        setFragmentResultListener(
+            ResourcePickerFragment.REQUEST_PICK_RESOURCE_FOR_RESULT,
+            linkedResourceReceivedListener
+        )
+        findNavController().navigate(
+            NavDeepLinkProvider.resourceResourcePickerDeepLinkRequest(null)
+        )
     }
 
     companion object {

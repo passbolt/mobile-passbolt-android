@@ -55,6 +55,12 @@ data class TotpSecretsDto(
         @SerializedName("secret_key")
         val key: String,
         val digits: Int,
-        val period: Int
+        val period: Long
     )
 }
+
+data class PasswordDescriptionTotpSecretsDto(
+    val password: String,
+    val description: String,
+    val totp: TotpSecretsDto.Totp
+)

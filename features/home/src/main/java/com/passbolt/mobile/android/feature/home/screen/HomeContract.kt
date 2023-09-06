@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
+import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
@@ -44,10 +46,10 @@ interface HomeContract {
             groupsList: List<GroupWithCount>,
             filteredSubFoldersList: List<FolderWithCountAndPath>,
             filteredSubFolderResourceList: List<ResourceModel>,
-            sectionsConfiguration: HomeFragment.HeaderSectionConfiguration
+            sectionsConfiguration: HeaderSectionConfiguration
         )
 
-        fun navigateToMore(resourceMoreMenuModel: ResourceMoreMenuModel)
+        fun navigateToMore(resourceId: String, resourceName: String)
         fun navigateToDetails(resourceModel: ResourceModel)
         fun showError()
         fun showEmptyList()
@@ -62,7 +64,7 @@ interface HomeContract {
         fun clearSearchInput()
         fun showResourceAddedSnackbar()
         fun showResourceDeletedSnackbar(name: String)
-        fun showGeneralError()
+        fun showGeneralError(errorMessage: String? = null)
         fun navigateToEdit(resourceModel: ResourceModel)
         fun showResourceEditedSnackbar(resourceName: String)
         fun hideAddButton()
@@ -99,6 +101,15 @@ interface HomeContract {
         fun finish()
         fun showDataRefreshError()
         fun showDeleteResourceFailure()
+        fun showProgress()
+        fun hideProgress()
+        fun showInvalidTotpScanned()
+        fun showEncryptionError(message: String)
+        fun navigateToOtpCreate(resourceId: String)
+        fun navigateToOtpMoreMenu(resourceId: String, resourceName: String)
+        fun navigateToOtpEdit()
+        fun showDeleteTotpConfirmationDialog()
+        fun showTotpDeleted()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -152,5 +163,13 @@ interface HomeContract {
         fun seeFolderDetailsClick()
         fun createFolderClick()
         fun folderCreated(name: String)
+        fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
+        fun menuAddTotpManuallyClick()
+        fun manageTotpClick()
+        fun menuCopyOtpClick()
+        fun menuEditOtpClick()
+        fun editOtpManuallyClick()
+        fun menuDeleteOtpClick()
+        fun totpDeletionConfirmed()
     }
 }

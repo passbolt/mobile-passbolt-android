@@ -40,6 +40,9 @@
     <string name="common_refresh">Refresh</string>
     <string name="common_sign_out">Sign out</string>
     <string name="common_data_refresh_error">There was an error during data refresh</string>
+    <string name="common_decryption_failure">Error during secret decryption</string>
+    <string name="common_fetch_failure">Error during downloading the secret</string>
+    <string name="common_encryption_failure">There was an error during secret encryption</string>
 
     <string name="common_message_resource_edited">%s password was successfully edited.</string>
     <string name="common_message_resource_deleted">%s password was deleted.</string>
@@ -76,6 +79,8 @@
     <string name="more_share">Share password</string>
     <string name="more_add_to_favourite">Add to favourite</string>
     <string name="more_remove_from_favourite">Remove from favourite</string>
+    <string name="more_add_totp">Add TOTP</string>
+    <string name="more_manage_totp">Manage TOTP</string>
 
     <string name="folder_more_see_details">See details</string>
 
@@ -218,14 +223,12 @@
     <string name="autofill_resources_create">Create&amp;fill</string>
 
     <string name="home_empty_list">Empty list</string>
-    <string name="home_decryption_failure">Error during secret decryption</string>
-    <string name="home_fetch_failure">Error during downloading the secret</string>
     <string name="home_create">Create</string>
     <string name="home_in_sub_folders">in subfolders:</string>
     <string name="home_in_current_folder">in \"%s\":</string>
     <string name="home_speed_dial_add_password">Add password</string>
     <string name="home_speed_dial_add_folder">Add folder</string>
-    <string name="home_please_wait_for_refresh">Please wait for data refresh to switch account</string>
+    <string name="home_please_wait_for_refresh">Please wait for data refresh to finish</string>
 
     <string name="switch_account_see_details">See details</string>
     <string name="switch_account_sign_out">Sign out</string>
@@ -248,6 +251,7 @@
 
     <string name="resource_details_username_header">Username</string>
     <string name="resource_details_password_header">Password</string>
+    <string name="resource_details_totp_header">Totp</string>
     <string name="resource_details_url_header">Website URL</string>
     <string name="resource_details_description_header">Description</string>
     <string name="resource_details_tags_header">Tags</string>
@@ -255,9 +259,8 @@
         translatable="false">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">Description is encrypted</string>
     <string name="resource_details_see_description">See description</string>
-    <string name="resource_details_decryption_failure">Error during secret decryption</string>
-    <string name="resource_details_fetch_failure">Error during downloading the secret</string>
     <string name="resource_details_information">Information</string>
+    <string name="resource_details_invalid_totp_scanned">Invalid TOTP QR code scanned</string>
 
     <string name="more_details_copy_password">Copy password</string>
     <string name="more_details_copy_description">Copy description</string>
@@ -277,6 +280,7 @@
     <string name="resource_update_field_uri">URL</string>
     <string name="resource_update_field_username">Username</string>
     <string name="resource_update_field_description">Description</string>
+    <string name="resource_update_invalid_secret_data">Invalid secret data types. Aborting edit.</string>
 
     <string name="settings_app_settings">App settings</string>
     <string name="settings_accounts">Accounts</string>
@@ -376,9 +380,6 @@
     <string name="resource_permissions_one_owner">Please make sure there is at least one owner.</string>
     <string name="resource_permissions_share_simulation_failed">There was an error during share simulation</string>
     <string name="resource_permissions_share_failed">There was an error during share </string>
-    <string name="resource_permissions_secret_fetch_failure">There was an error during secret fetching</string>
-    <string name="resource_permissions_secret_encrypt_failure">There was an error during secret encryption</string>
-    <string name="resource_permissions_secret_decrypt_failure">There was an error during secret decryption</string>
     <string name="resource_permissions_edit_permissions">Edit permissions</string>
 
     <string name="group_permission_permission">Permission</string>
@@ -452,15 +453,25 @@
         translatable="false">••••••</string>
     <string name="otp_speed_dial_scan_qr">Scan QR code</string>
     <string name="otp_speed_dial_create_manually">Create TOTP manually</string>
+    <string name="otp_invalid_itp_data_scanned">There was an error during TOTP QR code scanning</string>
 
     <string name="otp_more_copy_otp">Copy TOTP</string>
     <string name="otp_more_show_otp">Show TOTP</string>
     <string name="otp_more_edit_otp">Edit TOTP</string>
     <string name="otp_more_delete_otp">Delete TOTP</string>
-    <string name="otp_delete_confirmation">This action will permanently delete the TOTP.</string>
+
+    <string name="otp_edit_title">Edit TOTP</string>
+    <string name="otp_edit_scan_new">Scan a new QR code</string>
+    <string name="otp_edit_edit_manually">Edit the TOTP manually</string>
+
+    <string name="otp_create_title">Create TOTP</string>
+    <string name="otp_create_scan_new">Scan a new QR code</string>
+    <string name="otp_create_edit_manually">Create the TOTP manually</string>
+
     <string name="otp_delete_totp">Delete TOTP</string>
     <string name="otp_deleted">TOTP was deleted</string>
-    <string name="otp_failed_to_delete">Failed to delete totp</string>
+    <string name="otp_failed_to_delete">Failed to delete TOTP</string>
+    <string name="otp_delete_confirmation">This action will permanently delete the TOTP.</string>
     <string name="otp_new_otp_created">New TOTP created!</string>
 
     <string name="otp_scan_title">Scan QR code</string>
@@ -474,9 +485,11 @@
     <string name="otp_create_totp_field_secret">Secret</string>
     <string name="otp_create_totp_field_secret_hint">Secret</string>
     <string name="otp_create_totp_advanced_settings">Advanced settings</string>
+    <string name="otp_create_totp_overwrite">Editing name &amp; URL will also edit the associated resource.</string>
     <string name="otp_create_totp_create_standalone">Create a standalone TOTP</string>
+    <string name="otp_create_totp_link_to_password">Link TOTP to a password</string>
 
-    <string name="otp_create_totp_expert_settings_title">Create TOTP - advanced settings</string>
+    <string name="otp_create_totp_expert_settings_title">TOTP - advanced settings</string>
     <string name="otp_create_totp_expert_settings_expiry">TOTP expiry</string>
     <string name="otp_create_totp_expert_settings_expiry_hint">TOTP expiry</string>
     <string name="otp_create_totp_expert_settings_expiry_seconds_info">seconds until the TOTP expires.</string>
@@ -486,6 +499,14 @@
     <string name="otp_create_totp_expert_settings_warning">Advanced settings have to match your TOTP provider settings otherwise it won’t work.</string>
 
     <string name="otp_create_success">Your TOTP has been scanned!</string>
+    <string name="otp_otp_updated">TOTP successfully replaced.</string>
+
+    <string name="resource_picker_title">Add TOTP to a password</string>
+    <string name="resource_picker_link_to_information">If you add TOTP to this resource, the TOTP will inherit the same sharing permissions.</string>
+    <string name="resource_picker_link_to_warning">A TOTP is already associated with this resource, do you want to override it?</string>
+    <string name="resource_picker_replace_totp_title">Replace TOTP?</string>
+    <string name="resource_picker_replace_totp">Replace TOTP</string>
+    <string name="resource_picker_add_totp">Add TOTP</string>
 
     <!--
     arrays can be inconsistent when in other languages

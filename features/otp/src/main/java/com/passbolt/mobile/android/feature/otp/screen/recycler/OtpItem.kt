@@ -1,21 +1,22 @@
 package com.passbolt.mobile.android.feature.otp.screen.recycler
 
-import android.animation.ObjectAnimator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.LinearInterpolator
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
-import com.passbolt.mobile.android.common.OtpFormatter
 import com.passbolt.mobile.android.common.extension.asBinding
+import com.passbolt.mobile.android.core.ui.controller.TotpViewController
+import com.passbolt.mobile.android.core.ui.controller.TotpViewController.StateParameters
+import com.passbolt.mobile.android.core.ui.controller.TotpViewController.TimeParameters
+import com.passbolt.mobile.android.core.ui.controller.TotpViewController.ViewParameters
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.otp.R
 import com.passbolt.mobile.android.feature.otp.databinding.ItemOtpBinding
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
+import com.passbolt.mobile.android.ui.OtpItemWrapper
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -42,14 +43,14 @@ import org.koin.core.component.inject
  * @since v1.0
  */
 class OtpItem(
-    val otpModel: OtpListItemWrapper,
+    val otpModel: OtpItemWrapper,
     private val initialsIconGenerator: InitialsIconGenerator
 ) : AbstractBindingItem<ItemOtpBinding>(), KoinComponent {
 
     override val type: Int
         get() = R.id.itemOtp
 
-    private val otpFormatter: OtpFormatter by inject()
+    private val totpViewController: TotpViewController by inject()
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemOtpBinding =
         ItemOtpBinding.inflate(inflater, parent, false)
@@ -57,56 +58,20 @@ class OtpItem(
     override fun bindView(binding: ItemOtpBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            with(progress) {
-                min = 0
-                max = otpModel.otpExpirySeconds?.let { it.toInt() * ANIMATION_MULTIPLIER } ?: 0
-                progress = otpModel.remainingSecondsCounter?.let { (it.toInt() + 1) * ANIMATION_MULTIPLIER } ?: 0
-            }
-            name.text = otpModel.otp.name
-            otp.text = otpFormatter.format(otpModel.otpValue ?: otp.context.getString(R.string.otp_hide_otp))
-            icon.setImageDrawable(initialsIconGenerator.generate(otpModel.otp.name, otpModel.otp.initials))
-            eye.isVisible = !otpModel.isVisible
-            progress.isVisible = otpModel.isVisible
-            updateProgress(binding)
-            updateColors(binding)
-        }
-    }
+            name.text = otpModel.resource.name
+            icon.setImageDrawable(initialsIconGenerator.generate(otpModel.resource.name, otpModel.resource.initials))
+            eye.isVisible = !otpModel.isVisible && !otpModel.isRefreshing
 
-    private fun updateProgress(binding: ItemOtpBinding) {
-        val progressAnimator = ObjectAnimator.ofInt(
-            binding.progress,
-            PROPERTY_PROGRESS,
-            otpModel.remainingSecondsCounter?.let { it.toInt() * ANIMATION_MULTIPLIER } ?: 0
-        ).apply {
-            duration = PROGRESS_ANIMATION_DURATION_MILLIS
-            interpolator = LinearInterpolator()
-        }
-        progressAnimator.start()
-    }
-
-    /**
-     * If progress <= 25% highlight otp value and progress in red
-     */
-    private fun updateColors(binding: ItemOtpBinding) {
-        val progressPercentage =
-            if (otpModel.remainingSecondsCounter != null && otpModel.otpExpirySeconds != null) {
-                otpModel.remainingSecondsCounter!!.toFloat() / otpModel.otpExpirySeconds!!
-            } else {
-                MAX_PERCENTAGE
-            }
-        with(binding) {
-            if (progressPercentage <= RED_HIGHLIGHT_PROGRESS_PERCENTAGE) {
-                otp.setTextColor(progress.context.getColor(R.color.red))
-                progress.setIndicatorColor(progress.context.getColor(R.color.red))
-            } else {
-                otp.setTextColor(progress.context.getColor(R.color.text_primary))
-                progress.setIndicatorColor(progress.context.getColor(R.color.icon_tint))
-            }
+            totpViewController.updateView(
+                ViewParameters(binding.progress, binding.otp, binding.generationInProgress),
+                StateParameters(otpModel.isRefreshing, otpModel.isVisible, otpModel.otpValue),
+                TimeParameters(otpModel.otpExpirySeconds, otpModel.remainingSecondsCounter)
+            )
         }
     }
 
     class ItemClick(
-        private val clickListener: (OtpListItemWrapper) -> Unit
+        private val clickListener: (OtpItemWrapper) -> Unit
     ) : ClickEventHook<OtpItem>() {
 
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
@@ -126,7 +91,7 @@ class OtpItem(
     }
 
     class ItemMoreClick(
-        private val clickListener: (OtpListItemWrapper) -> Unit
+        private val clickListener: (OtpItemWrapper) -> Unit
     ) : ClickEventHook<OtpItem>() {
 
         override fun onBind(viewHolder: RecyclerView.ViewHolder): View? {
@@ -143,13 +108,5 @@ class OtpItem(
         ) {
             clickListener.invoke(item.otpModel)
         }
-    }
-
-    private companion object {
-        private const val ANIMATION_MULTIPLIER = 1_000
-        private const val RED_HIGHLIGHT_PROGRESS_PERCENTAGE = 0.25
-        private const val MAX_PERCENTAGE = 1f
-        private const val PROGRESS_ANIMATION_DURATION_MILLIS = 1_000L
-        private const val PROPERTY_PROGRESS = "progress"
     }
 }

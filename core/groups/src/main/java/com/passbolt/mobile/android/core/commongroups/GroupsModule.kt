@@ -3,6 +3,8 @@ package com.passbolt.mobile.android.core.commongroups
 import com.passbolt.mobile.android.core.commongroups.usecase.FetchUserGroupsUseCase
 import com.passbolt.mobile.android.core.commongroups.usecase.GroupsInteractor
 import com.passbolt.mobile.android.core.commongroups.usecase.RebuildGroupsTablesUseCase
+import com.passbolt.mobile.android.core.commongroups.usecase.db.groupsDbModule
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 /**
@@ -29,24 +31,9 @@ import org.koin.dsl.module
  */
 
 val groupsModule = module {
+    groupsDbModule()
 
-    single {
-        FetchUserGroupsUseCase(
-            groupsRepository = get(),
-            groupsModelMapper = get()
-        )
-    }
-    single {
-        RebuildGroupsTablesUseCase(
-            getSelectedAccountUseCase = get(),
-            removeLocalGroupsUseCase = get(),
-            addLocalGroupsUseCase = get()
-        )
-    }
-    single {
-        GroupsInteractor(
-            fetchUserGroupsUseCase = get(),
-            rebuildLocalGroupsUseCase = get()
-        )
-    }
+    singleOf(::FetchUserGroupsUseCase)
+    singleOf(::RebuildGroupsTablesUseCase)
+    singleOf(::GroupsInteractor)
 }

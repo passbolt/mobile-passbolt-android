@@ -25,13 +25,14 @@ package com.passbolt.mobile.android.feature.otp.screen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.ui.OtpItemWrapper
 
 interface OtpContract {
 
+    @Suppress("TooManyFunctions")
     interface View : DataRefreshViewReactiveContract.View {
-        fun showOtpList(otpList: List<OtpListItemWrapper>)
+        fun showOtpList(otpList: List<OtpItemWrapper>)
         fun showEmptyView()
         fun hideEmptyView()
         fun displaySearchAvatar(avatarUrl: String?)
@@ -43,9 +44,8 @@ interface OtpContract {
         fun showPleaseWaitForDataRefresh()
         fun displaySearchClearIcon()
         fun clearSearchInput()
-        fun showOtmMoreMenu(moreMenuModel: ResourceMoreMenuModel)
+        fun showOtmMoreMenu(resourceId: String, resourceName: String)
         fun copySecretToClipBoard(label: String, value: String)
-        fun navigateToScanOtpQrCode()
         fun navigateToCreateOtpManually()
         fun showDecryptionFailure()
         fun showFetchFailure()
@@ -53,13 +53,24 @@ interface OtpContract {
         fun showFailedToDeleteResource()
         fun showResourceDeleted()
         fun showNewOtpCreated()
+        fun navigateToEditOtpMenu()
+        fun showProgress()
+        fun navigateToEditOtpManually(resourceId: String)
+        fun hideProgress()
+        fun showOtpUpdate()
+        fun navigateToScanOtpCodeForResult()
+        fun showInvalidQrCodeDataScanned()
+        fun showError(message: String)
+        fun showEncryptionError(message: String)
         fun showCreateButton()
         fun hideCreateButton()
+        fun navigateToScanOtpSuccess(totpQr: OtpParseResult.OtpQr.TotpQr)
+        fun showTotpDeleted()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
-        fun otpItemClick(otpListItemWrapper: OtpListItemWrapper)
-        fun otpItemMoreClick(otpListWrapper: OtpListItemWrapper)
+        fun otpItemClick(otpItemWrapper: OtpItemWrapper)
+        fun otpItemMoreClick(otpListWrapper: OtpItemWrapper)
         fun refreshClick()
         fun searchAvatarClick()
         fun switchAccountManageAccountClick()
@@ -72,7 +83,11 @@ interface OtpContract {
         fun menuEditOtpClick()
         fun scanOtpQrCodeClick()
         fun createOtpManuallyClick()
-        fun totpDeletetionConfirmed()
+        fun totpDeletionConfirmed()
         fun otpCreated()
+        fun menuEditByQrScanClick()
+        fun menuEditOtpManuallyClick()
+        fun otpUpdated()
+        fun otpQrScanned(totpQr: OtpParseResult.OtpQr.TotpQr?)
     }
 }

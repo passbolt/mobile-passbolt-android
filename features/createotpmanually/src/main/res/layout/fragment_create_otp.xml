@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="@dimen/dp_32"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:toolbarTitle="@string/otp_create_totp_title" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_16"
+            android:orientation="vertical">
+
+            <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
+                android:id="@+id/totpLabelInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_8"
+                app:inputHint="@string/otp_create_totp_field_name_hint"
+                app:inputIsRequired="true"
+                app:inputTitle="@string/otp_create_totp_field_name" />
+
+            <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
+                android:id="@+id/totpIssuerInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_8"
+                app:inputHint="@string/otp_create_totp_field_url_hint"
+                app:inputIsRequired="false"
+                app:inputTitle="@string/otp_create_totp_field_url" />
+
+            <com.passbolt.mobile.android.core.ui.textinputfield.TextInputView
+                android:id="@+id/totpSecretInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_8"
+                app:inputHint="@string/otp_create_totp_field_secret_hint"
+                app:inputIsRequired="true"
+                app:inputTitle="@string/otp_create_totp_field_secret" />
+
+            <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+                android:id="@+id/advancedSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                app:icon="@drawable/ic_cog"
+                app:name="@string/otp_create_totp_advanced_settings" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="@integer/material_motion_duration_long_1" />
+
+            <!-- do not use textPrimary color here as the background is yellow -->
+            <TextView
+                android:id="@+id/alsoEditsResourceWarning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_yellow_rectangle_corners"
+                android:drawablePadding="@dimen/dp_16"
+                android:padding="@dimen/dp_16"
+                android:text="@string/otp_create_totp_overwrite"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_alert_triangle"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/mainButton"
+                style="@style/PrimaryBlueButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_56"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginBottom="@dimen/dp_16"
+                tools:text="@string/otp_create_totp_create_standalone" />
+
+            <TextView
+                android:id="@+id/linkToButton"
+                style="@style/ButtonSmallText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/dp_32"
+                android:background="?selectableItemBackground"
+                android:padding="@dimen/dp_16"
+                android:text="@string/otp_create_totp_link_to_password"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

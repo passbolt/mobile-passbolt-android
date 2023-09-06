@@ -1,0 +1,26 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+dependencies {
+    implementation project(':architecture')
+    implementation project(':common')
+    implementation project(':ui')
+    implementation project(':resources')
+    implementation project(':authentication')
+    implementation project(':fulldatarefresh')
+    implementation project(':coreui')
+
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintLayout
+    implementation libs.material
+    implementation libs.di.koin
+}
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}

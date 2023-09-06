@@ -27,14 +27,21 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
-import com.passbolt.mobile.android.database.impl.resources.GetLocalOtpResourcesUseCase
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.ui.OtpListItemWrapper
-import com.passbolt.mobile.android.ui.OtpModel
+import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -43,6 +50,7 @@ import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.get
 import org.koin.test.inject
+import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
@@ -51,7 +59,9 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.time.ZonedDateTime
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class OtpPresenterTest : KoinTest {
 
     private val presenter: OtpContract.Presenter by inject()
@@ -93,8 +103,8 @@ class OtpPresenterTest : KoinTest {
 
     @Test
     fun `view should show empty state if otp list is empty`() {
-        mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(Unit) } doReturn GetLocalOtpResourcesUseCase.Output(emptyList())
+        mockGetLocalResourcesUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(emptyList())
         }
 
         presenter.attach(view)
@@ -105,8 +115,8 @@ class OtpPresenterTest : KoinTest {
 
     @Test
     fun `view should show otp resources`() {
-        mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(Unit) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
+        mockGetLocalResourcesUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(mockTotpResources)
         }
         val mapper = get<OtpModelMapper>()
 
@@ -114,7 +124,7 @@ class OtpPresenterTest : KoinTest {
         presenter.resume(view)
 
         verify(view, times(2)).hideEmptyView()
-        argumentCaptor<List<OtpListItemWrapper>> {
+        argumentCaptor<List<OtpItemWrapper>> {
             verify(view, times(3)).showOtpList(capture())
             assertThat(firstValue).apply {
                 hasSize(mockTotpResources.size)
@@ -125,8 +135,8 @@ class OtpPresenterTest : KoinTest {
 
     @Test
     fun `view should show empty list when search term not found`() {
-        mockGetLocalOtpResourcesUseCase.stub {
-            onBlocking { execute(Unit) } doReturn GetLocalOtpResourcesUseCase.Output(mockTotpResources)
+        mockGetLocalResourcesUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(mockTotpResources)
         }
 
         presenter.attach(view)
@@ -136,10 +146,60 @@ class OtpPresenterTest : KoinTest {
         verify(view).showEmptyView()
     }
 
+    @Test
+    fun `view should reveal selected otp`() = runTest(get<CoroutineLaunchContext>().ui) {
+        val mapper = get<OtpModelMapper>()
+        val clickedItem = mapper.map(mockTotpResources[0])
+        mockGetLocalResourcesUseCase.stub {
+            onBlocking { execute(any()) } doReturn GetLocalResourcesUseCase.Output(mockTotpResources)
+        }
+        mockSecretPropertiesActionsInteractor.stub {
+            onBlocking { provideOtp() } doReturn flowOf(
+                SecretPropertyActionResult.Success(
+                    SecretPropertiesActionsInteractor.OTP_LABEL,
+                    isSecret = true,
+                    DecryptedSecret.StandaloneTotp.Totp(
+                        algorithm = OtpParseResult.OtpQr.Algorithm.SHA1.name,
+                        key = "aaa",
+                        digits = 6,
+                        period = 100
+                    )
+                )
+            )
+        }
+        val otpValue = "111111"
+        val otpSecondsValid = 30L
+        whenever(mockTotpParametersProvider.provideOtpParameters(any(), any(), any(), any())).doReturn(
+            TotpParametersProvider.OtpParameters(otpValue, otpSecondsValid)
+        )
+
+        presenter.attach(view)
+        presenter.resume(view)
+        presenter.otpItemClick(clickedItem)
+
+        argumentCaptor<List<OtpItemWrapper>> {
+            verify(view, times(5)).showOtpList(capture())
+            assertThat(lastValue.any { it.otpValue == otpValue }).isTrue()
+        }
+    }
+
     private companion object {
         private const val SEARCH_AVATAR_URL = "url"
         private val mockTotpResources = listOf(
-            OtpModel("resId", "name", "N", ResourcePermission.READ)
+            ResourceModel(
+                resourceId = "resId",
+                resourceTypeId = "resTypeId",
+                folderId = null,
+                name = "name",
+                username = "username",
+                icon = "N",
+                initials = "in",
+                url = "url",
+                description = "desc",
+                permission = ResourcePermission.READ,
+                favouriteId = null,
+                modified = ZonedDateTime.now()
+            )
         )
     }
 }

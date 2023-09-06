@@ -1,54 +1,3 @@
-package com.passbolt.mobile.android.feature.home.screen
-
-import com.passbolt.mobile.android.common.DomainProvider
-import com.passbolt.mobile.android.common.extension.areListsEmpty
-import com.passbolt.mobile.android.common.search.Searchable
-import com.passbolt.mobile.android.common.search.SearchableMatcher
-import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
-import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.resources.actions.ResourceActionsInteractor
-import com.passbolt.mobile.android.core.resources.actions.ResourceAuthenticatedActionsInteractor
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_AND_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_SIMPLE_PASSWORD
-import com.passbolt.mobile.android.database.impl.folders.GetLocalFolderDetailsUseCase
-import com.passbolt.mobile.android.database.impl.folders.GetLocalResourcesAndFoldersUseCase
-import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFolderResourcesFilteredUseCase
-import com.passbolt.mobile.android.database.impl.folders.GetLocalSubFoldersForFolderUseCase
-import com.passbolt.mobile.android.database.impl.groups.GetLocalGroupsWithShareItemsCountUseCase
-import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.GetLocalResourcesWithGroupUseCase
-import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.GetLocalResourcesWithTagUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesFilteredByTagUseCase
-import com.passbolt.mobile.android.database.impl.resources.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.database.impl.tags.GetLocalTagsUseCase
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
-import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
-import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
-import com.passbolt.mobile.android.mappers.ResourceMenuModelMapper
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
-import com.passbolt.mobile.android.ui.Folder
-import com.passbolt.mobile.android.ui.FolderMoreMenuModel
-import com.passbolt.mobile.android.ui.FolderWithCountAndPath
-import com.passbolt.mobile.android.ui.GroupWithCount
-import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
-import com.passbolt.mobile.android.ui.ResourcePermission
-import com.passbolt.mobile.android.ui.TagWithCount
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.launch
-import org.koin.core.component.KoinScopeComponent
-import org.koin.core.component.get
-import org.koin.core.component.getOrCreateScope
-import org.koin.core.parameter.parametersOf
-import org.koin.core.scope.Scope
-import timber.log.Timber
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -78,12 +27,72 @@ import timber.log.Timber
  * shared with me, etc.) the reload is done from the database only. To refresh from backend again users can do the
  * swipe to refresh gesture.
  */
-@Suppress("TooManyFunctions", "LargeClass") // TODO MOB-321
+
+package com.passbolt.mobile.android.feature.home.screen
+
+import com.passbolt.mobile.android.common.DomainProvider
+import com.passbolt.mobile.android.common.extension.areListsEmpty
+import com.passbolt.mobile.android.common.search.Searchable
+import com.passbolt.mobile.android.common.search.SearchableMatcher
+import com.passbolt.mobile.android.common.types.ClipboardLabel
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFoldersForFolderUseCase
+import com.passbolt.mobile.android.core.commongroups.usecase.db.GetLocalGroupsWithShareItemsCountUseCase
+import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
+import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
+import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.performCommonResourceAction
+import com.passbolt.mobile.android.core.resources.actions.performResourcePropertyAction
+import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
+import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFilteredByTagUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
+import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
+import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
+import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
+import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
+import com.passbolt.mobile.android.ui.Folder
+import com.passbolt.mobile.android.ui.FolderMoreMenuModel
+import com.passbolt.mobile.android.ui.FolderWithCountAndPath
+import com.passbolt.mobile.android.ui.GroupWithCount
+import com.passbolt.mobile.android.ui.ResourceModel
+import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.ui.TagWithCount
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
+import timber.log.Timber
+
+@Suppress("TooManyFunctions", "LargeClass", "LongParameterList") // TODO MOB-321
 class HomePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase,
     private val searchableMatcher: SearchableMatcher,
-    private val resourceMenuModelMapper: ResourceMenuModelMapper,
     private val getLocalResourcesUseCase: GetLocalResourcesUseCase,
     private val getLocalResourcesFilteredByTag: GetLocalResourcesFilteredByTagUseCase,
     private val getLocalSubFoldersForFolderUseCase: GetLocalSubFoldersForFolderUseCase,
@@ -97,19 +106,17 @@ class HomePresenter(
     private val homeModelMapper: HomeDisplayViewMapper,
     private val domainProvider: DomainProvider,
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
-    private val deleteResourceIdlingResource: DeleteResourceIdlingResource
+    private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
+    private val totpParametersProvider: TotpParametersProvider,
+    private val resourceTypeFactory: ResourceTypeFactory
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
-    KoinScopeComponent {
+    KoinComponent {
 
     override var view: HomeContract.View? = null
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(job + coroutineLaunchContext.ui)
-    private val dataRefreshJob = SupervisorJob()
-    private val dataRefreshScope = CoroutineScope(dataRefreshJob + coroutineLaunchContext.ui)
     private val filteringJob = SupervisorJob()
     private val filteringScope = CoroutineScope(filteringJob + coroutineLaunchContext.ui)
-    override val scope: Scope
-        get() = getOrCreateScope().value
     private lateinit var homeView: HomeDisplayViewModel
 
     private var currentSearchText = MutableStateFlow("")
@@ -130,9 +137,13 @@ class HomePresenter(
     private val searchInputEndIconMode
         get() = if (currentSearchText.value.isBlank()) SearchInputEndIconMode.AVATAR else SearchInputEndIconMode.CLEAR
 
-    private val resourceActionsInteractor: ResourceActionsInteractor
+    private val resourcePropertiesActionsInteractor: ResourcePropertiesActionsInteractor
         get() = get { parametersOf(requireNotNull(currentMoreMenuResource)) }
-    private val resourceAuthenticatedActionsInteractor: ResourceAuthenticatedActionsInteractor
+    private val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor
+        get() = get {
+            parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
+        }
+    private val resourceCommonActionsInteractor: ResourceCommonActionsInteractor
         get() = get {
             parametersOf(requireNotNull(currentMoreMenuResource), needSessionRefreshFlow, sessionRefreshedFlow)
         }
@@ -327,7 +338,7 @@ class HomePresenter(
         coroutineScope.launch {
             runWithHandlingMissingItem({
                 suggestedResourceList = if (shouldShowSuggested()) {
-                    getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(homeResourcesSlugs))
+                    getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(homeSlugs))
                         .resources
                         .filter {
                             val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
@@ -372,10 +383,8 @@ class HomePresenter(
     }
 
     override fun detach() {
-        dataRefreshScope.coroutineContext.cancelChildren()
         filteringScope.coroutineContext.cancelChildren()
         coroutineScope.coroutineContext.cancelChildren()
-        scope.close()
         super<DataRefreshViewReactivePresenter>.detach()
     }
 
@@ -396,7 +405,10 @@ class HomePresenter(
 
     private suspend fun showResourcesFromDatabase() {
         resourceList = getLocalResourcesUseCase.execute(
-            GetLocalResourcesUseCase.Input(homeResourcesSlugs, homeView)
+            GetLocalResourcesUseCase.Input(
+                homeSlugs,
+                homeView
+            )
         ).resources
         foldersList = emptyList()
         tagsList = emptyList()
@@ -415,7 +427,10 @@ class HomePresenter(
             foldersList = emptyList()
             groupsList = emptyList()
             resourceList = getLocalResourcesWithTagUseCase.execute(
-                GetLocalResourcesWithTagUseCase.Input(tags, homeResourcesSlugs)
+                GetLocalResourcesWithTagUseCase.Input(
+                    tags,
+                    homeSlugs
+                )
             ).resources
         }
         displayHomeData()
@@ -432,7 +447,10 @@ class HomePresenter(
             foldersList = emptyList()
             groupsList = emptyList()
             resourceList = getLocalResourcesWithGroupsUseCase.execute(
-                GetLocalResourcesWithGroupUseCase.Input(groups, homeResourcesSlugs)
+                GetLocalResourcesWithGroupUseCase.Input(
+                    groups,
+                    homeSlugs
+                )
             ).resources
         }
         displayHomeData()
@@ -443,7 +461,10 @@ class HomePresenter(
         groupsList = emptyList()
         when (
             val result = getLocalResourcesAndFoldersUseCase.execute(
-                GetLocalResourcesAndFoldersUseCase.Input(folders.activeFolder, homeResourcesSlugs)
+                GetLocalResourcesAndFoldersUseCase.Input(
+                    folders.activeFolder,
+                    homeSlugs
+                )
             )
         ) {
             is GetLocalResourcesAndFoldersUseCase.Output.Failure -> {
@@ -472,7 +493,7 @@ class HomePresenter(
                     groupsList,
                     filteredSubFolders,
                     filteredSubFolderResources,
-                    HomeFragment.HeaderSectionConfiguration(
+                    HeaderSectionConfiguration(
                         isInCurrentFolderSectionVisible = false,
                         isInSubFoldersSectionVisible = false,
                         isOtherItemsSectionVisible = !areListsEmpty(
@@ -528,7 +549,7 @@ class HomePresenter(
                 filteredGroups,
                 filteredSubFolders,
                 filteredSubFolderResources,
-                HomeFragment.HeaderSectionConfiguration(
+                HeaderSectionConfiguration(
                     isInCurrentFolderSectionVisible =
                     homeView is HomeDisplayViewModel.Folders && !areListsEmpty(filteredResources, filteredFolders),
                     isInSubFoldersSectionVisible =
@@ -545,7 +566,10 @@ class HomePresenter(
     }
 
     private suspend fun getResourcesFilteredByTag() = getLocalResourcesFilteredByTag.execute(
-        GetLocalResourcesFilteredByTagUseCase.Input(currentSearchText.value, homeResourcesSlugs)
+        GetLocalResourcesFilteredByTagUseCase.Input(
+            currentSearchText.value,
+            homeSlugs
+        )
     ).resources
 
     private suspend fun populateSubFoldersFilteringResults(folders: HomeDisplayViewModel.Folders) {
@@ -566,7 +590,9 @@ class HomePresenter(
     private suspend fun getSubFoldersFilteredResources(allSubFolders: List<FolderWithCountAndPath>) =
         getLocalResourcesFiltered.execute(
             GetLocalSubFolderResourcesFilteredUseCase.Input(
-                allSubFolders.map { it.folderId }, currentSearchText.value, homeResourcesSlugs
+                allSubFolders.map { it.folderId },
+                currentSearchText.value,
+                homeSlugs
             )
         ).resources
 
@@ -594,52 +620,68 @@ class HomePresenter(
 
     override fun resourceMoreClick(resourceModel: ResourceModel) {
         currentMoreMenuResource = resourceModel
-        view?.navigateToMore(resourceMenuModelMapper.map(resourceModel))
+        view?.navigateToMore(resourceModel.resourceId, resourceModel.name)
     }
 
     override fun itemClick(resourceModel: ResourceModel) {
         view?.navigateToDetails(resourceModel)
     }
 
-    override fun menuLaunchWebsiteClick() {
-        resourceActionsInteractor
-            .provideWebsiteUrl { _, url ->
-                view?.openWebsite(url)
-            }
+    override fun menuCopyUsernameClick() {
+        coroutineScope.launch {
+            performResourcePropertyAction(
+                action = { resourcePropertiesActionsInteractor.provideUsername() },
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+            )
+        }
     }
 
-    override fun menuCopyUsernameClick() {
-        resourceActionsInteractor
-            .provideUsername { label, username ->
-                view?.addToClipboard(label, username, isSecret = false)
-            }
+    override fun menuLaunchWebsiteClick() {
+        coroutineScope.launch {
+            performResourcePropertyAction(
+                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+                doOnResult = { view?.openWebsite(it.result) }
+            )
+        }
     }
 
     override fun menuCopyUrlClick() {
-        resourceActionsInteractor
-            .provideWebsiteUrl { label, url ->
-                view?.addToClipboard(label, url, isSecret = false)
-            }
+        coroutineScope.launch {
+            performResourcePropertyAction(
+                action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+                doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+            )
+        }
     }
 
     override fun menuCopyPasswordClick() {
         coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.providePassword(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { label, password ->
-                view?.addToClipboard(label, password, isSecret = true)
-            }
+            performSecretPropertyAction(
+                action = { secretPropertiesActionsInteractor.providePassword() },
+                doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+            )
         }
     }
 
     override fun menuCopyDescriptionClick() {
         coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.provideDescription(
-                decryptionFailure = { view?.showDecryptionFailure() },
-                fetchFailure = { view?.showFetchFailure() }
-            ) { label, description, isSecret ->
-                view?.addToClipboard(label, description, isSecret = isSecret)
+            when (resourceTypeFactory.getResourceTypeEnum(currentMoreMenuResource!!.resourceTypeId)) {
+                SIMPLE_PASSWORD -> {
+                    performResourcePropertyAction(
+                        action = { resourcePropertiesActionsInteractor.provideDescription() },
+                        doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                    )
+                }
+                else -> {
+                    performSecretPropertyAction(
+                        action = { secretPropertiesActionsInteractor.provideDescription() },
+                        doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                        doOnFetchFailure = { view?.showFetchFailure() },
+                        doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                    )
+                }
             }
         }
     }
@@ -659,11 +701,11 @@ class HomePresenter(
     override fun deleteResourceConfirmed() {
         coroutineScope.launch {
             deleteResourceIdlingResource.setIdle(false)
-            resourceAuthenticatedActionsInteractor.deleteResource(
-                failure = { view?.showDeleteResourceFailure() }
-            ) {
-                resourceDeleted(it)
-            }
+            performCommonResourceAction(
+                action = { resourceCommonActionsInteractor.deleteResource() },
+                doOnFailure = { view?.showDeleteResourceFailure() },
+                doOnSuccess = { resourceDeleted(it.resourceName) }
+            )
             deleteResourceIdlingResource.setIdle(true)
         }
     }
@@ -799,12 +841,11 @@ class HomePresenter(
 
     override fun menuFavouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
         coroutineScope.launch {
-            resourceAuthenticatedActionsInteractor.toggleFavourite(
-                option,
-                failure = { view?.showToggleFavouriteFailure() }
-            ) {
-                showActiveHomeView()
-            }
+            performCommonResourceAction(
+                action = { resourceCommonActionsInteractor.toggleFavourite(option) },
+                doOnFailure = { view?.showToggleFavouriteFailure() },
+                doOnSuccess = { showActiveHomeView() }
+            )
         }
     }
 
@@ -838,7 +879,112 @@ class HomePresenter(
         view?.showFolderCreated(name)
     }
 
-    private companion object {
-        private val homeResourcesSlugs = listOf(SLUG_SIMPLE_PASSWORD, SLUG_PASSWORD_AND_DESCRIPTION)
+    override fun otpScanned(totpQr: OtpParseResult.OtpQr.TotpQr?) {
+        if (totpQr == null) {
+            view?.showInvalidTotpScanned()
+            return
+        }
+        coroutineScope.launch {
+            val resourceModel = requireNotNull(currentMoreMenuResource)
+            view?.showProgress()
+
+            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
+                parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
+            performResourceUpdateAction(
+                action = {
+                    resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
+                        label = resourceModel.name,
+                        issuer = resourceModel.url,
+                        period = totpQr.period,
+                        digits = totpQr.digits,
+                        algorithm = totpQr.algorithm.name,
+                        secretKey = totpQr.secret
+                    )
+                },
+                doOnFailure = { view?.showGeneralError(it) },
+                doOnCryptoFailure = { view?.showEncryptionError(it) },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnSuccess = { fullDataRefreshExecutor.performFullDataRefresh() }
+            )
+
+            view?.hideProgress()
+        }
+    }
+
+    override fun menuAddTotpManuallyClick() {
+        view?.navigateToOtpCreate(currentMoreMenuResource!!.resourceId)
+    }
+
+    override fun manageTotpClick() {
+        view?.navigateToOtpMoreMenu(
+            resourceId = currentMoreMenuResource!!.resourceId,
+            resourceName = currentMoreMenuResource!!.name
+        )
+    }
+
+    override fun menuCopyOtpClick() {
+        doAfterOtpFetchAndDecrypt { label, _, otpParameters ->
+            view?.addToClipboard(label, otpParameters.otpValue, isSecret = true)
+        }
+    }
+
+    override fun menuEditOtpClick() {
+        view?.navigateToOtpEdit()
+    }
+
+    private fun doAfterOtpFetchAndDecrypt(
+        action: (
+            ClipboardLabel,
+            DecryptedSecret.StandaloneTotp.Totp,
+            TotpParametersProvider.OtpParameters
+        ) -> Unit
+    ) {
+        coroutineScope.launch {
+            performSecretPropertyAction(
+                action = { secretPropertiesActionsInteractor.provideOtp() },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                doOnSuccess = {
+                    val otpParameters = totpParametersProvider.provideOtpParameters(
+                        secretKey = it.result.key,
+                        digits = it.result.digits,
+                        period = it.result.period,
+                        algorithm = it.result.algorithm
+                    )
+                    action(it.label, it.result, otpParameters)
+                }
+            )
+        }
+    }
+
+    override fun editOtpManuallyClick() {
+        view?.navigateToOtpCreate(currentMoreMenuResource!!.resourceId)
+    }
+
+    override fun menuDeleteOtpClick() {
+        view?.showDeleteTotpConfirmationDialog()
+    }
+
+    override fun totpDeletionConfirmed() {
+        coroutineScope.launch {
+            view?.showProgress()
+            val resourceUpdateActionInteractor = get<ResourceUpdateActionsInteractor> {
+                parametersOf(currentMoreMenuResource!!, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
+            performResourceUpdateAction(
+                action = {
+                    resourceUpdateActionInteractor.downgradeToPasswordAndDescriptionResource()
+                },
+                doOnCryptoFailure = { view?.showEncryptionError(it) },
+                doOnFailure = { view?.showError() },
+                doOnSuccess = {
+                    fullDataRefreshExecutor.performFullDataRefresh()
+                    view?.showTotpDeleted()
+                },
+                doOnFetchFailure = { view?.showFetchFailure() }
+            )
+            view?.hideProgress()
+        }
     }
 }

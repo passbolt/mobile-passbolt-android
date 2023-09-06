@@ -50,7 +50,7 @@ class ResourceTypesModelMapper(
             val secretFields = processFieldsDefinition(it.definition.secret, FieldKind.SECRET)
 
             ResourceTypeIdWithFields(
-                ResourceType(it.id, it.name, it.slug),
+                ResourceType(it.id.toString(), it.name, it.slug),
                 resourceFields + secretFields
             )
         }

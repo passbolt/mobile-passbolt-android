@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.RebuildFolderPermi
 import com.passbolt.mobile.android.core.commonfolders.usecase.RebuildFoldersTablesUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.RemoveLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.ShareFolderUseCase
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.foldersDbModule
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -37,6 +38,8 @@ import org.koin.dsl.module
  */
 
 val foldersModule = module {
+    foldersDbModule()
+
     factoryOf(::CreateFolderUseCase)
     singleOf(::FetchUserFoldersUseCase)
     singleOf(::FoldersInteractor)
