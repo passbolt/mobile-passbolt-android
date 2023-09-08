@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.passboltapi.mfa
 
+import com.passbolt.mobile.android.core.networking.NO_REDIRECT_RETROFIT_SERVICE
 import com.passbolt.mobile.android.core.networking.RestService
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,7 +41,7 @@ internal fun Module.mfaApiModule() {
         )
     }
     single {
-        get<RestService>()
+        get<RestService>(named(NO_REDIRECT_RETROFIT_SERVICE))
             .service(MfaApi::class.java)
     }
 }

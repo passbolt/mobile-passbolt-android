@@ -56,6 +56,18 @@ val networkingModule = module {
             )
         )
     }
+    single(named(NO_REDIRECT_HTTP_CLIENT)) {
+        provideHttpClient(
+            loggingInterceptor = get(),
+            interceptors = listOf(
+                get<ChangeableBaseUrlInterceptor>(),
+                get<AuthInterceptor>(),
+                get<CookiesInterceptor.ReceivedCookiesInterceptor>(),
+                get<CookiesInterceptor.AddCookiesInterceptor>()
+            ),
+            followRedirects = false
+        )
+    }
     single { ChangeableBaseUrlInterceptor(getCurrentApiUrlUseCase = get()) }
     single {
         AuthInterceptor(
@@ -75,6 +87,14 @@ val networkingModule = module {
     single<RestService> {
         RetrofitRestService(
             client = get(named(DEFAULT_HTTP_CLIENT)),
+            converterFactory = GsonConverterFactory.create(
+                get()
+            )
+        )
+    }
+    single<RestService>(named(NO_REDIRECT_RETROFIT_SERVICE)) {
+        RetrofitRestService(
+            client = get(named(NO_REDIRECT_HTTP_CLIENT)),
             converterFactory = GsonConverterFactory.create(
                 get()
             )
@@ -106,7 +126,8 @@ private fun provideHttpLogger(): HttpLoggingInterceptor.Logger = object : HttpLo
 
 private fun provideHttpClient(
     loggingInterceptor: HttpLoggingInterceptor,
-    interceptors: List<Interceptor> = emptyList()
+    interceptors: List<Interceptor> = emptyList(),
+    followRedirects: Boolean = true
 ) =
     OkHttpClient.Builder()
         .addNetworkInterceptor(loggingInterceptor)
@@ -116,7 +137,10 @@ private fun provideHttpClient(
         .apply {
             interceptors.forEach { addInterceptor(it) }
         }
+        .followRedirects(followRedirects)
         .build()
 
 const val DEFAULT_HTTP_CLIENT = "DEFAULT_HTTP_CLIENT"
 const val COIL_HTTP_CLIENT = "COIL_HTTP_CLIENT"
+const val NO_REDIRECT_HTTP_CLIENT = "NO_REDIRECT_HTTP_CLIENT"
+const val NO_REDIRECT_RETROFIT_SERVICE = "NO_REDIRECT_RETROFIT"

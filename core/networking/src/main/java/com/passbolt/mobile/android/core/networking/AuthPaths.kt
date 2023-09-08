@@ -30,6 +30,8 @@ object AuthPaths {
     const val AUTH_JWT_REFRESH = "/auth/jwt/refresh.json"
     const val MFA_VERIFICATION_TOTP = "/mfa/verify/totp.json"
     const val MFA_VERIFICATION_YUBIKEY = "/mfa/verify/yubikey.json"
+    const val MFA_VERIFICATION_DUO_PROMPT = "/mfa/verify/duo/prompt"
+    const val MFA_VERIFICATION_DUO_VERIFY = "/mfa/verify/duo/callback"
     const val AVATAR_PATH = "/img/avatar/"
     const val TRANSFER_PATH = "/mobile/transfers/"
 }

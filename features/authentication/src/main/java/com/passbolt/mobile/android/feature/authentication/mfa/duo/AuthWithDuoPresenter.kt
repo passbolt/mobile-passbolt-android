@@ -24,29 +24,107 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.duo
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetDuoPromptUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyDuoCallbackUseCase
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewsheet.DuoState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class AuthWithDuoPresenter(
+    private val getDuoPromptUseCase: GetDuoPromptUseCase,
+    private val verifyDuoCallbackUseCase: VerifyDuoCallbackUseCase,
+    private val refreshSessionUseCase: RefreshSessionUseCase,
     private val signOutUseCase: SignOutUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : AuthWithDuoContract.Presenter {
 
     override var view: AuthWithDuoContract.View? = null
-
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
-    override fun authWithDuoClick() {
-        // TODO
+    private var authToken: String? = null
+    private var passboltDuoCookieUuid: String? = null
+
+    override fun onViewCreated(hasOtherProvider: Boolean, authToken: String?) {
+        this.authToken = authToken
+        view?.showChangeProviderButton(hasOtherProvider)
     }
 
-    override fun onViewCreated(bundledHasOtherProvider: Boolean) {
-        view?.showChangeProviderButton(bundledHasOtherProvider)
+    override fun authWithDuoClick() {
+        view?.showProgress()
+        scope.launch {
+            authToken?.let {
+                when (val duoPromptResult =
+                    getDuoPromptUseCase.execute(GetDuoPromptUseCase.Input(it, remember = false))) {
+                    is GetDuoPromptUseCase.Output.DuoPromptUrlNotFound -> view?.showError()
+                    is GetDuoPromptUseCase.Output.Failure<*> -> view?.showError()
+                    is GetDuoPromptUseCase.Output.NetworkFailure -> view?.showError()
+                    is GetDuoPromptUseCase.Output.Unauthorized -> if (backgroundSessionRefreshSucceeded()) {
+                        authWithDuoClick() // restart operation after background session refresh
+                    } else {
+                        view?.run {
+                            navigateToLogin()
+                        }
+                    }
+                    is GetDuoPromptUseCase.Output.Success -> {
+                        passboltDuoCookieUuid = duoPromptResult.passboltDuoCookieUuid
+                        view?.navigateToDuoPrompt(duoPromptResult.duoPromptUrl)
+                    }
+                }
+            }
+            view?.hideProgress()
+        }
     }
+
+    override fun verifyDuoAuth(state: DuoState) {
+        view?.showProgress()
+        scope.launch {
+            val (authToken, duoCookie) = authToken to passboltDuoCookieUuid
+            if (authToken != null && duoCookie != null) {
+                when (val duoVerificationResult =
+                    verifyDuoCallbackUseCase.execute(
+                        VerifyDuoCallbackUseCase.Input(
+                            jwtHeader = authToken,
+                            passboltDuoCookieUuid = duoCookie,
+                            duoState = state.state,
+                            duoCode = state.duoCode
+                        )
+                    )) {
+                    is VerifyDuoCallbackUseCase.Output.Error -> view?.showError()
+                    is VerifyDuoCallbackUseCase.Output.Failure<*> -> view?.showError()
+                    is VerifyDuoCallbackUseCase.Output.Unauthorized -> if (backgroundSessionRefreshSucceeded()) {
+                        verifyDuoAuth(state) // restart operation after background session refresh
+                    } else {
+                        view?.run {
+                            navigateToLogin()
+                        }
+                    }
+                    is VerifyDuoCallbackUseCase.Output.Success -> {
+                        duoSuccess(duoVerificationResult.mfaHeader)
+                    }
+                }
+            } else {
+                Timber.e("Authentication token or duo uuid cookie is null")
+            }
+            view?.hideProgress()
+        }
+    }
+
+    private fun duoSuccess(mfaHeader: String?) {
+        mfaHeader?.let {
+            view?.notifyVerificationSucceeded(it)
+        } ?: run {
+            view?.showError()
+        }
+    }
+
+    private suspend fun backgroundSessionRefreshSucceeded() =
+        refreshSessionUseCase.execute(Unit) is RefreshSessionUseCase.Output.Success
 
     override fun authenticationSucceeded() {
         view?.apply {
