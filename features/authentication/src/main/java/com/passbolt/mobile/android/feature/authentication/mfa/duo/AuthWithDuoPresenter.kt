@@ -60,7 +60,7 @@ class AuthWithDuoPresenter(
         scope.launch {
             authToken?.let {
                 when (val duoPromptResult =
-                    getDuoPromptUseCase.execute(GetDuoPromptUseCase.Input(it, remember = false))) {
+                    getDuoPromptUseCase.execute(GetDuoPromptUseCase.Input(it))) {
                     is GetDuoPromptUseCase.Output.DuoPromptUrlNotFound -> view?.showError()
                     is GetDuoPromptUseCase.Output.Failure<*> -> view?.showError()
                     is GetDuoPromptUseCase.Output.NetworkFailure -> view?.showError()

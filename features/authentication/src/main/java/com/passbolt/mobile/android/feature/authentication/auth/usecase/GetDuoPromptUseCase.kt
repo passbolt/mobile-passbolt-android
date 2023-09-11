@@ -63,8 +63,7 @@ class GetDuoPromptUseCase(
         }
 
     data class Input(
-        val jwtHeader: String,
-        val remember: Boolean // TODO currently not used? wait for API finalization
+        val jwtHeader: String
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {

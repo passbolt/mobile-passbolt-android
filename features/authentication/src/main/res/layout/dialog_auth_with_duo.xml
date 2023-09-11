@@ -59,19 +59,6 @@
             android:textColor="@color/text_primary"
             app:layout_constraintTop_toBottomOf="@id/mfaLogoImage" />
 
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/rememberMeCheckBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_16"
-            android:buttonTint="@color/primary"
-            android:checked="true"
-            android:fontFamily="@font/inter_semi_bold"
-            android:text="@string/dialog_mfa_remember_me"
-            app:layout_constraintBottom_toTopOf="@id/authWithDuoButton"
-            app:layout_constraintTop_toBottomOf="@id/headerLabel"
-            app:layout_constraintVertical_bias="0.95" />
-
         <Button
             android:id="@+id/authWithDuoButton"
             style="@style/PrimaryButton"
