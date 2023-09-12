@@ -146,7 +146,7 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
         private val USER = UserModel(
             "userId",
             "userName",
-            GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now()),
+            GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now(), ZonedDateTime.now()),
             UserProfileModel("username", "first", "last", "avatarUrl")
         )
         private val GROUP = GroupModel("grId", "grName")

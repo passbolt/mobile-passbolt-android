@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/dp_8"
+        app:toolbarTitle="@string/key_inspector_title">
+
+        <ImageView
+            android:id="@+id/moreButton"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/dp_8"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_more" />
+    </com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/dp_16">
+
+            <ImageView
+                android:id="@+id/avatarImage"
+                android:layout_width="@dimen/dp_96"
+                android:layout_height="@dimen/dp_96"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/dp_24"
+                tools:src="@drawable/ic_avatar_placeholder" />
+
+            <TextView
+                android:id="@+id/label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_32"
+                android:gravity="center"
+                android:textSize="@dimen/sp_24"
+                android:textStyle="bold"
+                tools:text="Ada L" />
+
+            <com.passbolt.mobile.android.core.ui.labelledtext.LabelledText
+                android:id="@+id/uidLabeledText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_32"
+                app:labelledText_label="@string/key_inspector_uid" />
+
+            <com.passbolt.mobile.android.core.ui.labelledtext.LabelledText
+                android:id="@+id/fingerprintLabeledText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                app:labelledText_label="@string/key_inspector_fingerprint"
+                app:labelledText_use_monospace_font="true" />
+
+            <com.passbolt.mobile.android.core.ui.labelledtext.LabelledText
+                android:id="@+id/createdLabeledText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:visibility="gone"
+                app:labelledText_label="@string/key_inspector_created" />
+
+            <com.passbolt.mobile.android.core.ui.labelledtext.LabelledText
+                android:id="@+id/expiresLabeledText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:visibility="gone"
+                app:labelledText_label="@string/key_inspector_expires" />
+
+            <com.passbolt.mobile.android.core.ui.labelledtext.LabelledText
+                android:id="@+id/lengthLabeledText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                app:labelledText_label="@string/key_inspector_key_length" />
+
+            <com.passbolt.mobile.android.core.ui.labelledtext.LabelledText
+                android:id="@+id/algorithmLabeledText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:visibility="gone"
+                app:labelledText_label="@string/key_inspector_key_algorithm" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -32,4 +32,12 @@
         <attr name="dropdownIsRequired"
             format="boolean" />
     </declare-styleable>
+    <declare-styleable name="LabelledText">
+        <attr name="labelledText_label"
+            format="string" />
+        <attr name="labelledText_text"
+            format="string" />
+        <attr name="labelledText_use_monospace_font"
+            format="boolean" />
+    </declare-styleable>
 </resources>

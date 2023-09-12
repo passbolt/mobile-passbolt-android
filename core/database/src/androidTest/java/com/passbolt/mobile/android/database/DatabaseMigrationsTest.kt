@@ -1,23 +1,3 @@
-package com.passbolt.mobile.android.database
-
-import androidx.room.Room
-import androidx.room.testing.MigrationTestHelper
-import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
-import androidx.test.platform.app.InstrumentationRegistry
-import com.passbolt.mobile.android.database.migrations.Migration10to11
-import com.passbolt.mobile.android.database.migrations.Migration11to12
-import com.passbolt.mobile.android.database.migrations.Migration1to2
-import com.passbolt.mobile.android.database.migrations.Migration2to3
-import com.passbolt.mobile.android.database.migrations.Migration3to4
-import com.passbolt.mobile.android.database.migrations.Migration4to5
-import com.passbolt.mobile.android.database.migrations.Migration5to6
-import com.passbolt.mobile.android.database.migrations.Migration6to7
-import com.passbolt.mobile.android.database.migrations.Migration7to8
-import com.passbolt.mobile.android.database.migrations.Migration8to9
-import com.passbolt.mobile.android.database.migrations.Migration9to10
-import org.junit.Rule
-import org.junit.Test
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -40,6 +20,27 @@ import org.junit.Test
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.database
+
+import androidx.room.Room
+import androidx.room.testing.MigrationTestHelper
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
+import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.database.migrations.Migration10to11
+import com.passbolt.mobile.android.database.migrations.Migration11to12
+import com.passbolt.mobile.android.database.migrations.Migration12to13
+import com.passbolt.mobile.android.database.migrations.Migration1to2
+import com.passbolt.mobile.android.database.migrations.Migration2to3
+import com.passbolt.mobile.android.database.migrations.Migration3to4
+import com.passbolt.mobile.android.database.migrations.Migration4to5
+import com.passbolt.mobile.android.database.migrations.Migration5to6
+import com.passbolt.mobile.android.database.migrations.Migration6to7
+import com.passbolt.mobile.android.database.migrations.Migration7to8
+import com.passbolt.mobile.android.database.migrations.Migration8to9
+import com.passbolt.mobile.android.database.migrations.Migration9to10
+import org.junit.Rule
+import org.junit.Test
 
 class DatabaseMigrationsTest {
 
@@ -243,6 +244,27 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate12To13() {
+        helper.createDatabase(TEST_DB, 12)
+            .apply {
+                execSQL(
+                    "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833)"
+                )
+                close()
+            }
+
+        helper.runMigrationsAndValidate(TEST_DB, 13, true, Migration12to13)
+            .apply {
+                execSQL(
+                    "INSERT INTO User VALUES('id2','username','fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
+                )
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -256,7 +278,7 @@ class DatabaseMigrationsTest {
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
                 Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11,
-                Migration11to12
+                Migration11to12, Migration12to13
             )
             .build().apply {
                 openHelper.writableDatabase

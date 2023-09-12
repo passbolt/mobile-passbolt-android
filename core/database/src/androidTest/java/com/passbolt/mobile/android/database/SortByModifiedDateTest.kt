@@ -7,6 +7,7 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.entity.resource.ResourceType
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -50,6 +51,9 @@ class SortByModifiedDateTest {
             context, ResourceDatabase::class.java
         ).build()
         resourcesDao = db.resourcesDao()
+        runBlocking {
+            db.resourceTypesDao().insert(RESOURCE_TYPE)
+        }
     }
 
     @After
@@ -59,9 +63,9 @@ class SortByModifiedDateTest {
 
     @Test
     fun testSortingWithNoTimeZones() = runBlocking {
-    resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3))
+        resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3))
 
-        val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate()
+        val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG))
 
         assertThat(
             sortedByModifiedDate.map { it.modified.toInstant().toEpochMilli() }
@@ -73,7 +77,7 @@ class SortByModifiedDateTest {
     fun testSortingWithTimeZones() = runBlocking {
         resourcesDao.insertAll(listOf(RESOURCE_1, RESOURCE_2, RESOURCE_3, RESOURCE_1_ZONE_MINUS, RESOURCE_1_ZONE_PLUS))
 
-        val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate()
+        val sortedByModifiedDate = resourcesDao.getAllOrderedByModifiedDate(setOf(PASSWORD_DESCRIPTION_SLUG))
 
         assertThat(
             sortedByModifiedDate.map { it.modified.toInstant().toEpochMilli() }
@@ -82,25 +86,73 @@ class SortByModifiedDateTest {
     }
 
     private companion object {
+        private const val PASSWORD_DESCRIPTION_SLUG = "password-description"
+
+        private val RESOURCE_TYPE = ResourceType(
+            resourceTypeId = "1",
+            name = "password-description",
+            slug = PASSWORD_DESCRIPTION_SLUG
+        )
+
         private val RESOURCE_1 = Resource(
-            "1", "folderid", "", Permission.READ, null, null, null, "1", null,
-            ZonedDateTime.now()
+            resourceId = "1",
+            folderId = "folderid",
+            resourceName = "",
+            resourcePermission = Permission.READ,
+            url = null,
+            username = null,
+            description = null,
+            resourceTypeId = "1",
+            favouriteId = null,
+            modified = ZonedDateTime.now()
         )
         private val RESOURCE_2 = Resource(
-            "2", "folderid", "", Permission.READ, null, null, null, "1", null,
-            ZonedDateTime.now().plusDays(1)
+            resourceId = "2",
+            folderId = "folderid",
+            resourceName = "",
+            resourcePermission = Permission.READ,
+            url = null,
+            username = null,
+            description = null,
+            resourceTypeId = "1",
+            favouriteId = null,
+            modified = ZonedDateTime.now().plusDays(1)
         )
         private val RESOURCE_3 = Resource(
-            "3", "folderid", "", Permission.READ, null, null, null, "1", null,
-            ZonedDateTime.now().plusDays(2)
+            resourceId = "3",
+            folderId = "folderid",
+            resourceName = "",
+            resourcePermission = Permission.READ,
+            url = null,
+            username = null,
+            description = null,
+            resourceTypeId = "1",
+            favouriteId = null,
+            modified = ZonedDateTime.now().plusDays(2)
         )
         private val RESOURCE_1_ZONE_MINUS = Resource(
-            "4", "folderid", "", Permission.READ, null, null, null, "1", null,
-            LocalDateTime.now().atZone(ZoneOffset.of("-08:00"))
+            resourceId = "4",
+            folderId = "folderid",
+            resourceName = "",
+            resourcePermission = Permission.READ,
+            url = null,
+            username = null,
+            description = null,
+            resourceTypeId = "1",
+            favouriteId = null,
+            modified = LocalDateTime.now().atZone(ZoneOffset.of("-08:00"))
         )
         private val RESOURCE_1_ZONE_PLUS = Resource(
-            "5", "folderid", "", Permission.READ, null, null, null, "1", null,
-            LocalDateTime.now().atZone(ZoneOffset.of("+08:00"))
+            resourceId = "5",
+            folderId = "folderid",
+            resourceName = "",
+            resourcePermission = Permission.READ,
+            url = null,
+            username = null,
+            description = null,
+            resourceTypeId = "1",
+            favouriteId = null,
+            modified = LocalDateTime.now().atZone(ZoneOffset.of("+08:00"))
         )
     }
 }

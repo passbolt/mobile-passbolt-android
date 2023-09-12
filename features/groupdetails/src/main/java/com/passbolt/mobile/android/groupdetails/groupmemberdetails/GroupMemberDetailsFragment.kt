@@ -5,8 +5,8 @@ import android.view.View
 import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
-import com.passbolt.mobile.android.common.FingerprintFormatter
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.groupdetails.databinding.FragmentGroupMemberDetailsBinding
 import com.passbolt.mobile.android.ui.UserModel
@@ -33,7 +33,9 @@ class GroupMemberDetailsFragment :
         with(binding) {
             nameLabel.text = String.format("%s %s", user.profile.firstName, user.profile.lastName)
             emailLabel.text = user.userName
-            fingerprintLabel.text = fingerprintFormatter.formatWithRawFallback(user.gpgKey.fingerprint)
+            fingerprintLabel.text = fingerprintFormatter.formatWithRawFallback(
+                user.gpgKey.fingerprint, appendMiddleSpacing = true
+            )
             avatarImage.load(user.profile.avatarUrl) {
                 error(CoreUiR.drawable.ic_user_avatar)
                 transformations(CircleCropTransformation())

@@ -1,16 +1,6 @@
-package com.passbolt.mobile.android.core.ui
+package com.passbolt.mobile.android.core.ui.formatter
 
-import com.passbolt.mobile.android.core.font.Font
-import com.passbolt.mobile.android.core.font.fontModule
-import com.passbolt.mobile.android.core.ui.controller.TotpViewController
-import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
-import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
-import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
-import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
-import java.time.format.DateTimeFormatter
+import org.jetbrains.annotations.VisibleForTesting
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,21 +24,30 @@ import java.time.format.DateTimeFormatter
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class FingerprintFormatter {
 
-val coreUiModule = module {
-    fontModule()
+    fun format(fingerprint: String, appendMiddleSpacing: Boolean): String? {
+        if (fingerprint.length != FINGERPRINT_LENGTH) {
+            return null
+        }
 
-    singleOf(::TotpViewController)
-    singleOf(::OtpFormatter)
-    singleOf(::FingerprintFormatter)
-    singleOf(::DateFormatter)
+        val parsedString = buildString {
+            append(fingerprint.substring(0, fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
+            appendLine()
+            if (appendMiddleSpacing) appendLine()
+            append(fingerprint.substring(fingerprint.length / 2).chunked(FINGERPRINT_BLOCK_LENGTH).joinToString(" "))
+        }
 
-    single {
-        DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")
+        return parsedString
     }
-    factory {
-        InitialsIconGenerator(
-            font = get(named<Font.InterMedium>())
-        )
+
+    fun formatWithRawFallback(fingerprint: String, appendMiddleSpacing: Boolean) =
+        format(fingerprint, appendMiddleSpacing) ?: fingerprint
+
+    companion object {
+        @VisibleForTesting
+        const val FINGERPRINT_LENGTH = 40
+
+        private const val FINGERPRINT_BLOCK_LENGTH = 4
     }
 }

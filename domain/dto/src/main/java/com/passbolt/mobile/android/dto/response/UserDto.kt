@@ -44,5 +44,7 @@ data class GpgKeyDto(
     val uid: String?,
     @SerializedName("key_id")
     val keyId: String,
-    val type: String?
+    val type: String?,
+    @SerializedName("key_created")
+    val keyCreated: String?
 )

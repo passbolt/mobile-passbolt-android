@@ -175,7 +175,7 @@ class PermissionRecipientsPresenterTest : KoinTest {
         private val USER = UserModel(
             USER_WITH_AVATAR.userId,
             USER_WITH_AVATAR.userName,
-            GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now()),
+            GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now(), ZonedDateTime.now()),
             UserProfileModel(
                 "username",
                 USER_WITH_AVATAR.firstName,
@@ -186,7 +186,7 @@ class PermissionRecipientsPresenterTest : KoinTest {
         private val NEW_USER = UserModel(
             "newUserId",
             "newUserName",
-            GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now()),
+            GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now(), ZonedDateTime.now()),
             UserProfileModel("username", "newUserFirst", "newUserLast", "newUserAvatar")
         )
     }

@@ -304,6 +304,7 @@
 
     <string name="settings_accounts_manage_accounts">Manage accounts</string>
     <string name="settings_accounts_transfer_account">Transfer account to another device</string>
+    <string name="settings_accounts_key_inspector">Key inspector</string>
 
     <string name="settings_terms_and_licenses_privacy_policy">Privacy policy</string>
     <string name="settings_terms_and_licenses_licenses">Open Source Licenses</string>
@@ -509,6 +510,21 @@
     <string name="resource_picker_replace_totp_title">Replace TOTP?</string>
     <string name="resource_picker_replace_totp">Replace TOTP</string>
     <string name="resource_picker_add_totp">Add TOTP</string>
+
+    <string name="key_inspector_uid">Uid</string>
+    <string name="key_inspector_fingerprint">Fingerprint</string>
+    <string name="key_inspector_created">Created</string>
+    <string name="key_inspector_expires">Expires</string>
+    <string name="key_inspector_key_length">Key length</string>
+    <string name="key_inspector_key_algorithm">Algorithm</string>
+    <string name="key_inspector_error_during_key_fetch">Error during fetching the key. %s</string>
+    <string name="key_inspector_title">Key inspector</string>
+
+    <string name="key_inspector_menu_title">Key inspector</string>
+    <string name="key_inspector_menu_export_private_key">Export private key</string>
+    <string name="key_inspector_menu_export_public_key">Export public key</string>
+    <string name="key_inspector_menu_export_key">Export key</string>
+    <string name="key_inspector_menu_failed_to_generate_public_key">Failed to generate public key. %s</string>
 
     <!--
     arrays can be inconsistent when in other languages

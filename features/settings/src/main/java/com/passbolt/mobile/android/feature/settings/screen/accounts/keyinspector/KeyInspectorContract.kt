@@ -1,17 +1,3 @@
-package com.passbolt.mobile.android.core.ui
-
-import com.passbolt.mobile.android.core.font.Font
-import com.passbolt.mobile.android.core.font.fontModule
-import com.passbolt.mobile.android.core.ui.controller.TotpViewController
-import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
-import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
-import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
-import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
-import java.time.format.DateTimeFormatter
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -35,20 +21,30 @@ import java.time.format.DateTimeFormatter
  * @since v1.0
  */
 
-val coreUiModule = module {
-    fontModule()
+package com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector
 
-    singleOf(::TotpViewController)
-    singleOf(::OtpFormatter)
-    singleOf(::FingerprintFormatter)
-    singleOf(::DateFormatter)
+import com.passbolt.mobile.android.common.types.ClipboardLabel
+import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
 
-    single {
-        DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")
+interface KeyInspectorContract {
+
+    interface View : BaseAuthenticatedContract.View {
+        fun showProgress()
+        fun hideProgress()
+        fun showError(message: String?)
+        fun showUid(uid: String)
+        fun showFingerprint(fingerprint: String)
+        fun showCreationDate(keyCreationDate: String)
+        fun showExpirationDate(keyExpirationDate: String)
+        fun showLength(bits: String)
+        fun showAlgorithm(algorithm: String)
+        fun showAvatar(avatarUrl: String?)
+        fun showLabel(label: String)
+        fun addToClipboard(clipboardLabel: ClipboardLabel, value: String)
     }
-    factory {
-        InitialsIconGenerator(
-            font = get(named<Font.InterMedium>())
-        )
+
+    interface Presenter : BaseAuthenticatedContract.Presenter<View> {
+        fun uidCopyClick()
+        fun fingerprintCopyClick()
     }
 }

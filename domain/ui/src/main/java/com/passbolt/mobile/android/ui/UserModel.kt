@@ -40,7 +40,8 @@ data class GpgKeyModel(
     val uid: String?,
     val keyId: String,
     val type: String?,
-    val expires: ZonedDateTime?
+    val keyExpirationDate: ZonedDateTime?,
+    val keyCreationDate: ZonedDateTime?
 )
 
 data class UserProfileModel(

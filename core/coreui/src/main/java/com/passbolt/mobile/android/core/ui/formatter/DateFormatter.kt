@@ -1,17 +1,3 @@
-package com.passbolt.mobile.android.core.ui
-
-import com.passbolt.mobile.android.core.font.Font
-import com.passbolt.mobile.android.core.font.fontModule
-import com.passbolt.mobile.android.core.ui.controller.TotpViewController
-import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
-import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
-import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
-import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
-import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
-import java.time.format.DateTimeFormatter
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -35,20 +21,15 @@ import java.time.format.DateTimeFormatter
  * @since v1.0
  */
 
-val coreUiModule = module {
-    fontModule()
+package com.passbolt.mobile.android.core.ui.formatter
 
-    singleOf(::TotpViewController)
-    singleOf(::OtpFormatter)
-    singleOf(::FingerprintFormatter)
-    singleOf(::DateFormatter)
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
-    single {
-        DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")
-    }
-    factory {
-        InitialsIconGenerator(
-            font = get(named<Font.InterMedium>())
-        )
-    }
+class DateFormatter(
+    private val dateTimeFormatter: DateTimeFormatter
+) {
+
+    fun format(date: ZonedDateTime) =
+        dateTimeFormatter.format(date)
 }
