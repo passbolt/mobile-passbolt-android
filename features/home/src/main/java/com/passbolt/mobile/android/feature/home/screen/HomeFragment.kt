@@ -22,6 +22,7 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.gaelmarhic.quadrant.Autofillresources
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -333,7 +334,6 @@ class HomeFragment :
         with(binding) {
             recyclerView.isVisible = state.listVisible
             emptyListContainer.isVisible = state.emptyVisible
-            errorContainer.isVisible = state.errorVisible
         }
     }
 
@@ -353,9 +353,6 @@ class HomeFragment :
 
     private fun setListeners() {
         with(binding) {
-            refreshButton.setDebouncingOnClick {
-                presenter.refreshClick()
-            }
             swipeRefresh.setOnRefreshListener {
                 presenter.refreshSwipe()
             }
@@ -488,11 +485,6 @@ class HomeFragment :
         binding.swipeRefresh.isRefreshing = true
     }
 
-    override fun showError() {
-        setState(State.ERROR)
-        binding.appBar.setExpanded(true)
-    }
-
     override fun navigateToMore(resourceId: String, resourceName: String) {
         presenter.pause()
         ResourceMoreMenuFragment.newInstance(resourceId, resourceName)
@@ -612,6 +604,14 @@ class HomeFragment :
             LocalizationR.string.common_message_resource_shared,
             anchorView = snackbarAnchorView,
             backgroundColor = CoreUiR.color.green
+        )
+    }
+
+    override fun showTotpDeletionFailed() {
+        showSnackbar(
+            LocalizationR.string.home_failed_to_delete_totp,
+            anchorView = snackbarAnchorView,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -924,9 +924,9 @@ class HomeFragment :
 
     override fun showDataRefreshError() {
         showSnackbar(
-            LocalizationR.string.common_data_refresh_error,
-            anchorView = snackbarAnchorView,
-            backgroundColor = CoreUiR.color.red
+            messageResId = LocalizationR.string.common_data_refresh_error,
+            backgroundColor = CoreUiR.color.red,
+            length = Snackbar.LENGTH_LONG
         )
     }
 
