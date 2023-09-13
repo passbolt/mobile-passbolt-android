@@ -1,5 +1,6 @@
 # do not obfuscate code - Open Source
 -dontobfuscate
+-keepattributes SourceFile,LineNumberTable
 
 # keep all the code from the app
 -keep class com.passbolt.mobile.android.** { *; }
@@ -26,3 +27,7 @@
 
 # Jwt
 -keep class io.fusionauth.jwt.domain.** { *; }
+
+# Yubikit
+-keep class com.yubico.yubikit.android.** { *; }
+-dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
