@@ -1,3 +1,5 @@
+# Passbolt 1.16.0-26 Android app release notes
+
 ## Added
 - MOB-892: Add Duo authentication
 - MOB-1454: Add key inspector
