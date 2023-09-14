@@ -327,7 +327,6 @@ class HomePresenterTest : KoinTest {
             shouldShowCloseButton = false,
             shouldShowResourceMoreMenu = false
         )
-        presenter.refreshClick()
         presenter.resume(view)
 
         verify(view).hideBackArrow()

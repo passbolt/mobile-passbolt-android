@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.google.android.material.snackbar.Snackbar
 import com.leinardi.android.speeddial.SpeedDialView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -47,10 +48,10 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.px
-import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.localization.R
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
@@ -179,9 +180,6 @@ class OtpFragment :
 
     private fun setupListeners() {
         with(binding) {
-            refreshButton.setDebouncingOnClick {
-                presenter.refreshClick()
-            }
             swipeRefresh.setOnRefreshListener {
                 presenter.refreshClick()
             }
@@ -231,14 +229,6 @@ class OtpFragment :
             )
             .build()
         imageLoader.enqueue(request)
-    }
-
-    override fun showFullscreenError() {
-        binding.errorContainer.visible()
-    }
-
-    override fun hideFullScreenError() {
-        binding.errorContainer.gone()
     }
 
     override fun navigateToSwitchAccount(appContext: AppContext) {
@@ -422,7 +412,7 @@ class OtpFragment :
 
     override fun showInvalidQrCodeDataScanned() {
         showSnackbar(
-            LocalizationR.string.otp_invalid_itp_data_scanned,
+            messageResId = LocalizationR.string.otp_invalid_itp_data_scanned,
             backgroundColor = CoreUiR.color.red
         )
     }
@@ -433,7 +423,7 @@ class OtpFragment :
 
     override fun showEncryptionError(message: String) {
         showSnackbar(
-            LocalizationR.string.common_encryption_failure,
+            messageResId = LocalizationR.string.common_encryption_failure,
             backgroundColor = CoreUiR.color.red
         )
     }
@@ -442,6 +432,14 @@ class OtpFragment :
         showSnackbar(
             getString(LocalizationR.string.common_failure_format, message),
             backgroundColor = CoreUiR.color.red
+        )
+    }
+
+    override fun showDataRefreshError() {
+        showSnackbar(
+            messageResId = R.string.common_data_refresh_error,
+            backgroundColor = CoreUiR.color.red,
+            length = Snackbar.LENGTH_LONG
         )
     }
 

@@ -37,8 +37,6 @@ interface OtpContract {
         fun hideEmptyView()
         fun displaySearchAvatar(avatarUrl: String?)
         fun navigateToSwitchAccount(appContext: AppContext)
-        fun showFullscreenError()
-        fun hideFullScreenError()
         fun navigateToManageAccounts()
         fun navigateToSwitchedAccountAuth(appContext: AppContext)
         fun showPleaseWaitForDataRefresh()
@@ -66,6 +64,7 @@ interface OtpContract {
         fun hideCreateButton()
         fun navigateToScanOtpSuccess(totpQr: OtpParseResult.OtpQr.TotpQr)
         fun showTotpDeleted()
+        fun showDataRefreshError()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {

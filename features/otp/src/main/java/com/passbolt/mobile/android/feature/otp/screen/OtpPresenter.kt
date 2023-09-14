@@ -133,7 +133,6 @@ class OtpPresenter(
             .map(otpModelMapper::map)
             .let {
                 otpList = it.toMutableList()
-                view?.hideFullScreenError()
                 if (otpList.isEmpty()) {
                     view?.showEmptyView()
                 } else {
@@ -297,7 +296,7 @@ class OtpPresenter(
     }
 
     override fun refreshFailureAction() {
-        view?.showFullscreenError()
+        view?.showDataRefreshError()
     }
 
     override fun refreshClick() {
