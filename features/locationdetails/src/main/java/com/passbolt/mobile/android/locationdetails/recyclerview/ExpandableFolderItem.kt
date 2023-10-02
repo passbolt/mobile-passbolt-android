@@ -9,8 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.ISubItem
 import com.mikepenz.fastadapter.expandable.ExpandableExtension
 import com.mikepenz.fastadapter.expandable.items.AbstractExpandableItem
-import com.passbolt.mobile.android.locationdetails.R
+import com.passbolt.mobile.android.feature.locationdetails.R
 import com.passbolt.mobile.android.ui.FolderModel
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class ExpandableFolderItem(
     private val folderModel: FolderModel,
@@ -40,9 +41,9 @@ class ExpandableFolderItem(
             name.text = folderModel.name
             icon.setImageResource(
                 if (folderModel.isShared) {
-                    R.drawable.ic_filled_shared_folder_with_bg
+                    CoreUiR.drawable.ic_filled_shared_folder_with_bg
                 } else {
-                    R.drawable.ic_filled_folder_with_bg
+                    CoreUiR.drawable.ic_filled_folder_with_bg
                 }
             )
             expandIcon.apply {
@@ -50,7 +51,7 @@ class ExpandableFolderItem(
                 rotation = if (isExpanded) ROTATION_EXPANDED else ROTATION_COLLAPSED
             }
             view.updatePadding(
-                left = itemView.context.resources.getDimension(R.dimen.dp_8).toInt() * basePaddingMultiplier
+                left = itemView.context.resources.getDimension(CoreUiR.dimen.dp_8).toInt() * basePaddingMultiplier
             )
         }
     }

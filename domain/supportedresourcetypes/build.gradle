@@ -1,4 +1,12 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.domain.supportedresourcetypes"
+}
+
+kotlin {
+    jvmToolchain(17)
 }

@@ -14,11 +14,11 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -36,6 +36,8 @@ import com.passbolt.mobile.android.ui.AccountModelUi
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -158,10 +160,10 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
             R.id.authFragment,
             AuthFragment.newBundle(authConfig, context, model.userId),
             NavOptions.Builder()
-                .setEnterAnim(R.anim.slide_in_right)
-                .setExitAnim(R.anim.slide_out_left)
-                .setPopEnterAnim(R.anim.slide_in_left)
-                .setPopExitAnim(R.anim.slide_out_right)
+                .setEnterAnim(CoreUiR.anim.slide_in_right)
+                .setExitAnim(CoreUiR.anim.slide_out_left)
+                .setPopEnterAnim(CoreUiR.anim.slide_in_left)
+                .setPopExitAnim(CoreUiR.anim.slide_out_right)
                 .build()
         )
     }
@@ -171,10 +173,10 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
             R.id.authFragment,
             AuthFragment.newBundle(ActivityIntents.AuthConfig.Startup, context, model.userId),
             NavOptions.Builder()
-                .setEnterAnim(R.anim.slide_in_right)
-                .setExitAnim(R.anim.slide_out_left)
-                .setPopEnterAnim(R.anim.slide_in_left)
-                .setPopExitAnim(R.anim.slide_out_right)
+                .setEnterAnim(CoreUiR.anim.slide_in_right)
+                .setExitAnim(CoreUiR.anim.slide_out_left)
+                .setPopEnterAnim(CoreUiR.anim.slide_in_left)
+                .setPopExitAnim(CoreUiR.anim.slide_out_right)
                 .build()
         )
     }
@@ -203,12 +205,12 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
 
     override fun showRemoveAccountConfirmationDialog(model: AccountModelUi.AccountModel) {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.are_you_sure)
-            .setMessage(R.string.accounts_list_remove_account_message)
-            .setPositiveButton(R.string.accounts_list_remove_account) { _, _ ->
+            .setTitle(LocalizationR.string.are_you_sure)
+            .setMessage(LocalizationR.string.accounts_list_remove_account_message)
+            .setPositiveButton(LocalizationR.string.accounts_list_remove_account) { _, _ ->
                 presenter.confirmRemoveAccountClick(model)
             }
-            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
             .show()
     }
 
@@ -230,9 +232,18 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
 
     override fun showAccountRemovedSnackbar() {
         Snackbar
-            .make(binding.root, R.string.accounts_list_account_removed, Snackbar.LENGTH_SHORT)
+            .make(
+                binding.root,
+                LocalizationR.string.accounts_list_account_removed,
+                Snackbar.LENGTH_SHORT
+            )
             .setAnchorView(binding.doneRemovingAccountsButton)
-            .setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.background_gray_dark))
+            .setBackgroundTint(
+                ContextCompat.getColor(
+                    requireContext(),
+                    CoreUiR.color.background_gray_dark
+                )
+            )
             .show()
     }
 

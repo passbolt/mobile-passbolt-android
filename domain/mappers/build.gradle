@@ -1,6 +1,6 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
@@ -11,6 +11,14 @@ dependencies {
     implementation project(':ui')
     implementation project(':navigation')
 
-    implementation libs.di.koin
+    implementation libs.koin
     implementation libs.gson
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.domain.mappers"
+}
+
+kotlin {
+    jvmToolchain(17)
 }

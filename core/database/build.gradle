@@ -1,7 +1,7 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
-    id "com.google.devtools.ksp" version "1.7.22-1.0.8"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.ksp
 }
 
 dependencies {
@@ -9,23 +9,24 @@ dependencies {
     implementation project(':storage')
     implementation project(':common')
 
-    implementation libs.di.koin
+    implementation libs.koin
     implementation libs.room.core
     implementation libs.room.runtime
-    implementation libs.room.cipher
+    implementation(libs.sqlite.cipher) { artifact { type = "aar" } }
     ksp libs.room.compiler
-    implementation libs.room.sqlite
+    implementation libs.sqlite
 
-    androidTestImplementation libs.di.koinTest
-    androidTestImplementation libs.di.koinTestJUnit
-    androidTestImplementation libs.test.coroutinesTest
-    androidTestImplementation libs.test.androidTestsRunner
-    androidTestImplementation libs.test.androidTestRules
-    androidTestImplementation libs.test.espressoCore
+    androidTestImplementation libs.koin.test
+    androidTestImplementation libs.koin.test.junit
+    androidTestImplementation libs.kotlin.coroutines.test
+    androidTestImplementation libs.android.tests.runner
+    androidTestImplementation libs.android.test.rules
+    androidTestImplementation libs.espresso.core
     androidTestImplementation libs.room.testing
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.database"
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -40,6 +41,10 @@ android {
     packagingOptions {
         exclude "META-INF/{AL2.0,LGPL2.1}"
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 ksp {

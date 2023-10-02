@@ -1,6 +1,6 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
@@ -12,13 +12,18 @@ dependencies {
     implementation project(':logger')
     implementation project(':ui')
 
-    implementation libs.di.koin
+    implementation libs.koin
     implementation libs.material
     implementation libs.androidx.core
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.helpmenu"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

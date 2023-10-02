@@ -1,10 +1,19 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
-    id "kotlin-parcelize"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.parcelize
 }
 
 dependencies {
     implementation project(':common')
     implementation project(':coreui')
+    implementation project(':localization')
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.domain.ui"
+}
+
+kotlin {
+    jvmToolchain(17)
 }

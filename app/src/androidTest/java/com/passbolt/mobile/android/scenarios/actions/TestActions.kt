@@ -7,7 +7,6 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
-import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.scenarios.helpers.getString
 import com.passbolt.mobile.android.withHint
 import org.hamcrest.BaseMatcher
@@ -15,6 +14,8 @@ import org.hamcrest.CoreMatchers.isA
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
+import com.google.android.material.R as MaterialR
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 
 /**
@@ -43,8 +44,8 @@ import org.hamcrest.Matchers
 internal fun clickOnPasswordToggle() {
     Espresso.onView(
         Matchers.allOf(
-            ViewMatchers.isDescendantOfA(withHint(Matchers.hasToString(getString(R.string.resource_update_password_hint)))),
-            ViewMatchers.withId(R.id.text_input_end_icon)
+            ViewMatchers.isDescendantOfA(withHint(Matchers.hasToString(getString(LocalizationR.string.resource_update_password_hint)))),
+            ViewMatchers.withId(MaterialR.id.text_input_end_icon)
         )
     ).perform(ViewActions.click())
 }

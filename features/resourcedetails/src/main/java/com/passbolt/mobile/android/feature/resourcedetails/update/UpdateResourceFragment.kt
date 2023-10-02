@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import com.passbolt.mobile.android.common.dialogs.encryptionErrorAlertDialog
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
@@ -21,10 +21,11 @@ import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput.State.Er
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
-import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentUpdateResourceBinding
 import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -168,12 +169,12 @@ class UpdateResourceFragment :
 
     override fun showEmptyValueError(tag: String) {
         (binding.container.findViewWithTag<View>(tag) as StatefulInput)
-            .setState(Error(String.format(resources.getString(R.string.resource_update_empty_error), tag)))
+            .setState(Error(String.format(resources.getString(LocalizationR.string.resource_update_empty_error), tag)))
     }
 
     override fun showTooLongError(tag: String) {
         (binding.container.findViewWithTag<View>(tag) as StatefulInput)
-            .setState(Error(resources.getString(R.string.resource_update_too_long_error)))
+            .setState(Error(resources.getString(LocalizationR.string.resource_update_too_long_error)))
     }
 
     override fun showPassword(
@@ -210,8 +211,8 @@ class UpdateResourceFragment :
 
     override fun showError() {
         showSnackbar(
-            R.string.common_failure,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -221,53 +222,53 @@ class UpdateResourceFragment :
     }
 
     override fun showCreateButton() {
-        binding.updateButton.text = getString(R.string.resource_update_create_button)
+        binding.updateButton.text = getString(LocalizationR.string.resource_update_create_button)
     }
 
     override fun showEditButton() {
-        binding.updateButton.text = getString(R.string.save)
+        binding.updateButton.text = getString(LocalizationR.string.save)
     }
 
     override fun showCreateTitle() {
-        binding.toolbar.toolbarTitle = getString(R.string.resource_update_password_title)
+        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_update_password_title)
     }
 
     override fun showEditTitle() {
-        binding.toolbar.toolbarTitle = getString(R.string.resource_update_edit_password_title)
+        binding.toolbar.toolbarTitle = getString(LocalizationR.string.resource_update_edit_password_title)
     }
 
     override fun showShareSimulationFailure() {
         showSnackbar(
-            R.string.resource_permissions_share_simulation_failed,
-            backgroundColor = R.color.red
+            LocalizationR.string.resource_permissions_share_simulation_failed,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showShareFailure() {
         showSnackbar(
-            R.string.resource_permissions_share_failed,
-            backgroundColor = R.color.red
+            LocalizationR.string.resource_permissions_share_failed,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showSecretFetchFailure() {
         showSnackbar(
-            R.string.common_fetch_failure,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_fetch_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showSecretEncryptFailure() {
         showSnackbar(
-            R.string.common_encryption_failure,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_encryption_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showSecretDecryptFailure() {
         showSnackbar(
-            R.string.common_decryption_failure,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_decryption_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -281,13 +282,13 @@ class UpdateResourceFragment :
 
     override fun showDataRefreshError() {
         showSnackbar(
-            R.string.common_data_refresh_error,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_data_refresh_error,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showContentNotAvailable() {
-        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), LocalizationR.string.content_not_available, Toast.LENGTH_SHORT).show()
     }
 
     override fun navigateHome() {
@@ -299,7 +300,7 @@ class UpdateResourceFragment :
     }
 
     override fun showInvalidSecretDataAndNavigateBack() {
-        Toast.makeText(requireContext(), R.string.resource_update_invalid_secret_data, Toast.LENGTH_SHORT)
+        Toast.makeText(requireContext(), LocalizationR.string.resource_update_invalid_secret_data, Toast.LENGTH_SHORT)
             .show()
         requireActivity().finish()
     }

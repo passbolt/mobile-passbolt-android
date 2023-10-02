@@ -1,9 +1,8 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.navigation.safeargs
 }
-
-apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     implementation project(':architecture')
@@ -22,18 +21,26 @@ dependencies {
     implementation project(':resourcetypes')
     implementation project(':storage')
     implementation project(':entity')
+    implementation project(':scanotp')
+    implementation project(':createotpmanually')
+    implementation project(':resourcepicker')
 
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
-    implementation libs.di.koin
-    implementation libs.inAppUpdate.core
-    implementation libs.inAppUpdate.ktx
-    implementation libs.inAppReview.core
-    implementation libs.inAppReview.ktx
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation libs.koin
+    implementation libs.inappupdate.core
+    implementation libs.inappupdate.ktx
+    implementation libs.inappreview.core
+    implementation libs.inappreview.ktx
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.main"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

@@ -9,15 +9,16 @@ import android.widget.CompoundButton
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.WebsiteOpener
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.helpmenu.databinding.ViewHelpBottomsheetBinding
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.feature.helpmenu.databinding.ViewHelpBottomsheetBinding
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
 import org.koin.core.scope.Scope
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -44,7 +45,7 @@ import org.koin.core.scope.Scope
 
 class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, HelpMenuContract.View {
 
-    override val scope: Scope by fragmentScope()
+    override val scope: Scope by fragmentScope(useParentActivityScope = false)
     private lateinit var binding: ViewHelpBottomsheetBinding
     private var listener: Listener? = null
     private val websiteOpener: WebsiteOpener by inject()
@@ -115,7 +116,7 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
     }
 
     private fun openHelpWebsite() {
-        websiteOpener.open(requireContext(), getString(R.string.help_website))
+        websiteOpener.open(requireContext(), getString(LocalizationR.string.help_website))
     }
 
     override fun showScanQrCodesHelp() {

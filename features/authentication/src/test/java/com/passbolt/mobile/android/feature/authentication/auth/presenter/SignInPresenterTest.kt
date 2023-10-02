@@ -204,7 +204,7 @@ class SignInPresenterTest : KoinTest {
                 )
             )
         }
-        whenever(mockMfaStatusProvider.provideMfaStatus(any(), any(), any())).doReturn(MfaStatus.NotRequired)
+        whenever(mockMfaStatusProvider.provideMfaStatus()).doReturn(MfaStatus.NOT_REQUIRED)
         whenever(mockGetSessionUseCase.execute(anyOrNull()))
             .doReturn(GetSessionUseCase.Output("access", "refresh", "mfa"))
         mockProfileInteractor.stub {

@@ -1,27 +1,24 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
-}
-
-repositories {
-    flatDir { dirs "libs" }
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
     implementation(name: "gopenpgp", ext: "aar")
     implementation project(":common")
 
-    implementation libs.di.koin
+    implementation libs.koin
 
     androidTestImplementation(name: "gopenpgp", ext: "aar")
-    androidTestImplementation libs.di.koinTest
-    androidTestImplementation libs.di.koinTestJUnit
-    androidTestImplementation libs.test.coroutinesTest
-    androidTestImplementation libs.test.androidTestsRunner
-    androidTestImplementation libs.test.androidTestRules
+    androidTestImplementation libs.koin.test
+    androidTestImplementation libs.koin.test.junit
+    androidTestImplementation libs.kotlin.coroutines.test
+    androidTestImplementation libs.android.tests.runner
+    androidTestImplementation libs.android.test.rules
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.gopenpgp"
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,4 +26,9 @@ android {
     packagingOptions {
         exclude "META-INF/{AL2.0,LGPL2.1}"
     }
+    
+}
+
+kotlin {
+    jvmToolchain(17)
 }

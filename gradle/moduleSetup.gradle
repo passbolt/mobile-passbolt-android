@@ -21,6 +21,12 @@ def setupModule(isAndroid, isAndroidComponent) {
                 targetSdk projectTargetSdk
             }
 
+            compileOptions {
+                coreLibraryDesugaringEnabled true
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
+            }
+
             if (isAndroidComponent) {
                 buildTypes {
                     release {
@@ -60,20 +66,20 @@ def setupCommonDependencies(isAndroid) {
         implementation libs.kotlin.stdlib
         implementation libs.kotlin.coroutines
         implementation libs.timber
-        testImplementation libs.test.junit
-        testImplementation libs.test.mockitoCore
-        testImplementation libs.test.mockitoKotlin
-        testImplementation libs.test.truth
-        testImplementation libs.test.turbine
-        testImplementation libs.test.coroutinesTest
-        testImplementation libs.di.koinTest
-        testImplementation libs.di.koinTestJUnit
+        testImplementation libs.junit
+        testImplementation libs.mockito.core
+        testImplementation libs.mockito.kotlin
+        testImplementation libs.truth
+        testImplementation libs.turbine
+        testImplementation libs.kotlin.coroutines.test
+        testImplementation libs.koin.test
+        testImplementation libs.koin.test.junit
         if (isAndroid) {
-            androidTestImplementation libs.test.androidxJUnit
-            androidTestImplementation libs.test.espressoCore
-            androidTestImplementation libs.test.truth
+            androidTestImplementation libs.androidx.junit
+            androidTestImplementation libs.espresso.core
+            androidTestImplementation libs.truth
         }
-        coreLibraryDesugaring libs.desugarJdkLibs
+        coreLibraryDesugaring libs.desugar.jdklibs
     }
 }
 

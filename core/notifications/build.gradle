@@ -1,11 +1,19 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
     implementation project(':localization')
     implementation project(':coreui')
 
-    implementation libs.di.koin
+    implementation libs.koin
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.core.notifications"
+}
+
+kotlin {
+    jvmToolchain(17)
 }

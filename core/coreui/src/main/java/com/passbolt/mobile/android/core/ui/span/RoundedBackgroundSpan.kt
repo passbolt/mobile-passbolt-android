@@ -5,7 +5,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.text.style.ReplacementSpan
 import androidx.annotation.ColorInt
-import com.passbolt.mobile.android.common.px
+import com.passbolt.mobile.android.core.extension.px
 import kotlin.math.roundToInt
 
 /**

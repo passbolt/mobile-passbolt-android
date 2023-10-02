@@ -22,6 +22,7 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.gaelmarhic.quadrant.Autofillresources
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -29,13 +30,13 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
 import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.common.px
+import com.passbolt.mobile.android.core.extension.gone
+import com.passbolt.mobile.android.core.extension.px
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -79,6 +80,8 @@ import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.TagWithCount
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -262,11 +265,11 @@ class HomeFragment :
             .data(url)
             .transformations(CircleCropTransformation())
             .size(AVATAR_SIZE, AVATAR_SIZE)
-            .placeholder(R.drawable.ic_avatar_placeholder)
+            .placeholder(CoreUiR.drawable.ic_avatar_placeholder)
             .target(
                 onError = {
                     binding.searchTextInput.setSearchEndIconWithListener(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_avatar_placeholder)!!,
+                        ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_avatar_placeholder)!!,
                         presenter::searchAvatarClick
                     )
                 },
@@ -280,7 +283,7 @@ class HomeFragment :
 
     override fun displaySearchClearIcon() {
         binding.searchTextInput.setSearchEndIconWithListener(
-            ContextCompat.getDrawable(requireContext(), R.drawable.ic_close)!!,
+            ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_close)!!,
             presenter::searchClearClick
         )
     }
@@ -331,7 +334,6 @@ class HomeFragment :
         with(binding) {
             recyclerView.isVisible = state.listVisible
             emptyListContainer.isVisible = state.emptyVisible
-            errorContainer.isVisible = state.errorVisible
         }
     }
 
@@ -351,9 +353,6 @@ class HomeFragment :
 
     private fun setListeners() {
         with(binding) {
-            refreshButton.setDebouncingOnClick {
-                presenter.refreshClick()
-            }
             swipeRefresh.setOnRefreshListener {
                 presenter.refreshSwipe()
             }
@@ -391,7 +390,7 @@ class HomeFragment :
         FastAdapterDiffUtil.calculateDiff(
             suggestedHeaderItemAdapter,
             if (sectionsConfiguration.isSuggestedSectionVisible) {
-                listOf(PasswordHeaderItem(ResourceListUiModel.Header(getString(R.string.suggested))))
+                listOf(PasswordHeaderItem(ResourceListUiModel.Header(getString(LocalizationR.string.suggested))))
             } else {
                 emptyList()
             }
@@ -411,7 +410,7 @@ class HomeFragment :
         FastAdapterDiffUtil.calculateDiff(
             otherItemsItemAdapter,
             if (sectionsConfiguration.isOtherItemsSectionVisible) {
-                listOf(PasswordHeaderItem(ResourceListUiModel.Header(getString(R.string.other))))
+                listOf(PasswordHeaderItem(ResourceListUiModel.Header(getString(LocalizationR.string.other))))
             } else {
                 emptyList()
             }
@@ -469,8 +468,8 @@ class HomeFragment :
             listOf(
                 InCurrentFoldersHeaderItem(
                     getString(
-                        R.string.home_in_current_folder,
-                        sectionsConfiguration.currentFolderName ?: getString(R.string.folder_root)
+                        LocalizationR.string.home_in_current_folder,
+                        sectionsConfiguration.currentFolderName ?: getString(LocalizationR.string.folder_root)
                     )
                 )
             )
@@ -484,11 +483,6 @@ class HomeFragment :
 
     override fun showRefreshProgress() {
         binding.swipeRefresh.isRefreshing = true
-    }
-
-    override fun showError() {
-        setState(State.ERROR)
-        binding.appBar.setExpanded(true)
     }
 
     override fun navigateToMore(resourceId: String, resourceName: String) {
@@ -511,7 +505,7 @@ class HomeFragment :
                 }
             }
         )
-        Toast.makeText(requireContext(), getString(R.string.copied_info, label), Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(LocalizationR.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }
 
     override fun menuCopyPasswordClick() {
@@ -569,47 +563,55 @@ class HomeFragment :
     }
 
     override fun showDecryptionFailure() {
-        Toast.makeText(requireContext(), R.string.common_decryption_failure, Toast.LENGTH_SHORT)
+        Toast.makeText(requireContext(), LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showFetchFailure() {
-        Toast.makeText(requireContext(), R.string.common_fetch_failure, Toast.LENGTH_SHORT)
+        Toast.makeText(requireContext(), LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showGeneralError(errorMessage: String?) {
         showSnackbar(
-            R.string.common_failure_format,
+            LocalizationR.string.common_failure_format,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red,
+            backgroundColor = CoreUiR.color.red,
             messageArgs = arrayOf(errorMessage.orEmpty())
         )
     }
 
     override fun showResourceDeletedSnackbar(name: String) {
         showSnackbar(
-            messageResId = R.string.common_message_resource_deleted,
+            messageResId = LocalizationR.string.common_message_resource_deleted,
             messageArgs = arrayOf(name),
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.green
+            backgroundColor = CoreUiR.color.green
         )
     }
 
     override fun showResourceEditedSnackbar(resourceName: String) {
         showSnackbar(
-            messageResId = R.string.common_message_resource_edited,
+            messageResId = LocalizationR.string.common_message_resource_edited,
             messageArgs = arrayOf(resourceName),
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.green
+            backgroundColor = CoreUiR.color.green
         )
     }
 
     override fun showResourceSharedSnackbar() {
         showSnackbar(
-            R.string.common_message_resource_shared,
+            LocalizationR.string.common_message_resource_shared,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.green
+            backgroundColor = CoreUiR.color.green
+        )
+    }
+
+    override fun showTotpDeletionFailed() {
+        showSnackbar(
+            LocalizationR.string.home_failed_to_delete_totp,
+            anchorView = snackbarAnchorView,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -624,9 +626,9 @@ class HomeFragment :
 
     override fun showResourceAddedSnackbar() {
         showSnackbar(
-            R.string.resource_update_create_success,
+            LocalizationR.string.resource_update_create_success,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.green
+            backgroundColor = CoreUiR.color.green
         )
     }
 
@@ -741,46 +743,46 @@ class HomeFragment :
     }
 
     override fun showAllItemsSearchHint() {
-        binding.searchEditText.hint = getString(R.string.all_items_home_search_hint)
+        binding.searchEditText.hint = getString(LocalizationR.string.all_items_home_search_hint)
     }
 
     override fun showDefaultSearchHint() {
-        binding.searchEditText.hint = getString(R.string.default_home_search_hint)
+        binding.searchEditText.hint = getString(LocalizationR.string.default_home_search_hint)
     }
 
     override fun showHomeScreenTitle(view: HomeDisplayViewModel) {
         when (view) {
             is HomeDisplayViewModel.AllItems -> showScreenTitleWithStartIcon(
-                R.string.filters_menu_all_items,
-                R.drawable.ic_list
+                LocalizationR.string.filters_menu_all_items,
+                CoreUiR.drawable.ic_list
             )
             is HomeDisplayViewModel.Favourites -> showScreenTitleWithStartIcon(
-                R.string.filters_menu_favourites,
-                R.drawable.ic_star
+                LocalizationR.string.filters_menu_favourites,
+                CoreUiR.drawable.ic_star
             )
             is HomeDisplayViewModel.RecentlyModified -> showScreenTitleWithStartIcon(
-                R.string.filters_menu_recently_modified,
-                R.drawable.ic_clock
+                LocalizationR.string.filters_menu_recently_modified,
+                CoreUiR.drawable.ic_clock
             )
             is HomeDisplayViewModel.SharedWithMe -> showScreenTitleWithStartIcon(
-                R.string.filters_menu_shared_with_me,
-                R.drawable.ic_share
+                LocalizationR.string.filters_menu_shared_with_me,
+                CoreUiR.drawable.ic_share
             )
             is HomeDisplayViewModel.OwnedByMe -> showScreenTitleWithStartIcon(
-                R.string.filters_menu_owned_by_me,
-                R.drawable.ic_person
+                LocalizationR.string.filters_menu_owned_by_me,
+                CoreUiR.drawable.ic_person
             )
             is HomeDisplayViewModel.Folders -> showScreenTitleWithStartIcon(
-                R.string.filters_menu_folders,
-                R.drawable.ic_folder
+                LocalizationR.string.filters_menu_folders,
+                CoreUiR.drawable.ic_folder
             )
             is HomeDisplayViewModel.Tags -> showScreenTitleWithStartIcon(
-                R.string.filters_menu_tags,
-                R.drawable.ic_tag
+                LocalizationR.string.filters_menu_tags,
+                CoreUiR.drawable.ic_tag
             )
             is HomeDisplayViewModel.Groups -> showScreenTitleWithStartIcon(
-                R.string.filters_menu_groups,
-                R.drawable.ic_group
+                LocalizationR.string.filters_menu_groups,
+                CoreUiR.drawable.ic_group
             )
         }
     }
@@ -788,19 +790,19 @@ class HomeFragment :
     override fun showChildFolderTitle(activeFolderName: String, isShared: Boolean) {
         showScreenTitleWithStartIcon(
             activeFolderName,
-            if (isShared) R.drawable.ic_shared_folder else R.drawable.ic_folder
+            if (isShared) CoreUiR.drawable.ic_shared_folder else CoreUiR.drawable.ic_folder
         )
     }
 
     override fun showTagTitle(activeTagTitle: String, isShared: Boolean) {
         showScreenTitleWithStartIcon(
             activeTagTitle,
-            if (isShared) R.drawable.ic_shared_tag else R.drawable.ic_tag
+            if (isShared) CoreUiR.drawable.ic_shared_tag else CoreUiR.drawable.ic_tag
         )
     }
 
     override fun showGroupTitle(groupName: String) {
-        showScreenTitleWithStartIcon(groupName, R.drawable.ic_group)
+        showScreenTitleWithStartIcon(groupName, CoreUiR.drawable.ic_group)
     }
 
     private fun showScreenTitleWithStartIcon(@StringRes titleRes: Int, @DrawableRes iconRes: Int) {
@@ -856,17 +858,17 @@ class HomeFragment :
 
     override fun showToggleFavouriteFailure() {
         showSnackbar(
-            R.string.favourites_failure,
+            LocalizationR.string.favourites_failure,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showDeleteResourceFailure() {
         showSnackbar(
-            R.string.delete_failure,
+            LocalizationR.string.delete_failure,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -905,26 +907,26 @@ class HomeFragment :
 
     override fun showFolderCreated(name: String) {
         showSnackbar(
-            messageResId = R.string.common_message_folder_created,
+            messageResId = LocalizationR.string.common_message_folder_created,
             messageArgs = arrayOf(name),
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.green
+            backgroundColor = CoreUiR.color.green
         )
     }
 
     override fun showContentNotAvailable() {
-        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), LocalizationR.string.content_not_available, Toast.LENGTH_SHORT).show()
     }
 
     override fun showPleaseWaitForDataRefresh() {
-        Toast.makeText(requireContext(), R.string.home_please_wait_for_refresh, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), LocalizationR.string.home_please_wait_for_refresh, Toast.LENGTH_SHORT).show()
     }
 
     override fun showDataRefreshError() {
         showSnackbar(
-            R.string.common_data_refresh_error,
-            anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            messageResId = LocalizationR.string.common_data_refresh_error,
+            backgroundColor = CoreUiR.color.red,
+            length = Snackbar.LENGTH_LONG
         )
     }
 
@@ -955,15 +957,15 @@ class HomeFragment :
 
     override fun showEncryptionError(message: String) {
         showSnackbar(
-            R.string.common_encryption_failure,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_encryption_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showInvalidTotpScanned() {
         showSnackbar(
-            R.string.resource_details_invalid_totp_scanned,
-            backgroundColor = R.color.red
+            LocalizationR.string.resource_details_invalid_totp_scanned,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -1018,7 +1020,7 @@ class HomeFragment :
     }
 
     override fun showTotpDeleted() {
-        showSnackbar(R.string.otp_deleted)
+        showSnackbar(LocalizationR.string.otp_deleted)
     }
 
     companion object {

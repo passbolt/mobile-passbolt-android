@@ -30,15 +30,15 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
-import com.passbolt.mobile.android.feature.createotpmanually.R
 import com.passbolt.mobile.android.feature.createotpmanually.databinding.FragmentCreateOtpAdvancedSettingsBinding
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class CreateOtpAdvancedSettingsFragment :
     BindingScopedFragment<FragmentCreateOtpAdvancedSettingsBinding>(FragmentCreateOtpAdvancedSettingsBinding::inflate),
@@ -103,7 +103,7 @@ class CreateOtpAdvancedSettingsFragment :
     override fun showTotpPeriodError() {
         binding.totpPeriodInput.setState(
             StatefulInput.State.Error(
-                getString(R.string.validation_required_integer)
+                getString(LocalizationR.string.validation_required_integer)
             )
         )
     }

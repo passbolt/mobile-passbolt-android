@@ -30,6 +30,7 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 
 /**
@@ -100,7 +101,7 @@ class WelcomeScreenTest : KoinTest {
         //      When    the user click on the "I don't have an account" button
         onView(withId(R.id.noAccountButton)).perform(click())
         //      Then    a dialog explaining why I can’t create an account is presented
-        onView(withId(R.id.alertTitle)).check(matches(isDisplayed()))
+        onView(withId(androidx.appcompat.R.id.alertTitle)).check(matches(isDisplayed()))
         //      And     the message says "I need to create an account first using the web"
         onView(withId(android.R.id.message)).check(matches(isDisplayed()))
         //      And     a “Got it” button to close the dialog is presented
@@ -118,11 +119,11 @@ class WelcomeScreenTest : KoinTest {
         //    Then    a modal with help options is presented
         onView(withId(R.id.title)).check(matches(isDisplayed()))
         //    And     an "Enable debug logs" switch is available (on Android only)
-        onView(withId(R.id.enableLogsSwitch)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.enableLogsSwitch)).check(matches(isDisplayed()))
         //    And     an "Access the logs" button is available
-        onView(withId(R.id.accessLogs)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.helpmenu.R.id.accessLogs)).check(matches(isDisplayed()))
         //    And     a "Visit help site" button is available
-        onView(withId(R.id.visitHelpWebsite)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.visitHelpWebsite)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -130,11 +131,11 @@ class WelcomeScreenTest : KoinTest {
         //        Given   the user is on the “Help” modal
         onView(withId(R.id.helpButton)).perform(click())
         //        When    the user clicks on the “Visit help site” button
-        onView(withId(R.id.visitHelpWebsite)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.settings.R.id.visitHelpWebsite)).perform(click())
         //        Then    a webpage with help is presented
         val expectedIntent: Matcher<Intent> = allOf(
             hasAction(Intent.ACTION_VIEW),
-            hasData(getString(R.string.help_website))
+            hasData(getString(LocalizationR.string.help_website))
         )
         intended(expectedIntent)
     }

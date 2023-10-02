@@ -6,10 +6,14 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.viewbinding.ViewBinding
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.DUO
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.TOTP
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.YUBIKEY
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedContract
-import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoDialog
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoListener
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpListener
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
@@ -44,10 +48,9 @@ import org.koin.android.ext.android.inject
 abstract class BindingScopedAuthenticatedFragment
 <T : ViewBinding, V : BaseAuthenticatedContract.View>(viewInflater: (LayoutInflater, ViewGroup?, Boolean) -> T) :
     BindingScopedFragment<T>(viewInflater), BaseAuthenticatedContract.View, EnterTotpListener,
-    ScanYubikeyListener {
+    ScanYubikeyListener, AuthWithDuoListener {
 
     abstract val presenter: BaseAuthenticatedContract.Presenter<V>
-    private val mfaProviderHandler: MfaProviderHandler by inject()
     private val getSessionUseCase: GetSessionUseCase by inject()
 
     private val authenticationResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -56,58 +59,81 @@ abstract class BindingScopedAuthenticatedFragment
         }
     }
 
-    override fun showAuth(reason: UnauthenticatedReason) {
-        when (reason) {
-            is Reason.Mfa ->
-                mfaProviderHandler.run(reason, ::showYubikeyDialog, ::showTotpDialog, ::showUnknownProvider)
-            is Reason.Passphrase ->
-                authenticationResult.launch(
-                    ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.RefreshPassphrase)
-                )
-            is Reason.Session ->
-                authenticationResult.launch(
-                    ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.SignIn)
-                )
+    override fun showRefreshPassphraseAuth() {
+        authenticationResult.launch(
+            ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.RefreshPassphrase)
+        )
+    }
+
+    override fun showSignInAuth() {
+        authenticationResult.launch(
+            ActivityIntents.authentication(requireContext(), ActivityIntents.AuthConfig.SignIn)
+        )
+    }
+
+    override fun showMfaAuth(mfaReason: Reason.Mfa.MfaProvider?, hasMultipleProviders: Boolean) {
+        when (mfaReason) {
+            YUBIKEY -> showYubikeyDialog(hasMultipleProviders)
+            TOTP -> showTotpDialog(hasMultipleProviders)
+            DUO -> showDuoDialog(hasMultipleProviders)
+            null -> showUnknownProvider()
         }
     }
 
-    private fun showTotpDialog(hasYubikeyProvider: Boolean) {
+    override fun showTotpDialog(hasOtherProviders: Boolean) {
         EnterTotpDialog.newInstance(
             token = getSessionUseCase.execute(Unit).accessToken,
-            hasYubikeyProvider = hasYubikeyProvider
+            hasOtherProvider = hasOtherProviders
         ).show(
             childFragmentManager, EnterTotpDialog::class.java.name
         )
     }
 
-    private fun showYubikeyDialog(hasTotpProvider: Boolean) {
+    override fun showYubikeyDialog(hasOtherProviders: Boolean) {
         ScanYubikeyDialog.newInstance(
             token = getSessionUseCase.execute(Unit).accessToken,
-            hasTotpProvider = hasTotpProvider
+            hasOtherProvider = hasOtherProviders
         ).show(
             childFragmentManager, ScanYubikeyDialog::class.java.name
         )
     }
 
-    private fun showUnknownProvider() {
+    override fun showUnknownProvider() {
         UnknownProviderDialog().show(
             childFragmentManager, UnknownProviderDialog::class.java.name
         )
     }
 
-    override fun changeProviderToYubikey(bearer: String) {
-        showYubikeyDialog(true)
+    override fun showDuoDialog(hasOtherProviders: Boolean) {
+        AuthWithDuoDialog.newInstance(
+            token = getSessionUseCase.execute(Unit).accessToken,
+            hasOtherProvider = hasOtherProviders
+        ).show(
+            childFragmentManager, AuthWithDuoDialog::class.java.name
+        )
+    }
+
+    override fun totpOtherProviderClick(bearer: String) {
+        presenter.otherProviderClick(TOTP)
     }
 
     override fun totpVerificationSucceeded(mfaHeader: String?) {
         presenter.authenticationRefreshed()
     }
 
-    override fun changeProviderToTotp(jwtToken: String?) {
-        showTotpDialog(true)
+    override fun yubikeyOtherProviderClick(jwtToken: String?) {
+        presenter.otherProviderClick(YUBIKEY)
     }
 
     override fun yubikeyVerificationSucceeded(mfaHeader: String?) {
+        presenter.authenticationRefreshed()
+    }
+
+    override fun duoOtherProviderClick(jwtToken: String?) {
+        presenter.otherProviderClick(DUO)
+    }
+
+    override fun duoAuthSucceeded(mfaHeader: String?) {
         presenter.authenticationRefreshed()
     }
 }

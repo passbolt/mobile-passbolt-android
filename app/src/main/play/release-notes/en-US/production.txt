@@ -1,12 +1,9 @@
-Added
-- Linked TOTP resource type - contains encrypted password, description and TOTP
-- Edit linked TOTP along with deleting TOTP only from the linked resource
-- Edit standalone TOTPs (both manually and via QR code scanning)
+## Added
+- MOB-892: Add Duo authentication
+- MOB-1454: Add key inspector
 
-Security
-- Add grade D validations (JSON schema compliance, UUIDs validations, strong JSON types enforced)
-- Invalid resources are filtered out
+## Improved
+- MOB-1453: Use snackbars for errors on home and otp instead of fullscreen error
 
- Maintenance
-- Refactored all resource update  and resource create use cases
-- Updated resource more menu logic
+## Maintenance
+- MOB-1411: Updated dependencies

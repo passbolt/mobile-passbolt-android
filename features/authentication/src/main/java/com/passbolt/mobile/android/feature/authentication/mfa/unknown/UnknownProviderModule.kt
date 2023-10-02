@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.feature.authentication.mfa.unknown
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,11 +30,6 @@ import org.koin.core.qualifier.named
 
 fun Module.unknownProviderModule() {
     scope(named<UnknownProviderDialog>()) {
-        scoped<UnknownProviderContract.Presenter> {
-            UnknownProviderPresenter(
-                signOutUseCase = get(),
-                coroutineLaunchContext = get()
-            )
-        }
+        scopedOf(::UnknownProviderPresenter) bind UnknownProviderContract.Presenter::class
     }
 }

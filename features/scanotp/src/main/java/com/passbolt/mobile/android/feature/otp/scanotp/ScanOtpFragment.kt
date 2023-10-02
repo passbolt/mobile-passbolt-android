@@ -34,12 +34,12 @@ import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
-import com.passbolt.mobile.android.feature.scanotp.R
 import com.passbolt.mobile.android.feature.scanotp.databinding.FragmentScanOtpBinding
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentScanOtpBinding::inflate),
     ScanOtpContract.View {
@@ -86,11 +86,11 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
     }
 
     override fun showStartCameraError() {
-        binding.tooltip.text = getString(R.string.scan_qr_camera_error)
+        binding.tooltip.text = getString(LocalizationR.string.scan_qr_camera_error)
     }
 
     override fun showBarcodeScanError(message: String?) {
-        val messageBuilder = StringBuilder(getString(R.string.scan_qr_scanning_error)).apply {
+        val messageBuilder = StringBuilder(getString(LocalizationR.string.scan_qr_scanning_error)).apply {
             if (!message.isNullOrBlank()) {
                 append("(%s)".format(message))
             }
@@ -99,15 +99,15 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
     }
 
     override fun showMultipleCodesInRange() {
-        binding.tooltip.text = getString(R.string.scan_qr_multiple_codes_in_range)
+        binding.tooltip.text = getString(LocalizationR.string.scan_qr_multiple_codes_in_range)
     }
 
     override fun showCenterCameraOnBarcode() {
-        binding.tooltip.text = getString(R.string.scan_qr_aim_at_qr_code)
+        binding.tooltip.text = getString(LocalizationR.string.scan_qr_aim_at_qr_code)
     }
 
     override fun showNotAnOtpBarcode() {
-        binding.tooltip.text = getString(R.string.otp_scan_not_a_totp_qr)
+        binding.tooltip.text = getString(LocalizationR.string.otp_scan_not_a_totp_qr)
     }
 
     override fun setFlagSecure() {

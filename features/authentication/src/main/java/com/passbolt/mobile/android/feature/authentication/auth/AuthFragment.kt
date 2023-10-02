@@ -13,25 +13,29 @@ import androidx.navigation.fragment.findNavController
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.common.dialogs.rootWarningAlertDialog
 import com.passbolt.mobile.android.common.dialogs.serverNotReachableAlertDialog
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.hideSoftInput
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.DUO
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.TOTP
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.YUBIKEY
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
-import com.passbolt.mobile.android.core.security.rootdetection.rootWarningAlertDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
-import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.auth.accountdoesnotexist.AccountDoesNotExistDialog
 import com.passbolt.mobile.android.feature.authentication.auth.presenter.SignInPresenter
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategy
 import com.passbolt.mobile.android.feature.authentication.auth.uistrategy.AuthStrategyFactory
 import com.passbolt.mobile.android.feature.authentication.databinding.FragmentAuthBinding
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoDialog
+import com.passbolt.mobile.android.feature.authentication.mfa.duo.AuthWithDuoListener
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpDialog
 import com.passbolt.mobile.android.feature.authentication.mfa.totp.EnterTotpListener
 import com.passbolt.mobile.android.feature.authentication.mfa.unknown.UnknownProviderDialog
@@ -45,6 +49,8 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import java.util.concurrent.Executor
 import javax.crypto.Cipher
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -71,7 +77,7 @@ import javax.crypto.Cipher
 @Suppress("TooManyFunctions")
 class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBinding::inflate), AuthContract.View,
     FeatureFlagsFetchErrorDialog.Listener, ServerFingerprintChangedDialog.Listener, AccountDoesNotExistDialog.Listener,
-    EnterTotpListener, ScanYubikeyListener, HelpMenuFragment.Listener {
+    EnterTotpListener, ScanYubikeyListener, AuthWithDuoListener, HelpMenuFragment.Listener {
 
     private val strategyFactory: AuthStrategyFactory by inject()
     private lateinit var authStrategy: AuthStrategy
@@ -122,7 +128,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
                 presenter.biometricAuthClick()
             }
             with(toolbar) {
-                setNavigationIcon(R.drawable.ic_back)
+                setNavigationIcon(CoreUiR.drawable.ic_back)
                 setNavigationOnClickListener { presenter.backClick(authStrategy.showLeaveConfirmationDialog()) }
             }
             helpButton.setDebouncingOnClick {
@@ -141,8 +147,10 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
 
     private fun getMessageForReason(reason: AuthContract.View.RefreshAuthReason) =
         when (reason) {
-            AuthContract.View.RefreshAuthReason.SESSION -> getString(R.string.auth_reason_session_expired)
-            AuthContract.View.RefreshAuthReason.PASSPHRASE -> getString(R.string.auth_reason_passphrase_expired)
+            AuthContract.View.RefreshAuthReason.SESSION ->
+                getString(LocalizationR.string.auth_reason_session_expired)
+            AuthContract.View.RefreshAuthReason.PASSPHRASE ->
+                getString(LocalizationR.string.auth_reason_passphrase_expired)
         }
 
     override fun setBiometricAuthButtonVisible() {
@@ -162,11 +170,12 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         )
 
         val promptSubtitle =
-            authReason?.let { getMessageForReason(authReason) } ?: getString(R.string.auth_biometric_subtitle)
+            authReason?.let { getMessageForReason(authReason) }
+                ?: getString(LocalizationR.string.auth_biometric_subtitle)
         val promptInfo = biometricPromptBuilder
-            .setTitle(getString(R.string.auth_biometric_title))
+            .setTitle(getString(LocalizationR.string.auth_biometric_title))
             .setSubtitle(promptSubtitle)
-            .setNegativeButtonText(getString(R.string.cancel))
+            .setNegativeButtonText(getString(LocalizationR.string.cancel))
             .setAllowedAuthenticators(BIOMETRIC_STRONG)
             .build()
         biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(fingeprintCipherCrypto))
@@ -198,52 +207,52 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         showSnackbar(
             errorMessage,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showWrongPassphrase() {
         showSnackbar(
-            R.string.auth_incorrect_passphrase,
+            LocalizationR.string.auth_incorrect_passphrase,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showGenericError() {
         showSnackbar(
-            R.string.common_failure,
+            LocalizationR.string.common_failure,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showChallengeInvalidSignature() {
         showSnackbar(
-            R.string.auth_error_invalid_signature,
+            LocalizationR.string.auth_error_invalid_signature,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showChallengeTokenExpired() {
         showSnackbar(
-            R.string.auth_error_token_expired,
+            LocalizationR.string.auth_error_token_expired,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showChallengeVerificationFailure() {
         showSnackbar(
-            R.string.auth_error_challenge_verification_failure,
+            LocalizationR.string.auth_error_challenge_verification_failure,
             length = Snackbar.LENGTH_LONG,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showFailedToFetchUserProfile(message: String?) {
-        val errorMessage = StringBuilder(getString(R.string.auth_error_profile_fetch_failure))
+        val errorMessage = StringBuilder(getString(LocalizationR.string.auth_error_profile_fetch_failure))
         if (!message.isNullOrBlank()) {
             errorMessage.append("(%s)".format(message))
         }
@@ -251,19 +260,26 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showError(message: String) {
-        showSnackbar(message, length = Snackbar.LENGTH_LONG, backgroundColor = R.color.red)
+        showSnackbar(
+            message, length = Snackbar.LENGTH_LONG,
+            backgroundColor = CoreUiR.color.red
+        )
     }
 
     override fun showTimeIsOutOfSync() {
-        showSnackbar(R.string.common_time_is_out_of_sync, length = Snackbar.LENGTH_LONG, backgroundColor = R.color.red)
+        showSnackbar(
+            LocalizationR.string.common_time_is_out_of_sync,
+            length = Snackbar.LENGTH_LONG,
+            backgroundColor = CoreUiR.color.red
+        )
     }
 
     override fun showFingerprintChangedError() {
         AlertDialog.Builder(requireContext())
             .setCancelable(false)
-            .setTitle(R.string.fingerprint_biometric_changed_title)
-            .setMessage(R.string.fingerprint_biometric_changed_message)
-            .setPositiveButton(R.string.got_it) { _, _ -> }
+            .setTitle(LocalizationR.string.fingerprint_biometric_changed_title)
+            .setMessage(LocalizationR.string.fingerprint_biometric_changed_message)
+            .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
             .show()
     }
 
@@ -273,21 +289,21 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         )
     }
 
-    override fun showTotpDialog(jwtToken: String, hasYubikeyProvider: Boolean) {
-        EnterTotpDialog.newInstance(token = jwtToken, hasYubikeyProvider = hasYubikeyProvider).show(
+    override fun showTotpDialog(jwtToken: String?, hasOtherProviders: Boolean) {
+        EnterTotpDialog.newInstance(token = jwtToken, hasOtherProvider = hasOtherProviders).show(
             childFragmentManager, EnterTotpDialog::class.java.name
         )
     }
 
-    override fun showYubikeyDialog(jwtToken: String, hasTotpProvider: Boolean) {
-        ScanYubikeyDialog.newInstance(token = jwtToken, hasTotpProvider = hasTotpProvider).show(
-            childFragmentManager, EnterTotpDialog::class.java.name
+    override fun showDuoDialog(jwtToken: String?, hasOtherProviders: Boolean) {
+        AuthWithDuoDialog.newInstance(token = jwtToken, hasOtherProvider = hasOtherProviders).show(
+            childFragmentManager, AuthWithDuoDialog::class.java.name
         )
     }
 
-    override fun changeProviderToTotp(jwtToken: String?) {
-        EnterTotpDialog.newInstance(token = jwtToken, hasYubikeyProvider = true).show(
-            childFragmentManager, EnterTotpDialog::class.java.name
+    override fun showYubikeyDialog(jwtToken: String?, hasOtherProviders: Boolean) {
+        ScanYubikeyDialog.newInstance(token = jwtToken, hasOtherProvider = hasOtherProviders).show(
+            childFragmentManager, ScanYubikeyDialog::class.java.name
         )
     }
 
@@ -326,25 +342,25 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     override fun showAvatar(url: String) {
         binding.avatarImage.load(url) {
             transformations(CircleCropTransformation())
-            error(R.drawable.ic_avatar_placeholder)
-            placeholder(R.drawable.ic_avatar_placeholder)
+            error(CoreUiR.drawable.ic_avatar_placeholder)
+            placeholder(CoreUiR.drawable.ic_avatar_placeholder)
         }
     }
 
     override fun showForgotPasswordDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.auth_forgot_password_title)
-            .setMessage(R.string.auth_forgot_password_message)
-            .setPositiveButton(R.string.got_it) { _, _ -> }
+            .setTitle(LocalizationR.string.auth_forgot_password_title)
+            .setMessage(LocalizationR.string.auth_forgot_password_message)
+            .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
             .show()
     }
 
     override fun showLeaveConfirmationDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.are_you_sure)
-            .setMessage(R.string.auth_exit_dialog_message)
-            .setPositiveButton(R.string.continue_setup) { _, _ -> }
-            .setNegativeButton(R.string.cancel_setup) { _, _ -> presenter.leaveConfirmationClick() }
+            .setTitle(LocalizationR.string.are_you_sure)
+            .setMessage(LocalizationR.string.auth_exit_dialog_message)
+            .setPositiveButton(LocalizationR.string.continue_setup) { _, _ -> }
+            .setNegativeButton(LocalizationR.string.cancel_setup) { _, _ -> presenter.leaveConfirmationClick() }
             .show()
     }
 
@@ -397,33 +413,40 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showDecryptionError(message: String?) {
-        val errorMessage = StringBuilder(getString(R.string.auth_decryption_error_description))
+        val errorMessage = StringBuilder(getString(LocalizationR.string.auth_decryption_error_description))
         if (!message.isNullOrBlank()) {
-            errorMessage.append(getString(R.string.auth_decryption_error_cause, message))
+            errorMessage.append(getString(LocalizationR.string.auth_decryption_error_cause, message))
         }
 
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.auth_decryption_error_title)
+            .setTitle(LocalizationR.string.auth_decryption_error_title)
             .setMessage(errorMessage)
-            .setPositiveButton(R.string.got_it) { _, _ -> }
+            .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
             .show()
     }
 
-    override fun changeProviderToYubikey(bearer: String) {
-        ScanYubikeyDialog.newInstance(
-            hasTotpProvider = true,
-            token = bearer
-        ).show(
-            childFragmentManager, EnterTotpDialog::class.java.name
-        )
+    override fun totpOtherProviderClick(bearer: String) {
+        presenter.otherProviderClick(bearer, TOTP)
+    }
+
+    override fun yubikeyOtherProviderClick(jwtToken: String?) {
+        presenter.otherProviderClick(jwtToken, YUBIKEY)
+    }
+
+    override fun duoOtherProviderClick(jwtToken: String?) {
+        presenter.otherProviderClick(jwtToken, DUO)
     }
 
     override fun totpVerificationSucceeded(mfaHeader: String?) {
-        presenter.totpSucceeded(mfaHeader)
+        presenter.mfaSucceeded(mfaHeader)
     }
 
     override fun yubikeyVerificationSucceeded(mfaHeader: String?) {
-        presenter.yubikeySucceeded(mfaHeader)
+        presenter.mfaSucceeded(mfaHeader)
+    }
+
+    override fun duoAuthSucceeded(mfaHeader: String?) {
+        presenter.mfaSucceeded(mfaHeader)
     }
 
     override fun showServerNotReachable(serverDomain: String) {

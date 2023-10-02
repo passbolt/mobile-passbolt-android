@@ -17,17 +17,16 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ItemFilter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.select.getSelectExtension
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.extension.clearEndIcon
+import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.permissions.R
-import com.passbolt.mobile.android.permissions.databinding.FragmentPermissionRecipientsBinding
+import com.passbolt.mobile.android.feature.permissions.databinding.FragmentPermissionRecipientsBinding
 import com.passbolt.mobile.android.permissions.permissionrecipients.recipientsrecycler.ExistingUsersAndGroupsHeaderItem
 import com.passbolt.mobile.android.permissions.permissionrecipients.recipientsrecycler.GenericFilteredByConstraintListener
 import com.passbolt.mobile.android.permissions.permissionrecipients.recipientsrecycler.GroupRecipientItem
@@ -42,6 +41,7 @@ import com.passbolt.mobile.android.ui.UserModel
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import timber.log.Timber
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -124,7 +124,7 @@ class PermissionRecipientsFragment :
                 args.groupPermissions.toList(),
                 args.userPermissions.toList(),
                 it.width,
-                resources.getDimension(R.dimen.dp_40)
+                resources.getDimension(CoreUiR.dimen.dp_40)
             )
         }
     }
@@ -237,7 +237,7 @@ class PermissionRecipientsFragment :
 
     override fun showClearSearchIcon() {
         binding.searchTextInput.setSearchEndIconWithListener(
-            ContextCompat.getDrawable(requireContext(), R.drawable.ic_close)!!,
+            ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_close)!!,
             presenter::searchClearClick
         )
     }

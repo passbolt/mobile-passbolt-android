@@ -1,7 +1,7 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
-    id "kotlin-parcelize"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.parcelize
 }
 
 dependencies {
@@ -24,15 +24,20 @@ dependencies {
     implementation project(':entity')
 
     implementation libs.androidx.core
-    implementation libs.androidx.appcompat
-    implementation libs.androidx.constraintLayout
+    implementation libs.appcompat
+    implementation libs.constraintlayout
     implementation libs.material
-    implementation libs.di.koin
+    implementation libs.koin
     implementation libs.room.core
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.resourcemoremenu"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

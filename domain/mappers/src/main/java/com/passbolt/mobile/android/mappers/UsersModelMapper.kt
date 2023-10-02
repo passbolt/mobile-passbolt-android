@@ -12,79 +12,84 @@ import java.time.ZonedDateTime
 
 class UsersModelMapper {
 
-    fun map(input: List<UserDto>) =
+    fun map(userDto: UserDto): UserModel {
+        val usersGpgKey = requireNotNull(userDto.gpgKey)
+        return UserModel(
+            id = userDto.id.toString(),
+            userName = userDto.username,
+            gpgKey = GpgKeyModel(
+                armoredKey = usersGpgKey.armoredKey,
+                fingerprint = usersGpgKey.fingerprint,
+                bits = usersGpgKey.bits,
+                uid = usersGpgKey.uid,
+                keyId = usersGpgKey.keyId,
+                type = usersGpgKey.type,
+                keyExpirationDate = usersGpgKey.expires?.let { expires -> ZonedDateTime.parse(expires) },
+                keyCreationDate = usersGpgKey.keyCreated?.let { keyCreated -> ZonedDateTime.parse(keyCreated) }
+            ),
+            profile = UserProfileModel(
+                username = userDto.username,
+                firstName = userDto.profile?.firstName,
+                lastName = userDto.profile?.lastName,
+                avatarUrl = userDto.profile?.avatar?.url?.medium
+            )
+        )
+    }
+
+    fun map(input: List<UserDto>): List<UserModel> =
         input
             .filter { it.active && !it.deleted }
-            .map {
-                val usersGpgKey = requireNotNull(it.gpgKey)
-                UserModel(
-                    it.id.toString(),
-                    it.username,
-                    GpgKeyModel(
-                        usersGpgKey.armoredKey,
-                        usersGpgKey.fingerprint,
-                        usersGpgKey.bits,
-                        usersGpgKey.uid,
-                        usersGpgKey.keyId,
-                        usersGpgKey.type,
-                        usersGpgKey.expires?.let { expires -> ZonedDateTime.parse(expires) }
-                    ),
-                    UserProfileModel(
-                        it.username,
-                        it.profile?.firstName,
-                        it.profile?.lastName,
-                        it.profile?.avatar?.url?.medium
-                    )
-                )
-            }
+            .map(::map)
 
     fun map(input: UserModel) =
         User(
-            input.id,
-            input.userName,
-            UserProfile(
-                input.profile.firstName,
-                input.profile.lastName,
-                input.profile.avatarUrl
+            id = input.id,
+            userName = input.userName,
+            profile = UserProfile(
+                firstName = input.profile.firstName,
+                lastName = input.profile.lastName,
+                avatarUrl = input.profile.avatarUrl
             ),
-            UserGpgKey(
-                input.gpgKey.armoredKey,
-                input.gpgKey.bits,
-                input.gpgKey.uid,
-                input.gpgKey.keyId,
-                input.gpgKey.fingerprint,
-                input.gpgKey.type,
-                input.gpgKey.expires
+            gpgKey = UserGpgKey(
+                armoredKey = input.gpgKey.armoredKey,
+                bits = input.gpgKey.bits,
+                uid = input.gpgKey.uid,
+                keyId = input.gpgKey.keyId,
+                fingerprint = input.gpgKey.fingerprint,
+                type = input.gpgKey.type,
+                expires = input.gpgKey.keyExpirationDate,
+                created = input.gpgKey.keyCreationDate
             )
         )
 
     fun map(input: User) =
         UserModel(
-            input.id,
-            input.userName,
-            GpgKeyModel(
-                input.gpgKey.armoredKey,
-                input.gpgKey.fingerprint,
-                input.gpgKey.bits,
-                input.gpgKey.uid,
-                input.gpgKey.keyId,
-                input.gpgKey.type,
-                input.gpgKey.expires
+            id = input.id,
+            userName = input.userName,
+            gpgKey = GpgKeyModel(
+                armoredKey = input.gpgKey.armoredKey,
+                fingerprint = input.gpgKey.fingerprint,
+                bits = input.gpgKey.bits,
+                uid = input.gpgKey.uid,
+                keyId = input.gpgKey.keyId,
+                type = input.gpgKey.type,
+                keyExpirationDate = input.gpgKey.expires,
+                keyCreationDate = input.gpgKey.created
             ),
-            UserProfileModel(
-                input.userName,
-                input.profile.firstName,
-                input.profile.lastName,
-                input.profile.avatarUrl
+            profile = UserProfileModel(
+                username = input.userName,
+                firstName = input.profile.firstName,
+                lastName = input.profile.lastName,
+                avatarUrl = input.profile.avatarUrl
             )
         )
 
     fun mapToUserWithAvatar(input: UserModel) =
         UserWithAvatar(
-            input.id,
-            input.profile.firstName.orEmpty(),
-            input.profile.lastName.orEmpty(),
-            input.userName,
-            input.profile.avatarUrl
+            userId = input.id,
+            firstName = input.profile.firstName.orEmpty(),
+            lastName = input.profile.lastName.orEmpty(),
+            userName = input.userName,
+            avatarUrl = input.profile.avatarUrl
         )
 }

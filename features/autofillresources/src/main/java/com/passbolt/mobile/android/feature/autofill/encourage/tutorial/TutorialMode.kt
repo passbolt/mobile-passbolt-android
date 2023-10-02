@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.autofill.encourage.tutorial
 
 import androidx.annotation.StringRes
-import com.passbolt.mobile.android.feature.autofill.R
 import java.io.Serializable
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -36,12 +36,12 @@ sealed class TutorialMode(
     val otherUrl: String = "https://www.passbolt.com/help/mobile/android/autofill/others"
 
     object Overlay : TutorialMode(
-        R.string.dialog_encourage_autofill_overlay_header,
-        R.string.dialog_encourage_autofill_overlay_description
+        LocalizationR.string.dialog_encourage_autofill_overlay_header,
+        LocalizationR.string.dialog_encourage_autofill_overlay_description
     )
 
     object Service : TutorialMode(
-        R.string.dialog_encourage_autofill_service_header,
-        R.string.dialog_encourage_autofill_service_description
+        LocalizationR.string.dialog_encourage_autofill_service_header,
+        LocalizationR.string.dialog_encourage_autofill_service_description
     )
 }

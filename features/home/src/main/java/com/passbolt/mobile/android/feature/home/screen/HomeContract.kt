@@ -51,7 +51,6 @@ interface HomeContract {
 
         fun navigateToMore(resourceId: String, resourceName: String)
         fun navigateToDetails(resourceModel: ResourceModel)
-        fun showError()
         fun showEmptyList()
         fun showSearchEmptyList()
         fun displaySearchAvatar(url: String?)
@@ -110,13 +109,13 @@ interface HomeContract {
         fun navigateToOtpEdit()
         fun showDeleteTotpConfirmationDialog()
         fun showTotpDeleted()
+        fun showTotpDeletionFailed()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
         fun resourceMoreClick(resourceModel: ResourceModel)
         fun itemClick(resourceModel: ResourceModel)
         fun refreshSwipe()
-        fun refreshClick()
         fun searchTextChange(text: String)
         fun menuLaunchWebsiteClick()
         fun menuCopyUsernameClick()

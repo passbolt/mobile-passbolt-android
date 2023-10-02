@@ -1,8 +1,5 @@
 package com.passbolt.mobile.android.feature.setup.transferdetails
 
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -10,6 +7,9 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 /**
  * Passbolt - Open source password manager for teams

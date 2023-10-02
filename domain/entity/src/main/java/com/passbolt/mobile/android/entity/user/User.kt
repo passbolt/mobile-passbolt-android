@@ -51,5 +51,6 @@ data class UserGpgKey(
     val keyId: String,
     val fingerprint: String,
     val type: String?,
-    val expires: ZonedDateTime?
+    val expires: ZonedDateTime?,
+    val created: ZonedDateTime?
 )

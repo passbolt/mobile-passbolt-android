@@ -9,6 +9,8 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.settings.R
 import com.passbolt.mobile.android.feature.settings.databinding.ItemDefaultFilterBinding
 import com.passbolt.mobile.android.ui.DefaultFilterModel
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -62,23 +64,23 @@ class DefaultFilterItem(
                         it,
                         when (it) {
                             DefaultFilterModel.LAST_USED ->
-                                R.string.filters_menu_last_used to R.drawable.ic_filter
+                                LocalizationR.string.filters_menu_last_used to CoreUiR.drawable.ic_filter
                             DefaultFilterModel.ALL_ITEMS ->
-                                R.string.filters_menu_all_items to R.drawable.ic_list
+                                LocalizationR.string.filters_menu_all_items to CoreUiR.drawable.ic_list
                             DefaultFilterModel.FAVOURITES ->
-                                R.string.filters_menu_favourites to R.drawable.ic_star
+                                LocalizationR.string.filters_menu_favourites to CoreUiR.drawable.ic_star
                             DefaultFilterModel.RECENTLY_MODIFIED ->
-                                R.string.filters_menu_recently_modified to R.drawable.ic_clock
+                                LocalizationR.string.filters_menu_recently_modified to CoreUiR.drawable.ic_clock
                             DefaultFilterModel.SHARED_WITH_ME ->
-                                R.string.filters_menu_shared_with_me to R.drawable.ic_share
+                                LocalizationR.string.filters_menu_shared_with_me to CoreUiR.drawable.ic_share
                             DefaultFilterModel.OWNED_BY_ME ->
-                                R.string.filters_menu_owned_by_me to R.drawable.ic_person
+                                LocalizationR.string.filters_menu_owned_by_me to CoreUiR.drawable.ic_person
                             DefaultFilterModel.FOLDERS ->
-                                R.string.filters_menu_folders to R.drawable.ic_folder
+                                LocalizationR.string.filters_menu_folders to CoreUiR.drawable.ic_folder
                             DefaultFilterModel.TAGS ->
-                                R.string.filters_menu_tags to R.drawable.ic_tag
+                                LocalizationR.string.filters_menu_tags to CoreUiR.drawable.ic_tag
                             DefaultFilterModel.GROUPS ->
-                                R.string.filters_menu_groups to R.drawable.ic_group
+                                LocalizationR.string.filters_menu_groups to CoreUiR.drawable.ic_group
                         }
                     )
                 }

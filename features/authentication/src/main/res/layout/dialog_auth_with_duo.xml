@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/dp_16"
+        android:paddingEnd="@dimen/dp_16">
+
+        <ImageView
+            android:id="@+id/closeButton"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:layout_marginTop="@dimen/dp_16"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_close"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/titleLabel"
+            style="@style/Heading3Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            android:gravity="center"
+            android:paddingStart="@dimen/dp_48"
+            android:paddingEnd="@dimen/dp_48"
+            android:text="@string/dialog_mfa_mfa"
+            android:textColor="@color/text_primary"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/mfaLogoImage"
+            android:layout_width="@dimen/dp_116"
+            android:layout_height="@dimen/dp_116"
+            android:layout_marginTop="@dimen/dp_32"
+            android:src="@drawable/duo_logo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleLabel" />
+
+        <TextView
+            android:id="@+id/headerLabel"
+            style="@style/Heading1Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_32"
+            android:layout_marginTop="@dimen/dp_24"
+            android:gravity="center"
+            android:text="@string/dialog_mfa_duo"
+            android:textColor="@color/text_primary"
+            app:layout_constraintTop_toBottomOf="@id/mfaLogoImage" />
+
+        <Button
+            android:id="@+id/authWithDuoButton"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginBottom="@dimen/dp_24"
+            android:text="@string/dialog_mfa_auth_with_duo"
+            app:layout_constraintBottom_toTopOf="@id/otherProviderButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/otherProviderButton"
+            style="@style/ButtonSmallText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_32"
+            android:background="?selectableItemBackground"
+            android:padding="@dimen/dp_16"
+            android:text="@string/dialog_mfa_other_provider"
+            android:textColor="@color/text_primary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

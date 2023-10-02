@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import timber.log.Timber
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,7 +38,7 @@ class WebsiteOpener {
         }
             .onFailure {
                 Timber.e(it)
-                Toast.makeText(context, R.string.common_failure, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, LocalizationR.string.common_failure, Toast.LENGTH_SHORT).show()
             }
     }
 }

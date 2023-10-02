@@ -1,22 +1,26 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
-    id "kotlin-parcelize"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.parcelize
+    alias libs.plugins.quadrant
 }
-
-apply plugin: "com.gaelmarhic.quadrant"
 
 quadrantConfig {
     perModule true
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.navigation"
     buildFeatures {
         viewBinding true
     }
 }
 
-dependencies{
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
+kotlin {
+    jvmToolchain(17)
+}
+
+dependencies {
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
 }

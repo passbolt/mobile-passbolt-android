@@ -606,10 +606,6 @@ class HomePresenter(
             searchableMatcher.matches(it, currentSearchText)
         }
 
-    override fun refreshClick() {
-        initRefresh()
-    }
-
     override fun refreshSwipe() {
         refreshInProgress = true
         view?.apply {
@@ -977,7 +973,7 @@ class HomePresenter(
                     resourceUpdateActionInteractor.downgradeToPasswordAndDescriptionResource()
                 },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
-                doOnFailure = { view?.showError() },
+                doOnFailure = { view?.showTotpDeletionFailed() },
                 doOnSuccess = {
                     fullDataRefreshExecutor.performFullDataRefresh()
                     view?.showTotpDeleted()

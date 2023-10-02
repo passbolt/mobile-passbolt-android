@@ -1,10 +1,9 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
-    id "kotlin-parcelize"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.parcelize
+    alias libs.plugins.navigation.safeargs
 }
-
-apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     implementation project(':architecture')
@@ -44,25 +43,30 @@ dependencies {
     implementation project(':otpcore')
     implementation project(':otpeditmoremenu')
 
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
-    implementation libs.androidx.swiperefresh
-    implementation libs.di.koin
-    implementation libs.fastAdapter.core
-    implementation libs.fastAdapter.binding
-    implementation libs.fastAdapter.diff
-    implementation libs.textDrawable
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation libs.swiperefresh
+    implementation libs.koin
+    implementation libs.fastadapter.core
+    implementation libs.fastadapter.binding
+    implementation libs.fastadapter.diff
+    implementation libs.textdrawable
     implementation libs.coil.core
     implementation libs.coil.base
-    implementation libs.fabSpeedDial
+    implementation libs.fab.speeddial
     implementation libs.room.core
-    implementation libs.test.espressoIdlingResource
+    implementation libs.espresso.idling.resource
 
     testImplementation project(':commontest')
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.home"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

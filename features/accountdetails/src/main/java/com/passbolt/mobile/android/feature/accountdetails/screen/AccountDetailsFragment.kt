@@ -5,15 +5,16 @@ import android.os.Bundle
 import android.view.View
 import coil.load
 import coil.transform.CircleCropTransformation
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
-import com.passbolt.mobile.android.feature.accountdetails.R
 import com.passbolt.mobile.android.feature.accountdetails.databinding.FragmentAccountDetailsBinding
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.TransferAccountToAnotherDeviceActivity
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -86,9 +87,9 @@ class AccountDetailsFragment :
 
     override fun showAvatar(avatarUrl: String?) {
         binding.avatarImage.load(avatarUrl) {
-            error(R.drawable.ic_avatar_placeholder)
+            error(CoreUiR.drawable.ic_avatar_placeholder)
             transformations(CircleCropTransformation())
-            placeholder(R.drawable.ic_avatar_placeholder)
+            placeholder(CoreUiR.drawable.ic_avatar_placeholder)
         }
     }
 
@@ -103,15 +104,15 @@ class AccountDetailsFragment :
     override fun showLabelLengthError(labelMaxLength: Int) {
         binding.labelInput.setState(
             StatefulInput.State.Error(
-                getString(R.string.validation_required_with_max_length, labelMaxLength)
+                getString(LocalizationR.string.validation_required_with_max_length, labelMaxLength)
             )
         )
     }
 
     override fun showLabelChanged() {
         showSnackbar(
-            R.string.account_details_label_saved,
-            backgroundColor = R.color.green
+            LocalizationR.string.account_details_label_saved,
+            backgroundColor = CoreUiR.color.green
         )
     }
 

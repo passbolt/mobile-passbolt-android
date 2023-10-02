@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClickAndDismiss
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
-import com.passbolt.mobile.android.folderdetails.R
-import com.passbolt.mobile.android.folderdetails.databinding.ViewFolderMoreMenuBottomsheetBinding
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClickAndDismiss
+import com.passbolt.mobile.android.feature.folderdetails.databinding.ViewFolderMoreMenuBottomsheetBinding
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,7 +40,7 @@ import org.koin.androidx.scope.fragmentScope
 
 class FolderMoreMenuFragment : BottomSheetDialogFragment(), FolderMoreMenuContract.View, AndroidScopeComponent {
 
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: FolderMoreMenuContract.Presenter by scope.inject()
     private lateinit var binding: ViewFolderMoreMenuBottomsheetBinding
     private var listener: Listener? = null
@@ -86,7 +86,7 @@ class FolderMoreMenuFragment : BottomSheetDialogFragment(), FolderMoreMenuContra
     }
 
     override fun showTitle(title: String?) {
-        binding.title.text = title ?: getString(R.string.folder_root)
+        binding.title.text = title ?: getString(LocalizationR.string.folder_root)
     }
 
     companion object {

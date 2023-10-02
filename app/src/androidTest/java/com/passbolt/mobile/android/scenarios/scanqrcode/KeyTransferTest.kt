@@ -22,6 +22,7 @@ import org.junit.runner.RunWith
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.BeforeTest
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -78,8 +79,8 @@ class KeyTransferTest : KoinTest {
         //When     the user scans the last QR code
         //Then     a successful feedback illustration and message appears
         onView(withId(R.id.icon)).check(matches(isDisplayed()))
-        onView(withText(R.string.scan_qr_summary_success_title)).check(matches(isDisplayed()))
+        onView(withText(LocalizationR.string.scan_qr_summary_success_title)).check(matches(isDisplayed()))
         //And      a "Continue" button is available
-        onView(withId(R.id.button)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).check(matches(isDisplayed()))
     }
 }

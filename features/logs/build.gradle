@@ -1,6 +1,6 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
@@ -11,17 +11,22 @@ dependencies {
     implementation project(':localization')
     implementation project(':logger')
 
-    implementation libs.di.koin
+    implementation libs.koin
     implementation libs.material
     implementation libs.androidx.core
-    implementation libs.fastAdapter.binding
-    implementation libs.fastAdapter.core
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
+    implementation libs.fastadapter.binding
+    implementation libs.fastadapter.core
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.logs"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

@@ -13,8 +13,8 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.dialogs.signOutAlertDialog
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
@@ -35,7 +35,7 @@ import org.koin.core.qualifier.named
 class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidScopeComponent,
     SwitchAccountContract.View {
 
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: SwitchAccountContract.Presenter by scope.inject()
     private lateinit var binding: FragmentSwitchAccountBinding
     private val modelAdapter: ModelAdapter<SwitchAccountUiModel, GenericItem> by inject()

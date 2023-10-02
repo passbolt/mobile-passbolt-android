@@ -11,13 +11,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.fromHtml
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
-import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentTransferDetailsBinding
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -68,12 +68,12 @@ class TransferDetailsFragment : BindingScopedFragment<FragmentTransferDetailsBin
 
     override fun showCameraPermissionRequiredDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.transfer_details_camera_access_dialog_title)
-            .setMessage(R.string.transfer_details_camera_access_dialog_message)
-            .setPositiveButton(R.string.settings) { _, _ ->
+            .setTitle(LocalizationR.string.transfer_details_camera_access_dialog_title)
+            .setMessage(LocalizationR.string.transfer_details_camera_access_dialog_message)
+            .setPositiveButton(LocalizationR.string.settings) { _, _ ->
                 presenter.settingsButtonClick()
             }
-            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
             .show()
     }
 
@@ -105,9 +105,9 @@ class TransferDetailsFragment : BindingScopedFragment<FragmentTransferDetailsBin
 
     override fun showCameraRequiredDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.transfer_details_camera_required_dialog_title)
-            .setMessage(R.string.transfer_details_camera_required_dialog_message)
-            .setPositiveButton(R.string.ok) { _, _ -> }
+            .setTitle(LocalizationR.string.transfer_details_camera_required_dialog_title)
+            .setMessage(LocalizationR.string.transfer_details_camera_required_dialog_message)
+            .setPositiveButton(LocalizationR.string.ok) { _, _ -> }
             .show()
     }
 
@@ -117,7 +117,7 @@ class TransferDetailsFragment : BindingScopedFragment<FragmentTransferDetailsBin
 
     private fun addSteps() {
         binding.steps.addList(
-            requireContext().resources.getStringArray(R.array.transfer_details_steps_array)
+            requireContext().resources.getStringArray(LocalizationR.array.transfer_details_steps_array)
                 .map { CircleStepItemModel(it.fromHtml()) }
         )
     }

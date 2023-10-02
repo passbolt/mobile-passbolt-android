@@ -15,7 +15,6 @@ import com.passbolt.mobile.android.core.navigation.AutofillMode
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedActivity
-import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.ActivityAutofillResourcesBinding
 import com.passbolt.mobile.android.feature.autofill.resources.datasetstrategy.ReturnAutofillDatasetStrategy
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
@@ -23,6 +22,8 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -90,7 +91,7 @@ class AutofillResourcesActivity :
     override fun navigateToAutofillHome() {
         findNavHostFragment(binding.fragmentContainer.id)
             .navController
-            .setGraph(R.navigation.home)
+            .setGraph(com.passbolt.mobile.android.feature.home.R.navigation.home)
     }
 
     override fun navigateToAuth() {
@@ -152,9 +153,12 @@ class AutofillResourcesActivity :
     }
 
     override fun showError(message: String?) {
-        Snackbar.make(binding.root, getString(R.string.common_failure_format, message), Snackbar.LENGTH_LONG)
+        Snackbar.make(
+            binding.root,
+            getString(LocalizationR.string.common_failure_format, message), Snackbar.LENGTH_LONG
+        )
             .apply {
-                view.setBackgroundColor(context.getColor(R.color.red))
+                view.setBackgroundColor(context.getColor(CoreUiR.color.red))
                 show()
             }
     }

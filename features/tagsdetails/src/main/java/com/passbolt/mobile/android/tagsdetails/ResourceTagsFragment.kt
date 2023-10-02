@@ -8,17 +8,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.tagsdetails.databinding.FragmentResourceTagsBinding
+import com.passbolt.mobile.android.feature.tagsdetails.databinding.FragmentResourceTagsBinding
 import com.passbolt.mobile.android.tagsdetails.tagsrecycler.TagItem
 import com.passbolt.mobile.android.ui.TagModel
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class ResourceTagsFragment :
     BindingScopedAuthenticatedFragment<FragmentResourceTagsBinding, ResourceTagsContract.View>(
@@ -91,13 +93,13 @@ class ResourceTagsFragment :
 
     override fun showDataRefreshError() {
         showSnackbar(
-            R.string.common_data_refresh_error,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_data_refresh_error,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showContentNotAvailable() {
-        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), LocalizationR.string.content_not_available, Toast.LENGTH_SHORT).show()
     }
 
     override fun navigateToHome() {

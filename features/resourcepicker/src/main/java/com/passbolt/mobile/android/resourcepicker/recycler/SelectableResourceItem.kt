@@ -8,9 +8,11 @@ import androidx.core.view.isVisible
 import coil.load
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
-import com.passbolt.mobile.android.resourcepicker.R
-import com.passbolt.mobile.android.resourcepicker.databinding.ItemSelectableResourceBinding
+import com.passbolt.mobile.android.feature.resourcepicker.R
+import com.passbolt.mobile.android.feature.resourcepicker.databinding.ItemSelectableResourceBinding
 import com.passbolt.mobile.android.ui.SelectableResourceModelWrapper
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class SelectableResourceItem(
     val selectableResourceModel: SelectableResourceModelWrapper,
@@ -60,11 +62,11 @@ class SelectableResourceItem(
     }
 
     private fun setupUsername(binding: ItemSelectableResourceBinding) = with(binding) {
-        val fontFamily = ResourcesCompat.getFont(binding.root.context, R.font.inter)
+        val fontFamily = ResourcesCompat.getFont(binding.root.context, CoreUiR.font.inter)
 
         if (selectableResourceModel.resourceModel.username.isNullOrBlank()) {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
-            subtitle.text = binding.root.context.getString(R.string.no_username)
+            subtitle.text = binding.root.context.getString(LocalizationR.string.no_username)
         } else {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
             subtitle.text = selectableResourceModel.resourceModel.username

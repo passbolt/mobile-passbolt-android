@@ -8,18 +8,18 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
-import com.passbolt.mobile.android.common.FingerprintFormatter
 import com.passbolt.mobile.android.common.dialogs.permissionDeletionConfirmationAlertDialog
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.visible
+import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.permissions.R
-import com.passbolt.mobile.android.permissions.databinding.FragmentUserPermissionsBinding
+import com.passbolt.mobile.android.feature.permissions.databinding.FragmentUserPermissionsBinding
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class UserPermissionsFragment :
     BindingScopedAuthenticatedFragment<FragmentUserPermissionsBinding, UserPermissionsContract.View>(
@@ -76,11 +76,13 @@ class UserPermissionsFragment :
         with(binding) {
             nameLabel.text = String.format("%s %s", user.profile.firstName, user.profile.lastName)
             emailLabel.text = user.userName
-            fingerprintLabel.text = fingerprintFormatter.formatWithRawFallback(user.gpgKey.fingerprint)
+            fingerprintLabel.text = fingerprintFormatter.formatWithRawFallback(
+                user.gpgKey.fingerprint, appendMiddleSpacing = false
+            )
             avatarImage.load(user.profile.avatarUrl) {
-                error(R.drawable.ic_user_avatar)
+                error(CoreUiR.drawable.ic_user_avatar)
                 transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_user_avatar)
+                placeholder(CoreUiR.drawable.ic_user_avatar)
             }
         }
     }

@@ -1,10 +1,9 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
-    id "kotlin-parcelize"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.parcelize
+    alias libs.plugins.navigation.safeargs
 }
-
-apply plugin: "androidx.navigation.safeargs"
 
 android {
     defaultConfig {
@@ -47,27 +46,31 @@ dependencies {
     implementation project(':otpmoremenu')
     implementation project(':createotpmanually')
 
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
-    implementation libs.di.koin
-    implementation libs.androidx.swiperefresh
-    implementation libs.fabSpeedDial
-    implementation libs.fastAdapter.core
-    implementation libs.fastAdapter.binding
-    implementation libs.fastAdapter.diff
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation libs.koin
+    implementation libs.swiperefresh
+    implementation libs.fab.speeddial
+    implementation libs.fastadapter.core
+    implementation libs.fastadapter.binding
+    implementation libs.fastadapter.diff
     implementation libs.coil.core
     implementation libs.coil.base
-    implementation libs.fabSpeedDial
-    implementation libs.androidx.cameraXView
-    implementation libs.androidx.cameraX
-    implementation libs.androidx.cameraXLifecycle
-    implementation libs.networking.retrofit
+    implementation libs.camerax.view
+    implementation libs.camerax
+    implementation libs.camerax.lifecycle
+    implementation libs.retrofit
 
     testImplementation project(':commontest')
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.otp"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

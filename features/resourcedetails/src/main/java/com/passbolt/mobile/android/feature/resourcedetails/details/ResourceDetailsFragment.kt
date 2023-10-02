@@ -24,11 +24,11 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.dialogs.confirmResourceDeletionAlertDialog
 import com.passbolt.mobile.android.common.dialogs.confirmTotpDeletionAlertDialog
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.gone
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController
@@ -39,13 +39,13 @@ import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
+import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
 import com.passbolt.mobile.android.core.ui.span.RoundedBackgroundSpan
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
-import com.passbolt.mobile.android.feature.resources.R
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
 import com.passbolt.mobile.android.locationdetails.LocationItem
 import com.passbolt.mobile.android.otpcreatemoremenu.OtpCreateMoreMenuFragment
@@ -65,6 +65,8 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -104,10 +106,10 @@ class ResourceDetailsFragment :
         )
     }
     private val regularFont by lifecycleAwareLazy {
-        ResourcesCompat.getFont(requireContext(), R.font.inter)
+        ResourcesCompat.getFont(requireContext(), CoreUiR.font.inter)
     }
     private val secretFont by lifecycleAwareLazy {
-        ResourcesCompat.getFont(requireContext(), R.font.inconsolata)
+        ResourcesCompat.getFont(requireContext(), CoreUiR.font.inconsolata)
     }
     private val usernameCopyFields
         get() = listOf(binding.usernameHeader, binding.usernameValue, binding.usernameIcon)
@@ -176,7 +178,7 @@ class ResourceDetailsFragment :
             presenter.argsReceived(
                 bundledResourceModel.resourceId,
                 it.width,
-                resources.getDimension(R.dimen.dp_40)
+                resources.getDimension(CoreUiR.dimen.dp_40)
             )
         }
     }
@@ -286,7 +288,7 @@ class ResourceDetailsFragment :
                 }
             }
         )
-        Toast.makeText(requireContext(), getString(R.string.copied_info, label), Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(LocalizationR.string.copied_info, label), Toast.LENGTH_SHORT).show()
     }
 
     override fun showProgress() {
@@ -298,25 +300,25 @@ class ResourceDetailsFragment :
     }
 
     override fun showPasswordVisibleIcon() {
-        binding.passwordIcon.setImageResource(R.drawable.ic_eye_invisible)
+        binding.passwordIcon.setImageResource(CoreUiR.drawable.ic_eye_invisible)
     }
 
     override fun showPasswordHiddenIcon() {
-        binding.passwordIcon.setImageResource(R.drawable.ic_eye_visible)
+        binding.passwordIcon.setImageResource(CoreUiR.drawable.ic_eye_visible)
     }
 
     override fun showDecryptionFailure() {
-        Toast.makeText(requireContext(), R.string.common_decryption_failure, Toast.LENGTH_SHORT)
+        Toast.makeText(requireContext(), LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showFetchFailure() {
-        Toast.makeText(requireContext(), R.string.common_fetch_failure, Toast.LENGTH_SHORT)
+        Toast.makeText(requireContext(), LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
             .show()
     }
 
     override fun showPasswordHidden() {
-        binding.passwordValue.text = getString(R.string.resource_details_hide_password)
+        binding.passwordValue.text = getString(LocalizationR.string.resource_details_hide_password)
     }
 
     override fun showPassword(decryptedSecret: String) {
@@ -343,7 +345,7 @@ class ResourceDetailsFragment :
             descriptionValue.apply {
                 typeface = regularFont
                 setTextIsSelectable(false)
-                text = getString(R.string.resource_details_encrypted_description)
+                text = getString(LocalizationR.string.resource_details_encrypted_description)
             }
             seeDescriptionButton.visible()
         }
@@ -398,13 +400,13 @@ class ResourceDetailsFragment :
 
     override fun showToggleFavouriteFailure() {
         showSnackbar(
-            R.string.favourites_failure,
-            backgroundColor = R.color.red
+            LocalizationR.string.favourites_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showTotpDeleted() {
-        showSnackbar(R.string.otp_deleted)
+        showSnackbar(LocalizationR.string.otp_deleted)
     }
 
     override fun showFavouriteStar() {
@@ -446,23 +448,23 @@ class ResourceDetailsFragment :
 
     override fun showGeneralError(errorMessage: String?) {
         showSnackbar(
-            R.string.common_failure_format,
-            backgroundColor = R.color.red,
+            LocalizationR.string.common_failure_format,
+            backgroundColor = CoreUiR.color.red,
             messageArgs = arrayOf(errorMessage.orEmpty())
         )
     }
 
     override fun showEncryptionError(message: String) {
         showSnackbar(
-            R.string.common_encryption_failure,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_encryption_failure,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showInvalidTotpScanned() {
         showSnackbar(
-            R.string.resource_details_invalid_totp_scanned,
-            backgroundColor = R.color.red
+            LocalizationR.string.resource_details_invalid_totp_scanned,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -485,9 +487,9 @@ class ResourceDetailsFragment :
 
     override fun showResourceEditedSnackbar(resourceName: String) {
         showSnackbar(
-            messageResId = R.string.common_message_resource_edited,
+            messageResId = LocalizationR.string.common_message_resource_edited,
             messageArgs = arrayOf(resourceName),
-            backgroundColor = R.color.green
+            backgroundColor = CoreUiR.color.green
         )
     }
 
@@ -511,7 +513,7 @@ class ResourceDetailsFragment :
         counterValue: List<String>,
         overlapOffset: Int
     ) {
-        val decorator = OverlappingItemDecorator(OverlappingItemDecorator.Overlap(left = overlapOffset))
+        val decorator = OverlappingItemDecorator(Overlap(left = overlapOffset))
         binding.sharedWithRecycler.addItemDecoration(decorator)
         FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })
         FastAdapterDiffUtil.calculateDiff(userPermissionsItemAdapter, userPermissions.map { UserItem(it) })
@@ -537,8 +539,8 @@ class ResourceDetailsFragment :
 
     override fun showResourceSharedSnackbar() {
         showSnackbar(
-            R.string.common_message_resource_shared,
-            backgroundColor = R.color.green
+            LocalizationR.string.common_message_resource_shared,
+            backgroundColor = CoreUiR.color.green
         )
     }
 
@@ -548,8 +550,8 @@ class ResourceDetailsFragment :
             builder.append(it)
             builder.setSpan(
                 RoundedBackgroundSpan(
-                    ContextCompat.getColor(requireContext(), R.color.divider),
-                    ContextCompat.getColor(requireContext(), R.color.text_primary)
+                    ContextCompat.getColor(requireContext(), CoreUiR.color.divider),
+                    ContextCompat.getColor(requireContext(), CoreUiR.color.text_primary)
                 ),
                 builder.length - it.length,
                 builder.length,
@@ -562,8 +564,10 @@ class ResourceDetailsFragment :
     override fun showFolderLocation(locationPathSegments: List<String>) {
         binding.locationValue.text = locationPathSegments.let {
             val mutable = it.toMutableList()
-            mutable.add(0, getString(R.string.folder_root))
-            mutable.joinToString(separator = " %s ".format(getString(R.string.folder_details_location_separator)))
+            mutable.add(0, getString(LocalizationR.string.folder_root))
+            mutable.joinToString(
+                separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator))
+            )
         }
     }
 
@@ -585,13 +589,13 @@ class ResourceDetailsFragment :
 
     override fun showDataRefreshError() {
         showSnackbar(
-            R.string.common_data_refresh_error,
-            backgroundColor = R.color.red
+            LocalizationR.string.common_data_refresh_error,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showContentNotAvailable() {
-        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), LocalizationR.string.content_not_available, Toast.LENGTH_SHORT).show()
     }
 
     override fun showTotp(otpWrapper: OtpItemWrapper?) {
@@ -603,7 +607,7 @@ class ResourceDetailsFragment :
             )
 
             binding.totpIcon.setImageResource(
-                if (otpModel.isVisible) R.drawable.ic_eye_invisible else R.drawable.ic_eye_visible
+                if (otpModel.isVisible) CoreUiR.drawable.ic_eye_invisible else CoreUiR.drawable.ic_eye_visible
             )
         }
     }

@@ -1,20 +1,25 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
-    implementation project(':common')
+    implementation project(':coreui')
 
     implementation libs.androidx.core
-    implementation libs.androidx.appcompat
-    implementation libs.androidx.constraintLayout
+    implementation libs.appcompat
+    implementation libs.constraintlayout
     implementation libs.material
-    implementation libs.di.koin
+    implementation libs.koin
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.otpeditmoremenu"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

@@ -15,10 +15,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.use
 import androidx.core.widget.addTextChangedListener
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.px
+import com.passbolt.mobile.android.core.extension.px
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewPasswordGeneratorInputBinding
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -174,16 +175,16 @@ class PasswordGenerateInputView @JvmOverloads constructor(
     ) {
         object Empty : PasswordStrength(
             0,
-            R.string.password_strength_empty,
+            LocalizationR.string.password_strength_empty,
             android.R.color.transparent,
             R.color.text_tertiary
         )
 
-        object VeryWeak : PasswordStrength(20, R.string.password_strength_very_weak, R.color.red)
-        object Weak : PasswordStrength(40, R.string.password_strength_weak, R.color.red)
-        object Fair : PasswordStrength(60, R.string.password_strength_fair, R.color.orange)
-        object Strong : PasswordStrength(80, R.string.password_strength_strong, R.color.orange)
-        object VeryStrong : PasswordStrength(100, R.string.password_strength_very_strong, R.color.green)
+        object VeryWeak : PasswordStrength(20, LocalizationR.string.password_strength_very_weak, R.color.red)
+        object Weak : PasswordStrength(40, LocalizationR.string.password_strength_weak, R.color.red)
+        object Fair : PasswordStrength(60, LocalizationR.string.password_strength_fair, R.color.orange)
+        object Strong : PasswordStrength(80, LocalizationR.string.password_strength_strong, R.color.orange)
+        object VeryStrong : PasswordStrength(100, LocalizationR.string.password_strength_very_strong, R.color.green)
     }
 
     private companion object {

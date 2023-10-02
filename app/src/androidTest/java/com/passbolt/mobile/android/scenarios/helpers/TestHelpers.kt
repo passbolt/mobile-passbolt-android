@@ -10,10 +10,10 @@ import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
-import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.withHint
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -42,35 +42,35 @@ internal fun getString(@StringRes stringResId: Int, vararg formatArgs: String? =
     InstrumentationRegistry.getInstrumentation().targetContext.getString(stringResId, *formatArgs)
 
 internal fun createNewPasswordFromHomeScreen() {
-    onView(withId(R.id.homeSpeedDialViewId)).perform(click())
+    onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString("Enter Name"))),
-            withId(R.id.input)
+            withId(CoreUiR.id.input)
         )
     )
         .perform(typeText("ResourcesEditionTestPK"), pressKey(KeyEvent.KEYCODE_BACK))
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString("Enter URL"))),
-            withId(R.id.input)
+            withId(CoreUiR.id.input)
         )
     )
         .perform(typeText("TestURL"), pressKey(KeyEvent.KEYCODE_BACK))
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString("Enter Username"))),
-            withId(R.id.input)
+            withId(CoreUiR.id.input)
         )
     )
         .perform(typeText("TestUsername"), pressKey(KeyEvent.KEYCODE_BACK))
-    onView(withId(R.id.generatePasswordLayout)).perform(click())
+    onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
     onView(
         allOf(
             isDescendantOfA(withHint(hasToString("Enter Description"))),
-            withId(R.id.input)
+            withId(CoreUiR.id.input)
         )
     )
         .perform(typeText("TestDescription"), pressKey(KeyEvent.KEYCODE_BACK))
-    onView(withId(R.id.updateButton)).perform(scrollTo(), click())
+    onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(scrollTo(), click())
 }

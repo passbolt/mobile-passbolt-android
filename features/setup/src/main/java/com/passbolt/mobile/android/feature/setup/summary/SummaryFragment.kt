@@ -9,15 +9,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentSummaryBinding
 import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -107,10 +107,10 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
 
     override fun showLeaveConfirmationDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.are_you_sure)
-            .setMessage(R.string.auth_exit_dialog_message)
-            .setPositiveButton(R.string.continue_setup) { _, _ -> }
-            .setNegativeButton(R.string.cancel_setup) { _, _ -> presenter.leaveConfirmationClick() }
+            .setTitle(LocalizationR.string.are_you_sure)
+            .setMessage(LocalizationR.string.auth_exit_dialog_message)
+            .setPositiveButton(LocalizationR.string.continue_setup) { _, _ -> }
+            .setNegativeButton(LocalizationR.string.cancel_setup) { _, _ -> presenter.leaveConfirmationClick() }
             .show()
     }
 

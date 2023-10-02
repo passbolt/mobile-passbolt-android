@@ -83,7 +83,15 @@
         android:id="@+id/accountsSettingsFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.accounts.AccountsSettingsFragment"
         android:label="AccountsSettingsFragment"
-        tools:layout="@layout/fragment_accounts_settings" />
+        tools:layout="@layout/fragment_accounts_settings">
+        <action
+            android:id="@+id/action_accountsSettingsFragment_to_keyInspectorFragment"
+            app:destination="@id/keyInspectorFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
     <fragment
         android:id="@+id/termsAndLicensesSettingsFragment"
         android:name="com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsFragment"
@@ -129,5 +137,10 @@
         android:name="com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.ExpertSettingsFragment"
         android:label="ExpertSettingsFragment"
         tools:layout="@layout/fragment_expert_settings" />
+    <fragment
+        android:id="@+id/keyInspectorFragment"
+        android:name="com.passbolt.mobile.android.feature.settings.screen.accounts.keyinspector.KeyInspectorFragment"
+        android:label="KeyInspectorFragment"
+        tools:layout="@layout/fragment_key_inspector" />
 
 </navigation>

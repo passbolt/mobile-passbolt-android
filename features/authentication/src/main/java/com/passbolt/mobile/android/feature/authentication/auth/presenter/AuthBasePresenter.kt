@@ -2,6 +2,11 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import androidx.annotation.CallSuper
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.DUO
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.TOTP
+import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.YUBIKEY
+import com.passbolt.mobile.android.core.mvp.authentication.MfaProvidersHandler
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
@@ -21,6 +26,8 @@ import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCa
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import javax.crypto.Cipher
 
@@ -62,7 +69,7 @@ abstract class AuthBasePresenter(
     private val getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
     protected val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
     coroutineLaunchContext: CoroutineLaunchContext
-) : AuthContract.Presenter {
+) : AuthContract.Presenter, KoinComponent {
 
     override var view: AuthContract.View? = null
 
@@ -73,6 +80,8 @@ abstract class AuthBasePresenter(
 
     private val authReason: AuthContract.View.RefreshAuthReason?
         get() = authReasonMapper.map(authConfig)
+
+    private val mfaProvidersHandler: MfaProvidersHandler by inject()
 
     override fun attach(view: AuthContract.View) {
         super.attach(view)
@@ -217,5 +226,41 @@ abstract class AuthBasePresenter(
 
     override fun helpClick() {
         view?.showHelpMenu()
+    }
+
+    protected fun mfaRequired(jwtToken: String, mfaProviders: List<String>?) {
+        mfaProvidersHandler.setProviders(
+            mfaProviders.orEmpty().map { AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider.parse(it) })
+        when (val provider = mfaProvidersHandler.firstMfaProvider()) {
+            YUBIKEY -> view?.showYubikeyDialog(
+                jwtToken,
+                mfaProvidersHandler.hasMultipleProviders()
+            )
+            TOTP -> view?.showTotpDialog(
+                jwtToken,
+                mfaProvidersHandler.hasMultipleProviders()
+            )
+            DUO -> view?.showDuoDialog(
+                jwtToken,
+                mfaProvidersHandler.hasMultipleProviders()
+            )
+            else -> {
+                view?.showUnknownProvider()
+                Timber.e("Unknown provider: $provider")
+            }
+        }
+        view?.hideProgress()
+    }
+
+    override fun otherProviderClick(
+        bearer: String?,
+        currentProvider: AuthenticationState.Unauthenticated.Reason.Mfa.MfaProvider
+    ) {
+        when (mfaProvidersHandler.nextMfaProvider(currentProvider)) {
+            YUBIKEY -> view?.showYubikeyDialog(bearer, mfaProvidersHandler.hasMultipleProviders())
+            TOTP -> view?.showTotpDialog(bearer, mfaProvidersHandler.hasMultipleProviders())
+            DUO -> view?.showDuoDialog(bearer, mfaProvidersHandler.hasMultipleProviders())
+            null -> view?.showUnknownProvider()
+        }
     }
 }

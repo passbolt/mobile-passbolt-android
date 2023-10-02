@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.scenarios.resourcesdetails
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
-import com.passbolt.mobile.android.feature.setup.R
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,48 +34,48 @@ enum class ResourcesDetailsItemModel(
     @ColorRes val resourceTintColorId: Int?
 ) {
     LAUNCH_WEBSITE(
-        resourceId = R.id.launchWebsite,
-        resourceIconId = R.drawable.ic_open_link,
-        resourceTintColorId = R.color.icon_tint
+        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.launchWebsite,
+        resourceIconId = CoreUiR.drawable.ic_open_link,
+        resourceTintColorId = CoreUiR.color.icon_tint
     ),
     COPY_URL(
-        resourceId = R.id.copyUrl,
-        resourceIconId = R.drawable.ic_link,
-        resourceTintColorId = R.color.icon_tint
+        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.copyUrl,
+        resourceIconId = CoreUiR.drawable.ic_link,
+        resourceTintColorId = CoreUiR.color.icon_tint
     ),
     COPY_PASSWORD(
-        resourceId = R.id.copyPassword,
-        resourceIconId = R.drawable.ic_key,
-        resourceTintColorId = R.color.icon_tint
+        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.copyPassword,
+        resourceIconId = CoreUiR.drawable.ic_key,
+        resourceTintColorId = CoreUiR.color.icon_tint
     ),
     COPY_DESCRIPTION(
-        resourceId = R.id.copyDescription,
-        resourceIconId = R.drawable.ic_description,
-        resourceTintColorId = R.color.icon_tint
+        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.copyDescription,
+        resourceIconId = CoreUiR.drawable.ic_description,
+        resourceTintColorId = CoreUiR.color.icon_tint
     ),
     COPY_USERNAME(
-        resourceId = R.id.copyUsername,
-        resourceIconId = R.drawable.ic_user,
-        resourceTintColorId = R.color.icon_tint
+        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.copyUsername,
+        resourceIconId = CoreUiR.drawable.ic_user,
+        resourceTintColorId = CoreUiR.color.icon_tint
     ),
     ADD_TO_FAVOURITE(
-        resourceId = R.id.favourite,
-        resourceIconId = R.drawable.ic_add_to_favourite,
-        resourceTintColorId = R.color.icon_tint
+        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.favourite,
+        resourceIconId = CoreUiR.drawable.ic_add_to_favourite,
+        resourceTintColorId = CoreUiR.color.icon_tint
     ),
     SHARE_PASSWORD(
-        resourceId = R.id.share,
-        resourceIconId = R.drawable.ic_share,
-        resourceTintColorId = R.color.icon_tint
+        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.share,
+        resourceIconId = CoreUiR.drawable.ic_share,
+        resourceTintColorId = CoreUiR.color.icon_tint
     ),
     EDIT_PASSWORD(
-        resourceId = R.id.edit,
-        resourceIconId = R.drawable.ic_edit,
-        resourceTintColorId = R.color.icon_tint
+        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword,
+        resourceIconId = CoreUiR.drawable.ic_edit,
+        resourceTintColorId = CoreUiR.color.icon_tint
     ),
     DELETE_PASSWORD(
-        resourceId = R.id.delete,
-        resourceIconId = R.drawable.ic_trash,
+        resourceId = com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete,
+        resourceIconId = CoreUiR.drawable.ic_trash,
         resourceTintColorId = null
     )
 }

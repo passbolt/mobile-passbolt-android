@@ -14,14 +14,13 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.common.dialogs.permissionDeletionConfirmationAlertDialog
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
-import com.passbolt.mobile.android.groupdetails.groupmembers.GroupMembersFragment
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.permissions.R
-import com.passbolt.mobile.android.permissions.databinding.FragmentGroupPermissionsBinding
+import com.passbolt.mobile.android.feature.permissions.databinding.FragmentGroupPermissionsBinding
+import com.passbolt.mobile.android.groupdetails.groupmembers.GroupMembersFragment
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.membersrecycler.GroupUserItem
 import com.passbolt.mobile.android.permissions.recycler.CounterItem
 import com.passbolt.mobile.android.ui.PermissionModelUi
@@ -29,6 +28,8 @@ import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.feature.groupdetails.R as GroupDetailsR
 
 class GroupPermissionsFragment :
     BindingScopedAuthenticatedFragment<FragmentGroupPermissionsBinding, GroupPermissionsContract.View>(
@@ -52,7 +53,7 @@ class GroupPermissionsFragment :
                 args.permission,
                 args.mode,
                 it.width,
-                resources.getDimension(R.dimen.dp_40)
+                resources.getDimension(CoreUiR.dimen.dp_40)
             )
         }
     }
@@ -136,12 +137,12 @@ class GroupPermissionsFragment :
 
     override fun navigateToGroupMembers(groupId: String) {
         findNavController().navigate(
-            R.id.group_members, GroupMembersFragment.newBundle(groupId),
+            GroupDetailsR.id.group_members, GroupMembersFragment.newBundle(groupId),
             NavOptions.Builder()
-                .setEnterAnim(R.anim.slide_in_right)
-                .setExitAnim(R.anim.slide_out_left)
-                .setPopEnterAnim(R.anim.slide_in_left)
-                .setPopExitAnim(R.anim.slide_out_right)
+                .setEnterAnim(CoreUiR.anim.slide_in_right)
+                .setExitAnim(CoreUiR.anim.slide_out_left)
+                .setPopEnterAnim(CoreUiR.anim.slide_in_left)
+                .setPopExitAnim(CoreUiR.anim.slide_out_right)
                 .build()
         )
     }

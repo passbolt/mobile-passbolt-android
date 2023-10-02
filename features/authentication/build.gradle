@@ -1,9 +1,8 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.navigation.safeargs
 }
-
-apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     implementation project(':architecture')
@@ -31,35 +30,40 @@ dependencies {
     implementation project(':gopenpgp')
     implementation project(':database')
 
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
-    implementation libs.androidx.fragment
-    implementation libs.androidx.activity
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    implementation libs.fragment
+    implementation libs.activity
     implementation libs.androidx.core
-    implementation libs.androidx.appcompat
+    implementation libs.appcompat
     implementation libs.material
-    implementation libs.androidx.biometric
-    implementation libs.fastAdapter.core
-    implementation libs.fastAdapter.binding
-    implementation libs.fastAdapter.diff
-    implementation libs.di.koin
+    implementation libs.biometric
+    implementation libs.fastadapter.core
+    implementation libs.fastadapter.binding
+    implementation libs.fastadapter.diff
+    implementation libs.koin
     implementation libs.coil.core
     implementation libs.coil.base
     implementation libs.gson
-    implementation libs.fusionauthJwt
+    implementation libs.fusionauth.jwt
     implementation libs.yubikit.android
     implementation(libs.pinentry) {
         exclude group: 'androidx.appcompat', module: 'appcompat'
     }
-    implementation libs.test.espressoIdlingResource
+    implementation libs.espresso.idling.resource
 
     testImplementation project(":commontest")
-    testImplementation libs.di.koinTestJUnit
+    testImplementation libs.koin.test.junit
     testImplementation libs.kotlin.reflect
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.authentication"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

@@ -1,13 +1,21 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
     implementation project(':architecture')
 
-    implementation libs.di.koin
-    implementation libs.test.coroutinesTest
-    implementation libs.test.espressoCore
-    implementation libs.test.androidTestKtx
+    implementation libs.koin
+    implementation libs.kotlin.coroutines.test
+    implementation libs.espresso.core
+    implementation libs.android.test.ktx
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.core.commontest"
+}
+
+kotlin {
+    jvmToolchain(17)
 }

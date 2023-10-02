@@ -38,7 +38,5 @@ val commonModule = module {
     }
 
     singleOf(::DomainProvider)
-    singleOf(::FingerprintFormatter)
-    singleOf(::OtpFormatter)
     singleOf(::AndroidTimeProvider) bind TimeProvider::class
 }

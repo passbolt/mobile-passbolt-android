@@ -1,0 +1,11 @@
+# Passbolt 1.16.0-26 Android app release notes
+
+## Added
+- MOB-892: Add Duo authentication
+- MOB-1454: Add key inspector
+
+## Improved
+- MOB-1453: Use snackbars for errors on home and otp instead of fullscreen error
+
+## Maintenance
+- MOB-1411: Updated dependencies

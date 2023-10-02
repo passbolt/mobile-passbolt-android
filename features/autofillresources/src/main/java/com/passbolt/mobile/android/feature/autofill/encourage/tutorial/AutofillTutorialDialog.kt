@@ -7,14 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.WebsiteOpener
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.feature.authentication.auth.accountdoesnotexist.AccountDoesNotExistDialog
-import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogAutofillTutorialBinding
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,7 +40,7 @@ import org.koin.androidx.scope.fragmentScope
  */
 class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, AndroidScopeComponent {
 
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: AutofillTutorialContract.Presenter by scope.inject()
     private val tutorialMode: TutorialMode by lifecycleAwareLazy {
         requireArguments().getSerializable(TUTORIAL_MODE_KEY) as TutorialMode
@@ -51,7 +51,7 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.FullscreenDialogTheme)
+        setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

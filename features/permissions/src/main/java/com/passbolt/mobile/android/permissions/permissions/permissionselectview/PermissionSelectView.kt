@@ -7,8 +7,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.updatePadding
 import com.google.android.material.radiobutton.MaterialRadioButton
-import com.passbolt.mobile.android.permissions.R
 import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -65,18 +65,18 @@ class PermissionSelectView @JvmOverloads constructor(
                 setCompoundDrawablesWithIntrinsicBounds(
                     ResourcePermission.getPermissionIcon(context, permission),
                     null,
-                    ContextCompat.getDrawable(context, R.drawable.radio_button_selector),
+                    ContextCompat.getDrawable(context, CoreUiR.drawable.radio_button_selector),
                     null
                 )
                 layoutParams = LayoutParams(
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.WRAP_CONTENT
                 )
-                updatePadding(right = resources.getDimension(R.dimen.dp_16).toInt())
-                compoundDrawablePadding = context.resources.getDimension(R.dimen.dp_12).toInt()
-                typeface = ResourcesCompat.getFont(context, R.font.inter_semi_bold)
+                updatePadding(right = resources.getDimension(CoreUiR.dimen.dp_16).toInt())
+                compoundDrawablePadding = context.resources.getDimension(CoreUiR.dimen.dp_12).toInt()
+                typeface = ResourcesCompat.getFont(context, CoreUiR.font.inter_semi_bold)
                 buttonDrawable = null
-                setBackgroundColor(ContextCompat.getColor(context, R.color.background))
+                setBackgroundColor(ContextCompat.getColor(context, CoreUiR.color.background))
                 buttons[permission] = id
             }
 

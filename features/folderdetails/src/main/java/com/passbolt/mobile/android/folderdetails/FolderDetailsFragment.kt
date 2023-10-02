@@ -11,14 +11,14 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.folderdetails.databinding.FragmentFolderDetailsBinding
+import com.passbolt.mobile.android.feature.folderdetails.databinding.FragmentFolderDetailsBinding
 import com.passbolt.mobile.android.locationdetails.LocationItem
 import com.passbolt.mobile.android.permissions.permissions.NavigationOrigin
 import com.passbolt.mobile.android.permissions.permissions.PermissionsItem
@@ -29,6 +29,8 @@ import com.passbolt.mobile.android.permissions.recycler.UserItem
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -80,7 +82,7 @@ class FolderDetailsFragment :
             presenter.argsRetrieved(
                 args.folderId,
                 it.width,
-                resources.getDimension(R.dimen.dp_40)
+                resources.getDimension(CoreUiR.dimen.dp_40)
             )
         }
     }
@@ -122,18 +124,20 @@ class FolderDetailsFragment :
     }
 
     override fun showFolderSharedIcon() {
-        binding.icon.setImageResource(R.drawable.ic_filled_shared_folder_with_bg)
+        binding.icon.setImageResource(CoreUiR.drawable.ic_filled_shared_folder_with_bg)
     }
 
     override fun showFolderIcon() {
-        binding.icon.setImageResource(R.drawable.ic_filled_folder_with_bg)
+        binding.icon.setImageResource(CoreUiR.drawable.ic_filled_folder_with_bg)
     }
 
     override fun showFolderLocation(parentFolders: List<String>) {
         binding.locationValue.text = parentFolders.let {
             val mutable = it.toMutableList()
-            mutable.add(0, getString(R.string.folder_root))
-            mutable.joinToString(separator = " %s ".format(getString(R.string.folder_details_location_separator)))
+            mutable.add(0, getString(LocalizationR.string.folder_root))
+            mutable.joinToString(
+                separator = " %s ".format(getString(LocalizationR.string.folder_details_location_separator))
+            )
         }
     }
 
@@ -178,11 +182,11 @@ class FolderDetailsFragment :
     }
 
     override fun showDataRefreshError() {
-        showSnackbar(R.string.common_data_refresh_error)
+        showSnackbar(LocalizationR.string.common_data_refresh_error)
     }
 
     override fun showContentNotAvailable() {
-        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), LocalizationR.string.content_not_available, Toast.LENGTH_SHORT).show()
     }
 
     override fun navigateToHome() {

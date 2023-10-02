@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.authentication.accountslist.uistrategy
 
 import android.view.View
-import com.passbolt.mobile.android.feature.authentication.R
 import com.passbolt.mobile.android.feature.authentication.accountslist.AccountsListFragment
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,7 +32,7 @@ class ManageAccountListStrategy(
 
     private var selectedAccountChanged: Boolean = false
 
-    override fun getTitleRes(): Int = R.string.accounts_list_manage_accounts
+    override fun getTitleRes(): Int = LocalizationR.string.accounts_list_manage_accounts
 
     override fun logoVisibility() = View.GONE
 

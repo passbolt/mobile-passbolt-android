@@ -1,17 +1,22 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
     implementation libs.material
     implementation libs.androidx.core
-    implementation libs.androidx.appcompat
-    implementation libs.di.koin
+    implementation libs.appcompat
+    implementation libs.koin
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.architecture"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

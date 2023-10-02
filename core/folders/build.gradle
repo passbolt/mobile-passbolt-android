@@ -1,9 +1,8 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.navigation.safeargs
 }
-
-apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     implementation project(':common')
@@ -17,13 +16,18 @@ dependencies {
     implementation project(':passboltapi')
     implementation project(':database')
 
-    implementation libs.di.koin
+    implementation libs.koin
     implementation libs.room.core
-    implementation libs.room.cipher
+    implementation(libs.sqlite.cipher) { artifact { type = "aar" } }
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.folders"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

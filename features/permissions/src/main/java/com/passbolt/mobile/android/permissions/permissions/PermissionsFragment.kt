@@ -14,18 +14,17 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
+import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityResults
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.permissions.R
-import com.passbolt.mobile.android.permissions.databinding.FragmentResourcePermissionsBinding
+import com.passbolt.mobile.android.feature.permissions.databinding.FragmentResourcePermissionsBinding
 import com.passbolt.mobile.android.permissions.grouppermissionsdetails.GroupPermissionsFragment
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsFragment
 import com.passbolt.mobile.android.permissions.permissions.recycler.PermissionItem
@@ -33,6 +32,8 @@ import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermis
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -209,26 +210,26 @@ class PermissionsFragment :
 
     override fun showSaveButton() {
         showActionButtonLayout()
-        binding.actionButton.text = getString(R.string.save)
+        binding.actionButton.text = getString(LocalizationR.string.save)
     }
 
     private fun showActionButtonLayout() {
         with(binding) {
-            permissionsRecycler.updatePadding(bottom = resources.getDimension(R.dimen.dp_96).toInt())
+            permissionsRecycler.updatePadding(bottom = resources.getDimension(CoreUiR.dimen.dp_96).toInt())
             actionButtonLayout.visible()
         }
     }
 
     override fun showEditButton() {
         showActionButtonLayout()
-        binding.actionButton.text = getString(R.string.resource_permissions_edit_permissions)
+        binding.actionButton.text = getString(LocalizationR.string.resource_permissions_edit_permissions)
     }
 
     override fun showOneOwnerSnackbar() {
         showSnackbar(
-            R.string.resource_permissions_one_owner,
+            LocalizationR.string.resource_permissions_one_owner,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -246,41 +247,41 @@ class PermissionsFragment :
 
     override fun showShareSimulationFailure() {
         showSnackbar(
-            R.string.resource_permissions_share_simulation_failed,
+            LocalizationR.string.resource_permissions_share_simulation_failed,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showShareFailure() {
         showSnackbar(
-            R.string.resource_permissions_share_failed,
+            LocalizationR.string.resource_permissions_share_failed,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showSecretFetchFailure() {
         showSnackbar(
-            R.string.common_fetch_failure,
+            LocalizationR.string.common_fetch_failure,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showSecretEncryptFailure() {
         showSnackbar(
-            R.string.common_encryption_failure,
+            LocalizationR.string.common_encryption_failure,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
     override fun showSecretDecryptFailure() {
         showSnackbar(
-            R.string.common_decryption_failure,
+            LocalizationR.string.common_decryption_failure,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -309,9 +310,9 @@ class PermissionsFragment :
 
     override fun showDataRefreshError() {
         showSnackbar(
-            R.string.common_data_refresh_error,
+            LocalizationR.string.common_data_refresh_error,
             anchorView = snackbarAnchorView,
-            backgroundColor = R.color.red
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -324,7 +325,7 @@ class PermissionsFragment :
     }
 
     override fun showContentNotAvailable() {
-        Toast.makeText(requireContext(), R.string.content_not_available, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), LocalizationR.string.content_not_available, Toast.LENGTH_SHORT).show()
     }
 
     override fun navigateToHome() {

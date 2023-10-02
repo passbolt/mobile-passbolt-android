@@ -1,24 +1,28 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
     implementation project(':localization')
+    implementation project(':coreui')
 
     implementation libs.androidx.core
-    implementation libs.androidx.appcompat
-    implementation libs.androidx.biometric
+    implementation libs.appcompat
+    implementation libs.biometric
     implementation libs.material
-    implementation libs.fastAdapter.binding
-    implementation libs.fastAdapter.core
-    implementation libs.networking.retrofit
-    implementation libs.networking.okHttp
-    implementation libs.di.koin
+    implementation libs.retrofit
+    implementation libs.okhttp
+    implementation libs.koin
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.common"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

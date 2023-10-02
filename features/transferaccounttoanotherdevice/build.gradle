@@ -1,10 +1,9 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
-    id("kotlinx-serialization")
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.serialization
+    alias libs.plugins.navigation.safeargs
 }
-
-apply plugin: "androidx.navigation.safeargs"
 
 dependencies {
     implementation project(':architecture')
@@ -20,25 +19,31 @@ dependencies {
     implementation project(':mappers')
     implementation project(':ui')
     implementation project(':idlingresource')
+    implementation project(':localization')
 
-    implementation libs.di.koin
-    implementation libs.androidx.fragment
-    implementation libs.androidx.activity
-    implementation libs.androidx.constraintLayout
+    implementation libs.koin
+    implementation libs.fragment
+    implementation libs.activity
+    implementation libs.constraintlayout
     implementation libs.material
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
     implementation libs.gson
-    implementation libs.kotlin.serializationJson
-    implementation libs.qrGeneration
+    implementation libs.kotlin.serializationjson
+    implementation libs.qr.generation
     implementation libs.okio
-    implementation libs.test.espressoIdlingResource
+    implementation libs.espresso.idling.resource
 
     testImplementation project(':commontest')
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.feature.transferaccounttoanotherdevice"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

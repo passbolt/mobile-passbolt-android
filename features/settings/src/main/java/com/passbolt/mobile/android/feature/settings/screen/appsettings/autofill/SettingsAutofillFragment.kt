@@ -10,9 +10,10 @@ import com.passbolt.mobile.android.feature.autofill.enabled.AutofillEnabledDialo
 import com.passbolt.mobile.android.feature.autofill.enabled.DialogMode
 import com.passbolt.mobile.android.feature.autofill.encourage.accessibility.EncourageAccessibilityAutofillDialog
 import com.passbolt.mobile.android.feature.autofill.encourage.autofill.EncourageAutofillServiceDialog
-import com.passbolt.mobile.android.feature.settings.R
 import com.passbolt.mobile.android.feature.settings.databinding.FragmentSettingsAutofillBinding
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -75,8 +76,8 @@ class SettingsAutofillFragment :
 
     override fun showAutofillServiceNotSupported() {
         showSnackbar(
-            R.string.settings_autofill_autofill_service_not_supported,
-            backgroundColor = R.color.red
+            LocalizationR.string.settings_autofill_autofill_service_not_supported,
+            backgroundColor = CoreUiR.color.red
         )
     }
 

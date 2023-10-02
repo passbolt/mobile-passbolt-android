@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.scenarios.resourcescreation
 
 import androidx.annotation.IdRes
-import com.passbolt.mobile.android.feature.setup.R
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,15 +26,15 @@ import com.passbolt.mobile.android.feature.setup.R
  */
 
 enum class VisibleCreateButton(@IdRes val filterId: Int){
-    ALL_ITEMS(R.id.allItems),
-    FAVOURITES(R.id.favourites),
-    RECENTLY_MODIFIED(R.id.recentlyModified),
-    SHARED_WITH_ME(R.id.sharedWithMe),
-    OWNED_BY_ME(R.id.ownedByMe),
-    FOLDERS(R.id.folders)
+    ALL_ITEMS(com.passbolt.mobile.android.feature.home.R.id.allItems),
+    FAVOURITES(com.passbolt.mobile.android.feature.home.R.id.favourites),
+    RECENTLY_MODIFIED(com.passbolt.mobile.android.feature.home.R.id.recentlyModified),
+    SHARED_WITH_ME(com.passbolt.mobile.android.feature.home.R.id.sharedWithMe),
+    OWNED_BY_ME(com.passbolt.mobile.android.feature.home.R.id.ownedByMe),
+    FOLDERS(com.passbolt.mobile.android.feature.home.R.id.folders)
 }
 
 enum class HiddenCreateButton(@IdRes val filterId: Int){
-    TAGS(R.id.tags),
-    GROUPS(R.id.groups)
+    TAGS(com.passbolt.mobile.android.feature.home.R.id.tags),
+    GROUPS(com.passbolt.mobile.android.feature.home.R.id.groups)
 }

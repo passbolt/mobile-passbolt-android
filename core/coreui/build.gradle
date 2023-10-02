@@ -1,25 +1,31 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
-    implementation project(':common')
     implementation project(':localization')
 
     implementation libs.androidx.core
-    implementation libs.androidx.appcompat
+    implementation libs.appcompat
     implementation libs.material
-    implementation libs.androidx.constraintLayout
-    implementation libs.androidx.navigationFragment
-    implementation libs.androidx.navigationUi
+    implementation libs.constraintlayout
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
     implementation libs.balloon
-    implementation libs.di.koin
-    implementation libs.textDrawable
+    implementation libs.koin
+    implementation libs.textdrawable
+    implementation libs.fastadapter.binding
+    implementation libs.fastadapter.core
 }
 
 android {
+    namespace = "com.passbolt.mobile.android.core.ui"
     buildFeatures {
         viewBinding true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }

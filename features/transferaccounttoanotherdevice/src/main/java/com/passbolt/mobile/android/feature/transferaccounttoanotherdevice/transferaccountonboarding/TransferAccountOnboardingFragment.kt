@@ -6,14 +6,14 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.extension.fromHtml
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
-import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.databinding.FragmentTransferAccountOnboardingBinding
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -86,7 +86,7 @@ class TransferAccountOnboardingFragment : BindingScopedFragment<FragmentTransfer
 
     private fun addSteps() {
         binding.steps.addList(
-            requireContext().resources.getStringArray(R.array.transfer_account_onboarding_steps_array)
+            requireContext().resources.getStringArray(LocalizationR.array.transfer_account_onboarding_steps_array)
                 .map { CircleStepItemModel(it.fromHtml()) }
         )
     }

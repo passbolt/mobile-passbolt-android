@@ -1,10 +1,20 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
 }
 
 dependencies {
     implementation project(':common')
+    implementation project(':coreui')
+    implementation project(':localization')
 
-    implementation libs.di.koin
+    implementation libs.koin
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.core.autofill"
+}
+
+kotlin {
+    jvmToolchain(17)
 }

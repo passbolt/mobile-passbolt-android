@@ -4,9 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import coil.load
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.passbolt.mobile.android.permissions.R
-import com.passbolt.mobile.android.permissions.databinding.ItemGroupBinding
+import com.passbolt.mobile.android.feature.permissions.R
+import com.passbolt.mobile.android.feature.permissions.databinding.ItemGroupBinding
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -39,7 +40,7 @@ class GroupItem(
 
     override fun bindView(binding: ItemGroupBinding, payloads: List<Any>) {
         with(binding) {
-            root.load(R.drawable.ic_group_avatar)
+            root.load(CoreUiR.drawable.ic_group_avatar)
         }
     }
 

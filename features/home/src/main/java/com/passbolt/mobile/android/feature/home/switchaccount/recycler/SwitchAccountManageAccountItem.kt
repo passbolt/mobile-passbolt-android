@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
-import com.passbolt.mobile.android.common.extension.asBinding
+import com.passbolt.mobile.android.core.extension.asBinding
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.ItemSwitchAccountManageAccountBinding
 

@@ -39,15 +39,15 @@ import com.mikepenz.fastadapter.ISelectionListener
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.select.getSelectExtension
-import com.passbolt.mobile.android.common.extension.gone
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
-import com.passbolt.mobile.android.common.extension.visible
 import com.passbolt.mobile.android.core.extension.clearEndIcon
+import com.passbolt.mobile.android.core.extension.gone
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
-import com.passbolt.mobile.android.resourcepicker.databinding.FragmentResourcePickerBinding
+import com.passbolt.mobile.android.feature.resourcepicker.databinding.FragmentResourcePickerBinding
 import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModel
 import com.passbolt.mobile.android.resourcepicker.model.HeaderType
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
@@ -57,6 +57,8 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.SelectableResourceModelWrapper
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class ResourcePickerFragment :
     BindingScopedAuthenticatedFragment<FragmentResourcePickerBinding, ResourcePickerContract.View>(
@@ -214,7 +216,7 @@ class ResourcePickerFragment :
 
     override fun displaySearchClearEndIcon() {
         binding.searchTextInput.setSearchEndIconWithListener(
-            ContextCompat.getDrawable(requireContext(), R.drawable.ic_close)!!,
+            ContextCompat.getDrawable(requireContext(), CoreUiR.drawable.ic_close)!!,
             presenter::searchClearClick
         )
     }
@@ -225,8 +227,8 @@ class ResourcePickerFragment :
 
     override fun showDataRefreshError() {
         showSnackbar(
-            messageResId = R.string.common_data_refresh_error,
-            backgroundColor = R.color.red
+            messageResId = LocalizationR.string.common_data_refresh_error,
+            backgroundColor = CoreUiR.color.red
         )
     }
 
@@ -243,7 +245,7 @@ class ResourcePickerFragment :
             .setTitle(confirmationModel.titleResId)
             .setMessage(confirmationModel.messageResId)
             .setPositiveButton(confirmationModel.positiveButtonResId) { _, _ -> presenter.otpLinkConfirmed(pickAction) }
-            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
             .show()
     }
 

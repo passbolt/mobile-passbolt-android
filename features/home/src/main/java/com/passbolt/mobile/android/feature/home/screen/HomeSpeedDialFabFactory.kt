@@ -18,6 +18,8 @@ import com.leinardi.android.speeddial.SpeedDialView
 import com.leinardi.android.speeddial.SpeedDialView.OnChangeListener
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -48,10 +50,10 @@ class HomeSpeedDialFabFactory(
     var addPasswordClick: (() -> Unit)? = null
     var addFolderClick: (() -> Unit)? = null
 
-    private val backgroundColor = ResourcesCompat.getColor(context.resources, R.color.background, context.theme)
-    private val tintColor = ResourcesCompat.getColor(context.resources, R.color.icon_tint, context.theme)
-    private val primaryColor = ResourcesCompat.getColor(context.resources, R.color.primary, context.theme)
-    private val textColor = ResourcesCompat.getColor(context.resources, R.color.text_primary, context.theme)
+    private val backgroundColor = ResourcesCompat.getColor(context.resources, CoreUiR.color.background, context.theme)
+    private val tintColor = ResourcesCompat.getColor(context.resources, CoreUiR.color.icon_tint, context.theme)
+    private val primaryColor = ResourcesCompat.getColor(context.resources, CoreUiR.color.primary, context.theme)
+    private val textColor = ResourcesCompat.getColor(context.resources, CoreUiR.color.text_primary, context.theme)
 
     fun getSpeedDialFab(context: Context, overlay: SpeedDialOverlayLayout, homeDisplay: HomeDisplayViewModel) =
         when (homeDisplay) {
@@ -64,7 +66,7 @@ class HomeSpeedDialFabFactory(
      */
     private fun mainFab(context: Context, overlay: SpeedDialOverlayLayout) =
         SpeedDialView(context).apply {
-            val margin = context.resources.getDimension(R.dimen.dp_16).toInt()
+            val margin = context.resources.getDimension(CoreUiR.dimen.dp_16).toInt()
             id = R.id.homeSpeedDialViewId
             overlayLayout = overlay
 
@@ -81,7 +83,7 @@ class HomeSpeedDialFabFactory(
             mainFabOpenedBackgroundColor = backgroundColor
 
             setMainFabClosedDrawable(
-                ContextCompat.getDrawable(context, R.drawable.ic_plus)
+                ContextCompat.getDrawable(context, CoreUiR.drawable.ic_plus)
                     ?.mutate()
                     ?.apply {
                         colorFilter = PorterDuffColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
@@ -110,13 +112,13 @@ class HomeSpeedDialFabFactory(
         mainFab(context, overlay).apply {
             addSpeedDialItem(
                 R.id.homeSpeedDialViewAddPasswordId,
-                R.drawable.ic_key,
-                R.string.home_speed_dial_add_password
+                CoreUiR.drawable.ic_key,
+                LocalizationR.string.home_speed_dial_add_password
             )
             addSpeedDialItem(
                 R.id.homeSpeedDialViewAddFolderId,
-                R.drawable.ic_folder,
-                R.string.home_speed_dial_add_folder
+                CoreUiR.drawable.ic_folder,
+                LocalizationR.string.home_speed_dial_add_folder
             )
 
             setOnChangeListener(null)
@@ -147,7 +149,9 @@ class HomeSpeedDialFabFactory(
                 .setFabBackgroundColor(backgroundColor)
                 .setLabelColor(textColor)
                 .setLabelBackgroundColor(backgroundColor)
-                .setFabImageTintColor(ResourcesCompat.getColor(context.resources, R.color.icon_tint, context.theme))
+                .setFabImageTintColor(
+                    ResourcesCompat.getColor(context.resources, CoreUiR.color.icon_tint, context.theme)
+                )
                 .setLabel(context.getString(labelId))
                 .create()
         )

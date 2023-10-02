@@ -13,12 +13,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.extension.fromHtml
-import com.passbolt.mobile.android.common.extension.setDebouncingOnClick
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.ui.circlestepsview.CircleStepItemModel
-import com.passbolt.mobile.android.feature.autofill.R
 import com.passbolt.mobile.android.feature.autofill.databinding.DialogEncourageAutofillBinding
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.fragmentScope
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -44,7 +45,7 @@ import org.koin.androidx.scope.fragmentScope
  */
 class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContract.View, AndroidScopeComponent {
 
-    override val scope by fragmentScope()
+    override val scope by fragmentScope(useParentActivityScope = false)
     private var listener: Listener? = null
     private val presenter: EncourageAutofillContract.Presenter by scope.inject()
     private var autofillSystemSettingsLauncher = registerForActivityResult(
@@ -57,7 +58,7 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.FullscreenDialogTheme)
+        setStyle(STYLE_NO_TITLE, CoreUiR.style.FullscreenDialogTheme)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -85,7 +86,7 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
 
     private fun setupSteps(binding: DialogEncourageAutofillBinding) {
         binding.stepsView.addList(
-            requireContext().resources.getStringArray(R.array.dialog_encourage_autofill_setup_steps)
+            requireContext().resources.getStringArray(LocalizationR.array.dialog_encourage_autofill_setup_steps)
                 .mapIndexed { index, text -> CircleStepItemModel(text.fromHtml(), getStepDrawable(index)) }
         )
     }
@@ -115,9 +116,9 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
 
     override fun showAutofillNotSupported() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.dialog_encourage_autofill_autofill_not_supported_title)
-            .setMessage(R.string.dialog_encourage_autofill_autofill_not_supported_message)
-            .setPositiveButton(R.string.ok) { _, _ -> }
+            .setTitle(LocalizationR.string.dialog_encourage_autofill_autofill_not_supported_title)
+            .setMessage(LocalizationR.string.dialog_encourage_autofill_autofill_not_supported_message)
+            .setPositiveButton(LocalizationR.string.ok) { _, _ -> }
             .show()
     }
 
@@ -133,7 +134,10 @@ class EncourageAutofillServiceDialog : DialogFragment(), EncourageAutofillContra
 
     private companion object {
         private const val PACKAGE_URI_FORMAT = "package:%s"
-        private val AUTOFILL_SETUP_STEPS_ICONS = listOf(R.drawable.autofill_with_bg, R.drawable.passbolt_with_bg)
+        private val AUTOFILL_SETUP_STEPS_ICONS = listOf(
+            CoreUiR.drawable.autofill_with_bg,
+            CoreUiR.drawable.passbolt_with_bg
+        )
     }
 
     interface Listener {

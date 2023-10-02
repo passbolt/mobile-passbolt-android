@@ -62,7 +62,7 @@ fun hasDrawable(
     @DrawableRes id: Int,
     @ColorRes tint: Int? = null,
     tintMode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN,
-    drawablePosition: TextDrawablePosition = TextDrawablePosition.Left
+    drawablePosition: TextDrawablePosition = TextDrawablePosition.LEFT
 ) = object : TypeSafeMatcher<View>() {
     override fun describeTo(description: Description) {
         description.appendText("View with drawable same as drawable with id $id")
@@ -94,7 +94,7 @@ private fun Drawable.tinted(@ColorInt tintColor: Int? = null, tintMode: PorterDu
 private fun Int.toColorStateList() = ColorStateList.valueOf(this)
 
 enum class TextDrawablePosition {
-    Left, Top, Right, Bottom
+    LEFT, TOP, RIGHT, BOTTOM
 }
 
 

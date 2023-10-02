@@ -9,9 +9,6 @@ import android.service.autofill.FillResponse
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillManager
 import android.view.autofill.AutofillValue
-import com.passbolt.mobile.android.core.autofill.system.AssistStructureParser
-import com.passbolt.mobile.android.core.autofill.system.AutofillField
-import com.passbolt.mobile.android.core.autofill.system.FillableInputsFinder
 import com.passbolt.mobile.android.feature.autofill.autofill.RemoteViewsFactory
 import com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesContract
 

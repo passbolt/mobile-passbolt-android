@@ -3,10 +3,14 @@ package com.passbolt.mobile.android.core.ui
 import com.passbolt.mobile.android.core.font.Font
 import com.passbolt.mobile.android.core.font.fontModule
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController
+import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
+import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
+import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import java.time.format.DateTimeFormatter
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,10 +38,17 @@ import org.koin.dsl.module
 val coreUiModule = module {
     fontModule()
 
+    singleOf(::TotpViewController)
+    singleOf(::OtpFormatter)
+    singleOf(::FingerprintFormatter)
+    singleOf(::DateFormatter)
+
+    single {
+        DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")
+    }
     factory {
         InitialsIconGenerator(
             font = get(named<Font.InterMedium>())
         )
     }
-    singleOf(::TotpViewController)
 }

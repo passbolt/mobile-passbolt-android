@@ -39,7 +39,6 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.hasBackgroundColor
 import com.passbolt.mobile.android.hasDrawable
 import com.passbolt.mobile.android.instrumentationTestsModule
@@ -52,6 +51,9 @@ import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
+import com.google.android.material.R as MaterialR
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 
 @RunWith(AndroidJUnit4::class)
@@ -82,8 +84,8 @@ class FilterDrawerTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(R.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
-        onView(withId(R.id.authButton)).perform(scrollTo(), click())
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
     }
 
     @Test
@@ -91,10 +93,10 @@ class FilterDrawerTest : KoinTest {
     fun asALoggedInMobileUserOnTheHomepageICanSeeAFilterIconInTheSearchBar() {
         //    Given     that I am a logged in mobile user
         //    When      I am on the homepage
-        onView(withId(R.id.rootLayout)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
         //    And       the search bar is not focused
         //    Then      I see an icon filter in the left side of the search bar
-        onView(withId(R.id.text_input_start_icon)).check(matches(isDisplayed()))
+        onView(withId(MaterialR.id.text_input_start_icon)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -102,20 +104,20 @@ class FilterDrawerTest : KoinTest {
     fun asALoggedInMobileUserOnTheHomepageICanSeeTheFilterDrawer() {
         //    Given     that I am a logged in mobile user on the homepage
         //    When      I click on the filter icon
-        onView(withId(R.id.text_input_start_icon)).perform(click())
+        onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
         //    Then      I see the “filter” drawer
-        onView(withId(R.id.root)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.root)).check(matches(isDisplayed()))
         //    And       I see the homepage is greyed out in the background
         //    And       I see a “Filter view by” title
-        onView(withText(R.string.filters_menu_title)).check(matches(isDisplayed()))
+        onView(withText(LocalizationR.string.filters_menu_title)).check(matches(isDisplayed()))
         //    And       I see a close button
-        onView(withId(R.id.close)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.close)).check(matches(isDisplayed()))
         //    And       I see a list of filters
         //    And       I see <filter> list item with their corresponding icon
         ResourceFilterModel.values().forEach { filterItem ->
             onView(withId(filterItem.filterId))
                 .check(matches(isDisplayed()))
-                .check(matches(hasDrawable(filterItem.filterIconId, R.color.icon_tint)))
+                .check(matches(hasDrawable(filterItem.filterIconId, CoreUiR.color.icon_tint)))
             //    Examples:
             //      | filter              |
             //      | “All items”         |
@@ -137,15 +139,15 @@ class FilterDrawerTest : KoinTest {
         filterList.indices.forEach { index ->
             // And        the <filter> is active
             // When       I open the filter drawer
-            onView(withId(R.id.text_input_start_icon)).perform(click())
+            onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
             onView(withId(filterList[index].filterId)).perform(click())
             // Then       I see the current active <filter> in the list with an active status
-            onView(withId(R.id.text_input_start_icon)).perform(click())
+            onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
             onView(withId(filterList[index].filterId))
                 .check(matches(isDisplayed()))
-                .check(matches(hasBackgroundColor(R.color.primary)))
+                .check(matches(hasBackgroundColor(CoreUiR.color.primary)))
             // And        I can close the drawer
-            onView(withId(R.id.close)).perform(click())
+            onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.close)).perform(click())
             // Examples:
             //    | filter              |
             //    | “All items”         |

@@ -12,7 +12,7 @@
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
         <argument
-            android:name="HomeView"
+            android:name="homeView"
             android:defaultValue="@null"
             app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel"
             app:nullable="true" />
@@ -24,7 +24,7 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right">
             <argument
-                android:name="HomeView"
+                android:name="homeView"
                 app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel" />
         </action>
     </fragment>
@@ -43,7 +43,7 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right">
             <argument
-                android:name="HomeView"
+                android:name="homeView"
                 app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel" />
         </action>
     </fragment>
@@ -58,7 +58,7 @@
         app:popUpTo="@id/home"
         app:popUpToInclusive="true">
         <argument
-            android:name="HomeView"
+            android:name="homeView"
             app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel" />
     </action>
 
@@ -80,7 +80,7 @@
         app:popUpTo="@id/home"
         app:popUpToInclusive="true">
         <argument
-            android:name="HomeView"
+            android:name="homeView"
             app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel" />
     </action>
 
