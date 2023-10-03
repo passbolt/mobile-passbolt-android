@@ -44,7 +44,7 @@ val coreUiModule = module {
     singleOf(::DateFormatter)
 
     single {
-        DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")
+        DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm O")
     }
     factory {
         InitialsIconGenerator(
