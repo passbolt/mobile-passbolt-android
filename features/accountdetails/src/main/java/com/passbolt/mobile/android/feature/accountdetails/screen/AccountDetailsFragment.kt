@@ -8,6 +8,7 @@ import coil.transform.CircleCropTransformation
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.feature.accountdetails.databinding.FragmentAccountDetailsBinding
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
@@ -83,6 +84,14 @@ class AccountDetailsFragment :
 
     override fun showOrgUrl(orgUrl: String) {
         binding.orgUrlLabel.text = orgUrl
+    }
+
+    override fun showRole(roleName: String) {
+        with(binding) {
+            roleLabel.text = roleName
+            roleLabel.visible()
+            roleHeading.visible()
+        }
     }
 
     override fun showAvatar(avatarUrl: String?) {

@@ -42,7 +42,7 @@ class FetchUserProfileUseCase(
             is NetworkResult.Success -> {
                 val profile = userProfileMapper.mapToUi(result.value.profile, result.value.username)
                 if (profile != null) {
-                    Output.Success(profile)
+                    Output.Success(profile, result.value.role?.name)
                 } else {
                     Timber.e("User profile was not present in the API response")
                     Output.Failure("User profile not present in the response")
@@ -52,7 +52,10 @@ class FetchUserProfileUseCase(
 
     sealed class Output {
 
-        data class Success(val profile: UserProfileModel) : Output()
+        data class Success(
+            val profile: UserProfileModel,
+            val roleName: String?
+        ) : Output()
 
         data class Failure(val message: String?) : Output()
     }

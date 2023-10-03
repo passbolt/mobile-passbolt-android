@@ -56,6 +56,7 @@ class AccountDetailsTest : KoinTest {
         verify(view).showOrgUrl(SERVER_URL)
         verify(view).showEmail(EMAIL)
         verify(view).showName("$FIRST_NAME $LAST_NAME")
+        verify(view).showRole(ROLE)
         verifyNoMoreInteractions(view)
     }
 

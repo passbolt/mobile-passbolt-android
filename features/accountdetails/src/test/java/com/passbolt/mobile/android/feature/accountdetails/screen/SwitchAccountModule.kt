@@ -40,11 +40,21 @@ internal const val AVATAR_URL = "avatarUrl"
 internal const val SERVER_URL = "serverUrl"
 internal const val SERVER_ID = "serverId"
 internal const val LABEL = "label"
+internal const val ROLE = "user"
 internal const val SELECTED_ACCOUNT_ID = "selected"
 
 internal val mockGetSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseCase> {
     on { execute(Unit) }.doReturn(
-        GetSelectedAccountDataUseCase.Output(FIRST_NAME, LAST_NAME, EMAIL, AVATAR_URL, SERVER_URL, SERVER_ID, LABEL)
+        GetSelectedAccountDataUseCase.Output(
+            firstName = FIRST_NAME,
+            lastName = LAST_NAME,
+            email = EMAIL,
+            avatarUrl = AVATAR_URL,
+            url = SERVER_URL,
+            serverId = SERVER_ID,
+            label = LABEL,
+            role = ROLE
+        )
     )
 }
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase> {

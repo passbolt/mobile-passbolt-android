@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesF
 import com.passbolt.mobile.android.storage.paths.AccountDataFileName
 import com.passbolt.mobile.android.storage.usecase.AVATAR_URL_KEY
 import com.passbolt.mobile.android.storage.usecase.EMAIL_KEY
+import com.passbolt.mobile.android.storage.usecase.ROLE_KEY
 import com.passbolt.mobile.android.storage.usecase.SERVER_ID_KEY
 import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.URL_KEY
@@ -50,7 +51,8 @@ class GetSelectedAccountDataUseCase(
             avatarUrl = sharedPreferences.getString(AVATAR_URL_KEY, null),
             url = sharedPreferences.getString(URL_KEY, "").orEmpty(),
             serverId = sharedPreferences.getString(SERVER_ID_KEY, ""),
-            label = sharedPreferences.getString(USER_LABEL_KEY, null)
+            label = sharedPreferences.getString(USER_LABEL_KEY, null),
+            role = sharedPreferences.getString(ROLE_KEY, null)
         )
     }
 
@@ -61,6 +63,7 @@ class GetSelectedAccountDataUseCase(
         val avatarUrl: String?,
         val url: String,
         val serverId: String?,
-        val label: String?
+        val label: String?,
+        val role: String?
     )
 }

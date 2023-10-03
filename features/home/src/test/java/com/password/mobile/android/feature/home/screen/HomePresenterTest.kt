@@ -628,7 +628,8 @@ class HomePresenterTest : KoinTest {
                 avatarUrl = avatarUrl,
                 url = "",
                 serverId = "",
-                label = "label"
+                label = "label",
+                role = "user"
             )
         )
     }

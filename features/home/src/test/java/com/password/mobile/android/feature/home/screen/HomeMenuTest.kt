@@ -84,7 +84,8 @@ class HomeMenuTest : KoinTest {
                 avatarUrl = "avatarUrl",
                 url = "",
                 serverId = "",
-                label = "label"
+                label = "label",
+                role = "user"
             )
         )
     }

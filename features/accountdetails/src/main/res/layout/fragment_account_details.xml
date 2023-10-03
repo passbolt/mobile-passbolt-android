@@ -77,6 +77,26 @@
                 tools:text="john@doe" />
 
             <TextView
+                android:id="@+id/roleHeading"
+                style="@style/Heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_24"
+                android:text="@string/account_details_label_role"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/roleLabel"
+                style="@style/ValueText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:visibility="gone"
+                tools:text="user"
+                tools:visibility="visible" />
+
+            <TextView
                 style="@style/Heading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -119,6 +119,7 @@
     <string name="account_details_label_desc">Label will be displayed in the account list and for authentication</string>
     <string name="account_details_label_name">Name</string>
     <string name="account_details_label_email">E-mail</string>
+    <string name="account_details_label_role">Role</string>
     <string name="account_details_label_org">Organization URL</string>
     <string name="account_details_save_changes">Save changes</string>
     <string name="account_details_label_saved">Your account label was changed!</string>

@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesF
 import com.passbolt.mobile.android.storage.paths.AccountDataFileName
 import com.passbolt.mobile.android.storage.usecase.AVATAR_URL_KEY
 import com.passbolt.mobile.android.storage.usecase.EMAIL_KEY
+import com.passbolt.mobile.android.storage.usecase.ROLE_KEY
 import com.passbolt.mobile.android.storage.usecase.SERVER_ID_KEY
 import com.passbolt.mobile.android.storage.usecase.URL_KEY
 import com.passbolt.mobile.android.storage.usecase.USER_FIRST_NAME_KEY
@@ -50,6 +51,7 @@ class UpdateAccountDataUseCase(
                 avatarUrl?.let { putString(AVATAR_URL_KEY, it) }
                 url?.let { putString(URL_KEY, it) }
                 serverId?.let { putString(SERVER_ID_KEY, it) }
+                role?.let { putString(ROLE_KEY, it) }
             }
             apply()
         }
@@ -63,6 +65,7 @@ class UpdateAccountDataUseCase(
         val email: String? = null,
         val avatarUrl: String? = null,
         val serverId: String? = null,
-        val label: String? = null
+        val label: String? = null,
+        val role: String? = null
     )
 }
