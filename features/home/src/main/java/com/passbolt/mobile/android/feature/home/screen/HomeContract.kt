@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.home.screen
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel

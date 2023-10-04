@@ -4,8 +4,8 @@ import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.paths.AccountPreferencesFileName
-import com.passbolt.mobile.android.storage.usecase.KEY_LAST_USED_HOME_VIEW
-import com.passbolt.mobile.android.storage.usecase.KEY_USER_SET_HOME_VIEW
+import com.passbolt.mobile.android.storage.KEY_LAST_USED_HOME_VIEW
+import com.passbolt.mobile.android.storage.KEY_USER_SET_HOME_VIEW
 import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 

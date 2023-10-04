@@ -97,14 +97,6 @@ class OtpFragment :
             }
         }
 
-    private val otpScannedResult = { _: String, result: Bundle ->
-        if (result.containsKey(ScanOtpSuccessFragment.EXTRA_OTP_CREATED) &&
-            result.getBoolean(ScanOtpSuccessFragment.EXTRA_OTP_CREATED)
-        ) {
-            presenter.otpCreated()
-        }
-    }
-
     private val otpCreatedResult = { _: String, result: Bundle ->
         if (result.containsKey(CreateOtpFragment.EXTRA_OTP_CREATED) &&
             result.getBoolean(CreateOtpFragment.EXTRA_OTP_CREATED)

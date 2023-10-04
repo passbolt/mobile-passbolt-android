@@ -50,7 +50,7 @@ import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.home.screen.model.State
 import com.passbolt.mobile.android.feature.home.screen.recycler.FolderItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.GroupWithCountItem

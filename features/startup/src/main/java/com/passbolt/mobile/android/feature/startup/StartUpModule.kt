@@ -1,9 +1,5 @@
-package com.passbolt.mobile.android.feature.startup.di
+package com.passbolt.mobile.android.feature.startup
 
-import com.passbolt.mobile.android.feature.startup.AccountSetupModelCreator
-import com.passbolt.mobile.android.feature.startup.StartUpActivity
-import com.passbolt.mobile.android.feature.startup.StartUpContract
-import com.passbolt.mobile.android.feature.startup.StartUpPresenter
 import org.koin.dsl.module
 
 /**

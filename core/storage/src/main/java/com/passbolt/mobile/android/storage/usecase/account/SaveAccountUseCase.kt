@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.storage.usecase.account
 
 import android.content.SharedPreferences
 import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.storage.usecase.ACCOUNTS_ALIAS
+import com.passbolt.mobile.android.storage.ACCOUNTS_ALIAS
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**

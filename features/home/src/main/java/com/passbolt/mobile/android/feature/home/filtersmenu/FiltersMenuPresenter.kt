@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.feature.home.filtersmenu
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.UpdateHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel

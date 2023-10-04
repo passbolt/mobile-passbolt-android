@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.storage.usecase.session
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.paths.SessionFileName
-import com.passbolt.mobile.android.storage.usecase.ACCESS_TOKEN_KEY
-import com.passbolt.mobile.android.storage.usecase.REFRESH_TOKEN_KEY
+import com.passbolt.mobile.android.storage.ACCESS_TOKEN_KEY
+import com.passbolt.mobile.android.storage.REFRESH_TOKEN_KEY
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**

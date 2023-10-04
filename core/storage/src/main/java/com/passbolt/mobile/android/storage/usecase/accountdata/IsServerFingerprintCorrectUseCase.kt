@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.storage.usecase.accountdata
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.paths.ServerFingerprintFileName
-import com.passbolt.mobile.android.storage.usecase.SERVER_FINGERPRINT_KEY
+import com.passbolt.mobile.android.storage.SERVER_FINGERPRINT_KEY
 
 /**
  * Passbolt - Open source password manager for teams

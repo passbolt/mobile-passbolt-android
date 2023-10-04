@@ -20,7 +20,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpT
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.module.dsl.singleOf

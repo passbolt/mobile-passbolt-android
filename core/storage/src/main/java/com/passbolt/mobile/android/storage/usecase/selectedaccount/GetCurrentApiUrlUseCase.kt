@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.storage.usecase.selectedaccount
 
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
-import com.passbolt.mobile.android.storage.usecase.CURRENT_URL_ALIAS
-import com.passbolt.mobile.android.storage.usecase.CURRENT_URL_KEY
+import com.passbolt.mobile.android.storage.CURRENT_URL_ALIAS
+import com.passbolt.mobile.android.storage.CURRENT_URL_KEY
 
 /**
  * Passbolt - Open source password manager for teams
@@ -41,7 +41,7 @@ class GetCurrentApiUrlUseCase(
         return if (selectedAccount != null) {
             Output(selectedAccount)
         } else {
-            throw IllegalStateException("No api url is currently saved")
+            error("No api url is currently saved")
         }
     }
 

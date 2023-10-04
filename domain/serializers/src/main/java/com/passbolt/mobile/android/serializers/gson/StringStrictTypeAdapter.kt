@@ -17,7 +17,7 @@ class StringStrictTypeAdapter : TypeAdapter<String?>() {
             null
         } else {
             if (peek != JsonToken.STRING) {
-                throw InvalidJsonTokenType(input.nextString(), peek.toString(), String::class.java.simpleName)
+                throw InvalidJsonTokenType(peek.toString(), String::class.java.simpleName)
             } else {
                 input.nextString()
             }

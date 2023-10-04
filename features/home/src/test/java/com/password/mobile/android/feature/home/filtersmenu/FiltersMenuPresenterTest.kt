@@ -2,7 +2,7 @@ package com.password.mobile.android.feature.home.filtersmenu
 
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuContract
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

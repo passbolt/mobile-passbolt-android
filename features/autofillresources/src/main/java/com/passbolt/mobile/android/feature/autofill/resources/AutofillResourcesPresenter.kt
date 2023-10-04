@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
@@ -41,7 +40,6 @@ import timber.log.Timber
  */
 class AutofillResourcesPresenter(
     private val getAccountsUseCase: GetAccountsUseCase,
-    private val resourceTypeFactory: ResourceTypeFactory,
     private val secretParser: SecretParser,
     private val secretInteractor: SecretInteractor,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,

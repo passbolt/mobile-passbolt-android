@@ -198,7 +198,7 @@ class ResourcePickerPresenter(
                         PickResourceAction.TOTP_LINK to ConfirmationModel.LinkTotpModel()
                     PASSWORD_DESCRIPTION_TOTP_SLUG ->
                         PickResourceAction.TOTP_REPLACE to ConfirmationModel.ReplaceTotpModel()
-                    else -> throw IllegalStateException("Impossible resource slug: $slug")
+                    else -> error("Impossible resource slug: $slug")
                 }
 
             view?.showConfirmation(confirmationModel, pickAction)

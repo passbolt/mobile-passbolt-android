@@ -14,7 +14,7 @@
         <argument
             android:name="homeView"
             android:defaultValue="@null"
-            app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel"
+            app:argType="com.passbolt.mobile.android.ui.HomeDisplayViewModel"
             app:nullable="true" />
         <action
             android:id="@+id/action_home_to_homeChild"
@@ -25,7 +25,7 @@
             app:popExitAnim="@anim/slide_out_right">
             <argument
                 android:name="homeView"
-                app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel" />
+                app:argType="com.passbolt.mobile.android.ui.HomeDisplayViewModel" />
         </action>
     </fragment>
 
@@ -44,7 +44,7 @@
             app:popExitAnim="@anim/slide_out_right">
             <argument
                 android:name="homeView"
-                app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel" />
+                app:argType="com.passbolt.mobile.android.ui.HomeDisplayViewModel" />
         </action>
     </fragment>
 
@@ -59,7 +59,7 @@
         app:popUpToInclusive="true">
         <argument
             android:name="homeView"
-            app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel" />
+            app:argType="com.passbolt.mobile.android.ui.HomeDisplayViewModel" />
     </action>
 
     <action
@@ -81,7 +81,7 @@
         app:popUpToInclusive="true">
         <argument
             android:name="homeView"
-            app:argType="com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel" />
+            app:argType="com.passbolt.mobile.android.ui.HomeDisplayViewModel" />
     </action>
 
     <include app:graph="@navigation/folder_details" />

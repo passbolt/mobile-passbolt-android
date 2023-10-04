@@ -61,7 +61,7 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper

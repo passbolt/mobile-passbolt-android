@@ -15,7 +15,7 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase

@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.storage.usecase.database
 
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
-import com.passbolt.mobile.android.storage.usecase.PASSPHRASE_KEY
-import com.passbolt.mobile.android.storage.usecase.RESOURCE_DATABASE_ALIAS
+import com.passbolt.mobile.android.storage.PASSPHRASE_KEY
+import com.passbolt.mobile.android.storage.RESOURCE_DATABASE_ALIAS
 import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 
 /**

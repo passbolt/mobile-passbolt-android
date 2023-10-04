@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.ui
+package com.passbolt.mobile.android.core
 
 import com.passbolt.mobile.android.core.font.Font
 import com.passbolt.mobile.android.core.font.fontModule

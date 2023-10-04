@@ -157,11 +157,8 @@ class DropDownInputView @JvmOverloads constructor(
 
     fun setItem(item: String) {
         val itemIndex = items.indexOf(item)
-        if (itemIndex == -1) {
-            throw IllegalArgumentException("Item not present inside set items.")
-        } else {
-            binding.input.setText(items[itemIndex], false)
-        }
+        require(itemIndex != -1) { "Item not present inside set items." }
+        binding.input.setText(items[itemIndex], false)
     }
 
     private companion object {

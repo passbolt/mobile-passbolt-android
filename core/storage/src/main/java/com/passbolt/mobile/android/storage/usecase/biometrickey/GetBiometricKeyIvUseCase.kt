@@ -4,7 +4,7 @@ import android.util.Base64
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.paths.BiometricKeyIvFileName
-import com.passbolt.mobile.android.storage.usecase.IV_KEY
+import com.passbolt.mobile.android.storage.IV_KEY
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**

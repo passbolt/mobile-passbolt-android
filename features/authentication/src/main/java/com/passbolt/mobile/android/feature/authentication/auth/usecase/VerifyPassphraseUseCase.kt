@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.feature.setup.enterpassphrase
+package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp

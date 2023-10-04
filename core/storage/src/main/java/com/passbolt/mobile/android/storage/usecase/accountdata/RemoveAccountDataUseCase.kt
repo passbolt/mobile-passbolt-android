@@ -3,10 +3,10 @@ package com.passbolt.mobile.android.storage.usecase.accountdata
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.paths.AccountDataFileName
-import com.passbolt.mobile.android.storage.usecase.EMAIL_KEY
-import com.passbolt.mobile.android.storage.usecase.URL_KEY
-import com.passbolt.mobile.android.storage.usecase.USER_FIRST_NAME_KEY
-import com.passbolt.mobile.android.storage.usecase.USER_LAST_NAME_KEY
+import com.passbolt.mobile.android.storage.EMAIL_KEY
+import com.passbolt.mobile.android.storage.URL_KEY
+import com.passbolt.mobile.android.storage.USER_FIRST_NAME_KEY
+import com.passbolt.mobile.android.storage.USER_LAST_NAME_KEY
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**

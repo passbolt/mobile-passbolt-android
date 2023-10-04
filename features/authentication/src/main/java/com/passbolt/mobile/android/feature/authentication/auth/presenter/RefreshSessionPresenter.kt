@@ -12,7 +12,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
