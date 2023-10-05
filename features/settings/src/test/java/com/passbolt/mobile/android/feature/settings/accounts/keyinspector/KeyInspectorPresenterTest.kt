@@ -117,7 +117,8 @@ class KeyInspectorPresenterTest : KoinTest {
             avatarUrl = "avatar_url",
             url = "url",
             serverId = "serverId",
-            label = "label"
+            label = "label",
+            role = "user"
         )
         private val userData = FetchCurrentUserUseCase.Output.Success(
             UserModel(

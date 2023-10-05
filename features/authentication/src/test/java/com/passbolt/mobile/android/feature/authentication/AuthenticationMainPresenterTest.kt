@@ -110,7 +110,8 @@ class AuthenticationMainPresenterTest : KoinTest {
                         avatarUrl = "avatarUrl",
                         serverId = "serverId",
                         url = "https://passbolt.com",
-                        label = "label"
+                        label = "label",
+                        role = "user"
                     )
                 )
 

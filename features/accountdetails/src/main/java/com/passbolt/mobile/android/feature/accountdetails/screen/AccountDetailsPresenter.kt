@@ -69,6 +69,7 @@ class AccountDetailsPresenter(
                 showOrgUrl(data.url)
                 showAvatar(data.avatarUrl)
                 showLabel(label)
+                data.role?.let { showRole(it) }
             }
         }
     }

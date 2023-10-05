@@ -85,7 +85,8 @@ class OtpPresenterTest : KoinTest {
                 avatarUrl = SEARCH_AVATAR_URL,
                 url = "",
                 serverId = "",
-                label = "label"
+                label = "label",
+                role = "user"
             )
         )
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(

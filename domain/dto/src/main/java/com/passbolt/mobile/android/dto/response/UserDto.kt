@@ -32,7 +32,13 @@ data class UserDto(
     val profile: UserProfileResponseDto?,
     val username: String,
     val active: Boolean,
-    val deleted: Boolean
+    val deleted: Boolean,
+    val role: RoleDto?
+)
+
+data class RoleDto(
+    val id: String,
+    val name: String
 )
 
 data class GpgKeyDto(
