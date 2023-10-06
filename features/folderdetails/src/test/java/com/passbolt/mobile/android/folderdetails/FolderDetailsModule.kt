@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderD
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
@@ -36,7 +37,7 @@ import org.mockito.kotlin.mock
 val mockGetLocalFolderDetailsUseCase = mock<GetLocalFolderDetailsUseCase>()
 val mockGetFolderLocationUseCase = mock<GetLocalFolderLocationUseCase>()
 val mockGetLocalFolderPermissionsUseCase = mock<GetLocalFolderPermissionsUseCase>()
-
+val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 
 @ExperimentalCoroutinesApi
 val testFolderDetailsModule = module {
@@ -46,6 +47,7 @@ val testFolderDetailsModule = module {
             getLocalFolderDetailsUseCase = mockGetLocalFolderDetailsUseCase,
             getLocalFolderLocation = mockGetFolderLocationUseCase,
             getLocalFolderPermissionsUseCase = mockGetLocalFolderPermissionsUseCase,
+            getRbacRulesUseCase = mockGetRbacRulesUseCase,
             coroutineLaunchContext = get()
         )
     }

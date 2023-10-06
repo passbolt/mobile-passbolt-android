@@ -17,9 +17,12 @@ import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.RbacModel
+import com.passbolt.mobile.android.ui.RbacRuleModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.TagModel
@@ -97,7 +100,21 @@ class ResourceMenuTest : KoinTest {
                     isPreviewPasswordAvailable = true,
                     areFoldersAvailable = true,
                     areTagsAvailable = true,
-                    isTotpAvailable = true
+                    isTotpAvailable = true,
+                    isRbacAvailable = true
+                )
+            )
+        }
+        mockGetRbacRulesUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetRbacRulesUseCase.Output(
+                    RbacModel(
+                        passwordPreviewRule = RbacRuleModel.ALLOW,
+                        passwordCopyRule = RbacRuleModel.ALLOW,
+                        tagsUseRule = RbacRuleModel.ALLOW,
+                        shareViewRule = RbacRuleModel.ALLOW,
+                        foldersUseRule = RbacRuleModel.ALLOW
+                    )
                 )
             )
         }

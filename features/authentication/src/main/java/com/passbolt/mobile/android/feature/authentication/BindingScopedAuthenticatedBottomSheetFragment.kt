@@ -80,19 +80,19 @@ abstract class BindingScopedAuthenticatedBottomSheetFragment
         }
     }
 
-    override fun showTotpDialog(hasYubikeyProvider: Boolean) {
+    override fun showTotpDialog(hasOtherProviders: Boolean) {
         EnterTotpDialog.newInstance(
             token = getSessionUseCase.execute(Unit).accessToken,
-            hasOtherProvider = hasYubikeyProvider
+            hasOtherProvider = hasOtherProviders
         ).show(
             childFragmentManager, EnterTotpDialog::class.java.name
         )
     }
 
-    override fun showYubikeyDialog(hasTotpProvider: Boolean) {
+    override fun showYubikeyDialog(hasOtherProviders: Boolean) {
         ScanYubikeyDialog.newInstance(
             token = getSessionUseCase.execute(Unit).accessToken,
-            hasOtherProvider = hasTotpProvider
+            hasOtherProvider = hasOtherProviders
         ).show(
             childFragmentManager, ScanYubikeyDialog::class.java.name
         )

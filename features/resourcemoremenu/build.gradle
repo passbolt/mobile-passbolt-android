@@ -22,6 +22,7 @@ dependencies {
     implementation project(':fulldatarefresh')
     implementation project(':authentication')
     implementation project(':entity')
+    implementation project(':rbac')
 
     implementation libs.androidx.core
     implementation libs.appcompat

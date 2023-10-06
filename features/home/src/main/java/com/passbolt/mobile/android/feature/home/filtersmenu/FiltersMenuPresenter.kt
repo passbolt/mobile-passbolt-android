@@ -1,11 +1,13 @@
 package com.passbolt.mobile.android.feature.home.filtersmenu
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.UpdateHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -13,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class FiltersMenuPresenter(
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
+    private val getRbacRulesUseCase: GetRbacRulesUseCase,
     private val updateHomeDisplayViewPrefsUseCase: UpdateHomeDisplayViewPrefsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : FiltersMenuContract.Presenter {
@@ -50,10 +53,11 @@ class FiltersMenuPresenter(
     private fun processAdditionalItemsVisibility() {
         scope.launch {
             val featureFlags = getFeatureFlagsUseCase.execute(Unit).featureFlags
-            if (featureFlags.areFoldersAvailable) {
+            val rbac = getRbacRulesUseCase.execute(Unit).rbacModel
+            if (featureFlags.areFoldersAvailable && rbac.foldersUseRule == ALLOW) {
                 view?.showFoldersMenuItem()
             }
-            if (featureFlags.areTagsAvailable) {
+            if (featureFlags.areTagsAvailable && rbac.tagsUseRule == ALLOW) {
                 view?.showTagsMenuItem()
             }
         }

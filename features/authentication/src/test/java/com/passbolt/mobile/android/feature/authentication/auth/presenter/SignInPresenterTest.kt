@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
@@ -21,6 +22,8 @@ import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerpri
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
+import com.passbolt.mobile.android.ui.RbacModel
+import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
@@ -199,7 +202,21 @@ class SignInPresenterTest : KoinTest {
                         isPreviewPasswordAvailable = true,
                         areFoldersAvailable = false,
                         areTagsAvailable = true,
-                        isTotpAvailable = true
+                        isTotpAvailable = true,
+                        isRbacAvailable = true
+                    )
+                )
+            )
+        }
+        mockRbacInteractor.stub {
+            onBlocking { fetchAndSaveRbacRulesFlags() }.doReturn(
+                RbacInteractor.Output.Success(
+                    RbacModel(
+                        passwordPreviewRule = ALLOW,
+                        passwordCopyRule = ALLOW,
+                        tagsUseRule = ALLOW,
+                        shareViewRule = ALLOW,
+                        foldersUseRule = ALLOW
                     )
                 )
             )

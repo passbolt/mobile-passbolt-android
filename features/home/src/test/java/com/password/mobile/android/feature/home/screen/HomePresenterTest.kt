@@ -12,13 +12,16 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUs
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.RbacModel
+import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -74,6 +77,19 @@ class HomePresenterTest : KoinTest {
         mockGetLocalResourcesFilteredByTagUseCase.stub {
             onBlocking { execute(any()) } doReturn GetLocalResourcesFilteredByTagUseCase.Output(
                 emptyList()
+            )
+        }
+        mockGetRbacRulesUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetRbacRulesUseCase.Output(
+                    RbacModel(
+                        passwordPreviewRule = ALLOW,
+                        passwordCopyRule = ALLOW,
+                        tagsUseRule = ALLOW,
+                        shareViewRule = ALLOW,
+                        foldersUseRule = ALLOW
+                    )
+                )
             )
         }
     }
@@ -150,7 +166,7 @@ class HomePresenterTest : KoinTest {
         )
         presenter.resume(view)
 
-        verify(view).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
+        verify(view, times(2)).showHomeScreenTitle(HomeDisplayViewModel.AllItems)
         verify(view).showAllItemsSearchHint()
         verify(view).hideBackArrow()
         verify(view).hideAddButton()
@@ -456,7 +472,7 @@ class HomePresenterTest : KoinTest {
         verify(view).showChildFolderTitle("folder name", isShared = false)
         verify(view).showTagTitle("tag name", isShared = false)
         verify(view).showGroupTitle("group name")
-        verify(view, times(5)).showHomeScreenTitle(any())
+        verify(view, times(6)).showHomeScreenTitle(any())
     }
 
     @Test
@@ -547,7 +563,7 @@ class HomePresenterTest : KoinTest {
         presenter.resume(view)
 
         argumentCaptor<HomeDisplayViewModel> {
-            verify(view).showHomeScreenTitle(capture())
+            verify(view, times(2)).showHomeScreenTitle(capture())
             assertThat(firstValue).isInstanceOf(HomeDisplayViewModel.Folders::class.java)
         }
     }

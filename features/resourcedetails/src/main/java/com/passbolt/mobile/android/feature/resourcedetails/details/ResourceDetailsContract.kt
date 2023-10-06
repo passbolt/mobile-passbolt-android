@@ -52,7 +52,7 @@ interface ResourceDetailsContract {
         fun clearPasswordInput()
         fun showDescriptionIsEncrypted()
         fun showDescription(description: String, useSecretFont: Boolean)
-        fun hidePasswordEyeIcon()
+        fun showPasswordEyeIcon()
         fun openWebsite(url: String)
         fun showGeneralError(errorMessage: String? = null)
         fun closeWithDeleteSuccessResult(name: String)

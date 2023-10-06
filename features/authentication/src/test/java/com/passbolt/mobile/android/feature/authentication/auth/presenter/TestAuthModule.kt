@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
@@ -131,6 +132,7 @@ internal val mockProfileInteractor = mock<UserProfileInteractor>()
 internal val mockInAppReviewInteractor = mock<InAppReviewInteractor>()
 internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
 internal val mockGopenPgpTimeUpdater = mock<GopenPgpTimeUpdater>()
+internal val mockRbacInteractor = mock<RbacInteractor>()
 
 @ExperimentalCoroutinesApi
 val testAuthModule = module {
@@ -200,7 +202,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     rootDetector = mockRootDetector,
     runtimeAuthenticatedFlag = get(),
     signInIdlingResource = get(),
-    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase
+    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+    rbacInteractor = mockRbacInteractor
 )
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(
@@ -242,5 +245,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     userProfileInteractor = mockProfileInteractor,
     runtimeAuthenticatedFlag = get(),
     inAppReviewInteractor = mockInAppReviewInteractor,
-    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase
+    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+    rbacInteractor = mockRbacInteractor
 )

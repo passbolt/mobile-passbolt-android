@@ -29,6 +29,7 @@ dependencies {
     implementation project(':idlingresource')
     implementation project(':gopenpgp')
     implementation project(':database')
+    implementation project(':rbac')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

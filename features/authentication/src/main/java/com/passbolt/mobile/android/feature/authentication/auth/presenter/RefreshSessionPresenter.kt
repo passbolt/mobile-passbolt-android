@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
@@ -72,7 +73,8 @@ class RefreshSessionPresenter(
     userProfileInteractor: UserProfileInteractor,
     runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
     inAppReviewInteractor: InAppReviewInteractor,
-    getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase
+    getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
+    rbacInteractor: RbacInteractor
 ) : SignInPresenter(
     saveSessionUseCase,
     saveSelectedAccountUseCase,
@@ -81,6 +83,7 @@ class RefreshSessionPresenter(
     saveServerFingerprintUseCase,
     mfaStatusProvider,
     featureFlagsInteractor,
+    rbacInteractor,
     getAndVerifyServerKeysInteractor,
     signInVerifyInteractor,
     userProfileInteractor,

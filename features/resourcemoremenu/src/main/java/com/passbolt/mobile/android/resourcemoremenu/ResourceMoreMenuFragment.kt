@@ -165,6 +165,10 @@ class ResourceMoreMenuFragment :
         binding.addTotp.visible()
     }
 
+    override fun showCopyButton() {
+        binding.copyPassword.visible()
+    }
+
     override fun hideMenu() {
         dismiss()
     }

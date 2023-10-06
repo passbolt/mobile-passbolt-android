@@ -24,11 +24,13 @@
 package com.passbolt.mobile.android.resourcemoremenu.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
+import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.TotpOption.ADD_TOTP
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.TotpOption.MANAGE_TOTP
@@ -40,7 +42,8 @@ import java.util.UUID
 class CreateResourceMoreMenuModelUseCase(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val getResourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-    private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase
+    private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
+    private val getRbacRulesUseCase: GetRbacRulesUseCase
 ) :
     AsyncUseCase<CreateResourceMoreMenuModelUseCase.Input, CreateResourceMoreMenuModelUseCase.Output> {
 
@@ -49,10 +52,12 @@ class CreateResourceMoreMenuModelUseCase(
         val resourceSlug = getResourceTypeIdToSlugMappingProvider
             .provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
         val isTotpFeatureFlagEnabled = getFeatureFlagsUseCase.execute(Unit).featureFlags.isTotpAvailable
+        val copyRbac = getRbacRulesUseCase.execute(Unit).rbacModel.passwordCopyRule
 
         return Output(
             ResourceMoreMenuModel(
                 title = resource.name,
+                canCopy = copyRbac == ALLOW,
                 canDelete = resource.permission in WRITE_PERMISSIONS,
                 canEdit = resource.permission in WRITE_PERMISSIONS,
                 canShare = resource.permission == ResourcePermission.OWNER,

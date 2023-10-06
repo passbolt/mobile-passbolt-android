@@ -29,10 +29,10 @@ import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.HomePresenter
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
-import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
@@ -57,11 +57,11 @@ internal val mockGetHomeDisplayPrefsUseCase = mock<GetHomeDisplayViewPrefsUseCas
 internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()
 internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
 internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
-internal val mockCreateOtpMoreMenuModelUseCase = mock<CreateOtpMoreMenuModelUseCase>()
 internal val mockSecretPropertiesActionsInteractor = mock<SecretPropertiesActionsInteractor>()
 internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesActionsInteractor>()
 internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
+internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -98,7 +98,8 @@ val testHomeModule = module {
             getLocalFolderUseCase = mockGetLocalFolderUseCase,
             deleteResourceIdlingResource = get(),
             totpParametersProvider = mockTotpParametersProvider,
-            resourceTypeFactory = mockResourceTypeFactory
+            resourceTypeFactory = mockResourceTypeFactory,
+            getRbacRulesUseCase = mockGetRbacRulesUseCase
         )
     }
     factory { mockResourceCommonActionsInteractor }

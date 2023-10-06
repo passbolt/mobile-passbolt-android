@@ -24,6 +24,7 @@ import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
@@ -44,6 +45,7 @@ internal val mockSecretPropertiesActionsInteractor = mock<SecretPropertiesAction
 internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesActionsInteractor>()
 internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
+internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule = module {
@@ -66,7 +68,8 @@ internal val testResourceDetailsModule = module {
             otpModelMapper = get(),
             getResourceTypeIdToSlugMappingUseCase = mockGetResourceTypeIdToSlugMappingUseCase,
             resourceTypeFactory = mockResourceTypeFactory,
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            getRbacRulesUseCase = mockGetRbacRulesUseCase
         )
     }
     factory { mockResourceCommonActionsInteractor }
