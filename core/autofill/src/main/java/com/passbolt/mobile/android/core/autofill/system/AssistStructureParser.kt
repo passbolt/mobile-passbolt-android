@@ -37,9 +37,10 @@ class AssistStructureParser {
         val packageIdBuilder = StringBuilder()
 
         // iterate recursively through all nodes
-        (0 until assistStructure.windowNodeCount)
-            .map { assistStructure.getWindowNodeAt(it).rootViewNode }
-            .forEach { visitNode(it, structuresRef, domainBuilder, packageIdBuilder) }
+        for (i in 0.rangeUntil(assistStructure.windowNodeCount)) {
+            val rootViewNode = assistStructure.getWindowNodeAt(i).rootViewNode
+            visitNode(rootViewNode, structuresRef, domainBuilder, packageIdBuilder)
+        }
 
         return ParsedStructures(
             domainBuilder.toString(),
@@ -57,9 +58,10 @@ class AssistStructureParser {
         parseNode(viewNode, domainBuilder, packageIdBuilder)
             ?.let { structuresRef.add(it) }
 
-        (0 until viewNode.childCount)
-            .map { viewNode.getChildAt(it) }
-            .forEach { visitNode(it, structuresRef, domainBuilder, packageIdBuilder) }
+        for (i in 0.rangeUntil(viewNode.childCount)) {
+            val child = viewNode.getChildAt(i)
+            visitNode(child, structuresRef, domainBuilder, packageIdBuilder)
+        }
     }
 
     private fun parseNode(

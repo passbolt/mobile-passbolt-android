@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.storage.usecase
+package com.passbolt.mobile.android.storage
 
 /**
  * Passbolt - Open source password manager for teams

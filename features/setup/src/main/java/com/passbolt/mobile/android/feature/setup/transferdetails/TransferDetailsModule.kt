@@ -1,9 +1,5 @@
-package com.passbolt.mobile.android.feature.setup.transferdetails.di
+package com.passbolt.mobile.android.feature.setup.transferdetails
 
-import com.passbolt.mobile.android.feature.setup.transferdetails.CameraInformationProvider
-import com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsContract
-import com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsFragment
-import com.passbolt.mobile.android.feature.setup.transferdetails.TransferDetailsPresenter
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named

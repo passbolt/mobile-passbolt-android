@@ -1,8 +1,5 @@
-package com.passbolt.mobile.android.feature.setup.summary.di
+package com.passbolt.mobile.android.feature.setup.summary
 
-import com.passbolt.mobile.android.feature.setup.summary.SummaryContract
-import com.passbolt.mobile.android.feature.setup.summary.SummaryFragment
-import com.passbolt.mobile.android.feature.setup.summary.SummaryPresenter
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 

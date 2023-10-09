@@ -90,7 +90,7 @@ class DatabaseProvider(
     private fun hashString(input: String, algorithm: String = "SHA-256"): String {
         return MessageDigest.getInstance(algorithm)
             .digest(input.toByteArray())
-            .fold("") { str, it -> str + "%02x".format(it) }
+            .fold("") { str, value -> str + "%02x".format(value) }
     }
 
     companion object {

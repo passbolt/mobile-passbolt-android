@@ -44,7 +44,7 @@ class GetPrivateKeyUseCase(
             }
         } catch (exception: IOException) {
             Timber.e(exception)
-            throw IllegalStateException("Unable to restore private key.")
+            error("Unable to restore private key.")
         }
     }
 

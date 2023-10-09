@@ -17,13 +17,13 @@ class LongStrictTypeAdapter : TypeAdapter<Long?>() {
             null
         } else {
             if (peek != JsonToken.NUMBER) {
-                throw InvalidJsonTokenType(input.nextString(), peek.toString(), Long::class.java.simpleName)
+                throw InvalidJsonTokenType(peek.toString(), Long::class.java.simpleName)
             } else {
                 val numberString = input.nextString()
                 return if (numberString.all { it.isDigit() }) {
                     numberString.toLong()
                 } else {
-                    throw InvalidJsonTokenType(input.nextString(), peek.toString(), Long::class.java.simpleName)
+                    throw InvalidJsonTokenType(peek.toString(), Long::class.java.simpleName)
                 }
             }
         }

@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.feature.setup.fingerprint.di
+package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import androidx.biometric.BiometricPrompt
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintContract
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintFragment
-import com.passbolt.mobile.android.feature.setup.fingerprint.FingerprintPresenter
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 

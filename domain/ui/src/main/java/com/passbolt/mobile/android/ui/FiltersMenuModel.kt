@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.ui
 
 import android.os.Parcelable
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import kotlinx.parcelize.Parcelize
 
 /**

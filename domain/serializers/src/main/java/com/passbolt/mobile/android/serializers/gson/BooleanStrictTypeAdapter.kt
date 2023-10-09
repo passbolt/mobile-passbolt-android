@@ -17,7 +17,7 @@ class BooleanStrictTypeAdapter : TypeAdapter<Boolean?>() {
             null
         } else {
             if (peek != JsonToken.BOOLEAN) {
-                throw InvalidJsonTokenType(input.nextString(), peek.toString(), Boolean::class.java.simpleName)
+                throw InvalidJsonTokenType(peek.toString(), Boolean::class.java.simpleName)
             } else {
                 input.nextBoolean()
             }

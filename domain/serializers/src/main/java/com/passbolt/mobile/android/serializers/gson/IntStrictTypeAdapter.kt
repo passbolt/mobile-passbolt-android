@@ -17,13 +17,13 @@ class IntStrictTypeAdapter : TypeAdapter<Int?>() {
             null
         } else {
             if (peek != JsonToken.NUMBER) {
-                throw InvalidJsonTokenType(input.nextString(), peek.toString(), Int::class.java.simpleName)
+                throw InvalidJsonTokenType(peek.toString(), Int::class.java.simpleName)
             } else {
                 val numberString = input.nextString()
                 return if (numberString.all { it.isDigit() }) {
                     numberString.toInt()
                 } else {
-                    throw InvalidJsonTokenType(input.nextString(), peek.toString(), Int::class.java.simpleName)
+                    throw InvalidJsonTokenType(peek.toString(), Int::class.java.simpleName)
                 }
             }
         }
