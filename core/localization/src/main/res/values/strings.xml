@@ -307,6 +307,7 @@
     <string name="settings_accounts_manage_accounts">Manage accounts</string>
     <string name="settings_accounts_transfer_account">Transfer account to another device</string>
     <string name="settings_accounts_key_inspector">Key inspector</string>
+    <string name="settings_accounts_account_details">Account details</string>
 
     <string name="settings_terms_and_licenses_privacy_policy">Privacy policy</string>
     <string name="settings_terms_and_licenses_licenses">Open Source Licenses</string>

@@ -25,6 +25,7 @@ dependencies {
     implementation project(':users')
     implementation project(':transferaccounttoanotherdevice')
     implementation project(':gopenpgp')
+    implementation project(':accountdetails')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
