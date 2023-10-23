@@ -76,7 +76,6 @@ interface UpdateResourceContract {
         fun showDataRefreshError()
         fun showContentNotAvailable()
         fun navigateHome()
-        fun clearInputFields()
         fun showInvalidSecretDataAndNavigateBack()
     }
 
