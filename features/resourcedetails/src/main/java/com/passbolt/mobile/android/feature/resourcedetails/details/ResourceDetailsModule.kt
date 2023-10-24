@@ -49,7 +49,8 @@ fun Module.detailsModule() {
                 otpModelMapper = get(),
                 getResourceTypeIdToSlugMappingUseCase = get(),
                 resourceTypeFactory = get(),
-                coroutineLaunchContext = get()
+                coroutineLaunchContext = get(),
+                getRbacRulesUseCase = get()
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {

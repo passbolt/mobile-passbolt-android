@@ -154,6 +154,7 @@ dependencies {
     implementation project(':scanotp')
     implementation project(':otpmoremenu')
     implementation project(':createotpmanually')
+    implementation project(':rbac')
 
     debugImplementation libs.leakcanary
 

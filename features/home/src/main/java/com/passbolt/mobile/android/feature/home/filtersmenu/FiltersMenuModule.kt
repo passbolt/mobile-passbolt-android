@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.feature.home.filtersmenu
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.scopedOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,12 +29,6 @@ import org.koin.core.module.Module
 
 fun Module.filtersMenuModule() {
     scope<FiltersMenuFragment> {
-        scoped<FiltersMenuContract.Presenter> {
-            FiltersMenuPresenter(
-                getFeatureFlagsUseCase = get(),
-                coroutineLaunchContext = get(),
-                updateHomeDisplayViewPrefsUseCase = get()
-            )
-        }
+        scopedOf(::FiltersMenuPresenter) bind FiltersMenuContract.Presenter::class
     }
 }

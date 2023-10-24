@@ -40,7 +40,9 @@ class FeatureFlagsMapper {
                 areTagsAvailable = it.plugins.tags?.enabled
                     ?: Defaults.ARE_TAGS_AVAILABLE,
                 isTotpAvailable = it.plugins.totpResourceTypes?.enabled
-                    ?: Defaults.IS_TOTP_AVAILABLE
+                    ?: Defaults.IS_TOTP_AVAILABLE,
+                isRbacAvailable = it.plugins.rbacs?.enabled
+                    ?: Defaults.IS_RBAC_AVAILABLE
             )
         }
 }

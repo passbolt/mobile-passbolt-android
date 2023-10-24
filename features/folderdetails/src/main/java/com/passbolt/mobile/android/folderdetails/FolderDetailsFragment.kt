@@ -14,6 +14,7 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
@@ -67,7 +68,12 @@ class FolderDetailsFragment :
     private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
     private val fastAdapter: FastAdapter<GenericItem> by inject()
     private val sharedWithFields
-        get() = listOf(binding.sharedWithLabel, binding.sharedWithRecyclerClickableArea, binding.sharedWithNavIcon)
+        get() = listOf(
+            binding.sharedWithLabel,
+            binding.sharedWithRecycler,
+            binding.sharedWithRecyclerClickableArea,
+            binding.sharedWithNavIcon
+        )
     private val locationFields
         get() = listOf(binding.locationHeader, binding.locationValue, binding.locationNavIcon)
 
@@ -147,6 +153,7 @@ class FolderDetailsFragment :
         counterValue: List<String>,
         overlap: Int
     ) {
+        sharedWithFields.forEach { it.visible() }
         val decorator = OverlappingItemDecorator(OverlappingItemDecorator.Overlap(left = overlap))
         binding.sharedWithRecycler.addItemDecoration(decorator)
         FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })

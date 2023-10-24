@@ -5,8 +5,10 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderL
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
+import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -39,6 +41,7 @@ class FolderDetailsPresenter(
     private val getLocalFolderDetailsUseCase: GetLocalFolderDetailsUseCase,
     private val getLocalFolderLocation: GetLocalFolderLocationUseCase,
     private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase,
+    private val getRbacRulesUseCase: GetRbacRulesUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<FolderDetailsContract.View>(coroutineLaunchContext),
     FolderDetailsContract.Presenter {
@@ -91,22 +94,24 @@ class FolderDetailsPresenter(
                 .let { view?.showFolderLocation(it.map { folder -> folder.name }) }
         }
         scope.launch(missingItemHandler) { // get and display permissions
-            val permissions = getLocalFolderPermissionsUseCase.execute(
-                GetLocalFolderPermissionsUseCase.Input(folderId)
-            ).permissions
+            if (getRbacRulesUseCase.execute(Unit).rbacModel.shareViewRule == ALLOW) {
+                val permissions = getLocalFolderPermissionsUseCase.execute(
+                    GetLocalFolderPermissionsUseCase.Input(folderId)
+                ).permissions
 
-            val permissionsDisplayDataset = PermissionsDatasetCreator(
-                permissionsListWidth,
-                permissionItemWidth
-            )
-                .prepareDataset(permissions)
+                val permissionsDisplayDataset = PermissionsDatasetCreator(
+                    permissionsListWidth,
+                    permissionItemWidth
+                )
+                    .prepareDataset(permissions)
 
-            view?.showPermissions(
-                permissionsDisplayDataset.groupPermissions,
-                permissionsDisplayDataset.userPermissions,
-                permissionsDisplayDataset.counterValue,
-                permissionsDisplayDataset.overlap
-            )
+                view?.showPermissions(
+                    permissionsDisplayDataset.groupPermissions,
+                    permissionsDisplayDataset.userPermissions,
+                    permissionsDisplayDataset.counterValue,
+                    permissionsDisplayDataset.overlap
+                )
+            }
         }
     }
 

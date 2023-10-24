@@ -17,10 +17,14 @@ import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.RbacModel
+import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
+import com.passbolt.mobile.android.ui.RbacRuleModel.DENY
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.TagModel
@@ -39,6 +43,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -101,7 +106,8 @@ class ResourceDetailsPresenterTest : KoinTest {
                     isPreviewPasswordAvailable = true,
                     areFoldersAvailable = true,
                     areTagsAvailable = true,
-                    isTotpAvailable = true
+                    isTotpAvailable = true,
+                    isRbacAvailable = true
                 )
             )
         }
@@ -133,6 +139,19 @@ class ResourceDetailsPresenterTest : KoinTest {
                 )
             )
         }
+        mockGetRbacRulesUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetRbacRulesUseCase.Output(
+                    RbacModel(
+                        passwordPreviewRule = ALLOW,
+                        passwordCopyRule = ALLOW,
+                        tagsUseRule = ALLOW,
+                        shareViewRule = ALLOW,
+                        foldersUseRule = ALLOW
+                    )
+                )
+            )
+        }
         presenter.attach(view)
     }
 
@@ -157,6 +176,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showDescription(RESOURCE_MODEL.description!!, useSecretFont = false)
         verify(view, times(2)).showFolderLocation(emptyList())
         verify(view, times(2)).hideTotpSection()
+        verify(view, times(2)).showPasswordEyeIcon()
         verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
     }
@@ -300,7 +320,8 @@ class ResourceDetailsPresenterTest : KoinTest {
                         isPreviewPasswordAvailable = false,
                         areFoldersAvailable = false,
                         areTagsAvailable = false,
-                        isTotpAvailable = true
+                        isTotpAvailable = true,
+                        isRbacAvailable = true
                     )
                 )
             )
@@ -313,7 +334,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         )
         presenter.resume(view)
 
-        verify(view, times(2)).hidePasswordEyeIcon()
+        verify(view, never()).showPasswordEyeIcon()
     }
 
     @ExperimentalCoroutinesApi
@@ -327,6 +348,35 @@ class ResourceDetailsPresenterTest : KoinTest {
         presenter.resume(view)
 
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+    }
+
+    @Test
+    fun `view should not show features disabled by rbac`() {
+        mockGetRbacRulesUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetRbacRulesUseCase.Output(
+                    RbacModel(
+                        passwordPreviewRule = DENY,
+                        passwordCopyRule = DENY,
+                        tagsUseRule = DENY,
+                        shareViewRule = DENY,
+                        foldersUseRule = DENY
+                    )
+                )
+            )
+        }
+
+        presenter.argsReceived(
+            RESOURCE_MODEL.resourceId,
+            100,
+            20f
+        )
+        presenter.resume(view)
+
+        verify(view, never()).showPasswordEyeIcon()
+        verify(view, never()).showTags(any())
+        verify(view, never()).showPermissions(any(), any(), any(), any())
+        verify(view, never()).showFolderLocation(any())
     }
 
     private companion object {
@@ -352,7 +402,6 @@ class ResourceDetailsPresenterTest : KoinTest {
             "fav-id",
             ZonedDateTime.now()
         )
-        private val DECRYPTED_SECRET = "decrypted".toByteArray()
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
             ResourcePermission.READ, "permId1", GroupModel("grId", "grName")
         )

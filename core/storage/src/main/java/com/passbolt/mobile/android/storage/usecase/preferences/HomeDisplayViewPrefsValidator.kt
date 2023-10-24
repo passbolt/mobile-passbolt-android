@@ -3,7 +3,10 @@ package com.passbolt.mobile.android.storage.usecase.preferences
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
+import com.passbolt.mobile.android.ui.RbacModel
+import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -29,17 +32,19 @@ import kotlinx.coroutines.runBlocking
  * @since v1.0
  */
 class HomeDisplayViewPrefsValidator(
-    private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase
+    private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
+    private val getRbacRulesUseCase: GetRbacRulesUseCase
 ) {
 
     fun validated(output: GetHomeDisplayViewPrefsUseCase.Output): GetHomeDisplayViewPrefsUseCase.Output {
         val featureFlags = runBlocking { getFeatureFlagsUseCase.execute(Unit).featureFlags }
+        val rbac = runBlocking { getRbacRulesUseCase.execute(Unit).rbacModel }
         val validatedLastUsedView = output.lastUsedHomeView.mutateIf(
-            { isNotAvailable(output.lastUsedHomeView, featureFlags) },
+            { isNotAvailable(output.lastUsedHomeView, featureFlags, rbac) },
             HomeDisplayView.ALL_ITEMS
         )
         val validatedUserSetView = output.userSetHomeView.mutateIf(
-            { isNotAvailable(output.userSetHomeView, featureFlags) },
+            { isNotAvailable(output.userSetHomeView, featureFlags, rbac) },
             DefaultFilterModel.ALL_ITEMS
         )
         return output.copy(
@@ -50,12 +55,13 @@ class HomeDisplayViewPrefsValidator(
 
     fun validatedDefaultFiltersList(): List<DefaultFilterModel> {
         val featureFlags = runBlocking { getFeatureFlagsUseCase.execute(Unit).featureFlags }
+        val rbac = runBlocking { getRbacRulesUseCase.execute(Unit).rbacModel }
         return DefaultFilterModel.values().toMutableList()
             .apply {
-                if (!featureFlags.areFoldersAvailable) {
+                if (!featureFlags.areFoldersAvailable || rbac.foldersUseRule != ALLOW) {
                     remove(DefaultFilterModel.FOLDERS)
                 }
-                if (!featureFlags.areTagsAvailable) {
+                if (!featureFlags.areTagsAvailable || rbac.tagsUseRule != ALLOW) {
                     remove(DefaultFilterModel.TAGS)
                 }
             }
@@ -64,11 +70,11 @@ class HomeDisplayViewPrefsValidator(
     private fun <T> T.mutateIf(condition: () -> Boolean, replacement: T) =
         if (condition()) replacement else this
 
-    private fun isNotAvailable(view: DefaultFilterModel, featureFlags: FeatureFlagsModel) =
-        (view == DefaultFilterModel.FOLDERS && !featureFlags.areFoldersAvailable) ||
-                (view == DefaultFilterModel.TAGS && !featureFlags.areTagsAvailable)
+    private fun isNotAvailable(view: DefaultFilterModel, featureFlags: FeatureFlagsModel, rbac: RbacModel) =
+        (view == DefaultFilterModel.FOLDERS && (!featureFlags.areFoldersAvailable || rbac.foldersUseRule != ALLOW)) ||
+                (view == DefaultFilterModel.TAGS && (!featureFlags.areTagsAvailable || rbac.tagsUseRule != ALLOW))
 
-    private fun isNotAvailable(view: HomeDisplayView, featureFlags: FeatureFlagsModel) =
-        (view == HomeDisplayView.FOLDERS && !featureFlags.areFoldersAvailable) ||
-                (view == HomeDisplayView.TAGS && !featureFlags.areTagsAvailable)
+    private fun isNotAvailable(view: HomeDisplayView, featureFlags: FeatureFlagsModel, rbac: RbacModel) =
+        (view == HomeDisplayView.FOLDERS && (!featureFlags.areFoldersAvailable || rbac.foldersUseRule != ALLOW)) ||
+                (view == HomeDisplayView.TAGS && (!featureFlags.areTagsAvailable || rbac.tagsUseRule != ALLOW))
 }

@@ -24,6 +24,7 @@ import com.passbolt.mobile.android.core.secrets.secretsModule
 import com.passbolt.mobile.android.core.security.securityModule
 import com.passbolt.mobile.android.core.tags.tagsModule
 import com.passbolt.mobile.android.core.coreUiModule
+import com.passbolt.mobile.android.core.rbacModule
 import com.passbolt.mobile.android.core.users.usersModule
 import com.passbolt.mobile.android.createFolderModule
 import com.passbolt.mobile.android.database.databaseModule
@@ -153,7 +154,8 @@ class KoinInitializer : Initializer<Unit> {
             tagsModule,
             scanOtpMainModule,
             otpMainMoreMenuModule,
-            createOtpManuallyMainModule
+            createOtpManuallyMainModule,
+            rbacModule
         )
     }
 }

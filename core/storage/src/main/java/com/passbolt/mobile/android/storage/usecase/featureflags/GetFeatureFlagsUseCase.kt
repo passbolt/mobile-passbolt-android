@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.FOLDERS_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PREVIEW_PASSWORD_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PRIVACY_POLICY_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.RBAC_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TAGS_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TOTP_KEY
@@ -47,14 +48,16 @@ class GetFeatureFlagsUseCase(
             val areFoldersAvailable = it.getBoolean(FOLDERS_KEY, Defaults.ARE_FOLDERS_AVAILABLE)
             val areTagsAvailable = it.getBoolean(TAGS_KEY, Defaults.ARE_TAGS_AVAILABLE)
             val isTotpAvailable = it.getBoolean(TOTP_KEY, Defaults.IS_TOTP_AVAILABLE)
+            val isRbacAvailable = it.getBoolean(RBAC_KEY, Defaults.IS_RBAC_AVAILABLE)
             return Output(
                 FeatureFlagsModel(
-                    privacyPolicyUrl,
-                    termsUrl,
-                    previewPasswordAvailable,
-                    areFoldersAvailable,
-                    areTagsAvailable,
-                    isTotpAvailable
+                    privacyPolicyUrl = privacyPolicyUrl,
+                    termsAndConditionsUrl = termsUrl,
+                    isPreviewPasswordAvailable = previewPasswordAvailable,
+                    areFoldersAvailable = areFoldersAvailable,
+                    areTagsAvailable = areTagsAvailable,
+                    isTotpAvailable = isTotpAvailable,
+                    isRbacAvailable = isRbacAvailable
                 )
             )
         }

@@ -58,6 +58,10 @@ class ResourceMoreMenuPresenter(
     }
 
     private fun processDynamicButtons() {
+        if (menuModel.canCopy) {
+            view?.showCopyButton()
+        }
+
         if (menuModel.canDelete || menuModel.canEdit || menuModel.canShare) {
             view?.showSeparator()
         }

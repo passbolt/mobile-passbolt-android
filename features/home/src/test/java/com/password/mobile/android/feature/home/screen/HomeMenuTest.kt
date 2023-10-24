@@ -449,7 +449,8 @@ class HomeMenuTest : KoinTest {
             canEdit = true,
             canShare = true,
             favouriteOption = ADD_TO_FAVOURITES,
-            totpOption = ResourceMoreMenuModel.TotpOption.NONE
+            totpOption = ResourceMoreMenuModel.TotpOption.NONE,
+            canCopy = true
         )
 
         private val RESOURCE_MODEL = ResourceModel(

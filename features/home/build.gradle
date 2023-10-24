@@ -42,6 +42,7 @@ dependencies {
     implementation project(':otpmoremenu')
     implementation project(':otpcore')
     implementation project(':otpeditmoremenu')
+    implementation project(':rbac')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

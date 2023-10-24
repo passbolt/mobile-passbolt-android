@@ -41,6 +41,7 @@ interface ResourceMoreMenuContract {
         fun showRefreshFailure()
         fun notifyFavouriteClick(favouriteOption: ResourceMoreMenuModel.FavouriteOption)
         fun hideMenu()
+        fun showCopyButton()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
