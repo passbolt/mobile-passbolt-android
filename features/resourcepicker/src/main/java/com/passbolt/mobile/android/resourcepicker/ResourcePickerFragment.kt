@@ -33,6 +33,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.ISelectionListener
@@ -54,7 +55,10 @@ import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.resourcepicker.recycler.HeaderItem
 import com.passbolt.mobile.android.resourcepicker.recycler.SelectableResourceItem
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.SelectableResourceModelWrapper
+import com.passbolt.mobile.android.ui.ResourcePickerListItem
+import com.passbolt.mobile.android.ui.ResourcePickerListItem.Selection.NOT_SELECTABLE_NO_PERMISSION
+import com.passbolt.mobile.android.ui.ResourcePickerListItem.Selection.NOT_SELECTABLE_UNSUPPORTED_RESOURCE_TYPE
+import com.passbolt.mobile.android.ui.ResourcePickerListItem.Selection.SELECTABLE
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
@@ -84,7 +88,25 @@ class ResourcePickerFragment :
     private val resourcePickedListener = object : ISelectionListener<GenericItem> {
         override fun onSelectionChanged(item: GenericItem, selected: Boolean) {
             if (item is SelectableResourceItem) {
-                presenter.resourcePicked(item.selectableResourceModel, selected)
+                when (item.resourcePickerListItem.selection) {
+                    SELECTABLE -> presenter.resourcePicked(item.resourcePickerListItem, selected)
+                    NOT_SELECTABLE_NO_PERMISSION -> if (selected) {
+                        showSnackbar(
+                            LocalizationR.string.resource_picker_no_edit_permission,
+                            backgroundColor = CoreUiR.color.red,
+                            anchorView = binding.applyButtonLayout,
+                            length = Snackbar.LENGTH_LONG
+                        )
+                    }
+                    NOT_SELECTABLE_UNSUPPORTED_RESOURCE_TYPE -> if (selected) {
+                        showSnackbar(
+                            LocalizationR.string.resource_picker_resource_not_compatible,
+                            backgroundColor = CoreUiR.color.red,
+                            anchorView = binding.applyButtonLayout,
+                            length = Snackbar.LENGTH_LONG
+                        )
+                    }
+                }
             }
         }
     }
@@ -162,8 +184,8 @@ class ResourcePickerFragment :
     }
 
     override fun showResources(
-        suggestedResources: List<SelectableResourceModelWrapper>,
-        resourceList: List<SelectableResourceModelWrapper>
+        suggestedResources: List<ResourcePickerListItem>,
+        resourceList: List<ResourcePickerListItem>
     ) {
         // suggested header
         FastAdapterDiffUtil.calculateDiff(
