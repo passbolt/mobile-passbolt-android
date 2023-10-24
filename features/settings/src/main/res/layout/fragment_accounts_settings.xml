@@ -23,10 +23,17 @@
             app:toolbarTitle="@string/settings_accounts" />
 
         <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
-            android:id="@+id/keyInspectorSetting"
+            android:id="@+id/accountDetailsSetting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_32"
+            app:icon="@drawable/ic_user"
+            app:name="@string/settings_accounts_account_details" />
+
+        <com.passbolt.mobile.android.core.ui.menu.OpenableSettingView
+            android:id="@+id/keyInspectorSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:icon="@drawable/ic_key"
             app:name="@string/settings_accounts_key_inspector" />
 

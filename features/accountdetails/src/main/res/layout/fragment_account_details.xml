@@ -9,8 +9,11 @@
 
     <com.passbolt.mobile.android.core.ui.toolbar.defaulttoolbar.TitleToolbar
         android:id="@+id/toolbar"
+        style="@style/Heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_32"
+        android:textSize="@dimen/sp_16"
         app:toolbarTitle="@string/account_details_title" />
 
     <ScrollView
