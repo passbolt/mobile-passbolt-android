@@ -10,12 +10,12 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.resourcepicker.R
 import com.passbolt.mobile.android.feature.resourcepicker.databinding.ItemSelectableResourceBinding
-import com.passbolt.mobile.android.ui.SelectableResourceModelWrapper
+import com.passbolt.mobile.android.ui.ResourcePickerListItem
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class SelectableResourceItem(
-    val selectableResourceModel: SelectableResourceModelWrapper,
+    val resourcePickerListItem: ResourcePickerListItem,
     private val initialsIconGenerator: InitialsIconGenerator
 ) : AbstractBindingItem<ItemSelectableResourceBinding>() {
 
@@ -28,10 +28,9 @@ class SelectableResourceItem(
     override fun bindView(binding: ItemSelectableResourceBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            title.text = selectableResourceModel.resourceModel.name
-            itemSelectableResource.isEnabled = selectableResourceModel.isSelectable
-            selectionRadioButton.isChecked = selectableResourceModel.isSelected
-            root.alpha = if (selectableResourceModel.isSelectable) ALPHA_ENABLED else ALPHA_DISABLED
+            title.text = resourcePickerListItem.resourceModel.name
+            selectionRadioButton.isChecked = resourcePickerListItem.isSelected
+            root.alpha = if (resourcePickerListItem.isSelectable) ALPHA_ENABLED else ALPHA_DISABLED
             setupUsername(this)
             setupInitialsIcon(this)
             setupSelection(this)
@@ -40,20 +39,20 @@ class SelectableResourceItem(
 
     private fun setupSelection(binding: ItemSelectableResourceBinding) {
         with(binding) {
-            lock.isVisible = !selectableResourceModel.isSelectable
-            selectionRadioButton.isVisible = selectableResourceModel.isSelectable
-            selectionRadioButton.isChecked = selectableResourceModel.isSelected
+            lock.isVisible = !resourcePickerListItem.isSelectable
+            selectionRadioButton.isVisible = resourcePickerListItem.isSelectable
+            selectionRadioButton.isChecked = resourcePickerListItem.isSelected
         }
     }
 
     private fun setupInitialsIcon(binding: ItemSelectableResourceBinding) {
         val initialsIcons = initialsIconGenerator.generate(
-            selectableResourceModel.resourceModel.name,
-            selectableResourceModel.resourceModel.initials
+            resourcePickerListItem.resourceModel.name,
+            resourcePickerListItem.resourceModel.initials
         )
         with(binding) {
             icon.setImageDrawable(initialsIcons)
-            selectableResourceModel.resourceModel.icon?.let {
+            resourcePickerListItem.resourceModel.icon?.let {
                 icon.load(it) {
                     placeholder(initialsIcons)
                 }
@@ -64,12 +63,12 @@ class SelectableResourceItem(
     private fun setupUsername(binding: ItemSelectableResourceBinding) = with(binding) {
         val fontFamily = ResourcesCompat.getFont(binding.root.context, CoreUiR.font.inter)
 
-        if (selectableResourceModel.resourceModel.username.isNullOrBlank()) {
+        if (resourcePickerListItem.resourceModel.username.isNullOrBlank()) {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
             subtitle.text = binding.root.context.getString(LocalizationR.string.no_username)
         } else {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
-            subtitle.text = selectableResourceModel.resourceModel.username
+            subtitle.text = resourcePickerListItem.resourceModel.username
         }
     }
 

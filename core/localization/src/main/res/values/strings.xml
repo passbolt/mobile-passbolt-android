@@ -512,6 +512,8 @@
     <string name="resource_picker_replace_totp_title">Replace TOTP?</string>
     <string name="resource_picker_replace_totp">Replace TOTP</string>
     <string name="resource_picker_add_totp">Add TOTP</string>
+    <string name="resource_picker_no_edit_permission">You are not allowed to edit this resource.</string>
+    <string name="resource_picker_resource_not_compatible">This resource is not compatible with TOTP.</string>
 
     <string name="key_inspector_uid">Uid</string>
     <string name="key_inspector_fingerprint">Fingerprint</string>

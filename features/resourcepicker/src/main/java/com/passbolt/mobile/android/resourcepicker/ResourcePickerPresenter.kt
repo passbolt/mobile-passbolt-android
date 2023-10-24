@@ -35,7 +35,7 @@ import com.passbolt.mobile.android.resourcepicker.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.allSlugs
-import com.passbolt.mobile.android.ui.SelectableResourceModelWrapper
+import com.passbolt.mobile.android.ui.ResourcePickerListItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -66,10 +66,10 @@ class ResourcePickerPresenter(
         get() = if (currentSearchText.value.isBlank()) SearchInputEndIconMode.NONE else SearchInputEndIconMode.CLEAR
     private var suggestionUri: String? = null
 
-    private var resourceList: List<SelectableResourceModelWrapper> = emptyList()
-    private var suggestedResourceList: List<SelectableResourceModelWrapper> = emptyList()
+    private var resourceList: List<ResourcePickerListItem> = emptyList()
+    private var suggestedResourceList: List<ResourcePickerListItem> = emptyList()
 
-    private lateinit var pickedResource: SelectableResourceModelWrapper
+    private lateinit var pickedResource: ResourcePickerListItem
     private val pickedResourceResourceTypeId
         get() = UUID.fromString(pickedResource.resourceModel.resourceTypeId)
 
@@ -99,16 +99,19 @@ class ResourcePickerPresenter(
         fullDataRefreshExecutor.performFullDataRefresh()
     }
 
-    override fun resourcePicked(selectableResourceModel: SelectableResourceModelWrapper, isSelected: Boolean) {
-        pickedResource = selectableResourceModel
-        suggestedResourceList = suggestedResourceList.updatedAfterSelectedResource(selectableResourceModel, isSelected)
-        resourceList = resourceList.updatedAfterSelectedResource(selectableResourceModel, isSelected)
-        filterHomeData()
-        view?.enableApplyButton()
+    override fun resourcePicked(selectableResourceModel: ResourcePickerListItem, isSelected: Boolean) {
+        if (selectableResourceModel.isSelectable && isSelected) {
+            pickedResource = selectableResourceModel
+            suggestedResourceList =
+                suggestedResourceList.updatedAfterSelectedResource(selectableResourceModel, isSelected)
+            resourceList = resourceList.updatedAfterSelectedResource(selectableResourceModel, isSelected)
+            filterHomeData()
+            view?.enableApplyButton()
+        }
     }
 
-    private fun List<SelectableResourceModelWrapper>.updatedAfterSelectedResource(
-        resource: SelectableResourceModelWrapper,
+    private fun List<ResourcePickerListItem>.updatedAfterSelectedResource(
+        resource: ResourcePickerListItem,
         isSelected: Boolean
     ) =
         map {
