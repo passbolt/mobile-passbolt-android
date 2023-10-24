@@ -111,9 +111,14 @@ class UpdateResourcePresenter(
     }
 
     override fun refreshAction() {
-        view?.showProgress()
-        view?.clearInputFields()
+        if (!::fields.isInitialized) {
+            createForm()
+        }
+    }
+
+    private fun createForm() {
         scope.launch {
+            view?.showProgress()
             when (resourceUpdateType) {
                 ResourceUpdateType.CREATE -> createInputFields()
                 ResourceUpdateType.EDIT -> {
