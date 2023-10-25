@@ -100,7 +100,6 @@ android-tests-runner = { group = "androidx.test", name = "runner", version.ref =
 android-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidTestRules" }
 android-test-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidTestKtx" }
 android-test-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "androidTestIntents" }
-espresso-okhttp-idling-resource = { group = "com.jakewharton.espresso", name = "okhttp3-idling-resource", version.ref = "espressoOkHttpIdlingResource" }
 espresso-idling-resource = { group = "androidx.test.espresso", name = "espresso-idling-resource", version.ref = "espressoIdlingResource" }
 ktlint = { group = "com.pinterest", name = "ktlint", version.ref = "ktlint" }
 leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }

@@ -13,7 +13,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.jakewharton.espresso.OkHttp3IdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -81,8 +80,12 @@ class ResourcesDetailsTest : KoinTest {
     val idlingResourceRule = let {
         val signInIdlingResource: SignInIdlingResource by inject()
         val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
-        val okHttpIdlingResource: OkHttp3IdlingResource by inject()
-        IdlingResourceRule(arrayOf(signInIdlingResource, resourcesFullRefreshIdlingResource, okHttpIdlingResource))
+        IdlingResourceRule(
+            arrayOf(
+                signInIdlingResource,
+                resourcesFullRefreshIdlingResource,
+            )
+        )
     }
 
     @BeforeTest
@@ -116,7 +119,11 @@ class ResourcesDetailsTest : KoinTest {
         //    And       I see the resource favicon or a default icon
         onView(withId(R.id.icon)).check(matches(isDisplayed()))
         //    And       I see the resource name
-        onView(allOf(withId(com.passbolt.mobile.android.feature.otp.R.id.name), withText("cakephp"))).check(matches(isDisplayed()))
+        onView(allOf(withId(com.passbolt.mobile.android.feature.otp.R.id.name), withText("cakephp"))).check(
+            matches(
+                isDisplayed()
+            )
+        )
         //    And       I see the “Website URL” list item with title, value and a copy icon
         onView(withText(LocalizationR.string.resource_details_url_header)).check(matches(isDisplayed()))
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.urlValue)).check(matches(isDisplayed()))
@@ -148,7 +155,10 @@ class ResourcesDetailsTest : KoinTest {
         //    And       the Passbolt application is already opened
         //    And       I completed the login step
         //    And       I am on a resource display screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click(), typeText("TestResourceDesc"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(
+            click(),
+            typeText("TestResourceDesc")
+        )
         onView(withText("TestResourceDescription")).perform(click())
         //    When      I click on the show icon in the “Description” item list
         onView(withText(LocalizationR.string.resource_details_see_description)).perform(click())
