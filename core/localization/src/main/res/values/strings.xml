@@ -169,10 +169,13 @@
     <string name="dialog_mfa_yubikey_otp">YubiKey OTP</string>
     <string name="dialog_mfa_duo">Duo multi-factor authentication</string>
     <string name="dialog_mfa_scan_youbikey">Scan your YubiKey</string>
+    <string name="dialog_mfa_scan_youbikey_failed_title">Scanning failed</string>
+    <string name="dialog_mfa_scan_youbikey_failed_message">Your Yubikey cannot be read. Please try another one or use another provider.</string>
+    <string name="dialog_mfa_scan_youbikey_not_from_current_user_title">Yubikey is not recognized</string>
+    <string name="dialog_mfa_scan_youbikey_not_from_current_user_message">Yubikey is not recognized by the server. Please try another Yubikey or use another provider.</string>
     <string name="dialog_mfa_auth_with_duo">Authenticate with Duo</string>
     <string name="dialog_mfa_other_provider">Try with another provider</string>
     <string name="dialog_mfa_remember_me">Remember this device for 30 days</string>
-    <string name="dialog_mfa_scan_cancelled">Scanning cancelled</string>
     <string name="dialog_mfa_scan_empty_otp">Scanned OTP is empty</string>
     <string name="dialog_mfa_totp">Two Factor Authentication</string>
     <string name="dialog_mfa_enter_otp">Enter the verification code:</string>

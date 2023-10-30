@@ -13,6 +13,8 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
+import com.passbolt.mobile.android.common.dialogs.yubikeyNotFromCurrentUserAlertDialog
+import com.passbolt.mobile.android.common.dialogs.yubikeyScanFailedAlertDialog
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -145,8 +147,13 @@ class ScanYubikeyDialog : DialogFragment(), AndroidScopeComponent, ScanYubikeyCo
         )
     }
 
+    override fun showYubikeyDoesNotBelongToCurrentUser() {
+        yubikeyNotFromCurrentUserAlertDialog(requireContext())
+            .show()
+    }
+
     override fun showScanOtpCancelled() {
-        Snackbar.make(requireView(), LocalizationR.string.dialog_mfa_scan_cancelled, Snackbar.LENGTH_SHORT)
+        yubikeyScanFailedAlertDialog(requireContext())
             .show()
     }
 
