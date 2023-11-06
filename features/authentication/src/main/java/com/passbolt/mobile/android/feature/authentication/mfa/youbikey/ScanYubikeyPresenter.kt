@@ -58,6 +58,8 @@ class ScanYubikeyPresenter(
                         }
                     }
                 }
+                is VerifyYubikeyUseCase.Output.YubikeyNotFromCurrentUser ->
+                    view?.showYubikeyDoesNotBelongToCurrentUser()
             }
             view?.hideProgress()
         }

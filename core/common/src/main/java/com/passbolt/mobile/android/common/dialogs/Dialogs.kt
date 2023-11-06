@@ -121,3 +121,19 @@ fun rootWarningAlertDialog(context: Context, onApprove: () -> Unit = {}) =
         .setPositiveButton(LocalizationR.string.root_warning_ackowledge) { _, _ -> onApprove() }
         .setCancelable(false)
         .create()
+
+fun yubikeyScanFailedAlertDialog(context: Context) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.dialog_mfa_scan_youbikey_failed_title)
+        .setMessage(LocalizationR.string.dialog_mfa_scan_youbikey_failed_message)
+        .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
+        .setCancelable(false)
+        .create()
+
+fun yubikeyNotFromCurrentUserAlertDialog(context: Context) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.dialog_mfa_scan_youbikey_not_from_current_user_title)
+        .setMessage(LocalizationR.string.dialog_mfa_scan_youbikey_not_from_current_user_message)
+        .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
+        .setCancelable(false)
+        .create()
