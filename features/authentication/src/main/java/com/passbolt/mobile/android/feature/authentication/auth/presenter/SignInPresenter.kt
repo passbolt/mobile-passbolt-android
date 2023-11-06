@@ -256,6 +256,8 @@ open class SignInPresenter(
                             is RbacInteractor.Output.Failure -> view?.showFeatureFlagsErrorDialog()
                             is RbacInteractor.Output.Success -> fetchUserAvatar()
                         }
+                    } else {
+                        fetchUserAvatar()
                     }
                 }
                 is FeatureFlagsInteractor.Output.Failure -> {
