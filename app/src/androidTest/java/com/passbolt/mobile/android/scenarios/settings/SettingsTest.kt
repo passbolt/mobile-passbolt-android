@@ -62,8 +62,8 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.actions.setChecked
-import com.passbolt.mobile.android.scenarios.setupautofill.autofillConfiguredModuleTests
-import com.passbolt.mobile.android.scenarios.setupconfigurebiometric.biometricSetupUnavailableModuleTests
+import com.passbolt.mobile.android.scenarios.setup.autofill.autofillConfiguredModuleTests
+import com.passbolt.mobile.android.scenarios.setup.configurebiometric.biometricSetupUnavailableModuleTests
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.`is`

@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android.scenarios.setupautofill
-
-import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2021-2023 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -25,6 +20,12 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.scenarios.setup.autofill
+
+import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
+import org.koin.dsl.module
+
 
 val autofillNotConfiguredModuleTests = module {
     single<AutofillInformationProvider> {

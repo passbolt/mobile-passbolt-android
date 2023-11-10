@@ -114,10 +114,10 @@ class FilterDrawerTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.close)).check(matches(isDisplayed()))
         //    And       I see a list of filters
         //    And       I see <filter> list item with their corresponding icon
-        ResourceFilterModel.values().forEach { filterItem ->
-            onView(withId(filterItem.filterId))
+        ResourceFilterModel.entries.forEach { model ->
+            onView(withId(model.filterId))
                 .check(matches(isDisplayed()))
-                .check(matches(hasDrawable(filterItem.filterIconId, CoreUiR.color.icon_tint)))
+                .check(matches(hasDrawable(model.filterIconId, CoreUiR.color.icon_tint)))
             //    Examples:
             //      | filter              |
             //      | “All items”         |
@@ -135,15 +135,14 @@ class FilterDrawerTest : KoinTest {
     // https://passbolt.testrail.io/index.php?/cases/view/2618
     fun asALoggedInMobileUserOnTheFilterDrawerICanSeeTheActiveFilterUsedToFilterOrSortResources() {
         // Given      that I am a logged in mobile user
-        val filterList = ResourceFilterModel.values()
-        filterList.indices.forEach { index ->
+        ResourceFilterModel.entries.forEach { model ->
             // And        the <filter> is active
             // When       I open the filter drawer
             onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-            onView(withId(filterList[index].filterId)).perform(click())
+            onView(withId(model.filterId)).perform(click())
             // Then       I see the current active <filter> in the list with an active status
             onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-            onView(withId(filterList[index].filterId))
+            onView(withId(model.filterId))
                 .check(matches(isDisplayed()))
                 .check(matches(hasBackgroundColor(CoreUiR.color.primary)))
             // And        I can close the drawer

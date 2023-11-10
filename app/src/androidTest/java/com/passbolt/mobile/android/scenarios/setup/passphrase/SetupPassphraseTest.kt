@@ -1,4 +1,27 @@
-package com.passbolt.mobile.android.scenarios.setuppassphrase
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021-2023 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
+package com.passbolt.mobile.android.scenarios.setup.passphrase
 
 import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
@@ -37,29 +60,6 @@ import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class SetupPassphraseTest : KoinTest {
@@ -86,6 +86,7 @@ class SetupPassphraseTest : KoinTest {
     }
 
     @Test
+    //    https://passbolt.testrail.io/index.php?/cases/view/2349
     fun asAMobileUserIShouldSeeTheEnterMyPassphraseScreenAfterISuccessfullyScannedQrCodes() {
         //    Given     the user is on the "Success feedback" screen at the end of the QR code scanning process
         //    When      the user clicks the "Continue" button
@@ -114,10 +115,15 @@ class SetupPassphraseTest : KoinTest {
         //    And       a sign in the primary action button is presented
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).check(matches(isDisplayed()))
         //    And       “I forgot my passphrase” link is presented
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.forgotPasswordButton)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.forgotPasswordButton)).check(
+            matches(
+                isDisplayed()
+            )
+        )
     }
 
     @Test
+    //    https://passbolt.testrail.io/index.php?/cases/view/2353
     fun asAMobileUserICanPreviewMyPassphrase() {
         //    Given     I am on the "Enter your passphrase" page
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
@@ -135,6 +141,7 @@ class SetupPassphraseTest : KoinTest {
     }
 
     @Test
+    //    https://passbolt.testrail.io/index.php?/cases/view/2354
     fun asAMobileUserICanSeeAFeedbackMessageIfIEnteredTheWrongPassphrase() {
         //    Given     I am on the “Enter your passphrase" page
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
@@ -146,15 +153,17 @@ class SetupPassphraseTest : KoinTest {
         onView(withText(LocalizationR.string.auth_enter_passphrase))
             .inRoot(hasToast())
             .check(matches(isDisplayed()))
+        //    And       the toast is in red #Not automated
         //    And       the input and label are still in the same colors
         onView(withId(R.id.titleLabel)).check(matches(hasTextColor(CoreUiR.color.text_primary)))
         onView(withId(CoreUiR.id.input)).check(matches(hasTextColor(com.google.android.gms.base.R.color.common_google_signin_btn_text_light_pressed)))
-        //    And       the message says "The passphrase is invalid"
-        // TODO: uncomment when correct message will be implemented https://app.clickup.com/t/2593179/MOB-746
-        //       onView(withText("The passphrase is invalid")).inRoot(hasToast()).check(matches(isDisplayed)))
+        //    And       the message says "Incorrect passphrase or decryption error. Please try again."
+        onView(withText("Incorrect passphrase or decryption error. Please try again.")).inRoot(hasToast())
+            .check(matches(isDisplayed()))
     }
 
     @Test
+    //    https://passbolt.testrail.io/index.php?/cases/view/2352
     fun asAMobileUserICanGetSomeHelpIfIForgotMyPassphrase() {
         //    Given     I am on the "Enter your passphrase" page
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
