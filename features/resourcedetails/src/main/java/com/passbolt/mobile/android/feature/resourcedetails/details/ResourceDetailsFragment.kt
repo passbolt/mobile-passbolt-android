@@ -12,7 +12,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -36,6 +35,7 @@ import com.passbolt.mobile.android.core.ui.controller.TotpViewController.StatePa
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.TimeParameters
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.ViewParameters
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ActionIcon
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
@@ -105,20 +105,6 @@ class ResourceDetailsFragment :
             requireActivity().intent.getParcelableExtra(ResourceActivity.EXTRA_RESOURCE_MODEL)
         )
     }
-    private val regularFont by lifecycleAwareLazy {
-        ResourcesCompat.getFont(requireContext(), CoreUiR.font.inter)
-    }
-    private val secretFont by lifecycleAwareLazy {
-        ResourcesCompat.getFont(requireContext(), CoreUiR.font.inconsolata)
-    }
-    private val usernameCopyFields
-        get() = listOf(binding.usernameHeader, binding.usernameValue, binding.usernameIcon)
-
-    private val passwordCopyField
-        get() = listOf(binding.passwordHeader, binding.passwordValue)
-
-    private val urlCopyFields
-        get() = listOf(binding.urlHeader, binding.urlIcon)
 
     private val sharedWithFields
         get() = listOf(
@@ -215,14 +201,26 @@ class ResourceDetailsFragment :
     @SuppressLint("ClickableViewAccessibility")
     private fun setListeners() {
         with(binding) {
-            usernameCopyFields.forEach { it.setDebouncingOnClick { presenter.usernameCopyClick() } }
-            passwordIcon.setDebouncingOnClick { presenter.secretIconClick() }
-            passwordCopyField.forEach { it.setDebouncingOnClick { presenter.copyPasswordClick() } }
-            urlCopyFields.forEach { it.setDebouncingOnClick { presenter.urlCopyClick() } }
+            with(usernameItem) {
+                val usernameCopyAction = presenter::usernameCopyClick
+                setDebouncingOnClick(action = usernameCopyAction)
+                actionClickListener = usernameCopyAction
+            }
+            with(passwordItem) {
+                setDebouncingOnClick { presenter.copyPasswordClick() }
+                actionClickListener = { presenter.passwordActionClick() }
+            }
+            with(urlItem) {
+                val urlCopyAction = presenter::urlCopyClick
+                setDebouncingOnClick(action = urlCopyAction)
+                actionClickListener = urlCopyAction
+            }
+            with(descriptionItem) {
+                setDebouncingOnClick { presenter.copyDescriptionClick() }
+                actionClickListener = { presenter.descriptionActionClick() }
+            }
             backArrow.setDebouncingOnClick { presenter.backArrowClick() }
             moreIcon.setDebouncingOnClick { presenter.moreClick() }
-            seeDescriptionButton.setDebouncingOnClick { presenter.seeDescriptionButtonClick() }
-            descriptionHeader.setDebouncingOnClick { presenter.copyDescriptionClick() }
             sharedWithFields.forEach { it.setDebouncingOnClick { presenter.sharedWithClick() } }
             tagsFields.forEach { it.setDebouncingOnClick { presenter.tagsClick() } }
             locationFields.forEach { it.setDebouncingOnClick { presenter.locationClick() } }
@@ -249,7 +247,7 @@ class ResourceDetailsFragment :
     }
 
     override fun displayUsername(username: String) {
-        binding.usernameValue.text = username
+        binding.usernameItem.textValue = username
     }
 
     override fun showTotpSection() {
@@ -272,10 +270,7 @@ class ResourceDetailsFragment :
 
     override fun displayUrl(url: String) {
         with(binding) {
-            urlValue.text = url
-            urlValue.visible()
-            urlHeader.visible()
-            urlIcon.visible()
+            urlItem.textValue = url
         }
     }
 
@@ -304,14 +299,6 @@ class ResourceDetailsFragment :
         hideProgressDialog(childFragmentManager)
     }
 
-    override fun showPasswordVisibleIcon() {
-        binding.passwordIcon.setImageResource(CoreUiR.drawable.ic_eye_invisible)
-    }
-
-    override fun showPasswordHiddenIcon() {
-        binding.passwordIcon.setImageResource(CoreUiR.drawable.ic_eye_visible)
-    }
-
     override fun showDecryptionFailure() {
         Toast.makeText(requireContext(), LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
             .show()
@@ -322,37 +309,42 @@ class ResourceDetailsFragment :
             .show()
     }
 
-    override fun showPasswordHidden() {
-        binding.passwordValue.text = getString(LocalizationR.string.resource_details_hide_password)
-    }
-
     override fun showPassword(decryptedSecret: String) {
-        binding.passwordValue.text = decryptedSecret
-    }
-
-    override fun clearPasswordInput() {
-        binding.passwordValue.text = ""
-    }
-
-    override fun showDescription(description: String, useSecretFont: Boolean) {
-        with(binding) {
-            descriptionValue.apply {
-                typeface = if (useSecretFont) secretFont else regularFont
-                setTextIsSelectable(true)
-                text = description
-            }
-            seeDescriptionButton.gone()
+        with(binding.passwordItem) {
+            actionIcon = ActionIcon.HIDE
+            textValue = decryptedSecret
         }
     }
 
-    override fun showDescriptionIsEncrypted() {
-        with(binding) {
-            descriptionValue.apply {
-                typeface = regularFont
-                setTextIsSelectable(false)
-                text = getString(LocalizationR.string.resource_details_encrypted_description)
-            }
-            seeDescriptionButton.visible()
+    override fun hidePassword() {
+        with(binding.passwordItem) {
+            actionIcon = ActionIcon.VIEW
+            textValue = getString(LocalizationR.string.hidden_secret)
+        }
+    }
+
+    override fun clearPasswordInput() {
+        binding.passwordItem.textValue = ""
+    }
+
+    override fun clearDescriptionInput() {
+        binding.descriptionItem.textValue = ""
+    }
+
+    override fun showDescription(description: String, isSecret: Boolean) {
+        with(binding.descriptionItem) {
+            isValueSecret = isSecret
+            textValue = description
+            actionIcon = if (isSecret) ActionIcon.HIDE else ActionIcon.NONE
+            setTextIsSelectable(true)
+        }
+    }
+
+    override fun hideDescription() {
+        with(binding.descriptionItem) {
+            isValueSecret = true
+            actionIcon = ActionIcon.VIEW
+            textValue = getString(LocalizationR.string.hidden_secret)
         }
     }
 
@@ -431,7 +423,11 @@ class ResourceDetailsFragment :
     }
 
     override fun showPasswordEyeIcon() {
-        binding.passwordIcon.visible()
+        binding.passwordItem.actionIcon = ActionIcon.VIEW
+    }
+
+    override fun hidePasswordEyeIcon() {
+        binding.passwordItem.actionIcon = ActionIcon.NONE
     }
 
     override fun closeWithDeleteSuccessResult(name: String) {

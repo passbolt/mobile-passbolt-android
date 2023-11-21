@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.resourcemoremenu
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
+import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -14,6 +15,7 @@ import timber.log.Timber
 
 class ResourceMoreMenuPresenter(
     private val createResourceMoreMenuModelUseCase: CreateResourceMoreMenuModelUseCase,
+    private val menuModelIdlingResource: CreateMenuModelIdlingResource,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<ResourceMoreMenuContract.View>(coroutineLaunchContext),
     ResourceMoreMenuContract.Presenter {
@@ -35,6 +37,7 @@ class ResourceMoreMenuPresenter(
     }
 
     override fun refreshAction() {
+        menuModelIdlingResource.setIdle(false)
         coroutineScope.launch {
             try {
                 menuModel = createResourceMoreMenuModelUseCase.execute(
@@ -50,6 +53,7 @@ class ResourceMoreMenuPresenter(
                 Timber.d("Resource item for the shown menu was deleted deleted")
                 view?.hideMenu()
             }
+            menuModelIdlingResource.setIdle(true)
         }
     }
 

@@ -84,189 +84,63 @@
                     app:layout_constraintTop_toBottomOf="@+id/icon"
                     tools:text="DD" />
 
-                <TextView
-                    android:id="@+id/informationLabel"
-                    style="@style/Heading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_8"
-                    android:layout_marginTop="@dimen/dp_32"
-                    android:text="@string/resource_details_information"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/sp_12"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name" />
-
-                <TextView
-                    android:id="@+id/urlHeader"
-                    style="@style/Heading"
+                <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
+                    android:id="@+id/urlItem"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_24"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:text="@string/resource_details_url_header"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/sp_12"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@id/urlIcon"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/informationLabel" />
-
-                <TextView
-                    android:id="@+id/urlValue"
-                    style="@style/ValueText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_8"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:autoLink="web"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="@dimen/sp_12"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@id/urlIcon"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/urlHeader"
-                    tools:text="airbnb.com/login" />
-
-                <ImageView
-                    android:id="@+id/urlIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/dp_12"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_copy"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@+id/urlValue"
+                    app:itemWithHeaderAndActionView_action="COPY"
+                    app:itemWithHeaderAndActionView_shouldUseWebLink="true"
+                    app:itemWithHeaderAndActionView_title="@string/resource_details_url_header"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/urlHeader"
-                    app:tint="@color/icon_tint" />
+                    app:layout_constraintStart_toEndOf="@id/guideline"
+                    app:layout_constraintTop_toBottomOf="@id/name" />
 
-                <TextView
-                    android:id="@+id/usernameHeader"
-                    style="@style/Heading"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:text="@string/resource_details_username_header"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/sp_12"
-                    app:layout_constraintEnd_toStartOf="@id/usernameIcon"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/urlValue" />
-
-                <TextView
-                    android:id="@+id/usernameValue"
-                    style="@style/ValueText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_8"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="@dimen/sp_14"
-                    app:layout_constraintEnd_toStartOf="@+id/usernameIcon"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/usernameHeader"
-                    tools:text="piotr@passbolt.com" />
-
-                <ImageView
-                    android:id="@+id/usernameIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/dp_12"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_copy"
-                    app:layout_constraintBottom_toBottomOf="@+id/usernameValue"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/usernameHeader"
-                    app:tint="@color/icon_tint" />
-
-                <TextView
-                    android:id="@+id/passwordHeader"
-                    style="@style/Heading"
+                <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
+                    android:id="@+id/usernameItem"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_24"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:text="@string/resource_details_password_header"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/sp_12"
-                    app:layout_constraintEnd_toStartOf="@id/passwordIcon"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/usernameValue" />
-
-                <TextView
-                    android:id="@+id/passwordValue"
-                    style="@style/SecretText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_8"
-                    android:layout_marginEnd="@dimen/dp_8"
-                    android:text="@string/resource_details_hide_password"
-                    android:textColor="@color/text_secondary"
-                    app:layout_constraintEnd_toStartOf="@+id/passwordIcon"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/passwordHeader" />
-
-                <ImageView
-                    android:id="@+id/passwordIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/dp_12"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_eye_visible"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="@+id/passwordValue"
+                    app:itemWithHeaderAndActionView_action="COPY"
+                    app:itemWithHeaderAndActionView_title="@string/resource_details_username_header"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/passwordHeader"
-                    app:tint="@color/icon_tint" />
+                    app:layout_constraintStart_toEndOf="@id/guideline"
+                    app:layout_constraintTop_toBottomOf="@id/urlItem" />
 
-                <TextView
-                    android:id="@+id/descriptionHeader"
-                    style="@style/Heading"
+                <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
+                    android:id="@+id/passwordItem"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_24"
-                    android:text="@string/resource_details_description_header"
-                    android:textColor="@color/text_primary"
-                    android:textSize="@dimen/sp_12"
-                    app:drawableTint="@color/icon_tint"
+                    android:layout_marginEnd="@dimen/dp_12"
+                    app:itemWithHeaderAndActionView_action="VIEW"
+                    app:itemWithHeaderAndActionView_isValueSecret="true"
+                    app:itemWithHeaderAndActionView_title="@string/resource_details_password_header"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/passwordValue" />
+                    app:layout_constraintStart_toEndOf="@id/guideline"
+                    app:layout_constraintTop_toBottomOf="@id/usernameItem" />
 
-                <TextView
-                    android:id="@+id/descriptionValue"
-                    style="@style/ValueText"
+                <com.passbolt.mobile.android.core.ui.itemwithheaderandaction.ItemWithHeaderAndActionView
+                    android:id="@+id/descriptionItem"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_8"
-                    android:text="@string/resource_details_encrypted_description"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="@dimen/sp_14"
+                    android:layout_marginTop="@dimen/dp_24"
+                    android:layout_marginEnd="@dimen/dp_12"
+                    app:itemWithHeaderAndActionView_action="VIEW"
+                    app:itemWithHeaderAndActionView_isValueSecret="true"
+                    app:itemWithHeaderAndActionView_title="@string/resource_details_description_header"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/descriptionHeader" />
-
-                <TextView
-                    android:id="@+id/seeDescriptionButton"
-                    style="@style/ValueText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_8"
-                    android:background="?selectableItemBackground"
-                    android:paddingVertical="@dimen/dp_8"
-                    android:text="@string/resource_details_see_description"
-                    android:textColor="@color/primary"
-                    android:textSize="@dimen/sp_12"
-                    app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/descriptionValue" />
+                    app:layout_constraintStart_toEndOf="@id/guideline"
+                    app:layout_constraintTop_toBottomOf="@id/passwordItem" />
 
                 <TextView
                     android:id="@+id/totpHeader"
                     style="@style/Heading"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_16"
                     android:layout_marginTop="@dimen/dp_24"
                     android:layout_marginEnd="@dimen/dp_8"
                     android:text="@string/resource_details_totp_header"
@@ -274,9 +148,8 @@
                     android:textColor="@color/text_primary"
                     android:textSize="@dimen/sp_12"
                     android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@id/passwordIcon"
                     app:layout_constraintStart_toStartOf="@+id/guideline"
-                    app:layout_constraintTop_toBottomOf="@+id/seeDescriptionButton" />
+                    app:layout_constraintTop_toBottomOf="@id/descriptionItem" />
 
                 <TextView
                     android:id="@+id/totpValue"
@@ -445,13 +318,12 @@
                     style="@style/Heading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_8"
                     android:layout_marginTop="@dimen/dp_32"
                     android:text="@string/shared_with"
                     android:textColor="@color/text_primary"
                     android:textSize="@dimen/sp_12"
                     android:visibility="invisible"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/guideline"
                     app:layout_constraintTop_toBottomOf="@+id/locationValue" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -468,9 +340,7 @@
                 <View
                     android:id="@+id/sharedWithRecyclerClickableArea"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/dp_40"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:layout_marginEnd="@dimen/dp_8"
+                    android:layout_height="0dp"
                     android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@id/sharedWithRecycler"
                     app:layout_constraintEnd_toStartOf="@id/sharedWithNavIcon"
