@@ -82,7 +82,9 @@ val resourcesModule = module {
             resourceModelMapper = get(),
             resourceRepository = get(),
             fetchUsersUseCase = get(),
-            getResourceTypeIdToSlugMappingUseCase = get()
+            getResourceTypeIdToSlugMappingUseCase = get(),
+            jsonSchemaValidationRunner = get(),
+            gson = get()
         )
     }
     singleOf(::CreatePasswordAndDescriptionResourceInteractor)

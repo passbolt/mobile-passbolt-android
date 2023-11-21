@@ -680,4 +680,18 @@ class ResourceDetailsFragment :
             ResourceDetailsFragmentDirections.actionResourceDetailsToScanOtp()
         )
     }
+
+    override fun showJsonResourceSchemaValidationError() {
+        showSnackbar(
+            LocalizationR.string.common_json_schema_resource_validation_error,
+            backgroundColor = CoreUiR.color.red
+        )
+    }
+
+    override fun showJsonSecretSchemaValidationError() {
+        showSnackbar(
+            LocalizationR.string.common_json_schema_secret_validation_error,
+            backgroundColor = CoreUiR.color.red
+        )
+    }
 }

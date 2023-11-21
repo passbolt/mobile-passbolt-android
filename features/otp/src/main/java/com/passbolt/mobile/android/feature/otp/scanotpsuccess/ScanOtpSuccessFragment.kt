@@ -133,6 +133,20 @@ class ScanOtpSuccessFragment :
         )
     }
 
+    override fun showJsonResourceSchemaValidationError() {
+        showSnackbar(
+            LocalizationR.string.common_json_schema_resource_validation_error,
+            backgroundColor = CoreUiR.color.red
+        )
+    }
+
+    override fun showJsonSecretSchemaValidationError() {
+        showSnackbar(
+            LocalizationR.string.common_json_schema_secret_validation_error,
+            backgroundColor = CoreUiR.color.red
+        )
+    }
+
     companion object {
         const val REQUEST_SCAN_OTP = "SCAN_OTP"
         const val EXTRA_OTP_CREATED = "OTP_CREATED"

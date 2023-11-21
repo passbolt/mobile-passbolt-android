@@ -50,6 +50,8 @@ interface CreateOtpContract {
         fun showEditingValuesAlsoEditsResourceValuesWarning()
         fun showDecryptionError()
         fun showFetchError()
+        fun showJsonResourceSchemaValidationError()
+        fun showJsonSecretSchemaValidationError()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

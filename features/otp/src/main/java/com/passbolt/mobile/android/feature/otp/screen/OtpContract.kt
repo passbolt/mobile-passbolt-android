@@ -65,6 +65,8 @@ interface OtpContract {
         fun navigateToScanOtpSuccess(totpQr: OtpParseResult.OtpQr.TotpQr)
         fun showTotpDeleted()
         fun showDataRefreshError()
+        fun showJsonResourceSchemaValidationError()
+        fun showJsonSecretSchemaValidationError()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {

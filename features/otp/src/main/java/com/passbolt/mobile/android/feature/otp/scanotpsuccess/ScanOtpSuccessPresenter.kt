@@ -32,6 +32,7 @@ import com.passbolt.mobile.android.core.resources.interactor.create.CreateStanda
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
+import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -64,16 +65,27 @@ class ScanOtpSuccessPresenter(
                     createTotpResourceCustomCreateInput()
                 )
             }) {
-                is CreateResourceInteractor.Output.Failure<*> -> view?.showGenericError()
-                is CreateResourceInteractor.Output.OpenPgpError -> view?.showEncryptionError(result.message)
+                is CreateResourceInteractor.Output.Failure<*> ->
+                    view?.showGenericError()
+                is CreateResourceInteractor.Output.OpenPgpError ->
+                    view?.showEncryptionError(result.message)
                 is CreateResourceInteractor.Output.PasswordExpired -> {
                     /* will not happen in BaseAuthenticatedPresenter */
                 }
                 is CreateResourceInteractor.Output.Success -> {
                     view?.navigateToOtpList(otpCreated = true)
                 }
+                is CreateResourceInteractor.Output.JsonSchemaValidationFailure ->
+                    handleSchemaValidationFailure(result.entity)
             }
             view?.hideProgress()
+        }
+    }
+
+    private fun handleSchemaValidationFailure(entity: SchemaEntity) {
+        when (entity) {
+            SchemaEntity.RESOURCE -> view?.showJsonResourceSchemaValidationError()
+            SchemaEntity.SECRET -> view?.showJsonSecretSchemaValidationError()
         }
     }
 
@@ -98,6 +110,7 @@ class ScanOtpSuccessPresenter(
                 doOnFailure = { view?.showGenericError() },
                 doOnFetchFailure = { view?.showGenericError() },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
+                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                 doOnSuccess = { view?.navigateToOtpList(otpCreated = true) }
             )
 

@@ -34,6 +34,7 @@ import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesAction
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor.Output.JsonSchemaValidationFailure
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
@@ -44,6 +45,7 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
+import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.ui.OtpAdvancedSettingsModel
 import com.passbolt.mobile.android.ui.OtpResourceModel
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -239,6 +241,7 @@ class CreateOtpPresenter(
                         otpCreated = true
                     )
                 }
+                is JsonSchemaValidationFailure -> handleSchemaValidationFailure(result.entity)
             }
             view?.hideProgress()
         }
@@ -255,6 +258,7 @@ class CreateOtpPresenter(
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnFetchFailure = { view?.showFetchError() },
                 doOnFailure = { view?.showError(it) },
+                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                 doOnSuccess = {
                     view?.navigateBackInUpdateFlow(it.resourceName, otpUpdated = true)
                 }
@@ -345,6 +349,7 @@ class CreateOtpPresenter(
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnFetchFailure = { view?.showGenericError() },
                 doOnFailure = { view?.showError(it) },
+                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                 doOnSuccess = {
                     view?.navigateBackInCreateFlow(
                         resourceName = it.resourceName,
@@ -354,6 +359,13 @@ class CreateOtpPresenter(
             )
         }
         view?.hideProgress()
+    }
+
+    private fun handleSchemaValidationFailure(entity: SchemaEntity) {
+        when (entity) {
+            SchemaEntity.RESOURCE -> view?.showJsonResourceSchemaValidationError()
+            SchemaEntity.SECRET -> view?.showJsonSecretSchemaValidationError()
+        }
     }
 
     override fun linkToResourceClick() {
