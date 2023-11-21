@@ -1,12 +1,3 @@
-package com.passbolt.mobile.android.core.secrets
-
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.DecryptSecretUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.FetchSecretUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,9 +21,17 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val secretsModule = module {
-    singleOf(::FetchSecretUseCase)
-    singleOf(::DecryptSecretUseCase)
-    singleOf(::SecretInteractor)
-    singleOf(::SecretParser)
+package com.passbolt.mobile.android.serializers.gson.validation
+
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaValidator
+
+class JsonSchemaValidationRunner(
+    private val jsonSchemaValidator: JsonSchemaValidator
+) {
+
+    suspend fun isResourceValid(resourceJson: String, resourceTypeSlug: String) =
+        jsonSchemaValidator.isResourceValid(resourceTypeSlug, resourceJson)
+
+    suspend fun isSecretValid(secretJson: String, resourceTypeSlug: String) =
+        jsonSchemaValidator.isSecretValid(resourceTypeSlug, secretJson)
 }

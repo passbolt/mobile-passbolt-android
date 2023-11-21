@@ -29,20 +29,37 @@ import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceType
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
-import com.passbolt.mobile.android.serializers.gson.validation.ResourceValidationRunner
+import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFJsonSchemaValidator
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFSchemaRepository
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaRepository
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaValidator
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import net.jimblackler.jsonschemafriend.Schema
+import net.jimblackler.jsonschemafriend.Validator
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
-val mockIdToSlugMappingUseCase =
+internal val mockIdToSlugMappingUseCase =
     mock<GetResourceTypeIdToSlugMappingUseCase>()
-val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
+internal val mockJSFSchemaRepository = mock<JSFSchemaRepository>()
 
 val resourceListDeserializationTestModule = module {
-    singleOf(::ResourceValidationRunner)
+    singleOf(::JsonSchemaValidationRunner)
     singleOf(::ResourceListDeserializer)
     singleOf(::ResourceTypeIdToSlugMappingProvider)
+    single { Validator() }
+    single<JsonSchemaRepository<Schema>> {
+        mockJSFSchemaRepository
+    }
+    single<JsonSchemaValidator> {
+        JSFJsonSchemaValidator(
+            schemaRepository = get(),
+            validator = get()
+        )
+    }
     single { mockIdToSlugMappingUseCase }
     factory { mockGetSelectedAccountUseCase }
     single {

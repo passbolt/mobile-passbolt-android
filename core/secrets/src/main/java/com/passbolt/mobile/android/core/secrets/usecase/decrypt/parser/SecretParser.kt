@@ -29,13 +29,17 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.SecretValidationRunner
+import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_STRING_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.TOTP_SLUG
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import timber.log.Timber
 
 class SecretParser(
     private val gson: Gson,
-    private val secretValidationRunner: SecretValidationRunner,
+    private val secretValidationRunner: JsonSchemaValidationRunner,
     private val resourceTypeFactory: ResourceTypeFactory
 ) {
 
@@ -43,11 +47,13 @@ class SecretParser(
         resourceTypeId: String,
         decryptedSecret: ByteArray
     ): DecryptedSecretOrError<String> {
+        val secretJson = String(decryptedSecret)
         return when (resourceTypeFactory.getResourceTypeEnum(resourceTypeId)) {
             SIMPLE_PASSWORD -> {
                 try {
-                    val parsedSecret = DecryptedSecret.SimplePassword(String(decryptedSecret))
-                    if (secretValidationRunner.isPasswordStringSecretValid(parsedSecret)) {
+                    // in case of simple password the backend returns a string (not a json string)
+                    if (secretValidationRunner.isSecretValid(gson.toJson(secretJson), PASSWORD_STRING_SLUG)) {
+                        val parsedSecret = DecryptedSecret.SimplePassword(secretJson)
                         DecryptedSecretOrError.DecryptedSecret(parsedSecret.password)
                     } else {
                         val errorMessage = "Invalid secret in password string resource type"
@@ -62,9 +68,9 @@ class SecretParser(
             }
             PASSWORD_WITH_DESCRIPTION -> {
                 try {
-                    val parsedSecret =
-                        gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordWithDescription::class.java)
-                    if (secretValidationRunner.isPasswordAndDescriptionSecretValid(parsedSecret)) {
+                    if (secretValidationRunner.isSecretValid(secretJson, PASSWORD_AND_DESCRIPTION_SLUG)) {
+                        val parsedSecret =
+                            gson.fromJson(secretJson, DecryptedSecret.PasswordWithDescription::class.java)
                         DecryptedSecretOrError.DecryptedSecret(parsedSecret.password)
                     } else {
                         val errorMessage = "Invalid secret in password and description resource type"
@@ -82,9 +88,9 @@ class SecretParser(
             }
             PASSWORD_DESCRIPTION_TOTP -> {
                 try {
-                    val parsedSecret =
-                        gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordDescriptionTotp::class.java)
-                    if (secretValidationRunner.isPasswordDescriptionTotpSecretValid(parsedSecret)) {
+                    if (secretValidationRunner.isSecretValid(secretJson, PASSWORD_DESCRIPTION_TOTP_SLUG)) {
+                        val parsedSecret =
+                            gson.fromJson(secretJson, DecryptedSecret.PasswordDescriptionTotp::class.java)
                         DecryptedSecretOrError.DecryptedSecret(parsedSecret.password)
                     } else {
                         val errorMessage = "Invalid secret in password description totp resource type"
@@ -104,15 +110,16 @@ class SecretParser(
         resourceTypeId: String,
         decryptedSecret: ByteArray
     ): DecryptedSecretOrError<String> {
+        val secretJson = String(decryptedSecret)
         return when (resourceTypeFactory.getResourceTypeEnum(resourceTypeId)) {
             SIMPLE_PASSWORD -> {
                 throw IllegalArgumentException("Simple password resource type does not contain description secret")
             }
             PASSWORD_WITH_DESCRIPTION -> {
                 try {
-                    val parsedSecret =
-                        gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordWithDescription::class.java)
-                    if (secretValidationRunner.isPasswordAndDescriptionSecretValid(parsedSecret)) {
+                    if (secretValidationRunner.isSecretValid(secretJson, PASSWORD_AND_DESCRIPTION_SLUG)) {
+                        val parsedSecret =
+                            gson.fromJson(secretJson, DecryptedSecret.PasswordWithDescription::class.java)
                         DecryptedSecretOrError.DecryptedSecret(parsedSecret.description.orEmpty())
                     } else {
                         val errorMessage = "Invalid secret in password and description resource type"
@@ -130,9 +137,9 @@ class SecretParser(
             }
             PASSWORD_DESCRIPTION_TOTP -> {
                 try {
-                    val parsedSecret =
-                        gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordDescriptionTotp::class.java)
-                    if (secretValidationRunner.isPasswordDescriptionTotpSecretValid(parsedSecret)) {
+                    if (secretValidationRunner.isSecretValid(secretJson, PASSWORD_DESCRIPTION_TOTP_SLUG)) {
+                        val parsedSecret =
+                            gson.fromJson(secretJson, DecryptedSecret.PasswordDescriptionTotp::class.java)
                         DecryptedSecretOrError.DecryptedSecret(parsedSecret.description.orEmpty())
                     } else {
                         val errorMessage = "Invalid secret in password description totp resource type"
@@ -152,6 +159,7 @@ class SecretParser(
         resourceTypeId: String,
         decryptedSecret: ByteArray
     ): DecryptedSecretOrError<DecryptedSecret.StandaloneTotp.Totp> {
+        val secretJson = String(decryptedSecret)
         return when (resourceTypeFactory.getResourceTypeEnum(resourceTypeId)) {
             SIMPLE_PASSWORD -> {
                 throw IllegalArgumentException("Simple password resource type does not contain totp data")
@@ -161,9 +169,9 @@ class SecretParser(
             }
             STANDALONE_TOTP -> {
                 try {
-                    val parsedSecret =
-                        gson.fromJson(String(decryptedSecret), DecryptedSecret.StandaloneTotp::class.java)
-                    if (secretValidationRunner.isTotpSecretValid(parsedSecret)) {
+                    if (secretValidationRunner.isSecretValid(secretJson, TOTP_SLUG)) {
+                        val parsedSecret =
+                            gson.fromJson(secretJson, DecryptedSecret.StandaloneTotp::class.java)
                         DecryptedSecretOrError.DecryptedSecret(parsedSecret.totp)
                     } else {
                         val errorMessage = "Invalid secret in totp resource type"
@@ -176,9 +184,9 @@ class SecretParser(
             }
             PASSWORD_DESCRIPTION_TOTP -> {
                 try {
-                    val parsedSecret =
-                        gson.fromJson(String(decryptedSecret), DecryptedSecret.PasswordDescriptionTotp::class.java)
-                    if (secretValidationRunner.isPasswordDescriptionTotpSecretValid(parsedSecret)) {
+                    if (secretValidationRunner.isSecretValid(secretJson, PASSWORD_DESCRIPTION_TOTP_SLUG)) {
+                        val parsedSecret =
+                            gson.fromJson(secretJson, DecryptedSecret.PasswordDescriptionTotp::class.java)
                         DecryptedSecretOrError.DecryptedSecret(parsedSecret.totp)
                     } else {
                         val errorMessage = "Invalid secret in password description totp resource type"

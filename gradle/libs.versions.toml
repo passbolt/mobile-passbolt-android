@@ -74,6 +74,7 @@ inAppReview = "2.0.1"
 okio = "3.5.0"
 otp = "2.4.0"
 apacheCommonsCodec = "1.16.0"
+jsonSchemaFriend = "0.12.2"
 
 [libraries]
 android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -160,6 +161,7 @@ fab-speeddial = { group = "com.leinardi.android", name = "speed-dial", version.r
 okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
 otp = { group = "dev.turingcomplete", name = "kotlin-onetimepassword", version.ref = "otp" }
 apache-commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "apacheCommonsCodec" }
+jsonschema-friend = { group = "net.jimblackler.jsonschemafriend", name = "core", version.ref = "jsonSchemaFriend" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
