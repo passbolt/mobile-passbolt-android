@@ -21,25 +21,28 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.serializers.gson.validation
+package com.passbolt.mobile.android.serializers.jsonschema
 
-import com.passbolt.mobile.android.dto.response.ResourceResponseDto
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_STRING_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.TOTP_SLUG
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFJsonSchemaValidator
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFSchemaRepository
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaRepository
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaValidator
+import net.jimblackler.jsonschemafriend.Schema
+import net.jimblackler.jsonschemafriend.Validator
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
 
-class ResourceValidationRunner {
-
-    fun isValid(resource: ResourceResponseDto, resourceTypeSlug: String) =
-        validations[resourceTypeSlug]?.invoke(resource) == true
-
-    private companion object {
-        private val validations = mapOf(
-            PASSWORD_STRING_SLUG to PasswordStringResourceValidation(),
-            PASSWORD_AND_DESCRIPTION_SLUG to PasswordAndDescriptionResourceValidation(),
-            TOTP_SLUG to TotpResourceValidation(),
-            PASSWORD_DESCRIPTION_TOTP_SLUG to PasswordDescriptionTotpResourceValidation()
+fun Module.jsonSchemaModule() {
+    single { Validator() }
+    single<JsonSchemaRepository<Schema>> {
+        JSFSchemaRepository(
+            context = androidContext()
+        )
+    }
+    single<JsonSchemaValidator> {
+        JSFJsonSchemaValidator(
+            schemaRepository = get(),
+            validator = get()
         )
     }
 }

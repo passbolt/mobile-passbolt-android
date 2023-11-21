@@ -21,24 +21,27 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation
+package com.passbolt.mobile.android.initializers
 
-import androidx.annotation.VisibleForTesting
-import com.passbolt.mobile.android.common.validation.RequiredStringLengthValidation
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import android.content.Context
+import androidx.startup.Initializer
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaRepository
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import javax.xml.validation.Schema
 
-class PasswordStringSecretValidation {
+/**
+ * Initializes the local JSON schema repository.
+ */
+@Suppress("unused")
+class LocalJsonSchemasInitializer : Initializer<Unit>, KoinComponent {
 
-    fun invoke(secret: DecryptedSecret.SimplePassword) =
-        RequiredStringLengthValidation().invoke(
-            secret.password,
-            PASSWORD_STRING_PASSWORD_MIN_LENGTH,
-            PASSWORD_STRING_PASSWORD_MAX_LENGTH
-        )
+    private val jsonSchemaRepository: JsonSchemaRepository<Schema> by inject()
 
-    @VisibleForTesting
-    companion object {
-        const val PASSWORD_STRING_PASSWORD_MIN_LENGTH = 0
-        const val PASSWORD_STRING_PASSWORD_MAX_LENGTH = 4096
+    override fun create(context: Context) {
+        jsonSchemaRepository.loadLocalSchemas()
     }
+
+    override fun dependencies(): MutableList<Class<out Initializer<*>>> =
+        mutableListOf(KoinInitializer::class.java)
 }

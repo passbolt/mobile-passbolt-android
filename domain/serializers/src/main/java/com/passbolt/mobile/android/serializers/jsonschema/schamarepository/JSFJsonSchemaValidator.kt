@@ -21,26 +21,29 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation
+package com.passbolt.mobile.android.serializers.jsonschema.schamarepository
 
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import net.jimblackler.jsonschemafriend.Schema
+import net.jimblackler.jsonschemafriend.Validator
+import timber.log.Timber
 
-class SecretValidationRunner(
-    private val passwordStringSecretValidation: PasswordStringSecretValidation,
-    private val passwordAndDescriptionSecretValidation: PasswordAndDescriptionSecretValidation,
-    private val totpSecretValidation: TotpSecretValidation,
-    private val passwordDescriptionTotpSecretValidation: PasswordDescriptionTotpSecretValidation
-) {
+class JSFJsonSchemaValidator(
+    private val schemaRepository: JsonSchemaRepository<Schema>,
+    private val validator: Validator
+) : JsonSchemaValidator {
 
-    fun isPasswordStringSecretValid(secret: DecryptedSecret.SimplePassword) =
-        passwordStringSecretValidation.invoke(secret)
+    override suspend fun isResourceValid(resourceSlug: String, resourceJson: String) =
+        validate(schemaRepository.schemaForResource(resourceSlug), resourceJson)
 
-    fun isPasswordAndDescriptionSecretValid(secret: DecryptedSecret.PasswordWithDescription) =
-        passwordAndDescriptionSecretValidation.invoke(secret)
+    override suspend fun isSecretValid(resourceSlug: String, secretJson: String) =
+        validate(schemaRepository.schemaForSecret(resourceSlug), secretJson)
 
-    fun isTotpSecretValid(secret: DecryptedSecret.StandaloneTotp) =
-        totpSecretValidation.invoke(secret)
-
-    fun isPasswordDescriptionTotpSecretValid(secret: DecryptedSecret.PasswordDescriptionTotp) =
-        passwordDescriptionTotpSecretValidation.invoke(secret)
+    private fun validate(schema: Schema, json: String) =
+        try {
+            validator.validateJson(schema, json)
+            true
+        } catch (exception: Exception) {
+            Timber.e("Validation error message: ${exception.message}")
+            false
+        }
 }

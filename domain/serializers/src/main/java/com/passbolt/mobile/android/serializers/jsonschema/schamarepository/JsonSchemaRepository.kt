@@ -21,8 +21,13 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.serializers.gson.validation
+package com.passbolt.mobile.android.serializers.jsonschema.schamarepository
 
-import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+interface JsonSchemaRepository<T> {
 
-typealias ResourceValidation = (ResourceResponseDto) -> Boolean
+    fun loadLocalSchemas()
+
+    fun schemaForResource(resourceSlug: String): T
+
+    fun schemaForSecret(resourceSlug: String): T
+}

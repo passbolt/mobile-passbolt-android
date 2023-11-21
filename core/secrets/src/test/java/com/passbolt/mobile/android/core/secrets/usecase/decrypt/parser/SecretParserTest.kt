@@ -28,9 +28,11 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import net.jimblackler.jsonschemafriend.SchemaStore
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -40,7 +42,6 @@ import org.koin.test.inject
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class SecretParserTest : KoinTest {
 
     @get:Rule
@@ -50,6 +51,24 @@ class SecretParserTest : KoinTest {
     }
 
     private val secretParser: SecretParser by inject()
+
+    @Before
+    fun setup() {
+        mockJSFSchemaRepository.stub {
+            on { schemaForSecret(SupportedContentTypes.PASSWORD_STRING_SLUG) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/password-string-secret-schema.json")
+            )
+            on { schemaForSecret(SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/password-and-description-secret-schema.json")
+            )
+            on { schemaForSecret(SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/password-description-totp-secret-schema.json")
+            )
+            on { schemaForSecret(SupportedContentTypes.TOTP_SLUG) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/totp-secret-schema.json")
+            )
+        }
+    }
 
     @Test
     fun `password should parse correct for password string secret`() = runTest {

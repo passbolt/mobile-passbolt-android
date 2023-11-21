@@ -48,6 +48,9 @@
             <meta-data
                 android:name="com.passbolt.mobile.android.initializers.LoggingExceptionHandlerInitializer"
                 android:value="androidx.startup" />
+            <meta-data
+                android:name="com.passbolt.mobile.android.initializers.LocalJsonSchemasInitializer"
+                android:value="androidx.startup" />
         </provider>
         <meta-data
             android:name="android.webkit.WebView.MetricsOptOut"
