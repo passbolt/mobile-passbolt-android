@@ -50,7 +50,8 @@ fun Module.detailsModule() {
                 getResourceTypeIdToSlugMappingUseCase = get(),
                 resourceTypeFactory = get(),
                 coroutineLaunchContext = get(),
-                getRbacRulesUseCase = get()
+                getRbacRulesUseCase = get(),
+                resourceDetailActionIdlingResource = get()
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {

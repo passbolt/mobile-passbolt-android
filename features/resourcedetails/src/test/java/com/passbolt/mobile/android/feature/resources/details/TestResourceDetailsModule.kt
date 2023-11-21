@@ -69,7 +69,8 @@ internal val testResourceDetailsModule = module {
             getResourceTypeIdToSlugMappingUseCase = mockGetResourceTypeIdToSlugMappingUseCase,
             resourceTypeFactory = mockResourceTypeFactory,
             coroutineLaunchContext = get(),
-            getRbacRulesUseCase = mockGetRbacRulesUseCase
+            getRbacRulesUseCase = mockGetRbacRulesUseCase,
+            resourceDetailActionIdlingResource = mock()
         )
     }
     factory { mockResourceCommonActionsInteractor }

@@ -23,11 +23,6 @@
 
 package com.passbolt.mobile.android.core.idlingresource
 
-class TransferAccountIdlingResource : FlaggedIdlingResource() {
+import com.passbolt.mobile.android.core.idlingresource.base.FlaggedIdlingResource
 
-    override fun getName(): String = TRANSFER_ACCOUNT_IDLING_RESOURCE
-
-    private companion object {
-        private val TRANSFER_ACCOUNT_IDLING_RESOURCE = TransferAccountIdlingResource::class.java.name
-    }
-}
+class TransferAccountIdlingResource : FlaggedIdlingResource()

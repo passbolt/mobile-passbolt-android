@@ -1,11 +1,10 @@
 package com.passbolt.mobile.android.core.idlingresource
 
-import androidx.test.espresso.IdlingResource
-import java.util.concurrent.atomic.AtomicBoolean
+import com.passbolt.mobile.android.core.idlingresource.base.FlaggedIdlingResource
 
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2023 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -25,29 +24,4 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-/**
- * Base idling resource class for boolean flag resources.
- */
-abstract class FlaggedIdlingResource : IdlingResource {
-
-    @Volatile
-    private var callback: IdlingResource.ResourceCallback? = null
-
-    private val isIdleNow = AtomicBoolean(true)
-
-    abstract override fun getName(): String
-
-    override fun isIdleNow(): Boolean = isIdleNow.get()
-
-    override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
-        this.callback = callback
-    }
-
-    fun setIdle(isIdle: Boolean) {
-        isIdleNow.set(isIdle)
-        if (isIdle) {
-            callback?.onTransitionToIdle()
-        }
-    }
-}
+class CreateMenuModelIdlingResource : FlaggedIdlingResource()

@@ -35,4 +35,6 @@ val idlingResourcesModule = module {
     singleOf(::DeleteResourceIdlingResource)
     singleOf(::CreateFolderIdlingResource)
     singleOf(::TransferAccountIdlingResource)
+    singleOf(::ResourceDetailActionIdlingResource)
+    singleOf(::CreateMenuModelIdlingResource)
 }

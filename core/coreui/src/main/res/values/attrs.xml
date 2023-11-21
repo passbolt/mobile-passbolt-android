@@ -40,4 +40,22 @@
         <attr name="labelledText_use_monospace_font"
             format="boolean" />
     </declare-styleable>
+    <declare-styleable name="ItemWithHeaderAndActionView">
+        <attr name="itemWithHeaderAndActionView_shouldUseWebLink"
+            format="boolean" />
+        <attr name="itemWithHeaderAndActionView_isValueSecret"
+            format="boolean" />
+        <attr name="itemWithHeaderAndActionView_title"
+            format="string" />
+        <!-- Corresponds with com.passbolt.mobile.android.core.ui.itemwithheaderandaction.Action -->
+        <attr name="itemWithHeaderAndActionView_action"
+            format="enum">
+            <enum name="NONE"
+                value="0" />
+            <enum name="VIEW"
+                value="1" />
+            <enum name="COPY"
+                value="2" />
+        </attr>
+    </declare-styleable>
 </resources>

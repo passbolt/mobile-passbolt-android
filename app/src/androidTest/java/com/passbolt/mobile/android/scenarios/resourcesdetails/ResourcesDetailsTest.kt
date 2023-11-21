@@ -7,12 +7,14 @@ import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -80,10 +82,12 @@ class ResourcesDetailsTest : KoinTest {
     val idlingResourceRule = let {
         val signInIdlingResource: SignInIdlingResource by inject()
         val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource by inject()
+        val resourceDetailActionIdlingResource: ResourceDetailActionIdlingResource by inject()
         IdlingResourceRule(
             arrayOf(
                 signInIdlingResource,
                 resourcesFullRefreshIdlingResource,
+                resourceDetailActionIdlingResource
             )
         )
     }
@@ -126,26 +130,40 @@ class ResourcesDetailsTest : KoinTest {
         )
         //    And       I see the “Website URL” list item with title, value and a copy icon
         onView(withText(LocalizationR.string.resource_details_url_header)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.urlValue)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.urlIcon))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.urlItem)).check(matches(isDisplayed()))
+        onView(
+            allOf(
+                isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.usernameItem)),
+                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon)
+            )
+        )
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_copy, tint = CoreUiR.color.icon_tint)))
         //    And       I see the “Username” list item with title, value and a copy icon
         onView(withText(LocalizationR.string.resource_details_username_header)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.usernameValue)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.usernameIcon))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.usernameItem)).check(matches(isDisplayed()))
+        onView(
+            allOf(
+                isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.usernameItem)),
+                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon)
+            )
+        )
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_copy, tint = CoreUiR.color.icon_tint)))
         //    And       I see the “Password” list item with title, hidden value and a show icon
         onView(withText(LocalizationR.string.resource_details_password_header)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.passwordValue)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.passwordIcon))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.passwordItem)).check(matches(isDisplayed()))
+        onView(
+            allOf(
+                isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.passwordItem)),
+                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon)
+            )
+        )
             .check(matches(isDisplayed()))
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_eye_visible, tint = CoreUiR.color.icon_tint)))
         //    And       I see the “Description” list item with title, hidden value and a show icon
         onView(withText(LocalizationR.string.resource_details_description_header)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.descriptionValue)).check(matches(isDisplayed()))
-        onView(withText(LocalizationR.string.resource_details_see_description)).check(matches(isDisplayed()))
+        onView(withId(com.passbolt.mobile.android.feature.resources.R.id.descriptionItem)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -161,7 +179,13 @@ class ResourcesDetailsTest : KoinTest {
         )
         onView(withText("TestResourceDescription")).perform(click())
         //    When      I click on the show icon in the “Description” item list
-        onView(withText(LocalizationR.string.resource_details_see_description)).perform(click())
+        onView(
+            allOf(
+                isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.descriptionItem)),
+                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon)
+            )
+        )
+            .perform(click())
         //    Then      I see the description
         onView(withText("Luxembourg")).check(matches(isDisplayed()))
     }
@@ -172,7 +196,13 @@ class ResourcesDetailsTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click(), typeText("long d"))
         //    When      I click on a resource
         onView(withText("long desc")).perform(click())
-        onView(withText(LocalizationR.string.resource_details_see_description)).perform(click())
+        onView(
+            allOf(
+                isDescendantOfA(withId(com.passbolt.mobile.android.feature.resources.R.id.descriptionItem)),
+                withId(com.passbolt.mobile.android.core.ui.R.id.actionIcon)
+            )
+        )
+            .perform(click())
         //    And       the description is unhidden
         //    And       the description height is taller than the height of the page
         //    When      I scroll the page

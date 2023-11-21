@@ -23,6 +23,7 @@ dependencies {
     implementation project(':authentication')
     implementation project(':entity')
     implementation project(':rbac')
+    implementation project(':idlingresource')
 
     implementation libs.androidx.core
     implementation libs.appcompat
@@ -30,6 +31,7 @@ dependencies {
     implementation libs.material
     implementation libs.koin
     implementation libs.room.core
+    implementation libs.espresso.idling.resource
 }
 
 android {

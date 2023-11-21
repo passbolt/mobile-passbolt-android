@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.core.idlingresource
 
+import com.passbolt.mobile.android.core.idlingresource.base.FlaggedIdlingResource
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,12 +25,4 @@ package com.passbolt.mobile.android.core.idlingresource
  * @since v1.0
  */
 
-class SignOutIdlingResource : FlaggedIdlingResource() {
-
-    override fun getName(): String = SIGN_OUT_IDLING_RESOURCE
-
-    private companion object {
-        private val SIGN_OUT_IDLING_RESOURCE =
-            SignOutIdlingResource::class.java.name
-    }
-}
+class SignOutIdlingResource : FlaggedIdlingResource()

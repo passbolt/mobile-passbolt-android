@@ -1,7 +1,3 @@
-package com.passbolt.mobile.android.core.idlingresource
-
-import com.passbolt.mobile.android.core.idlingresource.base.FlaggedIdlingResource
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2023 Passbolt SA
@@ -24,4 +20,9 @@ import com.passbolt.mobile.android.core.idlingresource.base.FlaggedIdlingResourc
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class DeleteResourceIdlingResource : FlaggedIdlingResource()
+
+package com.passbolt.mobile.android.core.idlingresource
+
+import com.passbolt.mobile.android.core.idlingresource.base.FlaggedIdlingResource
+
+class ResourceDetailActionIdlingResource : FlaggedIdlingResource()

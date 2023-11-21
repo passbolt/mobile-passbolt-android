@@ -262,10 +262,9 @@
     <string name="resource_details_url_header">Website URL</string>
     <string name="resource_details_description_header">Description</string>
     <string name="resource_details_tags_header">Tags</string>
-    <string name="resource_details_hide_password"
+    <string name="hidden_secret"
         translatable="false">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">Description is encrypted</string>
-    <string name="resource_details_see_description">See description</string>
     <string name="resource_details_information">Information</string>
     <string name="resource_details_invalid_totp_scanned">Invalid TOTP QR code scanned</string>
 
