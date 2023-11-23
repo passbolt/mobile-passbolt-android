@@ -1,0 +1,20 @@
+# Passbolt 1.17.0-27 Android app release notes
+
+## Added
+- MOB-1478: Add support for RBAC
+- MOB-1474: Show user role on account details
+- MOB-1475: Add account details navigation from accounts settings
+
+## Improved
+- MOB-1500: Add snackbar explanation for locked items when linking totp
+- MOB-1452: Improve yubikey error handling with better error explanation
+
+## Fixed
+- MOB-1465: Fix "close" action on duo auth bottom sheet
+- MOB-1469: Key inspector UI fixes
+- MOB-1489: Do not clear update password form when switching apps
+- MOB-883: Fix scanning stuck when resuming a new transfer from an existing one
+
+## Maintenance
+- MOB-1455: Bump dependencies
+- MOB-1498: Remove okhttp idling resource; turn off jetifier
