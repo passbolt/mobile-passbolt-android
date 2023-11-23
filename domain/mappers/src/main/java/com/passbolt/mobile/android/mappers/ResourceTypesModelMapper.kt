@@ -158,6 +158,7 @@ class ResourceTypesModelMapper(
      * typeEnumerator - contains types relation ("anyOf", "oneOf", etc);
      *   Currently only "anyOf" is supported
      */
+    @Suppress("UnusedParameter")
     private fun getFieldType(typeEnumerator: TypeEnumerator, typesList: List<FieldTypeDefinition>?): String =
         if (typesList?.any { it.type == FieldType.NUMBER.type } == true) {
             FieldType.NUMBER.type

@@ -24,6 +24,7 @@ dependencies {
     implementation project(':fulldatarefresh')
     implementation project(':folders')
     implementation project(':localization')
+    implementation project(':rbac')
 
     implementation libs.koin
     implementation libs.material

@@ -28,4 +28,5 @@ object Defaults {
     const val ARE_FOLDERS_AVAILABLE = false
     const val ARE_TAGS_AVAILABLE = false
     const val IS_TOTP_AVAILABLE = false
+    const val IS_RBAC_AVAILABLE = false
 }

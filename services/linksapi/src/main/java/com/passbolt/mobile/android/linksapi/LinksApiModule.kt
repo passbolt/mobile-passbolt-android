@@ -1,9 +1,6 @@
-package com.passbolt.mobile.android.service
+package com.passbolt.mobile.android.linksapi
 
 import com.passbolt.mobile.android.core.networking.DEFAULT_HTTP_CLIENT
-import com.passbolt.mobile.android.linksapi.CheckUrlLinksRepository
-import com.passbolt.mobile.android.linksapi.CheckUrlLinksUseCase
-import com.passbolt.mobile.android.linksapi.RestServiceProvider
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.converter.gson.GsonConverterFactory

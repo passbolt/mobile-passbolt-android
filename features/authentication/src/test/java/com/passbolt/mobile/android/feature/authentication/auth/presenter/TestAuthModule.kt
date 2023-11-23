@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
@@ -23,7 +24,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSe
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
@@ -79,17 +80,19 @@ internal const val MOCK_ACCOUNT_DATA_EMAIL = "email"
 internal const val MOCK_ACCOUNT_DATA_AVATAR_URL = "avatar"
 internal const val MOCK_ACCOUNT_DATA_SERVER_ID = "aaa-bbb-ccc"
 internal const val MOCK_LABEL = "label"
+internal const val MOCK_ROLE = "user"
 
 internal val mockGetAccountDataUseCase = mock<GetAccountDataUseCase> {
     on { execute(UserIdInput(ACCOUNT)) }.doReturn(
         GetAccountDataUseCase.Output(
-            MOCK_ACCOUNT_DATA_FIRST_NAME,
-            MOCK_ACCOUNT_DATA_LAST_NAME,
-            MOCK_ACCOUNT_DATA_EMAIL,
-            MOCK_ACCOUNT_DATA_AVATAR_URL,
-            MOCK_ACCOUNT_DATA_URL,
-            MOCK_ACCOUNT_DATA_SERVER_ID,
-            MOCK_LABEL
+            firstName = MOCK_ACCOUNT_DATA_FIRST_NAME,
+            lastName = MOCK_ACCOUNT_DATA_LAST_NAME,
+            email = MOCK_ACCOUNT_DATA_EMAIL,
+            avatarUrl = MOCK_ACCOUNT_DATA_AVATAR_URL,
+            url = MOCK_ACCOUNT_DATA_URL,
+            serverId = MOCK_ACCOUNT_DATA_SERVER_ID,
+            label = MOCK_LABEL,
+            role = MOCK_ROLE
         )
     )
 }
@@ -129,6 +132,7 @@ internal val mockProfileInteractor = mock<UserProfileInteractor>()
 internal val mockInAppReviewInteractor = mock<InAppReviewInteractor>()
 internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
 internal val mockGopenPgpTimeUpdater = mock<GopenPgpTimeUpdater>()
+internal val mockRbacInteractor = mock<RbacInteractor>()
 
 @ExperimentalCoroutinesApi
 val testAuthModule = module {
@@ -198,7 +202,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     rootDetector = mockRootDetector,
     runtimeAuthenticatedFlag = get(),
     signInIdlingResource = get(),
-    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase
+    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+    rbacInteractor = mockRbacInteractor
 )
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(
@@ -240,5 +245,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     userProfileInteractor = mockProfileInteractor,
     runtimeAuthenticatedFlag = get(),
     inAppReviewInteractor = mockInAppReviewInteractor,
-    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase
+    getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+    rbacInteractor = mockRbacInteractor
 )

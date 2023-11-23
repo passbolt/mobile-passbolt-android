@@ -61,17 +61,19 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourcePermission
@@ -108,7 +110,8 @@ class HomePresenter(
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
     private val totpParametersProvider: TotpParametersProvider,
-    private val resourceTypeFactory: ResourceTypeFactory
+    private val resourceTypeFactory: ResourceTypeFactory,
+    private val getRbacRulesUseCase: GetRbacRulesUseCase
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
     KoinComponent {
 
@@ -169,7 +172,6 @@ class HomePresenter(
         view?.apply {
             hideAddButton()
             processSearchHint(this)
-            processScreenTitle(this)
         }
 
         showActiveHomeView()
@@ -336,6 +338,7 @@ class HomePresenter(
 
     private fun showActiveHomeView() {
         coroutineScope.launch {
+            view?.let { processScreenTitle(it) }
             runWithHandlingMissingItem({
                 suggestedResourceList = if (shouldShowSuggested()) {
                     getLocalResourcesUseCase.execute(GetLocalResourcesUseCase.Input(homeSlugs))
@@ -417,23 +420,30 @@ class HomePresenter(
     }
 
     private suspend fun showTagsFromDatabase(tags: HomeDisplayViewModel.Tags) {
-        if (tags.activeTagId == null) { // tags root - list of tags
-            resourceList = emptyList()
-            tagsList = getLocalTagsUseCase.execute(Unit)
-            foldersList = emptyList()
-            groupsList = emptyList()
-        } else { // resources with active tag
-            tagsList = emptyList()
-            foldersList = emptyList()
-            groupsList = emptyList()
-            resourceList = getLocalResourcesWithTagUseCase.execute(
-                GetLocalResourcesWithTagUseCase.Input(
-                    tags,
-                    homeSlugs
-                )
-            ).resources
+        val tagsRbac = getRbacRulesUseCase.execute(Unit).rbacModel.tagsUseRule
+        if (tagsRbac == ALLOW) {
+            if (tags.activeTagId == null) { // tags root - list of tags
+                resourceList = emptyList()
+                tagsList = getLocalTagsUseCase.execute(Unit)
+                foldersList = emptyList()
+                groupsList = emptyList()
+            } else { // resources with active tag
+                tagsList = emptyList()
+                foldersList = emptyList()
+                groupsList = emptyList()
+                resourceList = getLocalResourcesWithTagUseCase.execute(
+                    GetLocalResourcesWithTagUseCase.Input(
+                        tags,
+                        homeSlugs
+                    )
+                ).resources
+            }
+            displayHomeData()
+        } else {
+            // if tags were disabled by rbac after selecting fallback to all items
+            homeView = HomeDisplayViewModel.AllItems
+            showActiveHomeView()
         }
-        displayHomeData()
     }
 
     private suspend fun showGroupsFromDatabase(groups: HomeDisplayViewModel.Groups) {
@@ -457,27 +467,34 @@ class HomePresenter(
     }
 
     private suspend fun showResourcesAndFoldersFromDatabase(folders: HomeDisplayViewModel.Folders) {
-        tagsList = emptyList()
-        groupsList = emptyList()
-        when (
-            val result = getLocalResourcesAndFoldersUseCase.execute(
-                GetLocalResourcesAndFoldersUseCase.Input(
-                    folders.activeFolder,
-                    homeSlugs
+        val foldersRbac = getRbacRulesUseCase.execute(Unit).rbacModel.foldersUseRule
+        if (foldersRbac == ALLOW) {
+            tagsList = emptyList()
+            groupsList = emptyList()
+            when (
+                val result = getLocalResourcesAndFoldersUseCase.execute(
+                    GetLocalResourcesAndFoldersUseCase.Input(
+                        folders.activeFolder,
+                        homeSlugs
+                    )
                 )
-            )
-        ) {
-            is GetLocalResourcesAndFoldersUseCase.Output.Failure -> {
-                Timber.d("Exception during getting resources and folders. Navigating to root")
-                this.view?.navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
+            ) {
+                is GetLocalResourcesAndFoldersUseCase.Output.Failure -> {
+                    Timber.d("Exception during getting resources and folders. Navigating to root")
+                    this.view?.navigateToRootHomeFromChildHome(HomeDisplayViewModel.folderRoot())
+                }
+                is GetLocalResourcesAndFoldersUseCase.Output.Success -> {
+                    foldersList = result.folders
+                    resourceList = result.resources
+                }
             }
-            is GetLocalResourcesAndFoldersUseCase.Output.Success -> {
-                foldersList = result.folders
-                resourceList = result.resources
-            }
-        }
 
-        displayHomeData()
+            displayHomeData()
+        } else {
+            // if folders were disabled by rbac after selecting fallback to all items
+            homeView = HomeDisplayViewModel.AllItems
+            showActiveHomeView()
+        }
     }
 
     private fun displayHomeData() {

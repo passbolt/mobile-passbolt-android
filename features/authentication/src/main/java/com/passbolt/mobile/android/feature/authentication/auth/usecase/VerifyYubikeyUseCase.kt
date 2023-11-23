@@ -8,7 +8,11 @@ import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.dto.request.HotpRequest
 import com.passbolt.mobile.android.passboltapi.mfa.MfaRepository
-import java.net.HttpURLConnection
+import org.json.JSONException
+import org.json.JSONObject
+import retrofit2.Response
+import java.net.HttpURLConnection.HTTP_BAD_REQUEST
+import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,17 +49,39 @@ class VerifyYubikeyUseCase(
             is NetworkResult.Failure -> Output.Failure(result)
             is NetworkResult.Success -> {
                 if (result.value.isSuccessful) {
-                    val mfaHeader = cookieExtractor.get(result.value, CookieExtractor.MFA_COOKIE)
-                    Output.Success(mfaHeader)
+                    handleSuccess(result)
                 } else {
-                    if (result.value.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                        Output.Unauthorized
-                    } else {
-                        Output.NetworkFailure(result.value.code())
-                    }
+                    handleError(result)
                 }
             }
         }
+
+    private fun handleSuccess(result: NetworkResult.Success<Response<Void>>) =
+        Output.Success(cookieExtractor.get(result.value, CookieExtractor.MFA_COOKIE))
+
+    private fun handleError(result: NetworkResult.Success<Response<Void>>) =
+        when (val errorCode = result.value.code()) {
+            HTTP_UNAUTHORIZED -> Output.Unauthorized
+            HTTP_BAD_REQUEST -> if (yubikeyNotFromCurrentUser(result.value)) {
+                Output.YubikeyNotFromCurrentUser
+            } else {
+                Output.NetworkFailure(errorCode)
+            }
+            else -> Output.NetworkFailure(errorCode)
+        }
+
+    // checks if field "isSameYubikeyId" exists in the response - that means that it's not a Yubikey
+    // that is associated with the account
+    private fun yubikeyNotFromCurrentUser(result: Response<Void>) = try {
+        val errorBody = result.errorBody()?.string()
+        errorBody != null &&
+                JSONObject(errorBody)
+                    .getJSONObject(RESPONSE_BODY)
+                    .getJSONObject(RESPONSE_BODY_HOTP)
+                    .has(HOTP_BODY_IS_SAME_YUBIKEY)
+    } catch (exception: JSONException) {
+        false
+    }
 
     data class Input(
         val totp: String,
@@ -68,7 +94,7 @@ class VerifyYubikeyUseCase(
         override val authenticationState: AuthenticationState
             get() = when {
                 this is Failure<*> && this.response.isUnauthorized ||
-                        this is NetworkFailure && this.errorCode == HttpURLConnection.HTTP_UNAUTHORIZED ->
+                        this is NetworkFailure && this.errorCode == HTTP_UNAUTHORIZED ->
                     AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
                 this is Failure<*> && this.response.isMfaRequired -> {
                     val providers = MfaTypeProvider.get(this.response)
@@ -90,6 +116,14 @@ class VerifyYubikeyUseCase(
 
         object Unauthorized : Output()
 
+        object YubikeyNotFromCurrentUser : Output()
+
         data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+    }
+
+    private companion object {
+        private const val RESPONSE_BODY = "body"
+        private const val RESPONSE_BODY_HOTP = "hotp"
+        private const val HOTP_BODY_IS_SAME_YUBIKEY = "isSameYubikeyId"
     }
 }

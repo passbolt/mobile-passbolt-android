@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
@@ -13,7 +14,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.Challenge
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
-import com.passbolt.mobile.android.feature.setup.enterpassphrase.VerifyPassphraseUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
@@ -61,6 +62,7 @@ open class SignInPresenter(
     private val saveServerFingerprintUseCase: SaveServerFingerprintUseCase,
     private val mfaStatusProvider: MfaStatusProvider,
     private val featureFlagsInteractor: FeatureFlagsInteractor,
+    private val rbacInteractor: RbacInteractor,
     private val getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysAndTimeInteractor,
     private val signInVerifyInteractor: SignInVerifyInteractor,
     private val userProfileInteractor: UserProfileInteractor,
@@ -239,16 +241,24 @@ open class SignInPresenter(
         Timber.d("Increasing sign in count")
         inAppReviewInteractor.processSuccessfulSignIn()
         loginState = null
-        fetchFeatureFlags()
+        fetchFeatureFlagsAndRbac()
     }
 
-    private fun fetchFeatureFlags() {
+    private fun fetchFeatureFlagsAndRbac() {
         Timber.d("Fetching feature flags")
         scope.launch {
-            when (featureFlagsInteractor.fetchAndSaveFeatureFlags()) {
+            when (val featureFlagsResult = featureFlagsInteractor.fetchAndSaveFeatureFlags()) {
                 is FeatureFlagsInteractor.Output.Success -> {
                     Timber.d("Feature flags fetched")
-                    fetchUserAvatar()
+                    if (featureFlagsResult.featureFlags.isRbacAvailable) {
+                        Timber.d("RBAC available, fetching RBAC")
+                        when (rbacInteractor.fetchAndSaveRbacRulesFlags()) {
+                            is RbacInteractor.Output.Failure -> view?.showFeatureFlagsErrorDialog()
+                            is RbacInteractor.Output.Success -> fetchUserAvatar()
+                        }
+                    } else {
+                        fetchUserAvatar()
+                    }
                 }
                 is FeatureFlagsInteractor.Output.Failure -> {
                     view?.showFeatureFlagsErrorDialog()

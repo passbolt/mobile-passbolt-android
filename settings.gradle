@@ -48,6 +48,7 @@ coreModule "envinfo"
 coreModule "idlingresource"
 coreModule "otpcore"
 coreModule "tags"
+coreModule "rbac"
 
 featureModule "startup"
 featureModule "setup"

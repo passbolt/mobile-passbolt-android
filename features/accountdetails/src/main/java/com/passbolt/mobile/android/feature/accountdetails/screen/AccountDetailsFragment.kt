@@ -3,13 +3,19 @@ package com.passbolt.mobile.android.feature.accountdetails.screen
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.showSnackbar
+import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
+import com.passbolt.mobile.android.feature.accountdetails.AccountDetailsActivity
 import com.passbolt.mobile.android.feature.accountdetails.databinding.FragmentAccountDetailsBinding
+import com.passbolt.mobile.android.feature.accountdetails.screen.backstrategy.AccountDetailsBackNavStrategy
+import com.passbolt.mobile.android.feature.accountdetails.screen.backstrategy.FragmentBackstackNavStrategy
+import com.passbolt.mobile.android.feature.accountdetails.screen.backstrategy.OwnActivityBackNavStrategy
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.TransferAccountToAnotherDeviceActivity
 import org.koin.android.ext.android.inject
@@ -45,14 +51,25 @@ class AccountDetailsFragment :
     ), AccountDetailsContract.View {
 
     override val presenter: AccountDetailsContract.Presenter by inject()
+    private var backNavStrategy: AccountDetailsBackNavStrategy? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setListeners()
+        initBackNavStrategy()
         presenter.attach(this)
     }
 
+    private fun initBackNavStrategy() {
+        backNavStrategy = if (context is AccountDetailsActivity) {
+            OwnActivityBackNavStrategy(requireActivity())
+        } else {
+            FragmentBackstackNavStrategy(findNavController())
+        }
+    }
+
     override fun onDestroyView() {
+        backNavStrategy = null
         presenter.detach()
         super.onDestroyView()
     }
@@ -60,7 +77,7 @@ class AccountDetailsFragment :
     private fun setListeners() {
         with(binding) {
             initDefaultToolbar(toolbar)
-            toolbar.setNavigationOnClickListener { requireActivity().finish() }
+            toolbar.setNavigationOnClickListener { backNavStrategy?.backClick() }
             labelInput.setTextChangeListener {
                 presenter.labelInputChanged(it)
             }
@@ -83,6 +100,14 @@ class AccountDetailsFragment :
 
     override fun showOrgUrl(orgUrl: String) {
         binding.orgUrlLabel.text = orgUrl
+    }
+
+    override fun showRole(roleName: String) {
+        with(binding) {
+            roleLabel.text = roleName
+            roleLabel.visible()
+            roleHeading.visible()
+        }
     }
 
     override fun showAvatar(avatarUrl: String?) {

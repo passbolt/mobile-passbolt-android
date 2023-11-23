@@ -60,6 +60,12 @@ class ScanQrParser(
                     if (it.isNotScanned()) {
                         processFirstPageData(it)
                         _pareResultFlow.tryEmit(it)
+                    } else {
+                        _pareResultFlow.tryEmit(
+                            ParseResult.ScanFailure(
+                                IllegalStateException("First page has already been scanned. Restart transfer.")
+                            )
+                        )
                     }
                 } else if (it is ParseResult.PassboltQr.SubsequentPage) {
                     if (isFirstPageScanned) {
@@ -69,7 +75,14 @@ class ScanQrParser(
                         }
                     } else {
                         Timber.e("First page was not scanned, but subsequent page received")
-                        _pareResultFlow.tryEmit(ParseResult.Failure())
+                        _pareResultFlow.tryEmit(
+                            ParseResult.ScanFailure(
+                                IllegalStateException(
+                                    "First page was not scanned, " +
+                                            "but subsequent page received. Restart transfer."
+                                )
+                            )
+                        )
                     }
                 } else {
                     _pareResultFlow.tryEmit(it)

@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.storage.usecase
+package com.passbolt.mobile.android.storage
 
 /**
  * Passbolt - Open source password manager for teams
@@ -32,6 +32,7 @@ internal const val USER_LABEL_KEY = "USER_LABEL_KEY"
 internal const val URL_KEY = "URL_KEY"
 internal const val SERVER_ID_KEY = "SERVER_ID_KEY"
 internal const val AVATAR_URL_KEY = "AVATAR_URL_KEY"
+internal const val ROLE_KEY = "ROLE_KEY"
 internal const val ACCESS_TOKEN_KEY = "ACCESS_TOKEN_KEY"
 internal const val SELECTED_ACCOUNT_KEY = "SELECTED_ACCOUNT_KEY"
 internal const val SERVER_FINGERPRINT_KEY = "SERVER_FINGERPRINT_KEY"
@@ -49,3 +50,8 @@ internal const val KEY_LAST_USED_HOME_VIEW = "LAST_USED_HOME_VIEW"
 internal const val KEY_USER_SET_HOME_VIEW = "USER_SET_HOME_VIEW"
 internal const val KEY_IS_DEVELOPER_MODE_ENABLED = "IS_DEVELOPER_MODE_ENABLED"
 internal const val KEY_IS_HIDE_ROOT_DIALOG_ENABLED = "IS_HIDE_ROOT_DIALOG_ENABLED"
+internal const val KEY_PREVIEW_PASSWORD = "PREVIEW_PASSWORD"
+internal const val KEY_COPY_PASSWORD = "COPY_PASSWORD"
+internal const val KEY_USE_TAGS = "USE_TAGS"
+internal const val KEY_USE_FOLDERS = "USE_FOLDERS"
+internal const val KEY_VIEW_SHARE = "VIEW_SHARE"

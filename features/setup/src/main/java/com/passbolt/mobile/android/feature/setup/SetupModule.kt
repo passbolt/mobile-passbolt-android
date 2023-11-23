@@ -5,12 +5,12 @@ import androidx.biometric.BiometricManager
 import com.passbolt.mobile.android.common.Biometric
 import com.passbolt.mobile.android.common.BiometricImpl
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
-import com.passbolt.mobile.android.feature.setup.fingerprint.di.fingerprintModule
+import com.passbolt.mobile.android.feature.setup.fingerprint.fingerprintModule
 import com.passbolt.mobile.android.feature.setup.importprofile.importProfileModule
-import com.passbolt.mobile.android.feature.setup.scanqr.di.scanQrModule
-import com.passbolt.mobile.android.feature.setup.summary.di.summaryModule
-import com.passbolt.mobile.android.feature.setup.transferdetails.di.transferDetailsModule
-import com.passbolt.mobile.android.feature.setup.welcome.di.welcomeModule
+import com.passbolt.mobile.android.feature.setup.scanqr.scanQrModule
+import com.passbolt.mobile.android.feature.setup.summary.summaryModule
+import com.passbolt.mobile.android.feature.setup.transferdetails.transferDetailsModule
+import com.passbolt.mobile.android.feature.setup.welcome.welcomeModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 

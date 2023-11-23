@@ -35,6 +35,7 @@ import com.passbolt.mobile.android.core.extension.selectableBackgroundBorderless
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.ui.R
 import com.passbolt.mobile.android.core.ui.databinding.ViewLabelledTextBinding
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class LabelledText @JvmOverloads constructor(
     context: Context,
@@ -84,6 +85,7 @@ class LabelledText @JvmOverloads constructor(
                 .apply {
                     setImageResource(model.icon)
                     setBackgroundResource(context.selectableBackgroundBorderlessResourceId())
+                    setColorFilter(context.getColor(CoreUiR.color.icon_tint), android.graphics.PorterDuff.Mode.SRC_IN)
                     setDebouncingOnClick { model.action.invoke() }
                     binding.actionsContainer.addView(this)
                 }

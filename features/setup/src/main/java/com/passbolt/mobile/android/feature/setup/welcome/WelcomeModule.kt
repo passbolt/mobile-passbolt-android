@@ -1,8 +1,5 @@
-package com.passbolt.mobile.android.feature.setup.welcome.di
+package com.passbolt.mobile.android.feature.setup.welcome
 
-import com.passbolt.mobile.android.feature.setup.welcome.WelcomeContract
-import com.passbolt.mobile.android.feature.setup.welcome.WelcomeFragment
-import com.passbolt.mobile.android.feature.setup.welcome.WelcomePresenter
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 import org.koin.dsl.bind

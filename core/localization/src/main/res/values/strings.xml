@@ -119,6 +119,7 @@
     <string name="account_details_label_desc">Label will be displayed in the account list and for authentication</string>
     <string name="account_details_label_name">Name</string>
     <string name="account_details_label_email">E-mail</string>
+    <string name="account_details_label_role">Role</string>
     <string name="account_details_label_org">Organization URL</string>
     <string name="account_details_save_changes">Save changes</string>
     <string name="account_details_label_saved">Your account label was changed!</string>
@@ -168,10 +169,13 @@
     <string name="dialog_mfa_yubikey_otp">YubiKey OTP</string>
     <string name="dialog_mfa_duo">Duo multi-factor authentication</string>
     <string name="dialog_mfa_scan_youbikey">Scan your YubiKey</string>
+    <string name="dialog_mfa_scan_youbikey_failed_title">Scanning failed</string>
+    <string name="dialog_mfa_scan_youbikey_failed_message">Your Yubikey cannot be read. Please try another one or use another provider.</string>
+    <string name="dialog_mfa_scan_youbikey_not_from_current_user_title">Yubikey is not recognized</string>
+    <string name="dialog_mfa_scan_youbikey_not_from_current_user_message">Yubikey is not recognized by the server. Please try another Yubikey or use another provider.</string>
     <string name="dialog_mfa_auth_with_duo">Authenticate with Duo</string>
     <string name="dialog_mfa_other_provider">Try with another provider</string>
     <string name="dialog_mfa_remember_me">Remember this device for 30 days</string>
-    <string name="dialog_mfa_scan_cancelled">Scanning cancelled</string>
     <string name="dialog_mfa_scan_empty_otp">Scanned OTP is empty</string>
     <string name="dialog_mfa_totp">Two Factor Authentication</string>
     <string name="dialog_mfa_enter_otp">Enter the verification code:</string>
@@ -306,6 +310,7 @@
     <string name="settings_accounts_manage_accounts">Manage accounts</string>
     <string name="settings_accounts_transfer_account">Transfer account to another device</string>
     <string name="settings_accounts_key_inspector">Key inspector</string>
+    <string name="settings_accounts_account_details">Account details</string>
 
     <string name="settings_terms_and_licenses_privacy_policy">Privacy policy</string>
     <string name="settings_terms_and_licenses_licenses">Open Source Licenses</string>
@@ -511,6 +516,8 @@
     <string name="resource_picker_replace_totp_title">Replace TOTP?</string>
     <string name="resource_picker_replace_totp">Replace TOTP</string>
     <string name="resource_picker_add_totp">Add TOTP</string>
+    <string name="resource_picker_no_edit_permission">You are not allowed to edit this resource.</string>
+    <string name="resource_picker_resource_not_compatible">This resource is not compatible with TOTP.</string>
 
     <string name="key_inspector_uid">Uid</string>
     <string name="key_inspector_fingerprint">Fingerprint</string>

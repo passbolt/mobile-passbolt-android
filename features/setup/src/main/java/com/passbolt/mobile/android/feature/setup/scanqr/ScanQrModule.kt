@@ -1,8 +1,5 @@
-package com.passbolt.mobile.android.feature.setup.scanqr.di
+package com.passbolt.mobile.android.feature.setup.scanqr
 
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrContract
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrFragment
-import com.passbolt.mobile.android.feature.setup.scanqr.ScanQrPresenter
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser

@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.storage.usecase.preferences
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,30 +27,9 @@ import org.koin.core.module.Module
  */
 
 internal fun Module.preferencesModule() {
-    factory {
-        GetGlobalPreferencesUseCase(
-            encryptedSharedPreferencesFactory = get()
-        )
-    }
-    factory {
-        UpdateGlobalPreferencesUseCase(
-            encryptedSharedPreferencesFactory = get()
-        )
-    }
-    factory {
-        GetHomeDisplayViewPrefsUseCase(
-            encryptedSharedPreferencesFactory = get(),
-            homeDisplayViewPrefsValidator = get()
-        )
-    }
-    factory {
-        UpdateHomeDisplayViewPrefsUseCase(
-            encryptedSharedPreferencesFactory = get()
-        )
-    }
-    factory {
-        HomeDisplayViewPrefsValidator(
-            getFeatureFlagsUseCase = get()
-        )
-    }
+    factoryOf(::GetGlobalPreferencesUseCase)
+    factoryOf(::UpdateGlobalPreferencesUseCase)
+    factoryOf(::GetHomeDisplayViewPrefsUseCase)
+    factoryOf(::UpdateHomeDisplayViewPrefsUseCase)
+    factoryOf(::HomeDisplayViewPrefsValidator)
 }

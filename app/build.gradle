@@ -154,6 +154,7 @@ dependencies {
     implementation project(':scanotp')
     implementation project(':otpmoremenu')
     implementation project(':createotpmanually')
+    implementation project(':rbac')
 
     debugImplementation libs.leakcanary
 
@@ -163,7 +164,7 @@ dependencies {
     implementation libs.koin
     implementation libs.gson
     implementation libs.app.startup
-    implementation libs.espresso.okhttp.idling.resource
+    implementation libs.espresso.idling.resource
 
     androidTestImplementation project(':commontest')
     androidTestImplementation libs.appcompat

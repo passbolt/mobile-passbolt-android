@@ -1,9 +1,9 @@
 [versions]
-androidGradlePlugin = '8.1.0'
-gradleVersionsPlugin = "0.28.0"
+androidGradlePlugin = '8.1.2'
+gradleVersionsPlugin = "0.48.0"
 desugarJdkLibs = "2.0.3"
-kotlin = "1.9.0"
-kotlinKsp = "1.9.0-1.0.13"
+kotlin = "1.9.10"
+kotlinKsp = "1.9.10-1.0.13"
 coroutines = "1.7.3"
 koin = "3.4.3"
 quadrant = "1.7"
@@ -23,11 +23,11 @@ mockitoAndroid = "5.4.0"
 espressoOkHttpIdlingResource = "1.0.0"
 espressoIdlingResource = "3.5.0-alpha07"
 ktlint = "0.36.0"
-detekt = "1.21.0"
+detekt = "1.23.1"
 leakcanary = "2.12"
 kover = "0.5.1"
-dependencyAnalysis = "1.10.0"
-licensee = "1.7.0"
+dependencyAnalysis = "1.24.0"
+licensee = "1.8.0"
 dokka = "1.6.10"
 androidXcore = "1.10.1"
 appcompat = "1.6.1"
@@ -56,7 +56,7 @@ coil = "2.4.0"
 fastAdapterCore = "5.7.0"
 fastAdapterCoreAnimators = "1.1.0"
 easylauncher = "6.2.0"
-fusionauthJwt = "5.2.4"
+fusionauthJwt = "5.3.0"
 textDrawable = "558677ea31"
 serializationJson = "1.5.1"
 roomCore = "2.4.3"
@@ -100,7 +100,6 @@ android-tests-runner = { group = "androidx.test", name = "runner", version.ref =
 android-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidTestRules" }
 android-test-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidTestKtx" }
 android-test-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "androidTestIntents" }
-espresso-okhttp-idling-resource = { group = "com.jakewharton.espresso", name = "okhttp3-idling-resource", version.ref = "espressoOkHttpIdlingResource" }
 espresso-idling-resource = { group = "androidx.test.espresso", name = "espresso-idling-resource", version.ref = "espressoIdlingResource" }
 ktlint = { group = "com.pinterest", name = "ktlint", version.ref = "ktlint" }
 leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }

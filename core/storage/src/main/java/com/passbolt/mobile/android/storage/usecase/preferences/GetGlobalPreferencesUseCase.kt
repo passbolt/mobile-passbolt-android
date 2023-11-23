@@ -2,11 +2,11 @@ package com.passbolt.mobile.android.storage.usecase.preferences
 
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
-import com.passbolt.mobile.android.storage.usecase.GLOBAL_PREFERENCES_FILE_NAME
-import com.passbolt.mobile.android.storage.usecase.KEY_DEBUG_LOGS_ENABLED
-import com.passbolt.mobile.android.storage.usecase.KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME
-import com.passbolt.mobile.android.storage.usecase.KEY_IS_DEVELOPER_MODE_ENABLED
-import com.passbolt.mobile.android.storage.usecase.KEY_IS_HIDE_ROOT_DIALOG_ENABLED
+import com.passbolt.mobile.android.storage.GLOBAL_PREFERENCES_FILE_NAME
+import com.passbolt.mobile.android.storage.KEY_DEBUG_LOGS_ENABLED
+import com.passbolt.mobile.android.storage.KEY_DEBUG_LOGS_FILE_CREATION_DATE_TIME
+import com.passbolt.mobile.android.storage.KEY_IS_DEVELOPER_MODE_ENABLED
+import com.passbolt.mobile.android.storage.KEY_IS_HIDE_ROOT_DIALOG_ENABLED
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 

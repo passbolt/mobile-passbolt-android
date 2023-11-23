@@ -248,7 +248,6 @@ class CreateOtpPresenter(
         coroutineScope.launch {
             view?.showProgress()
 
-            val existingResource = requireNotNull(editedOtpData) { "In edit mode but existing resource not present" }
             val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(editedOtpData!!.resourceId))
                 .resource
             performResourceUpdateAction(

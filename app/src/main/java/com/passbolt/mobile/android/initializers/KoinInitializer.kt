@@ -23,7 +23,8 @@ import com.passbolt.mobile.android.core.resourcetypes.resourceTypesModule
 import com.passbolt.mobile.android.core.secrets.secretsModule
 import com.passbolt.mobile.android.core.security.securityModule
 import com.passbolt.mobile.android.core.tags.tagsModule
-import com.passbolt.mobile.android.core.ui.coreUiModule
+import com.passbolt.mobile.android.core.coreUiModule
+import com.passbolt.mobile.android.core.rbacModule
 import com.passbolt.mobile.android.core.users.usersModule
 import com.passbolt.mobile.android.createFolderModule
 import com.passbolt.mobile.android.database.databaseModule
@@ -38,7 +39,7 @@ import com.passbolt.mobile.android.feature.otp.scanOtpMainModule
 import com.passbolt.mobile.android.feature.resourcedetails.resourceDetailsModule
 import com.passbolt.mobile.android.feature.settings.settingsModule
 import com.passbolt.mobile.android.feature.setup.setupModule
-import com.passbolt.mobile.android.feature.startup.di.startUpModule
+import com.passbolt.mobile.android.feature.startup.startUpModule
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferAccountToAnotherDeviceModule
 import com.passbolt.mobile.android.featureflags.featureFlagsModule
 import com.passbolt.mobile.android.folderDetailsModule
@@ -54,7 +55,7 @@ import com.passbolt.mobile.android.resourceMoreMenuModule
 import com.passbolt.mobile.android.resourcePickerModule
 import com.passbolt.mobile.android.resourceTagsModule
 import com.passbolt.mobile.android.serializers.serializersModule
-import com.passbolt.mobile.android.service.linksApiModule
+import com.passbolt.mobile.android.linksapi.linksApiModule
 import com.passbolt.mobile.android.storage.storageModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -153,7 +154,8 @@ class KoinInitializer : Initializer<Unit> {
             tagsModule,
             scanOtpMainModule,
             otpMainMoreMenuModule,
-            createOtpManuallyMainModule
+            createOtpManuallyMainModule,
+            rbacModule
         )
     }
 }

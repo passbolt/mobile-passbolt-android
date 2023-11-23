@@ -39,6 +39,7 @@ interface AccountDetailsContract {
         fun showOrgUrl(orgUrl: String)
         fun showAvatar(avatarUrl: String?)
         fun showLabel(label: String)
+        fun showRole(roleName: String)
         fun clearValidationErrors()
         fun showLabelLengthError(labelMaxLength: Int)
         fun showLabelChanged()

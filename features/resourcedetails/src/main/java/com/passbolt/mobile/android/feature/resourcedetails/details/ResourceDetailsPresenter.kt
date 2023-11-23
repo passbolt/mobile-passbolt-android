@@ -27,13 +27,17 @@ import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
 import com.passbolt.mobile.android.ui.OtpItemWrapper
+import com.passbolt.mobile.android.ui.RbacModel
+import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.isFavourite
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelChildren
@@ -79,6 +83,7 @@ class ResourceDetailsPresenter(
     private val otpModelMapper: OtpModelMapper,
     private val getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
     private val resourceTypeFactory: ResourceTypeFactory,
+    private val getRbacRulesUseCase: GetRbacRulesUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter, KoinComponent {
@@ -131,59 +136,88 @@ class ResourceDetailsPresenter(
 
     private fun getResourcesAndPermissions(resourceId: String) {
         coroutineScope.launch(missingItemExceptionHandler) {
-            val resourceInitializationDeferred = async { // get and display resource
-                resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
-                view?.apply {
-                    displayTitle(resourceModel.name)
-                    displayUsername(resourceModel.username.orEmpty())
-                    displayInitialsIcon(resourceModel.name, resourceModel.initials)
-                    displayUrl(resourceModel.url.orEmpty())
-                    if (resourceModel.isFavourite()) {
-                        view?.showFavouriteStar()
-                    } else {
-                        view?.hideFavouriteStar()
-                    }
-                    showPasswordHidden()
-                    showPasswordHiddenIcon()
-                    handleDescriptionField(resourceModel)
-                    handleTotpField(resourceModel)
-                    handleFeatureFlags()
-                }
+            val rbac = getRbacRulesUseCase.execute(Unit).rbacModel
+            val resourceInitializationDeferred = async {
+                getAndDisplayResource(resourceId)
             }
             launch { // get and display permissions
-                val permissions = getLocalResourcePermissionsUseCase.execute(
-                    GetLocalResourcePermissionsUseCase.Input(resourceId)
-                ).permissions
-
-                val permissionsDisplayDataset = PermissionsDatasetCreator(permissionsListWidth, permissionItemWidth)
-                    .prepareDataset(permissions)
-
-                view?.showPermissions(
-                    permissionsDisplayDataset.groupPermissions,
-                    permissionsDisplayDataset.userPermissions,
-                    permissionsDisplayDataset.counterValue,
-                    permissionsDisplayDataset.overlap
-                )
+                getAndDisplayPermissions(rbac, resourceId)
             }
             launch { // get and display tags
-                getLocalResourceTagsUseCase.execute(GetLocalResourceTagsUseCase.Input(resourceId))
-                    .tags
-                    .map { it.slug }
-                    .let { view?.showTags(it) }
+                getAndDisplayTags(rbac, resourceId)
             }
             launch { // get and show location
-                resourceInitializationDeferred.await()
-                val resourceLocationPathSegments = resourceModel.folderId.let {
-                    if (it != null) {
-                        getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(it))
-                            .parentFolders
-                            .map { folder -> folder.name }
-                    } else {
-                        emptyList()
-                    }
-                }
-                view?.showFolderLocation(resourceLocationPathSegments)
+                getAndDisplayLocation(rbac, resourceInitializationDeferred)
             }
+        }
+    }
+
+    private suspend fun getAndDisplayLocation(
+        rbac: RbacModel,
+        resourceInitializationDeferred: Deferred<Unit>
+    ) {
+        if (rbac.foldersUseRule == ALLOW) {
+            resourceInitializationDeferred.await()
+            val resourceLocationPathSegments = resourceModel.folderId.let {
+                if (it != null) {
+                    getLocalFolderLocation.execute(GetLocalFolderLocationUseCase.Input(it))
+                        .parentFolders
+                        .map { folder -> folder.name }
+                } else {
+                    emptyList()
+                }
+            }
+            view?.showFolderLocation(resourceLocationPathSegments)
+        }
+    }
+
+    private suspend fun getAndDisplayTags(rbac: RbacModel, resourceId: String) {
+        val areTagsAvailable = getFeatureFlagsUseCase.execute(Unit).featureFlags.areTagsAvailable
+        if (areTagsAvailable && rbac.tagsUseRule == ALLOW) {
+            getLocalResourceTagsUseCase.execute(GetLocalResourceTagsUseCase.Input(resourceId))
+                .tags
+                .map { it.slug }
+                .let { view?.showTags(it) }
+        }
+    }
+
+    private suspend fun getAndDisplayPermissions(rbac: RbacModel, resourceId: String) {
+        if (rbac.shareViewRule == ALLOW) {
+            val permissions = getLocalResourcePermissionsUseCase.execute(
+                GetLocalResourcePermissionsUseCase.Input(resourceId)
+            ).permissions
+
+            val permissionsDisplayDataset = PermissionsDatasetCreator(permissionsListWidth, permissionItemWidth)
+                .prepareDataset(permissions)
+
+            view?.showPermissions(
+                permissionsDisplayDataset.groupPermissions,
+                permissionsDisplayDataset.userPermissions,
+                permissionsDisplayDataset.counterValue,
+                permissionsDisplayDataset.overlap
+            )
+        }
+    }
+
+    private suspend fun ResourceDetailsPresenter.getAndDisplayResource(
+        resourceId: String
+    ) {
+        resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
+        view?.apply {
+            displayTitle(resourceModel.name)
+            displayUsername(resourceModel.username.orEmpty())
+            displayInitialsIcon(resourceModel.name, resourceModel.initials)
+            displayUrl(resourceModel.url.orEmpty())
+            if (resourceModel.isFavourite()) {
+                view?.showFavouriteStar()
+            } else {
+                view?.hideFavouriteStar()
+            }
+            showPasswordHidden()
+            showPasswordHiddenIcon()
+            handleDescriptionField(resourceModel)
+            handleTotpField(resourceModel)
+            handleFeatureFlagsAndRbac()
         }
     }
 
@@ -201,10 +235,11 @@ class ResourceDetailsPresenter(
         }
     }
 
-    private suspend fun handleFeatureFlags() {
-        val isPasswordEyeIconVisible = getFeatureFlagsUseCase.execute(Unit).featureFlags.isPreviewPasswordAvailable
-        if (!isPasswordEyeIconVisible) {
-            view?.hidePasswordEyeIcon()
+    private suspend fun handleFeatureFlagsAndRbac() {
+        val passwordPreviewFeatureFlag = getFeatureFlagsUseCase.execute(Unit).featureFlags.isPreviewPasswordAvailable
+        val passwordPreviewRbac = getRbacRulesUseCase.execute(Unit).rbacModel.passwordPreviewRule
+        if (passwordPreviewFeatureFlag && passwordPreviewRbac == ALLOW) {
+            view?.showPasswordEyeIcon()
         }
     }
 
@@ -318,12 +353,14 @@ class ResourceDetailsPresenter(
 
     override fun copyPasswordClick() {
         coroutineScope.launch {
-            performSecretPropertyAction(
-                action = { secretPropertiesActionsInteractor.providePassword() },
-                doOnFetchFailure = { view?.showFetchFailure() },
-                doOnDecryptionFailure = { view?.showDecryptionFailure() },
-                doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
-            )
+            if (getRbacRulesUseCase.execute(Unit).rbacModel.passwordCopyRule == ALLOW) {
+                performSecretPropertyAction(
+                    action = { secretPropertiesActionsInteractor.providePassword() },
+                    doOnFetchFailure = { view?.showFetchFailure() },
+                    doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                    doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                )
+            }
         }
     }
 

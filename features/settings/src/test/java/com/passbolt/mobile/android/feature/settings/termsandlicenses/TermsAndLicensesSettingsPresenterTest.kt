@@ -64,7 +64,8 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
                         isPreviewPasswordAvailable = true,
                         areFoldersAvailable = false,
                         areTagsAvailable = false,
-                        isTotpAvailable = true
+                        isTotpAvailable = true,
+                        isRbacAvailable = true
                     )
                 )
             )
@@ -82,7 +83,8 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
                         isPreviewPasswordAvailable = true,
                         areFoldersAvailable = false,
                         areTagsAvailable = false,
-                        isTotpAvailable = true
+                        isTotpAvailable = true,
+                        isRbacAvailable = true
                     )
                 )
             )
@@ -118,7 +120,8 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
             isPreviewPasswordAvailable = true,
             areFoldersAvailable = false,
             areTagsAvailable = false,
-            isTotpAvailable = true
+            isTotpAvailable = true,
+            isRbacAvailable = true
         )
         getFeatureFlagsUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(

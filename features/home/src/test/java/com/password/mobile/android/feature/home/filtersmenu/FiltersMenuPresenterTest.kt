@@ -2,10 +2,15 @@ package com.password.mobile.android.feature.home.filtersmenu
 
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuContract
-import com.passbolt.mobile.android.feature.home.screen.model.HomeDisplayViewModel
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.RbacModel
+import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
+import com.passbolt.mobile.android.ui.RbacRuleModel.DENY
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -14,6 +19,7 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 
@@ -29,6 +35,23 @@ class FiltersMenuPresenterTest : KoinTest {
         modules(testFiltersMenuModule)
     }
 
+    @Before
+    fun setup() {
+        mockGetRbacRulesUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetRbacRulesUseCase.Output(
+                    RbacModel(
+                        passwordPreviewRule = ALLOW,
+                        passwordCopyRule = ALLOW,
+                        tagsUseRule = ALLOW,
+                        shareViewRule = ALLOW,
+                        foldersUseRule = ALLOW
+                    )
+                )
+            )
+        }
+    }
+
     @Test
     fun `menu items should be visible based on feature flags`() {
         mockGetFeatureFlagsUseCase.stub {
@@ -39,7 +62,8 @@ class FiltersMenuPresenterTest : KoinTest {
                     isPreviewPasswordAvailable = false,
                     areFoldersAvailable = true,
                     areTagsAvailable = true,
-                    isTotpAvailable = true
+                    isTotpAvailable = true,
+                    isRbacAvailable = true
                 )
             )
         }
@@ -62,7 +86,8 @@ class FiltersMenuPresenterTest : KoinTest {
                     isPreviewPasswordAvailable = false,
                     areFoldersAvailable = true,
                     areTagsAvailable = true,
-                    isTotpAvailable = true
+                    isTotpAvailable = true,
+                    isRbacAvailable = true
                 )
             )
         }
@@ -86,5 +111,29 @@ class FiltersMenuPresenterTest : KoinTest {
         verify(view).selectFoldersMenuItem()
         verify(view).selectTagsMenuItem()
         verify(view).selectGroupsMenuItem()
+    }
+
+    @Test
+    fun `menu items should not be visible if not allowed in rbac`() {
+        mockGetRbacRulesUseCase.stub {
+            onBlocking { execute(Unit) }.doReturn(
+                GetRbacRulesUseCase.Output(
+                    RbacModel(
+                        passwordPreviewRule = ALLOW,
+                        passwordCopyRule = ALLOW,
+                        tagsUseRule = DENY,
+                        shareViewRule = ALLOW,
+                        foldersUseRule = DENY
+                    )
+                )
+            )
+        }
+
+        presenter.attach(view)
+        presenter.creatingView()
+        presenter.argsRetrieved(FiltersMenuModel(HomeDisplayViewModel.AllItems))
+
+        verify(view, never()).showFoldersMenuItem()
+        verify(view, never()).showTagsMenuItem()
     }
 }

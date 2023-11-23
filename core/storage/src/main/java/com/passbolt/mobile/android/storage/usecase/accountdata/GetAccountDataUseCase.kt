@@ -3,13 +3,14 @@ package com.passbolt.mobile.android.storage.usecase.accountdata
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
 import com.passbolt.mobile.android.storage.paths.AccountDataFileName
-import com.passbolt.mobile.android.storage.usecase.AVATAR_URL_KEY
-import com.passbolt.mobile.android.storage.usecase.EMAIL_KEY
-import com.passbolt.mobile.android.storage.usecase.SERVER_ID_KEY
-import com.passbolt.mobile.android.storage.usecase.URL_KEY
-import com.passbolt.mobile.android.storage.usecase.USER_FIRST_NAME_KEY
-import com.passbolt.mobile.android.storage.usecase.USER_LABEL_KEY
-import com.passbolt.mobile.android.storage.usecase.USER_LAST_NAME_KEY
+import com.passbolt.mobile.android.storage.AVATAR_URL_KEY
+import com.passbolt.mobile.android.storage.EMAIL_KEY
+import com.passbolt.mobile.android.storage.ROLE_KEY
+import com.passbolt.mobile.android.storage.SERVER_ID_KEY
+import com.passbolt.mobile.android.storage.URL_KEY
+import com.passbolt.mobile.android.storage.USER_FIRST_NAME_KEY
+import com.passbolt.mobile.android.storage.USER_LABEL_KEY
+import com.passbolt.mobile.android.storage.USER_LAST_NAME_KEY
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
@@ -50,7 +51,8 @@ class GetAccountDataUseCase(
             email = sharedPreferences.getString(EMAIL_KEY, null),
             avatarUrl = sharedPreferences.getString(AVATAR_URL_KEY, null),
             url = sharedPreferences.getString(URL_KEY, "").orEmpty(),
-            serverId = sharedPreferences.getString(SERVER_ID_KEY, "")
+            serverId = sharedPreferences.getString(SERVER_ID_KEY, ""),
+            role = sharedPreferences.getString(ROLE_KEY, null)
         )
     }
 
@@ -61,6 +63,7 @@ class GetAccountDataUseCase(
         val avatarUrl: String?,
         val url: String,
         val serverId: String?,
-        val label: String?
+        val label: String?,
+        val role: String?
     )
 }

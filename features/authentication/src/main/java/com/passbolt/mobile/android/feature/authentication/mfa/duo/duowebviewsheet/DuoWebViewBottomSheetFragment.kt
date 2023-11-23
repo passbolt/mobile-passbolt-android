@@ -30,6 +30,7 @@ import android.webkit.WebView
 import androidx.core.os.bundleOf
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.gone
+import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedBottomSheetFragment
 import com.passbolt.mobile.android.feature.authentication.databinding.BottomSheetDuoWebViewBinding
@@ -48,9 +49,16 @@ class DuoWebViewBottomSheetFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setListeners()
         setupWebView()
         presenter.attach(this)
         presenter.argsRetrieved(bundledDuoPromptUrl)
+    }
+
+    private fun setListeners() {
+        binding.closeButton.setDebouncingOnClick {
+            dismiss()
+        }
     }
 
     override fun onAttach(context: Context) {

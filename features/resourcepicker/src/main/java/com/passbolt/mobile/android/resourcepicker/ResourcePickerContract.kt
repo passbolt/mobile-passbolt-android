@@ -27,14 +27,14 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModel
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.ui.ResourceModel
-import com.passbolt.mobile.android.ui.SelectableResourceModelWrapper
+import com.passbolt.mobile.android.ui.ResourcePickerListItem
 
 interface ResourcePickerContract {
 
     interface View : DataRefreshViewReactiveContract.View {
         fun showResources(
-            suggestedResources: List<SelectableResourceModelWrapper>,
-            resourceList: List<SelectableResourceModelWrapper>
+            suggestedResources: List<ResourcePickerListItem>,
+            resourceList: List<ResourcePickerListItem>
         )
         fun showEmptyState()
         fun hideEmptyState()
@@ -52,7 +52,7 @@ interface ResourcePickerContract {
         fun searchClearClick()
         fun argsRetrieved(suggestionUri: String?)
         fun refreshSwipe()
-        fun resourcePicked(selectableResourceModel: SelectableResourceModelWrapper, isSelected: Boolean)
+        fun resourcePicked(selectableResourceModel: ResourcePickerListItem, isSelected: Boolean)
         fun applyClick()
         fun otpLinkConfirmed(pickAction: PickResourceAction)
     }

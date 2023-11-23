@@ -121,13 +121,18 @@ class ResourceDetailsFragment :
         get() = listOf(binding.urlHeader, binding.urlIcon)
 
     private val sharedWithFields
-        get() = listOf(binding.sharedWithLabel, binding.sharedWithRecyclerClickableArea, binding.sharedWithNavIcon)
+        get() = listOf(
+            binding.sharedWithLabel,
+            binding.sharedWithRecycler,
+            binding.sharedWithRecyclerClickableArea,
+            binding.sharedWithNavIcon
+        )
 
     private val totpFields
         get() = listOf(binding.totpHeader, binding.totpValue)
 
     private val tagsFields
-        get() = listOf(binding.tagsHeader, binding.tagsClickableArea, binding.tagsNavIcon)
+        get() = listOf(binding.tagsHeader, binding.tagsValue, binding.tagsClickableArea, binding.tagsNavIcon)
 
     private val locationFields
         get() = listOf(binding.locationHeader, binding.locationValue, binding.locationNavIcon)
@@ -425,8 +430,8 @@ class ResourceDetailsFragment :
         websiteOpener.open(requireContext(), url)
     }
 
-    override fun hidePasswordEyeIcon() {
-        binding.passwordIcon.gone()
+    override fun showPasswordEyeIcon() {
+        binding.passwordIcon.visible()
     }
 
     override fun closeWithDeleteSuccessResult(name: String) {
@@ -513,6 +518,7 @@ class ResourceDetailsFragment :
         counterValue: List<String>,
         overlapOffset: Int
     ) {
+        sharedWithFields.forEach { it.visible() }
         val decorator = OverlappingItemDecorator(Overlap(left = overlapOffset))
         binding.sharedWithRecycler.addItemDecoration(decorator)
         FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })
@@ -559,9 +565,11 @@ class ResourceDetailsFragment :
             )
         }
         binding.tagsValue.text = builder
+        tagsFields.forEach { it.visible() }
     }
 
     override fun showFolderLocation(locationPathSegments: List<String>) {
+        locationFields.forEach { it.visible() }
         binding.locationValue.text = locationPathSegments.let {
             val mutable = it.toMutableList()
             mutable.add(0, getString(LocalizationR.string.folder_root))

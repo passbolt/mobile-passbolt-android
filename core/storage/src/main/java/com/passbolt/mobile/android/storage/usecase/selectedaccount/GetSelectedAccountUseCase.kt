@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.storage.usecase.selectedaccount
 
 import com.passbolt.mobile.android.common.usecase.UseCase
 import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
-import com.passbolt.mobile.android.storage.usecase.SELECTED_ACCOUNT_ALIAS
-import com.passbolt.mobile.android.storage.usecase.SELECTED_ACCOUNT_KEY
+import com.passbolt.mobile.android.storage.SELECTED_ACCOUNT_ALIAS
+import com.passbolt.mobile.android.storage.SELECTED_ACCOUNT_KEY
 
 /**
  * Passbolt - Open source password manager for teams

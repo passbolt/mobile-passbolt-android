@@ -35,16 +35,15 @@ class DrawableListDivider(
         val dividerRight = parent.width - parent.paddingRight
         val childCount = parent.childCount
 
-        (0..childCount - 2)
-            .map { parent.getChildAt(it) }
-            .forEach { child ->
-                val params = child.layoutParams as RecyclerView.LayoutParams
-                val dividerTop: Int = child.bottom + params.bottomMargin
-                val dividerBottom = dividerTop + (divider?.intrinsicHeight ?: 0)
-                divider?.let {
-                    it.setBounds(dividerLeft, dividerTop, dividerRight, dividerBottom)
-                    it.draw(canvas)
-                }
+        for (i in 0..childCount - 2) {
+            val child = parent.getChildAt(i)
+            val params = child.layoutParams as RecyclerView.LayoutParams
+            val dividerTop: Int = child.bottom + params.bottomMargin
+            val dividerBottom = dividerTop + (divider?.intrinsicHeight ?: 0)
+            divider?.let {
+                it.setBounds(dividerLeft, dividerTop, dividerRight, dividerBottom)
+                it.draw(canvas)
             }
+        }
     }
 }

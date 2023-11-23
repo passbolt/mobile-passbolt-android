@@ -52,7 +52,16 @@ class AccountsSettingsFragment :
             transferAccountSetting.setDebouncingOnClick {
                 navigateToTransferAccountOnboarding()
             }
+            accountDetailsSetting.setDebouncingOnClick {
+                navigateToAccoundDetails()
+            }
         }
+    }
+
+    private fun navigateToAccoundDetails() {
+        findNavController().navigate(
+            AccountsSettingsFragmentDirections.actionAccountsSettingsFragmentToAccountDetailsFragment()
+        )
     }
 
     private fun navigateToKeyInspector() {

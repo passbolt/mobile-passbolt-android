@@ -1,9 +1,17 @@
 ## Added
-- MOB-892: Add Duo authentication
-- MOB-1454: Add key inspector
+- Add support for RBAC
+- Show user role on account details
+- Add account details navigation from accounts settings
 
 ## Improved
-- MOB-1453: Use snackbars for errors on home and otp instead of fullscreen error
+- Add explanation for locked items when linking totp
+- Improve yubikey error messages
+
+## Fixed
+- Do not clear update password form when switching apps
+- Fix scanning stuck when resuming a new transfer from an existing one
+- Small UI fixes
 
 ## Maintenance
-- MOB-1411: Updated dependencies
+- Bump dependencies
+- Remove okhttp idling resource; turn off jetifier

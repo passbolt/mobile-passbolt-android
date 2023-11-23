@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.ui
+package com.passbolt.mobile.android.core
 
 import com.passbolt.mobile.android.core.font.Font
 import com.passbolt.mobile.android.core.font.fontModule
@@ -44,7 +44,7 @@ val coreUiModule = module {
     singleOf(::DateFormatter)
 
     single {
-        DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")
+        DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm O")
     }
     factory {
         InitialsIconGenerator(
