@@ -88,6 +88,8 @@ interface ResourceDetailsContract {
         fun hidePasswordEyeIcon()
         fun clearDescriptionInput()
         fun hideDescription()
+        fun showJsonResourceSchemaValidationError()
+        fun showJsonSecretSchemaValidationError()
     }
 
     @Suppress("TooManyFunctions")

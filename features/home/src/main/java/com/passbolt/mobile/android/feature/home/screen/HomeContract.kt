@@ -110,6 +110,8 @@ interface HomeContract {
         fun showDeleteTotpConfirmationDialog()
         fun showTotpDeleted()
         fun showTotpDeletionFailed()
+        fun showJsonResourceSchemaValidationError()
+        fun showJsonSecretSchemaValidationError()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {

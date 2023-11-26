@@ -27,6 +27,7 @@ import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
+import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
@@ -559,9 +560,17 @@ class ResourceDetailsPresenter(
                     doOnFetchFailure = { view?.showFetchFailure() },
                     doOnFailure = { view?.showGeneralError(it) },
                     doOnCryptoFailure = { view?.showEncryptionError(it) },
+                    doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                     doOnSuccess = { resourceEdited(it.resourceName) }
                 )
             }
+        }
+    }
+
+    private fun handleSchemaValidationFailure(entity: SchemaEntity) {
+        when (entity) {
+            SchemaEntity.RESOURCE -> view?.showJsonResourceSchemaValidationError()
+            SchemaEntity.SECRET -> view?.showJsonSecretSchemaValidationError()
         }
     }
 
@@ -606,6 +615,7 @@ class ResourceDetailsPresenter(
                     getResourcesAndPermissions(it.resourceId)
                     view?.setResourceEditedResult(it.resourceName)
                 },
+                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                 doOnFetchFailure = { view?.showFetchFailure() }
             )
 

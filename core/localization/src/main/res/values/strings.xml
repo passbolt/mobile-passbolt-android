@@ -43,6 +43,8 @@
     <string name="common_decryption_failure">Error during secret decryption</string>
     <string name="common_fetch_failure">Error during downloading the secret</string>
     <string name="common_encryption_failure">There was an error during secret encryption</string>
+    <string name="common_json_schema_resource_validation_error">There was an error during validation of resource. Enable logs for more details.</string>
+    <string name="common_json_schema_secret_validation_error">There was an error during validation of secret. Enable logs for more details.</string>
 
     <string name="common_message_resource_edited">%s password was successfully edited.</string>
     <string name="common_message_resource_deleted">%s password was deleted.</string>

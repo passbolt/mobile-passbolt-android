@@ -44,6 +44,7 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
+import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
 import com.passbolt.mobile.android.ui.OtpItemWrapper
@@ -408,8 +409,16 @@ class OtpPresenter(
                 view?.showResourceDeleted()
                 refreshData()
             },
+            doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
             doOnFetchFailure = { view?.showFetchFailure() }
         )
+    }
+
+    private fun handleSchemaValidationFailure(entity: SchemaEntity) {
+        when (entity) {
+            SchemaEntity.RESOURCE -> view?.showJsonResourceSchemaValidationError()
+            SchemaEntity.SECRET -> view?.showJsonSecretSchemaValidationError()
+        }
     }
 
     private suspend fun deleteStandaloneTotpResource(otpResource: ResourceModel) {
@@ -454,52 +463,7 @@ class OtpPresenter(
     override fun otpQrScanned(totpQr: OtpParseResult.OtpQr.TotpQr?) {
         when (otpResultAction) {
             OtpResultAction.EDIT -> {
-                if (totpQr == null) {
-                    Timber.e("No data scanned in the QR code")
-                    view?.showInvalidQrCodeDataScanned()
-                    return
-                }
-                presenterScope.launch {
-                    view?.showProgress()
-                    val resource = currentOtpItemForMenu!!.resource
-                    val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
-                        parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
-                    }
-                    val updateOperation =
-                        when (resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
-                            SIMPLE_PASSWORD, PASSWORD_WITH_DESCRIPTION ->
-                                throw IllegalArgumentException("These resource types are not shown on TOTP tab")
-                            STANDALONE_TOTP ->
-                                resourceUpdateActionsInteractor.updateStandaloneTotpResource(
-                                    label = resource.name,
-                                    issuer = resource.url,
-                                    period = totpQr.period,
-                                    digits = totpQr.digits,
-                                    algorithm = totpQr.algorithm.name,
-                                    secretKey = totpQr.secret
-                                )
-                            PASSWORD_DESCRIPTION_TOTP ->
-                                resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
-                                    label = resource.name,
-                                    issuer = resource.url,
-                                    period = totpQr.period,
-                                    digits = totpQr.digits,
-                                    algorithm = totpQr.algorithm.name,
-                                    secretKey = totpQr.secret
-                                )
-                        }
-                    performResourceUpdateAction(
-                        action = { updateOperation },
-                        doOnCryptoFailure = { view?.showEncryptionError(it) },
-                        doOnFailure = { view?.showError(it) },
-                        doOnSuccess = {
-                            view?.showOtpUpdate()
-                            refreshData()
-                        }
-                    )
-
-                    view?.hideProgress()
-                }
+                editOtpAfterQrScan(totpQr)
             }
             OtpResultAction.CREATE -> {
                 totpQr
@@ -509,6 +473,56 @@ class OtpPresenter(
                         view?.showInvalidQrCodeDataScanned()
                     }
             }
+        }
+    }
+
+    private fun editOtpAfterQrScan(totpQr: OtpParseResult.OtpQr.TotpQr?) {
+        if (totpQr == null) {
+            Timber.e("No data scanned in the QR code")
+            view?.showInvalidQrCodeDataScanned()
+            return
+        }
+        presenterScope.launch {
+            view?.showProgress()
+            val resource = currentOtpItemForMenu!!.resource
+            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
+                parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
+            }
+            val updateOperation =
+                when (resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
+                    SIMPLE_PASSWORD, PASSWORD_WITH_DESCRIPTION ->
+                        throw IllegalArgumentException("These resource types are not shown on TOTP tab")
+                    STANDALONE_TOTP ->
+                        resourceUpdateActionsInteractor.updateStandaloneTotpResource(
+                            label = resource.name,
+                            issuer = resource.url,
+                            period = totpQr.period,
+                            digits = totpQr.digits,
+                            algorithm = totpQr.algorithm.name,
+                            secretKey = totpQr.secret
+                        )
+                    PASSWORD_DESCRIPTION_TOTP ->
+                        resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
+                            label = resource.name,
+                            issuer = resource.url,
+                            period = totpQr.period,
+                            digits = totpQr.digits,
+                            algorithm = totpQr.algorithm.name,
+                            secretKey = totpQr.secret
+                        )
+                }
+            performResourceUpdateAction(
+                action = { updateOperation },
+                doOnCryptoFailure = { view?.showEncryptionError(it) },
+                doOnFailure = { view?.showError(it) },
+                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
+                doOnSuccess = {
+                    view?.showOtpUpdate()
+                    refreshData()
+                }
+            )
+
+            view?.hideProgress()
         }
     }
 

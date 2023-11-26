@@ -39,6 +39,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerato
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.FieldNamesMapper.Companion.USERNAME_FIELD
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.NewFieldsModelCreator
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.ResourceUpdateType
+import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -319,6 +320,15 @@ class UpdateResourcePresenter(
                     )
                 }
             }
+            is CreateResourceInteractor.Output.JsonSchemaValidationFailure ->
+                handleSchemaValidationFailure(result.entity)
+        }
+    }
+
+    private fun handleSchemaValidationFailure(entity: SchemaEntity) {
+        when (entity) {
+            SchemaEntity.RESOURCE -> view?.showJsonResourceSchemaValidationError()
+            SchemaEntity.SECRET -> view?.showJsonSecretSchemaValidationError()
         }
     }
 
@@ -359,6 +369,7 @@ class UpdateResourcePresenter(
             action = { getUpdateOperation(existingResource, resourceUpdateActionsInteractor) },
             doOnFailure = { view?.showError() },
             doOnCryptoFailure = { view?.showEncryptionError(it) },
+            doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
             doOnSuccess = { view?.closeWithEditSuccessResult(existingResource.name) }
         )
     }

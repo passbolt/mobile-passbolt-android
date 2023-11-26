@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimple
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -266,6 +267,8 @@ class ResourceUpdateActionsInteractor(
                     operationResult.resource.name
                 )
             }
+            is UpdateResourceInteractor.Output.JsonSchemaValidationFailure ->
+                ResourceUpdateActionResult.JsonSchemaValidationFailure(operationResult.entity)
         }
     }
 }
@@ -275,6 +278,7 @@ suspend fun performResourceUpdateAction(
     doOnCryptoFailure: (String) -> Unit,
     doOnFailure: (String) -> Unit,
     doOnSuccess: (ResourceUpdateActionResult.Success) -> Unit,
+    doOnSchemaValidationFailure: (SchemaEntity) -> Unit,
     doOnFetchFailure: () -> Unit = {},
     doOnUnauthorized: () -> Unit = {}
 ) {
@@ -285,6 +289,7 @@ suspend fun performResourceUpdateAction(
             is ResourceUpdateActionResult.FetchFailure -> doOnFetchFailure()
             is ResourceUpdateActionResult.Success -> doOnSuccess(it)
             is ResourceUpdateActionResult.Unauthorized -> doOnUnauthorized()
+            is ResourceUpdateActionResult.JsonSchemaValidationFailure -> doOnSchemaValidationFailure(it.entity)
         }
     }
 }
