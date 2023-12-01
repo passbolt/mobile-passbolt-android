@@ -1,3 +1,26 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021-2023 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
 package com.passbolt.mobile.android.scenarios.welcome
 
 import android.content.Intent
@@ -33,29 +56,6 @@ import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
-
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class WelcomeScreenTest : KoinTest {
@@ -76,6 +76,7 @@ class WelcomeScreenTest : KoinTest {
     }
 
     @Test
+    //    https://passbolt.testrail.io/index.php?/cases/view/2332
     fun asAMobileUserICanSeeTheWelcomeScreenWhenIOpenTheApplicationAndNoAccountIsSetup() {
         //    Given     that the application is not configured for any users
         //    When      I launch the application
@@ -96,6 +97,7 @@ class WelcomeScreenTest : KoinTest {
     }
 
     @Test
+    //    https://passbolt.testrail.io/index.php?/cases/view/2333
     fun asAMobileUserICanSeeAnExplanationWhyICannotCreateAnAccountOnTheMobileApp() {
         //      Given   the welcome screen is displayed
         //      When    the user click on the "I don't have an account" button
@@ -112,6 +114,7 @@ class WelcomeScreenTest : KoinTest {
     }
 
     @Test
+    //    https://passbolt.testrail.io/index.php?/cases/view/6190
     fun asAMobileUserICanGetHelpBeforeTheQrCodeScanningProcess() {
         //    Given   the user is on the “Welcome” screen
         //    When    the user clicks on the “information” icon on the top
@@ -127,6 +130,7 @@ class WelcomeScreenTest : KoinTest {
     }
 
     @Test
+    //    https://passbolt.testrail.io/index.php?/cases/view/6191
     fun asAMobileUserICanOpenHelpWebpageBeforeTheQrCodeScanningProcess() {
         //        Given   the user is on the “Help” modal
         onView(withId(R.id.helpButton)).perform(click())
@@ -141,6 +145,7 @@ class WelcomeScreenTest : KoinTest {
     }
 
     @Test
+    //    https://passbolt.testrail.io/index.php?/cases/view/2334
     fun asAMobileUserICanSeeAnExplanationOnHowToConnectAnExistingAccount() {
         //        Given   the welcome screen is displayed
         //        When    the user clicks on “connect to an existing account”

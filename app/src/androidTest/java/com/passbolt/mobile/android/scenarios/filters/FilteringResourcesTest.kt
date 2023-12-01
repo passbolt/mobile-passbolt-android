@@ -89,22 +89,21 @@ class FilteringResourcesTest : KoinTest {
 
     @Test
     @FlakyTest(detail = "It is currently failing nondeterministic on Android 12 - reason unknown")
-    // https://passbolt.testrail.io/index.php?/cases/view/2621
+    //  https://passbolt.testrail.io/index.php?/cases/view/2621
     fun asALoggedInMobileUserOnTheHomepageICanChangeTheCurrentActiveFilter() {
         //        Given       that I am a logged in mobile user
         //        And         the active filter is   not   <filter>
-        val filterList = ResourceFilterModel.values()
-        filterList.indices.forEach { index ->
+        ResourceFilterModel.entries.forEach { model ->
             //        When        I open the filter drawer
             onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
             //        And         I click on the <filter> list item
-            onView(withId(filterList[index].filterId)).perform(click())
+            onView(withId(model.filterId)).perform(click())
             //        Then        I do not see the filter drawer
             //        And         I see the homepage
             onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
             //        And         I see the title is <filter> with its corresponding icon
-            onView(withText(filterList[index].filterNameId)).check(matches(isDisplayed()))
-            onView(withId(titleDrawable)).check(matches(hasDrawable(filterList[index].filterIconId)))
+            onView(withText(model.filterNameId)).check(matches(isDisplayed()))
+            onView(withId(titleDrawable)).check(matches(hasDrawable(model.filterIconId)))
             //        And         I see the list of resources contains <filter> elements // TODO: unitTest?
             //        And         I see the list of resources is <sorted> // TODO: unitTest?
             //        Examples:
