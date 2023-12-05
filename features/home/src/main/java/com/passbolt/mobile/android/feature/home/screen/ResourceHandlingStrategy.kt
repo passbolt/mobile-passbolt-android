@@ -43,7 +43,7 @@ interface ResourceHandlingStrategy {
 
 sealed class ShowSuggestedModel {
 
-    object DoNotShow : ShowSuggestedModel()
+    data object DoNotShow : ShowSuggestedModel()
 
     data class Show(
         val suggestedUri: String

@@ -96,10 +96,10 @@ class VerifyTotpUseCase(
             val errorCode: Int
         ) : Output()
 
-        object Unauthorized : Output()
+        data object Unauthorized : Output()
 
         class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
-        object WrongCode : Output()
+        data object WrongCode : Output()
     }
 
     companion object {

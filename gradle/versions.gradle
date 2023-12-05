@@ -2,7 +2,7 @@ ext {
     projectVersionName = "1.18.0"
     projectVersionCode = 28
 
-    projectCompileSdk = 33
+    projectCompileSdk = 34
     projectMinSdk = 29
-    projectTargetSdk = 33
+    projectTargetSdk = 34
 }

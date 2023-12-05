@@ -47,6 +47,6 @@ class RbacInteractor(
 
         data class Success(val rbacModel: RbacModel) : Output()
 
-        object Failure : Output()
+        data object Failure : Output()
     }
 }

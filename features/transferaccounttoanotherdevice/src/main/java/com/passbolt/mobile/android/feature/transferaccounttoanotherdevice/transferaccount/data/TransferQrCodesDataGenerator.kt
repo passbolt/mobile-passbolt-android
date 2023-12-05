@@ -95,6 +95,6 @@ class TransferQrCodesDataGenerator(
             val pages: List<String>
         ) : Output()
 
-        object Error : Output()
+        data object Error : Output()
     }
 }

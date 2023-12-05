@@ -23,9 +23,9 @@ sealed class BarcodeScanResult {
         }
     }
 
-    object MultipleBarcodes : BarcodeScanResult()
+    data object MultipleBarcodes : BarcodeScanResult()
 
-    object NoBarcodeInRange : BarcodeScanResult()
+    data object NoBarcodeInRange : BarcodeScanResult()
 
     class Failure(val throwable: Throwable) : BarcodeScanResult()
 }

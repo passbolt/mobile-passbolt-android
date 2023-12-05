@@ -35,5 +35,5 @@ sealed class AccountModelUi {
         val isCurrentUser: Boolean = false
     ) : AccountModelUi()
 
-    object AddNewAccount : AccountModelUi()
+    data object AddNewAccount : AccountModelUi()
 }

@@ -8,17 +8,17 @@ sealed class ResourceDatabaseView {
     /**
      * Ordering by resource name alphabetically
      */
-    object ByNameAscending : ResourceDatabaseView()
+    data object ByNameAscending : ResourceDatabaseView()
 
     /**
      * Ordering by the recently modified field from most recent one
      */
-    object ByModifiedDateDescending : ResourceDatabaseView()
+    data object ByModifiedDateDescending : ResourceDatabaseView()
 
     /**
      * Filters the resources to favourite ones
      */
-    object IsFavourite : ResourceDatabaseView()
+    data object IsFavourite : ResourceDatabaseView()
 
     /**
      * Filters the resource to ones that have permissions defined in the list

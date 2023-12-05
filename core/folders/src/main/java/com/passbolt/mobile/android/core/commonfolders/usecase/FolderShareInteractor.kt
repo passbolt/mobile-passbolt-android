@@ -70,6 +70,6 @@ class FolderShareInteractor(
 
         class Unauthorized(val reason: UnauthenticatedReason) : Output()
 
-        object Success : Output()
+        data object Success : Output()
     }
 }

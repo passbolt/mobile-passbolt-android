@@ -114,9 +114,9 @@ class VerifyYubikeyUseCase(
             val errorCode: Int
         ) : Output()
 
-        object Unauthorized : Output()
+        data object Unauthorized : Output()
 
-        object YubikeyNotFromCurrentUser : Output()
+        data object YubikeyNotFromCurrentUser : Output()
 
         data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }

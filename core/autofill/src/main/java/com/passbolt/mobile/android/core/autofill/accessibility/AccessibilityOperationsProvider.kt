@@ -316,10 +316,10 @@ class AccessibilityOperationsProvider(
     )
 
     sealed class OverlayPosition {
-        object InBoundsBottomAnchor : OverlayPosition()
-        object InBoundsTopAnchor : OverlayPosition()
-        object OutBoundsHide : OverlayPosition()
-        object ForceBottom : OverlayPosition()
+        data object InBoundsBottomAnchor : OverlayPosition()
+        data object InBoundsTopAnchor : OverlayPosition()
+        data object OutBoundsHide : OverlayPosition()
+        data object ForceBottom : OverlayPosition()
         class Position(val x: Int, val y: Int) : OverlayPosition()
     }
 

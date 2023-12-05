@@ -37,5 +37,5 @@ sealed class SwitchAccountUiModel {
         val avatarUrl: String?
     ) : SwitchAccountUiModel()
 
-    object ManageAccountsItem : SwitchAccountUiModel()
+    data object ManageAccountsItem : SwitchAccountUiModel()
 }

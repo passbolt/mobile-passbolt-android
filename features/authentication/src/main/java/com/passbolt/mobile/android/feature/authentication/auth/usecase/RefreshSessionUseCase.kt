@@ -76,8 +76,8 @@ class RefreshSessionUseCase(
 
     sealed class Output {
 
-        object Success : Output()
+        data object Success : Output()
 
-        object Failure : Output()
+        data object Failure : Output()
     }
 }

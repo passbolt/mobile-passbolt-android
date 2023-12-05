@@ -116,7 +116,6 @@
     <string name="auth_enter_passphrase">Passphrase eingeben</string>
     <string name="auth_exit_dialog_message">Wenn Sie gehen, müssen Sie Ihr Konto möglicherweise erneut einrichten.</string>
     <string name="auth_biometric_title">Bestätigen Sie mit Ihrem Fingerabdruck</string>
-    <string name="auth_biometric_subtitle"></string>
     <string name="auth_reason_session_expired">Bitte authentifizieren Sie sich, um die Sitzung zu aktualisieren</string>
     <string name="auth_reason_passphrase_expired">Bitte authentifizieren Sie den Zugriff mit einer Passphrase</string>
     <string name="auth_server_fingerprint_changed_title">Entschuldigung, der Serverschlüssel hat sich geändert.</string>
@@ -408,7 +407,8 @@
     arrays can be inconsistent when in other languages
     index / size is not used in code
     -->
-    <string-array name="username_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="username_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>E-Mail</item>
         <item>Benutzername</item>
         <item>Mobil</item>
@@ -419,7 +419,8 @@
       arrays can be inconsistent when in other languages
       index / size is not used in code
     -->
-    <string-array name="password_hint_values" tools:ignore="InconsistentArrays">
+    <string-array name="password_hint_values"
+        tools:ignore="InconsistentArrays">
         <item>Passwort</item>
         <item>Geheimniss</item>
         <item>Passphrase</item>

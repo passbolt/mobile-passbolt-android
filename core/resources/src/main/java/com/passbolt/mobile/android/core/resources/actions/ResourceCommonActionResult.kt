@@ -29,5 +29,5 @@ sealed class ResourceCommonActionResult {
         val resourceName: String
     ) : ResourceCommonActionResult()
 
-    object Failure : ResourceCommonActionResult()
+    data object Failure : ResourceCommonActionResult()
 }

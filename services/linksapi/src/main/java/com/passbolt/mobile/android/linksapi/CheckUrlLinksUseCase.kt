@@ -44,6 +44,6 @@ class CheckUrlLinksUseCase(
             val assets: List<AssetLink>
         ) : Output()
 
-        object Failure : Output()
+        data object Failure : Output()
     }
 }

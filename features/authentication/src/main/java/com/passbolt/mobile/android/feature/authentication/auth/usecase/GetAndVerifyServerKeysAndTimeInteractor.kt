@@ -84,7 +84,7 @@ class GetAndVerifyServerKeysAndTimeInteractor(
     sealed class Error {
         data class IncorrectServerFingerprint(val fingerprint: String) : Error()
         data class ServerNotReachable(val serverUrl: String) : Error()
-        object TimeIsOutOfSync : Error()
-        object Generic : Error()
+        data object TimeIsOutOfSync : Error()
+        data object Generic : Error()
     }
 }

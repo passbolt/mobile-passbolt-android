@@ -31,7 +31,7 @@ import org.koin.core.qualifier.named
  */
 
 sealed class Font {
-    object InterMedium : Font()
+    data object InterMedium : Font()
 }
 
 internal fun Module.fontModule() {

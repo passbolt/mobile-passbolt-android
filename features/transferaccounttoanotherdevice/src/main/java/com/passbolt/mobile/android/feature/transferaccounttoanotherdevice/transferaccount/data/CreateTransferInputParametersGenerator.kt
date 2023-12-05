@@ -88,6 +88,6 @@ class CreateTransferInputParametersGenerator(
             val pagesDataHash: String
         ) : Output()
 
-        object Error : Output()
+        data object Error : Output()
     }
 }

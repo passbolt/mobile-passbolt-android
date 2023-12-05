@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.core.autofill.system
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -23,6 +24,7 @@ class AutofillHintsFactory(
     private fun getLocalizedOrEnglishValues(@ArrayRes stringArrayResId: Int) =
         getLocalized(stringArrayResId) + getEnglish(stringArrayResId)
 
+    @SuppressLint("AppBundleLocaleChanges")
     private fun getEnglish(@ArrayRes stringArrayResId: Int): Array<String> {
         val config = Configuration(appContext.resources.configuration)
         config.setLocale(Locale.ENGLISH)
