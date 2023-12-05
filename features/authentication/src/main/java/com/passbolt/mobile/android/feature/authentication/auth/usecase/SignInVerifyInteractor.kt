@@ -217,7 +217,7 @@ class SignInVerifyInteractor(
     )
 
     sealed class Error {
-        object IncorrectPassphrase : Error()
+        data object IncorrectPassphrase : Error()
         data class AccountDoesNotExist(val label: String, val email: String?, val serverUrl: String) : Error()
         data class SignInFailure(val message: String) : Error()
         data class ChallengeDecryptionError(val message: String?) : Error()

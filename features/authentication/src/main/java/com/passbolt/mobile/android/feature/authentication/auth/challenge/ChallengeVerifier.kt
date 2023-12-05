@@ -57,13 +57,13 @@ class ChallengeVerifier {
     }
 
     sealed class Output {
-        object TokenExpired : Output()
+        data object TokenExpired : Output()
         data class Verified(
             val accessToken: String,
             val refreshToken: String
         ) : Output()
 
-        object InvalidSignature : Output()
-        object Failure : Output()
+        data object InvalidSignature : Output()
+        data object Failure : Output()
     }
 }

@@ -70,6 +70,6 @@ class GetLocalResourcesAndFoldersUseCase(
             val resources: List<ResourceModel>
         ) : Output()
 
-        object Failure : Output()
+        data object Failure : Output()
     }
 }

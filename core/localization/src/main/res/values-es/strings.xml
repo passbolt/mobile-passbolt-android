@@ -116,7 +116,6 @@
     <string name="auth_enter_passphrase">Introduzca su contraseña</string>
     <string name="auth_exit_dialog_message">Si sale, puede que necesite configurar su cuenta de nuevo.</string>
     <string name="auth_biometric_title">Confirme usando su huella digital</string>
-    <string name="auth_biometric_subtitle"></string>
     <string name="auth_reason_session_expired">Por favor, autentifíquese para actualizar la sesión</string>
     <string name="auth_reason_passphrase_expired">Por favor, autentifique el acceso a la contraseña</string>
     <string name="auth_server_fingerprint_changed_title">Lo sentimos, la clave del servidor ha cambiado.</string>

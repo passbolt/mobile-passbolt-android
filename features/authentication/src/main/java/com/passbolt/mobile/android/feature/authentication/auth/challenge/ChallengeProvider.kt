@@ -76,7 +76,7 @@ class ChallengeProvider(
             val challenge: String
         ) : Output()
 
-        object WrongPassphrase : Output()
+        data object WrongPassphrase : Output()
     }
 
     companion object {

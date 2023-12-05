@@ -173,18 +173,32 @@ class PasswordGenerateInputView @JvmOverloads constructor(
         @ColorRes val progressColor: Int,
         @ColorRes val textColor: Int = R.color.text_primary
     ) {
-        object Empty : PasswordStrength(
+        data object Empty : PasswordStrength(
             0,
             LocalizationR.string.password_strength_empty,
             android.R.color.transparent,
             R.color.text_tertiary
         )
 
-        object VeryWeak : PasswordStrength(20, LocalizationR.string.password_strength_very_weak, R.color.red)
-        object Weak : PasswordStrength(40, LocalizationR.string.password_strength_weak, R.color.red)
-        object Fair : PasswordStrength(60, LocalizationR.string.password_strength_fair, R.color.orange)
-        object Strong : PasswordStrength(80, LocalizationR.string.password_strength_strong, R.color.orange)
-        object VeryStrong : PasswordStrength(100, LocalizationR.string.password_strength_very_strong, R.color.green)
+        data object VeryWeak : PasswordStrength(
+            20, LocalizationR.string.password_strength_very_weak, R.color.red
+        )
+
+        data object Weak : PasswordStrength(
+            40, LocalizationR.string.password_strength_weak, R.color.red
+        )
+
+        data object Fair : PasswordStrength(
+            60, LocalizationR.string.password_strength_fair, R.color.orange
+        )
+
+        data object Strong : PasswordStrength(
+            80, LocalizationR.string.password_strength_strong, R.color.orange
+        )
+
+        data object VeryStrong : PasswordStrength(
+            100, LocalizationR.string.password_strength_very_strong, R.color.green
+        )
     }
 
     private companion object {

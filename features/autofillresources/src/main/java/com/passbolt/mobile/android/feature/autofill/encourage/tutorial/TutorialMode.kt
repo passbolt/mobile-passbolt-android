@@ -35,12 +35,12 @@ sealed class TutorialMode(
     val huaweiUrl: String = "https://www.passbolt.com/help/mobile/android/autofill/huawei"
     val otherUrl: String = "https://www.passbolt.com/help/mobile/android/autofill/others"
 
-    object Overlay : TutorialMode(
+    data object Overlay : TutorialMode(
         LocalizationR.string.dialog_encourage_autofill_overlay_header,
         LocalizationR.string.dialog_encourage_autofill_overlay_description
     )
 
-    object Service : TutorialMode(
+    data object Service : TutorialMode(
         LocalizationR.string.dialog_encourage_autofill_service_header,
         LocalizationR.string.dialog_encourage_autofill_service_description
     )

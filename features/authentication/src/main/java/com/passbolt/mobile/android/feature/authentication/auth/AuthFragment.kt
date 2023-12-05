@@ -170,8 +170,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         )
 
         val promptSubtitle =
-            authReason?.let { getMessageForReason(authReason) }
-                ?: getString(LocalizationR.string.auth_biometric_subtitle)
+            authReason?.let { getMessageForReason(authReason) } ?: ""
         val promptInfo = biometricPromptBuilder
             .setTitle(getString(LocalizationR.string.auth_biometric_title))
             .setSubtitle(promptSubtitle)

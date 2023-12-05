@@ -31,9 +31,9 @@ sealed class ResourceUpdateActionResult {
 
     data class Failure(val message: String? = null) : ResourceUpdateActionResult()
 
-    object FetchFailure : ResourceUpdateActionResult()
+    data object FetchFailure : ResourceUpdateActionResult()
 
-    object Unauthorized : ResourceUpdateActionResult()
+    data object Unauthorized : ResourceUpdateActionResult()
 
     class CryptoFailure(val message: String? = null) : ResourceUpdateActionResult()
 

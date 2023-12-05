@@ -54,7 +54,7 @@ class UserProfileInteractor(
 
     sealed class Output {
 
-        object Success : Output()
+        data object Success : Output()
 
         data class Failure(val message: String?) : Output()
     }

@@ -50,8 +50,8 @@ class SavePrivateKeyUseCase(
     }
 
     sealed class Output {
-        object Success : Output()
-        object Failure : Output()
+        data object Success : Output()
+        data object Failure : Output()
     }
 
     data class Input(

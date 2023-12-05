@@ -104,18 +104,18 @@ object ActivityIntents {
         }
 
     sealed class AuthConfig : Serializable {
-        object Startup : AuthConfig()
-        object Setup : AuthConfig()
-        object ManageAccount : AuthConfig()
+        data object Startup : AuthConfig()
+        data object Setup : AuthConfig()
+        data object ManageAccount : AuthConfig()
 
         // refreshes backend session and passphrase
-        object SignIn : AuthConfig()
+        data object SignIn : AuthConfig()
 
         // refreshes only passphrase
-        object RefreshPassphrase : AuthConfig()
+        data object RefreshPassphrase : AuthConfig()
 
         // tries to refresh background session and if fails fallbacks to SignIn
-        object RefreshSession : AuthConfig()
+        data object RefreshSession : AuthConfig()
 
         class Mfa(
             val provider: String

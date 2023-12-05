@@ -65,7 +65,7 @@ class FoldersInteractor(
 
     sealed class Output : AuthenticatedUseCaseOutput {
 
-        object Success : Output() {
+        data object Success : Output() {
             override val authenticationState: AuthenticationState
                 get() = AuthenticationState.Authenticated
         }
