@@ -27,14 +27,14 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  */
 
 @Suppress("MagicNumber")
-object Migration12to13 : Migration(12, 13) {
+object Migration13to14 : Migration(13, 14) {
 
-    private const val ADD_KEY_CREATION_DATE_COLUMN =
-        "ALTER TABLE User ADD COLUMN created INTEGER"
+    private const val ADD_DISABLED_COLUMN =
+        "ALTER TABLE User ADD COLUMN disabled INTEGER NOT NULL DEFAULT 0"
 
     override fun migrate(database: SupportSQLiteDatabase) {
         with(database) {
-            execSQL(ADD_KEY_CREATION_DATE_COLUMN)
+            execSQL(ADD_DISABLED_COLUMN)
         }
     }
 }

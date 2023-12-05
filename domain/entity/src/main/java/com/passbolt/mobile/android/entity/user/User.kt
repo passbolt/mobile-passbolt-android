@@ -32,6 +32,7 @@ data class User(
     @PrimaryKey
     val id: String,
     val userName: String,
+    val disabled: Boolean,
     @Embedded
     val profile: UserProfile,
     @Embedded

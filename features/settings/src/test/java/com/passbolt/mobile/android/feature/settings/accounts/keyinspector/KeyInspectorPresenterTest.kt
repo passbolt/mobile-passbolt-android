@@ -124,6 +124,7 @@ class KeyInspectorPresenterTest : KoinTest {
             UserModel(
                 id = "newUserId",
                 userName = "newUserName",
+                disabled = false,
                 gpgKey = GpgKeyModel(
                     armoredKey = "keyData",
                     fingerprint = "fingerprint",

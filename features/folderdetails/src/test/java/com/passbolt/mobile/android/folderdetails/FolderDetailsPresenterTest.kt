@@ -104,25 +104,45 @@ class FolderDetailsPresenterTest : KoinTest {
             FolderModel("parentId", null, "parent folder in root", false, ResourcePermission.UPDATE)
         private val MOCK_PERMISSIONS = listOf(
             PermissionModelUi.GroupPermissionModel(
-                ResourcePermission.READ,
-                "groupPermId1",
-                GroupModel("groupId1", "groupname1")
+                permission = ResourcePermission.READ,
+                permissionId = "groupPermId1",
+                group = GroupModel(
+                    groupId = "groupId1",
+                    groupName = "groupname1"
+                )
             ),
             PermissionModelUi.GroupPermissionModel(
-                ResourcePermission.READ,
-                "groupPermId2",
-                GroupModel("groupId2", "groupname2")
+                permission = ResourcePermission.READ,
+                permissionId = "groupPermId2",
+                group = GroupModel(
+                    groupId = "groupId2",
+                    groupName = "groupname2"
+                )
             )
         ) + listOf(
             PermissionModelUi.UserPermissionModel(
-                ResourcePermission.OWNER,
-                "userPermId1",
-                UserWithAvatar("userId1", "first", "last", "userName", "avatarUrl")
+                permission = ResourcePermission.OWNER,
+                permissionId = "userPermId1",
+                user = UserWithAvatar(
+                    userId = "userId1",
+                    firstName = "first",
+                    lastName = "last",
+                    userName = "userName",
+                    isDisabled = false,
+                    avatarUrl = "avatarUrl"
+                )
             ),
             PermissionModelUi.UserPermissionModel(
-                ResourcePermission.UPDATE,
-                "userPermId2",
-                UserWithAvatar("userId2", "first", "last", "userName", "avatarUrl")
+                permission = ResourcePermission.UPDATE,
+                permissionId = "userPermId2",
+                user = UserWithAvatar(
+                    userId = "userId2",
+                    firstName = "first",
+                    lastName = "last",
+                    userName = "userName",
+                    isDisabled = false,
+                    avatarUrl = "avatarUrl"
+                )
             )
         )
 

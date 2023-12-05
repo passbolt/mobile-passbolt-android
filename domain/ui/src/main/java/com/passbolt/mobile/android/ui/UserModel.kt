@@ -28,10 +28,15 @@ import java.time.ZonedDateTime
 data class UserModel(
     val id: String,
     val userName: String,
+    val disabled: Boolean,
     val gpgKey: GpgKeyModel,
     val profile: UserProfileModel,
     override val searchCriteria: String = "$userName${profile.firstName.orEmpty()}${profile.lastName.orEmpty()}"
-) : Searchable
+) : Searchable {
+
+    val fullName: String
+        get() = "${profile.firstName.orEmpty()} ${profile.lastName.orEmpty()}"
+}
 
 data class GpgKeyModel(
     val armoredKey: String,

@@ -144,10 +144,25 @@ class GroupPermissionsDetailsPresenterTest : KoinTest {
 
     private companion object {
         private val USER = UserModel(
-            "userId",
-            "userName",
-            GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now(), ZonedDateTime.now()),
-            UserProfileModel("username", "first", "last", "avatarUrl")
+            id = "userId",
+            userName = "userName",
+            disabled = false,
+            gpgKey = GpgKeyModel(
+                armoredKey = "keyData",
+                fingerprint = "fingerprint",
+                bits = 1,
+                uid = "uid",
+                keyId = "keyid",
+                type = "rsa",
+                keyExpirationDate = ZonedDateTime.now(),
+                keyCreationDate = ZonedDateTime.now()
+            ),
+            profile = UserProfileModel(
+                username = "username",
+                firstName = "first",
+                lastName = "last",
+                avatarUrl = "avatarUrl"
+            )
         )
         private val GROUP = GroupModel("grId", "grName")
         private val GROUP_PERMISSION = PermissionModelUi.GroupPermissionModel(ResourcePermission.READ, "permId", GROUP)

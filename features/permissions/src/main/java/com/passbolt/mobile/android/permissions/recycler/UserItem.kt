@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.passbolt.mobile.android.core.coil.transformation.AlphaTransformation
 import com.passbolt.mobile.android.feature.permissions.R
 import com.passbolt.mobile.android.feature.permissions.databinding.ItemUserBinding
 import com.passbolt.mobile.android.ui.PermissionModelUi
@@ -41,10 +42,15 @@ class UserItem(
 
     override fun bindView(binding: ItemUserBinding, payloads: List<Any>) {
         with(binding) {
-            root.load(model.user.avatarUrl) {
-                error(CoreUiR.drawable.ic_user_avatar)
-                transformations(CircleCropTransformation())
-                placeholder(CoreUiR.drawable.ic_user_avatar)
+            root.apply {
+                load(model.user.avatarUrl) {
+                    error(CoreUiR.drawable.ic_user_avatar)
+                    transformations(
+                        CircleCropTransformation(),
+                        AlphaTransformation(shouldLowerOpacity = model.user.isDisabled)
+                    )
+                    placeholder(CoreUiR.drawable.ic_user_avatar)
+                }
             }
         }
     }

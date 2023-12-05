@@ -5,10 +5,13 @@ import android.view.ViewGroup
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.passbolt.mobile.android.core.UiConstants
+import com.passbolt.mobile.android.core.coil.transformation.AlphaTransformation
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.feature.permissions.R
 import com.passbolt.mobile.android.feature.permissions.databinding.ItemPermissionRecipientUserBinding
 import com.passbolt.mobile.android.ui.UserModel
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
@@ -44,10 +47,20 @@ class UserRecipientItem(
         with(binding) {
             icon.load(model.profile.avatarUrl) {
                 error(CoreUiR.drawable.ic_user_avatar)
-                transformations(CircleCropTransformation())
+                transformations(
+                    CircleCropTransformation(),
+                    AlphaTransformation(shouldLowerOpacity = model.disabled)
+                )
                 placeholder(CoreUiR.drawable.ic_user_avatar)
             }
-            name.text = String.format("%s %s", model.profile.firstName, model.profile.lastName)
+            if (model.disabled) {
+                name.text =
+                    root.context.getString(LocalizationR.string.full_name_suspended, model.fullName)
+                setOf(name, userName).forEach { it.alpha = UiConstants.LOWERED_ALPHA }
+            } else {
+                name.text = model.fullName
+                setOf(name, userName).forEach { it.alpha = UiConstants.FULL_ALPHA }
+            }
             userName.apply {
                 text = model.userName
                 visible()
