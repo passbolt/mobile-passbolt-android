@@ -9,6 +9,8 @@ import coil.transform.CircleCropTransformation
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
+import com.passbolt.mobile.android.core.UiConstants
+import com.passbolt.mobile.android.core.coil.transformation.AlphaTransformation
 import com.passbolt.mobile.android.core.extension.asBinding
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.visible
@@ -16,6 +18,7 @@ import com.passbolt.mobile.android.feature.permissions.R
 import com.passbolt.mobile.android.feature.permissions.databinding.ItemPermissionBinding
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
@@ -48,28 +51,40 @@ class PermissionItem(
         get() = R.id.permissionItem
 
     override fun bindView(binding: ItemPermissionBinding, payloads: List<Any>) {
-        with(binding) {
-            permissionValue.text = ResourcePermission.getPermissionTextValue(binding.root.context, model.permission)
-            when (model) {
-                is PermissionModelUi.GroupPermissionModel -> {
-                    icon.load(CoreUiR.drawable.ic_filled_group_with_bg)
-                    name.text = model.group.groupName
-                    userName.gone()
-                }
-                is PermissionModelUi.UserPermissionModel -> {
-                    icon.load(model.user.avatarUrl) {
-                        error(CoreUiR.drawable.ic_user_avatar)
-                        transformations(CircleCropTransformation())
-                        placeholder(CoreUiR.drawable.ic_user_avatar)
-                    }
-                    name.text = String.format("%s %s", model.user.firstName, model.user.lastName)
-                    userName.apply {
-                        text = model.user.userName
-                        visible()
-                    }
-                }
-            }
+        binding.permissionValue.text = ResourcePermission.getPermissionTextValue(binding.root.context, model.permission)
+        when (model) {
+            is PermissionModelUi.GroupPermissionModel -> binding.bindGroupPermission(model)
+            is PermissionModelUi.UserPermissionModel -> binding.bindUserPermission(model)
         }
+    }
+
+    private fun ItemPermissionBinding.bindUserPermission(model: PermissionModelUi.UserPermissionModel) {
+        icon.load(model.user.avatarUrl) {
+            error(CoreUiR.drawable.ic_user_avatar)
+            transformations(
+                CircleCropTransformation(),
+                AlphaTransformation(shouldLowerOpacity = model.user.isDisabled)
+            )
+            placeholder(CoreUiR.drawable.ic_user_avatar)
+        }
+        if (model.user.isDisabled) {
+            name.text =
+                root.context.getString(LocalizationR.string.full_name_suspended, model.user.fullName)
+            setOf(name, userName).forEach { it.alpha = UiConstants.LOWERED_ALPHA }
+        } else {
+            name.text = model.user.fullName
+            setOf(name, userName).forEach { it.alpha = UiConstants.FULL_ALPHA }
+        }
+        userName.apply {
+            text = model.user.userName
+            visible()
+        }
+    }
+
+    private fun ItemPermissionBinding.bindGroupPermission(model: PermissionModelUi.GroupPermissionModel) {
+        icon.load(CoreUiR.drawable.ic_filled_group_with_bg)
+        name.text = model.group.groupName
+        userName.gone()
     }
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ItemPermissionBinding {

@@ -133,7 +133,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT rUCR.userId, rUCR.permission, rUCR.permissionId, " +
-                "u.firstName, u.lastName, u.avatarUrl, u.userName, u.fingerprint " +
+                "u.firstName, u.lastName, u.avatarUrl, u.userName, u.fingerprint, u.disabled " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceAndUsersCrossRef rUCR " +
                 "ON rUCR.resourceId = r.resourceId " +

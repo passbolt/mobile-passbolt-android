@@ -33,6 +33,7 @@ data class UserDto(
     val username: String,
     val active: Boolean,
     val deleted: Boolean,
+    val disabled: String?,
     val role: RoleDto?
 )
 

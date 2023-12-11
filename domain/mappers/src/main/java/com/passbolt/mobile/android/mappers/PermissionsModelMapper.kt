@@ -70,15 +70,15 @@ class PermissionsModelMapper(
     fun map(permissionWithGroups: PermissionWithGroupDto): PermissionModel =
         if (permissionWithGroups.group != null) {
             PermissionModel.GroupPermissionModel(
-                map(permissionWithGroups.type),
-                permissionWithGroups.id.toString(),
-                groupsModelMapper.map(permissionWithGroups.group!!)
+                permission = map(permissionWithGroups.type),
+                permissionId = permissionWithGroups.id.toString(),
+                group = groupsModelMapper.map(permissionWithGroups.group!!)
             )
         } else {
             PermissionModel.UserPermissionModel(
-                map(permissionWithGroups.type),
-                permissionWithGroups.id.toString(),
-                permissionWithGroups.aroForeignKey.toString()
+                permission = map(permissionWithGroups.type),
+                permissionId = permissionWithGroups.id.toString(),
+                userId = permissionWithGroups.aroForeignKey.toString()
             )
         }
 
@@ -90,9 +90,9 @@ class PermissionsModelMapper(
             .apply {
                 groupsPermissions.mapTo(this) {
                     PermissionModelUi.GroupPermissionModel(
-                        map(it.permission),
-                        it.permissionId,
-                        groupsModelMapper.map(it)
+                        permission = map(it.permission),
+                        permissionId = it.permissionId,
+                        group = groupsModelMapper.map(it)
                     )
                 }
                 usersPermissions.mapTo(this) {
@@ -100,11 +100,12 @@ class PermissionsModelMapper(
                         map(it.permission),
                         it.permissionId,
                         UserWithAvatar(
-                            it.userId,
-                            it.firstName.orEmpty(),
-                            it.lastName.orEmpty(),
-                            it.userName,
-                            it.avatarUrl
+                            userId = it.userId,
+                            firstName = it.firstName.orEmpty(),
+                            lastName = it.lastName.orEmpty(),
+                            userName = it.userName,
+                            isDisabled = it.disabled,
+                            avatarUrl = it.avatarUrl
                         )
                     )
                 }
@@ -119,8 +120,8 @@ class PermissionsModelMapper(
 
     fun mapToUserPermission(permission: PermissionDto): PermissionModel.UserPermissionModel =
         PermissionModel.UserPermissionModel(
-            map(permission.type),
-            permission.id.toString(),
-            permission.aroForeignKey.toString()
+            permission = map(permission.type),
+            permissionId = permission.id.toString(),
+            userId = permission.aroForeignKey.toString()
         )
 }

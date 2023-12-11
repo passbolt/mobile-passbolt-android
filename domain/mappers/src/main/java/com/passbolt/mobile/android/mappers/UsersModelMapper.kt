@@ -17,6 +17,9 @@ class UsersModelMapper {
         return UserModel(
             id = userDto.id.toString(),
             userName = userDto.username,
+            // if disabled date is in the past the user is disabled
+            disabled = userDto.disabled
+                ?.let { ZonedDateTime.parse(it).isBefore(ZonedDateTime.now()) } ?: false,
             gpgKey = GpgKeyModel(
                 armoredKey = usersGpgKey.armoredKey,
                 fingerprint = usersGpgKey.fingerprint,
@@ -50,6 +53,7 @@ class UsersModelMapper {
                 lastName = input.profile.lastName,
                 avatarUrl = input.profile.avatarUrl
             ),
+            disabled = input.disabled,
             gpgKey = UserGpgKey(
                 armoredKey = input.gpgKey.armoredKey,
                 bits = input.gpgKey.bits,
@@ -76,6 +80,7 @@ class UsersModelMapper {
                 keyExpirationDate = input.gpgKey.expires,
                 keyCreationDate = input.gpgKey.created
             ),
+            disabled = input.disabled,
             profile = UserProfileModel(
                 username = input.userName,
                 firstName = input.profile.firstName,
@@ -90,6 +95,7 @@ class UsersModelMapper {
             firstName = input.profile.firstName.orEmpty(),
             lastName = input.profile.lastName.orEmpty(),
             userName = input.userName,
-            avatarUrl = input.profile.avatarUrl
+            avatarUrl = input.profile.avatarUrl,
+            isDisabled = input.disabled
         )
 }
