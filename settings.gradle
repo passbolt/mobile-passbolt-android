@@ -20,6 +20,7 @@ rootProject.name = "Passbolt"
 projectModule "app"
 
 coreModule "architecture"
+coreModule "accounts"
 coreModule "networking"
 coreModule "gopenpgp"
 coreModule "coreui"

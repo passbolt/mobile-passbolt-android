@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.setup.welcome
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.dialogs.rootWarningAlertDialog
@@ -9,6 +10,7 @@ import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentWelcomeBinding
+import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.android.ext.android.inject
@@ -40,6 +42,17 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     WelcomeContract.View, HelpMenuFragment.Listener {
 
     private val presenter: WelcomeContract.Presenter by inject()
+
+    private val accountKitFileChosenResult =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) {
+            it?.let { uri ->
+                requireContext().applicationContext.contentResolver.openInputStream(uri).use { inputStream ->
+                    inputStream?.use {
+                        presenter.accountKitSelected(inputStream.reader().readText())
+                    }
+                }
+            }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -94,7 +107,13 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance(HelpMenuModel(shouldShowShowQrCodesHelp = true, shouldShowImportProfile = true))
+        HelpMenuFragment.newInstance(
+            HelpMenuModel(
+                shouldShowShowQrCodesHelp = true,
+                shouldShowImportProfile = true,
+                shouldShowImportAccountKit = true
+            )
+        )
             .show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 
@@ -111,6 +130,20 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     override fun navigateToImportProfile() {
         findNavController().navigate(
             WelcomeFragmentDirections.actionWelcomeFragmentToImportProfileFragment()
+        )
+    }
+
+    override fun menuImportAccountKitClick() {
+        presenter.importAccountKitClick()
+    }
+
+    override fun showAccountKitFilePicker() {
+        accountKitFileChosenResult.launch(arrayOf("*/*"))
+    }
+
+    override fun navigateToSummary(status: ResultStatus) {
+        findNavController().navigate(
+            WelcomeFragmentDirections.actionWelcomeFragmentToSummaryFragment(status)
         )
     }
 }

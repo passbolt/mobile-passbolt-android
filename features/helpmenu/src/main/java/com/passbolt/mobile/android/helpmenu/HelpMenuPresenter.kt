@@ -21,6 +21,9 @@ class HelpMenuPresenter(
         if (helpMenuModel.shouldShowImportProfile) {
             view?.showImportProfileHelp()
         }
+        if (helpMenuModel.shouldShowImportAccountKit) {
+            view?.showImportAccountKitHelp()
+        }
         logsSettingChanged(getGlobalPreferencesUseCase.execute(Unit).areDebugLogsEnabled)
     }
 

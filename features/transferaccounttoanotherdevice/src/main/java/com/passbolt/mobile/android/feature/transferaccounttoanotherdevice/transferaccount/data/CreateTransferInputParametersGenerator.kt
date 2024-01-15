@@ -51,7 +51,7 @@ class CreateTransferInputParametersGenerator(
             val armoredPrivateKey = requireNotNull(getSelectedAccountPrivateKeyUseCase.execute(Unit).privateKey)
             val accountData = getSelectedAccountDataUseCase.execute(Unit)
             val userServerId = requireNotNull(accountData.serverId)
-            val privateKeyFingerprint = openPgp.getPrivateKeyFingerprint(armoredPrivateKey)
+            val privateKeyFingerprint = openPgp.getKeyFingerprint(armoredPrivateKey)
                     as OpenPgpResult.Result<String>
             val keyJson = Json.encodeToString(
                 AssembledKeyDto(

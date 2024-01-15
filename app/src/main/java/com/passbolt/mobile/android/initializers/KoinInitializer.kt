@@ -5,6 +5,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.startup.Initializer
 import com.passbolt.mobile.android.appModule
 import com.passbolt.mobile.android.common.commonModule
+import com.passbolt.mobile.android.core.accounts.accountsCoreModule
 import com.passbolt.mobile.android.core.autofill.autofillModule
 import com.passbolt.mobile.android.core.commonfolders.foldersModule
 import com.passbolt.mobile.android.core.commongroups.groupsModule
@@ -155,7 +156,8 @@ class KoinInitializer : Initializer<Unit> {
             scanOtpMainModule,
             otpMainMoreMenuModule,
             createOtpManuallyMainModule,
-            rbacModule
+            rbacModule,
+            accountsCoreModule
         )
     }
 }

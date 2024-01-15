@@ -30,7 +30,7 @@ class AccountSetupModelCreator {
     fun createFromIntent(intent: Intent): AccountSetupDataModel? =
         if (BuildConfig.DEBUG && intent.action == ACTION_MANAGED_PROFILE) {
             AccountSetupDataModel(
-                userId = intent.getStringExtra(EXTRA_USER_ID).orEmpty(),
+                serverUserId = intent.getStringExtra(EXTRA_USER_ID).orEmpty(),
                 userName = intent.getStringExtra(EXTRA_USERNAME).orEmpty(),
                 domain = intent.getStringExtra(EXTRA_DOMAIN).orEmpty(),
                 firstName = intent.getStringExtra(EXTRA_FIRST_NAME).orEmpty(),

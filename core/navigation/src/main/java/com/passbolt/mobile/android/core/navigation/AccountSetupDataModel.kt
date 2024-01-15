@@ -31,7 +31,7 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class AccountSetupDataModel(
-    val userId: String,
+    val serverUserId: String,
     val domain: String,
     val userName: String,
     val firstName: String,

@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.helpmenu
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.HelpMenuModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,20 +20,27 @@ import com.passbolt.mobile.android.ui.HelpMenuModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HelpMenuContract {
 
-    interface View : BaseContract.View {
-        fun showScanQrCodesHelp()
-        fun enableAccessLogs()
-        fun disableAccessLogs()
-        fun setEnableLogsSwitchOn()
-        fun setEnableLogsSwitchOff()
-        fun showImportProfileHelp()
-        fun showImportAccountKitHelp()
-    }
+package com.passbolt.mobile.android.dto.response
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(helpMenuModel: HelpMenuModel)
-        fun logsSettingChanged(areLogsEnabled: Boolean)
-    }
-}
+import com.passbolt.mobile.android.dto.response.qrcode.UUIDSerializer
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import java.util.UUID
+
+@Serializable
+data class AccountKitDto(
+    @SerialName("user_private_armored_key")
+    val privateKeyArmored: String,
+    @SerialName("user_public_armored_key")
+    val publicKeyArmored: String,
+    @SerialName("first_name")
+    val firstName: String,
+    @SerialName("last_name")
+    val lastName: String,
+    @Serializable(with = UUIDSerializer::class)
+    @SerialName("user_id")
+    val userId: UUID,
+    val domain: String,
+    val username: String
+)

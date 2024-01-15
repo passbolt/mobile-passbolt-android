@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.UuidProvider
+import com.passbolt.mobile.android.core.accounts.AccountKitParser
+import com.passbolt.mobile.android.core.accounts.AccountsInteractor
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.KeyAssembler
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.QrScanResultsMapper
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ScanQrParser
@@ -47,6 +49,8 @@ internal val checkAccountExistsUseCase = mock<CheckAccountExistsUseCase>()
 internal val qrParser = mock<ScanQrParser>()
 internal val httpsVerifier = mock<HttpsVerifier>()
 internal val saveCurrentApiUrlUseCase = mock<SaveCurrentApiUrlUseCase>()
+internal val accountsInteractor = mock<AccountsInteractor>()
+internal val accountKitParser = mock<AccountKitParser>()
 
 val testScanQrModule = module {
     factory { httpsVerifier }
@@ -77,7 +81,9 @@ val testScanQrModule = module {
             updateAccountDataUseCase = get(),
             checkAccountExistsUseCase = get(),
             httpsVerifier = get(),
-            saveCurrentApiUrlUseCase = get()
+            saveCurrentApiUrlUseCase = get(),
+            accountsInteractor = accountsInteractor,
+            accountKitParser = accountKitParser
         )
     }
 }

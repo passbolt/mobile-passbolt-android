@@ -8,7 +8,6 @@ import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
-import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,12 +34,25 @@ import org.koin.dsl.bind
 
 fun Module.scanQrModule() {
     scope(named<ScanQrFragment>()) {
-        scopedOf(::ScanQrPresenter) bind ScanQrContract.Presenter::class
+        scoped<ScanQrContract.Presenter> {
+            ScanQrPresenter(
+                coroutineLaunchContext = get(),
+                updateTransferUseCase = get(),
+                qrParser = get(),
+                uuidProvider = get(),
+                savePrivateKeyUseCase = get(),
+                updateAccountDataUseCase = get(),
+                checkAccountExistsUseCase = get(),
+                httpsVerifier = get(),
+                saveCurrentApiUrlUseCase = get(),
+                accountsInteractor = get(),
+                accountKitParser = get()
+            )
+        }
         scopedOf(::QrScanResultsMapper)
         scopedOf(::KeyAssembler)
         scopedOf(::UpdateTransferUseCase)
         scopedOf(::ScanQrParser)
-
-        scoped { Json { ignoreUnknownKeys = true } }
     }
+    single { Json { ignoreUnknownKeys = true } }
 }

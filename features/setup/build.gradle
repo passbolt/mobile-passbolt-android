@@ -26,6 +26,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':helpmenu')
     implementation project(':logs')
+    implementation project(':accounts')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

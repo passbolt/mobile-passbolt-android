@@ -43,6 +43,8 @@ class OpenPgpTest : KoinTest {
 
     private lateinit var gracePrivateKey: ByteArray
     private lateinit var gracePublicKey: String
+    private lateinit var pgpMessageSignedByGrace: ByteArray
+    private lateinit var pgpMessageSignedByAdmin: ByteArray
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
@@ -52,9 +54,12 @@ class OpenPgpTest : KoinTest {
 
     @Before
     fun setup() {
-        gracePrivateKey = getInstrumentation().context.resources.openRawResource(R.raw.grace_private_key).readBytes()
-        gracePublicKey =
-            String(getInstrumentation().context.resources.openRawResource(R.raw.grace_public_key).readBytes())
+        getInstrumentation().context.resources.apply {
+            gracePrivateKey = openRawResource(R.raw.grace_private_key).readBytes()
+            gracePublicKey = String(openRawResource(R.raw.grace_public_key).readBytes())
+            pgpMessageSignedByGrace = openRawResource(R.raw.message_signed_by_grace).readBytes()
+            pgpMessageSignedByAdmin = openRawResource(R.raw.message_signed_by_admin).readBytes()
+        }
     }
 
     @Test

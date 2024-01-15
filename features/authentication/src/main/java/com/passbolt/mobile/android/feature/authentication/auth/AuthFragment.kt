@@ -461,7 +461,13 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance(HelpMenuModel(shouldShowShowQrCodesHelp = false, shouldShowImportProfile = false))
+        HelpMenuFragment.newInstance(
+            HelpMenuModel(
+                shouldShowShowQrCodesHelp = false,
+                shouldShowImportProfile = false,
+                shouldShowImportAccountKit = false
+            )
+        )
             .show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 

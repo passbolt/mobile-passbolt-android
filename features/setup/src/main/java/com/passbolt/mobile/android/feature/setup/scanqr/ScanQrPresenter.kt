@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.UuidProvider
+import com.passbolt.mobile.android.core.accounts.AccountKitParser
+import com.passbolt.mobile.android.core.accounts.AccountsInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 import com.passbolt.mobile.android.feature.setup.scanqr.qrparser.ParseResult
@@ -51,7 +53,9 @@ class ScanQrPresenter(
     private val updateAccountDataUseCase: UpdateAccountDataUseCase,
     private val checkAccountExistsUseCase: CheckAccountExistsUseCase,
     private val httpsVerifier: HttpsVerifier,
-    private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase
+    private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase,
+    private val accountsInteractor: AccountsInteractor,
+    private val accountKitParser: AccountKitParser
 ) : ScanQrContract.Presenter {
 
     override var view: ScanQrContract.View? = null
@@ -244,28 +248,11 @@ class ScanQrPresenter(
     }
 
     private fun injectPredefinedAccount(accountSetupData: AccountSetupDataModel) {
-        val userId = uuidProvider.get()
-        saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(accountSetupData.domain))
-        updateAccountDataUseCase.execute(
-            UpdateAccountDataUseCase.Input(
-                userId = userId,
-                firstName = accountSetupData.firstName,
-                lastName = accountSetupData.lastName,
-                avatarUrl = accountSetupData.avatarUrl,
-                email = accountSetupData.userName,
-                url = accountSetupData.domain,
-                serverId = accountSetupData.userId
-            )
+        accountsInteractor.injectPredefinedAccountData(
+            accountSetupData,
+            onSuccess = { userId -> view?.navigateToSummary(ResultStatus.Success(userId)) },
+            onFailure = { view?.navigateToSummary(ResultStatus.Failure("")) }
         )
-
-        when (savePrivateKeyUseCase.execute(SavePrivateKeyUseCase.Input(userId, accountSetupData.armoredKey))) {
-            SavePrivateKeyUseCase.Output.Failure -> {
-                view?.navigateToSummary(ResultStatus.Failure(""))
-            }
-            SavePrivateKeyUseCase.Output.Success -> {
-                view?.navigateToSummary(ResultStatus.Success(userId))
-            }
-        }
     }
 
     override fun startCameraError(exc: Exception) {
@@ -300,5 +287,18 @@ class ScanQrPresenter(
 
     override fun importProfileClick() {
         view?.navigateToImportProfile()
+    }
+
+    override fun importAccountKitClick() {
+        view?.showAccountKitFilePicker()
+    }
+
+    override fun accountKitSelected(accountKit: String) {
+        scope.launch {
+            accountKitParser.parseAndVerify(accountKit,
+                onSuccess = { injectPredefinedAccount(it) },
+                onFailure = { view?.navigateToSummary(ResultStatus.Failure("")) }
+            )
+        }
     }
 }
