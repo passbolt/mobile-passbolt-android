@@ -103,6 +103,9 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
             importProfileManually.setListenerWithDismiss {
                 listener?.menuImportProfileManuallyClick()
             }
+            importAccountKit.setListenerWithDismiss {
+                listener?.menuImportAccountKitClick()
+            }
             enableLogsSwitch.setOnCheckedChangeListener(enableLogsSwitchChangeListener)
             close.setListenerWithDismiss { }
         }
@@ -143,6 +146,10 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
         binding.importProfileManually.visible()
     }
 
+    override fun showImportAccountKitHelp() {
+        binding.importAccountKit.visible()
+    }
+
     companion object {
         private const val EXTRA_HELP_MENU_MODEL = "HELP_MENU_MODEL"
 
@@ -165,5 +172,6 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
         fun menuShowLogsClick()
         fun menuWhyScanQrCodesClick() {}
         fun menuImportProfileManuallyClick() {}
+        fun menuImportAccountKitClick() {}
     }
 }

@@ -155,6 +155,7 @@ dependencies {
     implementation project(':otpmoremenu')
     implementation project(':createotpmanually')
     implementation project(':rbac')
+    implementation project(':accounts')
 
     debugImplementation libs.leakcanary
 

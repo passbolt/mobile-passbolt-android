@@ -31,6 +31,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_welcomeFragment_to_summaryFragment"
+            app:destination="@id/summaryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -122,14 +129,14 @@
         android:id="@+id/importProfileFragment"
         android:name="com.passbolt.mobile.android.feature.setup.importprofile.ImportProfileFragment"
         android:label="ImportProfileFragment"
-        tools:layout="@layout/fragment_import_profile" >
+        tools:layout="@layout/fragment_import_profile">
         <action
             android:id="@+id/action_importProfileFragment_to_summaryFragment"
             app:destination="@id/summaryFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <include app:graph="@navigation/logs" />

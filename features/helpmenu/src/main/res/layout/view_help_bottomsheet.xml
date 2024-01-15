@@ -88,12 +88,22 @@
         app:layout_constraintTop_toBottomOf="@+id/accessLogs" />
 
     <TextView
+        android:id="@+id/importAccountKit"
+        style="@style/PasswordMenuItem"
+        android:drawablePadding="@dimen/dp_16"
+        android:text="@string/help_menu_import_account_kit"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_import_file"
+        app:drawableTint="@color/icon_tint"
+        app:layout_constraintTop_toBottomOf="@id/importProfileManually" />
+
+    <TextView
         android:id="@+id/visitHelpWebsite"
         style="@style/PasswordMenuItem"
         android:drawablePadding="@dimen/dp_16"
         android:text="@string/help_menu_visit_help_website"
         app:drawableStartCompat="@drawable/ic_link"
         app:drawableTint="@color/icon_tint"
-        app:layout_constraintTop_toBottomOf="@+id/importProfileManually" />
+        app:layout_constraintTop_toBottomOf="@id/importAccountKit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import com.passbolt.mobile.android.common.dialogs.serverNotReachableAlertDialog
@@ -60,6 +61,17 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
             presenter.backClick()
         }
     }
+
+    private val accountKitFileChosenResult =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) {
+            it?.let { uri ->
+                requireContext().applicationContext.contentResolver.openInputStream(uri).use { inputStream ->
+                    inputStream?.use {
+                        presenter.accountKitSelected(inputStream.reader().readText())
+                    }
+                }
+            }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -203,7 +215,13 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance(HelpMenuModel(shouldShowShowQrCodesHelp = true, shouldShowImportProfile = true))
+        HelpMenuFragment.newInstance(
+            HelpMenuModel(
+                shouldShowShowQrCodesHelp = true,
+                shouldShowImportProfile = true,
+                shouldShowImportAccountKit = true
+            )
+        )
             .show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 
@@ -217,6 +235,10 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
         presenter.importProfileClick()
     }
 
+    override fun menuImportAccountKitClick() {
+        presenter.importAccountKitClick()
+    }
+
     override fun menuWhyScanQrCodesClick() {
         showInformationDialog()
     }
@@ -225,5 +247,9 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
         findNavController().navigate(
             ScanQrFragmentDirections.actionScanQrFragmentToImportProfileFragment()
         )
+    }
+
+    override fun showAccountKitFilePicker() {
+        accountKitFileChosenResult.launch(arrayOf("*/*"))
     }
 }

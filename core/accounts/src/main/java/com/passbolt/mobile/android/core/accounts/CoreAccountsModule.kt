@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.helpmenu
-
-import com.passbolt.mobile.android.core.mvp.BaseContract
-import com.passbolt.mobile.android.ui.HelpMenuModel
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,20 +20,13 @@ import com.passbolt.mobile.android.ui.HelpMenuModel
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-interface HelpMenuContract {
 
-    interface View : BaseContract.View {
-        fun showScanQrCodesHelp()
-        fun enableAccessLogs()
-        fun disableAccessLogs()
-        fun setEnableLogsSwitchOn()
-        fun setEnableLogsSwitchOff()
-        fun showImportProfileHelp()
-        fun showImportAccountKitHelp()
-    }
+package com.passbolt.mobile.android.core.accounts
 
-    interface Presenter : BaseContract.Presenter<View> {
-        fun argsRetrieved(helpMenuModel: HelpMenuModel)
-        fun logsSettingChanged(areLogsEnabled: Boolean)
-    }
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+
+val accountsCoreModule = module {
+    singleOf(::AccountsInteractor)
+    singleOf(::AccountKitParser)
 }

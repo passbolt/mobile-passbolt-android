@@ -1,0 +1,24 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+    alias libs.plugins.kotlin.serialization
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':storage')
+    implementation project(':navigation')
+    implementation project(':gopenpgp')
+    implementation project(':dto')
+
+    implementation libs.koin
+    implementation libs.kotlin.serializationjson
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.core.accounts"
+}
+
+kotlin {
+    jvmToolchain(17)
+}

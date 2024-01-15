@@ -107,6 +107,7 @@
     <string name="help_menu_why_scan_codes">Why scanning QR codes?</string>
     <string name="help_menu_enable_debug_logs">Enable debug logs</string>
     <string name="help_menu_import_profile_manually">Import your account manually</string>
+    <string name="help_menu_import_account_kit">Import your account kit</string>
 
     <string name="logs_share_title">Share logs</string>
     <string name="logs_share_email_title">Passbolt logs</string>

@@ -52,6 +52,7 @@ interface ScanQrContract {
         fun removeFlagSecure()
         fun showHelpMenu()
         fun navigateToImportProfile()
+        fun showAccountKitFilePicker()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
@@ -63,5 +64,7 @@ interface ScanQrContract {
         fun viewPaused()
         fun argsRetrieved(bundledAccountSetupData: AccountSetupDataModel?)
         fun importProfileClick()
+        fun importAccountKitClick()
+        fun accountKitSelected(accountKit: String)
     }
 }
