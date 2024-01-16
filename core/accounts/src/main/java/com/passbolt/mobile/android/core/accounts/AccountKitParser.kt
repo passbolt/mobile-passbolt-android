@@ -41,7 +41,19 @@ class AccountKitParser(
         onSuccess: (AccountSetupDataModel) -> Unit,
         onFailure: (String) -> Unit
     ) {
-        val pgpMessage = Base64.decode(accountKitFileContent, Base64.DEFAULT)
+        try {
+            val pgpMessage = Base64.decode(accountKitFileContent, Base64.DEFAULT)
+            parseAccountKit(pgpMessage, onFailure, onSuccess)
+        } catch (e: IllegalArgumentException) {
+            parseAndVerifyError("File does not seem to be the account kit", onFailure)
+        }
+    }
+
+    private suspend fun parseAccountKit(
+        pgpMessage: ByteArray,
+        onFailure: (String) -> Unit,
+        onSuccess: (AccountSetupDataModel) -> Unit
+    ) {
         when (val unarmored = openPgp.unarmor(pgpMessage)) {
             is OpenPgpResult.Error -> onFailure(unarmored.error.message)
             is OpenPgpResult.Result -> {

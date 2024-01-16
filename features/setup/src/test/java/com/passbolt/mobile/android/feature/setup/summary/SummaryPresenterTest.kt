@@ -58,7 +58,7 @@ class ScanQrPresenterTest : KoinTest {
         presenter.start(ResultStatus.Failure(""))
         reset(view)
         presenter.buttonClick()
-        verify(view).navigateToScanQr()
+        verify(view).navigateToWelcome()
         verifyNoMoreInteractions(view)
     }
 

@@ -95,9 +95,9 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
         binding.resultView.setIcon(icon)
     }
 
-    override fun navigateToScanQr() {
+    override fun navigateToWelcome() {
         findNavController().navigate(
-            SummaryFragmentDirections.actionSummaryFragmentToScanQrFragment()
+            SummaryFragmentDirections.actionSummaryFragmentToWelcomeFragment()
         )
     }
 
