@@ -5,6 +5,9 @@ import com.passbolt.mobile.android.common.validation.StringIsUuid
 import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.accounts.AccountsInteractor
+import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ACCOUNT_ALREADY_LINKED
+import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ERROR_NON_HTTPS_DOMAIN
+import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ERROR_WHEN_SAVING_PRIVATE_KEY
 import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 
@@ -75,7 +78,13 @@ class ImportProfilePresenter(
                 view?.navigateToSummary(ResultStatus.Success(userId))
             },
             onFailure = { failureType ->
-                view?.navigateToSummary(ResultStatus.Failure(failureType.name))
+                view?.navigateToSummary(
+                    when (failureType) {
+                        ACCOUNT_ALREADY_LINKED -> ResultStatus.AlreadyLinked()
+                        ERROR_NON_HTTPS_DOMAIN -> ResultStatus.HttpNotSupported()
+                        ERROR_WHEN_SAVING_PRIVATE_KEY -> ResultStatus.Failure(failureType.name)
+                    }
+                )
             }
         )
     }
