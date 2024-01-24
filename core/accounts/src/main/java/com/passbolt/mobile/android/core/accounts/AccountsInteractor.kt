@@ -23,7 +23,10 @@
 
 package com.passbolt.mobile.android.core.accounts
 
+import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.UuidProvider
+import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ACCOUNT_ALREADY_LINKED
+import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ERROR_NON_HTTPS_DOMAIN
 import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ERROR_WHEN_SAVING_PRIVATE_KEY
 import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
@@ -38,7 +41,8 @@ class AccountsInteractor(
     private val savePrivateKeyUseCase: SavePrivateKeyUseCase,
     private val updateAccountDataUseCase: UpdateAccountDataUseCase,
     private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase,
-    private val checkAccountExistsUseCase: CheckAccountExistsUseCase
+    private val checkAccountExistsUseCase: CheckAccountExistsUseCase,
+    private val httpsVerifier: HttpsVerifier
 ) {
 
     fun injectPredefinedAccountData(
@@ -49,9 +53,10 @@ class AccountsInteractor(
         val userExistsResult =
             checkAccountExistsUseCase.execute(CheckAccountExistsUseCase.Input(accountSetupData.serverUserId))
         if (userExistsResult.exist) {
-            onFailure(InjectAccountFailureType.ACCOUNT_ALREADY_LINKED)
+            onFailure(ACCOUNT_ALREADY_LINKED)
+        } else if (!httpsVerifier.isHttps(accountSetupData.domain)) {
+            onFailure(ERROR_NON_HTTPS_DOMAIN)
         } else {
-
             val userId = uuidProvider.get()
             saveCurrentApiUrlUseCase.execute(SaveCurrentApiUrlUseCase.Input(accountSetupData.domain))
             updateAccountDataUseCase.execute(
@@ -79,6 +84,7 @@ class AccountsInteractor(
 
     enum class InjectAccountFailureType {
         ACCOUNT_ALREADY_LINKED,
-        ERROR_WHEN_SAVING_PRIVATE_KEY
+        ERROR_WHEN_SAVING_PRIVATE_KEY,
+        ERROR_NON_HTTPS_DOMAIN
     }
 }
