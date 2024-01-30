@@ -41,47 +41,51 @@ class AccountKitParser(
         onSuccess: (AccountSetupDataModel) -> Unit,
         onFailure: (String) -> Unit
     ) {
-        val pgpMessage = Base64.decode(accountKitFileContent, Base64.DEFAULT)
-        when (val unarmored = openPgp.unarmor(pgpMessage)) {
-            is OpenPgpResult.Error -> onFailure(unarmored.error.message)
-            is OpenPgpResult.Result -> {
-                JSON_REG_EX.find(unarmored.result)?.value?.let { accountKitJson ->
-                    try {
-                        val accountKitDto = json.decodeFromString<AccountKitDto>(accountKitJson)
-                        verifyAccountKit(
-                            pgpMessage = pgpMessage,
-                            hardcodedVerifiedMessage = accountKitJson,
-                            armoredPublicKey = accountKitDto.publicKeyArmored,
-                            onSuccess = onSuccess,
-                            onFailure = onFailure
-                        )
-                    } catch (e: Exception) {
-                        parseAndVerifyError("Could not parse the account kit: error during parsing JSON", onFailure)
-                    }
-                } ?: run {
-                    parseAndVerifyError("Could not parse the account kit: data JSON not found in file", onFailure)
-                }
+        try {
+            val pgpMessage = Base64.decode(accountKitFileContent, Base64.DEFAULT)
+            parseAccountKit(pgpMessage, onFailure, onSuccess)
+        } catch (e: IllegalArgumentException) {
+            parseAndVerifyError("File does not seem to be the account kit", onFailure)
+        }
+    }
+
+    private suspend fun parseAccountKit(
+        pgpMessage: ByteArray,
+        onFailure: (String) -> Unit,
+        onSuccess: (AccountSetupDataModel) -> Unit
+    ) {
+        JSON_REG_EX.find(String(pgpMessage))?.value?.let { accountKitJson ->
+            try {
+                val accountKitDto = json.decodeFromString<AccountKitDto>(accountKitJson)
+                verifyAccountKit(
+                    pgpMessage = pgpMessage,
+                    armoredPublicKey = accountKitDto.publicKeyArmored,
+                    onSuccess = onSuccess,
+                    onFailure = onFailure
+                )
+            } catch (e: Exception) {
+                parseAndVerifyError("Could not parse the account kit: error during parsing JSON", onFailure)
             }
+        } ?: run {
+            parseAndVerifyError("Could not parse the account kit: data JSON not found in file", onFailure)
         }
     }
 
     private suspend fun verifyAccountKit(
         pgpMessage: ByteArray,
-        hardcodedVerifiedMessage: String,
         armoredPublicKey: String,
         onSuccess: (AccountSetupDataModel) -> Unit,
         onFailure: (String) -> Unit
     ) {
         when (val verificationResult =
-            openPgp.verifyBinarySignature(
+            openPgp.verifyClearTextSignature(
                 armoredPublicKey = armoredPublicKey,
-                pgpMessage = pgpMessage,
-                hardcodedVerifiedMessage = hardcodedVerifiedMessage
+                pgpMessage = pgpMessage
             )) {
             is OpenPgpResult.Error -> parseAndVerifyError(verificationResult.error.message, onFailure)
             is OpenPgpResult.Result -> {
                 if (verificationResult.result.isSignatureVerified) {
-                    Timber.d("Signature verification skipped")
+                    Timber.d("Account kit signature is valid")
                     json.decodeFromString<AccountKitDto>(verificationResult.result.message).apply {
                         onSuccess(
                             AccountSetupDataModel(
@@ -97,7 +101,7 @@ class AccountKitParser(
                         )
                     }
                 } else {
-                    parseAndVerifyError("Signature is invalid", onFailure)
+                    parseAndVerifyError("Account kit signature is invalid", onFailure)
                 }
             }
         }

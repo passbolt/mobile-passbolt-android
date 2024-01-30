@@ -2,16 +2,15 @@ package com.passbolt.mobile.android.gopenpgp
 
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpError
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.gopenpgp.model.SignatureVerification
-import com.proton.gopenpgp.armor.Armor
 import com.proton.gopenpgp.crypto.Crypto
 import com.proton.gopenpgp.crypto.Key
 import com.proton.gopenpgp.helper.Helper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.util.Date
 
 /**
  * Passbolt - Open source password manager for teams
@@ -170,50 +169,29 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
         }
     }
 
-    suspend fun unarmor(pgpMessage: ByteArray): OpenPgpResult<String> {
-        return try {
-            withContext(Dispatchers.IO) {
-                val pgpMessageString = String(pgpMessage)
-                if (Crypto.isPGPMessage(pgpMessageString)) {
-                    OpenPgpResult.Result(
-                        String(Armor.unarmor(pgpMessageString))
-                    )
-                } else {
-                    OpenPgpResult.Error(OpenPgpError("Not a PGP message"))
-                }
-            }
-        } catch (exception: Exception) {
-            Timber.e(exception, "There was an error during unarmor")
-            OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
-        } finally {
-            Helper.freeOSMemory()
-        }
-    }
-
-    // Gopenpgp (v2) does not support verification of binary signatures
-    // TODO By decision currently skipping signature verification
-    // TODO update after signature format changes to clear text
-    suspend fun verifyBinarySignature(
+    suspend fun verifyClearTextSignature(
         armoredPublicKey: String,
-        // use this one for verification after signature format changes to clear text
-        @Suppress("UnusedParameter")
-        pgpMessage: ByteArray,
-        // remove this after signature format changes to clear text
-        hardcodedVerifiedMessage: String
+        pgpMessage: ByteArray
     ): OpenPgpResult<SignatureVerification> {
         return try {
             withContext(Dispatchers.IO) {
                 val keyFingerprint = (getKeyFingerprint(armoredPublicKey) as OpenPgpResult.Result<String>).result
+
+                // if verification fails an exception is thrown
+                val verifiedMessage = Helper.verifyCleartextMessageArmored(
+                    armoredPublicKey, String(pgpMessage), Date().time
+                )
+
                 OpenPgpResult.Result(
                     SignatureVerification(
-                        isSignatureVerified = true,
-                        message = hardcodedVerifiedMessage,
+                        isSignatureVerified = !verifiedMessage.isNullOrBlank(),
+                        message = verifiedMessage,
                         keyFingerprint = keyFingerprint
                     )
                 )
             }
         } catch (exception: Exception) {
-            Timber.e(exception, "There was an error during verifyBinarySignature")
+            Timber.e(exception, "There was an error during verifyClearTextSignature")
             return OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             Helper.freeOSMemory()

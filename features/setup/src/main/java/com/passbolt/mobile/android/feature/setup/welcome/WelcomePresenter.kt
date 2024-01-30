@@ -2,6 +2,9 @@ package com.passbolt.mobile.android.feature.setup.welcome
 
 import com.passbolt.mobile.android.core.accounts.AccountKitParser
 import com.passbolt.mobile.android.core.accounts.AccountsInteractor
+import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ACCOUNT_ALREADY_LINKED
+import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ERROR_NON_HTTPS_DOMAIN
+import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ERROR_WHEN_SAVING_PRIVATE_KEY
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AccountSetupDataModel
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
@@ -65,7 +68,15 @@ class WelcomePresenter(
         accountsInteractor.injectPredefinedAccountData(
             accountSetupData,
             onSuccess = { userId -> view?.navigateToSummary(ResultStatus.Success(userId)) },
-            onFailure = { view?.navigateToSummary(ResultStatus.Failure("")) }
+            onFailure = { failureType ->
+                view?.navigateToSummary(
+                    when (failureType) {
+                        ACCOUNT_ALREADY_LINKED -> ResultStatus.AlreadyLinked()
+                        ERROR_NON_HTTPS_DOMAIN -> ResultStatus.HttpNotSupported()
+                        ERROR_WHEN_SAVING_PRIVATE_KEY -> ResultStatus.Failure(failureType.name)
+                    }
+                )
+            }
         )
     }
 }

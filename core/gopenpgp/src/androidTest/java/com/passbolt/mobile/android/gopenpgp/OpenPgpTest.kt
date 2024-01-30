@@ -43,8 +43,9 @@ class OpenPgpTest : KoinTest {
 
     private lateinit var gracePrivateKey: ByteArray
     private lateinit var gracePublicKey: String
-    private lateinit var pgpMessageSignedByGrace: ByteArray
+    private lateinit var adminPublicKey: String
     private lateinit var pgpMessageSignedByAdmin: ByteArray
+    private lateinit var pgpMessageSignedByGrace: ByteArray
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
@@ -57,8 +58,9 @@ class OpenPgpTest : KoinTest {
         getInstrumentation().context.resources.apply {
             gracePrivateKey = openRawResource(R.raw.grace_private_key).readBytes()
             gracePublicKey = String(openRawResource(R.raw.grace_public_key).readBytes())
-            pgpMessageSignedByGrace = openRawResource(R.raw.message_signed_by_grace).readBytes()
+            adminPublicKey = String(openRawResource(R.raw.admin_public_key).readBytes())
             pgpMessageSignedByAdmin = openRawResource(R.raw.message_signed_by_admin).readBytes()
+            pgpMessageSignedByGrace = openRawResource(R.raw.message_signed_by_grace).readBytes()
         }
     }
 
@@ -130,6 +132,29 @@ class OpenPgpTest : KoinTest {
         val result = openPgp.unlockKey(
             String(gracePrivateKey),
             GRACE_KEY_WRONG_PASSPHRASE
+        )
+
+        assertIsOpenPgpErrorResult(result)
+    }
+
+    @Test
+    fun test_messageSignatureShouldBeValidForCorrectData() = runBlocking {
+        val result = openPgp.verifyClearTextSignature(
+            adminPublicKey,
+            pgpMessageSignedByAdmin
+        )
+
+        assertIsOpenPgpSuccessResult(result)
+        val verificationResult = (result as OpenPgpResult.Result).result
+        assertThat(verificationResult.isSignatureVerified).isTrue()
+        assertThat(verificationResult.message).isEqualTo(PLAIN_MESSAGE)
+    }
+
+    @Test
+    fun test_messageSignatureShouldBeInvalidForMessageSignedByOther() = runBlocking {
+        val result = openPgp.verifyClearTextSignature(
+            adminPublicKey,
+            pgpMessageSignedByGrace
         )
 
         assertIsOpenPgpErrorResult(result)
