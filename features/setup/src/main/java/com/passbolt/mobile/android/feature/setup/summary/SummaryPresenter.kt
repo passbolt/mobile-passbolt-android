@@ -57,9 +57,9 @@ class SummaryPresenter(
         when (val currentStatus = status) {
             is ResultStatus.AlreadyLinked -> view?.navigateToManageAccounts()
             is ResultStatus.Success -> view?.navigateToSignIn(currentStatus.userId)
-            is ResultStatus.Failure -> view?.navigateToScanQr()
-            is ResultStatus.HttpNotSupported -> view?.navigateToScanQr()
-            is ResultStatus.NoNetwork -> view?.navigateToScanQr()
+            is ResultStatus.Failure -> view?.navigateToWelcome()
+            is ResultStatus.HttpNotSupported -> view?.navigateToWelcome()
+            is ResultStatus.NoNetwork -> view?.navigateToWelcome()
         }
     }
 
@@ -79,7 +79,7 @@ class SummaryPresenter(
         if (status is ResultStatus.Success) {
             view?.showLeaveConfirmationDialog()
         } else {
-            view?.navigateToScanQr()
+            view?.navigateToWelcome()
         }
     }
 

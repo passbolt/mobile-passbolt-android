@@ -64,6 +64,7 @@ import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfig
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
+import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
@@ -918,10 +919,18 @@ class HomePresenter(
                 doOnFailure = { view?.showGeneralError(it) },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnFetchFailure = { view?.showFetchFailure() },
+                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                 doOnSuccess = { fullDataRefreshExecutor.performFullDataRefresh() }
             )
 
             view?.hideProgress()
+        }
+    }
+
+    private fun handleSchemaValidationFailure(entity: SchemaEntity) {
+        when (entity) {
+            SchemaEntity.RESOURCE -> view?.showJsonResourceSchemaValidationError()
+            SchemaEntity.SECRET -> view?.showJsonSecretSchemaValidationError()
         }
     }
 
@@ -995,6 +1004,7 @@ class HomePresenter(
                     fullDataRefreshExecutor.performFullDataRefresh()
                     view?.showTotpDeleted()
                 },
+                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                 doOnFetchFailure = { view?.showFetchFailure() }
             )
             view?.hideProgress()

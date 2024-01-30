@@ -3,12 +3,14 @@ package com.passbolt.mobile.android.gopenpgp
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.gopenpgp.exception.GopenPgpExceptionParser
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
+import com.passbolt.mobile.android.gopenpgp.model.SignatureVerification
 import com.proton.gopenpgp.crypto.Crypto
 import com.proton.gopenpgp.crypto.Key
 import com.proton.gopenpgp.helper.Helper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.util.Date
 
 /**
  * Passbolt - Open source password manager for teams
@@ -152,18 +154,45 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
         }
     }
 
-    suspend fun getPrivateKeyFingerprint(
-        privateKey: String
-    ): OpenPgpResult<String> {
+    suspend fun getKeyFingerprint(key: String): OpenPgpResult<String> {
         return try {
             withContext(Dispatchers.IO) {
                 OpenPgpResult.Result(
-                    Key(privateKey).fingerprint
+                    Key(key).fingerprint
                 )
             }
         } catch (exception: Exception) {
             Timber.e(exception, "There was an error during getPrivateKeyFingerprint")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
+        } finally {
+            Helper.freeOSMemory()
+        }
+    }
+
+    suspend fun verifyClearTextSignature(
+        armoredPublicKey: String,
+        pgpMessage: ByteArray
+    ): OpenPgpResult<SignatureVerification> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val keyFingerprint = (getKeyFingerprint(armoredPublicKey) as OpenPgpResult.Result<String>).result
+
+                // if verification fails an exception is thrown
+                val verifiedMessage = Helper.verifyCleartextMessageArmored(
+                    armoredPublicKey, String(pgpMessage), Date().time
+                )
+
+                OpenPgpResult.Result(
+                    SignatureVerification(
+                        isSignatureVerified = !verifiedMessage.isNullOrBlank(),
+                        message = verifiedMessage,
+                        keyFingerprint = keyFingerprint
+                    )
+                )
+            }
+        } catch (exception: Exception) {
+            Timber.e(exception, "There was an error during verifyClearTextSignature")
+            return OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             Helper.freeOSMemory()
         }

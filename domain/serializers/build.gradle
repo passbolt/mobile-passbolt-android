@@ -13,6 +13,7 @@ dependencies {
 
     implementation libs.koin
     implementation libs.gson
+    implementation libs.jsonschema.friend
 }
 
 android {

@@ -66,7 +66,7 @@ class ShareFolderUseCase(
                 }
             }
 
-        object Success : Output()
+        data object Success : Output()
 
         data class Failure(val result: NetworkResult.Failure<*>) : Output()
     }

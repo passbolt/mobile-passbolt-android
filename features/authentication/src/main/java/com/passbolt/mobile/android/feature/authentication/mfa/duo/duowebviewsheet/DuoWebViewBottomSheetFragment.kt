@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.feature.authentication.mfa.duo.duowebviewsheet
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -76,6 +77,7 @@ class DuoWebViewBottomSheetFragment :
         super.onDetach()
     }
 
+    @SuppressLint("SetJavaScriptEnabled") // required for Duo to work
     private fun setupWebView() {
         binding.webView.webViewClient = duoWebViewClient.apply {
             onPageCommitVisible = {

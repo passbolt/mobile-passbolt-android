@@ -6,14 +6,14 @@ interface AuthenticatedUseCaseOutput {
 
 sealed class AuthenticationState {
 
-    object Authenticated : AuthenticationState()
+    data object Authenticated : AuthenticationState()
 
     class Unauthenticated(val reason: Reason) : AuthenticationState() {
 
         sealed class Reason {
 
-            object Passphrase : Reason()
-            object Session : Reason()
+            data object Passphrase : Reason()
+            data object Session : Reason()
             class Mfa(val providers: List<MfaProvider?>?) : Reason() {
                 enum class MfaProvider(val providerName: String) {
                     YUBIKEY("yubikey"),

@@ -4,6 +4,7 @@ import com.passbolt.mobile.android.common.coroutinetimer.infiniteTimer
 import com.passbolt.mobile.android.common.types.ClipboardLabel
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
+import com.passbolt.mobile.android.core.idlingresource.ResourceDetailActionIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
@@ -26,6 +27,7 @@ import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
+import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
@@ -84,6 +86,7 @@ class ResourceDetailsPresenter(
     private val getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
     private val resourceTypeFactory: ResourceTypeFactory,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
+    private val resourceDetailActionIdlingResource: ResourceDetailActionIdlingResource,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<ResourceDetailsContract.View>(coroutineLaunchContext),
     ResourceDetailsContract.Presenter, KoinComponent {
@@ -94,6 +97,7 @@ class ResourceDetailsPresenter(
     private lateinit var resourceModel: ResourceModel
 
     private var isPasswordVisible = false
+    private var isDescriptionVisible = false
     private var permissionsListWidth: Int = -1
     private var permissionItemWidth: Float = -1f
     private lateinit var resourceId: String
@@ -199,7 +203,7 @@ class ResourceDetailsPresenter(
         }
     }
 
-    private suspend fun ResourceDetailsPresenter.getAndDisplayResource(
+    private suspend fun getAndDisplayResource(
         resourceId: String
     ) {
         resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
@@ -213,8 +217,7 @@ class ResourceDetailsPresenter(
             } else {
                 view?.hideFavouriteStar()
             }
-            showPasswordHidden()
-            showPasswordHiddenIcon()
+            hidePassword()
             handleDescriptionField(resourceModel)
             handleTotpField(resourceModel)
             handleFeatureFlagsAndRbac()
@@ -240,6 +243,8 @@ class ResourceDetailsPresenter(
         val passwordPreviewRbac = getRbacRulesUseCase.execute(Unit).rbacModel.passwordPreviewRule
         if (passwordPreviewFeatureFlag && passwordPreviewRbac == ALLOW) {
             view?.showPasswordEyeIcon()
+        } else {
+            view?.hidePasswordEyeIcon()
         }
     }
 
@@ -252,9 +257,9 @@ class ResourceDetailsPresenter(
                 .find { it.name == "description" }
                 ?.isSecret ?: false
             if (isDescriptionSecret) {
-                view?.showDescriptionIsEncrypted()
+                view?.hideDescription()
             } else {
-                view?.showDescription(resourceModel.description.orEmpty(), useSecretFont = false)
+                view?.showDescription(resourceModel.description.orEmpty(), isSecret = false)
             }
         }
     }
@@ -262,8 +267,7 @@ class ResourceDetailsPresenter(
     override fun viewStopped() {
         view?.apply {
             clearPasswordInput()
-            showPasswordHidden()
-            showPasswordHiddenIcon()
+            hidePassword()
         }
     }
 
@@ -286,50 +290,59 @@ class ResourceDetailsPresenter(
         view?.navigateBack()
     }
 
-    override fun secretIconClick() {
+    override fun passwordActionClick() {
         if (!isPasswordVisible) {
+            resourceDetailActionIdlingResource.setIdle(false)
             coroutineScope.launch {
                 performSecretPropertyAction(
                     action = { secretPropertiesActionsInteractor.providePassword() },
                     doOnDecryptionFailure = { view?.showDecryptionFailure() },
                     doOnFetchFailure = { view?.showFetchFailure() },
                     doOnSuccess = {
-                        view?.apply {
-                            showPasswordVisibleIcon()
-                            showPassword(it.result)
-                        }
+                        view?.showPassword(it.result)
                         isPasswordVisible = true
                     }
                 )
+                resourceDetailActionIdlingResource.setIdle(true)
             }
         } else {
             view?.apply {
                 clearPasswordInput()
-                showPasswordHidden()
-                showPasswordHiddenIcon()
+                hidePassword()
             }
             isPasswordVisible = false
         }
     }
 
-    override fun seeDescriptionButtonClick() {
-        coroutineScope.launch {
-            when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
-                SIMPLE_PASSWORD -> {
-                    performResourcePropertyAction(
-                        action = { resourcePropertiesActionsInteractor.provideDescription() },
-                        doOnResult = { view?.showDescription(it.result, useSecretFont = it.isSecret) }
-                    )
+    override fun descriptionActionClick() {
+        if (!isDescriptionVisible) {
+            resourceDetailActionIdlingResource.setIdle(false)
+            coroutineScope.launch {
+                when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
+                    SIMPLE_PASSWORD -> {
+                        performResourcePropertyAction(
+                            action = { resourcePropertiesActionsInteractor.provideDescription() },
+                            doOnResult = { view?.showDescription(it.result, isSecret = it.isSecret) }
+                        )
+                    }
+                    else -> {
+                        performSecretPropertyAction(
+                            action = { secretPropertiesActionsInteractor.provideDescription() },
+                            doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                            doOnFetchFailure = { view?.showFetchFailure() },
+                            doOnSuccess = { view?.showDescription(it.result, isSecret = it.isSecret) }
+                        )
+                    }
                 }
-                else -> {
-                    performSecretPropertyAction(
-                        action = { secretPropertiesActionsInteractor.provideDescription() },
-                        doOnDecryptionFailure = { view?.showDecryptionFailure() },
-                        doOnFetchFailure = { view?.showFetchFailure() },
-                        doOnSuccess = { view?.showDescription(it.result, useSecretFont = it.isSecret) }
-                    )
-                }
+                isDescriptionVisible = true
+                resourceDetailActionIdlingResource.setIdle(true)
             }
+        } else {
+            view?.apply {
+                clearDescriptionInput()
+                hideDescription()
+            }
+            isDescriptionVisible = false
         }
     }
 
@@ -352,6 +365,7 @@ class ResourceDetailsPresenter(
     }
 
     override fun copyPasswordClick() {
+        resourceDetailActionIdlingResource.setIdle(false)
         coroutineScope.launch {
             if (getRbacRulesUseCase.execute(Unit).rbacModel.passwordCopyRule == ALLOW) {
                 performSecretPropertyAction(
@@ -361,10 +375,12 @@ class ResourceDetailsPresenter(
                     doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
                 )
             }
+            resourceDetailActionIdlingResource.setIdle(true)
         }
     }
 
     override fun copyDescriptionClick() {
+        resourceDetailActionIdlingResource.setIdle(false)
         coroutineScope.launch {
             when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
                 SIMPLE_PASSWORD -> {
@@ -382,6 +398,7 @@ class ResourceDetailsPresenter(
                     )
                 }
             }
+            resourceDetailActionIdlingResource.setIdle(true)
         }
     }
 
@@ -445,6 +462,7 @@ class ResourceDetailsPresenter(
     }
 
     override fun favouriteClick(option: ResourceMoreMenuModel.FavouriteOption) {
+        resourceDetailActionIdlingResource.setIdle(false)
         runWhileShowingProgress {
             performCommonResourceAction(
                 action = { resourceCommonActionsInteractor.toggleFavourite(option) },
@@ -452,6 +470,7 @@ class ResourceDetailsPresenter(
                 doOnSuccess = { view?.setResourceEditedResult(resourceModel.name) }
             )
             getResourcesAndPermissions(resourceModel.resourceId)
+            resourceDetailActionIdlingResource.setIdle(true)
         }
     }
 
@@ -460,8 +479,10 @@ class ResourceDetailsPresenter(
     }
 
     override fun copyTotpClick() {
+        resourceDetailActionIdlingResource.setIdle(false)
         doAfterOtpFetchAndDecrypt { label, _, otpParameters ->
             view?.addToClipboard(label, otpParameters.otpValue, isSecret = true)
+            resourceDetailActionIdlingResource.setIdle(true)
         }
     }
 
@@ -474,6 +495,7 @@ class ResourceDetailsPresenter(
     }
 
     private fun showTotp() {
+        resourceDetailActionIdlingResource.setIdle(false)
         otpModel = otpModelMapper.map(resourceModel)
             .copy(isRefreshing = true)
             .also {
@@ -489,6 +511,7 @@ class ResourceDetailsPresenter(
                     remainingSecondsCounter = otpParameters.secondsValid,
                     isRefreshing = false
                 )
+            resourceDetailActionIdlingResource.setIdle(true)
         }
     }
 
@@ -537,9 +560,17 @@ class ResourceDetailsPresenter(
                     doOnFetchFailure = { view?.showFetchFailure() },
                     doOnFailure = { view?.showGeneralError(it) },
                     doOnCryptoFailure = { view?.showEncryptionError(it) },
+                    doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                     doOnSuccess = { resourceEdited(it.resourceName) }
                 )
             }
+        }
+    }
+
+    private fun handleSchemaValidationFailure(entity: SchemaEntity) {
+        when (entity) {
+            SchemaEntity.RESOURCE -> view?.showJsonResourceSchemaValidationError()
+            SchemaEntity.SECRET -> view?.showJsonSecretSchemaValidationError()
         }
     }
 
@@ -566,6 +597,7 @@ class ResourceDetailsPresenter(
     }
 
     override fun totpDeleteConfirmed() {
+        resourceDetailActionIdlingResource.setIdle(false)
         coroutineScope.launch {
             view?.showProgress()
 
@@ -583,10 +615,12 @@ class ResourceDetailsPresenter(
                     getResourcesAndPermissions(it.resourceId)
                     view?.setResourceEditedResult(it.resourceName)
                 },
+                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
                 doOnFetchFailure = { view?.showFetchFailure() }
             )
 
             view?.hideProgress()
+            resourceDetailActionIdlingResource.setIdle(true)
         }
     }
 

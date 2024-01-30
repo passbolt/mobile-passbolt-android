@@ -33,7 +33,7 @@ interface SummaryContract {
         fun setDescription(message: String)
         fun setButtonLabel(@StringRes text: Int)
         fun setIcon(@DrawableRes icon: Int)
-        fun navigateToScanQr()
+        fun navigateToWelcome()
         fun navigateToFingerprintSetup()
         fun navigateToSignIn(userId: String)
         fun showLeaveConfirmationDialog()

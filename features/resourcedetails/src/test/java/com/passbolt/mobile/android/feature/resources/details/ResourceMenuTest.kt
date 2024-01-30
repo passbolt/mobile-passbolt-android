@@ -282,30 +282,37 @@ class ResourceMenuTest : KoinTest {
         private val RESOURCE_TYPE_ID = UUID.randomUUID().toString()
         private const val FOLDER_ID_ID = "folderId"
         private val RESOURCE_MODEL = ResourceModel(
-            ID,
-            RESOURCE_TYPE_ID,
-            FOLDER_ID_ID,
-            NAME,
-            USERNAME,
-            null,
-            INITIALS,
-            URL,
-            DESCRIPTION,
-            ResourcePermission.READ,
-            "fav-id",
-            ZonedDateTime.now()
+            resourceId = ID,
+            resourceTypeId = RESOURCE_TYPE_ID,
+            folderId = FOLDER_ID_ID,
+            name = NAME,
+            username = USERNAME,
+            icon = null,
+            initials = INITIALS,
+            url = URL,
+            description = DESCRIPTION,
+            permission = ResourcePermission.READ,
+            favouriteId = "fav-id",
+            modified = ZonedDateTime.now()
         )
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
-            ResourcePermission.READ, "permId1", GroupModel("grId", "grName")
+            permission = ResourcePermission.READ, permissionId = "permId1", group = GroupModel("grId", "grName")
         )
         private val userPermission = PermissionModelUi.UserPermissionModel(
-            ResourcePermission.OWNER,
-            "permId2",
-            UserWithAvatar("usId", "first", "last", "uName", null)
+            permission = ResourcePermission.OWNER,
+            permissionId = "permId2",
+            user = UserWithAvatar(
+                userId = "usId",
+                firstName = "first",
+                lastName = "last",
+                userName = "uName",
+                isDisabled = false,
+                avatarUrl = null
+            )
         )
         private val RESOURCE_TAGS = listOf(
-            TagModel("id1", "tag1", false),
-            TagModel("id2", "tag2", false)
+            TagModel(id = "id1", slug = "tag1", isShared = false),
+            TagModel(id = "id2", slug = "tag2", isShared = false)
         )
     }
 }

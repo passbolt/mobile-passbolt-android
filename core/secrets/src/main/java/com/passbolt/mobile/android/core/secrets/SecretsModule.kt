@@ -4,11 +4,6 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.DecryptSecretUse
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.FetchSecretUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordAndDescriptionSecretValidation
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordDescriptionTotpSecretValidation
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordStringSecretValidation
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.SecretValidationRunner
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.TotpSecretValidation
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -40,9 +35,4 @@ val secretsModule = module {
     singleOf(::DecryptSecretUseCase)
     singleOf(::SecretInteractor)
     singleOf(::SecretParser)
-    singleOf(::SecretValidationRunner)
-    singleOf(::PasswordStringSecretValidation)
-    singleOf(::PasswordAndDescriptionSecretValidation)
-    singleOf(::TotpSecretValidation)
-    singleOf(::PasswordDescriptionTotpSecretValidation)
 }

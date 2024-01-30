@@ -130,20 +130,39 @@ class UserPermissionsDetailsPresenterTest : KoinTest {
 
     private companion object {
         private val USER_WITH_AVATAR = UserWithAvatar(
-            "userId", "first", "last", "userName", "avartUrl"
+            userId = "userId",
+            firstName = "first",
+            lastName = "last",
+            userName = "userName",
+            isDisabled = false,
+            avatarUrl = "avartUrl"
         )
         private val USER = UserModel(
-            USER_WITH_AVATAR.userId,
-            USER_WITH_AVATAR.userName,
-            GpgKeyModel("keyData", "fingerprint", 1, "uid", "keyid", "rsa", ZonedDateTime.now(), ZonedDateTime.now()),
-            UserProfileModel(
-                "username",
-                USER_WITH_AVATAR.firstName,
-                USER_WITH_AVATAR.lastName,
-                USER_WITH_AVATAR.avatarUrl
+            id = USER_WITH_AVATAR.userId,
+            userName = USER_WITH_AVATAR.userName,
+            disabled = false,
+            gpgKey = GpgKeyModel(
+                armoredKey = "keyData",
+                fingerprint = "fingerprint",
+                bits = 1,
+                uid = "uid",
+                keyId = "keyid",
+                type = "rsa",
+                keyExpirationDate = ZonedDateTime.now(),
+                keyCreationDate = ZonedDateTime.now()
+            ),
+            profile = UserProfileModel(
+                username = "username",
+                firstName = USER_WITH_AVATAR.firstName,
+                lastName = USER_WITH_AVATAR.lastName,
+                avatarUrl = USER_WITH_AVATAR.avatarUrl
             )
         )
         private val USER_PERMISSION =
-            PermissionModelUi.UserPermissionModel(ResourcePermission.READ, "permId", USER_WITH_AVATAR)
+            PermissionModelUi.UserPermissionModel(
+                permission = ResourcePermission.READ,
+                permissionId = "permId",
+                user = USER_WITH_AVATAR
+            )
     }
 }

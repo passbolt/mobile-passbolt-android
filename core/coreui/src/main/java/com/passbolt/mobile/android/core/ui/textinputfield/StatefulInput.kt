@@ -27,7 +27,7 @@ interface StatefulInput {
     fun setState(state: State)
 
     sealed class State {
-        object Default : State()
+        data object Default : State()
         class Error(val message: String) : State()
     }
 }

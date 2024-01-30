@@ -28,7 +28,7 @@ package com.passbolt.mobile.android.core.fulldatarefresh
  */
 sealed class DataRefreshStatus {
 
-    object InProgress : DataRefreshStatus()
+    data object InProgress : DataRefreshStatus()
 
     data class Finished(
         val output: HomeDataInteractor.Output

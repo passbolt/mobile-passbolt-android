@@ -45,6 +45,7 @@ dependencies {
     implementation project(':scanotp')
     implementation project(':otpmoremenu')
     implementation project(':createotpmanually')
+    implementation project(':serializers')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

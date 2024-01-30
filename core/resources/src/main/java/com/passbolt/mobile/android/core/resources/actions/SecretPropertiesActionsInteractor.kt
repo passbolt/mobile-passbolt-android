@@ -155,11 +155,11 @@ class SecretPropertiesActionsInteractor(
 
     private sealed class SecretFetchAndDecryptResult {
 
-        object FetchFailure : SecretFetchAndDecryptResult()
+        data object FetchFailure : SecretFetchAndDecryptResult()
 
-        object DecryptFailure : SecretFetchAndDecryptResult()
+        data object DecryptFailure : SecretFetchAndDecryptResult()
 
-        object Unauthorized : SecretFetchAndDecryptResult()
+        data object Unauthorized : SecretFetchAndDecryptResult()
 
         class Success(val secret: ByteArray) : SecretFetchAndDecryptResult()
     }

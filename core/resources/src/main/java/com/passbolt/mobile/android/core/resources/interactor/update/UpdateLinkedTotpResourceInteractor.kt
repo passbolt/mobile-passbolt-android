@@ -23,19 +23,17 @@
 
 package com.passbolt.mobile.android.core.resources.interactor.update
 
+import com.google.gson.Gson
 import com.passbolt.mobile.android.core.resources.SecretInputCreator
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.users.usecase.FetchUsersUseCase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
-import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
+import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.ui.EncryptedSecretOrError
-import com.passbolt.mobile.android.ui.UserModel
 
 class UpdateLinkedTotpResourceInteractor(
     private val secretInputCreator: SecretInputCreator,
@@ -46,48 +44,38 @@ class UpdateLinkedTotpResourceInteractor(
     resourceModelMapper: ResourceModelMapper,
     resourceRepository: ResourceRepository,
     fetchUsersUseCase: FetchUsersUseCase,
-    getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase
+    getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
+    jsonSchemaValidationRunner: JsonSchemaValidationRunner,
+    gson: Gson
 ) :
     UpdateResourceInteractor<UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput>(
         passphraseMemoryCache,
         resourceModelMapper,
         resourceRepository,
         fetchUsersUseCase,
-        getResourceTypeIdToSlugMappingUseCase
+        getResourceTypeIdToSlugMappingUseCase,
+        jsonSchemaValidationRunner,
+        gson,
+        getSelectedAccountUseCase,
+        getPrivateKeyUseCase,
+        openPgp
     ) {
 
     override val slug = "password-description-totp"
 
-    override suspend fun createSecrets(
+    override fun createSecret(
         input: CommonInput,
         customInput: UpdateToLinkedTotpInput,
-        passphrase: ByteArray,
-        usersWhoHaveAccess: List<UserModel>
-    ): List<EncryptedSecretOrError> {
-        return usersWhoHaveAccess.mapTo(mutableListOf()) {
-            val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-            val privateKey = getPrivateKeyUseCase.execute(UserIdInput(userId)).privateKey
-            val publicKey = it.gpgKey.armoredKey
-
-            try {
-                val secret = secretInputCreator.createPasswordDescriptionTotpSecretInput(
-                    password = customInput.password,
-                    description = customInput.description,
-                    algorithm = customInput.algorithm,
-                    key = customInput.secretKey,
-                    digits = customInput.digits,
-                    period = customInput.period
-                )
-                when (val encryptedSecret =
-                    openPgp.encryptSignMessageArmored(publicKey, privateKey, passphrase, secret)) {
-                    is OpenPgpResult.Error -> EncryptedSecretOrError.Error(encryptedSecret.error.message)
-                    is OpenPgpResult.Result -> EncryptedSecretOrError.EncryptedSecret(it.id, encryptedSecret.result)
-                }
-            } catch (exception: RuntimeException) {
-                EncryptedSecretOrError.Error(exception.message.orEmpty())
-            }
-        }
-    }
+        passphrase: ByteArray
+    ) =
+        secretInputCreator.createPasswordDescriptionTotpSecretInput(
+            password = customInput.password,
+            description = customInput.description,
+            algorithm = customInput.algorithm,
+            key = customInput.secretKey,
+            digits = customInput.digits,
+            period = customInput.period
+        )
 
     override suspend fun createCommonDescription(customInput: UpdateToLinkedTotpInput): String? =
         null

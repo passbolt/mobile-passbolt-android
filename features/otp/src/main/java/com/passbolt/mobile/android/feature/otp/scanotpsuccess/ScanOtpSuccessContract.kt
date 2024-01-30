@@ -38,6 +38,8 @@ interface ScanOtpSuccessContract {
         fun hideProgress()
         fun navigateToResourcePicker()
         fun showError(message: String)
+        fun showJsonResourceSchemaValidationError()
+        fun showJsonSecretSchemaValidationError()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

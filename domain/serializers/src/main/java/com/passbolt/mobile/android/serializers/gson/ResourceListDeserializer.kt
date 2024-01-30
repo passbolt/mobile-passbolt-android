@@ -28,7 +28,7 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
-import com.passbolt.mobile.android.serializers.gson.validation.ResourceValidationRunner
+import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
 import kotlinx.coroutines.runBlocking
@@ -39,7 +39,7 @@ import java.util.UUID
 
 open class ResourceListDeserializer(
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-    private val resourceValidationRunner: ResourceValidationRunner
+    private val jsonSchemaValidationRunner: JsonSchemaValidationRunner
 ) : JsonDeserializer<List<ResourceResponseDto>>, KoinComponent {
 
     override fun deserialize(
@@ -53,43 +53,48 @@ open class ResourceListDeserializer(
         }
 
         // done on the parser thread
-        val resourceTypeIdToSlugMapping = runBlocking {
-            resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()
-        }
+        return runBlocking {
+            val resourceTypeIdToSlugMapping = resourceTypeIdToSlugMappingProvider
+                .provideMappingForSelectedAccount()
 
-        val supportedResourceTypesIds = resourceTypeIdToSlugMapping
-            .filter { it.value in homeSlugs + totpSlugs }
-            .keys
+            val supportedResourceTypesIds = resourceTypeIdToSlugMapping
+                .filter { it.value in homeSlugs + totpSlugs }
+                .keys
 
-        return if (json.isJsonArray) {
-            json.asJsonArray.mapNotNullTo(mutableListOf()) { jsonElement ->
-                if (!jsonElement.isJsonNull) {
-                    val resource = context.deserialize<ResourceResponseDto>(
-                        jsonElement, ResourceResponseDto::class.java
-                    )
+            if (json.isJsonArray) {
+                json.asJsonArray.mapNotNullTo(mutableListOf()) { jsonElement ->
+                    if (!jsonElement.isJsonNull) {
+                        val resource = context.deserialize<ResourceResponseDto>(
+                            jsonElement, ResourceResponseDto::class.java
+                        )
 
-                    if (isSupported(resource, supportedResourceTypesIds) &&
-                        isValid(resource, resourceTypeIdToSlugMapping)
-                    ) {
-                        resource
+                        if (isSupported(resource, supportedResourceTypesIds) &&
+                            isValid(resource.resourceTypeId, jsonElement.toString(), resourceTypeIdToSlugMapping)
+                        ) {
+                            resource
+                        } else {
+                            Timber.d("Invalid resource found id=(${resource.id}, skipping")
+                            null
+                        }
                     } else {
-                        Timber.d("Invalid resource found id=(${resource.id}, skipping")
+                        Timber.e("Encountered a null root json element when parsing resources")
                         null
                     }
-                } else {
-                    Timber.e("Encountered a null root json element when parsing resources")
-                    null
                 }
+            } else {
+                emptyList()
             }
-        } else {
-            emptyList()
         }
     }
 
-    private fun isValid(resource: ResourceResponseDto, resourceTypeIdToSlugMapping: Map<UUID, String>): Boolean {
-        val resourceTypeSlug = resourceTypeIdToSlugMapping[resource.resourceTypeId]
+    private suspend fun isValid(
+        resourceTypeId: UUID,
+        resourceJson: String,
+        resourceTypeIdToSlugMapping: Map<UUID, String>
+    ): Boolean {
+        val resourceTypeSlug = resourceTypeIdToSlugMapping[resourceTypeId]
         return if (resourceTypeSlug != null) {
-            resourceValidationRunner.isValid(resource, resourceTypeSlug)
+            jsonSchemaValidationRunner.isResourceValid(resourceJson, resourceTypeSlug)
         } else {
             return false
         }

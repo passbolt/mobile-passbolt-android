@@ -17,6 +17,7 @@ dependencies {
     implementation libs.textdrawable
     implementation libs.fastadapter.binding
     implementation libs.fastadapter.core
+    implementation libs.coil.core
 }
 
 android {

@@ -13,6 +13,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.DeleteResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
@@ -86,12 +87,14 @@ class ResourcesDeletionTest : KoinTest {
         val signInIdlingResource: SignInIdlingResource by inject()
         val deleteIdlingResource: DeleteResourceIdlingResource by inject()
         val createResourceIdlingResource: CreateResourceIdlingResource by inject()
+        val createMenuModelIdlingResource: CreateMenuModelIdlingResource by inject()
         IdlingResourceRule(
             arrayOf(
                 signInIdlingResource,
                 resourcesFullRefreshIdlingResource,
                 deleteIdlingResource,
-                createResourceIdlingResource
+                createResourceIdlingResource,
+                createMenuModelIdlingResource
             )
         )
     }

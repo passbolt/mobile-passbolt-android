@@ -6,7 +6,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".PassboltApplication"
@@ -47,6 +46,9 @@
                 android:value="androidx.startup" />
             <meta-data
                 android:name="com.passbolt.mobile.android.initializers.LoggingExceptionHandlerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="com.passbolt.mobile.android.initializers.LocalJsonSchemasInitializer"
                 android:value="androidx.startup" />
         </provider>
         <meta-data

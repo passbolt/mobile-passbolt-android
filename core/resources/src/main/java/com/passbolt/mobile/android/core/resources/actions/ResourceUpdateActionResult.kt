@@ -23,15 +23,19 @@
 
 package com.passbolt.mobile.android.core.resources.actions
 
+import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
+
 sealed class ResourceUpdateActionResult {
 
     data class Success(val resourceId: String, val resourceName: String) : ResourceUpdateActionResult()
 
     data class Failure(val message: String? = null) : ResourceUpdateActionResult()
 
-    object FetchFailure : ResourceUpdateActionResult()
+    data object FetchFailure : ResourceUpdateActionResult()
 
-    object Unauthorized : ResourceUpdateActionResult()
+    data object Unauthorized : ResourceUpdateActionResult()
 
     class CryptoFailure(val message: String? = null) : ResourceUpdateActionResult()
+
+    class JsonSchemaValidationFailure(val entity: SchemaEntity) : ResourceUpdateActionResult()
 }

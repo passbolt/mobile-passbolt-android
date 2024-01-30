@@ -1,7 +1,12 @@
 package com.passbolt.mobile.android.feature.setup.welcome
 
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.accounts.AccountKitParser
+import com.passbolt.mobile.android.core.accounts.AccountsInteractor
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
@@ -30,12 +35,19 @@ import org.mockito.kotlin.mock
 
 internal val mockRootDetector = mock<RootDetectorImpl>()
 internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
+internal val accountsInteractor = mock<AccountsInteractor>()
+internal val accountKitParser = mock<AccountKitParser>()
 
+@OptIn(ExperimentalCoroutinesApi::class)
 val welcomeModule = module {
+    factoryOf(::TestCoroutineLaunchContext)
     factory<WelcomeContract.Presenter> {
         WelcomePresenter(
-            mockRootDetector,
-            mockGetGlobalPreferencesUseCase
+            coroutineLaunchContext = get(),
+            rootDetector = mockRootDetector,
+            getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
+            accountsInteractor = accountsInteractor,
+            accountKitParser = accountKitParser
         )
     }
 }

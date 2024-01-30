@@ -26,7 +26,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * @since v1.0
  */
 
-@Suppress("MagicNumber", "MaxLineLength")
+@Suppress("MagicNumber")
 object Migration12to13 : Migration(12, 13) {
 
     private const val ADD_KEY_CREATION_DATE_COLUMN =

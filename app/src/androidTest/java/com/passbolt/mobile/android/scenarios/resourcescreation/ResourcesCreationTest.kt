@@ -1,3 +1,26 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021-2023 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
 package com.passbolt.mobile.android.scenarios.resourcescreation
 
 import android.view.KeyEvent
@@ -6,6 +29,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
@@ -57,28 +81,6 @@ import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
@@ -127,6 +129,7 @@ class ResourcesCreationTest : KoinTest {
     }
 
     @Test
+//  https://passbolt.testrail.io/index.php?/cases/view/6348
     fun asALoggedInMobileUserOnThePasswordWorkspaceIShouldSeeACreateButton() {
         //    Given     that I am a logged in mobile user
         //    When      I am on the password workspace
@@ -164,6 +167,7 @@ class ResourcesCreationTest : KoinTest {
     }
 
     @Test
+//  https://passbolt.testrail.io/index.php?/cases/view/8128
     fun asALoggedInMobileUserOnThePasswordWorkspaceIShouldSeeTheNewPasswordPage() {
         //    Given     I am a logged in mobile user
         //    And       I have at least the "can update" permission in the current context
@@ -213,6 +217,7 @@ class ResourcesCreationTest : KoinTest {
     }
 
     @Test
+    //  https://passbolt.testrail.io/index.php?/cases/view/8130
     fun asALoggedInMobileUserOnTheNewPasswordPageIShouldSeeAToastMessageAfterCreationAPassword() {
         // unregister refresh idling resource after first refresh not to block the snackbar checks
         // (second refresh is during snackbar is showing)
@@ -222,7 +227,10 @@ class ResourcesCreationTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
         //    And       I filled out all mandatory fields
         onView(allOf(isDescendantOfA(withHint(hasToString("Enter Name"))), withId(CoreUiR.id.input)))
-            .perform(typeText("PasswordNameTest"))
+            .perform(
+                typeText("PasswordNameTest"),
+                closeSoftKeyboard(),
+            )
         onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
         //    When      I click on the create button
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton))
@@ -236,6 +244,7 @@ class ResourcesCreationTest : KoinTest {
     }
 
     @Test
+//  https://passbolt.testrail.io/index.php?/cases/view/8131
     fun asALoggedInMobileUserOnTheNewPasswordPageIShouldSeeAnErrorMessageAfterClickingTheCreateButtonWithAnEmptyMandatoryField() {
         //    Given     I am a logged in mobile user on the new password page
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
@@ -273,6 +282,7 @@ class ResourcesCreationTest : KoinTest {
     }
 
     @Test
+    //  https://passbolt.testrail.io/index.php?/cases/view/8132
     fun asALoggedInMobileUserOnTheNewPasswordPageICanGenerateARandomPassword() {
         //    Given     I am a logged in mobile user on the new password page
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
@@ -297,6 +307,7 @@ class ResourcesCreationTest : KoinTest {
     }
 
     @Test
+    //  https://passbolt.testrail.io/index.php?/cases/view/8133
     fun asALoggedInMobileUserOnTheNewPasswordPageICanSwitchTheVisibilityOfThePassword() {
         val password = "password"
 

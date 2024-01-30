@@ -170,8 +170,7 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
         )
 
         val promptSubtitle =
-            authReason?.let { getMessageForReason(authReason) }
-                ?: getString(LocalizationR.string.auth_biometric_subtitle)
+            authReason?.let { getMessageForReason(authReason) } ?: ""
         val promptInfo = biometricPromptBuilder
             .setTitle(getString(LocalizationR.string.auth_biometric_title))
             .setSubtitle(promptSubtitle)
@@ -462,7 +461,13 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance(HelpMenuModel(shouldShowShowQrCodesHelp = false, shouldShowImportProfile = false))
+        HelpMenuFragment.newInstance(
+            HelpMenuModel(
+                shouldShowShowQrCodesHelp = false,
+                shouldShowImportProfile = false,
+                shouldShowImportAccountKit = false
+            )
+        )
             .show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 

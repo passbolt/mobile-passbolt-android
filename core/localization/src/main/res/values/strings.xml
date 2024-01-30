@@ -32,6 +32,7 @@
     <string name="location">Location</string>
     <string name="content_not_available">The content is not available anymore</string>
     <string name="consent">I consent</string>
+    <string name="full_name_suspended">%s (suspended)</string>
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_time_is_out_of_sync">Server and client time is out of sync, please contact your administrator.</string>
@@ -43,6 +44,8 @@
     <string name="common_decryption_failure">Error during secret decryption</string>
     <string name="common_fetch_failure">Error during downloading the secret</string>
     <string name="common_encryption_failure">There was an error during secret encryption</string>
+    <string name="common_json_schema_resource_validation_error">There was an error during validation of resource. Enable logs for more details.</string>
+    <string name="common_json_schema_secret_validation_error">There was an error during validation of secret. Enable logs for more details.</string>
 
     <string name="common_message_resource_edited">%s password was successfully edited.</string>
     <string name="common_message_resource_deleted">%s password was deleted.</string>
@@ -104,6 +107,7 @@
     <string name="help_menu_why_scan_codes">Why scanning QR codes?</string>
     <string name="help_menu_enable_debug_logs">Enable debug logs</string>
     <string name="help_menu_import_profile_manually">Import your account manually</string>
+    <string name="help_menu_import_account_kit">Import your account kit</string>
 
     <string name="logs_share_title">Share logs</string>
     <string name="logs_share_email_title">Passbolt logs</string>
@@ -146,7 +150,6 @@
     <string name="auth_enter_passphrase">Enter your passphrase</string>
     <string name="auth_exit_dialog_message">If you leave, you may need to set up your account again.</string>
     <string name="auth_biometric_title">Confirm Using Your Fingerprint</string>
-    <string name="auth_biometric_subtitle" />
     <string name="auth_reason_session_expired">Please authenticate to refresh session</string>
     <string name="auth_reason_passphrase_expired">Please authenticate passphrase access</string>
     <string name="auth_server_fingerprint_changed_title">Sorry, the server key has changed.</string>
@@ -162,7 +165,7 @@
     <string name="auth_error_profile_fetch_failure">There was an error during profile update</string>
 
     <string name="dialog_account_does_not_exist_title">The account doesn’t exist</string>
-    <string name="dialog_account_does_not_exist_subtitle">The account has been deleted</string>
+    <string name="dialog_account_does_not_exist_subtitle">The account has been deleted or suspended.</string>
     <string name="dialog_account_does_not_exist_connect_account">Connect to an existing account</string>
 
     <string name="dialog_mfa_mfa">Multi Factor Authentication</string>
@@ -262,10 +265,9 @@
     <string name="resource_details_url_header">Website URL</string>
     <string name="resource_details_description_header">Description</string>
     <string name="resource_details_tags_header">Tags</string>
-    <string name="resource_details_hide_password"
+    <string name="hidden_secret"
         translatable="false">••••••••••••••••••</string>
     <string name="resource_details_encrypted_description">Description is encrypted</string>
-    <string name="resource_details_see_description">See description</string>
     <string name="resource_details_information">Information</string>
     <string name="resource_details_invalid_totp_scanned">Invalid TOTP QR code scanned</string>
 

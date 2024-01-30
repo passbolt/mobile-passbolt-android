@@ -72,6 +72,11 @@ data class UserWithAvatar(
     val firstName: String,
     val lastName: String,
     val userName: String,
+    val isDisabled: Boolean,
     val avatarUrl: String?,
     override val searchCriteria: String = "$userName$firstName$lastName"
-) : Searchable, Parcelable
+) : Searchable, Parcelable {
+
+    val fullName: String
+        get() = "$firstName $lastName"
+}

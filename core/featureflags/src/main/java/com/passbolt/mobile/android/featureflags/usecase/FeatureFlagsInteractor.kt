@@ -49,6 +49,6 @@ class FeatureFlagsInteractor(
 
         data class Success(val featureFlags: FeatureFlagsModel) : Output()
 
-        object Failure : Output()
+        data object Failure : Output()
     }
 }

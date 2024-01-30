@@ -30,11 +30,11 @@ sealed class DialogMode(
     @StringRes val buttonTextIdRes: Int
 ) : Serializable {
 
-    object Settings : DialogMode(
+    data object Settings : DialogMode(
         LocalizationR.string.dialog_autofill_enabled_go_to_app
     )
 
-    object Setup : DialogMode(
+    data object Setup : DialogMode(
         LocalizationR.string.dialog_autofill_enabled_got_it
     )
 }

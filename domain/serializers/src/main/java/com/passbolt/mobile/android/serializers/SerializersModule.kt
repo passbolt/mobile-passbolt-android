@@ -30,12 +30,15 @@ import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
 import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
-import com.passbolt.mobile.android.serializers.gson.validation.ResourceValidationRunner
+import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
+import com.passbolt.mobile.android.serializers.jsonschema.jsonSchemaModule
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val serializersModule = module {
-    singleOf(::ResourceValidationRunner)
+    jsonSchemaModule()
+
+    singleOf(::JsonSchemaValidationRunner)
     singleOf(::ResourceListDeserializer)
     singleOf(::ResourceTypesListDeserializer)
 

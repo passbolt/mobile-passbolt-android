@@ -12,12 +12,14 @@ dependencies {
     implementation project(':fulldatarefresh')
     implementation project(':coreui')
     implementation project(':localization')
+    implementation project(':idlingresource')
 
     implementation libs.androidx.core
     implementation libs.appcompat
     implementation libs.constraintlayout
     implementation libs.material
     implementation libs.koin
+    implementation libs.espresso.idling.resource
 }
 
 android {

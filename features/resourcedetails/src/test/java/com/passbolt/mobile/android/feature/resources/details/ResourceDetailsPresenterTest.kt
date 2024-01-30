@@ -169,11 +169,10 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).displayUsername(USERNAME)
         verify(view, times(2)).displayInitialsIcon(NAME, INITIALS)
         verify(view, times(2)).displayUrl(URL)
-        verify(view, times(2)).showPasswordHidden()
-        verify(view, times(2)).showPasswordHiddenIcon()
+        verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
-        verify(view, times(2)).showDescription(RESOURCE_MODEL.description!!, useSecretFont = false)
+        verify(view, times(2)).showDescription(RESOURCE_MODEL.description!!, isSecret = false)
         verify(view, times(2)).showFolderLocation(emptyList())
         verify(view, times(2)).hideTotpSection()
         verify(view, times(2)).showPasswordEyeIcon()
@@ -219,7 +218,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         )
         presenter.resume(view)
 
-        verify(view, times(2)).showDescription(DESCRIPTION, useSecretFont = false)
+        verify(view, times(2)).showDescription(DESCRIPTION, isSecret = false)
     }
 
     @Test
@@ -240,7 +239,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         )
         presenter.resume(view)
 
-        verify(view, times(2)).showDescriptionIsEncrypted()
+        verify(view, times(2)).hideDescription()
     }
 
     @Test
@@ -265,13 +264,11 @@ class ResourceDetailsPresenterTest : KoinTest {
             20f
         )
         presenter.resume(view)
-        presenter.secretIconClick()
-        presenter.secretIconClick()
+        presenter.passwordActionClick()
+        presenter.passwordActionClick()
 
-        verify(view).showPasswordVisibleIcon()
         verify(view).showPassword(password)
-        verify(view, times(3)).showPasswordHiddenIcon()
-        verify(view, times(3)).showPasswordHidden()
+        verify(view, times(3)).hidePassword()
     }
 
     @Test
@@ -287,7 +284,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             20f
         )
         presenter.resume(view)
-        presenter.secretIconClick()
+        presenter.passwordActionClick()
 
         verify(view).showDecryptionFailure()
     }
@@ -304,7 +301,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             20f
         )
         presenter.resume(view)
-        presenter.secretIconClick()
+        presenter.passwordActionClick()
 
         verify(view).showFetchFailure()
     }
@@ -389,30 +386,42 @@ class ResourceDetailsPresenterTest : KoinTest {
         private val RESOURCE_TYPE_ID = UUID.randomUUID().toString()
         private const val FOLDER_ID_ID = "folderId"
         private val RESOURCE_MODEL = ResourceModel(
-            ID,
-            RESOURCE_TYPE_ID,
-            FOLDER_ID_ID,
-            NAME,
-            USERNAME,
-            null,
-            INITIALS,
-            URL,
-            DESCRIPTION,
-            ResourcePermission.READ,
-            "fav-id",
-            ZonedDateTime.now()
+            resourceId = ID,
+            resourceTypeId = RESOURCE_TYPE_ID,
+            folderId = FOLDER_ID_ID,
+            name = NAME,
+            username = USERNAME,
+            icon = null,
+            initials = INITIALS,
+            url = URL,
+            description = DESCRIPTION,
+            permission = ResourcePermission.READ,
+            favouriteId = "fav-id",
+            modified = ZonedDateTime.now()
         )
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
-            ResourcePermission.READ, "permId1", GroupModel("grId", "grName")
+            permission = ResourcePermission.READ,
+            permissionId = "permId1",
+            group = GroupModel(
+                groupId = "grId",
+                groupName = "grName"
+            )
         )
         private val userPermission = PermissionModelUi.UserPermissionModel(
-            ResourcePermission.OWNER,
-            "permId2",
-            UserWithAvatar("usId", "first", "last", "uName", null)
+            permission = ResourcePermission.OWNER,
+            permissionId = "permId2",
+            user = UserWithAvatar(
+                userId = "usId",
+                firstName = "first",
+                lastName = "last",
+                userName = "uName",
+                isDisabled = false,
+                avatarUrl = null
+            )
         )
         private val RESOURCE_TAGS = listOf(
-            TagModel("id1", "tag1", false),
-            TagModel("id2", "tag2", false)
+            TagModel(id = "id1", slug = "tag1", isShared = false),
+            TagModel(id = "id2", slug = "tag2", isShared = false)
         )
     }
 }

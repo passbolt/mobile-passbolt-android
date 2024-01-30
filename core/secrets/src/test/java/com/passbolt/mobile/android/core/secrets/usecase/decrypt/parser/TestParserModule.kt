@@ -25,24 +25,33 @@ package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.google.gson.GsonBuilder
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordAndDescriptionSecretValidation
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordDescriptionTotpSecretValidation
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.PasswordStringSecretValidation
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.SecretValidationRunner
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validation.TotpSecretValidation
+import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFJsonSchemaValidator
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFSchemaRepository
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaRepository
+import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaValidator
+import net.jimblackler.jsonschemafriend.Schema
+import net.jimblackler.jsonschemafriend.Validator
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
 internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
+internal val mockJSFSchemaRepository = mock<JSFSchemaRepository>()
 
 val testParserModule = module {
     single { GsonBuilder().create() }
-    singleOf(::SecretValidationRunner)
-    singleOf(::PasswordStringSecretValidation)
-    singleOf(::PasswordAndDescriptionSecretValidation)
-    singleOf(::TotpSecretValidation)
-    singleOf(::PasswordDescriptionTotpSecretValidation)
+    singleOf(::JsonSchemaValidationRunner)
+    single { Validator() }
+    single<JsonSchemaRepository<Schema>> {
+        mockJSFSchemaRepository
+    }
+    single<JsonSchemaValidator> {
+        JSFJsonSchemaValidator(
+            schemaRepository = get(),
+            validator = get()
+        )
+    }
     singleOf(::SecretParser)
     factory { mockResourceTypeFactory }
 }

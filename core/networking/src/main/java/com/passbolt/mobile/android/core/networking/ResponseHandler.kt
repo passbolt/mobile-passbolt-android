@@ -87,7 +87,7 @@ sealed class MfaStatus {
         val providers: List<MfaProvider?>?
     ) : MfaStatus()
 
-    object NotRequired : MfaStatus()
+    data object NotRequired : MfaStatus()
 }
 
 inline fun <T : Any> callWithHandler(responseHandler: ResponseHandler, apiCall: () -> T) = try {

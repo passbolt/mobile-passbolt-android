@@ -57,7 +57,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
 
     private val presenter: PermissionsContract.Presenter by inject()
     private val view: PermissionsContract.View = mock()
-    private val mockFullDataRefreshExecutor : FullDataRefreshExecutor by inject()
+    private val mockFullDataRefreshExecutor: FullDataRefreshExecutor by inject()
 
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -250,16 +250,23 @@ class ResourcePermissionsPresenterTest : KoinTest {
         private const val RESOURCE_ID = "resid"
         private val GROUP_PERMISSIONS = listOf(
             PermissionModelUi.GroupPermissionModel(
-                ResourcePermission.READ,
-                "groupPermId",
-                GroupModel("groupId", "groupname")
+                permission = ResourcePermission.READ,
+                permissionId = "groupPermId",
+                group = GroupModel(groupId = "groupId", groupName = "groupname")
             )
         )
         private val USER_PERMISSIONS = listOf(
             PermissionModelUi.UserPermissionModel(
-                ResourcePermission.READ,
-                "userPermId",
-                UserWithAvatar("userId", "first", "last", "userName", "avartUrl")
+                permission = ResourcePermission.READ,
+                permissionId = "userPermId",
+                user = UserWithAvatar(
+                    userId = "userId",
+                    firstName = "first",
+                    lastName = "last",
+                    userName = "userName",
+                    isDisabled = false,
+                    avatarUrl = "avartUrl"
+                )
             )
         )
 
@@ -271,18 +278,18 @@ class ResourcePermissionsPresenterTest : KoinTest {
         private const val RESOURCE_TYPE_ID = "resTypeId"
         private const val FOLDER_ID_ID = "folderId"
         private val RESOURCE_MODEL = ResourceModel(
-            RESOURCE_ID,
-            RESOURCE_TYPE_ID,
-            FOLDER_ID_ID,
-            NAME,
-            USERNAME,
-            null,
-            INITIALS,
-            URL,
-            DESCRIPTION,
-            ResourcePermission.READ,
-            null,
-            ZonedDateTime.now()
+            resourceId = RESOURCE_ID,
+            resourceTypeId = RESOURCE_TYPE_ID,
+            folderId = FOLDER_ID_ID,
+            name = NAME,
+            username = USERNAME,
+            icon = null,
+            initials = INITIALS,
+            url = URL,
+            description = DESCRIPTION,
+            permission = ResourcePermission.READ,
+            favouriteId = null,
+            modified = ZonedDateTime.now()
         )
     }
 }

@@ -9,6 +9,7 @@ import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.passbolt.mobile.android.common.dialogs.permissionDeletionConfirmationAlertDialog
+import com.passbolt.mobile.android.core.UiConstants
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.visible
@@ -19,6 +20,7 @@ import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 import org.koin.android.ext.android.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 class UserPermissionsFragment :
@@ -74,7 +76,12 @@ class UserPermissionsFragment :
 
     override fun showUserData(user: UserModel) {
         with(binding) {
-            nameLabel.text = String.format("%s %s", user.profile.firstName, user.profile.lastName)
+            if (user.disabled) {
+                nameLabel.text = requireContext().getString(LocalizationR.string.full_name_suspended, user.fullName)
+                setOf(nameLabel, emailLabel).forEach { it.alpha = UiConstants.LOWERED_ALPHA }
+            } else {
+                nameLabel.text = user.fullName
+            }
             emailLabel.text = user.userName
             fingerprintLabel.text = fingerprintFormatter.formatWithRawFallback(
                 user.gpgKey.fingerprint, appendMiddleSpacing = false

@@ -77,6 +77,8 @@ interface UpdateResourceContract {
         fun showContentNotAvailable()
         fun navigateHome()
         fun showInvalidSecretDataAndNavigateBack()
+        fun showJsonResourceSchemaValidationError()
+        fun showJsonSecretSchemaValidationError()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {

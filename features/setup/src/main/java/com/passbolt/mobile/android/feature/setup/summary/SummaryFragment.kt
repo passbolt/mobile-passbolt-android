@@ -95,9 +95,9 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
         binding.resultView.setIcon(icon)
     }
 
-    override fun navigateToScanQr() {
+    override fun navigateToWelcome() {
         findNavController().navigate(
-            SummaryFragmentDirections.actionSummaryFragmentToScanQrFragment()
+            SummaryFragmentDirections.actionSummaryFragmentToWelcomeFragment()
         )
     }
 
@@ -146,7 +146,13 @@ class SummaryFragment : BindingScopedFragment<FragmentSummaryBinding>(
     }
 
     override fun showHelpMenu() {
-        HelpMenuFragment.newInstance(HelpMenuModel(shouldShowShowQrCodesHelp = false, shouldShowImportProfile = false))
+        HelpMenuFragment.newInstance(
+            HelpMenuModel(
+                shouldShowShowQrCodesHelp = false,
+                shouldShowImportProfile = false,
+                shouldShowImportAccountKit = false
+            )
+        )
             .show(childFragmentManager, HelpMenuFragment::class.java.name)
     }
 

@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.core.idlingresource
 
+import com.passbolt.mobile.android.core.idlingresource.base.FlaggedIdlingResource
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2023 Passbolt SA
@@ -22,11 +24,4 @@ package com.passbolt.mobile.android.core.idlingresource
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class UpdateResourceIdlingResource : FlaggedIdlingResource() {
-
-    override fun getName(): String = UPDATE_RESOURCE_IDLING_RESOURCE
-
-    private companion object {
-        private val UPDATE_RESOURCE_IDLING_RESOURCE = UpdateResourceIdlingResource::class.java.name
-    }
-}
+class UpdateResourceIdlingResource : FlaggedIdlingResource()

@@ -169,7 +169,7 @@ interface FoldersDao : BaseDao<Folder> {
     @Transaction
     @Query(
         "SELECT fUCR.userId, fUCR.permission, fUCR.permissionId, " +
-                "u.firstName, u.lastName, u.avatarUrl, u.userName, u.fingerprint " +
+                "u.firstName, u.lastName, u.avatarUrl, u.userName, u.fingerprint, u.disabled " +
                 "FROM Folder f " +
                 "INNER JOIN FolderAndUsersCrossRef fUCR " +
                 "ON fUCR.folderId = f.folderId " +

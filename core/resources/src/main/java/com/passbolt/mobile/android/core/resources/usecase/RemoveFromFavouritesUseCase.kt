@@ -57,7 +57,7 @@ class RemoveFromFavouritesUseCase(
                 }
             }
 
-        object Success : Output()
+        data object Success : Output()
 
         data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }

@@ -30,6 +30,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.passbolt.mobile.android.database.migrations.Migration10to11
 import com.passbolt.mobile.android.database.migrations.Migration11to12
 import com.passbolt.mobile.android.database.migrations.Migration12to13
+import com.passbolt.mobile.android.database.migrations.Migration13to14
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
@@ -265,6 +266,27 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate13To14() {
+        helper.createDatabase(TEST_DB, 13)
+            .apply {
+                execSQL(
+                    "INSERT INTO User VALUES('id','username','fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
+                )
+                close()
+            }
+
+        helper.runMigrationsAndValidate(TEST_DB, 14, true, Migration13to14)
+            .apply {
+                execSQL(
+                    "INSERT INTO User VALUES('id2','username',1,'fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
+                )
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -278,7 +300,7 @@ class DatabaseMigrationsTest {
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
                 Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11,
-                Migration11to12, Migration12to13
+                Migration11to12, Migration12to13, Migration13to14
             )
             .build().apply {
                 openHelper.writableDatabase

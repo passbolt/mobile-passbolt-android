@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.otpmoremenu
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
+import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.otpmoremenu.usecase.CreateOtpMoreMenuModelUseCase
 import com.passbolt.mobile.android.ui.OtpMoreMenuModel
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 
 class OtpMoreMenuPresenter(
     private val createOtpMoreMenuModelUseCase: CreateOtpMoreMenuModelUseCase,
+    private val createMenuModelIdlingResource: CreateMenuModelIdlingResource,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : DataRefreshViewReactivePresenter<OtpMoreMenuContract.View>(coroutineLaunchContext),
     OtpMoreMenuContract.Presenter {
@@ -35,12 +37,14 @@ class OtpMoreMenuPresenter(
     }
 
     override fun refreshAction() {
+        createMenuModelIdlingResource.setIdle(false)
         scope.launch {
             menuModel = createOtpMoreMenuModelUseCase.execute(
                 CreateOtpMoreMenuModelUseCase.Input(resourceId)
             ).otpMoreMenuModel
             view?.showTitle(menuModel.title)
             processEditAndDeleteButtons()
+            createMenuModelIdlingResource.setIdle(true)
         }
     }
 

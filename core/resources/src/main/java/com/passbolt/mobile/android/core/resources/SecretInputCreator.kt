@@ -31,7 +31,7 @@ class SecretInputCreator(
     private val gson: Gson
 ) {
 
-    fun createSimplePasswordSecretInput(password: String) = password
+    fun createSimplePasswordSecretInput(password: String): String = gson.toJson(password)
 
     fun createPasswordWithDescriptionSecretInput(password: String, description: String?): String =
         gson.toJson(

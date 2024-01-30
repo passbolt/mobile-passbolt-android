@@ -34,6 +34,7 @@ interface HelpMenuContract {
         fun setEnableLogsSwitchOn()
         fun setEnableLogsSwitchOff()
         fun showImportProfileHelp()
+        fun showImportAccountKitHelp()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
