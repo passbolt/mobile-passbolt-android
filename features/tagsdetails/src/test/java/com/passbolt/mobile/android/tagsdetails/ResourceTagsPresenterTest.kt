@@ -104,7 +104,8 @@ class ResourceTagsPresenterTest : KoinTest {
             DESCRIPTION,
             ResourcePermission.READ,
             "fav-id",
-            ZonedDateTime.now()
+            ZonedDateTime.now(),
+            null
         )
         private val RESOURCE_TAGS = listOf(
             TagModel("id1", "tag1", false),

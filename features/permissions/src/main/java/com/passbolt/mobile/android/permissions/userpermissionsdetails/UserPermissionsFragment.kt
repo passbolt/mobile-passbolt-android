@@ -77,7 +77,7 @@ class UserPermissionsFragment :
     override fun showUserData(user: UserModel) {
         with(binding) {
             if (user.disabled) {
-                nameLabel.text = requireContext().getString(LocalizationR.string.full_name_suspended, user.fullName)
+                nameLabel.text = requireContext().getString(LocalizationR.string.name_suspended, user.fullName)
                 setOf(nameLabel, emailLabel).forEach { it.alpha = UiConstants.LOWERED_ALPHA }
             } else {
                 nameLabel.text = user.fullName

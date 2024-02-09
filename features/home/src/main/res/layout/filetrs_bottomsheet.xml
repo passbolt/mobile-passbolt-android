@@ -88,6 +88,15 @@
         app:drawableTint="@color/icon_tint"
         app:layout_constraintTop_toBottomOf="@+id/sharedWithMe" />
 
+    <TextView
+        android:id="@+id/expiry"
+        style="@style/PasswordMenuItem"
+        android:drawablePadding="@dimen/dp_16"
+        android:text="@string/filters_menu_expiry"
+        app:drawableStartCompat="@drawable/ic_calendar_clock"
+        app:drawableTint="@color/icon_tint"
+        app:layout_constraintTop_toBottomOf="@+id/ownedByMe" />
+
     <View
         android:id="@+id/separator"
         android:layout_width="match_parent"
@@ -95,7 +104,7 @@
         android:layout_marginTop="@dimen/dp_16"
         android:layout_marginBottom="@dimen/dp_16"
         android:background="@color/divider"
-        app:layout_constraintTop_toBottomOf="@id/ownedByMe" />
+        app:layout_constraintTop_toBottomOf="@id/expiry" />
 
     <TextView
         android:id="@+id/folders"

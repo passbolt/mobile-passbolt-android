@@ -43,6 +43,7 @@ data class ResourceModel(
     val permission: ResourcePermission,
     val favouriteId: String?,
     val modified: ZonedDateTime,
+    val expiry: ZonedDateTime?,
     var loaderVisible: Boolean = false,
     var clickable: Boolean = true,
     override val searchCriteria: String = "$name$username$url"

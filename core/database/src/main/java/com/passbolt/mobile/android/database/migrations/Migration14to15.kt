@@ -1,4 +1,7 @@
-package com.passbolt.mobile.android.entity.home
+package com.passbolt.mobile.android.database.migrations
+
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Passbolt - Open source password manager for teams
@@ -22,14 +25,16 @@ package com.passbolt.mobile.android.entity.home
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-enum class HomeDisplayView {
-    ALL_ITEMS,
-    FAVOURITES,
-    RECENTLY_MODIFIED,
-    SHARED_WITH_ME,
-    OWNED_BY_ME,
-    EXPIRY,
-    FOLDERS,
-    TAGS,
-    GROUPS
+
+@Suppress("MagicNumber")
+object Migration14to15 : Migration(14, 15) {
+
+    private const val ADD_RESOURCE_EXPIRY_DATE_COLUMN =
+        "ALTER TABLE Resource ADD COLUMN expiry INTEGER DEFAULT NULL"
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        with(database) {
+            execSQL(ADD_RESOURCE_EXPIRY_DATE_COLUMN)
+        }
+    }
 }

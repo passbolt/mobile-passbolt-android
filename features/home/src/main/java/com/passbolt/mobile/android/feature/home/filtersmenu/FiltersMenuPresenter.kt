@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.feature.home.filtersmenu
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.UpdateHomeDisplayViewPrefsUseCase
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.ui.FiltersMenuModel
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
@@ -46,6 +46,7 @@ class FiltersMenuPresenter(
                 is HomeDisplayViewModel.Folders -> selectFoldersMenuItem()
                 is HomeDisplayViewModel.Tags -> selectTagsMenuItem()
                 is HomeDisplayViewModel.Groups -> selectGroupsMenuItem()
+                is HomeDisplayViewModel.Expiry -> selectExpiryMenuItem()
             }
         }
     }
@@ -88,6 +89,10 @@ class FiltersMenuPresenter(
 
     override fun ownedByMeClick() {
         saveLastUsedHomeView(HomeDisplayView.OWNED_BY_ME)
+    }
+
+    override fun expiryClick() {
+        saveLastUsedHomeView(HomeDisplayView.EXPIRY)
     }
 
     override fun foldersClick() {

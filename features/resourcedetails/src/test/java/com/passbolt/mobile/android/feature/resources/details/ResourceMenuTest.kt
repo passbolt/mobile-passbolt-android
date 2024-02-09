@@ -293,7 +293,8 @@ class ResourceMenuTest : KoinTest {
             description = DESCRIPTION,
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",
-            modified = ZonedDateTime.now()
+            modified = ZonedDateTime.now(),
+            expiry = null
         )
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
             permission = ResourcePermission.READ, permissionId = "permId1", group = GroupModel("grId", "grName")

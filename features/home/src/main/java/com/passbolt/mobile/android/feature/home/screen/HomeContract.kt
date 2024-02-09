@@ -172,5 +172,6 @@ interface HomeContract {
         fun editOtpManuallyClick()
         fun menuDeleteOtpClick()
         fun totpDeletionConfirmed()
+        fun expiryClick()
     }
 }

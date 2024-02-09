@@ -104,7 +104,8 @@ class SortByModifiedDateTest {
             description = null,
             resourceTypeId = "1",
             favouriteId = null,
-            modified = ZonedDateTime.now()
+            modified = ZonedDateTime.now(),
+            expiry = null
         )
         private val RESOURCE_2 = Resource(
             resourceId = "2",
@@ -116,7 +117,8 @@ class SortByModifiedDateTest {
             description = null,
             resourceTypeId = "1",
             favouriteId = null,
-            modified = ZonedDateTime.now().plusDays(1)
+            modified = ZonedDateTime.now().plusDays(1),
+            expiry = null
         )
         private val RESOURCE_3 = Resource(
             resourceId = "3",
@@ -128,7 +130,8 @@ class SortByModifiedDateTest {
             description = null,
             resourceTypeId = "1",
             favouriteId = null,
-            modified = ZonedDateTime.now().plusDays(2)
+            modified = ZonedDateTime.now().plusDays(2),
+            expiry = null
         )
         private val RESOURCE_1_ZONE_MINUS = Resource(
             resourceId = "4",
@@ -140,7 +143,8 @@ class SortByModifiedDateTest {
             description = null,
             resourceTypeId = "1",
             favouriteId = null,
-            modified = LocalDateTime.now().atZone(ZoneOffset.of("-08:00"))
+            modified = LocalDateTime.now().atZone(ZoneOffset.of("-08:00")),
+            expiry = null
         )
         private val RESOURCE_1_ZONE_PLUS = Resource(
             resourceId = "5",
@@ -152,7 +156,8 @@ class SortByModifiedDateTest {
             description = null,
             resourceTypeId = "1",
             favouriteId = null,
-            modified = LocalDateTime.now().atZone(ZoneOffset.of("+08:00"))
+            modified = LocalDateTime.now().atZone(ZoneOffset.of("+08:00")),
+            expiry = null
         )
     }
 }

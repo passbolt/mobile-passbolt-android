@@ -9,14 +9,27 @@
     android:background="?selectableItemBackground"
     android:minHeight="@dimen/dp_64">
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="@dimen/dp_40"
-        android:layout_height="@dimen/dp_40"
+    <FrameLayout
+        android:id="@+id/iconContainer"
+        android:layout_width="46dp"
+        android:layout_height="52dp"
         android:layout_marginStart="@dimen/dp_16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_gravity="center|start" />
+
+        <ImageView
+            android:id="@+id/indicatorIcon"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="bottom|end" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/title"
@@ -25,12 +38,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_16"
         android:layout_marginTop="@dimen/dp_4"
-        android:ellipsize="end"
+        android:ellipsize="middle"
         android:maxLines="1"
         android:textColor="@color/text_primary"
         app:layout_constraintBottom_toTopOf="@id/subtitle"
         app:layout_constraintEnd_toStartOf="@id/endGuide"
-        app:layout_constraintStart_toEndOf="@id/icon"
+        app:layout_constraintStart_toEndOf="@id/iconContainer"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="Adobe Photoshop" />

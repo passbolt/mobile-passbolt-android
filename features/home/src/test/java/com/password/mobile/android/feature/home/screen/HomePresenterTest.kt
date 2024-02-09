@@ -371,7 +371,8 @@ class HomePresenterTest : KoinTest {
             "",
             ResourcePermission.READ,
             null,
-            ZonedDateTime.now()
+            ZonedDateTime.now(),
+            expiry = null
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -618,7 +619,8 @@ class HomePresenterTest : KoinTest {
             description = "desc",
             permission = ResourcePermission.READ,
             favouriteId = null,
-            modified = ZonedDateTime.now()
+            modified = ZonedDateTime.now(),
+            expiry = null
         ), ResourceModel(
             resourceId = "id2",
             resourceTypeId = "resTypeId",
@@ -631,7 +633,8 @@ class HomePresenterTest : KoinTest {
             description = "desc",
             permission = ResourcePermission.READ,
             favouriteId = null,
-            modified = ZonedDateTime.now()
+            modified = ZonedDateTime.now(),
+            expiry = null
         )
     )
 

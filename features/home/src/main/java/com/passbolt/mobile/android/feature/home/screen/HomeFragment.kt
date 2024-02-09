@@ -730,6 +730,10 @@ class HomeFragment :
         presenter.ownedByMeClick()
     }
 
+    override fun menuExpiryClick() {
+        presenter.expiryClick()
+    }
+
     override fun menuFoldersClick() {
         presenter.foldersClick()
     }
@@ -783,6 +787,10 @@ class HomeFragment :
             is HomeDisplayViewModel.Groups -> showScreenTitleWithStartIcon(
                 LocalizationR.string.filters_menu_groups,
                 CoreUiR.drawable.ic_group
+            )
+            HomeDisplayViewModel.Expiry -> showScreenTitleWithStartIcon(
+                LocalizationR.string.filters_menu_expiry,
+                CoreUiR.drawable.ic_calendar_clock
             )
         }
     }

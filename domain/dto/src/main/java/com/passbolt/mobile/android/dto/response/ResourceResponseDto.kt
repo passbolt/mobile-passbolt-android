@@ -45,7 +45,8 @@ data class ResourceResponseDto(
     val favorite: FavouriteDto?,
     val modified: String,
     val tags: List<TagDto>?,
-    val permissions: List<PermissionWithGroupDto>?
+    val permissions: List<PermissionWithGroupDto>?,
+    val expired: String?
 )
 
 data class TagDto(

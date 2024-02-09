@@ -32,7 +32,8 @@
     <string name="location">Location</string>
     <string name="content_not_available">The content is not available anymore</string>
     <string name="consent">I consent</string>
-    <string name="full_name_suspended">%s (suspended)</string>
+    <string name="name_suspended">%s (suspended)</string>
+    <string name="name_expired">%s (expired)</string>
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_time_is_out_of_sync">Server and client time is out of sync, please contact your administrator.</string>
@@ -251,6 +252,7 @@
     <string name="filters_menu_recently_modified">Recently modified</string>
     <string name="filters_menu_shared_with_me">Shared with me</string>
     <string name="filters_menu_owned_by_me">Owned by me</string>
+    <string name="filters_menu_expiry">Expiry</string>
     <string name="filters_menu_folders">Folders</string>
     <string name="filters_menu_tags">Tags</string>
     <string name="filters_menu_groups">Groups</string>
@@ -263,6 +265,7 @@
     <string name="resource_details_password_header">Password</string>
     <string name="resource_details_totp_header">Totp</string>
     <string name="resource_details_url_header">Website URL</string>
+    <string name="resource_details_expiry_header">Expiry</string>
     <string name="resource_details_description_header">Description</string>
     <string name="resource_details_tags_header">Tags</string>
     <string name="hidden_secret"

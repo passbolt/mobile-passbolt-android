@@ -109,6 +109,10 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
                 presenter.ownedByMeClick()
                 listener?.menuOwnedByMeClick()
             }
+            expiry.setListenerWithDismiss {
+                presenter.expiryClick()
+                listener?.menuExpiryClick()
+            }
             folders.setListenerWithDismiss {
                 presenter.foldersClick()
                 listener?.menuFoldersClick()
@@ -168,6 +172,10 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         setBackgroundPrimaryColor(binding.ownedByMe)
     }
 
+    override fun selectExpiryMenuItem() {
+        setBackgroundPrimaryColor(binding.expiry)
+    }
+
     override fun selectTagsMenuItem() {
         setBackgroundPrimaryColor(binding.tags)
     }
@@ -194,6 +202,7 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         fun menuRecentlyModifiedClick()
         fun menuSharedWithMeClick()
         fun menuOwnedByMeClick()
+        fun menuExpiryClick()
         fun menuFoldersClick()
         fun menuTagsClick()
         fun menuGroupsClick()

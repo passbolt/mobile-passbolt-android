@@ -166,6 +166,44 @@ class ResourceDetailsPresenterTest : KoinTest {
 
         verify(view, times(2)).showFavouriteStar()
         verify(view, times(2)).displayTitle(NAME)
+        verify(view, never()).displayExpiryTitle(any())
+        verify(view, never()).displayExpiry(any())
+        verify(view, times(2)).displayUsername(USERNAME)
+        verify(view, times(2)).displayInitialsIcon(NAME, INITIALS)
+        verify(view, times(2)).displayUrl(URL)
+        verify(view, times(2)).hidePassword()
+        verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
+        verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
+        verify(view, times(2)).showDescription(RESOURCE_MODEL.description!!, isSecret = false)
+        verify(view, times(2)).showFolderLocation(emptyList())
+        verify(view, times(2)).hideTotpSection()
+        verify(view, times(2)).showPasswordEyeIcon()
+        verify(view).hideRefreshProgress()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `password details should be shown correct for expired resource`() {
+        mockGetLocalResourceUseCase.stub {
+            onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_MODEL_EXPIRED.resourceId)) }
+                .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL_EXPIRED))
+        }
+        mockGetLocalResourcePermissionsUseCase.stub {
+            onBlocking { execute(GetLocalResourcePermissionsUseCase.Input(RESOURCE_MODEL_EXPIRED.resourceId)) }
+                .doReturn(GetLocalResourcePermissionsUseCase.Output(listOf(groupPermission, userPermission)))
+        }
+
+        presenter.argsReceived(
+            RESOURCE_MODEL_EXPIRED.resourceId,
+            100,
+            20f
+        )
+        presenter.resume(view)
+
+        verify(view, times(2)).showFavouriteStar()
+        verify(view, never()).displayTitle(NAME)
+        verify(view, times(2)).displayExpiryTitle(any())
+        verify(view, times(2)).displayExpiry(RESOURCE_MODEL_EXPIRED.expiry!!)
         verify(view, times(2)).displayUsername(USERNAME)
         verify(view, times(2)).displayInitialsIcon(NAME, INITIALS)
         verify(view, times(2)).displayUrl(URL)
@@ -382,6 +420,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         private const val INITIALS = "NN"
         private const val URL = "https://www.passbolt.com"
         private val ID = UUID.randomUUID().toString()
+        private val ID_EXPIRED = UUID.randomUUID().toString()
         private const val DESCRIPTION = "desc"
         private val RESOURCE_TYPE_ID = UUID.randomUUID().toString()
         private const val FOLDER_ID_ID = "folderId"
@@ -397,7 +436,23 @@ class ResourceDetailsPresenterTest : KoinTest {
             description = DESCRIPTION,
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",
-            modified = ZonedDateTime.now()
+            modified = ZonedDateTime.now(),
+            expiry = null
+        )
+        private val RESOURCE_MODEL_EXPIRED = ResourceModel(
+            resourceId = ID_EXPIRED,
+            resourceTypeId = RESOURCE_TYPE_ID,
+            folderId = FOLDER_ID_ID,
+            name = NAME,
+            username = USERNAME,
+            icon = null,
+            initials = INITIALS,
+            url = URL,
+            description = DESCRIPTION,
+            permission = ResourcePermission.READ,
+            favouriteId = "fav-id",
+            modified = ZonedDateTime.now(),
+            expiry = ZonedDateTime.now()
         )
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
             permission = ResourcePermission.READ,

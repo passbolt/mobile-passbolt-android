@@ -4,6 +4,7 @@ import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
@@ -59,13 +60,23 @@ class PasswordItem(
         super.bindView(binding, payloads)
         with(binding) {
             setupUsername(this)
-            title.text = resourceModel.name
             more.isVisible = dotsVisible
             loader.isVisible = resourceModel.loaderVisible
             itemPassword.isEnabled = resourceModel.clickable
             val initialsIcons = initialsIconGenerator.generate(resourceModel.name, resourceModel.initials)
             icon.setImageDrawable(initialsIcons)
-
+            if (resourceModel.expiry == null) {
+                title.text = resourceModel.name
+                indicatorIcon.setImageDrawable(null)
+            } else {
+                title.text = root.context.getString(LocalizationR.string.name_expired, resourceModel.name)
+                indicatorIcon.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        root.context,
+                        CoreUiR.drawable.ic_excl_indicator
+                    )
+                )
+            }
             resourceModel.icon?.let {
                 icon.load(it) {
                     placeholder(initialsIcons)

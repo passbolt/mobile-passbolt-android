@@ -44,6 +44,9 @@ sealed class HomeDisplayViewModel : Parcelable {
     object OwnedByMe : HomeDisplayViewModel(), Parcelable
 
     @Parcelize
+    object Expiry : HomeDisplayViewModel(), Parcelable
+
+    @Parcelize
     data class Folders(
         val activeFolder: Folder,
         val activeFolderName: String? = null,

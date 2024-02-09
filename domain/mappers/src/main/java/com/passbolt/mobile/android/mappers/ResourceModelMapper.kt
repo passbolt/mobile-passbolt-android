@@ -46,7 +46,8 @@ class ResourceModelMapper(
             description = resource.description,
             permission = permissionsModelMapper.map(resource.permission.type),
             favouriteId = resource.favorite?.id?.toString(),
-            modified = ZonedDateTime.parse(resource.modified)
+            modified = ZonedDateTime.parse(resource.modified),
+            expiry = resource.expired?.let { ZonedDateTime.parse(it) }
         )
 
     fun map(resourceModel: ResourceModel): Resource =
@@ -60,7 +61,8 @@ class ResourceModelMapper(
             username = resourceModel.username,
             resourceTypeId = resourceModel.resourceTypeId,
             favouriteId = resourceModel.favouriteId,
-            modified = resourceModel.modified
+            modified = resourceModel.modified,
+            expiry = resourceModel.expiry
         )
 
     fun map(resourceEntity: Resource): ResourceModel =
@@ -76,6 +78,7 @@ class ResourceModelMapper(
             description = resourceEntity.description,
             permission = permissionsModelMapper.map(resourceEntity.resourcePermission),
             favouriteId = resourceEntity.favouriteId,
-            modified = resourceEntity.modified
+            modified = resourceEntity.modified,
+            expiry = resourceEntity.expiry
         )
 }

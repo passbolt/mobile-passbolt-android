@@ -69,7 +69,7 @@ class PermissionItem(
         }
         if (model.user.isDisabled) {
             name.text =
-                root.context.getString(LocalizationR.string.full_name_suspended, model.user.fullName)
+                root.context.getString(LocalizationR.string.name_suspended, model.user.fullName)
             setOf(name, userName).forEach { it.alpha = UiConstants.LOWERED_ALPHA }
         } else {
             name.text = model.user.fullName
