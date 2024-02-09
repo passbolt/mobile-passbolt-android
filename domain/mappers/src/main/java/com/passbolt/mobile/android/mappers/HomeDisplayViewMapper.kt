@@ -28,6 +28,7 @@ class HomeDisplayViewMapper {
             is HomeDisplayViewModel.Folders -> ResourceDatabaseView.ByModifiedDateDescending
             is HomeDisplayViewModel.Tags -> ResourceDatabaseView.ByModifiedDateDescending
             is HomeDisplayViewModel.Groups -> ResourceDatabaseView.ByModifiedDateDescending
+            is HomeDisplayViewModel.Expiry -> ResourceDatabaseView.HasExpiry
         }
 
     private fun map(homeView: HomeDisplayView): HomeDisplayViewModel =
@@ -40,6 +41,7 @@ class HomeDisplayViewMapper {
             HomeDisplayView.FOLDERS -> HomeDisplayViewModel.folderRoot()
             HomeDisplayView.TAGS -> HomeDisplayViewModel.tagsRoot()
             HomeDisplayView.GROUPS -> HomeDisplayViewModel.groupsRoot()
+            HomeDisplayView.EXPIRY -> HomeDisplayViewModel.Expiry
         }
 
     fun map(userSetHomeView: DefaultFilterModel, lastUsedHomeView: HomeDisplayView): HomeDisplayViewModel =
@@ -53,5 +55,6 @@ class HomeDisplayViewMapper {
             DefaultFilterModel.FOLDERS -> HomeDisplayViewModel.folderRoot()
             DefaultFilterModel.TAGS -> HomeDisplayViewModel.tagsRoot()
             DefaultFilterModel.GROUPS -> HomeDisplayViewModel.groupsRoot()
+            DefaultFilterModel.EXPIRY -> HomeDisplayViewModel.Expiry
         }
 }

@@ -170,6 +170,16 @@ interface ResourcesDao : BaseDao<Resource> {
     suspend fun getAllThatHaveTagContaining(tagSearchQuery: String, slugs: Set<String>): List<Resource>
 
     @Transaction
+    @Query(
+        "SELECT * FROM Resource " +
+                "WHERE expiry IS NOT NULL AND resourceTypeId IN(" +
+                "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
+                ") " +
+                "ORDER BY modified DESC"
+    )
+    suspend fun getResourcesWithExpiry(slugs: Set<String>): List<Resource>
+
+    @Transaction
     @Query("DELETE FROM Resource")
     suspend fun deleteAll()
 }

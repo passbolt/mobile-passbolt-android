@@ -21,6 +21,11 @@ sealed class ResourceDatabaseView {
     data object IsFavourite : ResourceDatabaseView()
 
     /**
+     * Filters the resources that have expiry field set
+     */
+    data object HasExpiry : ResourceDatabaseView()
+
+    /**
      * Filters the resource to ones that have permissions defined in the list
      * @param permissions permissions used for filtering
      */

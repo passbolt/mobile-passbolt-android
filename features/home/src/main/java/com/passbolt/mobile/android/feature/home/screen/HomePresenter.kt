@@ -311,6 +311,7 @@ class HomePresenter(
                     is HomeDisplayViewModel.RecentlyModified -> HomeDisplayViewModel.RecentlyModified
                     is HomeDisplayViewModel.SharedWithMe -> HomeDisplayViewModel.SharedWithMe
                     is HomeDisplayViewModel.Tags -> HomeDisplayViewModel.tagsRoot()
+                    is HomeDisplayViewModel.Expiry -> HomeDisplayViewModel.Expiry
                 }
             )
             view?.showContentNotAvailable()
@@ -380,6 +381,7 @@ class HomePresenter(
         is HomeDisplayViewModel.RecentlyModified -> true
         is HomeDisplayViewModel.SharedWithMe -> true
         is HomeDisplayViewModel.Tags -> activeHomeView.activeTagId == null // tags root
+        is HomeDisplayViewModel.Expiry -> true
     }
 
     override fun userAuthenticated() {
@@ -802,6 +804,10 @@ class HomePresenter(
 
     override fun ownedByMeClick() {
         navigateToHomeView(HomeDisplayViewModel.OwnedByMe)
+    }
+
+    override fun expiryClick() {
+        navigateToHomeView(HomeDisplayViewModel.Expiry)
     }
 
     override fun foldersClick() {

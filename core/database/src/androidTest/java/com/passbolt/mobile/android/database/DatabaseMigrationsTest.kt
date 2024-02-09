@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.database.migrations.Migration10to11
 import com.passbolt.mobile.android.database.migrations.Migration11to12
 import com.passbolt.mobile.android.database.migrations.Migration12to13
 import com.passbolt.mobile.android.database.migrations.Migration13to14
+import com.passbolt.mobile.android.database.migrations.Migration14to15
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
@@ -287,6 +288,30 @@ class DatabaseMigrationsTest {
     }
 
     @Test
+    fun migrate14To15() {
+        helper.createDatabase(TEST_DB, 14).apply {
+            execSQL(
+                "INSERT INTO Resource VALUES('id1','folderid','name','READ','url','username','desc'," +
+                        "'typeId', 'favouriteId',1644909225833)"
+            )
+            close()
+        }
+
+        helper.runMigrationsAndValidate(TEST_DB, 15, true, Migration14to15)
+            .apply {
+                execSQL(
+                    "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
+                            "'typeId', 'favouriteId', 1644909225833, 1644909225833)"
+                )
+                execSQL(
+                    "INSERT INTO Resource VALUES('id3','folderid','name','READ','url','username','desc'," +
+                            "'typeId', 'favouriteId', 1644909225833, null)"
+                )
+                close()
+            }
+    }
+
+    @Test
     fun migrateAll() {
         helper.createDatabase(TEST_DB, 1).apply {
             close()
@@ -300,7 +325,7 @@ class DatabaseMigrationsTest {
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
                 Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11,
-                Migration11to12, Migration12to13, Migration13to14
+                Migration11to12, Migration12to13, Migration13to14, Migration14to15
             )
             .build().apply {
                 openHelper.writableDatabase

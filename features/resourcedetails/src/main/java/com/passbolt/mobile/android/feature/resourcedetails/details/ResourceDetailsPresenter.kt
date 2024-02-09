@@ -208,10 +208,15 @@ class ResourceDetailsPresenter(
     ) {
         resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
         view?.apply {
-            displayTitle(resourceModel.name)
             displayUsername(resourceModel.username.orEmpty())
             displayInitialsIcon(resourceModel.name, resourceModel.initials)
             displayUrl(resourceModel.url.orEmpty())
+            if (resourceModel.expiry == null) {
+                displayTitle(resourceModel.name)
+            } else {
+                displayExpiry(resourceModel.expiry!!)
+                displayExpiryTitle(resourceModel.name)
+            }
             if (resourceModel.isFavourite()) {
                 view?.showFavouriteStar()
             } else {

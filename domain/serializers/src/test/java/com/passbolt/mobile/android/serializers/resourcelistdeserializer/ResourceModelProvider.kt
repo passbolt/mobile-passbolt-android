@@ -40,7 +40,8 @@ internal fun resourceWithNameOfLength(nameLength: Int, testedResourceTypeUuid: U
         favorite = null,
         modified = "",
         tags = emptyList(),
-        permissions = emptyList()
+        permissions = emptyList(),
+        expired = null
     )
 }
 
@@ -57,7 +58,8 @@ internal fun resourceWithUriOfLength(uriLength: Int, testedResourceTypeUuid: UUI
         favorite = null,
         modified = "",
         tags = emptyList(),
-        permissions = emptyList()
+        permissions = emptyList(),
+        expired = null
     )
 }
 
@@ -74,7 +76,8 @@ internal fun resourceWithDescriptionOfLength(descriptionLength: Int, testedResou
         favorite = null,
         modified = "",
         tags = emptyList(),
-        permissions = emptyList()
+        permissions = emptyList(),
+        expired = null
     )
 }
 
@@ -91,6 +94,7 @@ internal fun resourceWithUsernameOfLength(usernameLength: Int, testedResourceTyp
         favorite = null,
         modified = "",
         tags = emptyList(),
-        permissions = emptyList()
+        permissions = emptyList(),
+        expired = null
     )
 }

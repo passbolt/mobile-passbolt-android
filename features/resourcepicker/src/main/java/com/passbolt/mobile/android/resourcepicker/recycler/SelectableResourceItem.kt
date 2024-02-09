@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.resourcepicker.recycler
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import coil.load
@@ -28,9 +29,22 @@ class SelectableResourceItem(
     override fun bindView(binding: ItemSelectableResourceBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            title.text = resourcePickerListItem.resourceModel.name
             selectionRadioButton.isChecked = resourcePickerListItem.isSelected
             root.alpha = if (resourcePickerListItem.isSelectable) ALPHA_ENABLED else ALPHA_DISABLED
+            if (resourcePickerListItem.resourceModel.expiry == null) {
+                title.text = resourcePickerListItem.resourceModel.name
+                indicatorIcon.setImageDrawable(null)
+            } else {
+                title.text = root.context.getString(
+                    LocalizationR.string.name_expired, resourcePickerListItem.resourceModel.name
+                )
+                indicatorIcon.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        root.context,
+                        CoreUiR.drawable.ic_excl_indicator
+                    )
+                )
+            }
             setupUsername(this)
             setupInitialsIcon(this)
             setupSelection(this)

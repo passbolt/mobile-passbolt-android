@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -35,6 +36,7 @@ interface ResourceDetailsContract {
     @Suppress("TooManyFunctions")
     interface View : DataRefreshViewReactiveContract.View {
         fun displayTitle(title: String)
+        fun displayExpiryTitle(name: String)
         fun displayUsername(username: String)
         fun addToClipboard(label: String, value: String, isSecret: Boolean)
         fun displayUrl(url: String)
@@ -90,6 +92,7 @@ interface ResourceDetailsContract {
         fun hideDescription()
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
+        fun displayExpiry(expiry: ZonedDateTime)
     }
 
     @Suppress("TooManyFunctions")

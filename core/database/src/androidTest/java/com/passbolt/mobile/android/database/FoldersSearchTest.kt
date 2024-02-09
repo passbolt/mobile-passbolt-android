@@ -116,64 +116,69 @@ class FoldersSearchTest {
          */
 
         val RESOURCE_1 = Resource(
-            "1",
-            null,
-            "root resource 1",
-            Permission.READ,
-            null,
-            null,
-            null,
-            "1",
-            null,
-            ZonedDateTime.now()
+            resourceId = "1",
+            folderId = null,
+            resourceName = "root resource 1",
+            resourcePermission = Permission.READ,
+            url = null,
+            username = null,
+            description = null,
+            resourceTypeId = "1",
+            favouriteId = null,
+            modified = ZonedDateTime.now(),
+            expiry = null
         )
         val RESOURCE_2 = Resource(
-            "2",
-            null,
-            "root resource 2",
-            Permission.READ,
-            null,
-            null,
-            null,
-            "1",
-            null,
-            ZonedDateTime.now()
+            resourceId = "2",
+            folderId = null,
+            resourceName = "root resource 2",
+            resourcePermission = Permission.READ,
+            url = null,
+            username = null,
+            description = null,
+            resourceTypeId = "1",
+            favouriteId = null,
+            modified = ZonedDateTime.now(),
+            expiry = null
         )
         val RESOURCE_3 = Resource(
-            "3",
-            "rootFolder2",
-            "root folder 2 resource 1",
-            Permission.READ,
-            null,
-            null,
-            null,
-            "1",
-            null,
-            ZonedDateTime.now()
+            resourceId = "3",
+            folderId = "rootFolder2",
+            resourceName = "root folder 2 resource 1",
+            resourcePermission = Permission.READ,
+            url = null,
+            username = null,
+            description = null,
+            resourceTypeId = "1",
+            favouriteId = null,
+            modified = ZonedDateTime.now(),
+            expiry = null
         )
         val RESOURCE_4 = Resource(
-            "4",
-            "rootFolder2",
-            "root folder 2 resource 2",
-            Permission.READ,
-            null,
-            null,
-            null,
-            "1",
-            null,
-            ZonedDateTime.now()
+            resourceId = "4",
+            folderId = "rootFolder2",
+            resourceName = "root folder 2 resource 2",
+            resourcePermission = Permission.READ,
+            url = null,
+            username = null,
+            description = null,
+            resourceTypeId = "1",
+            favouriteId = null,
+            modified = ZonedDateTime.now(),
+            expiry = null
         )
         val RESOURCE_5 = Resource(
-            "5",
-            "rootFolder2Folder1",
-            "root folder 2 folder 1 resource 1",
-            Permission.READ,
-            null,
-            null,
-            null,
-            "1",
-            null,
-            ZonedDateTime.now()
+            resourceId = "5",
+            folderId = "rootFolder2Folder1",
+            resourceName = "root folder 2 folder 1 resource 1",
+            resourcePermission = Permission.READ,
+            url = null,
+            username = null,
+            description = null,
+            resourceTypeId = "1",
+            favouriteId = null,
+            modified = ZonedDateTime.now(),
+            expiry = null
         )
 
         val FOLDER_1 = Folder(

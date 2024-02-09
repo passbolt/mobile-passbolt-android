@@ -465,7 +465,8 @@ class HomeMenuTest : KoinTest {
             description = DESCRIPTION,
             permission = ResourcePermission.READ,
             favouriteId = null,
-            modified = ZonedDateTime.now()
+            modified = ZonedDateTime.now(),
+            expiry = null
         )
     }
 }

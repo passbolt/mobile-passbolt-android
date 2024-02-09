@@ -19,6 +19,8 @@ import com.passbolt.mobile.android.feature.otp.databinding.ItemOtpBinding
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -58,9 +60,15 @@ class OtpItem(
     override fun bindView(binding: ItemOtpBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            name.text = otpModel.resource.name
             icon.setImageDrawable(initialsIconGenerator.generate(otpModel.resource.name, otpModel.resource.initials))
             eye.isVisible = !otpModel.isVisible && !otpModel.isRefreshing
+
+            if (otpModel.resource.expiry == null) {
+                name.text = otpModel.resource.name
+            } else {
+                name.text = root.context.getString(LocalizationR.string.name_expired, otpModel.resource.name)
+                indicatorIcon.setImageResource(CoreUiR.drawable.ic_excl_indicator)
+            }
 
             totpViewController.updateView(
                 ViewParameters(binding.progress, binding.otp, binding.generationInProgress),

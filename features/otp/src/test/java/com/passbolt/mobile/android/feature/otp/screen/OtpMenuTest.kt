@@ -136,7 +136,8 @@ class OtpMenuTest : KoinTest {
                 description = "desc",
                 permission = ResourcePermission.READ,
                 favouriteId = null,
-                modified = ZonedDateTime.now()
+                modified = ZonedDateTime.now(),
+                expiry = null
             )
         )
     }
