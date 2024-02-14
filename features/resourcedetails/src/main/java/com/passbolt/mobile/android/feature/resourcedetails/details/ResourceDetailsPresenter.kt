@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.resourcedetails.details
 
 import com.passbolt.mobile.android.common.coroutinetimer.infiniteTimer
+import com.passbolt.mobile.android.common.extension.isBeforeNow
 import com.passbolt.mobile.android.common.types.ClipboardLabel
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
@@ -211,21 +212,36 @@ class ResourceDetailsPresenter(
             displayUsername(resourceModel.username.orEmpty())
             displayInitialsIcon(resourceModel.name, resourceModel.initials)
             displayUrl(resourceModel.url.orEmpty())
-            if (resourceModel.expiry == null) {
-                displayTitle(resourceModel.name)
-            } else {
-                displayExpiry(resourceModel.expiry!!)
-                displayExpiryTitle(resourceModel.name)
-            }
-            if (resourceModel.isFavourite()) {
-                view?.showFavouriteStar()
-            } else {
-                view?.hideFavouriteStar()
-            }
+            handleExpiry()
+            handleFavourite()
             hidePassword()
             handleDescriptionField(resourceModel)
             handleTotpField(resourceModel)
             handleFeatureFlagsAndRbac()
+        }
+    }
+
+    private fun handleFavourite() {
+        if (resourceModel.isFavourite()) {
+            view?.showFavouriteStar()
+        } else {
+            view?.hideFavouriteStar()
+        }
+    }
+
+    private fun handleExpiry() {
+        resourceModel.expiry.let { expiry ->
+            if (expiry == null) {
+                view?.displayTitle(resourceModel.name)
+            } else {
+                if (expiry.isBeforeNow()) {
+                    view?.displayExpiryTitle(resourceModel.name)
+                    view?.showExpiryIndicator()
+                } else {
+                    view?.displayTitle(resourceModel.name)
+                }
+                view?.displayExpirySection(resourceModel.expiry!!)
+            }
         }
     }
 

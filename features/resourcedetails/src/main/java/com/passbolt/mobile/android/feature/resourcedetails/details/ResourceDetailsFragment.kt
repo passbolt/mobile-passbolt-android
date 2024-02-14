@@ -252,9 +252,12 @@ class ResourceDetailsFragment :
         binding.name.text = getString(LocalizationR.string.name_expired, name)
     }
 
-    override fun displayExpiry(expiry: ZonedDateTime) {
+    override fun showExpiryIndicator() {
+        binding.indicatorIcon.setImageResource(CoreUiR.drawable.ic_excl_indicator)
+    }
+
+    override fun displayExpirySection(expiry: ZonedDateTime) {
         with(binding) {
-            indicatorIcon.setImageResource(CoreUiR.drawable.ic_excl_indicator)
             expiryItem.visible()
             expiryItem.textValue = DateUtils.getRelativeTimeSpanString(
                 expiry.toInstant().toEpochMilli(),
