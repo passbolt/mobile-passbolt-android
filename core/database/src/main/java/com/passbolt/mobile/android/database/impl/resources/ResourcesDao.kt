@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.entity.permission.GroupPermission
 import com.passbolt.mobile.android.entity.permission.UserPermission
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -172,12 +173,15 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT * FROM Resource " +
-                "WHERE expiry IS NOT NULL AND resourceTypeId IN(" +
+                "WHERE expiry IS NOT NULL AND expiry < :expiryTimestampMillis AND resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ") " +
                 "ORDER BY modified DESC"
     )
-    suspend fun getResourcesWithExpiry(slugs: Set<String>): List<Resource>
+    suspend fun getExpiredResources(
+        slugs: Set<String>,
+        expiryTimestampMillis: Long = ZonedDateTime.now().toInstant().toEpochMilli()
+    ): List<Resource>
 
     @Transaction
     @Query("DELETE FROM Resource")

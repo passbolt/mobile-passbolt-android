@@ -167,7 +167,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showFavouriteStar()
         verify(view, times(2)).displayTitle(NAME)
         verify(view, never()).displayExpiryTitle(any())
-        verify(view, never()).displayExpiry(any())
+        verify(view, never()).displayExpirySection(any())
         verify(view, times(2)).displayUsername(USERNAME)
         verify(view, times(2)).displayInitialsIcon(NAME, INITIALS)
         verify(view, times(2)).displayUrl(URL)
@@ -203,7 +203,8 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showFavouriteStar()
         verify(view, never()).displayTitle(NAME)
         verify(view, times(2)).displayExpiryTitle(any())
-        verify(view, times(2)).displayExpiry(RESOURCE_MODEL_EXPIRED.expiry!!)
+        verify(view, times(2)).showExpiryIndicator()
+        verify(view, times(2)).displayExpirySection(RESOURCE_MODEL_EXPIRED.expiry!!)
         verify(view, times(2)).displayUsername(USERNAME)
         verify(view, times(2)).displayInitialsIcon(NAME, INITIALS)
         verify(view, times(2)).displayUrl(URL)
@@ -452,7 +453,7 @@ class ResourceDetailsPresenterTest : KoinTest {
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",
             modified = ZonedDateTime.now(),
-            expiry = ZonedDateTime.now()
+            expiry = ZonedDateTime.now().minusDays(1)
         )
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
             permission = ResourcePermission.READ,

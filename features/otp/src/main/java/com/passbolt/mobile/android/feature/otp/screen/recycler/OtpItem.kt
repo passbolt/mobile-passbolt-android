@@ -3,11 +3,13 @@ package com.passbolt.mobile.android.feature.otp.screen.recycler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
+import com.passbolt.mobile.android.common.extension.isBeforeNow
 import com.passbolt.mobile.android.core.extension.asBinding
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.StateParameters
@@ -63,11 +65,19 @@ class OtpItem(
             icon.setImageDrawable(initialsIconGenerator.generate(otpModel.resource.name, otpModel.resource.initials))
             eye.isVisible = !otpModel.isVisible && !otpModel.isRefreshing
 
-            if (otpModel.resource.expiry == null) {
-                name.text = otpModel.resource.name
-            } else {
-                name.text = root.context.getString(LocalizationR.string.name_expired, otpModel.resource.name)
-                indicatorIcon.setImageResource(CoreUiR.drawable.ic_excl_indicator)
+            otpModel.resource.expiry.let { expiry ->
+                if (expiry == null) {
+                    name.text = otpModel.resource.name
+                    indicatorIcon.setImageDrawable(null)
+                } else if (expiry.isBeforeNow()) {
+                    name.text = root.context.getString(LocalizationR.string.name_expired, otpModel.resource.name)
+                    indicatorIcon.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            root.context,
+                            CoreUiR.drawable.ic_excl_indicator
+                        )
+                    )
+                }
             }
 
             totpViewController.updateView(

@@ -12,6 +12,7 @@ import coil.load
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
+import com.passbolt.mobile.android.common.extension.isBeforeNow
 import com.passbolt.mobile.android.core.extension.DebounceClickEventHook
 import com.passbolt.mobile.android.core.extension.asBinding
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
@@ -65,17 +66,19 @@ class PasswordItem(
             itemPassword.isEnabled = resourceModel.clickable
             val initialsIcons = initialsIconGenerator.generate(resourceModel.name, resourceModel.initials)
             icon.setImageDrawable(initialsIcons)
-            if (resourceModel.expiry == null) {
-                title.text = resourceModel.name
-                indicatorIcon.setImageDrawable(null)
-            } else {
-                title.text = root.context.getString(LocalizationR.string.name_expired, resourceModel.name)
-                indicatorIcon.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        root.context,
-                        CoreUiR.drawable.ic_excl_indicator
+            resourceModel.expiry.let { expiry ->
+                if (expiry == null) {
+                    title.text = resourceModel.name
+                    indicatorIcon.setImageDrawable(null)
+                } else if (expiry.isBeforeNow()) {
+                    title.text = root.context.getString(LocalizationR.string.name_expired, resourceModel.name)
+                    indicatorIcon.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            root.context,
+                            CoreUiR.drawable.ic_excl_indicator
+                        )
                     )
-                )
+                }
             }
             resourceModel.icon?.let {
                 icon.load(it) {

@@ -92,7 +92,8 @@ interface ResourceDetailsContract {
         fun hideDescription()
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
-        fun displayExpiry(expiry: ZonedDateTime)
+        fun displayExpirySection(expiry: ZonedDateTime)
+        fun showExpiryIndicator()
     }
 
     @Suppress("TooManyFunctions")

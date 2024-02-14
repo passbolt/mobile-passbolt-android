@@ -49,7 +49,7 @@ class GetLocalResourcesUseCase(
                     is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName(input.slugs)
                     is ResourceDatabaseView.IsFavourite -> it.getFavourites(input.slugs)
                     is ResourceDatabaseView.HasPermissions -> it.getWithPermissions(viewType.permissions, input.slugs)
-                    is ResourceDatabaseView.HasExpiry -> it.getResourcesWithExpiry(input.slugs)
+                    is ResourceDatabaseView.HasExpiry -> it.getExpiredResources(input.slugs)
                 }
             }
 

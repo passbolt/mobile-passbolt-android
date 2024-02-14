@@ -8,6 +8,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import coil.load
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.passbolt.mobile.android.common.extension.isBeforeNow
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.resourcepicker.R
 import com.passbolt.mobile.android.feature.resourcepicker.databinding.ItemSelectableResourceBinding
@@ -31,20 +32,24 @@ class SelectableResourceItem(
         with(binding) {
             selectionRadioButton.isChecked = resourcePickerListItem.isSelected
             root.alpha = if (resourcePickerListItem.isSelectable) ALPHA_ENABLED else ALPHA_DISABLED
-            if (resourcePickerListItem.resourceModel.expiry == null) {
-                title.text = resourcePickerListItem.resourceModel.name
-                indicatorIcon.setImageDrawable(null)
-            } else {
-                title.text = root.context.getString(
-                    LocalizationR.string.name_expired, resourcePickerListItem.resourceModel.name
-                )
-                indicatorIcon.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        root.context,
-                        CoreUiR.drawable.ic_excl_indicator
+            resourcePickerListItem.resourceModel.expiry.let { expiry ->
+                if (expiry == null) {
+                    title.text = resourcePickerListItem.resourceModel.name
+                    indicatorIcon.setImageDrawable(null)
+                } else if (expiry.isBeforeNow()) {
+                    title.text = root.context.getString(
+                        LocalizationR.string.name_expired,
+                        resourcePickerListItem.resourceModel.name
                     )
-                )
+                    indicatorIcon.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            root.context,
+                            CoreUiR.drawable.ic_excl_indicator
+                        )
+                    )
+                }
             }
+
             setupUsername(this)
             setupInitialsIcon(this)
             setupSelection(this)
