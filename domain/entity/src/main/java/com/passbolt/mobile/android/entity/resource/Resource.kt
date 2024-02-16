@@ -57,5 +57,6 @@ data class Resource(
     val resourceTypeId: String,
     val favouriteId: String?,
     val modified: ZonedDateTime,
-    val expiry: ZonedDateTime?
+    val expiry: ZonedDateTime?,
+    val resourceJson: String
 )

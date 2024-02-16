@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.sqlite.cipher) { artifact { type = "aar" } }
     ksp libs.room.compiler
     implementation libs.sqlite
+    implementation libs.gson
 
     androidTestImplementation libs.koin.test
     androidTestImplementation libs.koin.test.junit

@@ -31,10 +31,19 @@ object Migration14to15 : Migration(14, 15) {
 
     private const val ADD_RESOURCE_EXPIRY_DATE_COLUMN =
         "ALTER TABLE Resource ADD COLUMN expiry INTEGER DEFAULT NULL"
+    private const val ADD_RESOURCE_SCHEMA_JSON_COLUMN_TO_RESOURCE_TYPES =
+        "ALTER TABLE ResourceType ADD COLUMN resourceSchemaJson TEXT NOT NULL DEFAULT ''"
+    private const val ADD_SECRET_SCHEMA_JSON_COLUMN_TO_RESOURCE_TYPES =
+        "ALTER TABLE ResourceType ADD COLUMN secretSchemaJson TEXT NOT NULL DEFAULT ''"
+    private const val ADD_RESOURCE_JSON_COLUMN_TO_RESOURCE =
+        "ALTER TABLE Resource ADD COLUMN resourceJson TEXT NOT NULL DEFAULT ''"
 
     override fun migrate(database: SupportSQLiteDatabase) {
         with(database) {
             execSQL(ADD_RESOURCE_EXPIRY_DATE_COLUMN)
+            execSQL(ADD_RESOURCE_SCHEMA_JSON_COLUMN_TO_RESOURCE_TYPES)
+            execSQL(ADD_SECRET_SCHEMA_JSON_COLUMN_TO_RESOURCE_TYPES)
+            execSQL(ADD_RESOURCE_JSON_COLUMN_TO_RESOURCE)
         }
     }
 }

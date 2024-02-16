@@ -23,34 +23,37 @@
 
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
-import com.google.gson.annotations.SerializedName
+import com.passbolt.mobile.android.delegates.JsonModel
+import com.passbolt.mobile.android.delegates.JsonPathDelegate
+import com.passbolt.mobile.android.delegates.JsonPathNullableDelegate
 
-sealed class DecryptedSecret(val password: String) {
+class DecryptedSecret(override var json: String) : JsonModel {
 
-    class SimplePassword(
-        password: String
-    ) : DecryptedSecret(password)
+    var password: String by JsonPathDelegate(jsonPath = "$")
 
-    class PasswordWithDescription(
-        val description: String?,
-        password: String
-    ) : DecryptedSecret(password)
+    var secret: String by JsonPathDelegate(jsonPath = "$.password")
+    var description: String? by JsonPathNullableDelegate(jsonPath = "$.description")
 
-    class StandaloneTotp(
-        val totp: Totp
-    ) {
-        data class Totp(
-            val algorithm: String,
-            @SerializedName("secret_key")
-            val key: String,
-            val digits: Int,
-            val period: Long
-        )
-    }
-
-    class PasswordDescriptionTotp(
-        password: String,
-        val description: String?,
-        val totp: StandaloneTotp.Totp
-    ) : DecryptedSecret(password)
+    var totpAlgorithm: String by JsonPathDelegate(jsonPath = "$.totp.algorithm")
+    var totpKey: String by JsonPathDelegate(jsonPath = "$.totp.secret_key")
+    var totpDigits: Int by JsonPathDelegate(jsonPath = "$.totp.digits")
+    var totpPeriod: Int? by JsonPathNullableDelegate(jsonPath = "$.totp.period")
 }
+
+data class TotpSecret(
+    val algorithm: String,
+    val key: String,
+    val digits: Int,
+    val period: Long
+)
+
+class PasswordWithDescriptionSecret(
+    val password: String,
+    val description: String?
+)
+
+data class PasswordDescriptionTotpSecret(
+    val password: String,
+    val description: String?,
+    val totp: TotpSecret
+)

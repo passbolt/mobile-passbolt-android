@@ -38,16 +38,12 @@ class ResourceModelMapper(
             resourceId = resource.id.toString(),
             resourceTypeId = resource.resourceTypeId.toString(),
             folderId = resource.resourceFolderId?.toString(),
-            name = resource.name,
-            username = resource.username,
-            icon = null,
             initials = initialsProvider.get(resource.name),
-            url = resource.uri,
-            description = resource.description,
             permission = permissionsModelMapper.map(resource.permission.type),
             favouriteId = resource.favorite?.id?.toString(),
             modified = ZonedDateTime.parse(resource.modified),
-            expiry = resource.expired?.let { ZonedDateTime.parse(it) }
+            expiry = resource.expired?.let { ZonedDateTime.parse(it) },
+            json = resource.resourceJson
         )
 
     fun map(resourceModel: ResourceModel): Resource =
@@ -62,7 +58,8 @@ class ResourceModelMapper(
             resourceTypeId = resourceModel.resourceTypeId,
             favouriteId = resourceModel.favouriteId,
             modified = resourceModel.modified,
-            expiry = resourceModel.expiry
+            expiry = resourceModel.expiry,
+            resourceJson = resourceModel.json
         )
 
     fun map(resourceEntity: Resource): ResourceModel =
@@ -70,15 +67,11 @@ class ResourceModelMapper(
             resourceId = resourceEntity.resourceId,
             resourceTypeId = resourceEntity.resourceTypeId,
             folderId = resourceEntity.folderId,
-            name = resourceEntity.resourceName,
-            username = resourceEntity.username,
-            icon = null,
             initials = initialsProvider.get(resourceEntity.resourceName),
-            url = resourceEntity.url,
-            description = resourceEntity.description,
             permission = permissionsModelMapper.map(resourceEntity.resourcePermission),
             favouriteId = resourceEntity.favouriteId,
             modified = resourceEntity.modified,
-            expiry = resourceEntity.expiry
+            expiry = resourceEntity.expiry,
+            json = resourceEntity.resourceJson
         )
 }

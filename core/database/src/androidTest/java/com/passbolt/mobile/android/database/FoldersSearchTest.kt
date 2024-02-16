@@ -126,7 +126,8 @@ class FoldersSearchTest {
             resourceTypeId = "1",
             favouriteId = null,
             modified = ZonedDateTime.now(),
-            expiry = null
+            expiry = null,
+            resourceJson = String()
         )
         val RESOURCE_2 = Resource(
             resourceId = "2",
@@ -139,7 +140,8 @@ class FoldersSearchTest {
             resourceTypeId = "1",
             favouriteId = null,
             modified = ZonedDateTime.now(),
-            expiry = null
+            expiry = null,
+            resourceJson = String()
         )
         val RESOURCE_3 = Resource(
             resourceId = "3",
@@ -152,7 +154,8 @@ class FoldersSearchTest {
             resourceTypeId = "1",
             favouriteId = null,
             modified = ZonedDateTime.now(),
-            expiry = null
+            expiry = null,
+            resourceJson = String()
         )
         val RESOURCE_4 = Resource(
             resourceId = "4",
@@ -165,7 +168,8 @@ class FoldersSearchTest {
             resourceTypeId = "1",
             favouriteId = null,
             modified = ZonedDateTime.now(),
-            expiry = null
+            expiry = null,
+            resourceJson = String()
         )
         val RESOURCE_5 = Resource(
             resourceId = "5",
@@ -178,7 +182,8 @@ class FoldersSearchTest {
             resourceTypeId = "1",
             favouriteId = null,
             modified = ZonedDateTime.now(),
-            expiry = null
+            expiry = null,
+            resourceJson = String()
         )
 
         val FOLDER_1 = Folder(

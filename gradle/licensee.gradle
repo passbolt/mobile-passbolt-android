@@ -10,6 +10,7 @@ licensee {
     allowUrl "https://developer.android.com/guide/playcore/license"
     allowUrl "https://github.com/leinardi/FloatingActionButtonSpeedDial/blob/release/LICENSE"
     allowUrl "https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING" // it's Apache-2.0
+    allowUrl "https://asm.ow2.io/license.html" // 3-Clause BSD
 
     // coming from com.ibm.icu:icu4j; ICU license is open source (https://opensource.org/license/icu-license/)
     allowUrl "https://raw.githubusercontent.com/unicode-org/icu/master/icu4c/LICENSE"

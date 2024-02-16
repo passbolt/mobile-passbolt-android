@@ -59,6 +59,7 @@ dependencies {
     implementation libs.espresso.idling.resource
 
     testImplementation project(':commontest')
+    testImplementation libs.gson
 }
 
 android {

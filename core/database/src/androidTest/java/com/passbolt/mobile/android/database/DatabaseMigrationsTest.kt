@@ -289,23 +289,26 @@ class DatabaseMigrationsTest {
 
     @Test
     fun migrate14To15() {
-        helper.createDatabase(TEST_DB, 14).apply {
-            execSQL(
-                "INSERT INTO Resource VALUES('id1','folderid','name','READ','url','username','desc'," +
-                        "'typeId', 'favouriteId',1644909225833)"
-            )
-            close()
-        }
+        helper.createDatabase(TEST_DB, 14)
+            .apply {
+                execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug')")
+                execSQL(
+                    "INSERT INTO Resource VALUES('id1','folderid','name','READ','url','username','desc'," +
+                            "'1', 'favouriteId',1644909225833)"
+                )
+                close()
+            }
 
         helper.runMigrationsAndValidate(TEST_DB, 15, true, Migration14to15)
             .apply {
+                execSQL("INSERT INTO ResourceType VALUES('2', 'resourceTypeName', 'resourceTypeSlug', 'resourceSchemaJson', 'secretSchemaJson')")
                 execSQL(
                     "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
-                            "'typeId', 'favouriteId', 1644909225833, 1644909225833)"
+                            "'2', 'favouriteId',1644909225833,1644909225833, 'resourceJson')"
                 )
                 execSQL(
                     "INSERT INTO Resource VALUES('id3','folderid','name','READ','url','username','desc'," +
-                            "'typeId', 'favouriteId', 1644909225833, null)"
+                            "'typeId', 'favouriteId', 1644909225833, null,'resourceJson')"
                 )
                 close()
             }

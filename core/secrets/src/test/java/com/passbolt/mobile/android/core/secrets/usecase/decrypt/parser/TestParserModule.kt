@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.google.gson.GsonBuilder
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFJsonSchemaValidator
 import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFSchemaRepository
@@ -38,6 +39,7 @@ import org.mockito.kotlin.mock
 
 internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockJSFSchemaRepository = mock<JSFSchemaRepository>()
+internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
 val testParserModule = module {
     single { GsonBuilder().create() }
@@ -52,6 +54,12 @@ val testParserModule = module {
             validator = get()
         )
     }
-    singleOf(::SecretParser)
+    single {
+        SecretParser(
+            gson = get(),
+            secretValidationRunner = get(),
+            resourceTypeIdToSlugMappingProvider = mockIdToSlugMappingProvider
+        )
+    }
     factory { mockResourceTypeFactory }
 }

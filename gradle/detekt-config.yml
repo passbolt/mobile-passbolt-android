@@ -578,8 +578,6 @@ style:
         value: 'FIXME:'
       - reason: 'Forbidden STOPSHIP todo marker in comment, please address the problem before shipping the code.'
         value: 'STOPSHIP:'
-      - reason: 'Forbidden TODO todo marker in comment, please do the changes.'
-        value: 'TODO:'
     allowedPatterns: ''
   ForbiddenImport:
     active: false
@@ -736,10 +734,10 @@ style:
     allowedNames: 'ignored|expected'
   UnusedPrivateClass:
     active: true
-  UnusedPrivateMember :
+  UnusedPrivateMember:
     active: true
     allowedNames: ''
-    ignoreAnnotated: ['androidx.lifecycle.OnLifecycleEvent']
+    ignoreAnnotated: [ 'androidx.lifecycle.OnLifecycleEvent' ]
   UnusedPrivateProperty:
     active: true
     allowedNames: '_|ignored|expected|serialVersionUID'

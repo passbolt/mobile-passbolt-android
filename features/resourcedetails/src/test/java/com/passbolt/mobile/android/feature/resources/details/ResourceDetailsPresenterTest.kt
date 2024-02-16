@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resources.details
 
+import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderLocationUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
@@ -429,31 +430,33 @@ class ResourceDetailsPresenterTest : KoinTest {
             resourceId = ID,
             resourceTypeId = RESOURCE_TYPE_ID,
             folderId = FOLDER_ID_ID,
-            name = NAME,
-            username = USERNAME,
-            icon = null,
             initials = INITIALS,
-            url = URL,
-            description = DESCRIPTION,
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",
             modified = ZonedDateTime.now(),
-            expiry = null
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString()
         )
         private val RESOURCE_MODEL_EXPIRED = ResourceModel(
             resourceId = ID_EXPIRED,
             resourceTypeId = RESOURCE_TYPE_ID,
             folderId = FOLDER_ID_ID,
-            name = NAME,
-            username = USERNAME,
-            icon = null,
             initials = INITIALS,
-            url = URL,
-            description = DESCRIPTION,
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",
             modified = ZonedDateTime.now(),
-            expiry = ZonedDateTime.now().minusDays(1)
+            expiry = ZonedDateTime.now().minusDays(1),
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString()
         )
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
             permission = ResourcePermission.READ,

@@ -4,6 +4,7 @@ import com.mikepenz.fastadapter.GenericItem
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordHeaderItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.PasswordItem
+import com.passbolt.mobile.android.ui.ResourceItemWrapper
 import com.passbolt.mobile.android.ui.ResourceListUiModel
 
 /**
@@ -34,7 +35,11 @@ class ResourceUiItemsMapper(
 
     fun mapModelToItem(model: ResourceListUiModel): GenericItem =
         when (model) {
-            is ResourceListUiModel.Data -> PasswordItem(model.resourceModel, initialsIconGenerator, false)
+            is ResourceListUiModel.Data -> PasswordItem(
+                ResourceItemWrapper(model.resourceModel),
+                initialsIconGenerator,
+                dotsVisible = false
+            )
             is ResourceListUiModel.Header -> PasswordHeaderItem(model)
         }
 }

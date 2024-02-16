@@ -116,7 +116,8 @@ val resourcesModule = module {
             sessionRefreshedFlow,
             resource,
             secretParser = get(),
-            secretInteractor = get()
+            secretInteractor = get(),
+            idToSlugMappingProvider = get()
         )
     }
     factory { (

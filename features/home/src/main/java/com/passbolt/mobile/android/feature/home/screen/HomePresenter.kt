@@ -58,7 +58,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWi
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
@@ -964,7 +964,7 @@ class HomePresenter(
     private fun doAfterOtpFetchAndDecrypt(
         action: (
             ClipboardLabel,
-            DecryptedSecret.StandaloneTotp.Totp,
+            TotpSecret,
             TotpParametersProvider.OtpParameters
         ) -> Unit
     ) {

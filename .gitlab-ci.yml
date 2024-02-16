@@ -46,8 +46,6 @@ Run verifications:
       - build/reports/build-health-report.txt
     reports:
       junit: "**/test-results/**/TEST-*.xml"
-  variables:
-    KUBERNETES_MEMORY_REQUEST: "13Gi"
 
 # run instrumented tests on Sauce Labs
 Run instrumented tests on Sauce Labs:

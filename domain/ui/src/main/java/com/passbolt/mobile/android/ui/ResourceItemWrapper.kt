@@ -1,12 +1,3 @@
-package com.passbolt.mobile.android.entity.resource
-
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.Junction
-import androidx.room.PrimaryKey
-import androidx.room.Relation
-import com.google.gson.JsonElement
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -30,33 +21,10 @@ import com.google.gson.JsonElement
  * @since v1.0
  */
 
-@Entity
-data class ResourceType(
-    @PrimaryKey
-    val resourceTypeId: String,
-    val name: String,
-    val slug: String,
-    val resourceSchemaJson: JsonElement,
-    val secretSchemaJson: JsonElement
-)
+package com.passbolt.mobile.android.ui
 
-@Entity
-data class ResourceField(
-    @PrimaryKey(autoGenerate = true)
-    val resourceFieldId: Long = 0,
-    val name: String,
-    val isSecret: Boolean,
-    val maxLength: Int?,
-    val isRequired: Boolean,
-    val type: String
-)
-
-data class ResourceTypeIdWithFields(
-    @Embedded val resourceType: ResourceType,
-    @Relation(
-        parentColumn = "resourceTypeId",
-        entityColumn = "resourceFieldId",
-        associateBy = Junction(ResourceTypesAndFieldsCrossRef::class)
-    )
-    val resourceFields: List<ResourceField>
+data class ResourceItemWrapper(
+    val resourceModel: ResourceModel,
+    var loaderVisible: Boolean = false,
+    var clickable: Boolean = true
 )

@@ -74,6 +74,7 @@ okio = "3.5.0"
 otp = "2.4.0"
 apacheCommonsCodec = "1.16.0"
 jsonSchemaFriend = "0.12.2"
+jsonPath = "2.8.0"
 
 [libraries]
 android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -161,6 +162,7 @@ okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
 otp = { group = "dev.turingcomplete", name = "kotlin-onetimepassword", version.ref = "otp" }
 apache-commons-codec = { group = "commons-codec", name = "commons-codec", version.ref = "apacheCommonsCodec" }
 jsonschema-friend = { group = "net.jimblackler.jsonschemafriend", name = "core", version.ref = "jsonSchemaFriend" }
+json-path = { group = "com.jayway.jsonpath", name = "json-path", version.ref = "jsonPath" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }

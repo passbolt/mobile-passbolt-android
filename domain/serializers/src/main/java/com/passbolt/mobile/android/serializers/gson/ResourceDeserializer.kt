@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.serializers.gson
 
+import com.google.gson.Gson
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
@@ -37,19 +38,20 @@ import timber.log.Timber
 import java.lang.reflect.Type
 import java.util.UUID
 
-open class ResourceListDeserializer(
+open class ResourceDeserializer(
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
-    private val jsonSchemaValidationRunner: JsonSchemaValidationRunner
-) : JsonDeserializer<List<ResourceResponseDto>>, KoinComponent {
+    private val jsonSchemaValidationRunner: JsonSchemaValidationRunner,
+    private val gson: Gson
+) : JsonDeserializer<ResourceResponseDto?>, KoinComponent {
 
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
         context: JsonDeserializationContext?
-    ): List<ResourceResponseDto> {
+    ): ResourceResponseDto? {
         if (json == null || context == null) {
             Timber.e("Json element or deserialization context was null: (${json == null}), (${context == null}")
-            return emptyList()
+            return null
         }
 
         // done on the parser thread
@@ -61,30 +63,26 @@ open class ResourceListDeserializer(
                 .filter { it.value in homeSlugs + totpSlugs }
                 .keys
 
-            if (json.isJsonArray) {
-                json.asJsonArray.mapNotNullTo(mutableListOf()) { jsonElement ->
-                    if (!jsonElement.isJsonNull) {
-                        val resource = context.deserialize<ResourceResponseDto>(
-                            jsonElement, ResourceResponseDto::class.java
-                        )
+            if (json.isJsonObject) {
+                if (!json.asJsonObject.isJsonNull) {
+                    val resource = gson.fromJson(json, ResourceResponseDto::class.java)
 
-                        if (isSupported(resource, supportedResourceTypesIds) &&
-                            isValid(resource.resourceTypeId, jsonElement.toString(), resourceTypeIdToSlugMapping)
-                        ) {
-                            resource.apply {
-                                resourceJson = jsonElement.toString()
-                            }
-                        } else {
-                            Timber.d("Invalid resource found id=(${resource.id}, skipping")
-                            null
+                    if (isSupported(resource, supportedResourceTypesIds) &&
+                        isValid(resource.resourceTypeId, json.toString(), resourceTypeIdToSlugMapping)
+                    ) {
+                        resource.apply {
+                            resourceJson = json.toString()
                         }
                     } else {
-                        Timber.e("Encountered a null root json element when parsing resources")
+                        Timber.d("Invalid resource found id=(${resource.id}, skipping")
                         null
                     }
+                } else {
+                    Timber.e("Encountered a null root json element when parsing resources")
+                    null
                 }
             } else {
-                emptyList()
+                null
             }
         }
     }

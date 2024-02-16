@@ -1,6 +1,10 @@
 package com.passbolt.mobile.android.database.typeconverters
 
 import androidx.room.TypeConverter
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -32,7 +36,7 @@ import java.time.ZonedDateTime
  * This class helps Room to convert between Date and Long type - as Room does not have
  * built-in support for Date type.
  */
-class Converters {
+class Converters : KoinComponent {
 
     /**
      * Converts Unix timestamp in milliseconds to zoned date time
@@ -53,4 +57,24 @@ class Converters {
     @TypeConverter
     fun dateToTimestamp(date: ZonedDateTime): Long =
         date.toInstant().toEpochMilli()
+
+    /**
+     * Converts Gson Json Element to String
+     *
+     * @param jsonElement Gson Json Element
+     * @return Json string
+     */
+    @TypeConverter
+    fun jsonElementToString(jsonElement: JsonElement): String =
+        jsonElement.toString()
+
+    /**
+     * Converts json String to Gson Json Element
+     *
+     * @param jsonString Json String
+     * @return Gson Json Element
+     */
+    @TypeConverter
+    fun stringToJsonElement(jsonString: String): JsonElement =
+        get<Gson>().fromJson(jsonString, JsonElement::class.java)
 }
