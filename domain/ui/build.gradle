@@ -8,6 +8,10 @@ dependencies {
     implementation project(':common')
     implementation project(':coreui')
     implementation project(':localization')
+
+    implementation libs.koin
+    implementation libs.gson
+    implementation libs.json.path
 }
 
 android {

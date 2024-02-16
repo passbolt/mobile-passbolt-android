@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
-import coil.load
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.common.extension.isBeforeNow
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
@@ -65,17 +64,11 @@ class SelectableResourceItem(
     }
 
     private fun setupInitialsIcon(binding: ItemSelectableResourceBinding) {
-        val initialsIcons = initialsIconGenerator.generate(
+        initialsIconGenerator.generate(
             resourcePickerListItem.resourceModel.name,
             resourcePickerListItem.resourceModel.initials
-        )
-        with(binding) {
-            icon.setImageDrawable(initialsIcons)
-            resourcePickerListItem.resourceModel.icon?.let {
-                icon.load(it) {
-                    placeholder(initialsIcons)
-                }
-            }
+        ).apply {
+            binding.icon.setImageDrawable(this)
         }
     }
 

@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
@@ -18,6 +17,7 @@ import com.passbolt.mobile.android.core.extension.asBinding
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.ItemPasswordBinding
+import com.passbolt.mobile.android.ui.ResourceItemWrapper
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -45,7 +45,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @since v1.0
  */
 class PasswordItem(
-    private val resourceModel: ResourceModel,
+    private val resourceWrapper: ResourceItemWrapper,
     private val initialsIconGenerator: InitialsIconGenerator,
     private val dotsVisible: Boolean = true
 ) : AbstractBindingItem<ItemPasswordBinding>() {
@@ -62,16 +62,16 @@ class PasswordItem(
         with(binding) {
             setupUsername(this)
             more.isVisible = dotsVisible
-            loader.isVisible = resourceModel.loaderVisible
-            itemPassword.isEnabled = resourceModel.clickable
-            val initialsIcons = initialsIconGenerator.generate(resourceModel.name, resourceModel.initials)
-            icon.setImageDrawable(initialsIcons)
-            resourceModel.expiry.let { expiry ->
+            loader.isVisible = resourceWrapper.loaderVisible
+            itemPassword.isEnabled = resourceWrapper.clickable
+            resourceWrapper.resourceModel.expiry.let { expiry ->
                 if (expiry == null) {
-                    title.text = resourceModel.name
+                    title.text = resourceWrapper.resourceModel.name
                     indicatorIcon.setImageDrawable(null)
                 } else if (expiry.isBeforeNow()) {
-                    title.text = root.context.getString(LocalizationR.string.name_expired, resourceModel.name)
+                    title.text = root.context.getString(
+                        LocalizationR.string.name_expired, resourceWrapper.resourceModel.name
+                    )
                     indicatorIcon.setImageDrawable(
                         ContextCompat.getDrawable(
                             root.context,
@@ -80,10 +80,11 @@ class PasswordItem(
                     )
                 }
             }
-            resourceModel.icon?.let {
-                icon.load(it) {
-                    placeholder(initialsIcons)
-                }
+            initialsIconGenerator.generate(
+                resourceWrapper.resourceModel.name,
+                resourceWrapper.resourceModel.initials
+            ).apply {
+                icon.setImageDrawable(this)
             }
         }
     }
@@ -91,12 +92,12 @@ class PasswordItem(
     private fun setupUsername(binding: ItemPasswordBinding) = with(binding) {
         val fontFamily = ResourcesCompat.getFont(binding.root.context, CoreUiR.font.inter)
 
-        if (resourceModel.username.isNullOrBlank()) {
+        if (resourceWrapper.resourceModel.username.isNullOrBlank()) {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, true)
             subtitle.text = binding.root.context.getString(LocalizationR.string.no_username)
         } else {
             subtitle.typeface = Typeface.create(fontFamily, FONT_WEIGHT, false)
-            subtitle.text = resourceModel.username
+            subtitle.text = resourceWrapper.resourceModel.username
         }
     }
 
@@ -115,7 +116,7 @@ class PasswordItem(
             fastAdapter: FastAdapter<PasswordItem>,
             item: PasswordItem
         ) {
-            clickListener.invoke(item.resourceModel)
+            clickListener.invoke(item.resourceWrapper.resourceModel)
         }
     }
 
@@ -134,7 +135,7 @@ class PasswordItem(
             fastAdapter: FastAdapter<PasswordItem>,
             item: PasswordItem
         ) {
-            clickListener.invoke(item.resourceModel)
+            clickListener.invoke(item.resourceWrapper.resourceModel)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.password.mobile.android.feature.home.screen
 
+import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
@@ -15,10 +16,10 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Resour
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
 import com.passbolt.mobile.android.feature.home.screen.ShowSuggestedModel
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
@@ -457,16 +458,17 @@ class HomeMenuTest : KoinTest {
             resourceId = ID,
             resourceTypeId = RESOURCE_TYPE_ID,
             folderId = FOLDER_ID,
-            name = NAME,
-            username = USERNAME,
-            icon = null,
             initials = INITIALS,
-            url = URL,
-            description = DESCRIPTION,
             permission = ResourcePermission.READ,
             favouriteId = null,
             modified = ZonedDateTime.now(),
-            expiry = null
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString()
         )
     }
 }

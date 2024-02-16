@@ -1,6 +1,7 @@
 package com.password.mobile.android.feature.home.screen
 
 import com.google.common.truth.Truth.assertThat
+import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
@@ -221,7 +222,7 @@ class HomePresenterTest : KoinTest {
 
         verify(view, times(2)).hideAddButton()
         verify(view).hideRefreshProgress()
-        verify(view, times(3)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
+        verify(view, times(2)).showItems(any(), any(), any(), any(), any(), any(), any(), any())
         verify(view, times(1)).showAddButton()
     }
 
@@ -360,19 +361,20 @@ class HomePresenterTest : KoinTest {
             flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         )
         val model = ResourceModel(
-            "id",
-            "resTypeId",
-            "folderId",
-            "title",
-            "subtitle",
-            "",
-            "initials",
-            "",
-            "",
-            ResourcePermission.READ,
-            null,
-            ZonedDateTime.now(),
-            expiry = null
+            resourceId = "id",
+            resourceTypeId = "resTypeId",
+            folderId = "folderId",
+            initials = "initials",
+            permission = ResourcePermission.READ,
+            favouriteId = null,
+            modified = ZonedDateTime.now(),
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", "")
+                addProperty("username", "")
+                addProperty("uri", "")
+                addProperty("description", "")
+            }.toString()
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -611,30 +613,34 @@ class HomePresenterTest : KoinTest {
             resourceId = "id1",
             resourceTypeId = "resTypeId",
             folderId = "folderId",
-            name = "first name",
-            url = "",
-            username = "",
-            icon = "",
             initials = "",
-            description = "desc",
             permission = ResourcePermission.READ,
             favouriteId = null,
             modified = ZonedDateTime.now(),
-            expiry = null
-        ), ResourceModel(
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", "")
+                addProperty("username", "")
+                addProperty("uri", "")
+                addProperty("description", "")
+            }.toString()
+        ),
+        ResourceModel(
             resourceId = "id2",
             resourceTypeId = "resTypeId",
             folderId = "folderId",
-            name = "second name",
-            url = "",
-            username = "",
-            icon = "",
             initials = "",
-            description = "desc",
             permission = ResourcePermission.READ,
             favouriteId = null,
             modified = ZonedDateTime.now(),
-            expiry = null
+            expiry = null,
+            json = JsonObject().apply
+            {
+                addProperty("name", "")
+                addProperty("username", "")
+                addProperty("uri", "")
+                addProperty("description", "")
+            }.toString()
         )
     )
 

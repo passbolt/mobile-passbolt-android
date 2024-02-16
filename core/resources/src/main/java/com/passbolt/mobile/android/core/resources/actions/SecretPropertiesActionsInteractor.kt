@@ -25,9 +25,12 @@ package com.passbolt.mobile.android.core.resources.actions
 
 import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.PasswordWithDescriptionSecret
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -38,24 +41,26 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.transform
 import timber.log.Timber
+import java.util.UUID
 
 class SecretPropertiesActionsInteractor(
     private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
     private val sessionRefreshedFlow: StateFlow<Unit?>,
     private val resource: ResourceModel,
     private val secretParser: SecretParser,
-    private val secretInteractor: SecretInteractor
+    private val secretInteractor: SecretInteractor,
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) {
 
     suspend fun provideDescription(): Flow<SecretPropertyActionResult<String>> =
         fetchAndDecrypt()
             .mapSuccess {
-                when (val description = secretParser.extractDescription(resource.resourceTypeId, it.secret)) {
+                when (val description = secretParser.parseSecret(resource.resourceTypeId, it.secret)) {
                     is DecryptedSecretOrError.DecryptedSecret ->
                         SecretPropertyActionResult.Success(
                             DESCRIPTION_LABEL,
                             isSecret = true,
-                            description.secret
+                            description.secret.description.orEmpty()
                         )
 
                     is DecryptedSecretOrError.Error ->
@@ -66,27 +71,38 @@ class SecretPropertiesActionsInteractor(
     suspend fun providePassword(): Flow<SecretPropertyActionResult<String>> =
         fetchAndDecrypt()
             .mapSuccess {
-                when (val password = secretParser.extractPassword(resource.resourceTypeId, it.secret)) {
+                val slug = idToSlugMappingProvider
+                    .provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
+                when (val password = secretParser.parseSecret(resource.resourceTypeId, it.secret)) {
                     is DecryptedSecretOrError.DecryptedSecret ->
                         SecretPropertyActionResult.Success(
                             SECRET_LABEL,
                             isSecret = true,
-                            password.secret
+                            if (slug == ResourceTypeFactory.SLUG_SIMPLE_PASSWORD) {
+                                password.secret.password
+                            } else {
+                                password.secret.secret
+                            }
                         )
                     is DecryptedSecretOrError.Error ->
                         SecretPropertyActionResult.DecryptionFailure()
                 }
             }
 
-    suspend fun provideOtp(): Flow<SecretPropertyActionResult<DecryptedSecret.StandaloneTotp.Totp>> =
+    suspend fun provideOtp(): Flow<SecretPropertyActionResult<TotpSecret>> =
         fetchAndDecrypt()
             .mapSuccess {
-                when (val totp = secretParser.extractTotpData(resource.resourceTypeId, it.secret)) {
+                when (val totp = secretParser.parseSecret(resource.resourceTypeId, it.secret)) {
                     is DecryptedSecretOrError.DecryptedSecret ->
                         SecretPropertyActionResult.Success(
                             OTP_LABEL,
                             isSecret = true,
-                            totp.secret
+                            TotpSecret(
+                                totp.secret.totpAlgorithm!!,
+                                totp.secret.totpKey!!,
+                                totp.secret.totpDigits!!,
+                                totp.secret.totpPeriod!!.toLong()
+                            )
                         )
                     is DecryptedSecretOrError.Error ->
                         SecretPropertyActionResult.DecryptionFailure()
@@ -95,21 +111,18 @@ class SecretPropertiesActionsInteractor(
 
     // this method extracts description from secret (cannot be used for "simple password" resource type)
     suspend fun providePasswordAndSecretDescription():
-            Flow<SecretPropertyActionResult<DecryptedSecret.PasswordWithDescription>> =
+            Flow<SecretPropertyActionResult<PasswordWithDescriptionSecret>> =
         fetchAndDecrypt()
             .mapSuccess {
-                val password = secretParser.extractPassword(resource.resourceTypeId, it.secret)
-                val description = secretParser.extractDescription(resource.resourceTypeId, it.secret)
+                val secret = secretParser.parseSecret(resource.resourceTypeId, it.secret)
 
-                if (password is DecryptedSecretOrError.DecryptedSecret &&
-                    description is DecryptedSecretOrError.DecryptedSecret
-                ) {
+                if (secret is DecryptedSecretOrError.DecryptedSecret) {
                     SecretPropertyActionResult.Success(
                         PASSWORD_AND_DESCRIPTION,
                         isSecret = true,
-                        DecryptedSecret.PasswordWithDescription(
-                            description = description.secret,
-                            password = password.secret
+                        PasswordWithDescriptionSecret(
+                            description = secret.secret.description.orEmpty(),
+                            password = secret.secret.secret
                         )
                     )
                 } else {

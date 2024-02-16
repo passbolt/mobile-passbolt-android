@@ -23,7 +23,7 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
@@ -648,7 +648,7 @@ class ResourceDetailsPresenter(
     private fun doAfterOtpFetchAndDecrypt(
         action: (
             ClipboardLabel,
-            DecryptedSecret.StandaloneTotp.Totp,
+            TotpSecret,
             TotpParametersProvider.OtpParameters
         ) -> Unit
     ) {

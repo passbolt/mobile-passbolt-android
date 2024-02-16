@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.permissions.permissions
 
 import com.google.common.truth.Truth.assertThat
+import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
@@ -281,16 +282,17 @@ class ResourcePermissionsPresenterTest : KoinTest {
             resourceId = RESOURCE_ID,
             resourceTypeId = RESOURCE_TYPE_ID,
             folderId = FOLDER_ID_ID,
-            name = NAME,
-            username = USERNAME,
-            icon = null,
             initials = INITIALS,
-            url = URL,
-            description = DESCRIPTION,
             permission = ResourcePermission.READ,
             favouriteId = null,
             modified = ZonedDateTime.now(),
-            expiry = null
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString()
         )
     }
 }

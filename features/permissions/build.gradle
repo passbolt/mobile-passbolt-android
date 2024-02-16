@@ -33,6 +33,7 @@ dependencies {
     implementation libs.navigation.ui
 
     testImplementation project(':commontest')
+    testImplementation libs.gson
 }
 
 android {

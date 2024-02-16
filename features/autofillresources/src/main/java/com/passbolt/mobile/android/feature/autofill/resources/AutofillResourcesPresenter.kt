@@ -83,10 +83,10 @@ class AutofillResourcesPresenter(
                 resourceModel.resourceId,
                 successAction = {
                     view?.hideProgress()
-                    when (val password = secretParser.extractPassword(resourceModel.resourceTypeId, it)) {
+                    when (val password = secretParser.parseSecret(resourceModel.resourceTypeId, it)) {
                         is DecryptedSecretOrError.DecryptedSecret -> view?.autofillReturn(
                             resourceModel.username.orEmpty(),
-                            password.secret,
+                            password.secret.password,
                             uri
                         )
                         is DecryptedSecretOrError.Error -> error(password.message)
