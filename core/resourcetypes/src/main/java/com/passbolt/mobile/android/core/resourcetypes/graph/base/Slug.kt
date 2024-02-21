@@ -1,10 +1,3 @@
-package com.passbolt.mobile.android.core.resourcetypes
-
-import com.passbolt.mobile.android.core.resourcetypes.graph.ResourceTypesUpdatesAdjacencyGraph
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.resourceTypesDbModule
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,11 +21,6 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val resourceTypesModule = module {
-    resourceTypesDbModule()
+package com.passbolt.mobile.android.core.resourcetypes.graph.base
 
-    singleOf(::ResourceTypeFactory)
-    singleOf(::GetResourceTypesUseCase)
-    singleOf(::ResourceTypesInteractor)
-    singleOf(::ResourceTypesUpdatesAdjacencyGraph)
-}
+typealias Slug = String
