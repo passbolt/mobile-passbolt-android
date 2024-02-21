@@ -13,6 +13,7 @@ dependencies {
     implementation project(':coreui')
     implementation project(':localization')
     implementation project(':idlingresource')
+    implementation project(':resourcetypes')
 
     implementation libs.androidx.core
     implementation libs.appcompat

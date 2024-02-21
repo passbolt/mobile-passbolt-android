@@ -24,12 +24,12 @@
 package com.passbolt.mobile.android.resourcemoremenu.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.graph.ResourceTypesUpdatesAdjacencyGraph
+import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
+import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel.TotpOption.ADD_TOTP
@@ -41,36 +41,40 @@ import java.util.UUID
 
 class CreateResourceMoreMenuModelUseCase(
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
-    private val getResourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
-    private val getRbacRulesUseCase: GetRbacRulesUseCase
+    private val getRbacRulesUseCase: GetRbacRulesUseCase,
+    private val resourceTypesUpdatesAdjacencyGraph: ResourceTypesUpdatesAdjacencyGraph,
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) :
     AsyncUseCase<CreateResourceMoreMenuModelUseCase.Input, CreateResourceMoreMenuModelUseCase.Output> {
 
     override suspend fun execute(input: Input): Output {
         val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(input.resourceId)).resource
-        val resourceSlug = getResourceTypeIdToSlugMappingProvider
-            .provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
         val isTotpFeatureFlagEnabled = getFeatureFlagsUseCase.execute(Unit).featureFlags.isTotpAvailable
         val copyRbac = getRbacRulesUseCase.execute(Unit).rbacModel.passwordCopyRule
+        val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]
+        val updateActionsMetadata = resourceTypesUpdatesAdjacencyGraph.getUpdateActionsMetadata(requireNotNull(slug))
 
         return Output(
             ResourceMoreMenuModel(
                 title = resource.name,
                 canCopy = copyRbac == ALLOW,
                 canDelete = resource.permission in WRITE_PERMISSIONS,
-                canEdit = resource.permission in WRITE_PERMISSIONS,
+                canEdit = resource.permission in WRITE_PERMISSIONS &&
+                        updateActionsMetadata.any { it.action == UpdateAction.EDIT_PASSWORD },
                 canShare = resource.permission == ResourcePermission.OWNER,
                 favouriteOption = if (resource.isFavourite()) {
                     ResourceMoreMenuModel.FavouriteOption.REMOVE_FROM_FAVOURITES
                 } else {
                     ResourceMoreMenuModel.FavouriteOption.ADD_TO_FAVOURITES
                 },
-                totpOption = if (isTotpFeatureFlagEnabled) {
-                    when (resourceSlug) {
-                        PASSWORD_DESCRIPTION_TOTP_SLUG -> MANAGE_TOTP
-                        PASSWORD_AND_DESCRIPTION_SLUG -> ADD_TOTP
-                        else -> NONE
+                totpOption = if (isTotpFeatureFlagEnabled && resource.permission in WRITE_PERMISSIONS) {
+                    if (updateActionsMetadata.any { it.action == UpdateAction.ADD_TOTP }) {
+                        ADD_TOTP
+                    } else if (updateActionsMetadata.any { it.action == UpdateAction.EDIT_TOTP }) {
+                        MANAGE_TOTP
+                    } else {
+                        NONE
                     }
                 } else {
                     NONE
