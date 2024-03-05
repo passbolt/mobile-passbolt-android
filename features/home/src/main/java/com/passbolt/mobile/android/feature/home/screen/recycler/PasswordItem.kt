@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
-import com.passbolt.mobile.android.common.extension.isBeforeNow
+import com.passbolt.mobile.android.common.extension.isInFuture
 import com.passbolt.mobile.android.core.extension.DebounceClickEventHook
 import com.passbolt.mobile.android.core.extension.asBinding
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
@@ -61,30 +61,34 @@ class PasswordItem(
         super.bindView(binding, payloads)
         with(binding) {
             setupUsername(this)
+            setupTitleAndExpiry(this)
             more.isVisible = dotsVisible
             loader.isVisible = resourceWrapper.loaderVisible
             itemPassword.isEnabled = resourceWrapper.clickable
-            resourceWrapper.resourceModel.expiry.let { expiry ->
-                if (expiry == null) {
-                    title.text = resourceWrapper.resourceModel.name
-                    indicatorIcon.setImageDrawable(null)
-                } else if (expiry.isBeforeNow()) {
-                    title.text = root.context.getString(
-                        LocalizationR.string.name_expired, resourceWrapper.resourceModel.name
-                    )
-                    indicatorIcon.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            root.context,
-                            CoreUiR.drawable.ic_excl_indicator
-                        )
-                    )
-                }
-            }
             initialsIconGenerator.generate(
                 resourceWrapper.resourceModel.name,
                 resourceWrapper.resourceModel.initials
             ).apply {
                 icon.setImageDrawable(this)
+            }
+        }
+    }
+
+    private fun setupTitleAndExpiry(binding: ItemPasswordBinding) {
+        resourceWrapper.resourceModel.expiry.let { expiry ->
+            if (expiry == null || expiry.isInFuture()) {
+                binding.title.text = resourceWrapper.resourceModel.name
+                binding.indicatorIcon.setImageDrawable(null)
+            } else {
+                binding.title.text = binding.root.context.getString(
+                    LocalizationR.string.name_expired, resourceWrapper.resourceModel.name
+                )
+                binding.indicatorIcon.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        binding.root.context,
+                        CoreUiR.drawable.ic_excl_indicator
+                    )
+                )
             }
         }
     }

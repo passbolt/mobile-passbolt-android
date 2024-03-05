@@ -27,3 +27,6 @@ import java.time.ZonedDateTime
 
 fun ZonedDateTime.isBeforeNow() =
     isBefore(ZonedDateTime.now())
+
+fun ZonedDateTime.isInFuture() =
+    isAfter(ZonedDateTime.now())

@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.passbolt.mobile.android.common.extension.isBeforeNow
+import com.passbolt.mobile.android.common.extension.isInFuture
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.resourcepicker.R
 import com.passbolt.mobile.android.feature.resourcepicker.databinding.ItemSelectableResourceBinding
@@ -31,27 +31,29 @@ class SelectableResourceItem(
         with(binding) {
             selectionRadioButton.isChecked = resourcePickerListItem.isSelected
             root.alpha = if (resourcePickerListItem.isSelectable) ALPHA_ENABLED else ALPHA_DISABLED
-            resourcePickerListItem.resourceModel.expiry.let { expiry ->
-                if (expiry == null) {
-                    title.text = resourcePickerListItem.resourceModel.name
-                    indicatorIcon.setImageDrawable(null)
-                } else if (expiry.isBeforeNow()) {
-                    title.text = root.context.getString(
-                        LocalizationR.string.name_expired,
-                        resourcePickerListItem.resourceModel.name
-                    )
-                    indicatorIcon.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            root.context,
-                            CoreUiR.drawable.ic_excl_indicator
-                        )
-                    )
-                }
-            }
-
+            setupTitleAndExpiry(this)
             setupUsername(this)
             setupInitialsIcon(this)
             setupSelection(this)
+        }
+    }
+
+    private fun setupTitleAndExpiry(binding: ItemSelectableResourceBinding) {
+        resourcePickerListItem.resourceModel.expiry.let { expiry ->
+            if (expiry == null || expiry.isInFuture()) {
+                binding.title.text = resourcePickerListItem.resourceModel.name
+                binding.indicatorIcon.setImageDrawable(null)
+            } else {
+                binding.title.text = binding.root.context.getString(
+                    LocalizationR.string.name_expired, resourcePickerListItem.resourceModel.name
+                )
+                binding.indicatorIcon.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        binding.root.context,
+                        CoreUiR.drawable.ic_excl_indicator
+                    )
+                )
+            }
         }
     }
 
