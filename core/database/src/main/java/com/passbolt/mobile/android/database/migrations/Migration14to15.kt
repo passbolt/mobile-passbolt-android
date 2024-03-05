@@ -29,21 +29,42 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 @Suppress("MagicNumber")
 object Migration14to15 : Migration(14, 15) {
 
-    private const val ADD_RESOURCE_EXPIRY_DATE_COLUMN =
-        "ALTER TABLE Resource ADD COLUMN expiry INTEGER DEFAULT NULL"
-    private const val ADD_RESOURCE_SCHEMA_JSON_COLUMN_TO_RESOURCE_TYPES =
-        "ALTER TABLE ResourceType ADD COLUMN resourceSchemaJson TEXT NOT NULL DEFAULT ''"
-    private const val ADD_SECRET_SCHEMA_JSON_COLUMN_TO_RESOURCE_TYPES =
-        "ALTER TABLE ResourceType ADD COLUMN secretSchemaJson TEXT NOT NULL DEFAULT ''"
-    private const val ADD_RESOURCE_JSON_COLUMN_TO_RESOURCE =
-        "ALTER TABLE Resource ADD COLUMN resourceJson TEXT NOT NULL DEFAULT ''"
+    private const val DROP_EXISTING_RESOURCES_TABLE = "DROP TABLE Resource"
+    private const val DROP_EXISTING_RESOURCES_TYPES_TABLE = "DROP TABLE ResourceType"
+
+    private const val CREATE_NEW_RESOURCES_TABLE = "CREATE TABLE IF NOT EXISTS Resource (" +
+            "`resourceId` TEXT NOT NULL, " +
+            "`folderId` TEXT, " +
+            "`resourceName` TEXT NOT NULL, " +
+            "`resourcePermission` TEXT NOT NULL, " +
+            "`url` TEXT, " +
+            "`username` TEXT, " +
+            "`description` TEXT, " +
+            "`resourceTypeId` TEXT NOT NULL, " +
+            "`favouriteId` TEXT, " +
+            "`modified` INTEGER NOT NULL, " +
+            "`expiry` INTEGER, " +
+            "`resourceJson` TEXT NOT NULL, " +
+            "PRIMARY KEY(`resourceId`), " +
+            "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`)" +
+            " ON UPDATE NO ACTION ON DELETE SET NULL , " +
+            "FOREIGN KEY(`resourceTypeId`) REFERENCES `ResourceType`(`resourceTypeId`)" +
+            " ON UPDATE NO ACTION ON DELETE NO ACTION )"
+
+    private const val CREATE_NEW_RESOURCE_TYPES_TABLE = "CREATE TABLE IF NOT EXISTS ResourceType (" +
+            "`resourceTypeId` TEXT NOT NULL, " +
+            "`name` TEXT NOT NULL, " +
+            "`slug` TEXT NOT NULL, " +
+            "`resourceSchemaJson` TEXT NOT NULL, " +
+            "`secretSchemaJson` TEXT NOT NULL, " +
+            "PRIMARY KEY(`resourceTypeId`))"
 
     override fun migrate(database: SupportSQLiteDatabase) {
         with(database) {
-            execSQL(ADD_RESOURCE_EXPIRY_DATE_COLUMN)
-            execSQL(ADD_RESOURCE_SCHEMA_JSON_COLUMN_TO_RESOURCE_TYPES)
-            execSQL(ADD_SECRET_SCHEMA_JSON_COLUMN_TO_RESOURCE_TYPES)
-            execSQL(ADD_RESOURCE_JSON_COLUMN_TO_RESOURCE)
+            execSQL(DROP_EXISTING_RESOURCES_TABLE)
+            execSQL(DROP_EXISTING_RESOURCES_TYPES_TABLE)
+            execSQL(CREATE_NEW_RESOURCES_TABLE)
+            execSQL(CREATE_NEW_RESOURCE_TYPES_TABLE)
         }
     }
 }
