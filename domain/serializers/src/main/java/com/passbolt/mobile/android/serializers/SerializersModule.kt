@@ -27,15 +27,17 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
-import com.passbolt.mobile.android.serializers.gson.ResourceDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
+import com.passbolt.mobile.android.serializers.gson.ResourceListItemDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
+import com.passbolt.mobile.android.serializers.gson.SingleResourceDeserializer
 import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.serializers.jsonschema.jsonSchemaModule
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import java.util.UUID
 
 internal const val RESOURCE_DTO_GSON = "RESOURCE_DTO_GSON"
 
@@ -46,10 +48,18 @@ val serializersModule = module {
     singleOf(::ResourceListDeserializer)
     singleOf(::ResourceTypesListDeserializer)
     single {
-        ResourceDeserializer(
+        SingleResourceDeserializer(
             resourceTypeIdToSlugMappingProvider = get(),
             jsonSchemaValidationRunner = get(),
             gson = get(named(RESOURCE_DTO_GSON))
+        )
+    }
+    single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
+        ResourceListItemDeserializer(
+            jsonSchemaValidationRunner = get(),
+            gson = get(named(RESOURCE_DTO_GSON)),
+            resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
+            supportedResourceTypesIds = supportedResourceTypesIds
         )
     }
 
@@ -69,7 +79,7 @@ val serializersModule = module {
                 )
                 registerTypeAdapter(
                     ResourceResponseDto::class.java,
-                    get<ResourceDeserializer>()
+                    get<SingleResourceDeserializer>()
                 )
             }
             .create()

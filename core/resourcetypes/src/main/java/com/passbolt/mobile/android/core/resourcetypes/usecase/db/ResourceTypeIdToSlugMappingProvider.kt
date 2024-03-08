@@ -31,7 +31,7 @@ class ResourceTypeIdToSlugMappingProvider(
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase
 ) {
 
-    private val perAccountMappings = mutableMapOf<String, Map<UUID, String>>()
+    private val perAccountMappings = hashMapOf<String, Map<UUID, String>>()
 
     suspend fun provideMappingForSelectedAccount(): Map<UUID, String> {
         val selectedAccount = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
