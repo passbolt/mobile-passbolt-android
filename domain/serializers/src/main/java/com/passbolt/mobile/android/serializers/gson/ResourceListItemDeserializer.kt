@@ -27,61 +27,48 @@ import com.google.gson.Gson
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import java.lang.reflect.Type
 import java.util.UUID
 
-open class ResourceDeserializer(
-    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
+// resourceTypeIdToSlugMapping and supportedResourceTypesIds are provided from ResourceListDeserializer
+// they cannot be constructed here as *deserialize()* must be fast and they cannot be injected as they change
+// after account is switched
+
+open class ResourceListItemDeserializer(
     private val jsonSchemaValidationRunner: JsonSchemaValidationRunner,
-    private val gson: Gson
+    private val gson: Gson,
+    private val resourceTypeIdToSlugMapping: Map<UUID, String>,
+    private val supportedResourceTypesIds: Set<UUID>
 ) : JsonDeserializer<ResourceResponseDto?>, KoinComponent {
 
     override fun deserialize(
-        json: JsonElement?,
+        json: JsonElement,
         typeOfT: Type?,
-        context: JsonDeserializationContext?
+        context: JsonDeserializationContext
     ): ResourceResponseDto? {
-        if (json == null || context == null) {
-            Timber.e("Json element or deserialization context was null: (${json == null}), (${context == null}")
-            return null
-        }
 
         // done on the parser thread
         return runBlocking {
-            val resourceTypeIdToSlugMapping = resourceTypeIdToSlugMappingProvider
-                .provideMappingForSelectedAccount()
+            try {
+                val resource = gson.fromJson(json, ResourceResponseDto::class.java)
+                val resourceString = json.toString()
 
-            val supportedResourceTypesIds = resourceTypeIdToSlugMapping
-                .filter { it.value in homeSlugs + totpSlugs }
-                .keys
-
-            if (json.isJsonObject) {
-                if (!json.asJsonObject.isJsonNull) {
-                    val resource = gson.fromJson(json, ResourceResponseDto::class.java)
-
-                    if (isSupported(resource, supportedResourceTypesIds) &&
-                        isValid(resource.resourceTypeId, json.toString(), resourceTypeIdToSlugMapping)
-                    ) {
-                        resource.apply {
-                            resourceJson = json.toString()
-                        }
-                    } else {
-                        Timber.d("Invalid resource found id=(${resource.id}, skipping")
-                        null
-                    }
+                if (isSupported(resource, supportedResourceTypesIds) &&
+                    isValid(resource.resourceTypeId, resourceString, resourceTypeIdToSlugMapping)
+                ) {
+                    resource.resourceJson = resourceString
+                    resource
                 } else {
-                    Timber.e("Encountered a null root json element when parsing resources")
+                    Timber.d("Invalid resource found id=(${resource.id}, skipping")
                     null
                 }
-            } else {
+            } catch (e: Exception) {
+                Timber.e("Error when deserializing list item resource: ${e.message}")
                 null
             }
         }

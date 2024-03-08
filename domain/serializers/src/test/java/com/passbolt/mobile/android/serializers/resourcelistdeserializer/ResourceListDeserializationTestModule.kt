@@ -28,7 +28,10 @@ import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.serializers.RESOURCE_DTO_GSON
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
+import com.passbolt.mobile.android.serializers.gson.ResourceListItemDeserializer
+import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFJsonSchemaValidator
 import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFSchemaRepository
@@ -38,8 +41,10 @@ import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAc
 import net.jimblackler.jsonschemafriend.Schema
 import net.jimblackler.jsonschemafriend.Validator
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
+import java.util.UUID
 
 internal val mockIdToSlugMappingUseCase =
     mock<GetResourceTypeIdToSlugMappingUseCase>()
@@ -49,6 +54,14 @@ internal val mockJSFSchemaRepository = mock<JSFSchemaRepository>()
 val resourceListDeserializationTestModule = module {
     singleOf(::JsonSchemaValidationRunner)
     singleOf(::ResourceListDeserializer)
+    single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
+        ResourceListItemDeserializer(
+            jsonSchemaValidationRunner = get(),
+            gson = get(named(RESOURCE_DTO_GSON)),
+            resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
+            supportedResourceTypesIds = supportedResourceTypesIds
+        )
+    }
     singleOf(::ResourceTypeIdToSlugMappingProvider)
     single { Validator() }
     single<JsonSchemaRepository<Schema>> {
@@ -68,6 +81,15 @@ val resourceListDeserializationTestModule = module {
                 object : TypeToken<List<@JvmSuppressWildcards ResourceResponseDto>>() {}.type,
                 get<ResourceListDeserializer>()
             )
+            .create()
+    }
+    single(named(RESOURCE_DTO_GSON)) {
+        GsonBuilder()
+            .apply {
+                strictTypeAdapters.forEach {
+                    registerTypeAdapter(it.key, it.value)
+                }
+            }
             .create()
     }
 }
