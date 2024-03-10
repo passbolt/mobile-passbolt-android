@@ -58,11 +58,17 @@ class EditFieldsModelCreator(
             .map { field ->
                 val initialValue = when (field.name) {
                     in listOf(FieldNamesMapper.PASSWORD_FIELD, FieldNamesMapper.SECRET_FIELD) -> {
-                        // there can be parsing errors when secret data is invalid - do not create the input then
-                        (secretParser.parseSecret(
+                        val parsedSecret = (secretParser.parseSecret(
                             existingResource.resourceTypeId,
                             secret
-                        ) as DecryptedSecretOrError.DecryptedSecret<String>).secret
+                        ) as DecryptedSecretOrError.DecryptedSecret).secret
+                        when (resourceTypeEnum) {
+                            SIMPLE_PASSWORD -> parsedSecret.password
+                            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> parsedSecret.secret
+                            STANDALONE_TOTP -> {
+                                throw IllegalArgumentException("Standalone totp does not contain password or secret")
+                            }
+                        }
                     }
                     FieldNamesMapper.DESCRIPTION_FIELD -> {
                         when (resourceTypeEnum) {
