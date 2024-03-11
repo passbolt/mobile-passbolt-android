@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
+import com.google.gson.annotations.SerializedName
 import com.passbolt.mobile.android.delegates.JsonModel
 import com.passbolt.mobile.android.delegates.JsonPathDelegate
 import com.passbolt.mobile.android.delegates.JsonPathNullableDelegate
@@ -42,6 +43,7 @@ class DecryptedSecret(override var json: String) : JsonModel {
 
 data class TotpSecret(
     val algorithm: String,
+    @SerializedName("secret_key")
     val key: String,
     val digits: Int,
     val period: Long
