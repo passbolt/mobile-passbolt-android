@@ -24,7 +24,6 @@
 package com.passbolt.mobile.android.core.resources.interactor.update
 
 import com.google.gson.Gson
-import com.passbolt.mobile.android.core.resources.SecretInputCreator
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.users.usecase.FetchUsersUseCase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
@@ -36,7 +35,6 @@ import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCa
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 
 class UpdateSimplePasswordResourceInteractor(
-    private val secretInputCreator: SecretInputCreator,
     getSelectedAccountUseCase: GetSelectedAccountUseCase,
     getPrivateKeyUseCase: GetPrivateKeyUseCase,
     openPgp: OpenPgp,
@@ -68,7 +66,7 @@ class UpdateSimplePasswordResourceInteractor(
         customInput: UpdateSimplePasswordInput,
         passphrase: ByteArray
     ) =
-        secretInputCreator.createSimplePasswordSecretInput(customInput.password)
+        customInput.password
 
     override suspend fun createCommonDescription(customInput: UpdateSimplePasswordInput): String? =
         customInput.description

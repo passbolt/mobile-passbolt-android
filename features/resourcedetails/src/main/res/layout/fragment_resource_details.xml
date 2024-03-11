@@ -159,7 +159,7 @@
                 <TextView
                     android:id="@+id/totpHeader"
                     style="@style/Heading"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/dp_16"
                     android:layout_marginTop="@dimen/dp_24"
