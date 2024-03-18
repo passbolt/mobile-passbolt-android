@@ -41,7 +41,8 @@ interface AutofillResourcesContract {
         fun setResultAndFinish(result: Int, resultIntent: Intent)
         fun showProgress()
         fun hideProgress()
-        fun showError(message: String?)
+        fun showFetchFailure()
+        fun showDecryptionFailure()
     }
 
     interface Presenter : BaseAuthenticatedContract.Presenter<View> {

@@ -3,18 +3,17 @@ package com.passbolt.mobile.android.feature.autofill.resources
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
-import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.storage.usecase.accounts.GetAccountsUseCase
-import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,8 +39,6 @@ import timber.log.Timber
  */
 class AutofillResourcesPresenter(
     private val getAccountsUseCase: GetAccountsUseCase,
-    private val secretParser: SecretParser,
-    private val secretInteractor: SecretInteractor,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     coroutineLaunchContext: CoroutineLaunchContext
@@ -78,46 +75,23 @@ class AutofillResourcesPresenter(
 
     override fun itemClick(resourceModel: ResourceModel) {
         view?.showProgress()
-        scope.launch {
-            doAfterFetchAndDecrypt(
-                resourceModel.resourceId,
-                successAction = {
-                    view?.hideProgress()
-                    when (val password = secretParser.parseSecret(resourceModel.resourceTypeId, it)) {
-                        is DecryptedSecretOrError.DecryptedSecret -> view?.autofillReturn(
-                            resourceModel.username.orEmpty(),
-                            password.secret.password,
-                            uri
-                        )
-                        is DecryptedSecretOrError.Error -> error(password.message)
-                    }
-                },
-                errorAction = { error(it) })
+        val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor = get {
+            parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
         }
-    }
-
-    private fun error(message: String?) {
-        view?.hideProgress()
-        view?.showError(message)
-    }
-
-    private suspend fun doAfterFetchAndDecrypt(
-        resourceId: String,
-        successAction: suspend (ByteArray) -> Unit,
-        errorAction: (String?) -> Unit
-    ) {
-        when (val output =
-            runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                secretInteractor.fetchAndDecrypt(resourceId)
-            }
-        ) {
-            is SecretInteractor.Output.DecryptFailure -> errorAction.invoke(output.error.message)
-            is SecretInteractor.Output.FetchFailure -> errorAction.invoke(output.exception.message)
-            is SecretInteractor.Output.Success -> successAction(output.decryptedSecret)
-            is SecretInteractor.Output.Unauthorized -> {
-                // can be ignored - runAuthenticatedOperation handles it
-                Timber.d("Unauthorized during decrypting secret")
-            }
+        scope.launch {
+            performSecretPropertyAction(
+                action = { secretPropertiesActionsInteractor.providePassword() },
+                doOnFetchFailure = { view?.showFetchFailure() },
+                doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                doOnSuccess = {
+                    view?.autofillReturn(
+                        resourceModel.username.orEmpty(),
+                        it.result,
+                        uri
+                    )
+                }
+            )
+            view?.hideProgress()
         }
     }
 
