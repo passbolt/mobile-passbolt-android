@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.setup.scanqr
 
 import com.passbolt.mobile.android.common.HttpsVerifier
 import com.passbolt.mobile.android.common.UuidProvider
+import com.passbolt.mobile.android.common.usecase.FetchFileAsStringUseCase
 import com.passbolt.mobile.android.core.accounts.AccountKitParser
 import com.passbolt.mobile.android.core.accounts.AccountsInteractor
 import com.passbolt.mobile.android.core.accounts.AccountsInteractor.InjectAccountFailureType.ACCOUNT_ALREADY_LINKED
@@ -58,7 +59,8 @@ class ScanQrPresenter(
     private val httpsVerifier: HttpsVerifier,
     private val saveCurrentApiUrlUseCase: SaveCurrentApiUrlUseCase,
     private val accountsInteractor: AccountsInteractor,
-    private val accountKitParser: AccountKitParser
+    private val accountKitParser: AccountKitParser,
+    private val fetchFileAsStringUseCase: FetchFileAsStringUseCase
 ) : ScanQrContract.Presenter {
 
     override var view: ScanQrContract.View? = null
@@ -98,6 +100,7 @@ class ScanQrPresenter(
             is ParseResult.PassboltQr -> when (parserResult) {
                 is ParseResult.PassboltQr.FirstPage -> parserFirstPage(parserResult)
                 is ParseResult.PassboltQr.SubsequentPage -> parserSubsequentPage(parserResult)
+                is ParseResult.PassboltQr.AccountKitPage -> setupFromAccountKit(parserResult)
             }
             is ParseResult.FinishedWithSuccess -> parserFinishedWithSuccess(parserResult.armoredKey)
             is ParseResult.UserResolvableError -> when (parserResult.errorType) {
@@ -106,6 +109,28 @@ class ScanQrPresenter(
                 ParseResult.UserResolvableError.ErrorType.NOT_A_PASSBOLT_QR -> view?.showNotAPassboltQr()
             }
             is ParseResult.ScanFailure -> view?.showBarcodeScanError(parserResult.exception?.message)
+        }
+    }
+
+    private suspend fun setupFromAccountKit(accountKitPage: ParseResult.PassboltQr.AccountKitPage) {
+        view?.showProgress()
+        val failureAction = { view?.navigateToSummary(ResultStatus.Failure("")) }
+        try {
+            when (val fileContentResult = fetchFileAsStringUseCase.execute(
+                FetchFileAsStringUseCase.Input(accountKitPage.content.accountKitUrl)
+            )) {
+                is FetchFileAsStringUseCase.Output.Failure -> failureAction()
+                is FetchFileAsStringUseCase.Output.Success ->
+                    accountKitParser.parseAndVerify(
+                        fileContentResult.fileContent,
+                        onSuccess = { setupDataModel -> injectPredefinedAccount(setupDataModel) },
+                        onFailure = { failureAction() }
+                    )
+            }
+            view?.hideProgress()
+        } catch (e: Exception) {
+            Timber.e(e, "Error while reading account kit file")
+            view?.navigateToSummary(ResultStatus.Failure(""))
         }
     }
 

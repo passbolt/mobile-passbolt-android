@@ -1,13 +1,3 @@
-package com.passbolt.mobile.android.common
-
-import com.passbolt.mobile.android.common.time.AndroidTimeProvider
-import com.passbolt.mobile.android.common.time.TimeProvider
-import com.passbolt.mobile.android.common.usecase.FetchFileAsStringUseCase
-import org.koin.android.ext.koin.androidApplication
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -31,14 +21,34 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val commonModule = module {
-    single {
-        ResourceDimenProvider(
-            androidApplication().resources
-        )
+package com.passbolt.mobile.android.common.usecase
+
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import kotlinx.coroutines.withContext
+import timber.log.Timber
+import java.net.URL
+
+class FetchFileAsStringUseCase(
+    private val coroutineLaunchContext: CoroutineLaunchContext
+) : AsyncUseCase<FetchFileAsStringUseCase.Input, FetchFileAsStringUseCase.Output> {
+
+    override suspend fun execute(input: Input): Output {
+        return try {
+            withContext(coroutineLaunchContext.io) {
+                URL(input.url).openStream().use {
+                    Output.Success(it.readBytes().decodeToString())
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error during fetching file")
+            Output.Failure
+        }
     }
 
-    singleOf(::DomainProvider)
-    singleOf(::AndroidTimeProvider) bind TimeProvider::class
-    singleOf(::FetchFileAsStringUseCase)
+    data class Input(val url: String)
+
+    sealed class Output {
+        data class Success(val fileContent: String) : Output()
+        data object Failure : Output()
+    }
 }

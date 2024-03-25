@@ -216,6 +216,24 @@ class QrParserTest : KoinTest {
         scanningJob.cancel()
     }
 
+    @Test
+    fun `parser should parse account kit transfer page qr correct`() = runTest {
+        scanningJob = launch {
+            scanQrParser.startParsing(mockScanningFlow)
+        }
+
+        launch {
+            scanQrParser.parseResultFlow.test {
+                assertNoBarcodesInRange(expectItem())
+                assertPassboltAccountKitPage(expectItem())
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+        mockScanningFlow.emit(BarcodeScanResult.SingleBarcode(PASSBOLT_ACCOUNT_KIT_PAGE_SCAN))
+
+        scanningJob.cancel()
+    }
+
     private fun assertPassboltQrFirstPage(item: ParseResult) {
         assertThat(item).isInstanceOf(ParseResult.PassboltQr.FirstPage::class.java)
     }
@@ -226,6 +244,10 @@ class QrParserTest : KoinTest {
 
     private fun assertParserError(item: ParseResult) {
         assertThat(item).isInstanceOf(ParseResult.Failure::class.java)
+    }
+
+    private fun assertPassboltAccountKitPage(item: ParseResult) {
+        assertThat(item).isInstanceOf(ParseResult.PassboltQr.AccountKitPage::class.java)
     }
 
     private fun assertFailWithScanException(item: ParseResult) {

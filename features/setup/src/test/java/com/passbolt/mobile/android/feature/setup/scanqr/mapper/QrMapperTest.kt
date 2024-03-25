@@ -74,4 +74,11 @@ class QrMapperTest : KoinTest {
         val mapped = qrMapper.apply(scanResult)
         assertThat(mapped).isInstanceOf(ParseResult.PassboltQr.SubsequentPage::class.java)
     }
+
+    @Test
+    fun `mapper should return account kit first page input on account kit input`() {
+        val scanResult = BarcodeScanResult.SingleBarcode(PASSBOLT_FIRST_PAGE_ACCOUNT_KIT_SCAN)
+        val mapped = qrMapper.apply(scanResult)
+        assertThat(mapped).isInstanceOf(ParseResult.PassboltQr.AccountKitPage::class.java)
+    }
 }

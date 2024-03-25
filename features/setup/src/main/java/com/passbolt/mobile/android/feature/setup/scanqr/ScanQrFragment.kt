@@ -12,6 +12,8 @@ import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
 import com.passbolt.mobile.android.core.security.flagsecure.FlagSecureSetter
+import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
+import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.feature.setup.AccountSetupDataHolder
 import com.passbolt.mobile.android.feature.setup.databinding.FragmentScanQrBinding
 import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
@@ -251,5 +253,13 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
 
     override fun showAccountKitFilePicker() {
         accountKitFileChosenResult.launch(arrayOf("*/*"))
+    }
+
+    override fun showProgress() {
+        showProgressDialog(childFragmentManager)
+    }
+
+    override fun hideProgress() {
+        hideProgressDialog(childFragmentManager)
     }
 }

@@ -34,12 +34,22 @@ class QrScanResultsMapper(
             val reservedBytesDto = createReservedBytesDto(data)
             val payloadBytes = ByteArray(data.size - RESERVED_BYTES_COUNT) { data[it + RESERVED_BYTES_COUNT] }
 
-            if (reservedBytesDto.page == FIRST_PAGE_INDEX) {
-                ParseResult.PassboltQr.FirstPage(
-                    reservedBytesDto, json.decodeFromString(String(payloadBytes))
-                )
-            } else {
-                ParseResult.PassboltQr.SubsequentPage(reservedBytesDto, payloadBytes)
+            when (reservedBytesDto.version) {
+                QR_TRANSFER_PROTOCOL_VERSION -> {
+                    if (reservedBytesDto.page == FIRST_PAGE_INDEX) {
+                        ParseResult.PassboltQr.FirstPage(
+                            reservedBytesDto, json.decodeFromString(String(payloadBytes))
+                        )
+                    } else {
+                        ParseResult.PassboltQr.SubsequentPage(reservedBytesDto, payloadBytes)
+                    }
+                }
+                ACCOUNT_KIT_TRANSFER_PROTOCOL_VERSION -> {
+                    ParseResult.PassboltQr.AccountKitPage(
+                        reservedBytesDto, json.decodeFromString(String(payloadBytes))
+                    )
+                }
+                else -> error("Unsupported protocol version: ${reservedBytesDto.version}")
             }
         } catch (exception: Exception) {
             Timber.e(exception)
@@ -60,7 +70,7 @@ class QrScanResultsMapper(
     } else {
         try {
             val reservedBytes = createReservedBytesDto(qrData)
-            reservedBytes.version == PROTOCOL_VERSION && reservedBytes.page in (0..Short.MAX_VALUE)
+            reservedBytes.version in supportedProtocolVersions && reservedBytes.page in (0..Short.MAX_VALUE)
         } catch (exception: Exception) {
             Timber.e(exception, "Could not process reserved bytes from QR code")
             false
@@ -69,7 +79,10 @@ class QrScanResultsMapper(
 
     companion object {
         @VisibleForTesting
-        const val PROTOCOL_VERSION = 1
+        const val QR_TRANSFER_PROTOCOL_VERSION = 1
+
+        @VisibleForTesting
+        const val ACCOUNT_KIT_TRANSFER_PROTOCOL_VERSION = 2
 
         @VisibleForTesting
         const val PAGE_NUMBER_BYTES_COUNT = 2
@@ -79,6 +92,9 @@ class QrScanResultsMapper(
 
         const val FIRST_PAGE_INDEX = 0
 
+        private val supportedProtocolVersions = setOf(
+            QR_TRANSFER_PROTOCOL_VERSION, ACCOUNT_KIT_TRANSFER_PROTOCOL_VERSION
+        )
         private const val RESERVED_BYTES_NUMBER_RADIX = 16
         private const val RESERVED_BYTES_COUNT = 3
     }
