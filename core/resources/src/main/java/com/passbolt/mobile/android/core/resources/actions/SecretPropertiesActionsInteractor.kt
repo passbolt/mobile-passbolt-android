@@ -28,7 +28,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.PasswordWithDescriptionSecret
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
@@ -51,6 +51,22 @@ class SecretPropertiesActionsInteractor(
     private val secretInteractor: SecretInteractor,
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) {
+
+    suspend fun provideDecryptedSecret(): Flow<SecretPropertyActionResult<DecryptedSecret>> =
+        fetchAndDecrypt()
+            .mapSuccess {
+                when (val secret = secretParser.parseSecret(resource.resourceTypeId, it.secret)) {
+                    is DecryptedSecretOrError.DecryptedSecret ->
+                        SecretPropertyActionResult.Success(
+                            JSON_SECRET_LABEL,
+                            isSecret = true,
+                            secret.secret
+                        )
+
+                    is DecryptedSecretOrError.Error ->
+                        SecretPropertyActionResult.DecryptionFailure()
+                }
+            }
 
     suspend fun provideDescription(): Flow<SecretPropertyActionResult<String>> =
         fetchAndDecrypt()
@@ -98,35 +114,14 @@ class SecretPropertiesActionsInteractor(
                             OTP_LABEL,
                             isSecret = true,
                             TotpSecret(
-                                totp.secret.totpAlgorithm!!,
-                                totp.secret.totpKey!!,
-                                totp.secret.totpDigits!!,
-                                totp.secret.totpPeriod!!.toLong()
+                                algorithm = totp.secret.totpAlgorithm,
+                                key = totp.secret.totpKey,
+                                digits = totp.secret.totpDigits,
+                                period = totp.secret.totpPeriod?.toLong() ?: 30
                             )
                         )
                     is DecryptedSecretOrError.Error ->
                         SecretPropertyActionResult.DecryptionFailure()
-                }
-            }
-
-    // this method extracts description from secret (cannot be used for "simple password" resource type)
-    suspend fun providePasswordAndSecretDescription():
-            Flow<SecretPropertyActionResult<PasswordWithDescriptionSecret>> =
-        fetchAndDecrypt()
-            .mapSuccess {
-                val secret = secretParser.parseSecret(resource.resourceTypeId, it.secret)
-
-                if (secret is DecryptedSecretOrError.DecryptedSecret) {
-                    SecretPropertyActionResult.Success(
-                        PASSWORD_AND_DESCRIPTION,
-                        isSecret = true,
-                        PasswordWithDescriptionSecret(
-                            description = secret.secret.description.orEmpty(),
-                            password = secret.secret.secret
-                        )
-                    )
-                } else {
-                    SecretPropertyActionResult.DecryptionFailure()
                 }
             }
 
@@ -185,9 +180,10 @@ class SecretPropertiesActionsInteractor(
         const val DESCRIPTION_LABEL = "Description"
 
         @VisibleForTesting
-        const val OTP_LABEL = "TOTP"
+        const val JSON_SECRET_LABEL = "JSON Secret"
 
-        private const val PASSWORD_AND_DESCRIPTION = "PasswordAndDescription"
+        @VisibleForTesting
+        const val OTP_LABEL = "TOTP"
     }
 }
 

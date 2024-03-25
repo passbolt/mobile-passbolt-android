@@ -74,6 +74,7 @@ import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
 import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.ManageTotpAction
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -153,6 +154,7 @@ class HomePresenter(
         }
 
     private var refreshInProgress: Boolean = true
+    private lateinit var otpAction: ManageTotpAction
 
     override fun argsRetrieved(
         showSuggestedModel: ShowSuggestedModel,
@@ -911,8 +913,18 @@ class HomePresenter(
             val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
                 parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
             }
-            performResourceUpdateAction(
-                action = {
+            val updateAction = when (otpAction) {
+                ManageTotpAction.ADD_TOTP -> suspend {
+                    resourceUpdateActionsInteractor.addTotpToResource(
+                        overrideName = resourceModel.name,
+                        overrideUri = resourceModel.url,
+                        period = totpQr.period,
+                        digits = totpQr.digits,
+                        algorithm = totpQr.algorithm.name,
+                        secretKey = totpQr.secret
+                    )
+                }
+                ManageTotpAction.EDIT_TOTP -> suspend {
                     resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                         label = resourceModel.name,
                         issuer = resourceModel.url,
@@ -921,7 +933,11 @@ class HomePresenter(
                         algorithm = totpQr.algorithm.name,
                         secretKey = totpQr.secret
                     )
-                },
+                }
+            }
+
+            performResourceUpdateAction(
+                action = updateAction,
                 doOnFailure = { view?.showGeneralError(it) },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnFetchFailure = { view?.showFetchFailure() },
@@ -957,7 +973,13 @@ class HomePresenter(
         }
     }
 
+    override fun menuAddTotpClick() {
+        otpAction = ManageTotpAction.ADD_TOTP
+        view?.navigateToOtpCreateMenu()
+    }
+
     override fun menuEditOtpClick() {
+        otpAction = ManageTotpAction.EDIT_TOTP
         view?.navigateToOtpEdit()
     }
 
@@ -1002,7 +1024,7 @@ class HomePresenter(
             }
             performResourceUpdateAction(
                 action = {
-                    resourceUpdateActionInteractor.downgradeToPasswordAndDescriptionResource()
+                    resourceUpdateActionInteractor.deleteTotpFromResource()
                 },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnFailure = { view?.showTotpDeletionFailed() },

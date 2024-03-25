@@ -8,10 +8,7 @@ import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsI
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
 import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
@@ -69,24 +66,7 @@ val resourcesModule = module {
     singleOf(::RemoveFromFavouritesUseCase)
     singleOf(::FavouritesInteractor)
     singleOf(::ResourceShareInteractor)
-    singleOf(::UpdateSimplePasswordResourceInteractor)
-    singleOf(::UpdatePasswordAndDescriptionResourceInteractor)
-    singleOf(::UpdateStandaloneTotpResourceInteractor)
-    single {
-        UpdateLinkedTotpResourceInteractor(
-            secretInputCreator = get(),
-            getSelectedAccountUseCase = get(),
-            getPrivateKeyUseCase = get(),
-            openPgp = get(),
-            passphraseMemoryCache = get(),
-            resourceModelMapper = get(),
-            resourceRepository = get(),
-            fetchUsersUseCase = get(),
-            getResourceTypeIdToSlugMappingUseCase = get(),
-            jsonSchemaValidationRunner = get(),
-            gson = get()
-        )
-    }
+    singleOf(::UpdateResourceInteractor)
     singleOf(::CreatePasswordAndDescriptionResourceInteractor)
     singleOf(::CreateStandaloneTotpResourceInteractor)
 
@@ -136,11 +116,10 @@ val resourcesModule = module {
                     sessionRefreshedFlow
                 )
             },
-            updatePasswordAndDescriptionResourceInteractor = get(),
-            updateLinkedTotpResourceInteractor = get(),
-            updateSimplePasswordResourceInteractor = get(),
-            updateStandaloneTotpResourceInteractor = get(),
-            updateLocalResourceUseCase = get()
+            updateLocalResourceUseCase = get(),
+            idToSlugMappingProvider = get(),
+            updateResourceInteractor = get(),
+            resourceTypesUpdateGraph = get()
         )
     }
 }

@@ -279,7 +279,16 @@ class CreateOtpPresenter(
                 "Unsupported resource type on manual totp form:" +
                         " $resourceTypeEnum"
             )
-            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP ->
+            PASSWORD_WITH_DESCRIPTION ->
+                resourceUpdateActionsInteractor.addTotpToResource(
+                    overrideUri = label,
+                    overrideName = issuer,
+                    period = period,
+                    digits = digits,
+                    algorithm = algorithm,
+                    secretKey = secret
+                )
+            PASSWORD_DESCRIPTION_TOTP ->
                 resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                     label = label,
                     issuer = issuer,
@@ -335,17 +344,34 @@ class CreateOtpPresenter(
             val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
                 parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
             }
+            val updateOperation = resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId).let {
+                when (it) {
+                    SIMPLE_PASSWORD, STANDALONE_TOTP ->
+                        throw IllegalArgumentException("These resource types are not possible to link")
+                    PASSWORD_WITH_DESCRIPTION -> suspend {
+                        resourceUpdateActionsInteractor.addTotpToResource(
+                            overrideName = resource.name,
+                            overrideUri = resource.url,
+                            period = period,
+                            digits = digits,
+                            algorithm = algorithm,
+                            secretKey = secret
+                        )
+                    }
+                    PASSWORD_DESCRIPTION_TOTP -> suspend {
+                        resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
+                            label = resource.name,
+                            issuer = resource.url,
+                            period = period,
+                            digits = digits,
+                            algorithm = algorithm,
+                            secretKey = secret
+                        )
+                    }
+                }
+            }
             performResourceUpdateAction(
-                action = {
-                    resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
-                        label = resource.name,
-                        issuer = resource.url,
-                        period = period,
-                        digits = digits,
-                        algorithm = algorithm,
-                        secretKey = secret
-                    )
-                },
+                action = updateOperation,
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnFetchFailure = { view?.showGenericError() },
                 doOnFailure = { view?.showError(it) },

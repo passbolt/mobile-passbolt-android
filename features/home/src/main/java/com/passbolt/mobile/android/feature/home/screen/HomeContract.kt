@@ -112,6 +112,7 @@ interface HomeContract {
         fun showTotpDeletionFailed()
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
+        fun navigateToOtpCreateMenu()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -173,5 +174,6 @@ interface HomeContract {
         fun menuDeleteOtpClick()
         fun totpDeletionConfirmed()
         fun expiryClick()
+        fun menuAddTotpClick()
     }
 }

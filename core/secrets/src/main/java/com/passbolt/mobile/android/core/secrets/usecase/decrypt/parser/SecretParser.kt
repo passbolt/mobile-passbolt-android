@@ -23,16 +23,14 @@
 
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
-import com.google.gson.Gson
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
+import com.passbolt.mobile.android.serializers.validationwrapper.PlainSecretValidationWrapper
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import timber.log.Timber
 import java.util.UUID
 
 class SecretParser(
-    private val gson: Gson,
     private val secretValidationRunner: JsonSchemaValidationRunner,
     private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) {
@@ -45,13 +43,15 @@ class SecretParser(
         val slug = resourceTypeIdToSlugMappingProvider
             .provideMappingForSelectedAccount()[UUID.fromString(resourceTypeId)]
 
-        val secretJson =
-            if (slug == SLUG_SIMPLE_PASSWORD) gson.toJson(String(decryptedSecret)) else String(decryptedSecret)
-
         return try {
             // in case of simple password the backend returns a string (not a json string)
-            if (secretValidationRunner.isSecretValid(secretJson, slug!!)) {
-                val parsedSecret = DecryptedSecret(secretJson)
+            val plainSecret = String(decryptedSecret)
+            if (secretValidationRunner.isSecretValid(
+                    PlainSecretValidationWrapper(plainSecret, slug!!).validationPlainSecret,
+                    slug
+                )
+            ) {
+                val parsedSecret = DecryptedSecret(plainSecret)
                 DecryptedSecretOrError.DecryptedSecret(parsedSecret)
             } else {
                 val errorMessage = "Invalid secret in $slug resource type"

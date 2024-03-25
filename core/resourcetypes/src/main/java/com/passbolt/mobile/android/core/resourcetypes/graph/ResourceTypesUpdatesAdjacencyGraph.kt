@@ -78,4 +78,9 @@ class ResourceTypesUpdatesAdjacencyGraph {
                 UpdateActionMetadata(edge.updateAction, edge.destination.slug)
             }
             .toList()
+
+    fun getResourceTypeSlugAfterUpdate(currentResourceTypeSlug: String, update: UpdateAction) =
+        getUpdateActionsMetadata(currentResourceTypeSlug)
+            .first { it.action == update }
+            .newResourceTypeSlug
 }

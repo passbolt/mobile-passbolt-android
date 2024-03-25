@@ -24,12 +24,12 @@
 package com.passbolt.mobile.android.core.resources.actions
 
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateLinkedTotpResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdatePasswordAndDescriptionResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateSimplePasswordResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.update.UpdateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.UpdateLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.graph.ResourceTypesUpdatesAdjacencyGraph
+import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -39,48 +39,68 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import org.koin.core.component.KoinComponent
+import timber.log.Timber
+import java.util.UUID
 
 class ResourceUpdateActionsInteractor(
     private val resource: ResourceModel,
     private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
     private val sessionRefreshedFlow: StateFlow<Unit?>,
     private val secretPropertiesActionsInteractor: SecretPropertiesActionsInteractor,
-    private val updatePasswordAndDescriptionResourceInteractor: UpdatePasswordAndDescriptionResourceInteractor,
-    private val updateLinkedTotpResourceInteractor: UpdateLinkedTotpResourceInteractor,
-    private val updateSimplePasswordResourceInteractor: UpdateSimplePasswordResourceInteractor,
-    private val updateStandaloneTotpResourceInteractor: UpdateStandaloneTotpResourceInteractor,
-    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase
+    private val updateResourceInteractor: UpdateResourceInteractor,
+    private val resourceTypesUpdateGraph: ResourceTypesUpdatesAdjacencyGraph,
+    private val updateLocalResourceUseCase: UpdateLocalResourceUseCase,
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) : KoinComponent {
 
-    suspend fun downgradeToPasswordAndDescriptionResource(): Flow<ResourceUpdateActionResult> {
-        val password = secretPropertiesActionsInteractor.providePassword().single()
-        val description = secretPropertiesActionsInteractor.provideDescription().single()
-        return flowOf(
-            when {
-                password is SecretPropertyActionResult.Success && description is SecretPropertyActionResult.Success ->
-                    runUpdateOperation {
-                        updatePasswordAndDescriptionResourceInteractor.execute(
-                            UpdateResourceInteractor.CommonInput(
-                                resourceId = resource.resourceId,
-                                resourceName = resource.name,
-                                resourceUsername = resource.username,
-                                resourceUri = resource.url,
-                                resourceParentFolderId = resource.folderId
-                            ),
-                            UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput(
-                                password = password.result,
-                                description = description.result
-                            )
-                        )
-                    }
-                listOf(password, description).any { it is SecretPropertyActionResult.FetchFailure } ->
-                    ResourceUpdateActionResult.FetchFailure
-                listOf(password, description).any { it is SecretPropertyActionResult.DecryptionFailure } ->
-                    ResourceUpdateActionResult.CryptoFailure()
-                else -> ResourceUpdateActionResult.Failure()
+    suspend fun deleteTotpFromResource(): Flow<ResourceUpdateActionResult> =
+        updateResource(
+            updateAction = UpdateAction.REMOVE_TOTP,
+            updateResource = { newResourceTypeSlug ->
+                UpdateResourceInteractor.ResourceInput(
+                    resourceId = resource.resourceId,
+                    resourceName = resource.name,
+                    resourceUsername = resource.username,
+                    resourceUri = resource.url,
+                    resourceParentFolderId = resource.folderId,
+                    description = null,
+                    newResourceTypeSlug = newResourceTypeSlug
+                )
+            },
+            updateSecret = { decryptedSecret ->
+                decryptedSecret.apply {
+                    removeTotp()
+                }
             }
         )
-    }
+
+    suspend fun addTotpToResource(
+        overrideName: String?,
+        overrideUri: String?,
+        period: Long,
+        digits: Int,
+        algorithm: String,
+        secretKey: String
+    ): Flow<ResourceUpdateActionResult> =
+        updateResource(
+            updateAction = UpdateAction.ADD_TOTP,
+            updateResource = { newResourceTypeSlug ->
+                UpdateResourceInteractor.ResourceInput(
+                    resourceId = resource.resourceId,
+                    resourceName = overrideName ?: resource.name,
+                    resourceUsername = resource.username,
+                    resourceUri = overrideUri ?: resource.url,
+                    resourceParentFolderId = resource.folderId,
+                    description = null,
+                    newResourceTypeSlug = newResourceTypeSlug
+                )
+            },
+            updateSecret = { decryptedSecret ->
+                decryptedSecret.apply {
+                    addTotp(algorithm, secretKey, digits, period.toInt())
+                }
+            }
+        )
 
     suspend fun updatePasswordAndDescriptionResource(
         resourceName: String,
@@ -89,25 +109,27 @@ class ResourceUpdateActionsInteractor(
         resourceParentFolderId: String?,
         password: String,
         description: String?
-    ): Flow<ResourceUpdateActionResult> {
-        return flowOf(
-            runUpdateOperation {
-                updatePasswordAndDescriptionResourceInteractor.execute(
-                    UpdateResourceInteractor.CommonInput(
-                        resourceId = resource.resourceId,
-                        resourceName = resourceName,
-                        resourceUsername = resourceUsername,
-                        resourceUri = resourceUri,
-                        resourceParentFolderId = resourceParentFolderId
-                    ),
-                    UpdatePasswordAndDescriptionResourceInteractor.UpdatePasswordAndDescriptionInput(
-                        password = password,
-                        description = description
-                    )
+    ): Flow<ResourceUpdateActionResult> =
+        updateResource(
+            updateAction = UpdateAction.EDIT_PASSWORD,
+            updateResource = { newResourceTypeSlug ->
+                UpdateResourceInteractor.ResourceInput(
+                    resourceId = resource.resourceId,
+                    resourceName = resourceName,
+                    resourceUsername = resourceUsername,
+                    resourceUri = resourceUri,
+                    resourceParentFolderId = resourceParentFolderId,
+                    description = null,
+                    newResourceTypeSlug = newResourceTypeSlug
                 )
+            },
+            updateSecret = { decryptedSecret ->
+                decryptedSecret.apply {
+                    this.secret = password
+                    this.description = description
+                }
             }
         )
-    }
 
     suspend fun updateStandaloneTotpResource(
         label: String,
@@ -116,27 +138,29 @@ class ResourceUpdateActionsInteractor(
         digits: Int,
         algorithm: String,
         secretKey: String
-    ): Flow<ResourceUpdateActionResult> {
-        return flowOf(
-            runUpdateOperation {
-                updateStandaloneTotpResourceInteractor.execute(
-                    UpdateResourceInteractor.CommonInput(
-                        resourceId = resource.resourceId,
-                        resourceName = label,
-                        resourceUsername = resource.username,
-                        resourceUri = issuer,
-                        resourceParentFolderId = resource.folderId
-                    ),
-                    UpdateStandaloneTotpResourceInteractor.UpdateStandaloneTotpInput(
-                        period = period,
-                        digits = digits,
-                        algorithm = algorithm,
-                        secretKey = secretKey
-                    )
+    ): Flow<ResourceUpdateActionResult> =
+        updateResource(
+            updateAction = UpdateAction.EDIT_TOTP,
+            updateResource = { newResourceTypeSlug ->
+                UpdateResourceInteractor.ResourceInput(
+                    resourceId = resource.resourceId,
+                    resourceName = label,
+                    resourceUsername = resource.username,
+                    resourceUri = issuer,
+                    resourceParentFolderId = resource.folderId,
+                    description = null,
+                    newResourceTypeSlug = newResourceTypeSlug
                 )
+            },
+            updateSecret = { decryptedSecret ->
+                decryptedSecret.apply {
+                    this.totpAlgorithm = algorithm
+                    this.totpKey = secretKey
+                    this.totpDigits = digits
+                    this.totpPeriod = period.toInt()
+                }
             }
         )
-    }
 
     suspend fun updateSimplePasswordResource(
         resourceName: String,
@@ -145,25 +169,26 @@ class ResourceUpdateActionsInteractor(
         resourceParentFolderId: String?,
         password: String,
         description: String?
-    ): Flow<ResourceUpdateActionResult> {
-        return flowOf(
-            runUpdateOperation {
-                updateSimplePasswordResourceInteractor.execute(
-                    UpdateResourceInteractor.CommonInput(
-                        resourceId = resource.resourceId,
-                        resourceName = resourceName, // validated to be not null
-                        resourceUsername = resourceUsername,
-                        resourceUri = resourceUri,
-                        resourceParentFolderId = resourceParentFolderId
-                    ),
-                    UpdateSimplePasswordResourceInteractor.UpdateSimplePasswordInput(
-                        password = password,
-                        description = description
-                    )
+    ): Flow<ResourceUpdateActionResult> =
+        updateResource(
+            updateAction = UpdateAction.EDIT_PASSWORD,
+            updateResource = { newResourceTypeSlug ->
+                UpdateResourceInteractor.ResourceInput(
+                    resourceId = resource.resourceId,
+                    resourceName = resourceName, // validated to be not null
+                    resourceUsername = resourceUsername,
+                    resourceUri = resourceUri,
+                    resourceParentFolderId = resourceParentFolderId,
+                    description = description,
+                    newResourceTypeSlug = newResourceTypeSlug
                 )
+            },
+            updateSecret = { decryptedSecret ->
+                decryptedSecret.apply {
+                    this.password = password
+                }
             }
         )
-    }
 
     suspend fun updateLinkedTotpResourceTotpFields(
         label: String,
@@ -172,38 +197,29 @@ class ResourceUpdateActionsInteractor(
         digits: Int,
         algorithm: String,
         secretKey: String
-    ): Flow<ResourceUpdateActionResult> {
-        val passwordAndDescriptionSecret =
-            secretPropertiesActionsInteractor.providePasswordAndSecretDescription().single()
-        return flowOf(
-            when (passwordAndDescriptionSecret) {
-                is SecretPropertyActionResult.DecryptionFailure -> ResourceUpdateActionResult.CryptoFailure()
-                is SecretPropertyActionResult.FetchFailure -> ResourceUpdateActionResult.FetchFailure
-                is SecretPropertyActionResult.Unauthorized -> ResourceUpdateActionResult.Unauthorized
-                is SecretPropertyActionResult.Success -> {
-                    runUpdateOperation {
-                        updateLinkedTotpResourceInteractor.execute(
-                            UpdateResourceInteractor.CommonInput(
-                                resourceId = resource.resourceId,
-                                resourceName = label,
-                                resourceUsername = resource.username,
-                                resourceUri = issuer,
-                                resourceParentFolderId = resource.folderId
-                            ),
-                            UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
-                                period = period,
-                                digits = digits,
-                                algorithm = algorithm,
-                                secretKey = secretKey,
-                                description = passwordAndDescriptionSecret.result.description.orEmpty(),
-                                password = passwordAndDescriptionSecret.result.password
-                            )
-                        )
-                    }
+    ): Flow<ResourceUpdateActionResult> =
+        updateResource(
+            updateAction = UpdateAction.EDIT_TOTP,
+            updateResource = { newResourceTypeSlug ->
+                UpdateResourceInteractor.ResourceInput(
+                    resourceId = resource.resourceId,
+                    resourceName = label,
+                    resourceUsername = resource.username,
+                    resourceUri = issuer,
+                    resourceParentFolderId = resource.folderId,
+                    description = null,
+                    newResourceTypeSlug = newResourceTypeSlug
+                )
+            },
+            updateSecret = { decryptedSecret ->
+                decryptedSecret.apply {
+                    this.totpAlgorithm = algorithm
+                    this.totpKey = secretKey
+                    this.totpDigits = digits
+                    this.totpPeriod = period.toInt()
                 }
             }
         )
-    }
 
     suspend fun updateLinkedTotpResourcePasswordFields(
         resourceName: String,
@@ -212,35 +228,59 @@ class ResourceUpdateActionsInteractor(
         resourceParentFolderId: String?,
         password: String,
         description: String?
-    ): Flow<ResourceUpdateActionResult> {
-        val otpSecret = secretPropertiesActionsInteractor.provideOtp().single()
-        return flowOf(
-            when (otpSecret) {
-                is SecretPropertyActionResult.DecryptionFailure -> ResourceUpdateActionResult.CryptoFailure()
-                is SecretPropertyActionResult.FetchFailure -> ResourceUpdateActionResult.FetchFailure
-                is SecretPropertyActionResult.Unauthorized -> ResourceUpdateActionResult.Unauthorized
-                is SecretPropertyActionResult.Success ->
-                    runUpdateOperation {
-                        updateLinkedTotpResourceInteractor.execute(
-                            UpdateResourceInteractor.CommonInput(
-                                resourceId = resource.resourceId,
-                                resourceName = resourceName,
-                                resourceUsername = resourceUsername,
-                                resourceUri = resourceUri,
-                                resourceParentFolderId = resourceParentFolderId
-                            ),
-                            UpdateLinkedTotpResourceInteractor.UpdateToLinkedTotpInput(
-                                period = otpSecret.result.period,
-                                digits = otpSecret.result.digits,
-                                algorithm = otpSecret.result.algorithm,
-                                secretKey = otpSecret.result.key,
-                                description = description.orEmpty(),
-                                password = password
-                            )
-                        )
-                    }
+    ): Flow<ResourceUpdateActionResult> =
+        updateResource(
+            updateAction = UpdateAction.EDIT_PASSWORD,
+            updateResource = { newResourceTypeSlug ->
+                UpdateResourceInteractor.ResourceInput(
+                    resourceId = resource.resourceId,
+                    resourceName = resourceName,
+                    resourceUsername = resourceUsername,
+                    resourceUri = resourceUri,
+                    resourceParentFolderId = resourceParentFolderId,
+                    description = null,
+                    newResourceTypeSlug = newResourceTypeSlug
+                )
+            },
+            updateSecret = { decryptedSecret ->
+                decryptedSecret.apply {
+                    this.secret = password
+                    this.description = description.orEmpty()
+                }
             }
         )
+
+    private suspend fun updateResource(
+        updateAction: UpdateAction,
+        updateResource: (String) -> UpdateResourceInteractor.ResourceInput,
+        updateSecret: (DecryptedSecret) -> DecryptedSecret
+    ): Flow<ResourceUpdateActionResult> {
+        return try {
+            val decryptedSecret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
+            val newResourceTypeSlug = resourceTypesUpdateGraph.getResourceTypeSlugAfterUpdate(
+                idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]!!,
+                updateAction
+            )
+            flowOf(
+                when (decryptedSecret) {
+                    is SecretPropertyActionResult.Success ->
+                        runUpdateOperation {
+                            updateResourceInteractor.execute(
+                                updateResource(newResourceTypeSlug),
+                                updateSecret(decryptedSecret.result)
+                            )
+                        }
+                    is SecretPropertyActionResult.FetchFailure ->
+                        ResourceUpdateActionResult.FetchFailure
+                    is SecretPropertyActionResult.DecryptionFailure ->
+                        ResourceUpdateActionResult.CryptoFailure()
+                    else -> ResourceUpdateActionResult.Failure()
+                }
+            )
+        } catch (e: Exception) {
+            Timber.e(e, "Error updating resource")
+            flowOf(ResourceUpdateActionResult.Failure())
+        }
     }
 
     private suspend fun runUpdateOperation(
