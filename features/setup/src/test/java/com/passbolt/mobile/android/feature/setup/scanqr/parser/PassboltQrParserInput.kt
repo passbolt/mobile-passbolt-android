@@ -51,3 +51,8 @@ internal val PASSBOLT_FIRST_PAGE_SCAN_WITH_INVALID_UUIDS = ("100{" +
         "\"authentication_token\":\"af32cb1f-c1ae-4753-9982-7cc0d2178355\"" +
         "}")
     .toByteArray()
+
+internal val PASSBOLT_ACCOUNT_KIT_PAGE_SCAN = ("200{" +
+        "\"account_kit_url\":\"mock_url\"" +
+        "}")
+    .toByteArray()

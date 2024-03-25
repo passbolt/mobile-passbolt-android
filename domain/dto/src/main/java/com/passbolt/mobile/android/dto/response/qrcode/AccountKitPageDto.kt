@@ -1,12 +1,7 @@
-package com.passbolt.mobile.android.common
+package com.passbolt.mobile.android.dto.response.qrcode
 
-import com.passbolt.mobile.android.common.time.AndroidTimeProvider
-import com.passbolt.mobile.android.common.time.TimeProvider
-import com.passbolt.mobile.android.common.usecase.FetchFileAsStringUseCase
-import org.koin.android.ext.koin.androidApplication
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Passbolt - Open source password manager for teams
@@ -31,14 +26,8 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
-val commonModule = module {
-    single {
-        ResourceDimenProvider(
-            androidApplication().resources
-        )
-    }
-
-    singleOf(::DomainProvider)
-    singleOf(::AndroidTimeProvider) bind TimeProvider::class
-    singleOf(::FetchFileAsStringUseCase)
-}
+@Serializable
+data class AccountKitPageDto(
+    @SerialName("account_kit_url")
+    val accountKitUrl: String
+)

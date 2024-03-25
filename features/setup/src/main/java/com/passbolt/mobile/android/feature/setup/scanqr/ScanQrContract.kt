@@ -53,6 +53,8 @@ interface ScanQrContract {
         fun showHelpMenu()
         fun navigateToImportProfile()
         fun showAccountKitFilePicker()
+        fun showProgress()
+        fun hideProgress()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
