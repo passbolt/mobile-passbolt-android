@@ -29,6 +29,11 @@ import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsI
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
@@ -43,6 +48,7 @@ import org.koin.core.parameter.parametersOf
 
 class ScanOtpSuccessPresenter(
     private val createStandaloneTotpResourceInteractor: CreateStandaloneTotpResourceInteractor,
+    private val resourceTypeFactory: ResourceTypeFactory,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ScanOtpSuccessContract.View>(coroutineLaunchContext),
     ScanOtpSuccessContract.Presenter, KoinComponent {
@@ -93,20 +99,36 @@ class ScanOtpSuccessPresenter(
         scope.launch {
             view?.showProgress()
 
-            val resourceUpdateActionInteractor = get<ResourceUpdateActionsInteractor> {
+            val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
                 parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
             }
+            val updateOperation =
+                when (resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
+                    SIMPLE_PASSWORD, STANDALONE_TOTP ->
+                        throw IllegalArgumentException("These resource types are not possible to link")
+                    PASSWORD_WITH_DESCRIPTION -> suspend {
+                        resourceUpdateActionsInteractor.addTotpToResource(
+                            overrideName = resource.name,
+                            overrideUri = resource.url,
+                            period = scannedTotp.period,
+                            digits = scannedTotp.digits,
+                            algorithm = scannedTotp.algorithm.name,
+                            secretKey = scannedTotp.secret
+                        )
+                    }
+                    PASSWORD_DESCRIPTION_TOTP -> suspend {
+                        resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
+                            label = resource.name,
+                            issuer = resource.url,
+                            period = scannedTotp.period,
+                            digits = scannedTotp.digits,
+                            algorithm = scannedTotp.algorithm.name,
+                            secretKey = scannedTotp.secret
+                        )
+                    }
+                }
             performResourceUpdateAction(
-                action = {
-                    resourceUpdateActionInteractor.updateLinkedTotpResourceTotpFields(
-                        label = resource.name,
-                        issuer = resource.url,
-                        period = scannedTotp.period,
-                        digits = scannedTotp.digits,
-                        algorithm = scannedTotp.algorithm.name,
-                        secretKey = scannedTotp.secret
-                    )
-                },
+                action = updateOperation,
                 doOnFailure = { view?.showGenericError() },
                 doOnFetchFailure = { view?.showGenericError() },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },

@@ -94,6 +94,7 @@ interface ResourceDetailsContract {
         fun showJsonSecretSchemaValidationError()
         fun displayExpirySection(expiry: ZonedDateTime)
         fun showExpiryIndicator()
+        fun navigateToOtpCreateMenu()
     }
 
     @Suppress("TooManyFunctions")
@@ -130,5 +131,6 @@ interface ResourceDetailsContract {
         fun editOtpManuallyClick()
         fun manageTotpClick()
         fun totpDeleteConfirmed()
+        fun menuAddTotpClick()
     }
 }

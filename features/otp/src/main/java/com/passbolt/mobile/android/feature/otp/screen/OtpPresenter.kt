@@ -401,7 +401,7 @@ class OtpPresenter(
 
         performResourceUpdateAction(
             action = {
-                resourceUpdateActionInteractor.downgradeToPasswordAndDescriptionResource()
+                resourceUpdateActionInteractor.deleteTotpFromResource()
             },
             doOnCryptoFailure = { view?.showEncryptionError(it) },
             doOnFailure = { view?.showError(it) },
@@ -494,8 +494,8 @@ class OtpPresenter(
                         throw IllegalArgumentException("These resource types are not shown on TOTP tab")
                     STANDALONE_TOTP ->
                         resourceUpdateActionsInteractor.updateStandaloneTotpResource(
-                            label = resource.name,
-                            issuer = resource.url,
+                            label = totpQr.label,
+                            issuer = totpQr.issuer,
                             period = totpQr.period,
                             digits = totpQr.digits,
                             algorithm = totpQr.algorithm.name,

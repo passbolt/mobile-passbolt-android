@@ -56,7 +56,6 @@ val testParserModule = module {
     }
     single {
         SecretParser(
-            gson = get(),
             secretValidationRunner = get(),
             resourceTypeIdToSlugMappingProvider = mockIdToSlugMappingProvider
         )

@@ -538,6 +538,10 @@ class HomeFragment :
     }
 
     override fun menuAddTotpClick() {
+        presenter.menuAddTotpClick()
+    }
+
+    override fun navigateToOtpCreateMenu() {
         OtpCreateMoreMenuFragment()
             .show(childFragmentManager, OtpCreateMoreMenuFragment::class.java.name)
     }

@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.core.resources
-
-import com.google.gson.Gson
-import com.passbolt.mobile.android.dto.request.SecretsDto
-import com.passbolt.mobile.android.dto.request.TotpSecretsDto
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,17 +20,10 @@ import com.passbolt.mobile.android.dto.request.TotpSecretsDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SecretInputCreator(
-    private val gson: Gson
-) {
 
-    fun createPasswordWithDescriptionSecretInput(password: String, description: String?): String =
-        gson.toJson(
-            SecretsDto(password, description.orEmpty())
-        )
+package com.passbolt.mobile.android.ui
 
-    fun createTotpSecretInput(algorithm: String, key: String, digits: Int, period: Long): String =
-        gson.toJson(
-            TotpSecretsDto(TotpSecretsDto.Totp(algorithm, key, digits, period))
-        )
+enum class ManageTotpAction {
+    ADD_TOTP,
+    EDIT_TOTP
 }
