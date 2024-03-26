@@ -43,7 +43,6 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import java.util.UUID
@@ -232,7 +231,8 @@ class ResourceListDeserializerTest : KoinTest {
                 favorite = null,
                 modified = "",
                 tags = emptyList(),
-                permissions = emptyList()
+                permissions = emptyList(),
+                expired = null
             )
         )
 
@@ -267,7 +267,8 @@ class ResourceListDeserializerTest : KoinTest {
                 favorite = null,
                 modified = "",
                 tags = emptyList(),
-                permissions = emptyList()
+                permissions = emptyList(),
+                expired = null
             )
         )
 
@@ -303,7 +304,8 @@ class ResourceListDeserializerTest : KoinTest {
                 favorite = null,
                 modified = "",
                 tags = emptyList(),
-                permissions = emptyList()
+                permissions = emptyList(),
+                expired = null
             )
         )
 
@@ -339,7 +341,8 @@ class ResourceListDeserializerTest : KoinTest {
                 favorite = null,
                 modified = "",
                 tags = emptyList(),
-                permissions = emptyList()
+                permissions = emptyList(),
+                expired = null
             )
         )
 
@@ -375,7 +378,8 @@ class ResourceListDeserializerTest : KoinTest {
                 favorite = null,
                 modified = "",
                 tags = emptyList(),
-                permissions = emptyList()
+                permissions = emptyList(),
+                expired = null
             )
         )
 

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.format.DateUtils
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -65,6 +66,7 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
+import java.time.ZonedDateTime
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -244,6 +246,26 @@ class ResourceDetailsFragment :
 
     override fun displayTitle(title: String) {
         binding.name.text = title
+    }
+
+    override fun displayExpiryTitle(name: String) {
+        binding.name.text = getString(LocalizationR.string.name_expired, name)
+    }
+
+    override fun showExpiryIndicator() {
+        binding.indicatorIcon.setImageResource(CoreUiR.drawable.ic_excl_indicator)
+    }
+
+    override fun displayExpirySection(expiry: ZonedDateTime) {
+        with(binding) {
+            expiryItem.visible()
+            expiryItem.textValue = DateUtils.getRelativeTimeSpanString(
+                expiry.toInstant().toEpochMilli(),
+                ZonedDateTime.now().toInstant().toEpochMilli(),
+                DateUtils.MINUTE_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_RELATIVE
+            ).toString()
+        }
     }
 
     override fun displayUsername(username: String) {

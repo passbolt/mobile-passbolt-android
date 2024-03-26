@@ -58,7 +58,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWi
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
@@ -311,6 +311,7 @@ class HomePresenter(
                     is HomeDisplayViewModel.RecentlyModified -> HomeDisplayViewModel.RecentlyModified
                     is HomeDisplayViewModel.SharedWithMe -> HomeDisplayViewModel.SharedWithMe
                     is HomeDisplayViewModel.Tags -> HomeDisplayViewModel.tagsRoot()
+                    is HomeDisplayViewModel.Expiry -> HomeDisplayViewModel.Expiry
                 }
             )
             view?.showContentNotAvailable()
@@ -380,6 +381,7 @@ class HomePresenter(
         is HomeDisplayViewModel.RecentlyModified -> true
         is HomeDisplayViewModel.SharedWithMe -> true
         is HomeDisplayViewModel.Tags -> activeHomeView.activeTagId == null // tags root
+        is HomeDisplayViewModel.Expiry -> true
     }
 
     override fun userAuthenticated() {
@@ -804,6 +806,10 @@ class HomePresenter(
         navigateToHomeView(HomeDisplayViewModel.OwnedByMe)
     }
 
+    override fun expiryClick() {
+        navigateToHomeView(HomeDisplayViewModel.Expiry)
+    }
+
     override fun foldersClick() {
         navigateToHomeView(HomeDisplayViewModel.folderRoot())
     }
@@ -958,7 +964,7 @@ class HomePresenter(
     private fun doAfterOtpFetchAndDecrypt(
         action: (
             ClipboardLabel,
-            DecryptedSecret.StandaloneTotp.Totp,
+            TotpSecret,
             TotpParametersProvider.OtpParameters
         ) -> Unit
     ) {

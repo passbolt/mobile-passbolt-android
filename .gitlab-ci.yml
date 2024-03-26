@@ -18,19 +18,14 @@ stages:
   - Deploy
 
 # run all static analysis and reporting tools
-Run verifications:
+Run required verifications:
   stage: Build
   script:
     - >
       ./gradlew --no-daemon --build-cache 
       detekt 
       ktlint 
-      lintRelease 
-      unitTest 
-      koverMergedHtmlReport 
-      licenseeRelease 
-      dependencyUpdates 
-      buildHealth
+      unitTest
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "schedule"'
   artifacts:
@@ -39,15 +34,32 @@ Run verifications:
     paths:
       - "**/reports/ktlint-report.xml"
       - "**/reports/detekt-report.xml"
-      - "**/lint-results-*.html"
       - "**/test-results/**/TEST-*.xml"
+    reports:
+      junit: "**/test-results/**/TEST-*.xml"
+
+# run all static analysis and reporting tools
+Run extensive verifications:
+  stage: Build
+  script:
+    - >
+      ./gradlew --no-daemon --build-cache 
+      lintRelease 
+      koverMergedHtmlReport 
+      licenseeRelease 
+      dependencyUpdates 
+      buildHealth
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+  artifacts:
+    when: always
+    expire_in: 72 hrs
+    paths:
+      - "**/lint-results-*.html"
       - build/reports/kover/html/
       - build/dependencyUpdates/dependecyUpdates.txt
       - build/reports/build-health-report.txt
-    reports:
-      junit: "**/test-results/**/TEST-*.xml"
-  variables:
-    KUBERNETES_MEMORY_REQUEST: "13Gi"
 
 # run instrumented tests on Sauce Labs
 Run instrumented tests on Sauce Labs:

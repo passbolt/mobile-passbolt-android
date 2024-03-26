@@ -2,6 +2,10 @@ package com.passbolt.mobile.android.ui
 
 import android.os.Parcelable
 import com.passbolt.mobile.android.common.search.Searchable
+import com.passbolt.mobile.android.delegates.JsonModel
+import com.passbolt.mobile.android.delegates.JsonPathDelegate
+import com.passbolt.mobile.android.delegates.JsonPathNullableDelegate
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.time.ZonedDateTime
 
@@ -28,25 +32,34 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 
-// TODO move UI stuff do wrapper
 @Parcelize
 data class ResourceModel(
     val resourceId: String,
     val resourceTypeId: String,
     val folderId: String?,
-    val name: String,
-    val username: String?,
-    val icon: String?,
     val initials: String,
-    val url: String?,
-    val description: String?,
     val permission: ResourcePermission,
     val favouriteId: String?,
     val modified: ZonedDateTime,
-    var loaderVisible: Boolean = false,
-    var clickable: Boolean = true,
+    val expiry: ZonedDateTime?,
+    override var json: String
+) : Parcelable, Searchable, JsonModel {
+
+    @IgnoredOnParcel
+    var name: String by JsonPathDelegate(jsonPath = "$.name")
+
+    @IgnoredOnParcel
+    var username: String? by JsonPathNullableDelegate(jsonPath = "$.username")
+
+    @IgnoredOnParcel
+    var description: String? by JsonPathNullableDelegate(jsonPath = "$.description")
+
+    @IgnoredOnParcel
+    var url: String? by JsonPathNullableDelegate(jsonPath = "$.uri")
+
+    @IgnoredOnParcel
     override val searchCriteria: String = "$name$username$url"
-) : Parcelable, Searchable
+}
 
 fun ResourceModel.isFavourite() = favouriteId != null
 

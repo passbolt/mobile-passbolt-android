@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.tagsdetails
 
+import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase.Output
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
@@ -93,18 +94,20 @@ class ResourceTagsPresenterTest : KoinTest {
         private const val RESOURCE_TYPE_ID = "resTypeId"
         private const val FOLDER_ID_ID = "folderId"
         private val RESOURCE_MODEL = ResourceModel(
-            ID,
-            RESOURCE_TYPE_ID,
-            FOLDER_ID_ID,
-            NAME,
-            USERNAME,
-            null,
-            INITIALS,
-            URL,
-            DESCRIPTION,
-            ResourcePermission.READ,
-            "fav-id",
-            ZonedDateTime.now()
+            resourceId = ID,
+            resourceTypeId = RESOURCE_TYPE_ID,
+            folderId = FOLDER_ID_ID,
+            initials = INITIALS,
+            permission = ResourcePermission.READ,
+            favouriteId = "fav-id",
+            modified = ZonedDateTime.now(),
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString()
         )
         private val RESOURCE_TAGS = listOf(
             TagModel("id1", "tag1", false),

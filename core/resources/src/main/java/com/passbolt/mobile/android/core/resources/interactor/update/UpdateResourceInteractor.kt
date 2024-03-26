@@ -75,7 +75,7 @@ abstract class UpdateResourceInteractor<CustomInput>(
             is FetchUsersUseCase.Output.Failure<*> -> Output.Failure(usersWhoHaveAccess.response)
             is FetchUsersUseCase.Output.Success -> {
                 val plainSecret = createSecret(input, customInput, passphrase)
-                if (isSecretValid(plainSecret)) {
+                if (isSecretValid(PlainSecretValidationWrapper(plainSecret, slug).validationPlainSecret)) {
                     createResource(plainSecret, passphrase, usersWhoHaveAccess, input, customInput)
                 } else {
                     Output.JsonSchemaValidationFailure(SECRET)

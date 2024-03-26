@@ -3,10 +3,11 @@ package com.passbolt.mobile.android.resourcepicker.recycler
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
-import coil.load
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import com.passbolt.mobile.android.common.extension.isInFuture
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
 import com.passbolt.mobile.android.feature.resourcepicker.R
 import com.passbolt.mobile.android.feature.resourcepicker.databinding.ItemSelectableResourceBinding
@@ -28,12 +29,31 @@ class SelectableResourceItem(
     override fun bindView(binding: ItemSelectableResourceBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            title.text = resourcePickerListItem.resourceModel.name
             selectionRadioButton.isChecked = resourcePickerListItem.isSelected
             root.alpha = if (resourcePickerListItem.isSelectable) ALPHA_ENABLED else ALPHA_DISABLED
+            setupTitleAndExpiry(this)
             setupUsername(this)
             setupInitialsIcon(this)
             setupSelection(this)
+        }
+    }
+
+    private fun setupTitleAndExpiry(binding: ItemSelectableResourceBinding) {
+        resourcePickerListItem.resourceModel.expiry.let { expiry ->
+            if (expiry == null || expiry.isInFuture()) {
+                binding.title.text = resourcePickerListItem.resourceModel.name
+                binding.indicatorIcon.setImageDrawable(null)
+            } else {
+                binding.title.text = binding.root.context.getString(
+                    LocalizationR.string.name_expired, resourcePickerListItem.resourceModel.name
+                )
+                binding.indicatorIcon.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        binding.root.context,
+                        CoreUiR.drawable.ic_excl_indicator
+                    )
+                )
+            }
         }
     }
 
@@ -46,17 +66,11 @@ class SelectableResourceItem(
     }
 
     private fun setupInitialsIcon(binding: ItemSelectableResourceBinding) {
-        val initialsIcons = initialsIconGenerator.generate(
+        initialsIconGenerator.generate(
             resourcePickerListItem.resourceModel.name,
             resourcePickerListItem.resourceModel.initials
-        )
-        with(binding) {
-            icon.setImageDrawable(initialsIcons)
-            resourcePickerListItem.resourceModel.icon?.let {
-                icon.load(it) {
-                    placeholder(initialsIcons)
-                }
-            }
+        ).apply {
+            binding.icon.setImageDrawable(this)
         }
     }
 

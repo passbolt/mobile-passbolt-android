@@ -3,11 +3,13 @@ package com.passbolt.mobile.android.feature.otp.screen.recycler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.listeners.ClickEventHook
+import com.passbolt.mobile.android.common.extension.isInFuture
 import com.passbolt.mobile.android.core.extension.asBinding
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController
 import com.passbolt.mobile.android.core.ui.controller.TotpViewController.StateParameters
@@ -19,6 +21,8 @@ import com.passbolt.mobile.android.feature.otp.databinding.ItemOtpBinding
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import com.passbolt.mobile.android.core.localization.R as LocalizationR
+import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -58,15 +62,33 @@ class OtpItem(
     override fun bindView(binding: ItemOtpBinding, payloads: List<Any>) {
         super.bindView(binding, payloads)
         with(binding) {
-            name.text = otpModel.resource.name
+            setupTitleAndExpiry(this)
             icon.setImageDrawable(initialsIconGenerator.generate(otpModel.resource.name, otpModel.resource.initials))
             eye.isVisible = !otpModel.isVisible && !otpModel.isRefreshing
-
             totpViewController.updateView(
                 ViewParameters(binding.progress, binding.otp, binding.generationInProgress),
                 StateParameters(otpModel.isRefreshing, otpModel.isVisible, otpModel.otpValue),
                 TimeParameters(otpModel.otpExpirySeconds, otpModel.remainingSecondsCounter)
             )
+        }
+    }
+
+    private fun setupTitleAndExpiry(binding: ItemOtpBinding) {
+        otpModel.resource.expiry.let { expiry ->
+            if (expiry == null || expiry.isInFuture()) {
+                binding.name.text = otpModel.resource.name
+                binding.indicatorIcon.setImageDrawable(null)
+            } else {
+                binding.name.text = binding.root.context.getString(
+                    LocalizationR.string.name_expired, otpModel.resource.name
+                )
+                binding.indicatorIcon.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        binding.root.context,
+                        CoreUiR.drawable.ic_excl_indicator
+                    )
+                )
+            }
         }
     }
 

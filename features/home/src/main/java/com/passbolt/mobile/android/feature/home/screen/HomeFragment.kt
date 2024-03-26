@@ -50,7 +50,6 @@ import com.passbolt.mobile.android.feature.home.R
 import com.passbolt.mobile.android.feature.home.databinding.FragmentHomeBinding
 import com.passbolt.mobile.android.feature.home.filtersmenu.FiltersMenuFragment
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.feature.home.screen.model.State
 import com.passbolt.mobile.android.feature.home.screen.recycler.FolderItem
 import com.passbolt.mobile.android.feature.home.screen.recycler.GroupWithCountItem
@@ -74,6 +73,8 @@ import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
 import com.passbolt.mobile.android.ui.FolderWithCountAndPath
 import com.passbolt.mobile.android.ui.GroupWithCount
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
+import com.passbolt.mobile.android.ui.ResourceItemWrapper
 import com.passbolt.mobile.android.ui.ResourceListUiModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourceMoreMenuModel
@@ -398,9 +399,9 @@ class HomeFragment :
         // suggested items
         FastAdapterDiffUtil.calculateDiff(
             suggestedItemsItemAdapter,
-            suggestedResources.map {
+            suggestedResources.map { resourceModel ->
                 PasswordItem(
-                    it,
+                    ResourceItemWrapper(resourceModel),
                     initialsIconGenerator,
                     resourceHandlingStrategy.shouldShowResourceMoreMenu()
                 )
@@ -429,9 +430,9 @@ class HomeFragment :
         // current folder resources
         FastAdapterDiffUtil.calculateDiff(
             passwordItemAdapter,
-            resourceList.map {
+            resourceList.map { resourceModel ->
                 PasswordItem(
-                    it,
+                    ResourceItemWrapper(resourceModel),
                     initialsIconGenerator,
                     dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()
                 )
@@ -446,9 +447,9 @@ class HomeFragment :
         // sub-folders resources
         FastAdapterDiffUtil.calculateDiff(
             childrenPasswordItemAdapter,
-            filteredSubFolderResourceList.map {
+            filteredSubFolderResourceList.map { resourceModel ->
                 PasswordItem(
-                    it,
+                    ResourceItemWrapper(resourceModel),
                     initialsIconGenerator,
                     dotsVisible = resourceHandlingStrategy.shouldShowResourceMoreMenu()
                 )
@@ -730,6 +731,10 @@ class HomeFragment :
         presenter.ownedByMeClick()
     }
 
+    override fun menuExpiryClick() {
+        presenter.expiryClick()
+    }
+
     override fun menuFoldersClick() {
         presenter.foldersClick()
     }
@@ -783,6 +788,10 @@ class HomeFragment :
             is HomeDisplayViewModel.Groups -> showScreenTitleWithStartIcon(
                 LocalizationR.string.filters_menu_groups,
                 CoreUiR.drawable.ic_group
+            )
+            HomeDisplayViewModel.Expiry -> showScreenTitleWithStartIcon(
+                LocalizationR.string.filters_menu_expiry,
+                CoreUiR.drawable.ic_calendar_clock
             )
         }
     }

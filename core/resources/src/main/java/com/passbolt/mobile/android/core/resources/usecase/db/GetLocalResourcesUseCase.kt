@@ -3,10 +3,10 @@ package com.passbolt.mobile.android.core.resources.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -49,6 +49,7 @@ class GetLocalResourcesUseCase(
                     is ResourceDatabaseView.ByNameAscending -> it.getAllOrderedByName(input.slugs)
                     is ResourceDatabaseView.IsFavourite -> it.getFavourites(input.slugs)
                     is ResourceDatabaseView.HasPermissions -> it.getWithPermissions(viewType.permissions, input.slugs)
+                    is ResourceDatabaseView.HasExpiry -> it.getExpiredResources(input.slugs)
                 }
             }
 

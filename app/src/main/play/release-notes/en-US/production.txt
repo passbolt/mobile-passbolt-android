@@ -1,15 +1,8 @@
-# Passbolt 1.18.0-28 Android app release notes
+# Passbolt 1.19.0-29 Android app release notes
 
 ## Added
-- MOB-1547: Add option to setup the account using account kit
-- MOB-1532: Add support for suspended users
-
-## Improved
-- MOB-1501: Unify showing of description field on the UI with password field
+- Resource and secret models are now based on JSON
+- Support for expired resources
 
 ## Security
-- MOB-1505: Use json schema to validate local forms before sending payload to backend
-- MOB-1505: Validate resources and secrets using json schema format on fetch
-
-## Maintenance
-- Bump target SDK to 34; Update libraries
+- JSON models support full JSON schema validation (validation can be changed dynamically)

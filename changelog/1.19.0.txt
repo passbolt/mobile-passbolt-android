@@ -1,0 +1,11 @@
+# Passbolt 1.19.0-29 Android app release notes
+
+## Added
+- Resource and secret models are now based on JSON
+- Support for expired resources
+
+## Security
+- JSON models support full JSON schema validation (validation can be changed dynamically)
+
+## Maintenance
+- Split verification jobs into two flows (push and PRs) to save running time

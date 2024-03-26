@@ -66,6 +66,11 @@ interface FiltersMenuContract {
         fun selectOwnedByMeItem()
 
         /**
+         * Selects expiry item in the menu
+         */
+        fun selectExpiryMenuItem()
+
+        /**
          * Selects folders item in the menu
          */
         fun selectFoldersMenuItem()
@@ -115,5 +120,6 @@ interface FiltersMenuContract {
         fun foldersClick()
         fun tagsClick()
         fun groupsClick()
+        fun expiryClick()
     }
 }

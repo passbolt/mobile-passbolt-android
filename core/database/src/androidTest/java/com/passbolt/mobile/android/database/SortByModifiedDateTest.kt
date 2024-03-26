@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import com.google.gson.JsonObject
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
@@ -91,7 +92,9 @@ class SortByModifiedDateTest {
         private val RESOURCE_TYPE = ResourceType(
             resourceTypeId = "1",
             name = "password-description",
-            slug = PASSWORD_DESCRIPTION_SLUG
+            slug = PASSWORD_DESCRIPTION_SLUG,
+            resourceSchemaJson = JsonObject(),
+            secretSchemaJson = JsonObject()
         )
 
         private val RESOURCE_1 = Resource(
@@ -104,7 +107,9 @@ class SortByModifiedDateTest {
             description = null,
             resourceTypeId = "1",
             favouriteId = null,
-            modified = ZonedDateTime.now()
+            modified = ZonedDateTime.now(),
+            expiry = null,
+            resourceJson = String()
         )
         private val RESOURCE_2 = Resource(
             resourceId = "2",
@@ -116,7 +121,9 @@ class SortByModifiedDateTest {
             description = null,
             resourceTypeId = "1",
             favouriteId = null,
-            modified = ZonedDateTime.now().plusDays(1)
+            modified = ZonedDateTime.now().plusDays(1),
+            expiry = null,
+            resourceJson = String()
         )
         private val RESOURCE_3 = Resource(
             resourceId = "3",
@@ -128,7 +135,9 @@ class SortByModifiedDateTest {
             description = null,
             resourceTypeId = "1",
             favouriteId = null,
-            modified = ZonedDateTime.now().plusDays(2)
+            modified = ZonedDateTime.now().plusDays(2),
+            expiry = null,
+            resourceJson = String()
         )
         private val RESOURCE_1_ZONE_MINUS = Resource(
             resourceId = "4",
@@ -140,7 +149,9 @@ class SortByModifiedDateTest {
             description = null,
             resourceTypeId = "1",
             favouriteId = null,
-            modified = LocalDateTime.now().atZone(ZoneOffset.of("-08:00"))
+            modified = LocalDateTime.now().atZone(ZoneOffset.of("-08:00")),
+            expiry = null,
+            resourceJson = String()
         )
         private val RESOURCE_1_ZONE_PLUS = Resource(
             resourceId = "5",
@@ -152,7 +163,9 @@ class SortByModifiedDateTest {
             description = null,
             resourceTypeId = "1",
             favouriteId = null,
-            modified = LocalDateTime.now().atZone(ZoneOffset.of("+08:00"))
+            modified = LocalDateTime.now().atZone(ZoneOffset.of("+08:00")),
+            expiry = null,
+            resourceJson = String()
         )
     }
 }

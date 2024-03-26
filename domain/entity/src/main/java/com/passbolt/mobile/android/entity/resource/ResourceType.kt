@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.google.gson.JsonElement
 
 /**
  * Passbolt - Open source password manager for teams
@@ -34,7 +35,9 @@ data class ResourceType(
     @PrimaryKey
     val resourceTypeId: String,
     val name: String,
-    val slug: String
+    val slug: String,
+    val resourceSchemaJson: JsonElement,
+    val secretSchemaJson: JsonElement
 )
 
 @Entity

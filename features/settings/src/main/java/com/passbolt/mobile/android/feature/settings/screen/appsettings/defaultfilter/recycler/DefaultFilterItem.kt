@@ -81,6 +81,8 @@ class DefaultFilterItem(
                                 LocalizationR.string.filters_menu_tags to CoreUiR.drawable.ic_tag
                             DefaultFilterModel.GROUPS ->
                                 LocalizationR.string.filters_menu_groups to CoreUiR.drawable.ic_group
+                            DefaultFilterModel.EXPIRY ->
+                                LocalizationR.string.filters_menu_expiry to CoreUiR.drawable.ic_calendar_clock
                         }
                     )
                 }

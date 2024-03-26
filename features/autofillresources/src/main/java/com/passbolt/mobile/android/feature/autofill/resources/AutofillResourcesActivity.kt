@@ -5,8 +5,8 @@ import android.app.assist.AssistStructure
 import android.content.Intent
 import android.os.Bundle
 import android.view.autofill.AutofillManager.EXTRA_ASSIST_STRUCTURE
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import com.google.android.material.snackbar.Snackbar
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -23,7 +23,6 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -152,14 +151,13 @@ class AutofillResourcesActivity :
         hideProgressDialog(supportFragmentManager)
     }
 
-    override fun showError(message: String?) {
-        Snackbar.make(
-            binding.root,
-            getString(LocalizationR.string.common_failure_format, message), Snackbar.LENGTH_LONG
-        )
-            .apply {
-                view.setBackgroundColor(context.getColor(CoreUiR.color.red))
-                show()
-            }
+    override fun showDecryptionFailure() {
+        Toast.makeText(this, LocalizationR.string.common_decryption_failure, Toast.LENGTH_SHORT)
+            .show()
+    }
+
+    override fun showFetchFailure() {
+        Toast.makeText(this, LocalizationR.string.common_fetch_failure, Toast.LENGTH_SHORT)
+            .show()
     }
 }

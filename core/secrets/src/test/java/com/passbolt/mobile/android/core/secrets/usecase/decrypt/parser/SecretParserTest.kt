@@ -24,6 +24,10 @@
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_AND_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_DESCRIPTION_TOTP
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
@@ -41,6 +45,7 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
+import java.util.UUID
 
 class SecretParserTest : KoinTest {
 
@@ -74,29 +79,38 @@ class SecretParserTest : KoinTest {
     fun `password should parse correct for password string secret`() = runTest {
         val secret = "\\\"!@#_$%^&*()".toByteArray()
         mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(resourceId) } doReturn SIMPLE_PASSWORD
+            onBlocking { getResourceTypeEnum(resourceTypeId.toString()) } doReturn SIMPLE_PASSWORD
+        }
+        mockIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() } doReturn mapOf(
+                resourceTypeId to SLUG_SIMPLE_PASSWORD
+            )
         }
 
-        val extracted = secretParser.extractPassword(resourceId, secret)
+        val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
 
-        assertThat(extracted).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        assertThat((extracted as DecryptedSecretOrError.DecryptedSecret).secret).isEqualTo(String(secret))
+        assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+        assertThat((secretResult as DecryptedSecretOrError.DecryptedSecret).secret.password).isEqualTo(String(secret))
     }
 
     @Test
     fun `password and description should parse correct for password description secret`() = runTest {
         val secret = "{\"password\":\"\\\"!@#_\$%^&*()\", \"description\":\"desc\"}".toByteArray()
         mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(resourceId) } doReturn PASSWORD_WITH_DESCRIPTION
+            onBlocking { getResourceTypeEnum(resourceTypeId.toString()) } doReturn PASSWORD_WITH_DESCRIPTION
+        }
+        mockIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() } doReturn mapOf(
+                resourceTypeId to SLUG_PASSWORD_AND_DESCRIPTION
+            )
         }
 
-        val password = secretParser.extractPassword(resourceId, secret)
-        val description = secretParser.extractDescription(resourceId, secret)
+        val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
 
-        assertThat(password).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        assertThat((password as DecryptedSecretOrError.DecryptedSecret).secret).isEqualTo("\"!@#_\$%^&*()")
-        assertThat(description).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        assertThat((description as DecryptedSecretOrError.DecryptedSecret).secret).isEqualTo("desc")
+        assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+        val parsedSecret = (secretResult as DecryptedSecretOrError.DecryptedSecret).secret
+        assertThat(parsedSecret.secret).isEqualTo("\"!@#_\$%^&*()")
+        assertThat(parsedSecret.description).isEqualTo("desc")
     }
 
     @Test
@@ -109,17 +123,22 @@ class SecretParserTest : KoinTest {
                 "\"secret_key\":\"secret\"" + "}" +
                 "}").toByteArray()
         mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(resourceId) } doReturn STANDALONE_TOTP
+            onBlocking { getResourceTypeEnum(resourceTypeId.toString()) } doReturn STANDALONE_TOTP
+        }
+        mockIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() } doReturn mapOf(
+                resourceTypeId to SLUG_TOTP
+            )
         }
 
-        val totp = secretParser.extractTotpData(resourceId, secret)
+        val secretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
 
-        assertThat(totp).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        val totpData = (totp as DecryptedSecretOrError.DecryptedSecret).secret
-        assertThat(totpData.digits).isEqualTo(6)
-        assertThat(totpData.period).isEqualTo(30)
-        assertThat(totpData.algorithm).isEqualTo("SHA256")
-        assertThat(totpData.key).isEqualTo("secret")
+        assertThat(secretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+        val parsedSecret = (secretResult as DecryptedSecretOrError.DecryptedSecret).secret
+        assertThat(parsedSecret.totpDigits).isEqualTo(6)
+        assertThat(parsedSecret.totpPeriod).isEqualTo(30)
+        assertThat(parsedSecret.totpAlgorithm).isEqualTo("SHA256")
+        assertThat(parsedSecret.totpKey).isEqualTo("secret")
     }
 
     @Test
@@ -135,26 +154,27 @@ class SecretParserTest : KoinTest {
                 "}" +
                 "}").toByteArray()
         mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(resourceId) } doReturn PASSWORD_DESCRIPTION_TOTP
+            onBlocking { getResourceTypeEnum(resourceTypeId.toString()) } doReturn PASSWORD_DESCRIPTION_TOTP
+        }
+        mockIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() } doReturn mapOf(
+                resourceTypeId to SLUG_PASSWORD_DESCRIPTION_TOTP
+            )
         }
 
-        val password = secretParser.extractPassword(resourceId, secret)
-        val description = secretParser.extractDescription(resourceId, secret)
-        val totp = secretParser.extractTotpData(resourceId, secret)
+        val parsedSecretResult = secretParser.parseSecret(resourceTypeId.toString(), secret)
 
-        assertThat(password).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        assertThat((password as DecryptedSecretOrError.DecryptedSecret).secret).isEqualTo("pass")
-        assertThat(description).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        assertThat((description as DecryptedSecretOrError.DecryptedSecret).secret).isEqualTo("desc")
-        assertThat(totp).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
-        val totpData = (totp as DecryptedSecretOrError.DecryptedSecret).secret
-        assertThat(totpData.digits).isEqualTo(6)
-        assertThat(totpData.period).isEqualTo(30)
-        assertThat(totpData.algorithm).isEqualTo("SHA256")
-        assertThat(totpData.key).isEqualTo("secret")
+        assertThat(parsedSecretResult).isInstanceOf(DecryptedSecretOrError.DecryptedSecret::class.java)
+        val parsedSecret = (parsedSecretResult as DecryptedSecretOrError.DecryptedSecret).secret
+        assertThat(parsedSecret.secret).isEqualTo("pass")
+        assertThat(parsedSecret.description).isEqualTo("desc")
+        assertThat(parsedSecret.totpDigits).isEqualTo(6)
+        assertThat(parsedSecret.totpPeriod).isEqualTo(30)
+        assertThat(parsedSecret.totpAlgorithm).isEqualTo("SHA256")
+        assertThat(parsedSecret.totpKey).isEqualTo("secret")
     }
 
     private companion object {
-        private const val resourceId = "resourceId"
+        private val resourceTypeId = UUID.randomUUID()
     }
 }

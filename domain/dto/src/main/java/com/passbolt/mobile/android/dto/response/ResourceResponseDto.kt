@@ -45,8 +45,11 @@ data class ResourceResponseDto(
     val favorite: FavouriteDto?,
     val modified: String,
     val tags: List<TagDto>?,
+    val expired: String?,
     val permissions: List<PermissionWithGroupDto>?
-)
+) {
+    lateinit var resourceJson: String
+}
 
 data class TagDto(
     val id: UUID,

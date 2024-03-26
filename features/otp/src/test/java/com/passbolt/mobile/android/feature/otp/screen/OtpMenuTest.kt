@@ -23,13 +23,14 @@
 
 package com.passbolt.mobile.android.feature.otp.screen
 
+import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -96,7 +97,7 @@ class OtpMenuTest : KoinTest {
                 SecretPropertyActionResult.Success(
                     SecretPropertiesActionsInteractor.OTP_LABEL,
                     isSecret = true,
-                    DecryptedSecret.StandaloneTotp.Totp(
+                    TotpSecret(
                         OtpParseResult.OtpQr.Algorithm.SHA1.name,
                         "aaa",
                         6,
@@ -128,15 +129,17 @@ class OtpMenuTest : KoinTest {
                 resourceId = "resId",
                 resourceTypeId = "resTypeId",
                 folderId = null,
-                name = "name",
-                username = "username",
-                icon = "N",
                 initials = "in",
-                url = "url",
-                description = "desc",
                 permission = ResourcePermission.READ,
                 favouriteId = null,
-                modified = ZonedDateTime.now()
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                json = JsonObject().apply {
+                    addProperty("name", "")
+                    addProperty("username", "")
+                    addProperty("uri", "")
+                    addProperty("description", "")
+                }.toString()
             )
         )
     }

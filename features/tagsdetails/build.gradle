@@ -38,6 +38,7 @@ dependencies {
     implementation libs.swiperefresh
 
     testImplementation project(':commontest')
+    testImplementation libs.gson
 }
 
 android {

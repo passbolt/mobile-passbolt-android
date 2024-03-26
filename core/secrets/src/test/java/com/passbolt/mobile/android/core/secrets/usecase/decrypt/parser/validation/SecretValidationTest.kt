@@ -25,7 +25,7 @@ package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.validati
 
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.mockJSFSchemaRepository
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.testParserModule
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
@@ -94,13 +94,14 @@ class SecretValidationTest : KoinTest {
             (0..PASSWORD_AND_DESCRIPTION_DESCRIPTION_MAX_LENGTH + 1)
                 .joinToString { "a" }
         val invalidSecrets = listOf(
-            DecryptedSecret.PasswordWithDescription(
-                "desc",
-                tooLongPassword
-            ), DecryptedSecret.PasswordWithDescription(
-                tooLongDescription,
-                "pass"
-            )
+            JsonObject().apply {
+                addProperty("description", "desc")
+                addProperty("secret", tooLongPassword)
+            },
+            JsonObject().apply {
+                addProperty("description", tooLongDescription)
+                addProperty("secret", "pass")
+            },
         ).map { gson.toJson(it) }
 
         val results = invalidSecrets
@@ -118,10 +119,38 @@ class SecretValidationTest : KoinTest {
         val tooManyDigits = TOTP_DIGITS_INCLUSIVE_MAX + 1
 
         val invalidSecrets = listOf(
-            DecryptedSecret.StandaloneTotp(DecryptedSecret.StandaloneTotp.Totp(invalidAlgorithm, "A", 6, 1)),
-            DecryptedSecret.StandaloneTotp(DecryptedSecret.StandaloneTotp.Totp("SHA1", tooLongKey, 6, 1)),
-            DecryptedSecret.StandaloneTotp(DecryptedSecret.StandaloneTotp.Totp("SHA1", "A", tooFewDigits, 1)),
-            DecryptedSecret.StandaloneTotp(DecryptedSecret.StandaloneTotp.Totp("SHA1", "A", tooManyDigits, 1)),
+            JsonObject().apply {
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", invalidAlgorithm)
+                    addProperty("secret_key", "A")
+                    addProperty("digits", 6)
+                    addProperty("perdiod", 1)
+                })
+            },
+            JsonObject().apply {
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", "SHA1")
+                    addProperty("secret_key", tooLongKey)
+                    addProperty("digits", 6)
+                    addProperty("perdiod", 1)
+                })
+            },
+            JsonObject().apply {
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", "SHA1")
+                    addProperty("secret_key", "A")
+                    addProperty("digits", tooFewDigits)
+                    addProperty("perdiod", 1)
+                })
+            },
+            JsonObject().apply {
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", "SHA1")
+                    addProperty("secret_key", "A")
+                    addProperty("digits", tooManyDigits)
+                    addProperty("perdiod", 1)
+                })
+            },
         ).map { gson.toJson(it) }
 
         val results = invalidSecrets
@@ -146,35 +175,66 @@ class SecretValidationTest : KoinTest {
         val tooManyDigits =
             PASSWORD_DESCRIPTION_TOTP_TOTP_DIGITS_INCLUSIVE_MAX + 1
         val invalidSecrets = listOf(
-            DecryptedSecret.PasswordDescriptionTotp(
-                tooLongPassword,
-                "desc",
-                DecryptedSecret.StandaloneTotp.Totp("SHA-256", "A", 6, 1)
-            ), DecryptedSecret.PasswordDescriptionTotp(
-                tooLongDescription,
-                "pass",
-                DecryptedSecret.StandaloneTotp.Totp("SHA-256", "A", 6, 1)
-            ),
-            DecryptedSecret.PasswordDescriptionTotp(
-                "desc",
-                "pass",
-                DecryptedSecret.StandaloneTotp.Totp(invalidAlgorithm, "A", 6, 1)
-            ),
-            DecryptedSecret.PasswordDescriptionTotp(
-                "desc",
-                "pass",
-                DecryptedSecret.StandaloneTotp.Totp("SHA-256", tooLongKey, 6, 1)
-            ),
-            DecryptedSecret.PasswordDescriptionTotp(
-                "desc",
-                "pass",
-                DecryptedSecret.StandaloneTotp.Totp("SHA-256", "A", tooFewDigits, 1)
-            ),
-            DecryptedSecret.PasswordDescriptionTotp(
-                "desc",
-                "pass",
-                DecryptedSecret.StandaloneTotp.Totp("SHA-256", "A", tooManyDigits, 1)
-            )
+            JsonObject().apply {
+                addProperty("secret", tooLongPassword)
+                addProperty("desc", "desc")
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", "SHA-256")
+                    addProperty("secret_key", "A")
+                    addProperty("digits", 6)
+                    addProperty("period", 1)
+                })
+            },
+            JsonObject().apply {
+                addProperty("secret", "pass")
+                addProperty("desc", tooLongDescription)
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", "SHA-256")
+                    addProperty("secret_key", "A")
+                    addProperty("digits", 6)
+                    addProperty("period", 1)
+                })
+            },
+            JsonObject().apply {
+                addProperty("secret", "pass")
+                addProperty("desc", "desc")
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", invalidAlgorithm)
+                    addProperty("secret_key", "A")
+                    addProperty("digits", 6)
+                    addProperty("period", 1)
+                })
+            },
+            JsonObject().apply {
+                addProperty("secret", "pass")
+                addProperty("desc", "desc")
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", "SHA1")
+                    addProperty("secret_key", tooLongKey)
+                    addProperty("digits", 6)
+                    addProperty("period", 1)
+                })
+            },
+            JsonObject().apply {
+                addProperty("secret", "pass")
+                addProperty("desc", "desc")
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", "SHA1")
+                    addProperty("secret_key", "a")
+                    addProperty("digits", tooFewDigits)
+                    addProperty("period", 1)
+                })
+            },
+            JsonObject().apply {
+                addProperty("secret", "pass")
+                addProperty("desc", "desc")
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", "SHA1")
+                    addProperty("secret_key", "a")
+                    addProperty("digits", tooManyDigits)
+                    addProperty("period", 1)
+                })
+            },
         ).map { gson.toJson(it) }
 
         val results = invalidSecrets
@@ -195,10 +255,10 @@ class SecretValidationTest : KoinTest {
     @Test
     fun `valid secret for password and description resource type should not be rejected`() = runTest {
         val validSecrets = listOf(
-            DecryptedSecret.PasswordWithDescription(
-                "desc",
-                "password"
-            )
+            JsonObject().apply {
+                addProperty("description", "desc")
+                addProperty("password", "password")
+            },
         ).map { gson.toJson(it) }
 
         val results = validSecrets
@@ -210,11 +270,14 @@ class SecretValidationTest : KoinTest {
     @Test
     fun `valid secret for totp resource type should be not rejected`() = runTest {
         val validSecrets = listOf(
-            DecryptedSecret.StandaloneTotp(
-                DecryptedSecret.StandaloneTotp.Totp(
-                    "SHA-1", "A", 6, 1
-                )
-            ),
+            JsonObject().apply {
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", "SHA-1")
+                    addProperty("secret_key", "A")
+                    addProperty("digits", 6)
+                    addProperty("period", 1)
+                })
+            },
         ).map { gson.toJson(it) }
 
         val results = validSecrets
@@ -226,11 +289,16 @@ class SecretValidationTest : KoinTest {
     @Test
     fun `valid secret for password description totp resource type should not be rejected`() = runTest {
         val validSecrets = listOf(
-            DecryptedSecret.PasswordDescriptionTotp(
-                "desc",
-                "pass",
-                DecryptedSecret.StandaloneTotp.Totp("SHA256", "A", 6, 1)
-            )
+            JsonObject().apply {
+                addProperty("description", "desc")
+                addProperty("password", "password")
+                add("totp", JsonObject().apply {
+                    addProperty("algorithm", "SHA-1")
+                    addProperty("secret_key", "A")
+                    addProperty("digits", 6)
+                    addProperty("period", 1)
+                })
+            }
         ).map { gson.toJson(it) }
 
         val results = validSecrets

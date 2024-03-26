@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.mappers
 
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
@@ -50,7 +51,13 @@ class ResourceTypesModelMapper(
             val secretFields = processFieldsDefinition(it.definition.secret, FieldKind.SECRET)
 
             ResourceTypeIdWithFields(
-                ResourceType(it.id.toString(), it.name, it.slug),
+                ResourceType(
+                    resourceTypeId = it.id.toString(),
+                    name = it.name,
+                    slug = it.slug,
+                    resourceSchemaJson = it.definition.resource,
+                    secretSchemaJson = it.definition.secret
+                ),
                 resourceFields + secretFields
             )
         }
@@ -60,18 +67,20 @@ class ResourceTypesModelMapper(
      * object "totp" + primitive types: string and number.
      */
     private fun processFieldsDefinition(
-        resourceDefinitionObject: JsonObject,
+        resourceDefinitionElement: JsonElement,
         resourceFieldKind: FieldKind
     ): List<ResourceField> {
         val result = mutableListOf<ResourceField>()
 
-        when (resourceDefinitionObject.getMemberAsString(FIELD_TYPE)) {
+        when (resourceDefinitionElement.asJsonObject.getMemberAsString(FIELD_TYPE)) {
             FieldType.OBJECT.type -> {
-                val propertiesObject = resourceDefinitionObject.getAsJsonObject(FIELD_PROPERTIES)
+                val propertiesObject = resourceDefinitionElement
+                    .asJsonObject
+                    .getAsJsonObject(FIELD_PROPERTIES)
                 propertiesObject.keySet().forEach { propertyName ->
                     if (propertyName != OBJECT_NAME_TOTP) {
                         processFlatProperties(
-                            resourceDefinitionObject,
+                            resourceDefinitionElement,
                             propertiesObject,
                             propertyName,
                             result,
@@ -80,12 +89,12 @@ class ResourceTypesModelMapper(
                     } else {
                         // FIXME validation rules for otp not parsed
                         // to support fully dynamic schemas a bigger rework of the existing mechanism is needed
-                        processTotpObject(result, resourceDefinitionObject)
+                        processTotpObject(result, resourceDefinitionElement)
                     }
                 }
             }
             FieldType.STRING.type, FieldType.NUMBER.type -> {
-                processPrimitiveFields(resourceDefinitionObject, result, resourceFieldKind)
+                processPrimitiveFields(resourceDefinitionElement, result, resourceFieldKind)
             }
         }
 
@@ -93,11 +102,11 @@ class ResourceTypesModelMapper(
     }
 
     private fun processPrimitiveFields(
-        resourceDefinitionObject: JsonObject,
+        resourceDefinitionElement: JsonElement,
         result: MutableList<ResourceField>,
         resourceFieldKind: FieldKind
     ) {
-        val type = gson.fromJson(resourceDefinitionObject, FieldTypeDefinition::class.java)
+        val type = gson.fromJson(resourceDefinitionElement, FieldTypeDefinition::class.java)
         result += ResourceField(
             name = resourceFieldKind.kind,
             isSecret = resourceFieldKind == FieldKind.SECRET,
@@ -108,15 +117,15 @@ class ResourceTypesModelMapper(
     }
 
     private fun processFlatProperties(
-        resourceDefinitionObject: JsonObject,
-        propertiesObject: JsonObject,
+        resourceDefinitionElement: JsonElement,
+        propertiesElement: JsonElement,
         propertyName: String,
         result: MutableList<ResourceField>,
         resourceFieldKind: FieldKind
     ) {
-        val requiredPropertiesNames = resourceDefinitionObject.getAsJsonArray(FIELD_REQUIRED)
+        val requiredPropertiesNames = resourceDefinitionElement.asJsonObject.getAsJsonArray(FIELD_REQUIRED)
             .map { it.asString }
-        val possibleTypeObject = propertiesObject.getAsJsonObject(propertyName)
+        val possibleTypeObject = propertiesElement.asJsonObject.getAsJsonObject(propertyName)
         val typeEnumerator: TypeEnumerator
         val typesList = if (possibleTypeObject.hasTypeEnumeration()) {
             typeEnumerator = TypeEnumerator.ANY_OF // only `anyOf` is supported for now
@@ -140,10 +149,11 @@ class ResourceTypesModelMapper(
 
     private fun processTotpObject(
         result: MutableList<ResourceField>,
-        resourceDefinitionObject: JsonObject
+        resourceDefinitionObject: JsonElement
     ) {
         result += processFieldsDefinition(
             resourceDefinitionObject
+                .asJsonObject
                 .getAsJsonObject(FIELD_PROPERTIES)
                 .getAsJsonObject(OBJECT_NAME_TOTP),
             FieldKind.SECRET
