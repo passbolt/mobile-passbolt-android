@@ -136,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_24"
                     android:layout_marginEnd="@dimen/dp_12"
-                    app:itemWithHeaderAndActionView_action="VIEW"
+                    app:itemWithHeaderAndActionView_action="NONE"
                     app:itemWithHeaderAndActionView_isValueSecret="true"
                     app:itemWithHeaderAndActionView_title="@string/resource_details_password_header"
                     app:layout_constraintEnd_toEndOf="parent"
