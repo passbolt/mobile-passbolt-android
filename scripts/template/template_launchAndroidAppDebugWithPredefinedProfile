@@ -1,0 +1,11 @@
+adb shell 'am start \
+-a "com.passbolt.mobile.android.MANAGED_PROFILE" \
+-n "com.passbolt.mobile.android.debug/com.passbolt.mobile.android.feature.startup.StartUpActivity" \
+--es "USER_ID" "_INSERT_USER_ID_[uid]_" \
+--es "DOMAIN" "_INSERT_DOMAIN_[https://...]_" \
+--es "USERNAME" "_INSERT_USERNAME_" \
+--es "FIRST_NAME" "_INSERT_FIRST_NAME_" \
+--es "LAST_NAME" "_INSERT_LAST_NAME_" \
+--es "AVATAR_URL" "_INSERT_AVATAR_URL_" \
+--es "KEY_FINGERPRINT" "_INSERT_KEY_FINGERPRINT_" \
+--es "ARMORED_KEY" "_INSERT_ARMORED_PRIVATE_KEY_"'

@@ -12,3 +12,6 @@
 
 # OS
 .DS_Store
+
+# script templates with user data
+/scripts/implementation/
