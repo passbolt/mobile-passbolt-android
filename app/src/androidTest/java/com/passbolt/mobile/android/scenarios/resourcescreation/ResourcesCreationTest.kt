@@ -23,14 +23,12 @@
 
 package com.passbolt.mobile.android.scenarios.resourcescreation
 
-import android.view.KeyEvent
 import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -118,10 +116,7 @@ class ResourcesCreationTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(CoreUiR.id.input)).perform(
-            typeText(managedAccountIntentCreator.getUsername()),
-            pressKey(KeyEvent.KEYCODE_ENTER)
-        )
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
@@ -144,7 +139,7 @@ class ResourcesCreationTest : KoinTest {
         //           | “Shared with me”    |
         //           | “Owned by me”       |
         //           | “Folders”           |
-        VisibleCreateButton.values().forEach { visibleCreateButton ->
+        VisibleCreateButton.entries.forEach { visibleCreateButton ->
             onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
             onView(withId(visibleCreateButton.filterId)).perform(click())
             onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))
@@ -158,7 +153,7 @@ class ResourcesCreationTest : KoinTest {
         //           | filter              |
         //           | “Tags”              |
         //           | “Groups”            |
-        HiddenCreateButton.values().forEach { hiddenCreateButton ->
+        HiddenCreateButton.entries.forEach { hiddenCreateButton ->
             onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
             onView(withId(hiddenCreateButton.filterId)).perform(click())
             onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId))

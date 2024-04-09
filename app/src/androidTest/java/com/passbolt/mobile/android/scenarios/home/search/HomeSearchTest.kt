@@ -88,7 +88,7 @@ class HomeSearchTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
         onView(withId(ResourceFilterModel.values()[0].filterId)).perform(click())
