@@ -35,7 +35,7 @@ import com.passbolt.mobile.android.entity.group.UsersGroupWithChildItemsCount
 interface GroupsDao : BaseDao<UsersGroup> {
 
     @Transaction
-    @Query("SELECT * FROM UsersGroup WHERE groupId NOT IN (:ids)")
+    @Query("SELECT * FROM UsersGroup WHERE groupId NOT IN (:ids) ORDER BY name ASC")
     suspend fun getAllExcluding(ids: List<String>): List<UsersGroup>
 
     @Transaction
@@ -52,11 +52,11 @@ interface GroupsDao : BaseDao<UsersGroup> {
                 "where rGCR.groupId is g.groupId) " +
                 ")" +
                 ") AS childItemsCount " +
-                "FROM UsersGroup g"
+                "FROM UsersGroup g ORDER BY name ASC"
     )
     suspend fun getAllWithSharedItemsCount(): List<UsersGroupWithChildItemsCount>
 
     @Transaction
-    @Query("SELECT * FROM UsersGroup WHERE groupId=:groupId")
+    @Query("SELECT * FROM UsersGroup WHERE groupId=:groupId ORDER BY name ASC")
     suspend fun getGroupWithUsers(groupId: String): GroupWithUsers
 }
