@@ -32,6 +32,8 @@ dependencies {
     implementation libs.koin
     implementation libs.room.core
     implementation libs.espresso.idling.resource
+
+    testImplementation project(":commontest")
 }
 
 android {
