@@ -101,8 +101,7 @@ class ResourcesDeletionTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(CoreUiR.id.input)).perform(
-            typeText(managedAccountIntentCreator.getUsername()),
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()),
             ViewActions.pressKey(KeyEvent.KEYCODE_ENTER)
         )
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())

@@ -115,7 +115,7 @@ class SettingsTest : KoinTest {
         //    Given	I am a mobile user with the application installed
         //    And	I am logged in
         //    And 	I am on Passbolt PRO/CE/Cloud
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         Intents.init()
     }
@@ -152,7 +152,7 @@ class SettingsTest : KoinTest {
         //    And       I see a "Terms & licences" with an info icon and a caret on the right
         //    And       I see a "Debug, logs" with an bug icon and a caret on the right
         //    And       I see a "Sign out" with an exit icon
-        val settingsItems = SettingsMenuItemModel.values()
+        val settingsItems = SettingsMenuItemModel.entries.toTypedArray()
         settingsItems.forEach { settingsItem ->
             onView(withText(settingsItem.settingsItemTextId)).perform(scrollTo()).check(matches(isDisplayed()))
             onView(
@@ -181,9 +181,10 @@ class SettingsTest : KoinTest {
         //    And 	    I see a Autofill with an key icon and a caret on the right
         //    And 	    I see a Default filter with an filter icon and a caret on the right
         //    And 	    I see a Expert settings with an gear icon and a caret on the right
-        AppSettingsItemModel.values().forEach { appSettingsItem ->
+        AppSettingsItemModel.entries.forEach { appSettingsItem ->
             onView(withText(appSettingsItem.settingsItemTextId)).perform(scrollTo()).check(matches(isDisplayed()))
             onView(allOf(isDescendantOfA(withId(appSettingsItem.settingsItemId)), withId(CoreUiR.id.iconImage)))
+                // TODO: Tint again??
                 .check(matches(hasDrawable(id = appSettingsItem.settingsItemIconId, tint = CoreUiR.color.icon_tint)))
         }
     }
@@ -204,7 +205,7 @@ class SettingsTest : KoinTest {
             .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
         //    And 	    I see a Developer mode with an nodes icon and a switch on the right
         //    And 	    I see a Hide “device is rooted” dialog with an hash icon and a switch on the right
-        ExpertSettingsItemModel.values().forEach { expertSettingsItem ->
+        ExpertSettingsItemModel.entries.forEach { expertSettingsItem ->
             onView(withText(expertSettingsItem.settingsItemTextId)).perform(scrollTo()).check(matches(isDisplayed()))
             onView(allOf(isDescendantOfA(withId(expertSettingsItem.settingsItemId)), withId(CoreUiR.id.iconImage)))
                 .check(matches(hasDrawable(id = expertSettingsItem.settingsItemIconId, tint = CoreUiR.color.icon_tint)))
@@ -361,7 +362,7 @@ class SettingsTest : KoinTest {
         //    And 	    I see a Enable debug logs with an bug icon and a switch on the right
         //    And 	    I see a Access the logs with an sheet icon and a caret on the right
         //    And 	    I see a Visit help site with an chain icon and a caret on the right
-        DebugLogsItemModel.values().forEach { debugLogsSettingsItem ->
+        DebugLogsItemModel.entries.forEach { debugLogsSettingsItem ->
             onView(withText(debugLogsSettingsItem.settingsItemTextId)).perform(scrollTo()).check(matches(isDisplayed()))
             onView(allOf(isDescendantOfA(withId(debugLogsSettingsItem.settingsItemId)), withId(CoreUiR.id.iconImage)))
                 .check(matches(hasDrawable(id = debugLogsSettingsItem.settingsItemIconId, tint = CoreUiR.color.icon_tint)))

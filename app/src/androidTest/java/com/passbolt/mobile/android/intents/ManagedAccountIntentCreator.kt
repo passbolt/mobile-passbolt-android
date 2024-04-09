@@ -2,7 +2,8 @@ package com.passbolt.mobile.android.intents
 
 import android.content.Context
 import android.content.Intent
-import androidx.test.platform.app.InstrumentationRegistry
+import android.util.Base64
+import com.passbolt.mobile.android.BuildConfig
 import com.passbolt.mobile.android.feature.startup.StartUpActivity
 import java.util.Properties
 
@@ -33,14 +34,27 @@ class ManagedAccountIntentCreator {
 
     private val accountProperties = Properties()
 
+    // environment variables have to be set - see README.md
     init {
-        InstrumentationRegistry.getInstrumentation()
-            .context
-            .resources
-            .assets
-            .open(ACCOUNT_PROPERTIES_FILENAME).let {
-                accountProperties.load(it)
-            }
+        accountProperties.putAll(
+            listOf(
+                PROPERTY_USER_ID to BuildConfig.PROPERTY_USER_ID,
+                PROPERTY_USERNAME to BuildConfig.PROPERTY_USERNAME,
+                PROPERTY_DOMAIN to BuildConfig.PROPERTY_DOMAIN,
+                PROPERTY_FIRST_NAME to BuildConfig.PROPERTY_FIRST_NAME,
+                PROPERTY_LAST_NAME to BuildConfig.PROPERTY_LAST_NAME,
+                PROPERTY_AVATAR_URL to BuildConfig.PROPERTY_AVATAR_URL,
+                PROPERTY_KEY_FINGERPRINT to BuildConfig.PROPERTY_KEY_FINGERPRINT,
+                PROPERTY_ARMORED_KEY to String(
+                    Base64.decode(
+                        BuildConfig.PROPERTY_ARMORED_KEY_BASE_64,
+                        Base64.DEFAULT
+                    )
+                ),
+                PROPERTY_PASSPHRASE to BuildConfig.PROPERTY_PASSPHRASE,
+                PROPERTY_LOCAL_USER_UUID to BuildConfig.PROPERTY_LOCAL_USER_UUID
+            )
+        )
     }
 
     fun createIntent(context: Context): Intent =
@@ -63,6 +77,8 @@ class ManagedAccountIntentCreator {
     fun getUsername(): String = accountProperties.getProperty(EXTRA_USERNAME)
 
     fun getDomain(): String = accountProperties.getProperty(EXTRA_DOMAIN)
+
+    fun getPassphrase(): String = accountProperties.getProperty(PROPERTY_PASSPHRASE)
 
     fun getArmoredPrivateKey(): String = accountProperties.getProperty(PROPERTY_ARMORED_KEY)
 
@@ -91,7 +107,6 @@ class ManagedAccountIntentCreator {
         const val PROPERTY_KEY_FINGERPRINT = "KEY_FINGERPRINT"
         const val PROPERTY_ARMORED_KEY = "ARMORED_KEY"
         const val PROPERTY_LOCAL_USER_UUID = "LOCAL_USER_UUID"
-
-        private const val ACCOUNT_PROPERTIES_FILENAME = "profile_user_automated.properties"
+        const val PROPERTY_PASSPHRASE = "PASSPHRASE"
     }
 }

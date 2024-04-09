@@ -23,10 +23,8 @@
 
 package com.passbolt.mobile.android.scenarios.resourcesdetails
 
-import android.view.KeyEvent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -95,10 +93,7 @@ class ResourcesDetailsTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(CoreUiR.id.input)).perform(
-            typeText(managedAccountIntentCreator.getUsername()),
-            pressKey(KeyEvent.KEYCODE_ENTER)
-        )
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
     }
 
@@ -229,7 +224,7 @@ class ResourcesDetailsTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.close)).check(matches(isDisplayed()))
         //    And       I see a { “Launch website”, "Copy url", "Copy password", "Copy username", "Copy description",
         //              "Add to favourite", "Share password", "Edit password", "Delete password" } item
-        ResourcesDetailsItemModel.values().forEach { resourceItem ->
+        ResourcesDetailsItemModel.entries.forEach { resourceItem ->
             onView(withId(resourceItem.resourceId))
                 .check(matches(isDisplayed()))
                 .check(matches(hasDrawable(id = resourceItem.resourceIconId, tint = resourceItem.resourceTintColorId)))

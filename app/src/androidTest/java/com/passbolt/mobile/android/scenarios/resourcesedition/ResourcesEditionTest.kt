@@ -23,12 +23,10 @@
 
 package com.passbolt.mobile.android.scenarios.resourcesedition
 
-import android.view.KeyEvent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.pressKey
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
@@ -112,10 +110,7 @@ class ResourcesEditionTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(CoreUiR.id.input)).perform(
-            typeText(managedAccountIntentCreator.getUsername()),
-            pressKey(KeyEvent.KEYCODE_ENTER)
-        )
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
@@ -149,17 +144,17 @@ class ResourcesEditionTest : KoinTest {
         //    And       I see Edit password workspace
         onView(withText(LocalizationR.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
         //    And       <placeholder> is filled
-        EditableFieldInput.values().forEach { editableInputField ->
+        EditableFieldInput.entries.forEach { editableInputField ->
             onViewInputWithHintName(editableInputField.hintName)
                 .check(matches(isDisplayed()))
         }
         //    When      I change <placeholder>
-        EditableFieldInput.values().forEach { editableInputField ->
+        EditableFieldInput.entries.forEach { editableInputField ->
             onViewInputWithHintName(editableInputField.hintName)
                 .perform(replaceText(editableInputField.textToReplace))
         }
         //    Then      <placeholder> is changed
-        EditableFieldInput.values().forEach { editableInputField ->
+        EditableFieldInput.entries.forEach { editableInputField ->
             onViewInputWithHintName(editableInputField.hintName)
                 .check(matches(withText(editableInputField.textToReplace)))
         }
@@ -182,7 +177,7 @@ class ResourcesEditionTest : KoinTest {
         //    And       I see Edit password workspace
         onView(withText(LocalizationR.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
         //    And       <placeholder> was changed
-        EditableFieldInput.values().forEach { editableInputField ->
+        EditableFieldInput.entries.forEach { editableInputField ->
             onViewInputWithHintName(editableInputField.hintName)
                 .perform(replaceText(editableInputField.textToReplace))
         }
@@ -205,7 +200,7 @@ class ResourcesEditionTest : KoinTest {
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
         //    And       all placeholders are filled
-        EditableFieldInput.values().forEach { editableInputField ->
+        EditableFieldInput.entries.forEach { editableInputField ->
             onViewInputWithHintName(editableInputField.hintName)
                 .check(matches(isDisplayed()))
         }
@@ -246,7 +241,7 @@ class ResourcesEditionTest : KoinTest {
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
         //    And       all placeholders are filled
-        EditableFieldInput.values().forEach { editableInputField ->
+        EditableFieldInput.entries.forEach { editableInputField ->
             onViewInputWithHintName(editableInputField.hintName)
                 .check(matches(isDisplayed()))
         }
@@ -283,7 +278,7 @@ class ResourcesEditionTest : KoinTest {
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
         //    And       all placeholders are filled
-        EditableFieldInput.values().forEach { editableInputField ->
+        EditableFieldInput.entries.forEach { editableInputField ->
             onViewInputWithHintName(editableInputField.hintName)
                 .check(matches(isDisplayed()))
         }

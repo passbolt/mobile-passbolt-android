@@ -104,7 +104,7 @@ class TransferTest : KoinTest {
         //    Given	I am a mobile user with the application installed
         //    And	I am logged in
         //    And 	I am on Passbolt PRO/CE/Cloud
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.accountsSettings)).perform(click())
@@ -174,7 +174,7 @@ class TransferTest : KoinTest {
         //      And      I am on the "Enter your passphrase" page
         onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton)).perform(click())
         //      When     I click “Confirm passphrase” or provide valid biometric authentication
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         //      Then     I see a “Transferring your account details” page with corresponding title
         onView(withText(LocalizationR.string.transfer_account_title)).check(matches(isDisplayed()))
@@ -190,7 +190,7 @@ class TransferTest : KoinTest {
     fun asAUserINeedToConfirmToStopTheQrCodePresentation() {
         //      Given   I’m on a “Transferring your account details” page
         onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton)).perform(click())
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         //      When    I click “Cancel Transfer” button
         onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.cancelTransferButton)).perform(click())
@@ -263,7 +263,7 @@ class TransferTest : KoinTest {
 
     private fun openStopTransferPrompt() {
         onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.startTransferButton)).perform(click())
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.cancelTransferButton)).perform(click())
     }

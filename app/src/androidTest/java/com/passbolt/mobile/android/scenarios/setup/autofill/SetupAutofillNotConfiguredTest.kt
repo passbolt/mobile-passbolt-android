@@ -89,7 +89,7 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         onView(withId(R.id.connectToAccountButton)).perform(click())
         onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         Intents.init()
     }
