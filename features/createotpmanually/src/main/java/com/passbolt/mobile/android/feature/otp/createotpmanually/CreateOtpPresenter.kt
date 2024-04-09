@@ -281,8 +281,8 @@ class CreateOtpPresenter(
             )
             PASSWORD_WITH_DESCRIPTION ->
                 resourceUpdateActionsInteractor.addTotpToResource(
-                    overrideUri = label,
-                    overrideName = issuer,
+                    overrideUri = issuer,
+                    overrideName = label,
                     period = period,
                     digits = digits,
                     algorithm = algorithm,
