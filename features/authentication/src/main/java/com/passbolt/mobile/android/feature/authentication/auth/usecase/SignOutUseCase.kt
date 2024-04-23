@@ -48,8 +48,9 @@ class SignOutUseCase(
             authRepository.signOut(signOutMapper.mapRequestToDto(it))
         }
         passphraseMemoryCache.clear()
-        val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
-        removeSelectedAccountUseCase.execute(UserIdInput(requireNotNull(selectedAccount)))
+        getSelectedAccountUseCase.execute(Unit).selectedAccount?.let { selectedAccount ->
+            removeSelectedAccountUseCase.execute(UserIdInput(selectedAccount))
+        }
         signOutIdlingResource.setIdle(true)
     }
 }
