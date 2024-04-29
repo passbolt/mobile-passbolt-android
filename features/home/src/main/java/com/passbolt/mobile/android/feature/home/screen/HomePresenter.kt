@@ -30,11 +30,11 @@
 
 package com.passbolt.mobile.android.feature.home.screen
 
-import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.extension.areListsEmpty
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.common.types.ClipboardLabel
+import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUrlMatcher
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredUseCase
@@ -108,7 +108,7 @@ class HomePresenter(
     private val getLocalResourcesWithGroupsUseCase: GetLocalResourcesWithGroupUseCase,
     private val getHomeDisplayViewPrefsUseCase: GetHomeDisplayViewPrefsUseCase,
     private val homeModelMapper: HomeDisplayViewMapper,
-    private val domainProvider: DomainProvider,
+    private val autofillMatcher: AutofillUrlMatcher,
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
     private val totpParametersProvider: TotpParametersProvider,
@@ -349,13 +349,8 @@ class HomePresenter(
                         .resources
                         .filter {
                             val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
-                            val itemUrl = it.url
-                            if (!autofillUrl.isNullOrBlank() && !itemUrl.isNullOrBlank()) {
-                                val itemDomain = domainProvider.getHost(itemUrl)
-                                (!itemDomain.isNullOrBlank()) && (itemDomain == domainProvider.getHost(autofillUrl))
-                            } else {
-                                false
-                            }
+                            val resourceUrl = it.url
+                            autofillMatcher.isMatching(autofillUrl, resourceUrl)
                         }
                 } else {
                     emptyList()

@@ -37,8 +37,6 @@ val commonModule = module {
             androidApplication().resources
         )
     }
-
-    singleOf(::DomainProvider)
     singleOf(::AndroidTimeProvider) bind TimeProvider::class
     singleOf(::FetchFileAsStringUseCase)
 }

@@ -58,7 +58,7 @@ class HomeMenuTest : KoinTest {
 
     @Before
     fun setUp() {
-        whenever(getSelectedAccountUseCase.execute(anyOrNull())).thenReturn(
+        whenever(mockGetSelectedAccountUseCase.execute(anyOrNull())).thenReturn(
             GetSelectedAccountUseCase.Output("id")
         )
         mockGetLocalResourcesAndFoldersUseCase.stub {
@@ -70,14 +70,14 @@ class HomeMenuTest : KoinTest {
         mockCreateResourceMoreMenuModelUseCase.stub {
             onBlocking { execute(any()) } doReturn CreateResourceMoreMenuModelUseCase.Output(resourceMenuModel)
         }
-        resourcesInteractor.stub {
+        mockResourcesInteractor.stub {
             onBlocking { fetchAndSaveResources() } doReturn ResourceInteractor.Output.Success
         }
 
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
             flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         )
-        whenever(getSelectedAccountDataUseCase.execute(anyOrNull())).thenReturn(
+        whenever(mockGetSelectedAccountDataUseCase.execute(anyOrNull())).thenReturn(
             GetSelectedAccountDataUseCase.Output(
                 firstName = "",
                 lastName = "",
