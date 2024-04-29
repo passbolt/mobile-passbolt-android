@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.mappers
 
+import com.google.gson.JsonObject
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.entity.resource.Resource
@@ -59,7 +60,7 @@ class ResourceModelMapper(
             favouriteId = resourceModel.favouriteId,
             modified = resourceModel.modified,
             expiry = resourceModel.expiry,
-            resourceJson = resourceModel.json
+            resourceJson = resourceModel.toJsonString()
         )
 
     fun map(resourceEntity: Resource): ResourceModel =
@@ -74,4 +75,13 @@ class ResourceModelMapper(
             expiry = resourceEntity.expiry,
             json = resourceEntity.resourceJson
         )
+
+    private fun ResourceModel.toJsonString(): String {
+        return JsonObject().apply {
+            addProperty("name", name)
+            addProperty("username", username)
+            addProperty("description", description)
+            addProperty("uri", url)
+        }.toString()
+    }
 }
