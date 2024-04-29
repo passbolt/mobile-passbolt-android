@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.common
-
-import timber.log.Timber
-import java.net.URL
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,22 +20,36 @@ import java.net.URL
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class DomainProvider {
 
-    fun getHost(url: String): String? =
-        try {
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                URL("http://$url").host
-            } else {
-                val host = URL(url).host
-                if (!host.startsWith("www.")) {
-                    "www.${URL(url).host}"
-                } else {
-                    host
-                }
-            }
+package com.passbolt.mobile.android.core.autofill.urlmatcher
+
+import timber.log.Timber
+import java.net.URL
+
+class AutofillUrlMatcher {
+
+    fun isMatching(autofillUrl: String?, resourceUrl: String?): Boolean {
+        // not matching if any is null or empty
+        if (autofillUrl.isNullOrEmpty() || resourceUrl.isNullOrEmpty()) return false
+
+        // not matching if the schemes are not allowed
+        if (allowedSchemes.none { autofillUrl.startsWith(it) } || allowedSchemes.none { resourceUrl.startsWith(it) }) {
+            return false
+        }
+
+        return try {
+            val autofillURL = URL(autofillUrl)
+            val resourceURL = URL(resourceUrl)
+            val schemesMatch = autofillURL.protocol == resourceURL.protocol
+            val hostsMatch = autofillURL.host == resourceURL.host || autofillURL.host == "www.${resourceURL.host}"
+            schemesMatch && hostsMatch
         } catch (exception: Exception) {
             Timber.e(exception, "Error during URL parsing")
-            null
+            false
         }
+    }
+
+    companion object {
+        private val allowedSchemes = listOf("http", "https")
+    }
 }
