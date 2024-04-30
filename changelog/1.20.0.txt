@@ -2,15 +2,17 @@
 
 ## Added
 - Added support for QR code protocol v2 ("scan" account kit)
-- JSON model is now used also during edit
+- Secret JSON model is now used also during editing resource
 
 ## Improved
 - Groups in filter are sorted alphabetically
+- Added launch template with account injection (template_launchAndroidAppDebugWithPredefinedProfile)
 
 ## Fixed
 - Fixed silent crash during account setup when closing the MFA dialog
-- Clicking fast on password preview icon was possible before RBAC flags applied
+- Clicking very fast on password preview icon was possible before RBAC flags applied on resource details
 
 ## Maintenance
+- Changed instrumented test environment to cloud
 - Added more menus unit tests
 - Refactored domain provider and added extra test data
