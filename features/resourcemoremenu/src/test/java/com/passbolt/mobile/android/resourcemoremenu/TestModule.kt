@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.common
-
-import timber.log.Timber
-import java.net.URL
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,22 +20,29 @@ import java.net.URL
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class DomainProvider {
 
-    fun getHost(url: String): String? =
-        try {
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                URL("http://$url").host
-            } else {
-                val host = URL(url).host
-                if (!host.startsWith("www.")) {
-                    "www.${URL(url).host}"
-                } else {
-                    host
-                }
-            }
-        } catch (exception: Exception) {
-            Timber.e(exception, "Error during URL parsing")
-            null
-        }
+package com.passbolt.mobile.android.resourcemoremenu
+
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.idlingresource.CreateMenuModelIdlingResource
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.resourcemoremenu.usecase.CreateResourceMoreMenuModelUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import org.mockito.kotlin.mock
+
+internal val mockCreateResourceMoreMenuModelUseCase = mock<CreateResourceMoreMenuModelUseCase>()
+
+@ExperimentalCoroutinesApi
+val testModule = module {
+    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+    factory<ResourceMoreMenuContract.Presenter> {
+        ResourceMoreMenuPresenter(
+            createResourceMoreMenuModelUseCase = mockCreateResourceMoreMenuModelUseCase,
+            coroutineLaunchContext = get(),
+            menuModelIdlingResource = CreateMenuModelIdlingResource()
+        )
+    }
 }

@@ -50,7 +50,7 @@ class ResourceMoreMenuPresenter(
                     REMOVE_FROM_FAVOURITES -> view?.showRemoveFromFavouritesButton()
                 }
             } catch (exception: Exception) {
-                Timber.d("Resource item for the shown menu was deleted deleted")
+                Timber.d("Resource item for the shown menu was deleted deleted $exception")
                 view?.hideMenu()
             }
             menuModelIdlingResource.setIdle(true)

@@ -28,7 +28,17 @@ import org.koin.core.component.KoinComponent
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-// TODO: Memory vs performance - consider caching JsonPath.parse
+class StringDelegate :
+    ReadWriteProperty<JsonModel, String>, KoinComponent {
+
+    override fun getValue(thisRef: JsonModel, property: KProperty<*>): String {
+        return thisRef.json
+    }
+
+    override fun setValue(thisRef: JsonModel, property: KProperty<*>, value: String) {
+        thisRef.json = value
+    }
+}
 
 class JsonPathDelegate<T : Any>(private val jsonPath: String) :
     ReadWriteProperty<JsonModel, T>, KoinComponent {

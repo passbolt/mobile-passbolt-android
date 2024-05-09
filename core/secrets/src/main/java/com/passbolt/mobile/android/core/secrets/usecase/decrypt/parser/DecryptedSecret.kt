@@ -24,13 +24,16 @@
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.google.gson.annotations.SerializedName
+import com.jayway.jsonpath.JsonPath
 import com.passbolt.mobile.android.delegates.JsonModel
 import com.passbolt.mobile.android.delegates.JsonPathDelegate
 import com.passbolt.mobile.android.delegates.JsonPathNullableDelegate
+import com.passbolt.mobile.android.delegates.StringDelegate
 
 class DecryptedSecret(override var json: String) : JsonModel {
 
-    var password: String by JsonPathDelegate(jsonPath = "$")
+    // simple-password is just a string (not a valid JSON)
+    var password: String by StringDelegate()
 
     var secret: String by JsonPathDelegate(jsonPath = "$.password")
     var description: String? by JsonPathNullableDelegate(jsonPath = "$.description")
@@ -39,6 +42,24 @@ class DecryptedSecret(override var json: String) : JsonModel {
     var totpKey: String by JsonPathDelegate(jsonPath = "$.totp.secret_key")
     var totpDigits: Int by JsonPathDelegate(jsonPath = "$.totp.digits")
     var totpPeriod: Int? by JsonPathNullableDelegate(jsonPath = "$.totp.period")
+
+    fun removeTotp() {
+        json = JsonPath.parse(json).delete("$.totp").jsonString()
+    }
+
+    fun addTotp(algorithm: String, secretKey: String, digits: Int, period: Int) {
+        json = JsonPath.parse(json).apply {
+            put(
+                "$", "totp", mutableMapOf<String, Any>(
+                    "algorithm" to algorithm,
+                    "secret_key" to secretKey,
+                    "digits" to digits,
+                    "period" to period
+                )
+            )
+        }
+            .jsonString()
+    }
 }
 
 data class TotpSecret(
@@ -47,15 +68,4 @@ data class TotpSecret(
     val key: String,
     val digits: Int,
     val period: Long
-)
-
-class PasswordWithDescriptionSecret(
-    val password: String,
-    val description: String?
-)
-
-data class PasswordDescriptionTotpSecret(
-    val password: String,
-    val description: String?,
-    val totp: TotpSecret
 )

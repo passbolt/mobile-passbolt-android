@@ -68,7 +68,7 @@ fun Module.homeModule() {
                 getLocalResourcesWithGroupsUseCase = get(),
                 getHomeDisplayViewPrefsUseCase = get(),
                 homeModelMapper = get(),
-                domainProvider = get(),
+                autofillMatcher = get(),
                 getLocalFolderUseCase = get(),
                 deleteResourceIdlingResource = get(),
                 totpParametersProvider = get(),

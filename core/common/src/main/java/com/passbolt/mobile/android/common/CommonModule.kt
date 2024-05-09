@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.common
 
 import com.passbolt.mobile.android.common.time.AndroidTimeProvider
 import com.passbolt.mobile.android.common.time.TimeProvider
+import com.passbolt.mobile.android.common.usecase.FetchFileAsStringUseCase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -36,7 +37,6 @@ val commonModule = module {
             androidApplication().resources
         )
     }
-
-    singleOf(::DomainProvider)
     singleOf(::AndroidTimeProvider) bind TimeProvider::class
+    singleOf(::FetchFileAsStringUseCase)
 }

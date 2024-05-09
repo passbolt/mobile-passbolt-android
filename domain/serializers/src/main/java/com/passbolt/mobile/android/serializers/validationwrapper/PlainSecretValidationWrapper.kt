@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.core.resources.interactor.update
+package com.passbolt.mobile.android.serializers.validationwrapper
 
 import com.google.gson.Gson
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory

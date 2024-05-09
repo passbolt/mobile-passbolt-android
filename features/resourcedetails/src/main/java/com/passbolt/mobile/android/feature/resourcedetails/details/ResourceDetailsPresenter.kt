@@ -32,6 +32,9 @@ import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
+import com.passbolt.mobile.android.ui.ManageTotpAction
+import com.passbolt.mobile.android.ui.ManageTotpAction.ADD_TOTP
+import com.passbolt.mobile.android.ui.ManageTotpAction.EDIT_TOTP
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.RbacModel
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
@@ -122,6 +125,7 @@ class ResourceDetailsPresenter(
         get() = get {
             parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
         }
+    private lateinit var otpAction: ManageTotpAction
 
     override fun argsReceived(resourceId: String, permissionsListWidth: Int, permissionItemWidth: Float) {
         this.permissionsListWidth = permissionsListWidth
@@ -567,8 +571,18 @@ class ResourceDetailsPresenter(
                 val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
                     parametersOf(resourceModel, needSessionRefreshFlow, sessionRefreshedFlow)
                 }
-                performResourceUpdateAction(
-                    action = {
+                val updateAction = when (otpAction) {
+                    ADD_TOTP -> suspend {
+                        resourceUpdateActionsInteractor.addTotpToResource(
+                            overrideName = resourceModel.name,
+                            overrideUri = resourceModel.url,
+                            period = totpQr.period,
+                            digits = totpQr.digits,
+                            algorithm = totpQr.algorithm.name,
+                            secretKey = totpQr.secret
+                        )
+                    }
+                    EDIT_TOTP -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resourceModel.name,
                             issuer = resourceModel.url,
@@ -577,7 +591,10 @@ class ResourceDetailsPresenter(
                             algorithm = totpQr.algorithm.name,
                             secretKey = totpQr.secret
                         )
-                    },
+                    }
+                }
+                performResourceUpdateAction(
+                    action = updateAction,
                     doOnFetchFailure = { view?.showFetchFailure() },
                     doOnFailure = { view?.showGeneralError(it) },
                     doOnCryptoFailure = { view?.showEncryptionError(it) },
@@ -609,7 +626,13 @@ class ResourceDetailsPresenter(
         showTotp()
     }
 
+    override fun menuAddTotpClick() {
+        otpAction = ADD_TOTP
+        view?.navigateToOtpCreateMenu()
+    }
+
     override fun menuEditOtpClick() {
+        otpAction = EDIT_TOTP
         view?.navigateToOtpEdit()
     }
 
@@ -627,7 +650,7 @@ class ResourceDetailsPresenter(
             }
             performResourceUpdateAction(
                 action = {
-                    resourceUpdateActionInteractor.downgradeToPasswordAndDescriptionResource()
+                    resourceUpdateActionInteractor.deleteTotpFromResource()
                 },
                 doOnCryptoFailure = { view?.showEncryptionError(it) },
                 doOnFailure = { view?.showGeneralError(it) },

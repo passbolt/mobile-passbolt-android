@@ -1,6 +1,7 @@
 apiVersion: v1alpha
 kind: espresso
 sauce:
+  region: us-west-1
   concurrency: 1
   metadata:
     tags:
@@ -9,7 +10,7 @@ sauce:
     build: Commit $CI_COMMIT_SHORT_SHA
 espresso:
   app: app/build/outputs/apk/debug/app-debug.apk
-  testApp: app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+  testApp: app/build/outputs/apk/androidTest/automatedTests/app-automatedTests-androidTest.apk
 suites:
   - name: "Passbolt tests"
     # Configure run on device or emulator

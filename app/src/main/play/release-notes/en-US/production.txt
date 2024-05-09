@@ -1,8 +1,16 @@
-# Passbolt 1.19.0-29 Android app release notes
+# Passbolt 1.20.0-30 Android app release notes
 
 ## Added
-- Resource and secret models are now based on JSON
-- Support for expired resources
+- Added support for QR code protocol v2 ("scan" account kit)
+- JSON model is now used also during edit
 
-## Security
-- JSON models support full JSON schema validation (validation can be changed dynamically)
+## Improved
+- Groups in filter are sorted alphabetically
+
+## Fixed
+- Fixed silent crash during account setup when closing the MFA dialog
+- Clicking fast on password preview icon was possible before RBAC flags applied
+
+## Maintenance
+- Added more menus unit tests
+- Refactored domain provider and added extra test data

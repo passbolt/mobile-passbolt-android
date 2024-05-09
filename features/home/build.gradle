@@ -44,6 +44,7 @@ dependencies {
     implementation project(':otpeditmoremenu')
     implementation project(':rbac')
     implementation project(':serializers')
+    implementation project(':autofill')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

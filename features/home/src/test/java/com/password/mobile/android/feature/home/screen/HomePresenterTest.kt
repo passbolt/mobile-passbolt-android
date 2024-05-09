@@ -66,7 +66,7 @@ class HomePresenterTest : KoinTest {
 
     @Before
     fun setUp() {
-        whenever(getSelectedAccountUseCase.execute(anyOrNull())).thenReturn(
+        whenever(mockGetSelectedAccountUseCase.execute(anyOrNull())).thenReturn(
             GetSelectedAccountUseCase.Output("id")
         )
         mockGetLocalResourcesAndFoldersUseCase.stub {
@@ -97,7 +97,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `user avatar should be displayed when provided`() = runTest {
-        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
+        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
         )
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
@@ -149,7 +149,7 @@ class HomePresenterTest : KoinTest {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
             flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         )
-        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
+        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
         )
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -183,7 +183,7 @@ class HomePresenterTest : KoinTest {
     @Test
     fun `refresh swiped should reload data with filter applied when search text entered`() = runTest {
         mockResourcesList()
-        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
+        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
         )
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -228,7 +228,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `empty view should be displayed when search is empty`() = runTest {
-        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
+        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
         )
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -260,7 +260,7 @@ class HomePresenterTest : KoinTest {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
             flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         )
-        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
+        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Success
         )
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
@@ -324,7 +324,7 @@ class HomePresenterTest : KoinTest {
         whenever(mockGetLocalResourcesUseCase.execute(any())).thenReturn(
             GetLocalResourcesUseCase.Output(emptyList())
         )
-        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
+        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         whenever(mockFullDataRefreshExecutor.performFullDataRefresh()).then {
@@ -354,7 +354,7 @@ class HomePresenterTest : KoinTest {
 
     @Test
     fun `item clicked should open details screen`() = runTest {
-        whenever(resourcesInteractor.fetchAndSaveResources()).thenReturn(
+        whenever(mockResourcesInteractor.fetchAndSaveResources()).thenReturn(
             ResourceInteractor.Output.Failure(AuthenticationState.Authenticated)
         )
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
@@ -645,7 +645,7 @@ class HomePresenterTest : KoinTest {
     )
 
     private fun mockAccountData(avatarUrl: String?) {
-        whenever(getSelectedAccountDataUseCase.execute(anyOrNull())).thenReturn(
+        whenever(mockGetSelectedAccountDataUseCase.execute(anyOrNull())).thenReturn(
             GetSelectedAccountDataUseCase.Output(
                 firstName = "",
                 lastName = "",

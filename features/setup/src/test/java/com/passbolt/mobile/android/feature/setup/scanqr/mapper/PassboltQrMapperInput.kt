@@ -48,3 +48,8 @@ internal val PASSBOLT_SUBSEQUENT_PAGE_SCAN = ("101{" +
         "\"armored_key\":\"-----BEGIN PGP PRIVATE KEY BLOCK-----"
         )
     .toByteArray()
+
+internal val PASSBOLT_FIRST_PAGE_ACCOUNT_KIT_SCAN = ("200{" +
+        "\"account_kit_url\":\"mock_url\"" +
+        "}")
+    .toByteArray()

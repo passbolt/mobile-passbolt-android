@@ -29,6 +29,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.core.users.usecase.FetchUsersUseCase
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.request.EncryptedSecret
@@ -40,6 +41,7 @@ import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidat
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity.RESOURCE
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity.SECRET
+import com.passbolt.mobile.android.serializers.validationwrapper.PlainSecretValidationWrapper
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
@@ -49,7 +51,7 @@ import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.UserModel
 
-abstract class UpdateResourceInteractor<CustomInput>(
+class UpdateResourceInteractor(
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val resourceModelMapper: ResourceModelMapper,
     private val resourceRepository: ResourceRepository,
@@ -62,9 +64,7 @@ abstract class UpdateResourceInteractor<CustomInput>(
     private val openPgp: OpenPgp
 ) {
 
-    abstract val slug: String
-
-    suspend fun execute(input: CommonInput, customInput: CustomInput): Output {
+    suspend fun execute(input: ResourceInput, secretInput: DecryptedSecret): Output {
         val passphrase = when (val result = passphraseMemoryCache.get()) {
             is PotentialPassphrase.Passphrase -> result.passphrase
             is PotentialPassphrase.PassphraseNotPresent -> return Output.PasswordExpired
@@ -74,9 +74,13 @@ abstract class UpdateResourceInteractor<CustomInput>(
             fetchUsersUseCase.execute(FetchUsersUseCase.Input(listOf(input.resourceId)))) {
             is FetchUsersUseCase.Output.Failure<*> -> Output.Failure(usersWhoHaveAccess.response)
             is FetchUsersUseCase.Output.Success -> {
-                val plainSecret = createSecret(input, customInput, passphrase)
-                if (isSecretValid(PlainSecretValidationWrapper(plainSecret, slug).validationPlainSecret)) {
-                    createResource(plainSecret, passphrase, usersWhoHaveAccess, input, customInput)
+                if (isSecretValid(
+                        PlainSecretValidationWrapper(secretInput.json, input.newResourceTypeSlug)
+                            .validationPlainSecret,
+                        input.newResourceTypeSlug
+                    )
+                ) {
+                    createResource(secretInput.json, passphrase, usersWhoHaveAccess, input)
                 } else {
                     Output.JsonSchemaValidationFailure(SECRET)
                 }
@@ -88,8 +92,7 @@ abstract class UpdateResourceInteractor<CustomInput>(
         plainSecret: String,
         passphrase: ByteArray,
         usersWhoHaveAccess: FetchUsersUseCase.Output.Success,
-        input: CommonInput,
-        customInput: CustomInput
+        resourceInput: ResourceInput
     ): Output {
         val encryptedSecrets = encrypt(plainSecret, passphrase, usersWhoHaveAccess.users)
         return if (encryptedSecrets.any { it is EncryptedSecretOrError.Error }) {
@@ -99,17 +102,17 @@ abstract class UpdateResourceInteractor<CustomInput>(
         } else {
             val secrets = encryptedSecrets.filterIsInstance<EncryptedSecretOrError.EncryptedSecret>()
             val createResourceDto = CreateResourceDto(
-                name = input.resourceName,
-                resourceTypeId = getResourceTypeIdForSlug(slug),
+                name = resourceInput.resourceName,
+                resourceTypeId = getResourceTypeIdForSlug(resourceInput.newResourceTypeSlug),
                 secrets = secrets.map { EncryptedSecret(it.userId, it.data) },
-                username = input.resourceUsername,
-                uri = input.resourceUri,
-                description = createCommonDescription(customInput),
-                folderParentId = input.resourceParentFolderId
+                username = resourceInput.resourceUsername,
+                uri = resourceInput.resourceUri,
+                description = resourceInput.description,
+                folderParentId = resourceInput.resourceParentFolderId
             )
-            if (isResourceValid(createResourceDto)) {
+            if (isResourceValid(createResourceDto, resourceInput.newResourceTypeSlug)) {
                 when (val response = resourceRepository.updateResource(
-                    input.resourceId,
+                    resourceInput.resourceId,
                     createResourceDto
                 )) {
                     is NetworkResult.Failure -> Output.Failure(response)
@@ -138,10 +141,10 @@ abstract class UpdateResourceInteractor<CustomInput>(
             }
         }
 
-    private suspend fun isSecretValid(plainSecret: String) =
+    private suspend fun isSecretValid(plainSecret: String, slug: String) =
         jsonSchemaValidationRunner.isSecretValid(plainSecret, slug)
 
-    private suspend fun isResourceValid(createResourceDto: CreateResourceDto) =
+    private suspend fun isResourceValid(createResourceDto: CreateResourceDto, slug: String) =
         jsonSchemaValidationRunner.isResourceValid(gson.toJson(createResourceDto), slug)
 
     private suspend fun getResourceTypeIdForSlug(slug: String) =
@@ -152,22 +155,14 @@ abstract class UpdateResourceInteractor<CustomInput>(
             .first()
             .toString()
 
-    abstract fun createSecret(
-        input: CommonInput,
-        customInput: CustomInput,
-        passphrase: ByteArray
-    ): String
-
-    abstract suspend fun createCommonDescription(
-        customInput: CustomInput
-    ): String?
-
-    data class CommonInput(
+    data class ResourceInput(
         val resourceId: String,
         val resourceName: String,
         val resourceUsername: String?,
         val resourceUri: String?,
-        val resourceParentFolderId: String?
+        val resourceParentFolderId: String?,
+        val description: String?,
+        val newResourceTypeSlug: String
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {

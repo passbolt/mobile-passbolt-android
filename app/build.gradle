@@ -25,6 +25,9 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // connected android tests use qa config
+    testBuildType "automatedTests"
+
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
@@ -52,6 +55,35 @@ android {
                 groups "qa"
             }
         }
+
+        automatedTests {
+            initWith qa
+            matchingFallbacks = ['release']
+
+            applicationIdSuffix ".qa.automated"
+            debuggable false
+            zipAlignEnabled true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            firebaseAppDistribution {
+                appId "1:660923335137:android:c7e452d7912a9e3ab092a0"
+                serviceCredentialsFile findProperty("serviceKey") ?: ""
+                groups "qa"
+            }
+
+            // automated tests fields
+            buildConfigField("String", "PROPERTY_USER_ID", """\"${System.getenv("PASSBOLT_TEST_USER_ID")}\"""")
+            buildConfigField("String", "PROPERTY_USERNAME", """\"${System.getenv("PASSBOLT_TEST_USERNAME")}\"""")
+            buildConfigField("String", "PROPERTY_DOMAIN", """\"${System.getenv("PASSBOLT_TEST_DOMAIN")}\"""")
+            buildConfigField("String", "PROPERTY_FIRST_NAME", """\"${System.getenv("PASSBOLT_TEST_FIRST_NAME")}\"""")
+            buildConfigField("String", "PROPERTY_LAST_NAME", """\"${System.getenv("PASSBOLT_TEST_LAST_NAME")}\"""")
+            buildConfigField("String", "PROPERTY_AVATAR_URL", """\"${System.getenv("PASSBOLT_TEST_AVATAR_URL") ?: ''}\"""")
+            buildConfigField("String", "PROPERTY_KEY_FINGERPRINT", """\"${System.getenv("PASSBOLT_TEST_KEY_FINGERPRINT")}\"""")
+            buildConfigField("String", "PROPERTY_LOCAL_USER_UUID", """\"${System.getenv("PASSBOLT_TEST_LOCAL_USER_UUID")}\"""")
+            buildConfigField("String", "PROPERTY_ARMORED_KEY_BASE_64", """\"${System.getenv("PASSBOLT_TEST_ARMORED_KEY_BASE_64")}\"""")
+            buildConfigField("String", "PROPERTY_PASSPHRASE", """\"${System.getenv("PASSBOLT_TEST_PASSPHRASE")}\"""")
+        }
+
         release {
             debuggable false
             zipAlignEnabled true

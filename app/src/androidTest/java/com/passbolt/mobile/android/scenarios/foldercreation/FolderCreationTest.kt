@@ -103,10 +103,7 @@ class FolderCreationTest : KoinTest {
         //    And I want to create new folder
         //    And I am on the folders filter view
         //    And I have the permission to create a folder in my current location
-        onView(withId(CoreUiR.id.input)).perform(
-            typeText(managedAccountIntentCreator.getUsername()),
-            pressKey(KeyEvent.KEYCODE_ENTER)
-        )
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
@@ -155,6 +152,7 @@ class FolderCreationTest : KoinTest {
             )
         )
             .check(matches(isDisplayed()))
+            // TODO: Fix me please
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_key, tint = CoreUiR.color.icon_tint)))
         onView(
             allOf(

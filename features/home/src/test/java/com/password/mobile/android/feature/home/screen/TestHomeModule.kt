@@ -1,9 +1,9 @@
 package com.password.mobile.android.feature.home.screen
 
-import com.passbolt.mobile.android.common.DomainProvider
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.autofill.urlmatcher.AutofillUrlMatcher
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderDetailsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalResourcesAndFoldersUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalSubFolderResourcesFilteredUseCase
@@ -35,13 +35,16 @@ import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayVie
 import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
-internal val resourcesInteractor = mock<ResourceInteractor>()
-internal val getSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseCase>()
-internal val getSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
-internal val fetchAndUpdateDatabaseUseCase = mock<RebuildResourceTablesUseCase>()
+internal val mockResourcesInteractor = mock<ResourceInteractor>()
+internal val mockGetSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseCase>()
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
+internal val mockFetchAndUpdateDatabaseUseCase = mock<RebuildResourceTablesUseCase>()
 internal val mockSecretParser = mock<SecretParser>()
 internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
@@ -65,19 +68,19 @@ internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
-    factory { resourcesInteractor }
-    factory { getSelectedAccountDataUseCase }
-    factory { fetchAndUpdateDatabaseUseCase }
-    factory { InitialsProvider() }
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
-    factory { SearchableMatcher() }
+    factory { mockResourcesInteractor }
+    factory { mockGetSelectedAccountDataUseCase }
+    factory { mockFetchAndUpdateDatabaseUseCase }
     factory { mockSecretParser }
     factory { mockResourceTypeFactory }
     factory { mockCreateResourceMoreMenuModelUseCase }
-    factory { HomeDisplayViewMapper() }
-    factory { DomainProvider() }
     single { mock<FullDataRefreshExecutor>() }
-    single { DeleteResourceIdlingResource() }
+    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+    factoryOf(::InitialsProvider)
+    factoryOf(::AutofillUrlMatcher)
+    factoryOf(::HomeDisplayViewMapper)
+    factoryOf(::SearchableMatcher)
+    singleOf(::DeleteResourceIdlingResource)
     factory<HomeContract.Presenter> {
         HomePresenter(
             coroutineLaunchContext = get(),
@@ -94,7 +97,7 @@ val testHomeModule = module {
             getLocalResourcesWithGroupsUseCase = mockGetLocalResourcesWithGroupsUseCase,
             getHomeDisplayViewPrefsUseCase = mockGetHomeDisplayPrefsUseCase,
             homeModelMapper = get(),
-            domainProvider = get(),
+            autofillMatcher = get(),
             getLocalFolderUseCase = mockGetLocalFolderUseCase,
             deleteResourceIdlingResource = get(),
             totpParametersProvider = mockTotpParametersProvider,

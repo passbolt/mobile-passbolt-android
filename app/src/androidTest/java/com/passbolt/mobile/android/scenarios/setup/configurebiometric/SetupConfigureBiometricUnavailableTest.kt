@@ -104,7 +104,7 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Passphrase screen
         //    When      I successfully entered my passphrase
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         //    Then       I am prompted to Configure biometrics
         //    And        I see a “Configure {biometric provider}” primary button
@@ -122,7 +122,7 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     fun asAMobileUserICanConfigureBiometricsToUseItOnTheDevice() {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Configure {biometrics provider} screen
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         //    When      I click on Configure {biometrics provider} button
         onView(withId(R.id.useFingerprintButton)).perform(click())
@@ -139,7 +139,7 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     fun asAMobileUserIShouldBeAbleToSkipTheBiometricsConfiguration() {
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Configure {biometrics provider} screen
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getUsername()))
+        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
         //    When      I click the “Maybe later” button
         onView(withId(R.id.maybeLaterButton)).perform(click())

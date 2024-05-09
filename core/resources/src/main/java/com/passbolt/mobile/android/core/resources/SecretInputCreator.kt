@@ -1,8 +1,6 @@
 package com.passbolt.mobile.android.core.resources
 
 import com.google.gson.Gson
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.PasswordDescriptionTotpSecret
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
 import com.passbolt.mobile.android.dto.request.SecretsDto
 import com.passbolt.mobile.android.dto.request.TotpSecretsDto
 
@@ -40,21 +38,5 @@ class SecretInputCreator(
     fun createTotpSecretInput(algorithm: String, key: String, digits: Int, period: Long): String =
         gson.toJson(
             TotpSecretsDto(TotpSecretsDto.Totp(algorithm, key, digits, period))
-        )
-
-    fun createPasswordDescriptionTotpSecretInput(
-        password: String,
-        description: String?,
-        algorithm: String,
-        key: String,
-        digits: Int,
-        period: Long
-    ): String =
-        gson.toJson(
-            PasswordDescriptionTotpSecret(
-                password = password,
-                description = description.orEmpty(),
-                totp = TotpSecret(algorithm, key, digits, period)
-            )
         )
 }
