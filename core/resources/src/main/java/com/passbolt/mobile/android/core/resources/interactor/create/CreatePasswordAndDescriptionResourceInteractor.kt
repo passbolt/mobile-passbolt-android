@@ -51,7 +51,7 @@ class CreatePasswordAndDescriptionResourceInteractor(
     permissionsModelMapper: PermissionsModelMapper,
     getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
     jsonSchemaValidationRunner: JsonSchemaValidationRunner,
-    gson: Gson,
+    gson: Gson
 ) :
     CreateResourceInteractor<CreatePasswordAndDescriptionResourceInteractor.CreatePasswordAndDescriptionInput>(
         resourceRepository,
