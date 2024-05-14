@@ -22,6 +22,7 @@ dependencies {
     implementation project(':entity')
     implementation project(':tags')
     implementation project(':serializers')
+    implementation project(':policies')
 
     implementation libs.gson
     implementation libs.room.core

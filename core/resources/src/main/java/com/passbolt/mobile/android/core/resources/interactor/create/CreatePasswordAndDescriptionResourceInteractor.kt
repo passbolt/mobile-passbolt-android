@@ -33,11 +33,14 @@ import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.policies.GetPasswordExpirySettingsUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import java.time.ZonedDateTime
 
 class CreatePasswordAndDescriptionResourceInteractor(
     private val secretInputCreator: SecretInputCreator,
+    private val getPasswordExpirySettingsUseCase: GetPasswordExpirySettingsUseCase,
     getSelectedAccountUseCase: GetSelectedAccountUseCase,
     getPrivateKeyUseCase: GetPrivateKeyUseCase,
     openPgp: OpenPgp,
@@ -48,7 +51,7 @@ class CreatePasswordAndDescriptionResourceInteractor(
     permissionsModelMapper: PermissionsModelMapper,
     getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
     jsonSchemaValidationRunner: JsonSchemaValidationRunner,
-    gson: Gson
+    gson: Gson,
 ) :
     CreateResourceInteractor<CreatePasswordAndDescriptionResourceInteractor.CreatePasswordAndDescriptionInput>(
         resourceRepository,
@@ -79,8 +82,23 @@ class CreatePasswordAndDescriptionResourceInteractor(
             description = customInput.description
         )
 
+    override suspend fun getResourceExpiry(): ZonedDateTime? {
+        val expirySettings = getPasswordExpirySettingsUseCase.execute(Unit).expirySettings
+        return if (expirySettings.automaticExpiry) {
+            return ZonedDateTime.now()
+                .plusDays((expirySettings.defaultExpiryPeriodDays ?: DEFAULT_EXPIRY_PERIOD_DAYS).toLong())
+                .withFixedOffsetZone()
+        } else {
+            null
+        }
+    }
+
     class CreatePasswordAndDescriptionInput(
         val password: String,
         val description: String?
     )
+
+    private companion object {
+        private const val DEFAULT_EXPIRY_PERIOD_DAYS = 90
+    }
 }

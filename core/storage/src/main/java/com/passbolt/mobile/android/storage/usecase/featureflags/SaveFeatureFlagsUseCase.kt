@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesF
 import com.passbolt.mobile.android.storage.paths.FeatureFlagsFileName
 import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.FOLDERS_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PASSWORD_EXPIRY_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PREVIEW_PASSWORD_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PRIVACY_POLICY_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.RBAC_KEY
@@ -50,6 +51,7 @@ class SaveFeatureFlagsUseCase(
             putBoolean(TAGS_KEY, input.featureFlags.areTagsAvailable)
             putBoolean(TOTP_KEY, input.featureFlags.isTotpAvailable)
             putBoolean(RBAC_KEY, input.featureFlags.isRbacAvailable)
+            putBoolean(PASSWORD_EXPIRY_KEY, input.featureFlags.isPasswordExpiryAvailable)
             apply()
         }
     }

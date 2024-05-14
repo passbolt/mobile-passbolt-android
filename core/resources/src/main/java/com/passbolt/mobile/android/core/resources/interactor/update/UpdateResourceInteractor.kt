@@ -28,8 +28,11 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_AND_DESCRIPTION
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_DESCRIPTION_TOTP
+import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInput
 import com.passbolt.mobile.android.core.users.usecase.FetchUsersUseCase
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.request.EncryptedSecret
@@ -45,11 +48,13 @@ import com.passbolt.mobile.android.serializers.validationwrapper.PlainSecretVali
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
+import com.passbolt.mobile.android.storage.usecase.policies.GetPasswordExpirySettingsUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.UserModel
+import java.time.ZonedDateTime
 
 class UpdateResourceInteractor(
     private val passphraseMemoryCache: PassphraseMemoryCache,
@@ -61,10 +66,11 @@ class UpdateResourceInteractor(
     private val gson: Gson,
     private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
-    private val openPgp: OpenPgp
+    private val openPgp: OpenPgp,
+    private val passwordExpirySettingsUseCase: GetPasswordExpirySettingsUseCase
 ) {
 
-    suspend fun execute(input: ResourceInput, secretInput: DecryptedSecret): Output {
+    suspend fun execute(input: ResourceInput, secretInput: SecretInput): Output {
         val passphrase = when (val result = passphraseMemoryCache.get()) {
             is PotentialPassphrase.Passphrase -> result.passphrase
             is PotentialPassphrase.PassphraseNotPresent -> return Output.PasswordExpired
@@ -75,12 +81,12 @@ class UpdateResourceInteractor(
             is FetchUsersUseCase.Output.Failure<*> -> Output.Failure(usersWhoHaveAccess.response)
             is FetchUsersUseCase.Output.Success -> {
                 if (isSecretValid(
-                        PlainSecretValidationWrapper(secretInput.json, input.newResourceTypeSlug)
+                        PlainSecretValidationWrapper(secretInput.decryptedSecret.json, input.newResourceTypeSlug)
                             .validationPlainSecret,
                         input.newResourceTypeSlug
                     )
                 ) {
-                    createResource(secretInput.json, passphrase, usersWhoHaveAccess, input)
+                    createResource(secretInput, passphrase, usersWhoHaveAccess, input)
                 } else {
                     Output.JsonSchemaValidationFailure(SECRET)
                 }
@@ -89,12 +95,12 @@ class UpdateResourceInteractor(
     }
 
     private suspend fun createResource(
-        plainSecret: String,
+        secretInput: SecretInput,
         passphrase: ByteArray,
         usersWhoHaveAccess: FetchUsersUseCase.Output.Success,
         resourceInput: ResourceInput
     ): Output {
-        val encryptedSecrets = encrypt(plainSecret, passphrase, usersWhoHaveAccess.users)
+        val encryptedSecrets = encrypt(secretInput.decryptedSecret.json, passphrase, usersWhoHaveAccess.users)
         return if (encryptedSecrets.any { it is EncryptedSecretOrError.Error }) {
             Output.OpenPgpError(
                 encryptedSecrets.filterIsInstance<EncryptedSecretOrError.Error>().first().message
@@ -108,7 +114,8 @@ class UpdateResourceInteractor(
                 username = resourceInput.resourceUsername,
                 uri = resourceInput.resourceUri,
                 description = resourceInput.description,
-                folderParentId = resourceInput.resourceParentFolderId
+                folderParentId = resourceInput.resourceParentFolderId,
+                expiry = getResourceExpiry(resourceInput, secretInput)
             )
             if (isResourceValid(createResourceDto, resourceInput.newResourceTypeSlug)) {
                 when (val response = resourceRepository.updateResource(
@@ -121,6 +128,26 @@ class UpdateResourceInteractor(
             } else {
                 Output.JsonSchemaValidationFailure(RESOURCE)
             }
+        }
+    }
+
+    private suspend fun getResourceExpiry(resourceInput: ResourceInput, secretInput: SecretInput): ZonedDateTime? {
+        return if (resourcesSlugsSupportingExpiry.contains(resourceInput.newResourceTypeSlug)) {
+            val expirySettings = passwordExpirySettingsUseCase.execute(Unit).expirySettings
+            if (expirySettings.automaticUpdate && secretInput.passwordChanged) {
+                val expiryDays = expirySettings.defaultExpiryPeriodDays
+                if (expiryDays != null) {
+                    ZonedDateTime.now()
+                        .plusDays(expiryDays.toLong())
+                        .withFixedOffsetZone()
+                } else {
+                    null
+                }
+            } else {
+                resourceInput.expiry
+            }
+        } else {
+            null
         }
     }
 
@@ -162,7 +189,8 @@ class UpdateResourceInteractor(
         val resourceUri: String?,
         val resourceParentFolderId: String?,
         val description: String?,
-        val newResourceTypeSlug: String
+        val newResourceTypeSlug: String,
+        val expiry: ZonedDateTime?
     )
 
     sealed class Output : AuthenticatedUseCaseOutput {
@@ -197,5 +225,13 @@ class UpdateResourceInteractor(
         data class OpenPgpError(val message: String) : Output()
 
         data class JsonSchemaValidationFailure(val entity: SchemaEntity) : Output()
+    }
+
+    private companion object {
+        private val resourcesSlugsSupportingExpiry = setOf(
+            SLUG_PASSWORD_AND_DESCRIPTION,
+            SLUG_SIMPLE_PASSWORD,
+            SLUG_PASSWORD_DESCRIPTION_TOTP
+        )
     }
 }

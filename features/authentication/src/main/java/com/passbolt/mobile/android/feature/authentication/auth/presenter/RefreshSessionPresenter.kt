@@ -3,18 +3,16 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
-import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.PostSignInActionsInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
-import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
@@ -56,7 +54,6 @@ class RefreshSessionPresenter(
     saveSessionUseCase: SaveSessionUseCase,
     saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     getAccountDataUseCase: GetAccountDataUseCase,
-    featureFlagsInteractor: FeatureFlagsInteractor,
     signOutUseCase: SignOutUseCase,
     saveServerFingerprintUseCase: SaveServerFingerprintUseCase,
     mfaStatusProvider: MfaStatusProvider,
@@ -70,11 +67,10 @@ class RefreshSessionPresenter(
     getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysAndTimeInteractor,
     signInVerifyInteractor: SignInVerifyInteractor,
     biometryInteractor: BiometryInteractor,
-    userProfileInteractor: UserProfileInteractor,
     runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag,
     inAppReviewInteractor: InAppReviewInteractor,
     getGlobalPreferencesUseCase: GetGlobalPreferencesUseCase,
-    rbacInteractor: RbacInteractor
+    postSignInActionsInteractor: PostSignInActionsInteractor
 ) : SignInPresenter(
     saveSessionUseCase,
     saveSelectedAccountUseCase,
@@ -82,13 +78,11 @@ class RefreshSessionPresenter(
     signOutUseCase,
     saveServerFingerprintUseCase,
     mfaStatusProvider,
-    featureFlagsInteractor,
-    rbacInteractor,
     getAndVerifyServerKeysInteractor,
     signInVerifyInteractor,
-    userProfileInteractor,
     inAppReviewInteractor,
     signInIdlingResource,
+    postSignInActionsInteractor,
     biometryInteractor,
     getAccountDataUseCase,
     biometricCipher,

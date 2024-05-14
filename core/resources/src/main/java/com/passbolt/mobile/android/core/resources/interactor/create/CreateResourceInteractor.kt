@@ -48,6 +48,7 @@ import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCa
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
+import java.time.ZonedDateTime
 
 abstract class CreateResourceInteractor<CustomInput>(
     private val resourceRepository: ResourceRepository,
@@ -97,7 +98,8 @@ abstract class CreateResourceInteractor<CustomInput>(
             username = input.resourceUsername,
             uri = input.resourceUri,
             description = createCommonDescription(customInput),
-            folderParentId = input.resourceParentFolderId
+            folderParentId = input.resourceParentFolderId,
+            expiry = getResourceExpiry()
         )
         return if (isResourceValid(createResourceDto)) {
             when (val response = resourceRepository.createResource(createResourceDto)) {
@@ -115,6 +117,8 @@ abstract class CreateResourceInteractor<CustomInput>(
             Output.JsonSchemaValidationFailure(RESOURCE)
         }
     }
+
+    abstract suspend fun getResourceExpiry(): ZonedDateTime?
 
     private suspend fun encrypt(secret: String, passphrase: ByteArray): EncryptedSecretOrError {
         val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)

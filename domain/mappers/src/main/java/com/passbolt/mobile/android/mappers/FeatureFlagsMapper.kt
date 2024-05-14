@@ -42,7 +42,9 @@ class FeatureFlagsMapper {
                 isTotpAvailable = it.plugins.totpResourceTypes?.enabled
                     ?: Defaults.IS_TOTP_AVAILABLE,
                 isRbacAvailable = it.plugins.rbacs?.enabled
-                    ?: Defaults.IS_RBAC_AVAILABLE
+                    ?: Defaults.IS_RBAC_AVAILABLE,
+                isPasswordExpiryAvailable = it.plugins.passwordExpiry?.enabled
+                    ?: Defaults.IS_PASSWORD_EXPIRY_AVAILABLE
             )
         }
 }

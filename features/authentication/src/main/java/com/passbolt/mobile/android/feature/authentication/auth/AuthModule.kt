@@ -17,6 +17,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpTimeUpdater
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.PostSignInActionsInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -69,6 +70,7 @@ fun Module.authModule() {
         scopedOf(::GetAndVerifyServerKeysAndTimeInteractor)
         scopedOf(::SignInVerifyInteractor)
         scopedOf(::GopenPgpTimeUpdater)
+        scopedOf(::PostSignInActionsInteractor)
         scoped {
             BiometricPrompt.PromptInfo.Builder()
         }
@@ -114,10 +116,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     signOutUseCase = get(),
     saveServerFingerprintUseCase = get(),
     mfaStatusProvider = get(),
-    featureFlagsInteractor = get(),
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
-    userProfileInteractor = get(),
     inAppReviewInteractor = get(),
     biometryInteractor = get(),
     getAccountDataUseCase = get(),
@@ -131,7 +131,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
     runtimeAuthenticatedFlag = get(),
     signInIdlingResource = get(),
     getGlobalPreferencesUseCase = get(),
-    rbacInteractor = get()
+    postSignInActionsInteractor = get()
 )
 
 private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
@@ -141,7 +141,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     saveSessionUseCase = get(),
     saveSelectedAccountUseCase = get(),
     getAccountDataUseCase = get(),
-    featureFlagsInteractor = get(),
     signOutUseCase = get(),
     saveServerFingerprintUseCase = get(),
     mfaStatusProvider = get(),
@@ -155,9 +154,8 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
     biometryInteractor = get(),
-    userProfileInteractor = get(),
     runtimeAuthenticatedFlag = get(),
     inAppReviewInteractor = get(),
     getGlobalPreferencesUseCase = get(),
-    rbacInteractor = get()
+    postSignInActionsInteractor = get()
 )

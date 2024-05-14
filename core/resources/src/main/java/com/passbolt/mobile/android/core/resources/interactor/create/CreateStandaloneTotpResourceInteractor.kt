@@ -81,6 +81,8 @@ class CreateStandaloneTotpResourceInteractor(
             period = customInput.period
         )
 
+    override suspend fun getResourceExpiry() = null
+
     class CreateStandaloneTotpInput(
         val period: Long,
         val digits: Int,

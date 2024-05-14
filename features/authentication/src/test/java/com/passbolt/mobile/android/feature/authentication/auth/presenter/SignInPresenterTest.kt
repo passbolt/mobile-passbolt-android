@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.core.policies.usecase.PoliciesInteractor
 import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
@@ -22,6 +23,7 @@ import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerpri
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
+import com.passbolt.mobile.android.ui.PasswordExpirySettings
 import com.passbolt.mobile.android.ui.RbacModel
 import com.passbolt.mobile.android.ui.RbacRuleModel.ALLOW
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -93,6 +95,17 @@ class SignInPresenterTest : KoinTest {
             )
         whenever(mockGopenPgpTimeUpdater.updateTimeIfNeeded(any(), any()))
             .thenReturn(GopenPgpTimeUpdater.Result.TIME_SYNCED)
+        mockPolicyInteractor.stub {
+            onBlocking { fetchAndSavePasswordExpiryPolicies() }.doReturn(
+                PoliciesInteractor.Output.Success(
+                    PasswordExpirySettings(
+                        automaticExpiry = true,
+                        automaticUpdate = true,
+                        defaultExpiryPeriodDays = 90
+                    )
+                )
+            )
+        }
     }
 
     @Test
@@ -203,7 +216,8 @@ class SignInPresenterTest : KoinTest {
                         areFoldersAvailable = false,
                         areTagsAvailable = true,
                         isTotpAvailable = true,
-                        isRbacAvailable = true
+                        isRbacAvailable = true,
+                        isPasswordExpiryAvailable = true
                     )
                 )
             )

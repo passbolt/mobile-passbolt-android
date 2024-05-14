@@ -188,6 +188,7 @@ dependencies {
     implementation project(':createotpmanually')
     implementation project(':rbac')
     implementation project(':accounts')
+    implementation project(':policies')
 
     debugImplementation libs.leakcanary
 

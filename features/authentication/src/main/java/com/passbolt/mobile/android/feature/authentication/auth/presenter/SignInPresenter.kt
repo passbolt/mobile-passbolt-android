@@ -3,19 +3,17 @@ package com.passbolt.mobile.android.feature.authentication.auth.presenter
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
-import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatus
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.ChallengeVerificationErrorType
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.PostSignInActionsInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
-import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
@@ -61,13 +59,11 @@ open class SignInPresenter(
     private val signOutUseCase: SignOutUseCase,
     private val saveServerFingerprintUseCase: SaveServerFingerprintUseCase,
     private val mfaStatusProvider: MfaStatusProvider,
-    private val featureFlagsInteractor: FeatureFlagsInteractor,
-    private val rbacInteractor: RbacInteractor,
     private val getAndVerifyServerKeysInteractor: GetAndVerifyServerKeysAndTimeInteractor,
     private val signInVerifyInteractor: SignInVerifyInteractor,
-    private val userProfileInteractor: UserProfileInteractor,
     private val inAppReviewInteractor: InAppReviewInteractor,
     private val signInIdlingResource: SignInIdlingResource,
+    private val postSignInActionsInteractor: PostSignInActionsInteractor,
     biometryInteractor: BiometryInteractor,
     getAccountDataUseCase: GetAccountDataUseCase,
     biometricCipher: BiometricCipher,
@@ -241,49 +237,29 @@ open class SignInPresenter(
         Timber.d("Increasing sign in count")
         inAppReviewInteractor.processSuccessfulSignIn()
         loginState = null
-        fetchFeatureFlagsAndRbac()
+        launchPostSignInActions()
     }
 
-    private fun fetchFeatureFlagsAndRbac() {
-        Timber.d("Fetching feature flags")
+    private fun launchPostSignInActions() {
         scope.launch {
-            when (val featureFlagsResult = featureFlagsInteractor.fetchAndSaveFeatureFlags()) {
-                is FeatureFlagsInteractor.Output.Success -> {
-                    Timber.d("Feature flags fetched")
-                    if (featureFlagsResult.featureFlags.isRbacAvailable) {
-                        Timber.d("RBAC available, fetching RBAC")
-                        when (rbacInteractor.fetchAndSaveRbacRulesFlags()) {
-                            is RbacInteractor.Output.Failure -> view?.showFeatureFlagsErrorDialog()
-                            is RbacInteractor.Output.Success -> fetchUserAvatar()
-                        }
-                    } else {
-                        fetchUserAvatar()
+            postSignInActionsInteractor.launchPostSignInActions(
+                onError = {
+                    view?.hideProgress()
+                    signInIdlingResource.setIdle(true)
+                    when (it) {
+                        PostSignInActionsInteractor.Error.ConfigurationFetchError -> view?.showGenericError()
+                        PostSignInActionsInteractor.Error.UserProfileFetchError -> view?.showGenericError()
                     }
                 }
-                is FeatureFlagsInteractor.Output.Failure -> {
-                    view?.showFeatureFlagsErrorDialog()
+            ) {
+                view?.apply {
+                    hideProgress()
+                    clearPassphraseInput()
+                    authSuccess()
                 }
+                signInIdlingResource.setIdle(true)
             }
         }
-    }
-
-    private suspend fun fetchUserAvatar() {
-        Timber.d("Fetching user profile")
-        when (val result = userProfileInteractor.fetchAndUpdateUserProfile()) {
-            is UserProfileInteractor.Output.Failure -> {
-                Timber.e("Failed to update user profile: ${result.message}")
-                view?.showFailedToFetchUserProfile(result.message)
-            }
-            is UserProfileInteractor.Output.Success -> {
-                Timber.d("User profile updated successfully")
-            }
-        }
-        view?.apply {
-            hideProgress()
-            clearPassphraseInput()
-            authSuccess()
-        }
-        signInIdlingResource.setIdle(true)
     }
 
     fun signOutClick() {

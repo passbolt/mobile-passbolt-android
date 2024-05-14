@@ -108,7 +108,8 @@ class ResourceDetailsPresenterTest : KoinTest {
                     areFoldersAvailable = true,
                     areTagsAvailable = true,
                     isTotpAvailable = true,
-                    isRbacAvailable = true
+                    isRbacAvailable = true,
+                    isPasswordExpiryAvailable = true
                 )
             )
         }
@@ -179,6 +180,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showFolderLocation(emptyList())
         verify(view, times(2)).hideTotpSection()
         verify(view, times(2)).showPasswordEyeIcon()
+        verify(view, times(2)).hideExpirySection()
         verify(view).hideRefreshProgress()
         verifyNoMoreInteractions(view)
     }
@@ -358,7 +360,8 @@ class ResourceDetailsPresenterTest : KoinTest {
                         areFoldersAvailable = false,
                         areTagsAvailable = false,
                         isTotpAvailable = true,
-                        isRbacAvailable = true
+                        isRbacAvailable = true,
+                        isPasswordExpiryAvailable = true
                     )
                 )
             )

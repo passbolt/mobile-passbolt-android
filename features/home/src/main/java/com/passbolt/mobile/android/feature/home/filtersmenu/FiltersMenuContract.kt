@@ -94,6 +94,11 @@ interface FiltersMenuContract {
          * Shows tags item that is hidden by default (available under feature flag)
          */
         fun showTagsMenuItem()
+
+        /**
+         * Shows expiry item that is hidden by default (available under password expiry settings flag)
+         */
+        fun showExpiryMenuItem()
     }
 
     /**

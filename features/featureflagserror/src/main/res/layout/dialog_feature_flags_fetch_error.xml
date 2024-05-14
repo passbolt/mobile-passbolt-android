@@ -18,7 +18,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginHorizontal="@dimen/dp_72"
         android:gravity="center_horizontal"
-        android:text="@string/common_failure"
+        android:text="@string/common_startup_configuration_fetch_error"
         android:textColor="@color/text_primary" />
 
     <ImageView
