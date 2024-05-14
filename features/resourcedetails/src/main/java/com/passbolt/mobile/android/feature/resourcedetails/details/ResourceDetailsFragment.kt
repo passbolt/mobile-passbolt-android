@@ -268,6 +268,10 @@ class ResourceDetailsFragment :
         }
     }
 
+    override fun hideExpirySection() {
+        binding.expiryItem.gone()
+    }
+
     override fun displayUsername(username: String) {
         binding.usernameItem.textValue = username
     }

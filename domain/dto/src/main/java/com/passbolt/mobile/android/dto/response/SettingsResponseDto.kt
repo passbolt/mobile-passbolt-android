@@ -52,7 +52,8 @@ data class PluginsDto(
     val folders: PluginAvailabilityDto?,
     val tags: PluginAvailabilityDto?,
     val totpResourceTypes: PluginAvailabilityDto?,
-    val rbacs: PluginAvailabilityDto?
+    val rbacs: PluginAvailabilityDto?,
+    val passwordExpiry: PluginAvailabilityDto?
 )
 
 data class PluginAvailabilityDto(

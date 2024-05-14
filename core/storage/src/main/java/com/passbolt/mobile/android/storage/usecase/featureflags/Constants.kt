@@ -31,4 +31,5 @@ object Constants {
     const val TAGS_KEY = "TAGS_KEY"
     const val TOTP_KEY = "TOTP_KEY"
     const val RBAC_KEY = "RBAC_KEY"
+    const val PASSWORD_EXPIRY_KEY = "PASSWORD_EXPIRY_KEY"
 }

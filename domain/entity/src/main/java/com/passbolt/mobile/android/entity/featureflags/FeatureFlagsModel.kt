@@ -30,5 +30,6 @@ data class FeatureFlagsModel(
     val areFoldersAvailable: Boolean,
     val areTagsAvailable: Boolean,
     val isTotpAvailable: Boolean,
-    val isRbacAvailable: Boolean
+    val isRbacAvailable: Boolean,
+    val isPasswordExpiryAvailable: Boolean
 )

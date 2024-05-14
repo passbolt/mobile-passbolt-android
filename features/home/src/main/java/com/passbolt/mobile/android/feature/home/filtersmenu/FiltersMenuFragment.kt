@@ -196,6 +196,10 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
         binding.tags.visible()
     }
 
+    override fun showExpiryMenuItem() {
+        binding.expiry.visible()
+    }
+
     interface Listener {
         fun menuAllItemsClick()
         fun menuFavouritesClick()

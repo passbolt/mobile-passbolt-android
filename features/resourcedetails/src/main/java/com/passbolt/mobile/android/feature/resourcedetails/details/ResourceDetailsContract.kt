@@ -95,6 +95,7 @@ interface ResourceDetailsContract {
         fun displayExpirySection(expiry: ZonedDateTime)
         fun showExpiryIndicator()
         fun navigateToOtpCreateMenu()
+        fun hideExpirySection()
     }
 
     @Suppress("TooManyFunctions")

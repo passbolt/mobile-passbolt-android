@@ -31,12 +31,14 @@ import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceListItemDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
 import com.passbolt.mobile.android.serializers.gson.SingleResourceDeserializer
+import com.passbolt.mobile.android.serializers.gson.serializer.ZonedDateTimeSerializer
 import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.serializers.jsonschema.jsonSchemaModule
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import java.time.ZonedDateTime
 import java.util.UUID
 
 internal const val RESOURCE_DTO_GSON = "RESOURCE_DTO_GSON"
@@ -47,6 +49,7 @@ val serializersModule = module {
     singleOf(::JsonSchemaValidationRunner)
     singleOf(::ResourceListDeserializer)
     singleOf(::ResourceTypesListDeserializer)
+    singleOf(::ZonedDateTimeSerializer)
     single {
         SingleResourceDeserializer(
             resourceTypeIdToSlugMappingProvider = get(),
@@ -65,6 +68,7 @@ val serializersModule = module {
 
     single {
         GsonBuilder()
+            .serializeNulls()
             .apply {
                 strictTypeAdapters.forEach {
                     registerTypeAdapter(it.key, it.value)
@@ -77,6 +81,7 @@ val serializersModule = module {
                     object : TypeToken<List<@JvmSuppressWildcards ResourceTypeDto>>() {}.type,
                     get<ResourceTypesListDeserializer>()
                 )
+                registerTypeAdapter(ZonedDateTime::class.java, get<ZonedDateTimeSerializer>())
                 registerTypeAdapter(
                     ResourceResponseDto::class.java,
                     get<SingleResourceDeserializer>()

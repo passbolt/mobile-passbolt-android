@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesF
 import com.passbolt.mobile.android.storage.paths.FeatureFlagsFileName
 import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.FOLDERS_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PASSWORD_EXPIRY_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PREVIEW_PASSWORD_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.PRIVACY_POLICY_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.RBAC_KEY
@@ -49,6 +50,7 @@ class GetFeatureFlagsUseCase(
             val areTagsAvailable = it.getBoolean(TAGS_KEY, Defaults.ARE_TAGS_AVAILABLE)
             val isTotpAvailable = it.getBoolean(TOTP_KEY, Defaults.IS_TOTP_AVAILABLE)
             val isRbacAvailable = it.getBoolean(RBAC_KEY, Defaults.IS_RBAC_AVAILABLE)
+            val isPasswordExpiryAvailable = it.getBoolean(PASSWORD_EXPIRY_KEY, Defaults.IS_PASSWORD_EXPIRY_AVAILABLE)
             return Output(
                 FeatureFlagsModel(
                     privacyPolicyUrl = privacyPolicyUrl,
@@ -57,7 +59,8 @@ class GetFeatureFlagsUseCase(
                     areFoldersAvailable = areFoldersAvailable,
                     areTagsAvailable = areTagsAvailable,
                     isTotpAvailable = isTotpAvailable,
-                    isRbacAvailable = isRbacAvailable
+                    isRbacAvailable = isRbacAvailable,
+                    isPasswordExpiryAvailable = isPasswordExpiryAvailable
                 )
             )
         }
