@@ -131,20 +131,25 @@ class UpdateResourceInteractor(
         }
     }
 
+    @Suppress("NestedBlockDepth")
+    // https://drive.google.com/file/d/1lqiF0ajpuvx1xaZ74aSSjxiDLMGPBXVa/view?usp=drive_link
     private suspend fun getResourceExpiry(resourceInput: ResourceInput, secretInput: SecretInput): ZonedDateTime? {
         return if (resourcesSlugsSupportingExpiry.contains(resourceInput.newResourceTypeSlug)) {
             val expirySettings = passwordExpirySettingsUseCase.execute(Unit).expirySettings
-            if (expirySettings.automaticUpdate && secretInput.passwordChanged) {
-                val expiryDays = expirySettings.defaultExpiryPeriodDays
-                if (expiryDays != null) {
-                    ZonedDateTime.now()
-                        .plusDays(expiryDays.toLong())
-                        .withFixedOffsetZone()
+            if (expirySettings.automaticUpdate) {
+                if (secretInput.passwordChanged) {
+                    if (expirySettings.defaultExpiryPeriodDays != null) {
+                        ZonedDateTime.now()
+                            .plusDays(expirySettings.defaultExpiryPeriodDays!!.toLong())
+                            .withFixedOffsetZone()
+                    } else {
+                        null
+                    }
                 } else {
-                    null
+                    resourceInput.expiry
                 }
             } else {
-                resourceInput.expiry
+                null
             }
         } else {
             null

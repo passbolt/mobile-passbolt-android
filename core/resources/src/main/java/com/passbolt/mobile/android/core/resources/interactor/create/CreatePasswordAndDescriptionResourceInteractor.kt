@@ -82,12 +82,17 @@ class CreatePasswordAndDescriptionResourceInteractor(
             description = customInput.description
         )
 
+    // https://drive.google.com/file/d/1lqiF0ajpuvx1xaZ74aSSjxiDLMGPBXVa/view?usp=drive_link
     override suspend fun getResourceExpiry(): ZonedDateTime? {
         val expirySettings = getPasswordExpirySettingsUseCase.execute(Unit).expirySettings
         return if (expirySettings.automaticExpiry) {
-            return ZonedDateTime.now()
-                .plusDays((expirySettings.defaultExpiryPeriodDays ?: DEFAULT_EXPIRY_PERIOD_DAYS).toLong())
-                .withFixedOffsetZone()
+            if (expirySettings.defaultExpiryPeriodDays != null) {
+                ZonedDateTime.now()
+                    .plusDays((expirySettings.defaultExpiryPeriodDays!!).toLong())
+                    .withFixedOffsetZone()
+            } else {
+                null
+            }
         } else {
             null
         }
@@ -97,8 +102,4 @@ class CreatePasswordAndDescriptionResourceInteractor(
         val password: String,
         val description: String?
     )
-
-    private companion object {
-        private const val DEFAULT_EXPIRY_PERIOD_DAYS = 90
-    }
 }
