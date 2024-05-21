@@ -149,7 +149,7 @@ class UpdateResourceInteractor(
                     resourceInput.expiry
                 }
             } else {
-                null
+                resourceInput.expiry
             }
         } else {
             null
