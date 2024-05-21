@@ -103,6 +103,10 @@ class UpdateResourceFragment :
         }
     }
 
+    override fun clearInputsContainer() {
+        binding.container.removeAllViews()
+    }
+
     override fun addTextInput(
         name: String,
         isSecret: Boolean,

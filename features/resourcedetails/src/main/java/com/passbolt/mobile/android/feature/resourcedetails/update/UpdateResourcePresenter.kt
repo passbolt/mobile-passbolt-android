@@ -186,6 +186,7 @@ class UpdateResourcePresenter(
             }
         }
 
+        view?.clearInputsContainer()
         fields.forEach {
             when (it.field.name) {
                 in listOf(PASSWORD_FIELD, SECRET_FIELD) -> handlePasswordInput(it)
