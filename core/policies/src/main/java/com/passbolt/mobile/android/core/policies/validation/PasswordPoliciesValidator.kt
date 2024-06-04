@@ -27,7 +27,6 @@ import com.passbolt.mobile.android.ui.PassphraseGeneratorSettingsModel
 import com.passbolt.mobile.android.ui.PasswordGeneratorSettingsModel
 import com.passbolt.mobile.android.ui.PasswordPolicies
 
-
 class PasswordPoliciesValidator {
 
     fun arePasswordPoliciesValid(passwordPolicies: PasswordPolicies) =
@@ -49,7 +48,7 @@ class PasswordPoliciesValidator {
             passwordGeneratorSettingsModel.maskDigit,
             passwordGeneratorSettingsModel.maskParenthesis,
             passwordGeneratorSettingsModel.maskLower,
-            passwordGeneratorSettingsModel.maskUpper,
+            passwordGeneratorSettingsModel.maskUpper
         ).any()
 
     private fun isPasswordLengthValid(passwordLength: Int) =

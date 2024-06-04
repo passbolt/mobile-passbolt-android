@@ -54,6 +54,7 @@ class GetPasswordPoliciesUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
 ) : AsyncUseCase<Unit, PasswordPolicies>, SelectedAccountUseCase {
 
+    @Suppress("LongMethod")
     override suspend fun execute(input: Unit): PasswordPolicies {
         val fileName = PasswordPoliciesFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
@@ -143,7 +144,7 @@ class GetPasswordPoliciesUseCase(
             PassphraseGeneratorSettingsModel(
                 words = passphraseGeneratorWordsCount,
                 wordSeparator = passphraseGeneratorSeparator,
-                wordCase = passphraseGeneratorCase,
+                wordCase = passphraseGeneratorCase
             ),
             isExternalDictionaryCheckEnabled = externalDictionaryCheckEnabled
         )

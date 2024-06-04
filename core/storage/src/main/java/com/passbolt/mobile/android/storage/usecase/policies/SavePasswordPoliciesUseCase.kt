@@ -50,6 +50,7 @@ class SavePasswordPoliciesUseCase(
     private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
 ) : AsyncUseCase<SavePasswordPoliciesUseCase.Input, Unit>, SelectedAccountUseCase {
 
+    @Suppress("LongMethod")
     override suspend fun execute(input: Input) {
         val fileName = PasswordPoliciesFileName(selectedAccountId).name
         val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
