@@ -23,33 +23,29 @@
 
 package com.passbolt.mobile.android.core.policies.usecase
 
-import com.passbolt.mobile.android.storage.usecase.policies.SavePasswordExpirySettingsUseCase
-import com.passbolt.mobile.android.ui.PasswordExpirySettings
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.mappers.PasswordPoliciesMapper
+import com.passbolt.mobile.android.passboltapi.passwordpolicies.PasswordPoliciesRepository
+import com.passbolt.mobile.android.ui.PasswordPolicies
 
-class PoliciesInteractor(
-    private val fetchPasswordExpirySettingsUseCase: FetchPasswordExpirySettingsUseCase,
-    private val savePasswordExpirySettingsUseCase: SavePasswordExpirySettingsUseCase
-) {
+class FetchPasswordPoliciesUseCase(
+    private val passwordPoliciesRepository: PasswordPoliciesRepository,
+    private val passwordPoliciesMapper: PasswordPoliciesMapper
+) : AsyncUseCase<Unit, FetchPasswordPoliciesUseCase.Output> {
 
-    suspend fun fetchAndSavePasswordExpiryPolicies(): Output {
-        return when (val response = fetchPasswordExpirySettingsUseCase.execute(Unit)) {
-            is FetchPasswordExpirySettingsUseCase.Output.Failure<*> -> Output.Failure
-            is FetchPasswordExpirySettingsUseCase.Output.Success ->
-                savePasswordExpirySettingsRules(response.passwordExpirySettings)
+    override suspend fun execute(input: Unit): Output =
+        when (val response = passwordPoliciesRepository.getPasswordPoliciesSettings()) {
+            is NetworkResult.Failure -> Output.Failure(response)
+            is NetworkResult.Success -> Output.Success(passwordPoliciesMapper.map(response.value))
         }
-    }
-
-    private suspend fun savePasswordExpirySettingsRules(passwordExpirySettings: PasswordExpirySettings): Output {
-        savePasswordExpirySettingsUseCase.execute(SavePasswordExpirySettingsUseCase.Input(passwordExpirySettings))
-        return Output.Success(passwordExpirySettings)
-    }
 
     sealed class Output {
 
         data class Success(
-            val passwordExpirySettings: PasswordExpirySettings
+            val passwordPolicies: PasswordPolicies
         ) : Output()
 
-        data object Failure : Output()
+        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
     }
 }

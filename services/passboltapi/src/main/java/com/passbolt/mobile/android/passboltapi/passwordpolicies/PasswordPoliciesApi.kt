@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.featureflags.usecase
-
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.mappers.FeatureFlagsMapper
-import com.passbolt.mobile.android.passboltapi.settings.SettingsRepository
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,25 +20,20 @@ import com.passbolt.mobile.android.passboltapi.settings.SettingsRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class FetchFeatureFlagsUseCase(
-    private val settingsRepository: SettingsRepository,
-    private val featureFlagsMapper: FeatureFlagsMapper
-) : AsyncUseCase<Unit, FetchFeatureFlagsUseCase.Output> {
 
-    override suspend fun execute(input: Unit): Output =
-        when (val response = settingsRepository.getSettings()) {
-            is NetworkResult.Failure -> Output.Failure(response)
-            is NetworkResult.Success -> {
-                Output.Success(featureFlagsMapper.map(response.value.body))
-            }
-        }
+package com.passbolt.mobile.android.passboltapi.passwordpolicies
 
-    sealed class Output {
+import com.passbolt.mobile.android.dto.response.BaseResponse
+import com.passbolt.mobile.android.dto.response.PasswordPoliciesDto
+import retrofit2.http.GET
 
-        data class Success(
-            val featureFlags: FeatureFlagsModel
-        ) : Output()
+internal interface PasswordPoliciesApi {
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+    @GET(PASSWORD_POLICIES_SETTINGS)
+    suspend fun getPasswordPolicies(): BaseResponse<PasswordPoliciesDto>
+
+    private companion object {
+        private const val PASSWORD_POLICIES = "password-policies"
+        private const val PASSWORD_POLICIES_SETTINGS = "$PASSWORD_POLICIES/settings.json"
     }
 }

@@ -51,6 +51,14 @@ class GetFeatureFlagsUseCase(
             val isTotpAvailable = it.getBoolean(TOTP_KEY, Defaults.IS_TOTP_AVAILABLE)
             val isRbacAvailable = it.getBoolean(RBAC_KEY, Defaults.IS_RBAC_AVAILABLE)
             val isPasswordExpiryAvailable = it.getBoolean(PASSWORD_EXPIRY_KEY, Defaults.IS_PASSWORD_EXPIRY_AVAILABLE)
+            val arePasswordPoliciesAvailable = it.getBoolean(
+                Constants.PASSWORD_POLICIES_KEY,
+                Defaults.ARE_PASSWORD_POLICIES_AVAILABLE
+            )
+            val canUpdatePasswordPolicies = it.getBoolean(
+                Constants.PASSWORD_POLICIES_UPDATE_KEY,
+                Defaults.CAN_UPDATE_PASSWORD_POLICIES
+            )
             return Output(
                 FeatureFlagsModel(
                     privacyPolicyUrl = privacyPolicyUrl,
@@ -60,7 +68,9 @@ class GetFeatureFlagsUseCase(
                     areTagsAvailable = areTagsAvailable,
                     isTotpAvailable = isTotpAvailable,
                     isRbacAvailable = isRbacAvailable,
-                    isPasswordExpiryAvailable = isPasswordExpiryAvailable
+                    isPasswordExpiryAvailable = isPasswordExpiryAvailable,
+                    arePasswordPoliciesAvailable = arePasswordPoliciesAvailable,
+                    canUpdatePasswordPolicies = canUpdatePasswordPolicies
                 )
             )
         }

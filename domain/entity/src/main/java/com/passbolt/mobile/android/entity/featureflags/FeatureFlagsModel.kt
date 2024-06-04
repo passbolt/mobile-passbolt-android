@@ -31,5 +31,7 @@ data class FeatureFlagsModel(
     val areTagsAvailable: Boolean,
     val isTotpAvailable: Boolean,
     val isRbacAvailable: Boolean,
-    val isPasswordExpiryAvailable: Boolean
+    val isPasswordExpiryAvailable: Boolean,
+    val arePasswordPoliciesAvailable: Boolean,
+    val canUpdatePasswordPolicies: Boolean
 )

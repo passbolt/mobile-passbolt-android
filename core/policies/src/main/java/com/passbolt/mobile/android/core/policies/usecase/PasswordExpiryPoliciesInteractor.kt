@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.featureflags.usecase
-
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.mappers.FeatureFlagsMapper
-import com.passbolt.mobile.android.passboltapi.settings.SettingsRepository
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,25 +20,36 @@ import com.passbolt.mobile.android.passboltapi.settings.SettingsRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class FetchFeatureFlagsUseCase(
-    private val settingsRepository: SettingsRepository,
-    private val featureFlagsMapper: FeatureFlagsMapper
-) : AsyncUseCase<Unit, FetchFeatureFlagsUseCase.Output> {
 
-    override suspend fun execute(input: Unit): Output =
-        when (val response = settingsRepository.getSettings()) {
-            is NetworkResult.Failure -> Output.Failure(response)
-            is NetworkResult.Success -> {
-                Output.Success(featureFlagsMapper.map(response.value.body))
-            }
+package com.passbolt.mobile.android.core.policies.usecase
+
+import com.passbolt.mobile.android.storage.usecase.policies.SavePasswordExpirySettingsUseCase
+import com.passbolt.mobile.android.ui.PasswordExpirySettings
+
+class PasswordExpiryPoliciesInteractor(
+    private val fetchPasswordExpirySettingsUseCase: FetchPasswordExpirySettingsUseCase,
+    private val savePasswordExpirySettingsUseCase: SavePasswordExpirySettingsUseCase
+) {
+
+    suspend fun fetchAndSavePasswordExpiryPolicies(): Output {
+        return when (val response = fetchPasswordExpirySettingsUseCase.execute(Unit)) {
+            is FetchPasswordExpirySettingsUseCase.Output.Failure<*> -> Output.Failure
+            is FetchPasswordExpirySettingsUseCase.Output.Success ->
+                savePasswordExpirySettingsRules(response.passwordExpirySettings)
         }
+    }
+
+    private suspend fun savePasswordExpirySettingsRules(passwordExpirySettings: PasswordExpirySettings): Output {
+        savePasswordExpirySettingsUseCase.execute(SavePasswordExpirySettingsUseCase.Input(passwordExpirySettings))
+        return Output.Success(passwordExpirySettings)
+    }
 
     sealed class Output {
 
         data class Success(
-            val featureFlags: FeatureFlagsModel
+            val passwordExpirySettings: PasswordExpirySettings
         ) : Output()
 
-        data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()
+        data object Failure : Output()
     }
 }

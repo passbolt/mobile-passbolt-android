@@ -41,11 +41,11 @@ class PasswordGeneratorTest {
     @Test
     fun `generate string with latin and korean characters and digits succeeds`() {
         val alphabetSet = setOf(
-            com.passbolt.mobile.android.core.passwordgenerator.CharacterSets.lowercaseLetters,
-            com.passbolt.mobile.android.core.passwordgenerator.CharacterSets.uppercaseLetters,
-            com.passbolt.mobile.android.core.passwordgenerator.CharacterSets.digits,
+            CharacterSets.lowercaseLetters,
+            CharacterSets.uppercaseLetters,
+            CharacterSets.digits,
             koreanCharacters,
-            com.passbolt.mobile.android.core.passwordgenerator.CharacterSets.digits
+            CharacterSets.digits
         )
         val result = passwordGenerator.generate(alphabetSet, 18, com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.Entropy.VERY_STRONG)
 
