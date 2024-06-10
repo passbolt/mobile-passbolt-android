@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.scenarios.filters
+package com.passbolt.mobile.android.scenarios.home.filters
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
