@@ -137,3 +137,11 @@ fun yubikeyNotFromCurrentUserAlertDialog(context: Context) =
         .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
         .setCancelable(false)
         .create()
+
+fun unableToGeneratePasswordAlertDialog(context: Context, requiredEntropy: Int) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.dialog_unable_to_generate_password_title)
+        .setMessage(context.getString(LocalizationR.string.dialog_unable_to_generate_password_message, requiredEntropy))
+        .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
+        .setCancelable(false)
+        .create()

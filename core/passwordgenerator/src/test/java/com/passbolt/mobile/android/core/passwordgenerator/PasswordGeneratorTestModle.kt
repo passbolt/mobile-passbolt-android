@@ -1,7 +1,8 @@
-package com.passbolt.mobile.android.feature.resourcedetails.update
+package com.passbolt.mobile.android.core.passwordgenerator
 
-import com.passbolt.mobile.android.core.passwordgenerator.entropy.Entropy
-import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView.PasswordStrength
+import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculatorTest
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,16 +26,7 @@ import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputV
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class EntropyViewMapper {
-
-    fun map(entropy: Entropy): PasswordStrength =
-        when (entropy) {
-            Entropy.ZERO -> PasswordStrength.Empty
-            Entropy.VERY_WEAK -> PasswordStrength.VeryWeak
-            Entropy.WEAK -> PasswordStrength.Weak
-            Entropy.FAIR -> PasswordStrength.Fair
-            Entropy.STRONG -> PasswordStrength.Strong
-            Entropy.VERY_STRONG -> PasswordStrength.VeryStrong
-            Entropy.GREATEST_FINITE -> PasswordStrength.VeryStrong
-        }
+val passwordGeneratorTestModule = module {
+    singleOf(::PasswordGenerator)
+    singleOf(::EntropyCalculatorTest)
 }

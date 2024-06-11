@@ -88,7 +88,7 @@ class PasswordGenerateInputView @JvmOverloads constructor(
         parseAttributes(attrs)
         setInitialState()
         setFocusChangeListener()
-        setPasswordStrength(PasswordStrength.Empty)
+        setPasswordStrength(PasswordStrength.Empty, passwordEntropy = 0.0)
         setPasswordGenerateSize()
     }
 
@@ -104,9 +104,18 @@ class PasswordGenerateInputView @JvmOverloads constructor(
         }
     }
 
-    fun setPasswordStrength(passwordStrength: PasswordStrength) = with(binding) {
+    fun setPasswordStrength(passwordStrength: PasswordStrength, passwordEntropy: Double) = with(binding) {
         progressBar.progress = passwordStrength.progress
-        strengthDescription.setText(passwordStrength.text)
+        strengthDescription.text =
+            if (passwordEntropy > Double.NEGATIVE_INFINITY && passwordEntropy < Double.POSITIVE_INFINITY) {
+                context.getString(
+                    LocalizationR.string.password_generator_known_strength_format,
+                    context.getString(passwordStrength.text),
+                    passwordEntropy
+                )
+            } else {
+                context.getString(LocalizationR.string.password_generator_unknown_strength_format)
+            }
         strengthDescription.setTextColor(ContextCompat.getColor(context, passwordStrength.textColor))
 
         val progressBarDrawable = progressBar.progressDrawable as LayerDrawable
@@ -114,9 +123,9 @@ class PasswordGenerateInputView @JvmOverloads constructor(
         progressDrawable.setTint(ContextCompat.getColor(context, passwordStrength.progressColor))
     }
 
-    fun showPassword(password: String, passwordStrength: PasswordStrength) {
+    fun showPassword(password: String, passwordStrength: PasswordStrength, entropyBits: Double) {
         binding.input.setText(password)
-        setPasswordStrength(passwordStrength)
+        setPasswordStrength(passwordStrength, entropyBits)
     }
 
     fun setGenerateClickListener(action: () -> Unit) {

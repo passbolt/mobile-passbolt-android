@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update
 
-import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.EditFieldsModelCreator
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.FieldNamesMapper
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.NewFieldsModelCreator
@@ -51,12 +50,13 @@ fun Module.updateResourceModule() {
                 getLocalParentFolderPermissionsToApplyUseCase = get(),
                 addLocalResourcePermissionsUseCase = get(),
                 createResourceIdlingResource = get(),
-                updateResourceIdlingResource = get()
+                updateResourceIdlingResource = get(),
+                getPasswordPoliciesUseCase = get(),
+                entropyCalculator = get()
             )
         }
 
         scopedOf(::EntropyViewMapper)
-        scopedOf(::PasswordGenerator)
         scopedOf(::ViewProvider)
     }
     factoryOf(::NewFieldsModelCreator)

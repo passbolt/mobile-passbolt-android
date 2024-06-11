@@ -1,7 +1,4 @@
-package com.passbolt.mobile.android.feature.resourcedetails.update
-
-import com.passbolt.mobile.android.core.passwordgenerator.entropy.Entropy
-import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView.PasswordStrength
+package com.passbolt.mobile.android.core.passwordgenerator.codepoints
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,16 +22,26 @@ import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputV
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class EntropyViewMapper {
+data class CodepointSet(
+    val label: String,
+    val name: String,
+    val codepoints: List<Codepoint>
+)
 
-    fun map(entropy: Entropy): PasswordStrength =
-        when (entropy) {
-            Entropy.ZERO -> PasswordStrength.Empty
-            Entropy.VERY_WEAK -> PasswordStrength.VeryWeak
-            Entropy.WEAK -> PasswordStrength.Weak
-            Entropy.FAIR -> PasswordStrength.Fair
-            Entropy.STRONG -> PasswordStrength.Strong
-            Entropy.VERY_STRONG -> PasswordStrength.VeryStrong
-            Entropy.GREATEST_FINITE -> PasswordStrength.VeryStrong
-        }
+data class Codepoint(val value: Int) {
+
+    val characterCount: Int
+        get() = Character.charCount(value)
+}
+
+fun String.toCodepoints(): List<Codepoint> {
+    val result = mutableListOf<Codepoint>()
+
+    var offset = 0
+    while (offset < length) {
+        val codepoint = Codepoint(codePointAt(offset))
+        result.add(codepoint)
+        offset += codepoint.characterCount
+    }
+    return result
 }

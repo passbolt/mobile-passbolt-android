@@ -34,6 +34,8 @@
     <string name="consent">I consent</string>
     <string name="name_suspended">%s (suspended)</string>
     <string name="name_expired">%s (expired)</string>
+    <string name="password_generator_known_strength_format">%s (entropy: %.2f bits)</string>
+    <string name="password_generator_unknown_strength_format">Password strength (entropy: n/a bits)</string>
 
     <string name="common_failure">Something went wrong!</string>
     <string name="common_startup_configuration_fetch_error">Error while fetching configuration</string>
@@ -189,6 +191,8 @@
     <string name="dialog_mfa_unknown_provider_header">Your MFA provider is not supported</string>
     <string name="dialog_mfa_unknown_provider_description">Please setup another provider using the web app.
     Contact your administrator for more information.</string>
+    <string name="dialog_unable_to_generate_password_title">Unable to generate strong password</string>
+    <string name="dialog_unable_to_generate_password_message">The password generator will not generate strong enough password. Minimum of %d bits is required</string>
 
     <string name="autofill_service_name">Passbolt Autofill</string>
 

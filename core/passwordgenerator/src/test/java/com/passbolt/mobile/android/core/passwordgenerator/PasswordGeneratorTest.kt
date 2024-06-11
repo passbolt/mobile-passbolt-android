@@ -1,8 +1,16 @@
 package com.passbolt.mobile.android.core.passwordgenerator
 
 import com.google.common.truth.Truth.assertThat
-import junit.framework.Assert.assertEquals
+import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.PasswordGenerationResult
+import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.PasswordGenerationResult.FailedToGenerateStringEnoughPassword
+import com.passbolt.mobile.android.core.passwordgenerator.codepoints.CodepointSet
+import com.passbolt.mobile.android.ui.PasswordGeneratorSettingsModel
+import org.junit.Rule
 import org.junit.Test
+import org.koin.core.logger.Level
+import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
+import org.koin.test.inject
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,96 +34,324 @@ import org.junit.Test
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class PasswordGeneratorTest {
-
-    private val passwordGenerator = com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator()
-
-    @Test
-    fun `generate short string succeeds`() {
-        val alphabetSet = setOf('A', 'B', 'C')
-        val result = passwordGenerator.generate(setOf(alphabetSet), 18, com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.Entropy.FAIR)
-
-        assertThat(result.length >= 18).isTrue()
+class PasswordGeneratorTest : KoinTest {
+    @get:Rule
+    val koinTestRule = KoinTestRule.create {
+        printLogger(Level.ERROR)
+        modules(passwordGeneratorModule)
     }
 
+    private val passwordGenerator: PasswordGenerator by inject()
+
     @Test
-    fun `generate string with latin and korean characters and digits succeeds`() {
-        val alphabetSet = setOf(
-            CharacterSets.lowercaseLetters,
-            CharacterSets.uppercaseLetters,
-            CharacterSets.digits,
-            koreanCharacters,
-            CharacterSets.digits
+    fun `generate should return low entropy failure for low settings`() {
+        val length = 3
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = true,
+            maskLower = false,
+            maskDigit = false,
+            maskParenthesis = false,
+            maskEmoji = false,
+            maskChar1 = false,
+            maskChar2 = false,
+            maskChar3 = false,
+            maskChar4 = false,
+            maskChar5 = false,
+            excludeLookAlikeChars = false
         )
-        val result = passwordGenerator.generate(alphabetSet, 18, com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.Entropy.VERY_STRONG)
 
-        assertThat(result.length >= 18).isTrue()
+        val passwordGenerationResult = passwordGenerator.generate(settings)
+
+        assertThat(passwordGenerationResult).isInstanceOf(FailedToGenerateStringEnoughPassword::class.java)
     }
 
     @Test
-    fun `test entropy for short string generated from short character set`() {
-        val alphabetSet = setOf('A', 'B', 'C')
-        val result = passwordGenerator.getEntropy("ABC", setOf(alphabetSet))
-        assertEquals(result, 4.75, 0.1)
+    fun `generate upper case letters passwords succeeds`() {
+        val length = 50
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = true,
+            maskLower = false,
+            maskDigit = false,
+            maskParenthesis = false,
+            maskEmoji = false,
+            maskChar1 = false,
+            maskChar2 = false,
+            maskChar3 = false,
+            maskChar4 = false,
+            maskChar5 = false,
+            excludeLookAlikeChars = false
+        )
+
+        testPasswordAlphabetCorrectnessGeneration(
+            settings,
+            setOf(Alphabets.all[Alphabets.MASK_UPPER]!!)
+        )
     }
 
     @Test
-    fun `test entropy for short string generated from all characters`() {
-        val alphabetSet = com.passbolt.mobile.android.core.passwordgenerator.CharacterSets.all
-        val result = passwordGenerator.getEntropy("ABC", alphabetSet)
-        assertEquals(result, 14.1, 0.1)
+    fun `generate lower case letters passwords succeeds`() {
+        val length = 50
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = false,
+            maskLower = true,
+            maskDigit = false,
+            maskParenthesis = false,
+            maskEmoji = false,
+            maskChar1 = false,
+            maskChar2 = false,
+            maskChar3 = false,
+            maskChar4 = false,
+            maskChar5 = false,
+            excludeLookAlikeChars = false
+        )
+
+        testPasswordAlphabetCorrectnessGeneration(
+            settings,
+            setOf(Alphabets.all[Alphabets.MASK_LOWER]!!)
+        )
     }
 
     @Test
-    fun `test entropy for longer alphanumeric string`() {
-        val alphabetSet = com.passbolt.mobile.android.core.passwordgenerator.CharacterSets.alphanumeric
-        val result = passwordGenerator.getEntropy("oIabpwLaCaTYE3yOZheQ", alphabetSet)
-        assertEquals(result, 119.0, 0.1)
+    fun `generate digits passwords succeeds`() {
+        val length = 50
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = false,
+            maskLower = false,
+            maskDigit = true,
+            maskParenthesis = false,
+            maskEmoji = false,
+            maskChar1 = false,
+            maskChar2 = false,
+            maskChar3 = false,
+            maskChar4 = false,
+            maskChar5 = false,
+            excludeLookAlikeChars = false
+        )
+
+        testPasswordAlphabetCorrectnessGeneration(
+            settings,
+            setOf(Alphabets.all[Alphabets.MASK_DIGIT]!!)
+        )
     }
 
     @Test
-    fun `test entropy for long string with all available characters`() {
-        val alphabetSet = com.passbolt.mobile.android.core.passwordgenerator.CharacterSets.all
-        val result = passwordGenerator.getEntropy("###\"@L./Jfc^J&7{1cIs_W172Bir5qm\"b:Lkd%3oY.\\!]X#j(gi;B<Y\"'SWOPX')_KGMZO.[/3:P!ibyJa?x\$gN#\$dT~QOXF?.y9^AH?[teQDbkGsBTs[-ZQ8au/~@+ag\$uFJ9D72uew?i!q!*J01[w:``_g\"###", alphabetSet)
-        assertEquals(result, 1046.0, 1.0)
+    fun `generate parenthesis passwords succeeds`() {
+        val length = 50
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = false,
+            maskLower = false,
+            maskDigit = false,
+            maskParenthesis = true,
+            maskEmoji = false,
+            maskChar1 = false,
+            maskChar2 = false,
+            maskChar3 = false,
+            maskChar4 = false,
+            maskChar5 = false,
+            excludeLookAlikeChars = false
+        )
+
+        testPasswordAlphabetCorrectnessGeneration(
+            settings,
+            setOf(Alphabets.all[Alphabets.MASK_PARENTHESIS]!!)
+        )
     }
 
     @Test
-    fun `test entropy for string with korean characters and digits`() {
-        val alphabetSet = setOf(koreanCharacters, koreanDigits)
-        val result = passwordGenerator.getEntropy("ㄸㅉ삼공육ㄴㅌ오ㅡㅎㅁㅣ이ㄲ륙삼ㅁㅇㅋ육ㄱ팔삼", alphabetSet)
-        assertEquals(result, 132.36, 0.1)
+    fun `generate character set 1 passwords succeeds`() {
+        val length = 50
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = false,
+            maskLower = false,
+            maskDigit = false,
+            maskParenthesis = false,
+            maskEmoji = false,
+            maskChar1 = true,
+            maskChar2 = false,
+            maskChar3 = false,
+            maskChar4 = false,
+            maskChar5 = false,
+            excludeLookAlikeChars = false
+        )
+
+        testPasswordAlphabetCorrectnessGeneration(
+            settings,
+            setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR1]!!)
+        )
     }
 
     @Test
-    fun `test entropy for string with latin alphabet and additional korean characters`() {
-        val alphabetSet = com.passbolt.mobile.android.core.passwordgenerator.CharacterSets.all
-        val result = passwordGenerator.getEntropy("2!wㅎl;piwㅝWQca]영", alphabetSet)
-        assertEquals(result, 105.0, 1.0)
+    fun `generate character set 2 passwords succeeds`() {
+        val length = 50
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = false,
+            maskLower = false,
+            maskDigit = false,
+            maskParenthesis = false,
+            maskEmoji = false,
+            maskChar1 = false,
+            maskChar2 = true,
+            maskChar3 = false,
+            maskChar4 = false,
+            maskChar5 = false,
+            excludeLookAlikeChars = false
+        )
+
+        testPasswordAlphabetCorrectnessGeneration(
+            settings,
+            setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR2]!!)
+        )
     }
 
-    private val koreanCharacters: Set<Char> = setOf(
-        'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ',
-        'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ',
-        'ㅈ', 'ㅉ', 'ㅎ', 'ㅊ', 'ㅋ', 'ㅌ',
-        'ㅍ', 'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ',
-        'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅛ', 'ㅜ',
-        'ㅠ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅝ', 'ㅞ',
-        'ㅟ', 'ㅡ', 'ㅢ', 'ㅣ'
-    )
+    @Test
+    fun `generate character set 3 passwords succeeds`() {
+        val length = 100
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = false,
+            maskLower = false,
+            maskDigit = false,
+            maskParenthesis = false,
+            maskEmoji = false,
+            maskChar1 = false,
+            maskChar2 = false,
+            maskChar3 = true,
+            maskChar4 = false,
+            maskChar5 = false,
+            excludeLookAlikeChars = false
+        )
 
-    // Hangul digits - https://en.wikipedia.org/wiki/Korean_numerals
-    private val koreanDigits: Set<Char> = setOf(
-        '영', '령', '공',  // 0
-        '일',
-        '이',
-        '삼',
-        '사',
-        '오',
-        '육', '륙',  // 6
-        '칠',
-        '팔',
-        '구',
-        '십',  // 10
-    )
+        testPasswordAlphabetCorrectnessGeneration(
+            settings,
+            setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR3]!!)
+        )
+    }
+
+    @Test
+    fun `generate character set 4 passwords succeeds`() {
+        val length = 50
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = false,
+            maskLower = false,
+            maskDigit = false,
+            maskParenthesis = false,
+            maskEmoji = false,
+            maskChar1 = false,
+            maskChar2 = false,
+            maskChar3 = false,
+            maskChar4 = true,
+            maskChar5 = false,
+            excludeLookAlikeChars = false
+        )
+
+        testPasswordAlphabetCorrectnessGeneration(
+            settings,
+            setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR4]!!)
+        )
+    }
+
+    @Test
+    fun `generate character set 5 passwords succeeds`() {
+        val length = 50
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = false,
+            maskLower = false,
+            maskDigit = false,
+            maskParenthesis = false,
+            maskEmoji = false,
+            maskChar1 = false,
+            maskChar2 = false,
+            maskChar3 = false,
+            maskChar4 = false,
+            maskChar5 = true,
+            excludeLookAlikeChars = false
+        )
+
+        testPasswordAlphabetCorrectnessGeneration(
+            settings,
+            setOf(Alphabets.all[Alphabets.MASK_SPECIAL_CHAR5]!!)
+        )
+    }
+
+    @Test
+    fun `generate emoji passwords succeeds`() {
+        val length = 50
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = false,
+            maskLower = false,
+            maskDigit = false,
+            maskParenthesis = false,
+            maskEmoji = true,
+            maskChar1 = false,
+            maskChar2 = false,
+            maskChar3 = false,
+            maskChar4 = false,
+            maskChar5 = false,
+            excludeLookAlikeChars = false
+        )
+
+        testPasswordAlphabetCorrectnessGeneration(
+            settings,
+            setOf(Alphabets.all[Alphabets.MASK_EMOJI]!!)
+        )
+    }
+
+    @Test
+    fun `generate multi alphabet passwords succeeds`() {
+        val length = 50
+        val settings = PasswordGeneratorSettingsModel(
+            length = length,
+            maskUpper = true,
+            maskLower = true,
+            maskDigit = false,
+            maskParenthesis = false,
+            maskEmoji = false,
+            maskChar1 = false,
+            maskChar2 = false,
+            maskChar3 = false,
+            maskChar4 = false,
+            maskChar5 = false,
+            excludeLookAlikeChars = false
+        )
+
+        testPasswordAlphabetCorrectnessGeneration(
+            settings,
+            setOf(Alphabets.all[Alphabets.MASK_UPPER]!!, Alphabets.all[Alphabets.MASK_LOWER]!!)
+        )
+    }
+
+    private fun testPasswordAlphabetCorrectnessGeneration(
+        settings: PasswordGeneratorSettingsModel,
+        alphabets: Set<CodepointSet>
+    ) {
+        val password = passwordGenerator.generate(settings)
+
+        val codepoints = alphabets.flatMap { it.codepoints }
+        assertPasswordGenerationIsSuccess(password)
+        onPasswordGenerationSuccess(password) {
+            assertThat(it.password.size).isEqualTo(settings.length)
+            assertThat(it.password.all { codepoint -> codepoints.contains(codepoint) }).isTrue()
+        }
+    }
+
+    private fun assertPasswordGenerationIsSuccess(passwordGenerationResult: PasswordGenerationResult) {
+        assertThat(passwordGenerationResult).isInstanceOf(PasswordGenerationResult.Success::class.java)
+    }
+
+    private fun onPasswordGenerationSuccess(
+        passwordGenerationResult: PasswordGenerationResult,
+        block: (PasswordGenerationResult.Success) -> Unit
+    ) {
+        block(passwordGenerationResult as PasswordGenerationResult.Success)
+    }
 }
