@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2023 Passbolt SA
+ * Copyright (c) 2023-2024 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -55,6 +55,7 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.helpers.createNewPasswordFromHomeScreen
+import com.passbolt.mobile.android.scenarios.helpers.signIn
 import com.passbolt.mobile.android.withHint
 import com.passbolt.mobile.android.withTextInputStrokeColorOf
 import org.hamcrest.CoreMatchers
@@ -110,19 +111,17 @@ class ResourcesEditionTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
+        signIn(managedAccountIntentCreator.getPassphrase())
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.allItems)).perform(click())
-        createNewPasswordFromHomeScreen()
+        createNewPasswordFromHomeScreen("ResourcesEditionTest")
     }
 
     @Test
 //    https://passbolt.testrail.io/index.php?/cases/view/8134
     fun onTheResourcesActionMenuDrawerICanClickEditPassword() {
         //    Given     that I am on the action menu drawer
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         //    And       I see ‘Edit password’ element enabled
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword))
@@ -138,7 +137,7 @@ class ResourcesEditionTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8135
     fun onTheEditPasswordPageICanEditElements() {
         //    Given     that I am on `Edit password` screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
         //    And       I see Edit password workspace
@@ -171,7 +170,7 @@ class ResourcesEditionTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8136
     fun onTheEditPasswordPageICanSaveChangedResources() {
         //    Given     that I am on `Edit password` screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
         //    And       I see Edit password workspace
@@ -196,7 +195,7 @@ class ResourcesEditionTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8137
     fun onTheEditPasswordPageIShouldSeeAnErrorMessageAfterDeletingTheMandatoryTextField() {
         //    Given     that I am on `Edit password` screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
         //    And       all placeholders are filled
@@ -237,7 +236,7 @@ class ResourcesEditionTest : KoinTest {
 //    https://passbolt.testrail.io/index.php?/cases/view/8138
     fun onTheEditPasswordPageICanDeleteTheOptionalInputTextField() {
         //    Given     that I am on `Edit password` screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
         //    And       all placeholders are filled
@@ -274,7 +273,7 @@ class ResourcesEditionTest : KoinTest {
         IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
 
         //    Given     that I am on `Edit password` screen
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTest"))
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
         //    And       all placeholders are filled

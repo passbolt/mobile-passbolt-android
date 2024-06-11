@@ -62,6 +62,7 @@ import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.actions.clickOnPasswordToggle
 import com.passbolt.mobile.android.scenarios.helpers.getString
+import com.passbolt.mobile.android.scenarios.helpers.signIn
 import com.passbolt.mobile.android.withHint
 import com.passbolt.mobile.android.withProgressBarOfMinimumProgress
 import com.passbolt.mobile.android.withTextInputStrokeColorOf
@@ -116,9 +117,7 @@ class ResourcesCreationTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
+        signIn(managedAccountIntentCreator.getPassphrase())
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.allItems)).perform(click())
     }

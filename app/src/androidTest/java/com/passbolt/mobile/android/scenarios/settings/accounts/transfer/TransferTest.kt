@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2023 Passbolt SA
+ * Copyright (c) 2023-2024 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -50,6 +50,7 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.mappers.AccountModelMapper
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.helpers.signIn
 import com.passbolt.mobile.android.scenarios.setup.configurebiometric.biometricSetupUnavailableModuleTests
 import com.passbolt.mobile.android.withImageViewContainingAnyImage
 import org.junit.Rule
@@ -104,8 +105,7 @@ class TransferTest : KoinTest {
         //    Given	I am a mobile user with the application installed
         //    And	I am logged in
         //    And 	I am on Passbolt PRO/CE/Cloud
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
+        signIn(managedAccountIntentCreator.getPassphrase())
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.accountsSettings)).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.transferAccountSetting)).perform(click())

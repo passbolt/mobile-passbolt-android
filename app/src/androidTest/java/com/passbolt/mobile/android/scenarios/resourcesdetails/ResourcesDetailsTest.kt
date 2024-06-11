@@ -47,6 +47,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.helpers.signIn
 import org.hamcrest.Matchers.allOf
 import org.junit.Rule
 import org.junit.Test
@@ -93,8 +94,7 @@ class ResourcesDetailsTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
+        signIn(managedAccountIntentCreator.getPassphrase())
     }
 
     @Test
@@ -104,7 +104,6 @@ class ResourcesDetailsTest : KoinTest {
         //    And       the Passbolt application is already opened
         //    And       I completed the login step
         //    And       I am on the homepage
-        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click(), typeText("cake"))
         //    When      I click on a resource
         onView(withText("cakephp")).perform(click())

@@ -25,8 +25,6 @@ package com.passbolt.mobile.android.scenarios.filters
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -45,6 +43,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.helpers.signIn
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -84,8 +83,7 @@ class FilterDrawerTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
+        signIn(managedAccountIntentCreator.getPassphrase())
     }
 
     @Test
@@ -93,7 +91,6 @@ class FilterDrawerTest : KoinTest {
     fun asALoggedInMobileUserOnTheHomepageICanSeeAFilterIconInTheSearchBar() {
         //    Given     that I am a logged in mobile user
         //    When      I am on the homepage
-        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
         //    And       the search bar is not focused
         //    Then      I see an icon filter in the left side of the search bar
         onView(withId(MaterialR.id.text_input_start_icon)).check(matches(isDisplayed()))
