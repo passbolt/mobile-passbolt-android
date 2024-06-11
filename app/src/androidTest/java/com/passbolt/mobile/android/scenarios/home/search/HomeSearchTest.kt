@@ -1,9 +1,31 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2021-2024 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
 package com.passbolt.mobile.android.scenarios.home.search
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -26,6 +48,7 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.filters.ResourceFilterModel
+import com.passbolt.mobile.android.scenarios.helpers.signIn
 import org.hamcrest.CoreMatchers.not
 import org.junit.Rule
 import org.junit.Test
@@ -37,28 +60,6 @@ import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
@@ -88,10 +89,9 @@ class HomeSearchTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
+        signIn(managedAccountIntentCreator.getPassphrase())
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-        onView(withId(ResourceFilterModel.values()[0].filterId)).perform(click())
+        onView(withId(ResourceFilterModel.entries[0].filterId)).perform(click())
     }
 
     @Test
@@ -110,7 +110,6 @@ class HomeSearchTest : KoinTest {
     fun asALoggedInMobileUserOnTheHomepageICanSeeTheResourcesCorrespondingToMySearchQuery() {
         //      Given   I am a logged in mobile user
         //      And     the active filter is [Active Filter]
-        //      TODO: iterate through filters when particular user will be chosen https://app.clickup.com/t/2593179/MOB-743
         //      When    I type a query in the search bar
         //      And     the query matches at least one resource within [Active Filter]
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("cakephp"))
@@ -118,7 +117,6 @@ class HomeSearchTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.recyclerView)).check(matches(atPosition(0, hasDescendant(withText("cakephp")))))
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).check(matches(withText("cakephp")))
         //      And     I see the resources are sorted [sort]
-        //      TODO: implement sorting when particular user will be chosen https://app.clickup.com/t/2593179/MOB-743
         //
         //   | Active Filter       |  sort                                  |
         //   | “All items”         |  "alphabetically"                      |
@@ -133,7 +131,6 @@ class HomeSearchTest : KoinTest {
     fun asALoggedInMobileUserOnTheHomepageICanSeeAMessageWhenThereIsNoMatchToMySearchQuery() {
         //      Given   I am a logged in mobile user
         //      And     the active filter is [Active Filter]
-        //      TODO: iterate through filters when particular user will be chosen https://app.clickup.com/t/2593179/MOB-743
         //      When    I type a query in the search bar
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("Does Not Exist On List"))
         //      And     the query does not match any resources within [Active Filter]

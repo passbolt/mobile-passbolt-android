@@ -1,9 +1,30 @@
+/**
+ * Passbolt - Open source password manager for teams
+ * Copyright (c) 2023-2024 Passbolt SA
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License (AGPL) as published by the Free Software Foundation version 3.
+ *
+ * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
+ * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
+ * agreement with Passbolt SA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not,
+ * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
+ *
+ * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link https://www.passbolt.com Passbolt (tm)
+ * @since v1.0
+ */
+
 package com.passbolt.mobile.android.scenarios.resourcesdeletion
 
-import android.view.KeyEvent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -28,6 +49,7 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.helpers.createNewPasswordFromHomeScreen
+import com.passbolt.mobile.android.scenarios.helpers.signIn
 import org.hamcrest.CoreMatchers.endsWith
 import org.junit.Rule
 import org.junit.Test
@@ -39,28 +61,7 @@ import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
-/**
- * Passbolt - Open source password manager for teams
- * Copyright (c) 2023 Passbolt SA
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License (AGPL) as published by the Free Software Foundation version 3.
- *
- * The name "Passbolt" is a registered trademark of Passbolt SA, and Passbolt SA hereby declines to grant a trademark
- * license to "Passbolt" pursuant to the GNU Affero General Public License version 3 Section 7(e), without a separate
- * agreement with Passbolt SA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program. If not,
- * see GNU Affero General Public License v3 (http://www.gnu.org/licenses/agpl-3.0.html).
- *
- * @copyright Copyright (c) Passbolt SA (https://www.passbolt.com)
- * @license https://opensource.org/licenses/AGPL-3.0 AGPL License
- * @link https://www.passbolt.com Passbolt (tm)
- * @since v1.0
- */
+
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 class ResourcesDeletionTest : KoinTest {
@@ -101,12 +102,8 @@ class ResourcesDeletionTest : KoinTest {
 
     @BeforeTest
     fun setup() {
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()),
-            ViewActions.pressKey(KeyEvent.KEYCODE_ENTER)
-        )
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
-        createNewPasswordFromHomeScreen()
+        signIn(managedAccountIntentCreator.getPassphrase())
+        createNewPasswordFromHomeScreen("ResourcesDeletionTest")
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.allItems)).perform(click())
     }
@@ -115,7 +112,7 @@ class ResourcesDeletionTest : KoinTest {
     //    https://passbolt.testrail.io/index.php?/cases/view/8140
     fun onTheActionMenuDrawerICanClickDeletePasswordElement() {
         //    Given that I am on the resource’s action menu drawer
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesDeletionTest"))
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         //    And I see ‘Delete password’ element enabled
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete))
@@ -137,7 +134,7 @@ class ResourcesDeletionTest : KoinTest {
     //    https://passbolt.testrail.io/index.php?/cases/view/8141
     fun onThePasswordRemovalPopupICanClickTheCancelButton() {
         //    Given that I am on removal popup
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesDeletionTest"))
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
         //    When I click ‘Cancel’ button in @blue
@@ -154,7 +151,7 @@ class ResourcesDeletionTest : KoinTest {
         IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
 
         //    Given that I am on removal popup
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesEditionTestPK"))
+        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("ResourcesDeletionTest"))
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.delete)).perform(click())
         //    When I click ‘Delete’ button in @blue
