@@ -37,7 +37,7 @@ fun Module.updateResourceModule() {
         scoped<UpdateResourceContract.Presenter> {
             UpdateResourcePresenter(
                 coroutineLaunchContext = get(),
-                passwordGenerator = get(),
+                secretGenerator = get(),
                 entropyViewMapper = get(),
                 createPasswordAndDescriptionResourceInteractor = get(),
                 addLocalResourceUseCase = get(),

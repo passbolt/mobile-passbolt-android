@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.core.passwordgenerator
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.PasswordGenerationResult
-import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.PasswordGenerationResult.FailedToGenerateStringEnoughPassword
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.CodepointSet
 import com.passbolt.mobile.android.ui.PasswordGeneratorSettingsModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -35,39 +35,17 @@ import org.koin.test.inject
  * @since v1.0
  */
 class PasswordGeneratorTest : KoinTest {
+    @ExperimentalCoroutinesApi
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
-        modules(passwordGeneratorModule)
+        modules(passwordGeneratorTestModule)
     }
 
     private val passwordGenerator: PasswordGenerator by inject()
 
     @Test
-    fun `generate should return low entropy failure for low settings`() {
-        val length = 3
-        val settings = PasswordGeneratorSettingsModel(
-            length = length,
-            maskUpper = true,
-            maskLower = false,
-            maskDigit = false,
-            maskParenthesis = false,
-            maskEmoji = false,
-            maskChar1 = false,
-            maskChar2 = false,
-            maskChar3 = false,
-            maskChar4 = false,
-            maskChar5 = false,
-            excludeLookAlikeChars = false
-        )
-
-        val passwordGenerationResult = passwordGenerator.generate(settings)
-
-        assertThat(passwordGenerationResult).isInstanceOf(FailedToGenerateStringEnoughPassword::class.java)
-    }
-
-    @Test
-    fun `generate upper case letters passwords succeeds`() {
+    fun `generate upper case letters passwords succeeds`() = runTest {
         val length = 50
         val settings = PasswordGeneratorSettingsModel(
             length = length,
@@ -91,7 +69,7 @@ class PasswordGeneratorTest : KoinTest {
     }
 
     @Test
-    fun `generate lower case letters passwords succeeds`() {
+    fun `generate lower case letters passwords succeeds`() = runTest {
         val length = 50
         val settings = PasswordGeneratorSettingsModel(
             length = length,
@@ -115,7 +93,7 @@ class PasswordGeneratorTest : KoinTest {
     }
 
     @Test
-    fun `generate digits passwords succeeds`() {
+    fun `generate digits passwords succeeds`() = runTest {
         val length = 50
         val settings = PasswordGeneratorSettingsModel(
             length = length,
@@ -139,7 +117,7 @@ class PasswordGeneratorTest : KoinTest {
     }
 
     @Test
-    fun `generate parenthesis passwords succeeds`() {
+    fun `generate parenthesis passwords succeeds`() = runTest {
         val length = 50
         val settings = PasswordGeneratorSettingsModel(
             length = length,
@@ -163,7 +141,7 @@ class PasswordGeneratorTest : KoinTest {
     }
 
     @Test
-    fun `generate character set 1 passwords succeeds`() {
+    fun `generate character set 1 passwords succeeds`() = runTest {
         val length = 50
         val settings = PasswordGeneratorSettingsModel(
             length = length,
@@ -187,7 +165,7 @@ class PasswordGeneratorTest : KoinTest {
     }
 
     @Test
-    fun `generate character set 2 passwords succeeds`() {
+    fun `generate character set 2 passwords succeeds`() = runTest {
         val length = 50
         val settings = PasswordGeneratorSettingsModel(
             length = length,
@@ -211,7 +189,7 @@ class PasswordGeneratorTest : KoinTest {
     }
 
     @Test
-    fun `generate character set 3 passwords succeeds`() {
+    fun `generate character set 3 passwords succeeds`() = runTest {
         val length = 100
         val settings = PasswordGeneratorSettingsModel(
             length = length,
@@ -235,7 +213,7 @@ class PasswordGeneratorTest : KoinTest {
     }
 
     @Test
-    fun `generate character set 4 passwords succeeds`() {
+    fun `generate character set 4 passwords succeeds`() = runTest {
         val length = 50
         val settings = PasswordGeneratorSettingsModel(
             length = length,
@@ -259,7 +237,7 @@ class PasswordGeneratorTest : KoinTest {
     }
 
     @Test
-    fun `generate character set 5 passwords succeeds`() {
+    fun `generate character set 5 passwords succeeds`() = runTest {
         val length = 50
         val settings = PasswordGeneratorSettingsModel(
             length = length,
@@ -283,7 +261,7 @@ class PasswordGeneratorTest : KoinTest {
     }
 
     @Test
-    fun `generate emoji passwords succeeds`() {
+    fun `generate emoji passwords succeeds`() = runTest {
         val length = 50
         val settings = PasswordGeneratorSettingsModel(
             length = length,
@@ -307,7 +285,7 @@ class PasswordGeneratorTest : KoinTest {
     }
 
     @Test
-    fun `generate multi alphabet passwords succeeds`() {
+    fun `generate multi alphabet passwords succeeds`() = runTest {
         val length = 50
         val settings = PasswordGeneratorSettingsModel(
             length = length,
@@ -330,28 +308,14 @@ class PasswordGeneratorTest : KoinTest {
         )
     }
 
-    private fun testPasswordAlphabetCorrectnessGeneration(
+    private suspend fun testPasswordAlphabetCorrectnessGeneration(
         settings: PasswordGeneratorSettingsModel,
         alphabets: Set<CodepointSet>
     ) {
         val password = passwordGenerator.generate(settings)
 
         val codepoints = alphabets.flatMap { it.codepoints }
-        assertPasswordGenerationIsSuccess(password)
-        onPasswordGenerationSuccess(password) {
-            assertThat(it.password.size).isEqualTo(settings.length)
-            assertThat(it.password.all { codepoint -> codepoints.contains(codepoint) }).isTrue()
-        }
-    }
-
-    private fun assertPasswordGenerationIsSuccess(passwordGenerationResult: PasswordGenerationResult) {
-        assertThat(passwordGenerationResult).isInstanceOf(PasswordGenerationResult.Success::class.java)
-    }
-
-    private fun onPasswordGenerationSuccess(
-        passwordGenerationResult: PasswordGenerationResult,
-        block: (PasswordGenerationResult.Success) -> Unit
-    ) {
-        block(passwordGenerationResult as PasswordGenerationResult.Success)
+        assertThat(password.size).isEqualTo(settings.length)
+        assertThat(password.all { codepoint -> codepoints.contains(codepoint) }).isTrue()
     }
 }

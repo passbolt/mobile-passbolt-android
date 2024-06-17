@@ -12,11 +12,9 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.Entropy
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
-import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
-import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.PasswordGenerationResult.FailedToGenerateStringEnoughPassword
-import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator.PasswordGenerationResult.Success
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
@@ -45,6 +43,7 @@ import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerato
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.ResourceUpdateType
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.storage.usecase.policies.GetPasswordPoliciesUseCase
+import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -80,7 +79,7 @@ import java.net.HttpURLConnection.HTTP_NOT_FOUND
  */
 class UpdateResourcePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
-    private val passwordGenerator: PasswordGenerator,
+    private val secretGenerator: SecretGenerator,
     private val entropyViewMapper: EntropyViewMapper,
     private val createPasswordAndDescriptionResourceInteractor: CreatePasswordAndDescriptionResourceInteractor,
     private val addLocalResourceUseCase: AddLocalResourceUseCase,
@@ -457,15 +456,21 @@ class UpdateResourcePresenter(
 
     override fun passwordGenerateClick(tag: String) {
         scope.launch {
-            val passwordPolicies = getPasswordPoliciesUseCase.execute(Unit).passwordGeneratorSettings
-            when (val passwordGenerationResult = passwordGenerator.generate(passwordPolicies)) {
-                is FailedToGenerateStringEnoughPassword ->
-                    view?.showUnableToGeneratePassword(passwordGenerationResult.minimumEntropyBits)
-                is Success -> view?.showPassword(
+            val passwordPolicies = getPasswordPoliciesUseCase.execute(Unit)
+            val secretGenerationResult = when (passwordPolicies.defaultGenerator) {
+                PasswordGeneratorTypeModel.PASSWORD ->
+                    secretGenerator.generatePassword(passwordPolicies.passwordGeneratorSettings)
+                PasswordGeneratorTypeModel.PASSPHRASE ->
+                    secretGenerator.generatePassphrase(passwordPolicies.passphraseGeneratorSettings)
+            }
+            when (secretGenerationResult) {
+                is SecretGenerator.SecretGenerationResult.FailedToGenerateLowEntropy ->
+                    view?.showUnableToGeneratePassword(secretGenerationResult.minimumEntropyBits)
+                is SecretGenerator.SecretGenerationResult.Success -> view?.showPassword(
                     tag,
-                    passwordGenerationResult.password,
-                    passwordGenerationResult.entropy,
-                    entropyViewMapper.map(Entropy.parse(passwordGenerationResult.entropy))
+                    secretGenerationResult.password,
+                    secretGenerationResult.entropy,
+                    entropyViewMapper.map(Entropy.parse(secretGenerationResult.entropy))
                 )
             }
         }

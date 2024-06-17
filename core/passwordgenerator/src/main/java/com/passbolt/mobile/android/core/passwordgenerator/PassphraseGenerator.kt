@@ -1,8 +1,10 @@
 package com.passbolt.mobile.android.core.passwordgenerator
 
-import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculatorTest
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
+import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
+import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoints
+import com.passbolt.mobile.android.core.passwordgenerator.dice.Dice
+import com.passbolt.mobile.android.ui.PassphraseGeneratorSettingsModel
+import kotlinx.coroutines.flow.takeWhile
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,7 +28,18 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val passwordGeneratorTestModule = module {
-    singleOf(::PasswordGenerator)
-    singleOf(::EntropyCalculatorTest)
+class PassphraseGenerator(
+    private val dice: Dice
+) {
+    suspend fun generate(settings: PassphraseGeneratorSettingsModel): List<Codepoint> {
+        dice.apply {
+            initialize()
+            isInitializedFlow.takeWhile { !it }
+        }
+        return dice.generatePassphrase(
+            wordsCount = settings.words,
+            wordsSeparator = settings.wordSeparator,
+            case = settings.wordCase
+        ).toCodepoints()
+    }
 }

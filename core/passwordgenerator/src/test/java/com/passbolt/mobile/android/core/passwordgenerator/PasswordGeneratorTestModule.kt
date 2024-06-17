@@ -1,9 +1,14 @@
 package com.passbolt.mobile.android.core.passwordgenerator
 
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
-import com.passbolt.mobile.android.ui.PasswordGeneratorSettingsModel
-import kotlinx.coroutines.withContext
+import com.passbolt.mobile.android.core.passwordgenerator.dice.Dice
+import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+import java.security.SecureRandom
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,21 +32,22 @@ import kotlinx.coroutines.withContext
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class PasswordGenerator(
-    private val coroutineLaunchContext: CoroutineLaunchContext
-) {
-    suspend fun generate(settings: PasswordGeneratorSettingsModel): List<Codepoint> {
-        val codepointBuilder = mutableListOf<Codepoint>()
-
-        withContext(coroutineLaunchContext.io) {
-            val alphabets = Alphabets.getCodepointSetsForModel(settings)
-            val entireAlphabet = alphabets.flatMap { it.codepoints }
-
-            while (codepointBuilder.size < settings.length) {
-                codepointBuilder.add(entireAlphabet.random())
-            }
+@ExperimentalCoroutinesApi
+val passwordGeneratorTestModule = module {
+    singleOf(::PasswordGenerator)
+    singleOf(::PassphraseGenerator)
+    singleOf(::SecretGenerator)
+    singleOf(::EntropyCalculator)
+    singleOf<CoroutineLaunchContext>(::TestCoroutineLaunchContext)
+    single { SecureRandom() }
+    single {
+        val testDiceInputStream = javaClass.getClassLoader()?.getResourceAsStream("eff_large_wordlist.txt")!!
+        Dice(
+            diceInputFileInputStream = testDiceInputStream,
+            coroutineLaunchContext = get(),
+            secureRandom = get()
+        ).apply {
+            runBlocking { initialize() }
         }
-
-        return codepointBuilder
     }
 }

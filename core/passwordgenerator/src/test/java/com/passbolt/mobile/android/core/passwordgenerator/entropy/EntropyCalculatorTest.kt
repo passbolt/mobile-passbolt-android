@@ -28,7 +28,9 @@ import com.passbolt.mobile.android.core.passwordgenerator.Alphabets
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.CodepointSet
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoints
 import com.passbolt.mobile.android.core.passwordgenerator.passwordGeneratorModule
+import com.passbolt.mobile.android.core.passwordgenerator.passwordGeneratorTestModule
 import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -39,10 +41,11 @@ import org.koin.test.inject
 
 class EntropyCalculatorTest : KoinTest {
 
+    @ExperimentalCoroutinesApi
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
-        modules(passwordGeneratorModule)
+        modules(passwordGeneratorTestModule)
     }
 
     private val entropyCalculator: EntropyCalculator by inject()

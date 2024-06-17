@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.core.passwordgenerator
 
-import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.CodepointSet
 import com.passbolt.mobile.android.ui.PasswordGeneratorSettingsModel
@@ -29,34 +28,15 @@ import com.passbolt.mobile.android.ui.PasswordGeneratorSettingsModel
  */
 
 object Alphabets {
-    @VisibleForTesting
     const val MASK_UPPER = "upper"
-
-    @VisibleForTesting
     const val MASK_LOWER = "lower"
-
-    @VisibleForTesting
     const val MASK_DIGIT = "digit"
-
-    @VisibleForTesting
     const val MASK_PARENTHESIS = "parenthesis"
-
-    @VisibleForTesting
     const val MASK_SPECIAL_CHAR1 = "special_char1"
-
-    @VisibleForTesting
     const val MASK_SPECIAL_CHAR2 = "special_char2"
-
-    @VisibleForTesting
     const val MASK_SPECIAL_CHAR3 = "special_char3"
-
-    @VisibleForTesting
     const val MASK_SPECIAL_CHAR4 = "special_char4"
-
-    @VisibleForTesting
     const val MASK_SPECIAL_CHAR5 = "special_char5"
-
-    @VisibleForTesting
     const val MASK_EMOJI = "emoji"
 
     val all = mapOf(
