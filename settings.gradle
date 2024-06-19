@@ -82,6 +82,7 @@ featureModule "createotpmanually"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"
+serviceModule "pwnedpasswordsapi"
 
 domainModule "dto"
 domainModule "ui"
