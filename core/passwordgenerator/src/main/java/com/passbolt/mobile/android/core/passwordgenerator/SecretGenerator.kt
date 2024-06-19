@@ -36,16 +36,16 @@ class SecretGenerator(
 
     suspend fun generatePassword(settings: PasswordGeneratorSettingsModel): SecretGenerationResult {
         val password = passwordGenerator.generate(settings)
-        val entropy = entropyCalculator.getEntropy(password, Alphabets.getCodepointSetsForModel(settings))
+        val entropy = entropyCalculator.getPasswordEntropy(password, Alphabets.getCodepointSetsForModel(settings))
 
         return returnResult(password, entropy)
     }
 
     suspend fun generatePassphrase(settings: PassphraseGeneratorSettingsModel): SecretGenerationResult {
         val passphrase = passphraseGenerator.generate(settings)
-        val entropy = entropyCalculator.getEntropy(
-            passphrase,
-            Alphabets.all.values.toSet()
+        val entropy = entropyCalculator.getPassphraseEntropy(
+            settings.words,
+            settings.wordSeparator
         )
 
         return returnResult(passphrase, entropy)

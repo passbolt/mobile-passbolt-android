@@ -67,6 +67,8 @@ class Dice(
     val isInitializedFlow: Flow<Boolean> = _isInitializedFlow.asStateFlow()
 
     private val numbersToWords = hashMapOf<Int, String>()
+    val dictionarySize: Int
+        get() = numbersToWords.size
 
     suspend fun initialize() {
         _isInitializedFlow.value = false
@@ -82,10 +84,12 @@ class Dice(
     }
 
     @VisibleForTesting
-    fun getWord(number: Int): String {
-        return numbersToWords[number]
+    fun getWord(number: Int): String =
+        numbersToWords[number]
             ?: throw IllegalArgumentException("Number $number not found in the dice input file")
-    }
+
+    fun getDescendingLengthSortedWords(): List<String> =
+        numbersToWords.values.sortedByDescending { it.length }
 
     // https://www.eff.org/dice; use long words list
     suspend fun generatePassphrase(

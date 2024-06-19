@@ -202,11 +202,15 @@ class UpdateResourceFragment :
             stringBuilder.append(Character.toChars(it.value))
         }
 
-        (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).showPassword(
-            stringBuilder.toString(),
-            passwordStrength,
-            entropyBits
-        )
+        (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).apply {
+            setPasswordChangeListener { }
+            showPassword(
+                stringBuilder.toString(),
+                passwordStrength,
+                entropyBits
+            )
+            setPasswordChangeListener { presenter.passwordTextChanged(tag, it) }
+        }
     }
 
     override fun closeWithCreateSuccessResult(name: String, id: String) {

@@ -247,9 +247,9 @@ class UpdateResourcePresenter(
         }
     }
 
-    private fun handlePasswordInput(it: ResourceValue) {
+    private suspend fun handlePasswordInput(it: ResourceValue) {
         val initialValueEntropy = it.value?.let { password ->
-            entropyCalculator.getEntropy(password)
+            entropyCalculator.getSecretEntropy(password)
         } ?: 0.0
 
         view?.addPasswordInput(
@@ -477,11 +477,13 @@ class UpdateResourcePresenter(
     }
 
     override fun passwordTextChanged(tag: String, password: String) {
-        fields.find {
-            it.field.name == PASSWORD_FIELD || it.field.name == SECRET_FIELD
-        }?.value = password
-        val entropy = entropyCalculator.getEntropy(password)
-        view?.showPasswordStrength(tag, entropyViewMapper.map(Entropy.parse(entropy)), entropy)
+        scope.launch {
+            fields.find {
+                it.field.name == PASSWORD_FIELD || it.field.name == SECRET_FIELD
+            }?.value = password
+            val entropy = entropyCalculator.getSecretEntropy(password)
+            view?.showPasswordStrength(tag, entropyViewMapper.map(Entropy.parse(entropy)), entropy)
+        }
     }
 
     private fun getRules(field: ResourceField): List<Rule<String>> {

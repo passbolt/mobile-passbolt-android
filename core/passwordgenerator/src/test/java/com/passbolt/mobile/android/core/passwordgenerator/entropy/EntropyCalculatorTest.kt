@@ -27,10 +27,11 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.passwordgenerator.Alphabets
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.CodepointSet
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoints
-import com.passbolt.mobile.android.core.passwordgenerator.passwordGeneratorModule
+import com.passbolt.mobile.android.core.passwordgenerator.dice.Dice
 import com.passbolt.mobile.android.core.passwordgenerator.passwordGeneratorTestModule
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.logger.Level
@@ -49,27 +50,27 @@ class EntropyCalculatorTest : KoinTest {
     }
 
     private val entropyCalculator: EntropyCalculator by inject()
-
+    private val dice: Dice by inject()
 
     @Test
-    fun `test entropy for short string generated from short character set`() {
+    fun `test password entropy for short string generated from short character set`() = runTest {
         val alphabetSet = setOf("A", "B", "C").map { CodepointSet("label", "name", it.toCodepoints()) }.toSet()
-        val result = entropyCalculator.getEntropy("ABC".toCodepoints(), alphabetSet)
+        val result = entropyCalculator.getPasswordEntropy("ABC".toCodepoints(), alphabetSet)
         assertEquals(result, 4.75, 0.1)
     }
 
     @Test
-    fun `test entropy for short string generated from all characters`() {
+    fun `test password entropy for short string generated from all characters`() = runTest {
         val alphabetSet = Alphabets.all.values.toSet()
-        val result = entropyCalculator.getEntropy("ABC".toCodepoints(), alphabetSet)
+        val result = entropyCalculator.getPasswordEntropy("ABC".toCodepoints(), alphabetSet)
 
         assertEquals(result, 14.1, 0.1)
     }
 
     @Test
-    fun `test entropy for long string with all available characters`() {
+    fun `test password entropy for long string with all available characters`() = runTest {
         val alphabetSet = Alphabets.all.values.toSet()
-        val result = entropyCalculator.getEntropy(
+        val result = entropyCalculator.getPasswordEntropy(
             "###\"@L./Jfc^J&7{1cIs_W172Bir5qm\"b:Lkd%3oY.\\!]X#j(gi;B<Y\"'SWOPX')_KGMZO.[/3:P!ibyJa?x\$gN#\$dT~QOXF?.y9^AH?[teQDbkGsBTs[-ZQ8au/~@+ag\$uFJ9D72uew?i!q!*J01[w:``_g\"###".toCodepoints(),
             alphabetSet
         )
@@ -78,55 +79,44 @@ class EntropyCalculatorTest : KoinTest {
     }
 
     @Test
-    fun `test entropy for string only unknown characters should not be undefined`() {
-        val alphabetSet =
-            (koreanCharacters + koreanDigits).map { CodepointSet("label", "name", it.toCodepoints()) }.toSet()
-        val result = entropyCalculator.getEntropy("ㄸㅉ삼공육ㄴㅌ오ㅡㅎㅁㅣ이ㄲ륙삼ㅁㅇㅋ육ㄱ팔삼".toCodepoints(), alphabetSet)
-        assertThat(result).isGreaterThan(Double.NEGATIVE_INFINITY)
+    fun `test password entropy for string only unknown characters should be undefined`() = runTest {
+        val alphabetSet = Alphabets.all.values.toSet()
+        val result = entropyCalculator.getPasswordEntropy("ㄸㅉ삼공육ㄴㅌ오ㅡㅎㅁㅣ이ㄲ륙삼ㅁㅇㅋ육ㄱ팔삼".toCodepoints(), alphabetSet)
+        assertThat(result).isEqualTo(Double.NEGATIVE_INFINITY)
     }
 
     @Test
-    fun `test entropy for string with mixed unknown and known characters should be greater than with only known characters`() {
-        val alphabetSet = Alphabets.all.values.toSet()
+    fun `test password entropy for string with mixed unknown and known characters should be greater than with only known characters`() =
+        runTest {
+            val alphabetSet = Alphabets.all.values.toSet()
 
-        val resultWithKnown = entropyCalculator.getEntropy("ABC".toCodepoints(), alphabetSet)
-        val resultWithUnknown = entropyCalculator.getEntropy("ABC일".toCodepoints(), alphabetSet)
+            val resultWithKnown = entropyCalculator.getPasswordEntropy("ABC".toCodepoints(), alphabetSet)
+            val resultWithUnknown = entropyCalculator.getPasswordEntropy("ABC일".toCodepoints(), alphabetSet)
 
-        assertThat(resultWithUnknown).isGreaterThan(resultWithKnown)
-    }
+            assertThat(resultWithUnknown).isGreaterThan(resultWithKnown)
+        }
 
     @Test
-    fun `adding unknown characters should increase entropy`() {
+    fun `adding unknown characters to password should increase entropy`() = runTest {
         val alphabetSet = Alphabets.all.values.toSet()
 
-        val result1 = entropyCalculator.getEntropy("ABC일".toCodepoints(), alphabetSet)
-        val result2 = entropyCalculator.getEntropy("ABC일일".toCodepoints(), alphabetSet)
+        val result1 = entropyCalculator.getPasswordEntropy("ABC일".toCodepoints(), alphabetSet)
+        val result2 = entropyCalculator.getPasswordEntropy("ABC일일".toCodepoints(), alphabetSet)
 
         assertThat(result2).isGreaterThan(result1)
     }
 
-    private val koreanCharacters: Set<String> = setOf(
-        "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ",
-        "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ",
-        "ㅈ", "ㅉ", "ㅎ", "ㅊ", "ㅋ", "ㅌ",
-        "ㅍ", "ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ",
-        "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅛ", "ㅜ",
-        "ㅠ", "ㅘ", "ㅙ", "ㅚ", "ㅝ", "ㅞ",
-        "ㅟ", "ㅡ", "ㅢ", "ㅣ"
-    )
+    @Test
+    fun `test passphrase entropy for sample data`() = runTest {
+        val result = entropyCalculator.getPassphraseEntropy(9, "; ")
 
-    // Hangul digits - https://en.wikipedia.org/wiki/Korean_numerals
-    private val koreanDigits: Set<String> = setOf(
-        "영", "령", "공",  // 0
-        "일",
-        "이",
-        "삼",
-        "사",
-        "오",
-        "육", "륙",  // 6
-        "칠",
-        "팔",
-        "구",
-        "십",  // 10
-    )
+        assertEquals(result, 135.23, 0.01)
+    }
+
+    @Test
+    fun `test passphrase entropy with no separator`() = runTest {
+        val result = entropyCalculator.getPassphraseEntropy(9, "")
+
+        assertEquals(result, 130.59, 0.01)
+    }
 }

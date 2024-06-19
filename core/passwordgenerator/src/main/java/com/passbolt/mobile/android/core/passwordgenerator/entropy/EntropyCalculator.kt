@@ -23,39 +23,99 @@
 
 package com.passbolt.mobile.android.core.passwordgenerator.entropy
 
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.Alphabets
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.CodepointSet
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoints
+import com.passbolt.mobile.android.core.passwordgenerator.dice.Dice
+import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.withContext
 import kotlin.math.ln
 
-class EntropyCalculator {
-    fun getEntropy(
+class EntropyCalculator(
+    private val dice: Dice,
+    private val coroutineLaunchContext: CoroutineLaunchContext
+) {
+    suspend fun getPasswordEntropy(
         password: List<Codepoint>,
         alphabets: Set<CodepointSet>
-    ): Double {
+    ): Double =
         if (password.isEmpty() || alphabets.isEmpty()) {
-            return 0.0
-        }
-        val usedKnownAlphabet = mutableSetOf<Codepoint>()
-        val usedUnknownAlphabet = mutableSetOf<Codepoint>()
+            0.0
+        } else {
+            withContext(coroutineLaunchContext.io) {
+                val usedKnownAlphabet = mutableSetOf<Codepoint>()
+                val usedUnknownAlphabet = mutableSetOf<Codepoint>()
 
-        password.forEach { codepoint ->
-            val alphabet = alphabets.find { it.codepoints.contains(codepoint) }?.codepoints ?: emptyList()
-            if (alphabet.isNotEmpty()) {
-                usedKnownAlphabet.addAll(alphabet)
-            } else {
-                usedUnknownAlphabet.add(codepoint)
+                password.forEach { codepoint ->
+                    val alphabet = alphabets.find { it.codepoints.contains(codepoint) }?.codepoints ?: emptyList()
+                    if (alphabet.isNotEmpty()) {
+                        usedKnownAlphabet.addAll(alphabet)
+                    } else {
+                        usedUnknownAlphabet.add(codepoint)
+                    }
+                }
+
+                if (usedKnownAlphabet.isEmpty()) {
+                    // when all characters are unknown return undefined entropy
+                    Double.NEGATIVE_INFINITY
+                } else {
+                    password.size.toDouble() * (
+                            ln(usedKnownAlphabet.size.toDouble() + usedUnknownAlphabet.size.toDouble()) /
+                                    ln(2.0)
+                            )
+                }
             }
         }
 
-        return password.size.toDouble() * (
-                ln(usedKnownAlphabet.size.toDouble() + usedUnknownAlphabet.size.toDouble()) /
-                        ln(2.0)
-                )
+    suspend fun getPassphraseEntropy(passphraseWordCount: Int, separator: String): Double =
+        withContext(coroutineLaunchContext.io) {
+            dice.apply {
+                initialize()
+                isInitializedFlow.takeWhile { !it }
+            }
+            passphraseWordCount.toDouble() * (
+                    ln(dice.dictionarySize.toDouble() * WORD_CASE_NUMBER) /
+                            ln(2.0)
+                    ) +
+                    getPasswordEntropy(separator.toCodepoints(), Alphabets.all.values.toSet())
+        }
+
+    suspend fun getSecretEntropy(secret: String): Double {
+        return withContext(coroutineLaunchContext.io) {
+            var diceWordsCount = 0
+            var secretCopy = secret
+            dice.apply {
+                initialize()
+                isInitializedFlow.takeWhile { !it }
+            }
+
+            dice.getDescendingLengthSortedWords().forEach { word ->
+                if (secretCopy.contains(word)) {
+                    secretCopy = secretCopy.replace(word, "")
+                    diceWordsCount++
+                }
+            }
+
+            if (diceWordsCount < 2) {
+                getPasswordEntropy(secret.toCodepoints(), Alphabets.all.values.toSet())
+            } else {
+                try {
+                    val separatorCount = diceWordsCount - 1
+                    val separators = secretCopy.chunked(secretCopy.length / separatorCount)
+
+                    require(separators.all { it == separators.first() })
+
+                    getPassphraseEntropy(diceWordsCount, separators.first())
+                } catch (exception: Exception) {
+                    getPasswordEntropy(secret.toCodepoints(), Alphabets.all.values.toSet())
+                }
+            }
+        }
     }
 
-    fun getEntropy(password: String): Double {
-        return getEntropy(password.toCodepoints(), Alphabets.all.values.toSet())
+    private companion object {
+        private const val WORD_CASE_NUMBER = 3 // upper case, lower case, camel case
     }
 }

@@ -134,6 +134,7 @@ class PasswordGenerateInputView @JvmOverloads constructor(
     }
 
     fun setPasswordChangeListener(textChange: (String) -> Unit) {
+        textWatcher?.let { binding.input.removeTextChangedListener(it) }
         textWatcher = binding.input.addTextChangedListener {
             textChange.invoke(it.toString())
             setInitialState()
