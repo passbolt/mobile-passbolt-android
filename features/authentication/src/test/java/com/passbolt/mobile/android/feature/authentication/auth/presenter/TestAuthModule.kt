@@ -6,7 +6,8 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
-import com.passbolt.mobile.android.core.policies.usecase.PoliciesInteractor
+import com.passbolt.mobile.android.core.policies.usecase.PasswordExpiryPoliciesInteractor
+import com.passbolt.mobile.android.core.policies.usecase.PasswordPoliciesInteractor
 import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
@@ -135,7 +136,8 @@ internal val mockInAppReviewInteractor = mock<InAppReviewInteractor>()
 internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
 internal val mockGopenPgpTimeUpdater = mock<GopenPgpTimeUpdater>()
 internal val mockRbacInteractor = mock<RbacInteractor>()
-internal val mockPolicyInteractor = mock<PoliciesInteractor>()
+internal val mockPasswordExpiryPoliciesInteractor = mock<PasswordExpiryPoliciesInteractor>()
+internal val mockPasswordPoliciesInteractor = mock<PasswordPoliciesInteractor>()
 
 @ExperimentalCoroutinesApi
 val testAuthModule = module {
@@ -171,7 +173,8 @@ val testAuthModule = module {
             featureFlagsInteractor = mockFeatureFlagsInteractor,
             rbacInteractor = mockRbacInteractor,
             userProfileInteractor = mockProfileInteractor,
-            policiesInteractor = mockPolicyInteractor
+            passwordExpiryPoliciesInteractor = mockPasswordExpiryPoliciesInteractor,
+            passwordPoliciesInteractor = mockPasswordPoliciesInteractor
         )
     }
     single { RuntimeAuthenticatedFlag() }

@@ -44,7 +44,11 @@ class FeatureFlagsMapper {
                 isRbacAvailable = it.plugins.rbacs?.enabled
                     ?: Defaults.IS_RBAC_AVAILABLE,
                 isPasswordExpiryAvailable = it.plugins.passwordExpiry?.enabled
-                    ?: Defaults.IS_PASSWORD_EXPIRY_AVAILABLE
+                    ?: Defaults.IS_PASSWORD_EXPIRY_AVAILABLE,
+                arePasswordPoliciesAvailable = it.plugins.passwordPolicies?.enabled
+                    ?: Defaults.ARE_PASSWORD_POLICIES_AVAILABLE,
+                canUpdatePasswordPolicies = it.plugins.passwordPoliciesUpdate?.enabled
+                    ?: Defaults.CAN_UPDATE_PASSWORD_POLICIES
             )
         }
 }

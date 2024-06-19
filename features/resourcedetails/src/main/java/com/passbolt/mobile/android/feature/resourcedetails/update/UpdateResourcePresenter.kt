@@ -12,7 +12,9 @@ import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReac
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
+import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
+import com.passbolt.mobile.android.core.passwordgenerator.entropy.Entropy
+import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
@@ -40,6 +42,8 @@ import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerato
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.NewFieldsModelCreator
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.ResourceUpdateType
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
+import com.passbolt.mobile.android.storage.usecase.policies.GetPasswordPoliciesUseCase
+import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -75,7 +79,7 @@ import java.net.HttpURLConnection.HTTP_NOT_FOUND
  */
 class UpdateResourcePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
-    private val passwordGenerator: PasswordGenerator,
+    private val secretGenerator: SecretGenerator,
     private val entropyViewMapper: EntropyViewMapper,
     private val createPasswordAndDescriptionResourceInteractor: CreatePasswordAndDescriptionResourceInteractor,
     private val addLocalResourceUseCase: AddLocalResourceUseCase,
@@ -88,7 +92,9 @@ class UpdateResourcePresenter(
     private val getLocalParentFolderPermissionsToApplyUseCase: GetLocalParentFolderPermissionsToApplyToNewItemUseCase,
     private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase,
     private val createResourceIdlingResource: CreateResourceIdlingResource,
-    private val updateResourceIdlingResource: UpdateResourceIdlingResource
+    private val updateResourceIdlingResource: UpdateResourceIdlingResource,
+    private val getPasswordPoliciesUseCase: GetPasswordPoliciesUseCase,
+    private val entropyCalculator: EntropyCalculator
 ) : DataRefreshViewReactivePresenter<UpdateResourceContract.View>(coroutineLaunchContext),
     UpdateResourceContract.Presenter {
 
@@ -241,18 +247,18 @@ class UpdateResourcePresenter(
         }
     }
 
-    private fun handlePasswordInput(it: ResourceValue) {
-        val initialValueEntropy = PasswordGenerator.Entropy.parse(
-            it.value?.let {
-                passwordGenerator.getEntropy(it)
-            } ?: 0.0
-        )
+    private suspend fun handlePasswordInput(it: ResourceValue) {
+        val initialValueEntropy = it.value?.let { password ->
+            entropyCalculator.getSecretEntropy(password)
+        } ?: 0.0
+
         view?.addPasswordInput(
             fieldNamesMapper.mapFieldNameToUiName(it.field.name),
             it.uiTag,
             it.field.isRequired,
             it.value,
-            entropyViewMapper.map(initialValueEntropy)
+            entropyViewMapper.map(Entropy.parse(initialValueEntropy)),
+            initialValueEntropy
         )
     }
 
@@ -449,18 +455,35 @@ class UpdateResourcePresenter(
     }
 
     override fun passwordGenerateClick(tag: String) {
-        val generatedPassword = passwordGenerator.generate(targetEntropy = DEFAULT_ENTROPY)
-        view?.showPassword(tag, generatedPassword, entropyViewMapper.map(DEFAULT_ENTROPY))
+        scope.launch {
+            val passwordPolicies = getPasswordPoliciesUseCase.execute(Unit)
+            val secretGenerationResult = when (passwordPolicies.defaultGenerator) {
+                PasswordGeneratorTypeModel.PASSWORD ->
+                    secretGenerator.generatePassword(passwordPolicies.passwordGeneratorSettings)
+                PasswordGeneratorTypeModel.PASSPHRASE ->
+                    secretGenerator.generatePassphrase(passwordPolicies.passphraseGeneratorSettings)
+            }
+            when (secretGenerationResult) {
+                is SecretGenerator.SecretGenerationResult.FailedToGenerateLowEntropy ->
+                    view?.showUnableToGeneratePassword(secretGenerationResult.minimumEntropyBits)
+                is SecretGenerator.SecretGenerationResult.Success -> view?.showPassword(
+                    tag,
+                    secretGenerationResult.password,
+                    secretGenerationResult.entropy,
+                    entropyViewMapper.map(Entropy.parse(secretGenerationResult.entropy))
+                )
+            }
+        }
     }
 
     override fun passwordTextChanged(tag: String, password: String) {
-        fields.find {
-            it.field.name == PASSWORD_FIELD || it.field.name == SECRET_FIELD
-        }?.value = password
-        val entropy = PasswordGenerator.Entropy.parse(
-            passwordGenerator.getEntropy(password)
-        )
-        view?.showPasswordStrength(tag, entropyViewMapper.map(entropy))
+        scope.launch {
+            fields.find {
+                it.field.name == PASSWORD_FIELD || it.field.name == SECRET_FIELD
+            }?.value = password
+            val entropy = entropyCalculator.getSecretEntropy(password)
+            view?.showPasswordStrength(tag, entropyViewMapper.map(Entropy.parse(entropy)), entropy)
+        }
     }
 
     private fun getRules(field: ResourceField): List<Rule<String>> {
@@ -478,10 +501,5 @@ class UpdateResourcePresenter(
         existingSecret?.erase()
         scope.coroutineContext.cancelChildren()
         super<DataRefreshViewReactivePresenter>.detach()
-    }
-
-    // TODO add support for fully dynamic request model
-    companion object {
-        private val DEFAULT_ENTROPY = PasswordGenerator.Entropy.VERY_STRONG
     }
 }

@@ -109,7 +109,9 @@ class ResourceDetailsPresenterTest : KoinTest {
                     areTagsAvailable = true,
                     isTotpAvailable = true,
                     isRbacAvailable = true,
-                    isPasswordExpiryAvailable = true
+                    isPasswordExpiryAvailable = true,
+                    arePasswordPoliciesAvailable = true,
+                    canUpdatePasswordPolicies = true
                 )
             )
         }
@@ -361,7 +363,9 @@ class ResourceDetailsPresenterTest : KoinTest {
                         areTagsAvailable = false,
                         isTotpAvailable = true,
                         isRbacAvailable = true,
-                        isPasswordExpiryAvailable = true
+                        isPasswordExpiryAvailable = true,
+                        arePasswordPoliciesAvailable = true,
+                        canUpdatePasswordPolicies = true
                     )
                 )
             )

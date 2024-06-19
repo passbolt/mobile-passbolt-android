@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.featureflags.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.mappers.FeatureFlagsMapper
 import com.passbolt.mobile.android.passboltapi.settings.SettingsRepository
 
@@ -36,16 +37,14 @@ class FetchFeatureFlagsUseCase(
         when (val response = settingsRepository.getSettings()) {
             is NetworkResult.Failure -> Output.Failure(response)
             is NetworkResult.Success -> {
-                Output.Success(
-                    featureFlagsMapper.map(response.value.body)
-                )
+                Output.Success(featureFlagsMapper.map(response.value.body))
             }
         }
 
     sealed class Output {
 
         data class Success(
-            val featureFlags: com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
+            val featureFlags: FeatureFlagsModel
         ) : Output()
 
         data class Failure<T : Any>(val response: NetworkResult.Failure<T>) : Output()

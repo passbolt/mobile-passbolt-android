@@ -103,7 +103,9 @@ class ResourceMenuTest : KoinTest {
                     areTagsAvailable = true,
                     isTotpAvailable = true,
                     isRbacAvailable = true,
-                    isPasswordExpiryAvailable = true
+                    isPasswordExpiryAvailable = true,
+                    arePasswordPoliciesAvailable = true,
+                    canUpdatePasswordPolicies = true
                 )
             )
         }

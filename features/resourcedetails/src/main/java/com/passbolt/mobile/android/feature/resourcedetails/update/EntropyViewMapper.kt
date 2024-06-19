@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update
 
-import com.passbolt.mobile.android.core.passwordgenerator.PasswordGenerator
+import com.passbolt.mobile.android.core.passwordgenerator.entropy.Entropy
 import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView.PasswordStrength
 
 /**
@@ -27,14 +27,14 @@ import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputV
  */
 class EntropyViewMapper {
 
-    fun map(entropy: PasswordGenerator.Entropy): PasswordStrength =
+    fun map(entropy: Entropy): PasswordStrength =
         when (entropy) {
-            PasswordGenerator.Entropy.ZERO -> PasswordStrength.Empty
-            PasswordGenerator.Entropy.VERY_WEAK -> PasswordStrength.VeryWeak
-            PasswordGenerator.Entropy.WEAK -> PasswordStrength.Weak
-            PasswordGenerator.Entropy.FAIR -> PasswordStrength.Fair
-            PasswordGenerator.Entropy.STRONG -> PasswordStrength.Strong
-            PasswordGenerator.Entropy.VERY_STRONG -> PasswordStrength.VeryStrong
-            PasswordGenerator.Entropy.GREATEST_FINITE -> PasswordStrength.VeryStrong
+            Entropy.ZERO -> PasswordStrength.Empty
+            Entropy.VERY_WEAK -> PasswordStrength.VeryWeak
+            Entropy.WEAK -> PasswordStrength.Weak
+            Entropy.FAIR -> PasswordStrength.Fair
+            Entropy.STRONG -> PasswordStrength.Strong
+            Entropy.VERY_STRONG -> PasswordStrength.VeryStrong
+            Entropy.GREATEST_FINITE -> PasswordStrength.VeryStrong
         }
 }
