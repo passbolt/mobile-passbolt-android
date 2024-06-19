@@ -1,0 +1,20 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+}
+
+dependencies {
+    api project(":networking")
+    implementation project(":common")
+
+    implementation libs.koin
+    implementation libs.retrofit.scalarsconverter
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.services.pwnedpasswordsapi"
+}
+
+kotlin {
+    jvmToolchain(17)
+}

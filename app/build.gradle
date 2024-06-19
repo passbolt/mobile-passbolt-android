@@ -189,6 +189,7 @@ dependencies {
     implementation project(':rbac')
     implementation project(':accounts')
     implementation project(':policies')
+    implementation project(':pwnedpasswordsapi')
 
     debugImplementation libs.leakcanary
 
