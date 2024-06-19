@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.core.passwordgenerator
 
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.CodepointSet
+import com.passbolt.mobile.android.core.passwordgenerator.codepoints.CodepointSet.Companion.withLookAlikeExcluded
 import com.passbolt.mobile.android.ui.PasswordGeneratorSettingsModel
 
 /**
@@ -113,41 +114,44 @@ object Alphabets {
                 "😼", "😽", "😾", "😿", "🙀", "🙁", "🙂", "🙃", "🙄", "🙅",
                 "🙆", "🙇", "🙈", "🙉", "🙊", "🙋", "🙌", "🙍", "🙎", "🙏"
             ).map { Codepoint(it.codePointAt(0)) }
-
         )
     )
 
+    private fun getAlphabetByName(name: String, excludeLookAlike: Boolean): CodepointSet =
+        all[name]!!.withLookAlikeExcluded(excludeLookAlike)
+
     fun getCodepointSetsForModel(model: PasswordGeneratorSettingsModel): Set<CodepointSet> {
         val result = mutableSetOf<CodepointSet>()
+        val excludeLookAlike = model.excludeLookAlikeChars
         if (model.maskUpper) {
-            result.add(all[MASK_UPPER]!!)
+            result.add(getAlphabetByName(MASK_UPPER, excludeLookAlike))
         }
         if (model.maskLower) {
-            result.add(all[MASK_LOWER]!!)
+            result.add(getAlphabetByName(MASK_LOWER, excludeLookAlike))
         }
         if (model.maskDigit) {
-            result.add(all[MASK_DIGIT]!!)
+            result.add(getAlphabetByName(MASK_DIGIT, excludeLookAlike))
         }
         if (model.maskParenthesis) {
-            result.add(all[MASK_PARENTHESIS]!!)
+            result.add(getAlphabetByName(MASK_PARENTHESIS, excludeLookAlike))
         }
         if (model.maskChar1) {
-            result.add(all[MASK_SPECIAL_CHAR1]!!)
+            result.add(getAlphabetByName(MASK_SPECIAL_CHAR1, excludeLookAlike))
         }
         if (model.maskChar2) {
-            result.add(all[MASK_SPECIAL_CHAR2]!!)
+            result.add(getAlphabetByName(MASK_SPECIAL_CHAR2, excludeLookAlike))
         }
         if (model.maskChar3) {
-            result.add(all[MASK_SPECIAL_CHAR3]!!)
+            result.add(getAlphabetByName(MASK_SPECIAL_CHAR3, excludeLookAlike))
         }
         if (model.maskChar4) {
-            result.add(all[MASK_SPECIAL_CHAR4]!!)
+            result.add(getAlphabetByName(MASK_SPECIAL_CHAR4, excludeLookAlike))
         }
         if (model.maskChar5) {
-            result.add(all[MASK_SPECIAL_CHAR5]!!)
+            result.add(getAlphabetByName(MASK_SPECIAL_CHAR5, excludeLookAlike))
         }
         if (model.maskEmoji) {
-            result.add(all[MASK_EMOJI]!!)
+            result.add(getAlphabetByName(MASK_EMOJI, excludeLookAlike))
         }
         return result
     }
