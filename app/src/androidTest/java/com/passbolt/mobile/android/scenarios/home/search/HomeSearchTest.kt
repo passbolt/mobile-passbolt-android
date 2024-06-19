@@ -47,8 +47,8 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.filters.ResourceFilterModel
 import com.passbolt.mobile.android.scenarios.helpers.signIn
+import com.passbolt.mobile.android.scenarios.home.filters.ResourceFilterModel
 import org.hamcrest.CoreMatchers.not
 import org.junit.Rule
 import org.junit.Test

@@ -1,4 +1,4 @@
-/**
+/*
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021-2024 Passbolt SA
  *
@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.scenarios.foldercreation
+package com.passbolt.mobile.android.scenarios.home.filters.folders.creation
 
 import android.view.KeyEvent
 import androidx.appcompat.widget.Toolbar
