@@ -50,7 +50,6 @@ class EntropyCalculatorTest : KoinTest {
     }
 
     private val entropyCalculator: EntropyCalculator by inject()
-    private val dice: Dice by inject()
 
     @Test
     fun `test password entropy for short string generated from short character set`() = runTest {
@@ -118,5 +117,12 @@ class EntropyCalculatorTest : KoinTest {
         val result = entropyCalculator.getPassphraseEntropy(9, "")
 
         assertEquals(result, 130.59, 0.01)
+    }
+
+    @Test
+    fun `test passphrase entropy with only unknown chars separator should not be undefined`() = runTest {
+        val result = entropyCalculator.getPassphraseEntropy(9, " ")
+
+        assertThat(result).isGreaterThan(0.0)
     }
 }

@@ -75,11 +75,12 @@ class EntropyCalculator(
                 initialize()
                 isInitializedFlow.takeWhile { !it }
             }
-            passphraseWordCount.toDouble() * (
+            val passphraseEntropy = passphraseWordCount.toDouble() * (
                     ln(dice.dictionarySize.toDouble() * WORD_CASE_NUMBER) /
                             ln(2.0)
-                    ) +
-                    getPasswordEntropy(separator.toCodepoints(), Alphabets.all.values.toSet())
+                    )
+            val separatorEntropy = getPasswordEntropy(separator.toCodepoints(), Alphabets.all.values.toSet())
+            passphraseEntropy + if (separatorEntropy > 0) separatorEntropy else 0.0
         }
 
     suspend fun getSecretEntropy(secret: String): Double {
