@@ -26,6 +26,7 @@ dependencies {
     implementation project(':transferaccounttoanotherdevice')
     implementation project(':gopenpgp')
     implementation project(':accountdetails')
+    implementation project(':fulldatarefresh')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.feature.settings
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
@@ -35,6 +36,8 @@ import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
+internal val mockFullDataRefreshExecutor = mock<FullDataRefreshExecutor>()
+
 
 @ExperimentalCoroutinesApi
 val testModule = module {
@@ -42,7 +45,8 @@ val testModule = module {
     factory<SettingsContract.Presenter> {
         SettingsPresenter(
             signOutUseCase = mockSignOutUseCase,
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            fullDataRefreshExecutor = mockFullDataRefreshExecutor
         )
     }
 }
