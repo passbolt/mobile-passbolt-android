@@ -36,9 +36,10 @@ interface PwnedPasswordsApi {
         @Path(PATH_PASSWORD_PARTIAL_HASH) passwordPartialHash: String
     ): String
 
-    private companion object {
-        private const val PATH_PASSWORD_PARTIAL_HASH = "passwordPartialHash"
+    companion object {
+        const val PARTIAL_HASH_LENGTH = 5
 
+        private const val PATH_PASSWORD_PARTIAL_HASH = "passwordPartialHash"
         private const val PWNED_PASSWORDS_BY_RANGE = "/range/{$PATH_PASSWORD_PARTIAL_HASH}"
     }
 }

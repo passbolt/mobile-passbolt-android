@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.common
 
+import com.passbolt.mobile.android.common.hash.MessageDigestHash
 import com.passbolt.mobile.android.common.time.AndroidTimeProvider
 import com.passbolt.mobile.android.common.time.TimeProvider
 import com.passbolt.mobile.android.common.usecase.FetchFileAsStringUseCase
@@ -39,4 +40,5 @@ val commonModule = module {
     }
     singleOf(::AndroidTimeProvider) bind TimeProvider::class
     singleOf(::FetchFileAsStringUseCase)
+    singleOf(::MessageDigestHash)
 }

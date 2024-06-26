@@ -145,3 +145,21 @@ fun unableToGeneratePasswordAlertDialog(context: Context, requiredEntropy: Int) 
         .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
         .setCancelable(false)
         .create()
+
+fun pwnedPasswordAlertDialog(context: Context, onProceed: () -> Unit) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.dialog_confirm_password_title)
+        .setMessage(LocalizationR.string.dialog_confirm_password_message_data_breach)
+        .setPositiveButton(LocalizationR.string.edit_password) { _, _ -> }
+        .setNegativeButton(LocalizationR.string.proceed) { _, _ -> onProceed() }
+        .setCancelable(false)
+        .create()
+
+fun weakPasswordAlertDialog(context: Context, onProceed: () -> Unit) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.dialog_confirm_password_title)
+        .setMessage(LocalizationR.string.dialog_confirm_password_message_low_entropy)
+        .setPositiveButton(LocalizationR.string.edit_password) { _, _ -> }
+        .setNegativeButton(LocalizationR.string.proceed) { _, _ -> onProceed() }
+        .setCancelable(false)
+        .create()

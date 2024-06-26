@@ -89,6 +89,8 @@ interface UpdateResourceContract {
         fun showJsonSecretSchemaValidationError()
         fun clearInputsContainer()
         fun showUnableToGeneratePassword(minimumEntropyBits: Int)
+        fun showConfirmPwnedPassword()
+        fun showConfirmWeakPassword()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -97,5 +99,6 @@ interface UpdateResourceContract {
         fun passwordTextChanged(tag: String, password: String)
         fun textChanged(tag: String, value: String)
         fun argsRetrieved(mode: ResourceMode, resource: ResourceModel? = null, resourceParentFolderId: String?)
+        fun onPwnedOrWeakPasswordConfirmed()
     }
 }
