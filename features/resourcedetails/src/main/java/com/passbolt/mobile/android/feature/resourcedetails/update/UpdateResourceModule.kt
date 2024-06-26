@@ -52,7 +52,8 @@ fun Module.updateResourceModule() {
                 createResourceIdlingResource = get(),
                 updateResourceIdlingResource = get(),
                 getPasswordPoliciesUseCase = get(),
-                entropyCalculator = get()
+                entropyCalculator = get(),
+                checkPasswordPropertiesUseCase = get()
             )
         }
 

@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.Entropy
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
+import com.passbolt.mobile.android.core.passwordgenerator.usecase.CheckPasswordPropertiesUseCase
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
@@ -94,7 +95,8 @@ class UpdateResourcePresenter(
     private val createResourceIdlingResource: CreateResourceIdlingResource,
     private val updateResourceIdlingResource: UpdateResourceIdlingResource,
     private val getPasswordPoliciesUseCase: GetPasswordPoliciesUseCase,
-    private val entropyCalculator: EntropyCalculator
+    private val entropyCalculator: EntropyCalculator,
+    private val checkPasswordPropertiesUseCase: CheckPasswordPropertiesUseCase
 ) : DataRefreshViewReactivePresenter<UpdateResourceContract.View>(coroutineLaunchContext),
     UpdateResourceContract.Presenter {
 
@@ -272,10 +274,36 @@ class UpdateResourcePresenter(
                     }
                 }
                 onValid {
-                    updateResource()
+                    scope.launch {
+                        if (getPasswordPoliciesUseCase.execute(Unit).isExternalDictionaryCheckEnabled) {
+                            checkPasswordStatus()
+                        } else {
+                            updateResource()
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private suspend fun checkPasswordStatus() {
+        when (checkPasswordPropertiesUseCase.execute(
+            CheckPasswordPropertiesUseCase.Input(getFieldValue(PASSWORD_FIELD)!!)
+        )
+        ) {
+            CheckPasswordPropertiesUseCase.Output.Fine -> updateResource()
+            is CheckPasswordPropertiesUseCase.Output.Pwned -> view?.showConfirmPwnedPassword()
+            is CheckPasswordPropertiesUseCase.Output.Weak -> view?.showConfirmWeakPassword()
+            is CheckPasswordPropertiesUseCase.Output.Failure<*> -> {
+                Timber.d("Failed to check password status")
+                // if external service is down, proceed with password update without checking
+                updateResource()
+            }
+        }
+    }
+
+    override fun onPwnedOrWeakPasswordConfirmed() {
+        updateResource()
     }
 
     override fun textChanged(tag: String, value: String) {

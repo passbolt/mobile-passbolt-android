@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import com.passbolt.mobile.android.common.dialogs.encryptionErrorAlertDialog
+import com.passbolt.mobile.android.common.dialogs.pwnedPasswordAlertDialog
 import com.passbolt.mobile.android.common.dialogs.unableToGeneratePasswordAlertDialog
+import com.passbolt.mobile.android.common.dialogs.weakPasswordAlertDialog
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
@@ -342,5 +344,17 @@ class UpdateResourceFragment :
 
     override fun showUnableToGeneratePassword(minimumEntropyBits: Int) {
         unableToGeneratePasswordAlertDialog(requireContext(), minimumEntropyBits).show()
+    }
+
+    override fun showConfirmPwnedPassword() {
+        pwnedPasswordAlertDialog(requireContext()) {
+            presenter.onPwnedOrWeakPasswordConfirmed()
+        }.show()
+    }
+
+    override fun showConfirmWeakPassword() {
+        weakPasswordAlertDialog(requireContext()) {
+            presenter.onPwnedOrWeakPasswordConfirmed()
+        }.show()
     }
 }

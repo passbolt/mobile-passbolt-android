@@ -1,13 +1,17 @@
 package com.passbolt.mobile.android.core.passwordgenerator
 
+import com.passbolt.mobile.android.common.hash.MessageDigestHash
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.passwordgenerator.dice.Dice
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
+import com.passbolt.mobile.android.core.passwordgenerator.usecase.CheckPasswordPropertiesUseCase
+import com.passbolt.mobile.android.pwnedpasswordsapi.range.PwnedPasswordRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.mockito.Mockito.mock
 import java.security.SecureRandom
 
 /**
@@ -32,6 +36,9 @@ import java.security.SecureRandom
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+internal val mockPwnedPasswordRepository = mock<PwnedPasswordRepository>()
+
 @ExperimentalCoroutinesApi
 val passwordGeneratorTestModule = module {
     singleOf(::PasswordGenerator)
@@ -49,5 +56,13 @@ val passwordGeneratorTestModule = module {
         ).apply {
             runBlocking { initialize() }
         }
+    }
+    singleOf(::MessageDigestHash)
+    single {
+        CheckPasswordPropertiesUseCase(
+            pwnedPasswordRepository = mockPwnedPasswordRepository,
+            messageDigestHash = get(),
+            entropyCalculator = get()
+        )
     }
 }

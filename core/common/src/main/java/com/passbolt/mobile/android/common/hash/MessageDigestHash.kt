@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.database
-
-import org.koin.android.ext.koin.androidApplication
-import org.koin.dsl.module
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -25,12 +20,20 @@ import org.koin.dsl.module
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-val databaseModule = module {
-    single {
-        DatabaseProvider(
-            context = androidApplication(),
-            getResourcesDatabasePassphraseUseCase = get(),
-            messageDigestHash = get()
-        )
+
+package com.passbolt.mobile.android.common.hash
+
+import java.security.MessageDigest
+
+class MessageDigestHash {
+
+    fun sha256(message: String) = hashString(message, algorithm = "SHA-256")
+
+    fun sha1(message: String) = hashString(message, algorithm = "SHA-1")
+
+    private fun hashString(input: String, algorithm: String): String {
+        return MessageDigest.getInstance(algorithm)
+            .digest(input.toByteArray())
+            .fold("") { str, value -> str + "%02x".format(value) }
     }
 }

@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.core.passwordgenerator
 
 import com.passbolt.mobile.android.core.passwordgenerator.dice.Dice
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
+import com.passbolt.mobile.android.core.passwordgenerator.usecase.CheckPasswordPropertiesUseCase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -35,6 +36,7 @@ val passwordGeneratorModule = module {
     singleOf(::PassphraseGenerator)
     singleOf(::SecretGenerator)
     singleOf(::EntropyCalculator)
+    singleOf(::CheckPasswordPropertiesUseCase)
     single { SecureRandom() }
     single {
         val diceInputStream = androidApplication().resources.openRawResource(R.raw.eff_large_wordlist)
