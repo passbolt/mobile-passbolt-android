@@ -62,7 +62,7 @@ class FullDataRefreshExecutor(
     fun performFullDataRefresh() {
         scope.launch {
             Timber.d("Full data refresh initiated")
-            if (!refreshInProgress.get()) {
+            if (!refreshInProgress.get() && presenter != null) {
                 refreshInProgress.set(true)
                 _dataRefreshStatusFlow.emit(DataRefreshStatus.InProgress)
                 val output = runAuthenticatedOperation(

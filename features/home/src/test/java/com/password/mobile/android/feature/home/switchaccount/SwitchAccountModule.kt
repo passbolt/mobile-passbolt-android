@@ -1,6 +1,7 @@
 package com.password.mobile.android.feature.home.switchaccount
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.entity.account.Account
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -12,6 +13,7 @@ import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUs
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
+import org.koin.test.inject
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -34,6 +36,7 @@ internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase> {
 internal val switchAccountModelMapper = SwitchAccountModelMapper(
     mockGetSelectedAccountUseCase, SwitchAccountUiModelComparator()
 )
+internal val mockFullDataRefreshExecutor = mock<FullDataRefreshExecutor>()
 
 @ExperimentalCoroutinesApi
 val testSwitchAccountModule = module {
@@ -44,7 +47,8 @@ val testSwitchAccountModule = module {
             getAllAccountsDataUseCase = mockGetAllAccountsDataUseCase,
             switchAccountModelMapper = switchAccountModelMapper,
             signOutUseCase = mockSignOutUseCase,
-            saveSelectedAccountUseCase = mock()
+            saveSelectedAccountUseCase = mock(),
+            fullDataRefreshExecutor = mockFullDataRefreshExecutor
         )
     }
 }
