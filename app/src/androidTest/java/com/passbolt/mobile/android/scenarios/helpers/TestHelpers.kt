@@ -34,8 +34,11 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
+import com.passbolt.mobile.android.feature.otp.R.id.searchEditText
 import com.passbolt.mobile.android.withHint
+import com.passbolt.mobile.android.withIndex
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -84,4 +87,21 @@ internal fun signIn(passphrase: String) {
     //TODO: There is failure here when testing on real devices https://app.clickup.com/t/2593179/MOB-1835
     //    sleep(300) usually helps
     onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
+}
+
+/**
+ * Navigates to the details screen of the first resource with the given name.
+ *
+ * This function assumes the search field is already visible and performs the following steps:
+ * 1. Clicks on the search field (identified by `searchEditText`).
+ * 2. Types the given `name` into the search field.
+ * 3. Clicks on the first item in the search results that matches the given `name`.
+ *    Note: The search field itself is assumed to be at index 0, so the first resource is at index 1.
+ *    Note: The filter is assumed to be previously set according to the test desire
+ *
+ * @param name The name of the resource to search for and navigate to.
+ */
+internal fun pickFirstResourceWithName(name: String) {
+    onView(withId(searchEditText)).perform(click(), typeText(name))
+    onView(withIndex(index = 1, withText(name))).perform(click())
 }
