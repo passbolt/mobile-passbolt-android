@@ -94,7 +94,6 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     }
 
     override fun onDestroyView() {
-        backPressedCallback.isEnabled = false
         binding.recyclerView.adapter = null
         presenter.detach()
         super.onDestroyView()
