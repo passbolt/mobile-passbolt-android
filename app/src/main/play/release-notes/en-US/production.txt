@@ -1,16 +1,13 @@
-# Passbolt 1.20.0-30 Android app release notes
+# Passbolt 1.21.0-31 Android app release notes
 
 ## Added
-- Added support for QR code protocol v2 ("scan" account kit)
-- JSON model is now used also during edit
-
-## Improved
-- Groups in filter are sorted alphabetically
+- Password generator policies: generate passwords according to set policies (character sets, length, etc.)
+- Passphrase generation support if policy set
+- Support emoji in passwords
+- Updated entropy calc
+- Added option to exclude look alike characters
+- Added external service check for password breaches
+- Expiry policies
 
 ## Fixed
-- Fixed silent crash during account setup when closing the MFA dialog
-- Clicking fast on password preview icon was possible before RBAC flags applied
-
-## Maintenance
-- Added more menus unit tests
-- Refactored domain provider and added extra test data
+- MOB-1744: Fixed Play Store crash when data refresh finishes when no UI context available

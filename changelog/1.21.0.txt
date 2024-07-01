@@ -1,0 +1,13 @@
+# Passbolt 1.21.0-31 Android app release notes
+
+## Added
+- Password generator policies: generate passwords according to current policies (character sets, length, etc.)
+- Passphrase generation support if policy set
+- Support emoji in password generator
+- Updated entropy calculation
+- Added option to exclude look alike characters
+- Added external service check for password breaches
+- Expiry policies: set and clear resource expiry policies according to current policies
+
+## Fixed
+- MOB-1744: Fixed Play Store report on crash when full data refresh finishes when no UI context to notify available
