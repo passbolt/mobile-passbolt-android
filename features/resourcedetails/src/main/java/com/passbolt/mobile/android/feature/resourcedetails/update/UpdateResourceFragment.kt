@@ -205,13 +205,11 @@ class UpdateResourceFragment :
         }
 
         (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).apply {
-            setPasswordChangeListener { }
             showPassword(
                 stringBuilder.toString(),
                 passwordStrength,
                 entropyBits
             )
-            setPasswordChangeListener { presenter.passwordTextChanged(tag, it) }
         }
     }
 
