@@ -10,4 +10,4 @@
 - Expiry policies
 
 ## Fixed
-- MOB-1744: Fixed Play Store crash when data refresh finishes when no UI context available
+- Fixed Play Store crash when data refresh finishes when no UI context available
