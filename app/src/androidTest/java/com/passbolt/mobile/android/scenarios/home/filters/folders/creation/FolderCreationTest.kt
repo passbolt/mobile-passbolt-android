@@ -1,6 +1,6 @@
-/**
+/*
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021-2023 Passbolt SA
+ * Copyright (c) 2021-2024 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -21,7 +21,7 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.scenarios.foldercreation
+package com.passbolt.mobile.android.scenarios.home.filters.folders.creation
 
 import android.view.KeyEvent
 import androidx.appcompat.widget.Toolbar
@@ -47,6 +47,7 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.helpers.getString
+import com.passbolt.mobile.android.scenarios.helpers.signIn
 import org.hamcrest.Matchers.allOf
 import org.junit.Rule
 import org.junit.Test
@@ -103,9 +104,7 @@ class FolderCreationTest : KoinTest {
         //    And I want to create new folder
         //    And I am on the folders filter view
         //    And I have the permission to create a folder in my current location
-        onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
-        onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
+        signIn(managedAccountIntentCreator.getPassphrase())
         onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
         //    Given     that I am on the folders workspace
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.folders)).perform(click())

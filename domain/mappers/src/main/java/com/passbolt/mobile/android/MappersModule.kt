@@ -29,6 +29,8 @@ import com.passbolt.mobile.android.mappers.FolderModelMapper
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.HomeDisplayViewMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
+import com.passbolt.mobile.android.mappers.PasswordExpiryMapper
+import com.passbolt.mobile.android.mappers.PasswordPoliciesMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.RbacMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
@@ -67,4 +69,6 @@ val mappersModule = module {
     singleOf(::OtpModelMapper)
     singleOf(::ResourcePickerMapper)
     singleOf(::RbacMapper)
+    singleOf(::PasswordExpiryMapper)
+    singleOf(::PasswordPoliciesMapper)
 }

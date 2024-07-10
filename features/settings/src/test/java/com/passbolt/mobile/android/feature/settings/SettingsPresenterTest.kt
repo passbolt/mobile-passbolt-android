@@ -23,8 +23,11 @@
 
 package com.passbolt.mobile.android.feature.settings
 
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
+import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.feature.settings.screen.SettingsContract
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -32,8 +35,11 @@ import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class SettingsPresenterTest : KoinTest {
@@ -49,6 +55,9 @@ class SettingsPresenterTest : KoinTest {
 
     @Before
     fun setup() {
+        whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
+            flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
+        )
         presenter.attach(view)
     }
 
@@ -73,8 +82,8 @@ class SettingsPresenterTest : KoinTest {
         presenter.logoutConfirmed()
 
         verify(view).showLogoutDialog()
-        verify(view).showProgress()
-        verify(view).hideProgress()
+        verify(view, times(2)).showProgress()
+        verify(view, times(2)).hideProgress()
         verify(view).navigateToSignInWithLogout()
     }
 }

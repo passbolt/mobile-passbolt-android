@@ -34,8 +34,11 @@
     <string name="consent">I consent</string>
     <string name="name_suspended">%s (suspended)</string>
     <string name="name_expired">%s (expired)</string>
+    <string name="proceed">Proceed</string>
+    <string name="edit_password">Edit password</string>
 
     <string name="common_failure">Something went wrong!</string>
+    <string name="common_startup_configuration_fetch_error">Error while fetching configuration</string>
     <string name="common_time_is_out_of_sync">Server and client time is out of sync, please contact your administrator.</string>
     <string name="common_network_failure">There was a connection issue</string>
     <string name="common_failure_format">Something went wrong![%s]</string>
@@ -188,6 +191,8 @@
     <string name="dialog_mfa_unknown_provider_header">Your MFA provider is not supported</string>
     <string name="dialog_mfa_unknown_provider_description">Please setup another provider using the web app.
     Contact your administrator for more information.</string>
+    <string name="dialog_unable_to_generate_password_title">Unable to generate strong password</string>
+    <string name="dialog_unable_to_generate_password_message">The password generator will not generate strong enough password. Minimum of %d bits is required</string>
 
     <string name="autofill_service_name">Passbolt Autofill</string>
 
@@ -538,6 +543,13 @@
     <string name="key_inspector_menu_export_public_key">Export public key</string>
     <string name="key_inspector_menu_export_key">Export key</string>
     <string name="key_inspector_menu_failed_to_generate_public_key">Failed to generate public key. %s</string>
+
+    <string name="dialog_confirm_password_title">Confirm your password</string>
+    <string name="dialog_confirm_password_message_data_breach">The password is part of an exposed data breach.\n\nAre you sure you want to create this resource?</string>
+    <string name="dialog_confirm_password_message_low_entropy">The password is very weak and might be part of an exposed data breach.\n\nAre you sure you want to create this resource?</string>
+
+    <string name="password_generator_known_strength_format">%s (entropy: %.2f bits)</string>
+    <string name="password_generator_unknown_strength_format">Strength (entropy: n/a bits)</string>
 
     <!--
     arrays can be inconsistent when in other languages

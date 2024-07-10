@@ -5,8 +5,15 @@ plugins {
 
 dependencies {
     implementation project(':localization')
+    implementation project(':ui')
+    implementation project(':architecture')
+    implementation project(':common')
+    implementation project(':pwnedpasswordsapi')
+    implementation project(':mappers')
 
     implementation libs.koin
+
+    testImplementation project(":commontest")
 }
 
 android {

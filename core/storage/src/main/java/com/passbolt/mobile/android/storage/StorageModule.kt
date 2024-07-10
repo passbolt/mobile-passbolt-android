@@ -11,6 +11,7 @@ import com.passbolt.mobile.android.storage.usecase.biometrickey.biometricKeyIvMo
 import com.passbolt.mobile.android.storage.usecase.database.databaseModule
 import com.passbolt.mobile.android.storage.usecase.featureflags.featureFlagsModule
 import com.passbolt.mobile.android.storage.usecase.passphrase.passphraseModule
+import com.passbolt.mobile.android.storage.usecase.policies.policiesModule
 import com.passbolt.mobile.android.storage.usecase.preferences.preferencesModule
 import com.passbolt.mobile.android.storage.usecase.privatekey.privateKeyModule
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.selectedAccountModule
@@ -56,6 +57,7 @@ val storageModule = module {
     preferencesModule()
     databaseModule()
     featureFlagsModule()
+    policiesModule()
 
     single {
         androidApplication().getSharedPreferences("user-accounts", Context.MODE_PRIVATE)

@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.accounts.accountsCoreModule
 import com.passbolt.mobile.android.core.autofill.autofillModule
 import com.passbolt.mobile.android.core.commonfolders.foldersModule
 import com.passbolt.mobile.android.core.commongroups.groupsModule
+import com.passbolt.mobile.android.core.coreUiModule
 import com.passbolt.mobile.android.core.envinfo.envInfoModule
 import com.passbolt.mobile.android.core.fulldatarefresh.fullDataRefreshModule
 import com.passbolt.mobile.android.core.idlingresource.idlingResourcesModule
@@ -18,13 +19,17 @@ import com.passbolt.mobile.android.core.mvp.architectureModule
 import com.passbolt.mobile.android.core.networking.networkingModule
 import com.passbolt.mobile.android.core.notifications.notificationsModule
 import com.passbolt.mobile.android.core.otpcore.otpCoreModule
+import com.passbolt.mobile.android.core.policiesModule
 import com.passbolt.mobile.android.core.qrscan.barcodeScanModule
+import com.passbolt.mobile.android.core.rbacModule
 import com.passbolt.mobile.android.core.resources.resourcesModule
 import com.passbolt.mobile.android.core.resourcetypes.resourceTypesModule
 import com.passbolt.mobile.android.core.secrets.secretsModule
 import com.passbolt.mobile.android.core.security.securityModule
 import com.passbolt.mobile.android.core.tags.tagsModule
 import com.passbolt.mobile.android.core.coreUiModule
+import com.passbolt.mobile.android.core.passwordgenerator.passwordGeneratorModule
+import com.passbolt.mobile.android.core.policiesModule
 import com.passbolt.mobile.android.core.rbacModule
 import com.passbolt.mobile.android.core.users.usersModule
 import com.passbolt.mobile.android.createFolderModule
@@ -47,16 +52,17 @@ import com.passbolt.mobile.android.folderDetailsModule
 import com.passbolt.mobile.android.gopenpgp.openPgpModule
 import com.passbolt.mobile.android.groupDetailsModule
 import com.passbolt.mobile.android.helpMenuModule
+import com.passbolt.mobile.android.linksapi.linksApiModule
 import com.passbolt.mobile.android.locationDetailsModule
 import com.passbolt.mobile.android.logsModule
 import com.passbolt.mobile.android.mappersModule
 import com.passbolt.mobile.android.otpMainMoreMenuModule
 import com.passbolt.mobile.android.passboltapi.passboltApiModule
+import com.passbolt.mobile.android.pwnedpasswordsapi.pwnedPasswordsApiModule
 import com.passbolt.mobile.android.resourceMoreMenuModule
 import com.passbolt.mobile.android.resourcePickerModule
 import com.passbolt.mobile.android.resourceTagsModule
 import com.passbolt.mobile.android.serializers.serializersModule
-import com.passbolt.mobile.android.linksapi.linksApiModule
 import com.passbolt.mobile.android.storage.storageModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -157,7 +163,10 @@ class KoinInitializer : Initializer<Unit> {
             otpMainMoreMenuModule,
             createOtpManuallyMainModule,
             rbacModule,
-            accountsCoreModule
+            accountsCoreModule,
+            policiesModule,
+            pwnedPasswordsApiModule,
+            passwordGeneratorModule
         )
     }
 }

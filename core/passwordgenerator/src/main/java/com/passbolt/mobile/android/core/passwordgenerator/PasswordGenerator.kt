@@ -1,6 +1,9 @@
 package com.passbolt.mobile.android.core.passwordgenerator
 
-import kotlin.math.ln
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
+import com.passbolt.mobile.android.ui.PasswordGeneratorSettingsModel
+import kotlinx.coroutines.withContext
 
 /**
  * Passbolt - Open source password manager for teams
@@ -24,74 +27,21 @@ import kotlin.math.ln
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class PasswordGenerator {
+class PasswordGenerator(
+    private val coroutineLaunchContext: CoroutineLaunchContext
+) {
+    suspend fun generate(settings: PasswordGeneratorSettingsModel): List<Codepoint> {
+        val codepointBuilder = mutableListOf<Codepoint>()
 
-    fun generate(
-        alphabets: Set<Set<Char>> = CharacterSets.all,
-        minLength: Int = DEFAULT_LENGTH,
-        targetEntropy: Entropy = Entropy.VERY_STRONG
-    ): String {
-        require(minLength > 0 && targetEntropy.rawValue > 0)
+        withContext(coroutineLaunchContext.io) {
+            val alphabets = Alphabets.getCodepointSetsForModel(settings)
+            val entireAlphabet = alphabets.flatMap { it.codepoints }
 
-        val stringBuilder = StringBuilder()
-        val entireAlphabet = alphabets.flatten()
-
-        while (!arePasswordCriteriaMet(stringBuilder, minLength, alphabets, targetEntropy)) {
-            stringBuilder.append(entireAlphabet.random())
-        }
-        return stringBuilder.toString()
-    }
-
-    private fun arePasswordCriteriaMet(
-        stringBuilder: StringBuilder,
-        minLength: Int,
-        alphabets: Set<Set<Char>>,
-        targetEntropy: Entropy
-    ) = stringBuilder.length >= minLength && Entropy.parse(
-        getEntropy(
-            stringBuilder.toString(),
-            alphabets
-        )
-    ).rawValue >= targetEntropy.rawValue
-
-    fun getEntropy(password: String, alphabets: Set<Set<Char>> = CharacterSets.all): Double {
-        if (password.isEmpty() || alphabets.isEmpty()) {
-            return 0.0
-        }
-        val usedAlphabet = mutableSetOf<Char>()
-
-        password.forEach { char ->
-            val alphabet = alphabets.find { it.contains(char) }.orEmpty()
-            usedAlphabet.addAll(alphabet)
-        }
-
-        return password.length.toDouble() * (ln(usedAlphabet.size.toDouble()) / ln(2.0))
-    }
-
-    @Suppress("MagicNumber")
-    enum class Entropy(val rawValue: Int) {
-        ZERO(0),
-        VERY_WEAK(1),
-        WEAK(60),
-        FAIR(80),
-        STRONG(112),
-        VERY_STRONG(128),
-        GREATEST_FINITE(Int.MAX_VALUE);
-
-        companion object {
-            fun parse(value: Double): Entropy = when (value) {
-                in 0.0..1.0 -> ZERO
-                in 1.0..60.0 -> VERY_WEAK
-                in 60.0..80.0 -> WEAK
-                in 80.0..112.0 -> FAIR
-                in 112.0..128.0 -> STRONG
-                in 128.0..Int.MAX_VALUE.toDouble() -> VERY_STRONG
-                else -> GREATEST_FINITE
+            while (codepointBuilder.size < settings.length) {
+                codepointBuilder.add(entireAlphabet.random())
             }
         }
-    }
 
-    companion object {
-        private const val DEFAULT_LENGTH = 18
+        return codepointBuilder
     }
 }

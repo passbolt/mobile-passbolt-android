@@ -237,6 +237,7 @@ class ResourceDetailsPresenter(
         resourceModel.expiry.let { expiry ->
             if (expiry == null) {
                 view?.displayTitle(resourceModel.name)
+                view?.hideExpirySection()
             } else {
                 if (expiry.isBeforeNow()) {
                     view?.displayExpiryTitle(resourceModel.name)

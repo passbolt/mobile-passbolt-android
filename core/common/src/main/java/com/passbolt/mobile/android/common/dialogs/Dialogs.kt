@@ -137,3 +137,29 @@ fun yubikeyNotFromCurrentUserAlertDialog(context: Context) =
         .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
         .setCancelable(false)
         .create()
+
+fun unableToGeneratePasswordAlertDialog(context: Context, requiredEntropy: Int) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.dialog_unable_to_generate_password_title)
+        .setMessage(context.getString(LocalizationR.string.dialog_unable_to_generate_password_message, requiredEntropy))
+        .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
+        .setCancelable(false)
+        .create()
+
+fun pwnedPasswordAlertDialog(context: Context, onProceed: () -> Unit) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.dialog_confirm_password_title)
+        .setMessage(LocalizationR.string.dialog_confirm_password_message_data_breach)
+        .setPositiveButton(LocalizationR.string.edit_password) { _, _ -> }
+        .setNegativeButton(LocalizationR.string.proceed) { _, _ -> onProceed() }
+        .setCancelable(false)
+        .create()
+
+fun weakPasswordAlertDialog(context: Context, onProceed: () -> Unit) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.dialog_confirm_password_title)
+        .setMessage(LocalizationR.string.dialog_confirm_password_message_low_entropy)
+        .setPositiveButton(LocalizationR.string.edit_password) { _, _ -> }
+        .setNegativeButton(LocalizationR.string.proceed) { _, _ -> onProceed() }
+        .setCancelable(false)
+        .create()

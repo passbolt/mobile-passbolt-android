@@ -61,6 +61,9 @@ class FiltersMenuPresenter(
             if (featureFlags.areTagsAvailable && rbac.tagsUseRule == ALLOW) {
                 view?.showTagsMenuItem()
             }
+            if (featureFlags.isPasswordExpiryAvailable) {
+                view?.showExpiryMenuItem()
+            }
         }
     }
 

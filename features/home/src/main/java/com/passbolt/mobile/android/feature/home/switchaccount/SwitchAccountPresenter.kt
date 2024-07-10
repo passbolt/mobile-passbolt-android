@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.feature.home.switchaccount
 
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -11,6 +13,7 @@ import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -41,6 +44,7 @@ class SwitchAccountPresenter(
     private val switchAccountModelMapper: SwitchAccountModelMapper,
     private val signOutUseCase: SignOutUseCase,
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
+    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : SwitchAccountContract.Presenter {
 
@@ -72,7 +76,12 @@ class SwitchAccountPresenter(
             .map(getAllAccountsDataUseCase.execute(Unit).accounts, appContext)
 
     override fun signOutClick() {
-        view?.showSignOutDialog()
+        scope.launch {
+            view?.showProgress()
+            fullDataRefreshExecutor.dataRefreshStatusFlow.first { it is DataRefreshStatus.Finished }
+            view?.hideProgress()
+            view?.showSignOutDialog()
+        }
     }
 
     override fun signOutConfirmed() {

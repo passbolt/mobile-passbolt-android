@@ -188,6 +188,9 @@ dependencies {
     implementation project(':createotpmanually')
     implementation project(':rbac')
     implementation project(':accounts')
+    implementation project(':policies')
+    implementation project(':pwnedpasswordsapi')
+    implementation project(':passwordgenerator')
 
     debugImplementation libs.leakcanary
 

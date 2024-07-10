@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.database
 
 import android.content.Context
 import androidx.room.Room
+import com.passbolt.mobile.android.common.hash.MessageDigestHash
 import com.passbolt.mobile.android.database.migrations.Migration10to11
 import com.passbolt.mobile.android.database.migrations.Migration11to12
 import com.passbolt.mobile.android.database.migrations.Migration12to13
@@ -19,7 +20,6 @@ import com.passbolt.mobile.android.database.migrations.Migration9to10
 import com.passbolt.mobile.android.storage.usecase.database.GetResourcesDatabasePassphraseUseCase
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SupportFactory
-import java.security.MessageDigest
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -47,14 +47,15 @@ import kotlin.coroutines.suspendCoroutine
  */
 class DatabaseProvider(
     private val getResourcesDatabasePassphraseUseCase: GetResourcesDatabasePassphraseUseCase,
-    private val context: Context
+    private val context: Context,
+    private val messageDigestHash: MessageDigestHash
 ) {
 
     @Volatile
     private var instance: HashMap<String, ResourceDatabase?> = hashMapOf()
 
     fun get(userId: String): ResourceDatabase {
-        val currentUser = hashString(userId)
+        val currentUser = messageDigestHash.sha256(userId)
         instance[currentUser]?.let {
             return it
         }
@@ -77,7 +78,7 @@ class DatabaseProvider(
     }
 
     suspend fun delete(userId: String) {
-        val currentUser = hashString(userId)
+        val currentUser = messageDigestHash.sha256(userId)
         if (currentUser in instance.keys) {
             suspendCoroutine { continuation ->
                 Thread {
@@ -87,12 +88,6 @@ class DatabaseProvider(
             }
             instance.remove(currentUser)
         }
-    }
-
-    private fun hashString(input: String, algorithm: String = "SHA-256"): String {
-        return MessageDigest.getInstance(algorithm)
-            .digest(input.toByteArray())
-            .fold("") { str, value -> str + "%02x".format(value) }
     }
 
     companion object {

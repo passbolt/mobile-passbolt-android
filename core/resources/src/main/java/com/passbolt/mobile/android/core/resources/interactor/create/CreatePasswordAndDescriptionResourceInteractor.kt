@@ -33,11 +33,14 @@ import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
+import com.passbolt.mobile.android.storage.usecase.policies.GetPasswordExpirySettingsUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import java.time.ZonedDateTime
 
 class CreatePasswordAndDescriptionResourceInteractor(
     private val secretInputCreator: SecretInputCreator,
+    private val getPasswordExpirySettingsUseCase: GetPasswordExpirySettingsUseCase,
     getSelectedAccountUseCase: GetSelectedAccountUseCase,
     getPrivateKeyUseCase: GetPrivateKeyUseCase,
     openPgp: OpenPgp,
@@ -78,6 +81,22 @@ class CreatePasswordAndDescriptionResourceInteractor(
             password = customInput.password,
             description = customInput.description
         )
+
+    // https://drive.google.com/file/d/1lqiF0ajpuvx1xaZ74aSSjxiDLMGPBXVa/view?usp=drive_link
+    override suspend fun getResourceExpiry(): ZonedDateTime? {
+        val expirySettings = getPasswordExpirySettingsUseCase.execute(Unit).expirySettings
+        return if (expirySettings.automaticExpiry) {
+            if (expirySettings.defaultExpiryPeriodDays != null) {
+                ZonedDateTime.now()
+                    .plusDays((expirySettings.defaultExpiryPeriodDays!!).toLong())
+                    .withFixedOffsetZone()
+            } else {
+                null
+            }
+        } else {
+            null
+        }
+    }
 
     class CreatePasswordAndDescriptionInput(
         val password: String,

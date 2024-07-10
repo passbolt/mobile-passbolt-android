@@ -29,4 +29,7 @@ object Defaults {
     const val ARE_TAGS_AVAILABLE = false
     const val IS_TOTP_AVAILABLE = false
     const val IS_RBAC_AVAILABLE = false
+    const val IS_PASSWORD_EXPIRY_AVAILABLE = false
+    const val ARE_PASSWORD_POLICIES_AVAILABLE = false
+    const val CAN_UPDATE_PASSWORD_POLICIES = false
 }

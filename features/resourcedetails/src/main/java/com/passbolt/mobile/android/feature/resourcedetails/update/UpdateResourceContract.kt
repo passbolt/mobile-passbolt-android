@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update
 
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactiveContract
-import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
+import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
+import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView.PasswordStrength
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
 import com.passbolt.mobile.android.ui.ResourceModel
 
@@ -43,7 +44,8 @@ interface UpdateResourceContract {
             uiTag: String,
             isRequired: Boolean,
             initialPassword: String? = null,
-            initialPasswordStrength: PasswordGenerateInputView.PasswordStrength
+            initialPasswordStrength: PasswordStrength,
+            initialPasswordEntropyBits: Double
         )
 
         fun addDescriptionInput(
@@ -56,8 +58,14 @@ interface UpdateResourceContract {
 
         fun showEmptyValueError(tag: String)
         fun showTooLongError(tag: String)
-        fun showPassword(tag: String, password: String?, passwordStrength: PasswordGenerateInputView.PasswordStrength)
-        fun showPasswordStrength(tag: String, strength: PasswordGenerateInputView.PasswordStrength)
+        fun showPassword(
+            tag: String,
+            password: List<Codepoint>,
+            entropyBits: Double,
+            passwordStrength: PasswordStrength
+        )
+
+        fun showPasswordStrength(tag: String, strength: PasswordStrength, entropyBits: Double)
         fun showError()
         fun showProgress()
         fun hideProgress()
@@ -79,6 +87,10 @@ interface UpdateResourceContract {
         fun showInvalidSecretDataAndNavigateBack()
         fun showJsonResourceSchemaValidationError()
         fun showJsonSecretSchemaValidationError()
+        fun clearInputsContainer()
+        fun showUnableToGeneratePassword(minimumEntropyBits: Int)
+        fun showConfirmPwnedPassword()
+        fun showConfirmWeakPassword()
     }
 
     interface Presenter : DataRefreshViewReactiveContract.Presenter<View> {
@@ -87,5 +99,6 @@ interface UpdateResourceContract {
         fun passwordTextChanged(tag: String, password: String)
         fun textChanged(tag: String, value: String)
         fun argsRetrieved(mode: ResourceMode, resource: ResourceModel? = null, resourceParentFolderId: String?)
+        fun onPwnedOrWeakPasswordConfirmed()
     }
 }

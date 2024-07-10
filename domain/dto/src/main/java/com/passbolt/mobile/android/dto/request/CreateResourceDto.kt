@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.dto.request
 
 import com.google.gson.annotations.SerializedName
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,7 +34,9 @@ data class CreateResourceDto(
     val uri: String?,
     val description: String?,
     @SerializedName("folder_parent_id")
-    val folderParentId: String?
+    val folderParentId: String?,
+    @SerializedName("expired")
+    val expiry: ZonedDateTime?
 )
 
 data class EncryptedSecret(

@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import com.passbolt.mobile.android.common.dialogs.encryptionErrorAlertDialog
+import com.passbolt.mobile.android.common.dialogs.pwnedPasswordAlertDialog
+import com.passbolt.mobile.android.common.dialogs.unableToGeneratePasswordAlertDialog
+import com.passbolt.mobile.android.common.dialogs.weakPasswordAlertDialog
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
@@ -13,6 +16,7 @@ import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.ActivityResults
+import com.passbolt.mobile.android.core.passwordgenerator.codepoints.Codepoint
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView
@@ -103,6 +107,10 @@ class UpdateResourceFragment :
         }
     }
 
+    override fun clearInputsContainer() {
+        binding.container.removeAllViews()
+    }
+
     override fun addTextInput(
         name: String,
         isSecret: Boolean,
@@ -133,21 +141,29 @@ class UpdateResourceFragment :
         uiTag: String,
         isRequired: Boolean,
         initialPassword: String?,
-        initialPasswordStrength: PasswordGenerateInputView.PasswordStrength
+        initialPasswordStrength: PasswordGenerateInputView.PasswordStrength,
+        initialPasswordEntropyBits: Double
     ) {
         val (view, params) = viewProvider.getPasswordWithGeneratorInput(requireContext())
         view.apply {
             tag = uiTag
             this.isRequired = isRequired
-            showPassword(initialPassword.orEmpty(), initialPasswordStrength)
+            showPassword(initialPassword.orEmpty(), initialPasswordStrength, initialPasswordEntropyBits)
             setGenerateClickListener { presenter.passwordGenerateClick(uiTag) }
             setPasswordChangeListener { presenter.passwordTextChanged(uiTag, it) }
         }
         binding.container.addView(view, params)
     }
 
-    override fun showPasswordStrength(tag: String, strength: PasswordGenerateInputView.PasswordStrength) {
-        (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).setPasswordStrength(strength)
+    override fun showPasswordStrength(
+        tag: String,
+        strength: PasswordGenerateInputView.PasswordStrength,
+        entropyBits: Double
+    ) {
+        (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).setPasswordStrength(
+            strength,
+            entropyBits
+        )
     }
 
     override fun addDescriptionInput(
@@ -179,13 +195,22 @@ class UpdateResourceFragment :
 
     override fun showPassword(
         tag: String,
-        password: String?,
+        password: List<Codepoint>,
+        entropyBits: Double,
         passwordStrength: PasswordGenerateInputView.PasswordStrength
     ) {
-        (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).showPassword(
-            password.orEmpty(),
-            passwordStrength
-        )
+        val stringBuilder = StringBuilder()
+        password.forEach {
+            stringBuilder.append(Character.toChars(it.value))
+        }
+
+        (binding.container.findViewWithTag<View>(tag) as PasswordGenerateInputView).apply {
+            showPassword(
+                stringBuilder.toString(),
+                passwordStrength,
+                entropyBits
+            )
+        }
     }
 
     override fun closeWithCreateSuccessResult(name: String, id: String) {
@@ -313,5 +338,21 @@ class UpdateResourceFragment :
         Toast.makeText(requireContext(), LocalizationR.string.resource_update_invalid_secret_data, Toast.LENGTH_SHORT)
             .show()
         requireActivity().finish()
+    }
+
+    override fun showUnableToGeneratePassword(minimumEntropyBits: Int) {
+        unableToGeneratePasswordAlertDialog(requireContext(), minimumEntropyBits).show()
+    }
+
+    override fun showConfirmPwnedPassword() {
+        pwnedPasswordAlertDialog(requireContext()) {
+            presenter.onPwnedOrWeakPasswordConfirmed()
+        }.show()
+    }
+
+    override fun showConfirmWeakPassword() {
+        weakPasswordAlertDialog(requireContext()) {
+            presenter.onPwnedOrWeakPasswordConfirmed()
+        }.show()
     }
 }

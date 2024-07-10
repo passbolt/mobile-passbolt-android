@@ -50,6 +50,7 @@ coreModule "idlingresource"
 coreModule "otpcore"
 coreModule "tags"
 coreModule "rbac"
+coreModule "policies"
 
 featureModule "startup"
 featureModule "setup"
@@ -81,6 +82,7 @@ featureModule "createotpmanually"
 
 serviceModule "passboltapi"
 serviceModule "linksapi"
+serviceModule "pwnedpasswordsapi"
 
 domainModule "dto"
 domainModule "ui"

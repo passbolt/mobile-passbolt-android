@@ -23,14 +23,18 @@
 
 package com.passbolt.mobile.android.feature.settings.screen
 
+import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
+import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class SettingsPresenter(
     private val signOutUseCase: SignOutUseCase,
+    private val fullDataRefreshExecutor: FullDataRefreshExecutor,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : SettingsContract.Presenter {
 
@@ -39,7 +43,12 @@ class SettingsPresenter(
     private val scope = CoroutineScope(job + coroutineLaunchContext.ui)
 
     override fun signOutClick() {
-        view?.showLogoutDialog()
+        scope.launch {
+            view?.showProgress()
+            fullDataRefreshExecutor.dataRefreshStatusFlow.first { it is DataRefreshStatus.Finished }
+            view?.hideProgress()
+            view?.showLogoutDialog()
+        }
     }
 
     override fun logoutConfirmed() {

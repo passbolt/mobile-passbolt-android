@@ -1,10 +1,12 @@
 package com.passbolt.mobile.android.passboltapi
 
 import com.passbolt.mobile.android.passboltapi.auth.authApiModule
+import com.passbolt.mobile.android.passboltapi.expiry.passwordExpiryApiModule
 import com.passbolt.mobile.android.passboltapi.favourites.favouritesApiModule
 import com.passbolt.mobile.android.passboltapi.folders.foldersApiModule
 import com.passbolt.mobile.android.passboltapi.groups.groupsApiModule
 import com.passbolt.mobile.android.passboltapi.mfa.mfaApiModule
+import com.passbolt.mobile.android.passboltapi.passwordpolicies.passwordPoliciesApiModule
 import com.passbolt.mobile.android.passboltapi.rbac.rbacApiModule
 import com.passbolt.mobile.android.passboltapi.registration.mobileTransferApiModule
 import com.passbolt.mobile.android.passboltapi.resource.resourceApiModule
@@ -51,4 +53,6 @@ val passboltApiModule = module {
     shareApiModule()
     favouritesApiModule()
     rbacApiModule()
+    passwordExpiryApiModule()
+    passwordPoliciesApiModule()
 }

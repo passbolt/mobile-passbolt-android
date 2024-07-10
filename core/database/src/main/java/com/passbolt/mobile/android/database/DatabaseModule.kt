@@ -28,8 +28,9 @@ import org.koin.dsl.module
 val databaseModule = module {
     single {
         DatabaseProvider(
+            context = androidApplication(),
             getResourcesDatabasePassphraseUseCase = get(),
-            androidApplication()
+            messageDigestHash = get()
         )
     }
 }

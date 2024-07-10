@@ -6,6 +6,8 @@ import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
+import com.passbolt.mobile.android.core.policies.usecase.PasswordExpiryPoliciesInteractor
+import com.passbolt.mobile.android.core.policies.usecase.PasswordPoliciesInteractor
 import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
 import com.passbolt.mobile.android.core.security.runtimeauth.RuntimeAuthenticatedFlag
@@ -20,6 +22,7 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpTimeUpdater
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.PostSignInActionsInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
@@ -133,6 +136,8 @@ internal val mockInAppReviewInteractor = mock<InAppReviewInteractor>()
 internal val mockGetGlobalPreferencesUseCase = mock<GetGlobalPreferencesUseCase>()
 internal val mockGopenPgpTimeUpdater = mock<GopenPgpTimeUpdater>()
 internal val mockRbacInteractor = mock<RbacInteractor>()
+internal val mockPasswordExpiryPoliciesInteractor = mock<PasswordExpiryPoliciesInteractor>()
+internal val mockPasswordPoliciesInteractor = mock<PasswordPoliciesInteractor>()
 
 @ExperimentalCoroutinesApi
 val testAuthModule = module {
@@ -163,6 +168,15 @@ val testAuthModule = module {
             fingerprintInfoProvider = mockFingerprintInformationProvider
         )
     }
+    factory {
+        PostSignInActionsInteractor(
+            featureFlagsInteractor = mockFeatureFlagsInteractor,
+            rbacInteractor = mockRbacInteractor,
+            userProfileInteractor = mockProfileInteractor,
+            passwordExpiryPoliciesInteractor = mockPasswordExpiryPoliciesInteractor,
+            passwordPoliciesInteractor = mockPasswordPoliciesInteractor
+        )
+    }
     single { RuntimeAuthenticatedFlag() }
     single { SignInIdlingResource() }
     factory<AuthContract.Presenter> { (authConfig: ActivityIntents.AuthConfig) ->
@@ -186,10 +200,8 @@ private fun Scope.signInPresenter() = SignInPresenter(
     signOutUseCase = mockSignOutUseCase,
     saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
     mfaStatusProvider = mockMfaStatusProvider,
-    featureFlagsInteractor = mockFeatureFlagsInteractor,
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
-    userProfileInteractor = mockProfileInteractor,
     inAppReviewInteractor = mockInAppReviewInteractor,
     biometryInteractor = get(),
     getAccountDataUseCase = mockGetAccountDataUseCase,
@@ -203,7 +215,7 @@ private fun Scope.signInPresenter() = SignInPresenter(
     runtimeAuthenticatedFlag = get(),
     signInIdlingResource = get(),
     getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
-    rbacInteractor = mockRbacInteractor
+    postSignInActionsInteractor = get()
 )
 
 private fun Scope.passphrasePresenter() = PassphrasePresenter(
@@ -228,7 +240,6 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     saveSessionUseCase = mock(),
     saveSelectedAccountUseCase = mock(),
     getAccountDataUseCase = mockGetAccountDataUseCase,
-    featureFlagsInteractor = mockFeatureFlagsInteractor,
     signOutUseCase = mockSignOutUseCase,
     saveServerFingerprintUseCase = mockSaveServerFingerprintUseCase,
     mfaStatusProvider = mockMfaStatusProvider,
@@ -242,9 +253,8 @@ private fun Scope.refreshSessionPresenter() = RefreshSessionPresenter(
     getAndVerifyServerKeysInteractor = get(),
     signInVerifyInteractor = get(),
     biometryInteractor = get(),
-    userProfileInteractor = mockProfileInteractor,
     runtimeAuthenticatedFlag = get(),
     inAppReviewInteractor = mockInAppReviewInteractor,
     getGlobalPreferencesUseCase = mockGetGlobalPreferencesUseCase,
-    rbacInteractor = mockRbacInteractor
+    postSignInActionsInteractor = get()
 )
