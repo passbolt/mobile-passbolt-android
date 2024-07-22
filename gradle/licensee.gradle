@@ -12,8 +12,8 @@ licensee {
     allowUrl "https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING" // it's Apache-2.0
     allowUrl "https://asm.ow2.io/license.html" // 3-Clause BSD
 
-    // coming from com.ibm.icu:icu4j; ICU license is open source (https://opensource.org/license/icu-license/)
-    allowUrl "https://raw.githubusercontent.com/unicode-org/icu/master/icu4c/LICENSE"
+    // coming from com.ibm.icu:icu4j; Unicode license v3 is open source (https://opensource.org/license/unicode-license-v3)
+    allowUrl "https://raw.githubusercontent.com/unicode-org/icu/main/LICENSE"
 
     // coming from https://jsoup.org/; it's on MIT license (https://mvnrepository.com/artifact/org.jsoup/jsoup)
     allowUrl "https://jsoup.org/license"

@@ -2,7 +2,7 @@ package com.passbolt.mobile.android.entity.resource
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.ForeignKey.SET_NULL
+import androidx.room.ForeignKey.Companion.SET_NULL
 import androidx.room.PrimaryKey
 import com.passbolt.mobile.android.entity.folder.Folder
 import java.time.ZonedDateTime

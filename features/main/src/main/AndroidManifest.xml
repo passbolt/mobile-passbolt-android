@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.passbolt.mobile.android.feature.main">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application>
         <activity
             android:name="com.passbolt.mobile.android.feature.main.mainscreen.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Passbolt" />
+            android:theme="@style/Theme.Passbolt"
+            tools:ignore="DiscouragedApi" />
     </application>
 </manifest>

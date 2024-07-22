@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.passbolt.mobile.android.feature.startup">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application>
         <activity
-            android:name=".StartUpActivity"
+            android:name="com.passbolt.mobile.android.feature.startup.StartUpActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.App.Starting">
+            android:theme="@style/Theme.App.Starting"
+            tools:ignore="DiscouragedApi">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="com.passbolt.mobile.android.MANAGED_PROFILE" />
             </intent-filter>

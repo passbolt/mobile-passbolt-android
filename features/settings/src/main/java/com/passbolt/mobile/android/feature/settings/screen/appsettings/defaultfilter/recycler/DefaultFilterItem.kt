@@ -2,8 +2,6 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultf
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.passbolt.mobile.android.feature.settings.R
@@ -34,6 +32,9 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+private typealias FilterNameResId = Int
+private typealias FilterIconResId = Int
+
 class DefaultFilterItem(
     val filterModel: DefaultFilterModel
 ) : AbstractBindingItem<ItemDefaultFilterBinding>() {
@@ -57,7 +58,7 @@ class DefaultFilterItem(
     private companion object {
         private val defaultFilterAttributes = mutableMapOf<
                 DefaultFilterModel,
-                Pair<@StringRes Int, @DrawableRes Int>>()
+                Pair<FilterNameResId, FilterIconResId>>()
             .apply {
                 DefaultFilterModel.values().forEach {
                     put(

@@ -24,6 +24,7 @@ android {
     namespace = "com.passbolt.mobile.android.feature.startup"
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 }
 

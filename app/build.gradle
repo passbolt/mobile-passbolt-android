@@ -34,9 +34,9 @@ android {
             debuggable true
             minifyEnabled false
             firebaseAppDistribution {
-                appId "1:660923335137:android:08eec6c125f36ba9b092a0"
-                serviceCredentialsFile findProperty("serviceKey") ?: ""
-                groups "qa"
+                appId = "1:660923335137:android:08eec6c125f36ba9b092a0"
+                serviceCredentialsFile = findProperty("serviceKey") ?: ""
+                groups = "qa"
             }
             testCoverageEnabled = false
         }
@@ -45,30 +45,27 @@ android {
             matchingFallbacks = ['release']
 
             applicationIdSuffix ".qa"
-            debuggable true
-            zipAlignEnabled true
+            debuggable false
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             firebaseAppDistribution {
-                appId "1:660923335137:android:c7e452d7912a9e3ab092a0"
-                serviceCredentialsFile findProperty("serviceKey") ?: ""
-                groups "qa"
+                appId = "1:660923335137:android:c7e452d7912a9e3ab092a0"
+                serviceCredentialsFile = findProperty("serviceKey") ?: ""
+                groups = "qa"
             }
         }
-
         automatedTests {
             initWith qa
             matchingFallbacks = ['release']
 
             applicationIdSuffix ".qa.automated"
             debuggable false
-            zipAlignEnabled true
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             firebaseAppDistribution {
-                appId "1:660923335137:android:c7e452d7912a9e3ab092a0"
-                serviceCredentialsFile findProperty("serviceKey") ?: ""
-                groups "qa"
+                appId = "1:660923335137:android:c7e452d7912a9e3ab092a0"
+                serviceCredentialsFile = findProperty("serviceKey") ?: ""
+                groups = "qa"
             }
 
             // automated tests fields
@@ -86,7 +83,6 @@ android {
 
         release {
             debuggable false
-            zipAlignEnabled true
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -94,6 +90,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 }
 
