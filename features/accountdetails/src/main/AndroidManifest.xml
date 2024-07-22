@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.passbolt.mobile.android.feature.accountdetails">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
-        <activity android:name=".AccountDetailsActivity" />
+        <activity android:name="com.passbolt.mobile.android.feature.accountdetails.AccountDetailsActivity" />
     </application>
 </manifest>

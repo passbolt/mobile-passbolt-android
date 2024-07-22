@@ -17,6 +17,7 @@ android {
     namespace = "com.passbolt.mobile.android.core.security"
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 }
 

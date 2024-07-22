@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.core.commonfolders.usecase
 
+import android.database.SQLException
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
-import net.sqlcipher.SQLException
 import timber.log.Timber
 
 /**

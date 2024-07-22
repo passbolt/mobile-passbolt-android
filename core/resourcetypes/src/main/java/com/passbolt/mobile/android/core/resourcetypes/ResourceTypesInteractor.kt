@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.core.resourcetypes
 
+import android.database.SQLException
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.RebuildLocalResourceTypesUseCase
-import net.sqlcipher.SQLException
 import timber.log.Timber
 
 /**

@@ -1,67 +1,66 @@
 [versions]
-androidGradlePlugin = '8.1.4'
+androidGradlePlugin = "8.5.0"
 gradleVersionsPlugin = "0.48.0"
 desugarJdkLibs = "2.0.4"
-kotlin = "1.9.10"
-kotlinKsp = "1.9.10-1.0.13"
-coroutines = "1.7.3"
+kotlin = "2.0.0"
+kotlinKsp = "2.0.0-1.0.22"
+coroutines = "1.8.0"
 koin = "3.4.3"
 quadrant = "1.7"
 junit = "4.13.2"
-mockitoCore = "5.4.0"
-mockitoKotlin = "5.1.0"
+mockitoCore = "5.12.0"
+mockitoKotlin = "5.3.1"
 truth = "1.1.5"
-androidxJUnit = "1.1.5"
-espresso = "3.5.0-alpha07"
+androidxJUnit = "1.2.1"
+espresso = "3.6.1"
 turbine = "0.5.1"
-coroutinesTest = "1.7.3"
-androidTestsRunner = "1.5.2"
-androidTestRules = "1.5.0"
-androidTestKtx = "1.5.0"
-androidTestIntents = "3.5.0-alpha07"
-mockitoAndroid = "5.4.0"
-espressoIdlingResource = "3.5.0-alpha07"
+androidTestsRunner = "1.6.1"
+androidTestRules = "1.6.1"
+androidTestKtx = "1.6.1"
+androidTestIntents = "3.6.1"
+mockitoAndroid = "5.12.0"
+espressoIdlingResource = "3.6.1"
 ktlint = "0.36.0"
 detekt = "1.23.1"
 leakcanary = "2.12"
 kover = "0.5.1"
-dependencyAnalysis = "1.24.0"
+dependencyAnalysis = "1.32.0"
 licensee = "1.8.0"
 dokka = "1.6.10"
-androidXcore = "1.12.0"
-appcompat = "1.6.1"
+androidXcore = "1.13.1"
+appcompat = "1.7.0"
 constraintLayout = "2.1.4"
-navigation = "2.5.0"
-security = "1.1.0-alpha03"
-biometric = "1.2.0-alpha03"
-fragment = "1.6.2"
-activity = "1.8.1"
-cameraX = "1.3.0"
-cameraView = "1.3.0"
-lifecycle = "2.6.2"
+navigation = "2.7.7"
+security = "1.1.0-alpha06"
+biometric = "1.2.0-alpha05"
+fragment = "1.8.1"
+activity = "1.9.0"
+cameraX = "1.3.4"
+cameraView = "1.3.4"
+lifecycle = "2.8.3"
 swiperefresh = "1.1.0"
 appStartUp = "1.1.1"
-splashScreen = "1.1.0-alpha02"
-cameraXMlVision = "1.4.0-alpha02"
-material = "1.10.0"
-retrofit = "2.9.0"
-okHttp = "4.11.0"
+splashScreen = "1.1.0-rc01"
+cameraXMlVision = "1.4.0-beta02"
+material = "1.12.0"
+retrofit = "2.11.0"
+okHttp = "4.12.0"
 timber = "5.0.1"
 mlkit = "17.2.0"
 zxing = "4.3.0"
-gson = "2.10.1"
-appDistribution = "3.0.2"
-coil = "2.4.0"
+gson = "2.11.0"
+appDistribution = "5.0.0"
+coil = "2.6.0"
 fastAdapterCore = "5.7.0"
 fastAdapterCoreAnimators = "1.1.0"
 easylauncher = "6.2.0"
 fusionauthJwt = "5.3.0"
 textDrawable = "558677ea31"
-serializationJson = "1.5.1"
-roomCore = "2.4.3"
-sqliteCipher = "4.5.2"
-sqlite = "2.2.0"
-roomTesting = "2.4.3"
+serializationJson = "1.6.0"
+roomCore = "2.6.1"
+sqliteCipher = "4.6.0"
+sqlite = "2.4.0"
+roomTesting = "2.6.1"
 yubikitAndroid = "2.3.0"
 pinentry = "2.0.6"
 balloon = "1.5.4"
@@ -73,11 +72,10 @@ inAppReview = "2.0.1"
 okio = "3.5.0"
 otp = "2.4.0"
 apacheCommonsCodec = "1.16.0"
-jsonSchemaFriend = "0.12.2"
-jsonPath = "2.8.0"
+jsonSchemaFriend = "0.12.4"
+jsonPath = "2.9.0"
 
 [libraries]
-android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 desugar-jdklibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 licensee = { group = "app.cash.licensee", name = "licensee-gradle-plugin", version.ref = "licensee" }
 koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
@@ -85,7 +83,6 @@ koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin"
 koin-test-junit = { group = "io.insert-koin", name = "koin-test-junit4", version.ref = "koin" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
-kotlin-io = { group = "org.jetbrains.kotlin", name = "kotlin-util-io", version.ref = "kotlin" }
 kotlin-serializationjson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -96,7 +93,7 @@ truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJUnit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
-kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 android-tests-runner = { group = "androidx.test", name = "runner", version.ref = "androidTestsRunner" }
 android-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidTestRules" }
 android-test-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidTestKtx" }
@@ -146,7 +143,7 @@ fusionauth-jwt = { group = "io.fusionauth", name = "fusionauth-jwt", version.ref
 textdrawable = { group = "com.github.amulyakhare", name = "TextDrawable", version.ref = "textDrawable" }
 room-core = { group = "androidx.room", name = "room-ktx", version.ref = "roomCore" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomCore" }
-sqlite-cipher = { group = "net.zetetic", name = "android-database-sqlcipher", version.ref = "sqliteCipher" }
+sqlite-cipher = { group = "net.zetetic", name = "sqlcipher-android", version.ref = "sqliteCipher" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCore" }
 room-testing = { group = "androidx.room", name = "room-testing", version.ref = "roomTesting" }
 sqlite = { group = "androidx.sqlite", name = "sqlite-ktx", version.ref = "sqlite" }

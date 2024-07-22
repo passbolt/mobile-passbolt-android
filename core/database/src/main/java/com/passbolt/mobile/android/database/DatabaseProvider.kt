@@ -18,8 +18,8 @@ import com.passbolt.mobile.android.database.migrations.Migration7to8
 import com.passbolt.mobile.android.database.migrations.Migration8to9
 import com.passbolt.mobile.android.database.migrations.Migration9to10
 import com.passbolt.mobile.android.storage.usecase.database.GetResourcesDatabasePassphraseUseCase
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SupportFactory
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
+import java.nio.charset.StandardCharsets
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -55,12 +55,13 @@ class DatabaseProvider(
     private var instance: HashMap<String, ResourceDatabase?> = hashMapOf()
 
     fun get(userId: String): ResourceDatabase {
+        System.loadLibrary("sqlcipher")
         val currentUser = messageDigestHash.sha256(userId)
         instance[currentUser]?.let {
             return it
         }
         val passphrase = getResourcesDatabasePassphraseUseCase.execute(Unit).passphrase
-        val factory = SupportFactory(SQLiteDatabase.getBytes(passphrase.toCharArray()))
+        val factory = SupportOpenHelperFactory(passphrase.toByteArray(StandardCharsets.UTF_8))
         val newInstance = Room.databaseBuilder(
             context,
             ResourceDatabase::class.java, "${currentUser}_$RESOURCE_DATABASE_NAME"
