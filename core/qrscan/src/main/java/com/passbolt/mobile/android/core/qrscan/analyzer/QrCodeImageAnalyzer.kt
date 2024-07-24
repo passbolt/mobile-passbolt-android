@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.core.qrscan.analyzer
 
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.mlkit.vision.MlKitAnalyzer
-import androidx.camera.view.CameraController
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.Executor
@@ -35,7 +35,7 @@ class QrCodeImageAnalyzer(
     mainExecutor: Executor
 ) : MlKitAnalyzer(
     listOf(barcodeScanner),
-    CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED,
+    ImageAnalysis.COORDINATE_SYSTEM_VIEW_REFERENCED,
     mainExecutor,
     qrCodeImageAnalyzerResultsConsumer
 ) {

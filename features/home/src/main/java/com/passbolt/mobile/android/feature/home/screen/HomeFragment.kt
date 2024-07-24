@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.os.BundleCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.setFragmentResultListener
@@ -61,6 +62,7 @@ import com.passbolt.mobile.android.feature.home.screen.recycler.TagWithCountItem
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountBottomSheetFragment
 import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
 import com.passbolt.mobile.android.moremenu.FolderMoreMenuFragment
@@ -214,7 +216,11 @@ class HomeFragment :
     private val otpQrScanned = { _: String, result: Bundle ->
         if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
             presenter.otpScanned(
-                result.getParcelable(ScanOtpFragment.EXTRA_SCANNED_OTP)
+                BundleCompat.getParcelable(
+                    result,
+                    ScanOtpFragment.EXTRA_SCANNED_OTP,
+                    OtpParseResult.OtpQr.TotpQr::class.java
+                )
             )
         }
     }

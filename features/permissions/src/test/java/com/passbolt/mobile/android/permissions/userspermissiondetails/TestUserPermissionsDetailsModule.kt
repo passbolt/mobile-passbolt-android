@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalUserUseCase
 import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsContract
 import com.passbolt.mobile.android.permissions.userpermissionsdetails.UserPermissionsPresenter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
@@ -33,6 +34,7 @@ import org.mockito.kotlin.mock
 
 internal val mockGetLocalUserUseCase = mock<GetLocalUserUseCase>()
 
+@ExperimentalCoroutinesApi
 internal val testUserPermissionsDetailsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
     factory<UserPermissionsContract.Presenter> {

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
@@ -45,9 +46,9 @@ class FiltersMenuFragment : BottomSheetDialogFragment(), FiltersMenuContract.Vie
     private val presenter: FiltersMenuContract.Presenter by scope.inject()
     private lateinit var binding: FiletrsBottomsheetBinding
     private var listener: Listener? = null
-    private val menuModel: FiltersMenuModel by lifecycleAwareLazy {
+    private val menuModel by lifecycleAwareLazy {
         requireNotNull(
-            requireArguments().getParcelable(EXTRA_FILTERS_MENU_MODEL)
+            BundleCompat.getParcelable(requireArguments(), EXTRA_FILTERS_MENU_MODEL, FiltersMenuModel::class.java)
         )
     }
 

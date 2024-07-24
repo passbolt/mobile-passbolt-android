@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.feature.authentication
 
 import android.app.Activity
 import android.os.Bundle
+import androidx.core.content.IntentCompat
 import androidx.navigation.NavOptions
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
@@ -52,11 +53,23 @@ class AuthenticationMainActivity :
     }
 
     private val authConfig by lifecycleAwareLazy {
-        intent.getSerializableExtra(ActivityIntents.EXTRA_AUTH_CONFIG) as ActivityIntents.AuthConfig
+        requireNotNull(
+            IntentCompat.getSerializableExtra(
+                intent,
+                ActivityIntents.EXTRA_AUTH_CONFIG,
+                ActivityIntents.AuthConfig::class.java
+            )
+        )
     }
 
     private val context by lifecycleAwareLazy {
-        intent.getSerializableExtra(ActivityIntents.EXTRA_CONTEXT) as AppContext
+        requireNotNull(
+            IntentCompat.getSerializableExtra(
+                intent,
+                ActivityIntents.EXTRA_CONTEXT,
+                AppContext::class.java
+            )
+        )
     }
 
     private val userId by lifecycleAwareLazy {

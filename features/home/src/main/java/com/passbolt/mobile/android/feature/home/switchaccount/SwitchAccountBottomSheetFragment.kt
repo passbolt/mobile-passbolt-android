@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -43,8 +44,10 @@ class SwitchAccountBottomSheetFragment : BottomSheetDialogFragment(), AndroidSco
     private val listDivider: DrawableListDivider by inject()
     private var listener: Listener? = null
     private val switchAccountUiModelMapper: SwitchAccountUiItemsMapper by inject()
-    private val bundledAppContext: AppContext by lifecycleAwareLazy {
-        requireNotNull(requireArguments().getSerializable(EXTRA_APP_CONTEXT) as AppContext)
+    private val bundledAppContext by lifecycleAwareLazy {
+        requireNotNull(
+            BundleCompat.getSerializable(requireArguments(), EXTRA_APP_CONTEXT, AppContext::class.java)
+        )
     }
 
     override fun onCreateView(

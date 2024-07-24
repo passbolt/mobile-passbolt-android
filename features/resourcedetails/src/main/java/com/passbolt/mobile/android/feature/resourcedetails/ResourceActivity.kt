@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.feature.resourcedetails
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.content.IntentCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
@@ -46,7 +47,9 @@ class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResou
     private val runtimeAuthenticatedFlag: RuntimeAuthenticatedFlag by inject()
 
     private val mode by lifecycleAwareLazy {
-        intent.getSerializableExtra(EXTRA_RESOURCE_MODE) as ResourceMode
+        requireNotNull(
+            IntentCompat.getSerializableExtra(intent, EXTRA_RESOURCE_MODE, ResourceMode::class.java)
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,8 +76,9 @@ class ResourceActivity : BindingActivity<ActivityResourcesBinding>(ActivityResou
     }
 
     private fun navigateToResourcePermissions(navHostFragment: NavHostFragment) {
-        val resourceId =
-            requireNotNull(intent.getParcelableExtra<ResourceModel>(EXTRA_RESOURCE_MODEL)).resourceId
+        val resourceId = requireNotNull(
+            IntentCompat.getParcelableExtra(intent, EXTRA_RESOURCE_MODEL, ResourceModel::class.java)
+        ).resourceId
 
         val request = NavDeepLinkProvider.permissionsDeepLinkRequest(
             permissionItemName = PermissionsItem.RESOURCE.name,

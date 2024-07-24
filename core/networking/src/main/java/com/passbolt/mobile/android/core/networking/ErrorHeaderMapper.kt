@@ -52,6 +52,7 @@ class ErrorHeaderMapper(
     fun getValidationFieldsError(responseBody: ResponseBody?): List<String>? =
         responseBody?.let {
             return try {
+                @Suppress("UNCHECKED_CAST") // error is caught
                 val map = gson.fromJson(it.string(), BaseResponse::class.java).body as Map<String, Map<String, String>>
                 val invalidFields = mutableListOf<String>()
                 map.values.forEach {
@@ -66,6 +67,7 @@ class ErrorHeaderMapper(
 
     fun checkMfaRequired(baseResponse: BaseResponse<*>? = null): MfaStatus {
         try {
+            @Suppress("UNCHECKED_CAST") // error is caught
             val map = baseResponse?.body as Map<String, List<String>>
             if (map.containsKey(MFA_PROVIDER_KEY)) {
                 val mfaType = map[MFA_PROVIDER_KEY]?.map { MfaProvider.parse(it) }

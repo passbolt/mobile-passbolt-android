@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.feature.otp.createotpmanually
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
@@ -70,8 +71,12 @@ class CreateOtpFragment :
 
     private val linkedResourceReceivedListener = { _: String, result: Bundle ->
         if (result.containsKey(RESULT_PICKED_ACTION) && result.containsKey(RESULT_PICKED_RESOURCE)) {
-            val action = result.getSerializable(RESULT_PICKED_ACTION) as PickResourceAction
-            val resource = result.getParcelable<ResourceModel>(RESULT_PICKED_RESOURCE)!!
+            val action = requireNotNull(
+                BundleCompat.getSerializable(result, RESULT_PICKED_ACTION, PickResourceAction::class.java)
+            )
+            val resource = requireNotNull(
+                BundleCompat.getParcelable(result, RESULT_PICKED_RESOURCE, ResourceModel::class.java)
+            )
             presenter.linkedResourceReceived(action, resource)
         }
     }

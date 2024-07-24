@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.setup
 
+import androidx.core.content.IntentCompat
 import androidx.navigation.findNavController
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.mvp.viewbinding.BindingActivity
@@ -48,6 +49,10 @@ class SetUpActivity : BindingActivity<ActivitySetupBinding>(ActivitySetupBinding
         )
 
     override val bundledAccountSetupData: AccountSetupDataModel? by lifecycleAwareLazy {
-        intent.getParcelableExtra(ActivityIntents.EXTRA_ACCOUNT_SETUP_DATA)
+        IntentCompat.getParcelableExtra(
+            intent,
+            ActivityIntents.EXTRA_ACCOUNT_SETUP_DATA,
+            AccountSetupDataModel::class.java
+        )
     }
 }

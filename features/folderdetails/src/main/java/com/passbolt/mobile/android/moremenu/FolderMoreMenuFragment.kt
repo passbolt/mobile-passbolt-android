@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
@@ -44,8 +45,10 @@ class FolderMoreMenuFragment : BottomSheetDialogFragment(), FolderMoreMenuContra
     private val presenter: FolderMoreMenuContract.Presenter by scope.inject()
     private lateinit var binding: ViewFolderMoreMenuBottomsheetBinding
     private var listener: Listener? = null
-    private val menuModel: FolderMoreMenuModel by lifecycleAwareLazy {
-        requireNotNull(requireArguments().getParcelable(EXTRA_FOLDER_MENU_MODEL))
+    private val menuModel by lifecycleAwareLazy {
+        requireNotNull(
+            BundleCompat.getParcelable(requireArguments(), EXTRA_FOLDER_MENU_MODEL, FolderMoreMenuModel::class.java)
+        )
     }
 
     override fun onCreateView(

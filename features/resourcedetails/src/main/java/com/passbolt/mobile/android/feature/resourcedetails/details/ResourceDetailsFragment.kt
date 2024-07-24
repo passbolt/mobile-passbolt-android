@@ -13,6 +13,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
+import androidx.core.os.BundleCompat
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -45,6 +47,7 @@ import com.passbolt.mobile.android.core.ui.span.RoundedBackgroundSpan
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.otp.createotpmanually.CreateOtpFragment
 import com.passbolt.mobile.android.feature.otp.scanotp.ScanOtpFragment
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceActivity
 import com.passbolt.mobile.android.feature.resourcedetails.ResourceMode
 import com.passbolt.mobile.android.feature.resources.databinding.FragmentResourceDetailsBinding
@@ -102,9 +105,13 @@ class ResourceDetailsFragment :
     override val presenter: ResourceDetailsContract.Presenter by inject()
     private val clipboardManager: ClipboardManager? by inject()
     private val initialsIconGenerator: InitialsIconGenerator by inject()
-    private val bundledResourceModel: ResourceModel by lifecycleAwareLazy {
+    private val bundledResourceModel by lifecycleAwareLazy {
         requireNotNull(
-            requireActivity().intent.getParcelableExtra(ResourceActivity.EXTRA_RESOURCE_MODEL)
+            IntentCompat.getParcelableExtra(
+                requireActivity().intent,
+                ResourceActivity.EXTRA_RESOURCE_MODEL,
+                ResourceModel::class.java
+            )
         )
     }
 
@@ -148,7 +155,11 @@ class ResourceDetailsFragment :
     private val otpQrScanned = { _: String, result: Bundle ->
         if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
             presenter.otpScanned(
-                result.getParcelable(ScanOtpFragment.EXTRA_SCANNED_OTP)
+                BundleCompat.getParcelable(
+                    result,
+                    ScanOtpFragment.EXTRA_SCANNED_OTP,
+                    OtpParseResult.OtpQr.TotpQr::class.java
+                )
             )
         }
     }

@@ -33,6 +33,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.BundleCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -116,7 +117,11 @@ class OtpFragment :
     private val otpQrScannedResult = { _: String, result: Bundle ->
         if (result.containsKey(ScanOtpFragment.EXTRA_SCANNED_OTP)) {
             presenter.otpQrScanned(
-                result.getParcelable(ScanOtpFragment.EXTRA_SCANNED_OTP)
+                BundleCompat.getParcelable(
+                    result,
+                    ScanOtpFragment.EXTRA_SCANNED_OTP,
+                    OtpParseResult.OtpQr.TotpQr::class.java
+                )
             )
         }
     }

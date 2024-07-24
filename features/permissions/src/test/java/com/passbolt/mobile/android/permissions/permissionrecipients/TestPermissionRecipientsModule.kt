@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsContract
 import com.passbolt.mobile.android.permissions.permissionrecipients.PermissionRecipientsPresenter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
@@ -39,6 +40,7 @@ import org.mockito.kotlin.mock
 internal val mockGetLocalGroupsUseCase = mock<GetLocalGroupsUseCase>()
 internal val mockGetLocalUsersUseCase = mock<GetLocalUsersUseCase>()
 
+@ExperimentalCoroutinesApi
 internal val testPermissionRecipientsModule = module {
     factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
     factory { GroupsModelMapper() }
