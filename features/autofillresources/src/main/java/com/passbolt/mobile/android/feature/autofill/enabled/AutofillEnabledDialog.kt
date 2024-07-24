@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
@@ -38,8 +39,10 @@ class AutofillEnabledDialog : DialogFragment() {
 
     private var listener: Listener? = null
     private lateinit var binding: DialogAutofillEnabledBinding
-    private val dialogMode: DialogMode by lifecycleAwareLazy {
-        requireArguments().getSerializable(DIALOG_MODE_KEY) as DialogMode
+    private val dialogMode by lifecycleAwareLazy {
+        requireNotNull(
+            BundleCompat.getSerializable(requireArguments(), DIALOG_MODE_KEY, DialogMode::class.java)
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

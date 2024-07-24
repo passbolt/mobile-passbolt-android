@@ -8,6 +8,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import coil.load
@@ -89,10 +90,18 @@ class AuthFragment : BindingScopedFragment<FragmentAuthBinding>(FragmentAuthBind
     private val executor: Executor by inject()
     private var featureFlagsFetchErrorDialog: FeatureFlagsFetchErrorDialog? = null
     private val authConfig by lifecycleAwareLazy {
-        requireArguments().getSerializable(EXTRA_AUTH_CONFIG) as ActivityIntents.AuthConfig
+        requireNotNull(
+            BundleCompat.getSerializable(
+                requireArguments(), EXTRA_AUTH_CONFIG, ActivityIntents.AuthConfig::class.java
+            )
+        )
     }
     private val context by lifecycleAwareLazy {
-        requireArguments().getSerializable(EXTRA_CONTEXT) as AppContext
+        requireNotNull(
+            BundleCompat.getSerializable(
+                requireArguments(), EXTRA_CONTEXT, AppContext::class.java
+            )
+        )
     }
     private val userId by lifecycleAwareLazy {
         requireNotNull(requireArguments().getString(EXTRA_USER_ID))

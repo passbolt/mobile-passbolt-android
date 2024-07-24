@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -70,10 +71,14 @@ class AccountsListFragment : BindingScopedFragment<FragmentAccountsListBinding>(
     private val accountsUiMapper: AccountUiItemsMapper by inject()
     private val listDivider: DrawableListDivider by inject()
     private val authConfig by lifecycleAwareLazy {
-        requireArguments().getSerializable(ARG_AUTH_CONFIG) as ActivityIntents.AuthConfig
+        requireNotNull(
+            BundleCompat.getSerializable(requireArguments(), ARG_AUTH_CONFIG, ActivityIntents.AuthConfig::class.java)
+        )
     }
     private val context by lifecycleAwareLazy {
-        requireArguments().getSerializable(ARG_CONTEXT) as AppContext
+        requireNotNull(
+            BundleCompat.getSerializable(requireArguments(), ARG_CONTEXT, AppContext::class.java)
+        )
     }
     private lateinit var uiStrategy: AccountListStrategy
     private val backPressedCallback = object : OnBackPressedCallback(true) {

@@ -3,7 +3,6 @@ package com.passbolt.mobile.android.locationdetails.recyclerview
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.ISubItem
@@ -29,10 +28,10 @@ class ExpandableFolderItem(
         super.bindView(holder, payloads)
         val p = payloads.mapNotNull { it as? String }.lastOrNull()
         if (p == ExpandableExtension.PAYLOAD_EXPAND) {
-            ViewCompat.animate(holder.expandIcon).rotation(ROTATION_EXPANDED).start()
+            holder.expandIcon.animate().rotation(ROTATION_EXPANDED).start()
             return
         } else if (p == ExpandableExtension.PAYLOAD_COLLAPSE) {
-            ViewCompat.animate(holder.expandIcon).rotation(ROTATION_COLLAPSED).start()
+            holder.expandIcon.animate().rotation(ROTATION_COLLAPSED).start()
             return
         }
 

@@ -7,10 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import com.passbolt.mobile.android.core.ui.databinding.DialogProgressBinding
 import com.passbolt.mobile.android.core.ui.dialog.hideDialog
 import com.passbolt.mobile.android.core.ui.dialog.showDialog
@@ -37,7 +35,7 @@ import com.passbolt.mobile.android.core.ui.dialog.showDialog
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class ProgressDialog : DialogFragment(), LifecycleObserver {
+class ProgressDialog : DialogFragment(), DefaultLifecycleObserver {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         DialogProgressBinding.inflate(inflater).root
@@ -53,8 +51,7 @@ class ProgressDialog : DialogFragment(), LifecycleObserver {
         super.onDetach()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    private fun activityStopped() {
+    override fun onStop(owner: LifecycleOwner) {
         if (isAdded) {
             (activity as LifecycleOwner).lifecycle.removeObserver(this)
             // hide dialog to prevent leaked widows after navigating back or parent recreation
