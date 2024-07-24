@@ -8,7 +8,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021 Passbolt SA
+ * Copyright (c) 2021,2024 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -58,6 +58,11 @@ enum class ResourceFilterModel(
         filterId = com.passbolt.mobile.android.feature.home.R.id.ownedByMe,
         filterIconId = CoreUiR.drawable.ic_person,
         filterNameId = LocalizationR.string.filters_menu_owned_by_me
+    ),
+    EXPIRY(
+        filterId = com.passbolt.mobile.android.feature.home.R.id.expiry,
+        filterIconId = CoreUiR.drawable.ic_calendar_clock ,
+        filterNameId = LocalizationR.string.filters_menu_expiry
     ),
     FOLDERS(
         filterId = com.passbolt.mobile.android.feature.home.R.id.folders,

@@ -25,7 +25,6 @@ package com.passbolt.mobile.android.scenarios.resourcescreation.setexpiry
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -44,8 +43,8 @@ import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
 import com.passbolt.mobile.android.scenarios.helpers.createNewPasswordFromHomeScreen
+import com.passbolt.mobile.android.scenarios.helpers.pickFirstResourceWithName
 import com.passbolt.mobile.android.scenarios.helpers.signIn
-import com.passbolt.mobile.android.withIndex
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -105,9 +104,7 @@ class SetExpiryTest : KoinTest {
     @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/11935
     fun setExpiryOfCreatedResourceToDefaultExpiryPeriod() {
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText))
-            .perform(typeText("PasswordWithExpirySet"))
-        onView(withIndex(index = 1, withText("PasswordWithExpirySet"))).perform(click())
+        pickFirstResourceWithName("PasswordWithExpirySet")
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.expiryItem)).check(matches(isDisplayed()))
         //Then   The resource is marked to expire after <number of days>
         onView(withText("In 7 days")).check(

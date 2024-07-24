@@ -47,6 +47,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.helpers.chooseFilter
 import com.passbolt.mobile.android.scenarios.helpers.signIn
 import com.passbolt.mobile.android.scenarios.home.filters.ResourceFilterModel
 import org.hamcrest.CoreMatchers.not
@@ -59,6 +60,7 @@ import kotlin.test.BeforeTest
 import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.feature.otp.R.id as otpId
 
 
 @RunWith(AndroidJUnit4::class)
@@ -90,61 +92,93 @@ class HomeSearchTest : KoinTest {
     @BeforeTest
     fun setup() {
         signIn(managedAccountIntentCreator.getPassphrase())
-        onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-        onView(withId(ResourceFilterModel.entries[0].filterId)).perform(click())
     }
 
+    /**
+     * Verifies that the search functionality displays the correct resources based on the active filter.
+     *
+     * This test covers various active filters and expects **specific resources to be present**:
+     * - All Items: "cakephp"
+     * - Favorites: "cakephp" marked as favourite
+     * - Recently Modified: "cakephp"
+     * - Shared with me: "Shared resource" shared from another account
+     * - Owned by me: "cakephp"
+     * - Tags: "cakephp"
+     * - Groups: "Automation Group"
+     *
+     * This test not covers specific filters and expects them to be tested elsewhere:
+     * - Expired
+     * - Folders
+     *
+     * **Prerequisites:**
+     * - Ensure the listed resources exist and are accessible under the corresponding filters.
+     *
+     * Test Case: [TestRail](https://passbolt.testrail.io/index.php?/cases/view/2629)
+     */
     @Test
-    // https://passbolt.testrail.io/index.php?/cases/view/2460
-    fun asALoggedInMobileUserOnTheHomepageICanPutTheFocusOnTheSearchField() {
-        //    Given     I am on homepage
-        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
-        //    When      I click on the search bar
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click())
-        //    Then      I see the search field is focused
-        //    And       I see the OS keyboard
-    }
-
-    @Test
-    //  https://passbolt.testrail.io/index.php?/cases/view/2629
     fun asALoggedInMobileUserOnTheHomepageICanSeeTheResourcesCorrespondingToMySearchQuery() {
-        //      Given   I am a logged in mobile user
-        //      And     the active filter is [Active Filter]
-        //      When    I type a query in the search bar
-        //      And     the query matches at least one resource within [Active Filter]
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("cakephp"))
-        //      Then    I see the list of resources matching the query
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.recyclerView)).check(matches(atPosition(0, hasDescendant(withText("cakephp")))))
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).check(matches(withText("cakephp")))
-        //      And     I see the resources are sorted [sort]
-        //
-        //   | Active Filter       |  sort                                  |
-        //   | “All items”         |  "alphabetically"                      |
-        //   | “Favorites”         |  "chronologically by modification date"  |
-        //   | “Recently modified” |  "chronologically by modification date"  |
-        //   | “Shared with me”    |  "chronologically by modification date"  |
-        //   | “Owned by me”       |  "chronologically by modification date"  |
+        //      Given       the active filter is <filter>
+        val resourceNamesByFilter = mapOf(
+            ResourceFilterModel.ALL_ITEMS to "cakephp",
+            ResourceFilterModel.FAVOURITES to "cakephp",
+            ResourceFilterModel.RECENTLY_MODIFIED to "cakephp",
+            ResourceFilterModel.SHARED_WITH_ME to "Shared resource",
+            ResourceFilterModel.OWNED_BY_ME to "cakephp",
+            ResourceFilterModel.TAGS to "cakephp",
+            ResourceFilterModel.GROUPS to "Automation Group",
+        )
+        resourceNamesByFilter.entries.forEach { (model, testedResourceName) ->
+            chooseFilter(model.filterId)
+            //      When        I type a query in the search bar
+            onView(withId(otpId.searchEditText)).perform(click(), typeText(testedResourceName))
+            //      And         the query matches at least one resource within <Active Filter>
+            //      Then        I see the list of resources matching the query
+            onView(withId(otpId.recyclerView))
+                .check(matches(atPosition(0, hasDescendant(withText(testedResourceName)))))
+            //
+            //      Examples:
+            //         | filter              |
+            //         | “All items”         |
+            //         | “Favourites”        |
+            //         | “Recently modified” |
+            //         | “Shared with me”    |
+            //         | “Owned by me”       |
+            //         | “Expiry”            |
+            //         | “Folders”           |
+            //         | “Tags”              |
+            //         | “Groups”            |
+        }
     }
 
+    /**
+     * Test Case: [TestRail](https://passbolt.testrail.io/index.php?/cases/view/2630)
+     */
     @Test
-    //  https://passbolt.testrail.io/index.php?/cases/view/2630
-    fun asALoggedInMobileUserOnTheHomepageICanSeeAMessageWhenThereIsNoMatchToMySearchQuery() {
-        //      Given   I am a logged in mobile user
-        //      And     the active filter is [Active Filter]
-        //      When    I type a query in the search bar
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("Does Not Exist On List"))
-        //      And     the query does not match any resources within [Active Filter]
-        //      Then    I see a “There is no item” message
-        onView(withText(LocalizationR.string.no_passwords)).check(matches(isDisplayed()))
-        //      And     I see an illustration
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.emptyListImage)).check(matches(isDisplayed()))
-        //
-        //   | Active Filter       |
-        //   | “All items”         |
-        //   | “Favorites”         |
-        //   | “Recently modified” |
-        //   | “Shared with me”    |
-        //   | “Owned by me”       |
+    fun asAMobileUserICanSeeAMessageWhenTheresNoMatchToMySearchQueryOnProAndCloudInstance() {
+        //      Given       I'm on Pro or Cloud server instance
+        //      And         RBAC settings are not preventing me from seeing any filter
+        ResourceFilterModel.entries.forEach { model ->
+            //      And         the active filter is <Active Filter>
+            chooseFilter(model.filterId)
+            //      And         I'm looking for a query not matching any resources within <Active Filter>
+            //      When        I type a query in the search bar
+            onView(withId(otpId.searchEditText)).perform(click(), typeText("Does Not Exist On List"))
+            //      Then        I see a “There are no passwords” message
+            onView(withText(LocalizationR.string.no_passwords)).check(matches(isDisplayed()))
+            //      And         I see an illustration
+            onView(withId(otpId.emptyListImage)).check(matches(isDisplayed()))
+            //
+            //      | Active Filter       |
+            //         | “All items”         |
+            //         | “Favorites”         |
+            //         | “Recently modified” |
+            //         | “Shared with me”    |
+            //         | “Owned by me”       |
+            //         | “Expiry”            |
+            //         | “Folders”           |
+            //         | “Tags”              |
+            //         | “Groups”            |
+        }
     }
 
     @Test
@@ -152,8 +186,8 @@ class HomeSearchTest : KoinTest {
     fun asALoggedInMobileUserOnTheHomepageICanSeeTheCurrentAvatarSwitchesToACloseButtonWhenIFocusTheSearchBar() {
         //      Given   that I am a logged in mobile user
         //      When    I focus the search bar and start typing
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("cakephp"))
+        onView(withId(otpId.searchEditText)).perform(click())
+        onView(withId(otpId.searchEditText)).perform(typeText("cakephp"))
         //      Then    I do not see the user's current avatar
         //      And     I see a close button
         onView(withId(MaterialR.id.text_input_end_icon)).check(matches(hasDrawable(CoreUiR.drawable.ic_close)))
@@ -164,27 +198,27 @@ class HomeSearchTest : KoinTest {
     fun asALoggedInMobileUserOnTheHomepageICanCancelASearchAndGoBackToTheHomepage() {
         //      Given   I am a logged in mobile user
         //      And     the search bar is focused
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click())
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("Does Not Exist On List"))
+        onView(withId(otpId.searchEditText)).perform(click())
+        onView(withId(otpId.searchEditText)).perform(typeText("Does Not Exist On List"))
         //      When    I click on the close button
         onView(withId(MaterialR.id.text_input_end_icon)).perform(click())
         //      Then    I do not see the focus status on the search bar
         //      And     I see the homepage with the current active filter
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.recyclerView)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.emptyListImage)).check(matches(not(isDisplayed())))
+        onView(withId(otpId.recyclerView)).check(matches(isDisplayed()))
+        onView(withId(otpId.emptyListImage)).check(matches(not(isDisplayed())))
     }
 
     @Test
     // https://passbolt.testrail.io/index.php?/cases/view/2464
     fun asALoggedInMobileUserOnTheSearchFieldICanGoBackToTheHomepageWhenThereAreNoCharactersInTheSearchField() {
         //      Given   I am on the focused search field
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(click())
+        onView(withId(otpId.searchEditText)).perform(click())
         //      When    I delete all characters in the search input
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("Does Not Exist On List"))
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(replaceText(""))
+        onView(withId(otpId.searchEditText)).perform(typeText("Does Not Exist On List"))
+        onView(withId(otpId.searchEditText)).perform(replaceText(""))
         //      Then    I see all the resources available
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.recyclerView)).check(matches(isDisplayed()))
-        onView(withId(com.passbolt.mobile.android.feature.otp.R.id.emptyListImage)).check(matches(not(isDisplayed())))
+        onView(withId(otpId.recyclerView)).check(matches(isDisplayed()))
+        onView(withId(otpId.emptyListImage)).check(matches(not(isDisplayed())))
         onView(withText(MaterialR.id.text_input_end_icon)).check(doesNotExist())
     }
 }

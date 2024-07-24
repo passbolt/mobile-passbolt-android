@@ -24,3 +24,7 @@ dependencies {
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
 }
+
+tasks.named("dokkaHtmlPartial").configure {
+    dependsOn(tasks.named("generateActivityClassNameConstants"))
+}
