@@ -36,7 +36,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.passbolt.mobile.android.atPosition
+import com.passbolt.mobile.android.atAnyPosition
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -60,6 +60,7 @@ import kotlin.test.BeforeTest
 import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.feature.home.R.id as homeID
 import com.passbolt.mobile.android.feature.otp.R.id as otpId
 
 
@@ -103,12 +104,10 @@ class HomeSearchTest : KoinTest {
      * - Recently Modified: "cakephp"
      * - Shared with me: "Shared resource" shared from another account
      * - Owned by me: "cakephp"
+     * - Expiry: "PasswordWithExpirySet" which is expired
+     * - Folders: "Automated tests folder"
      * - Tags: "cakephp"
      * - Groups: "Automation Group"
-     *
-     * This test not covers specific filters and expects them to be tested elsewhere:
-     * - Expired
-     * - Folders
      *
      * **Prerequisites:**
      * - Ensure the listed resources exist and are accessible under the corresponding filters.
@@ -124,6 +123,7 @@ class HomeSearchTest : KoinTest {
             ResourceFilterModel.RECENTLY_MODIFIED to "cakephp",
             ResourceFilterModel.SHARED_WITH_ME to "Shared resource",
             ResourceFilterModel.OWNED_BY_ME to "cakephp",
+            ResourceFilterModel.FOLDERS to "Automated tests folder",
             ResourceFilterModel.TAGS to "cakephp",
             ResourceFilterModel.GROUPS to "Automation Group",
         )
@@ -134,7 +134,7 @@ class HomeSearchTest : KoinTest {
             //      And         the query matches at least one resource within <Active Filter>
             //      Then        I see the list of resources matching the query
             onView(withId(otpId.recyclerView))
-                .check(matches(atPosition(0, hasDescendant(withText(testedResourceName)))))
+                .check(matches(atAnyPosition(hasDescendant(withText(testedResourceName)))))
             //
             //      Examples:
             //         | filter              |
@@ -148,6 +148,10 @@ class HomeSearchTest : KoinTest {
             //         | “Tags”              |
             //         | “Groups”            |
         }
+        chooseFilter(homeID.expiry)
+        onView(withId(otpId.searchEditText)).perform(click(), typeText("PasswordWithExpirySet"))
+        onView(withId(otpId.recyclerView))
+            .check(matches(atAnyPosition(hasDescendant(withText("PasswordWithExpirySet (expired)")))))
     }
 
     /**
