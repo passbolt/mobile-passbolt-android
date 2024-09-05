@@ -19,6 +19,7 @@ import com.passbolt.mobile.android.core.extension.showSnackbar
 import com.passbolt.mobile.android.core.ui.progressdialog.hideProgressDialog
 import com.passbolt.mobile.android.core.ui.progressdialog.showProgressDialog
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
+import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
 import com.passbolt.mobile.android.core.ui.textinputfield.StatefulInput
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.createfolder.databinding.FragmentCreateFolderBinding
@@ -65,6 +66,7 @@ class CreateFolderFragment :
     private val userPermissionsItemAdapter: ItemAdapter<UserItem> by inject(named(USER_ITEM_ADAPTER))
     private val permissionsCounterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
     private val fastAdapter: FastAdapter<GenericItem> by inject()
+    private val sharedWithDecorator: OverlappingItemDecorator by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,6 +75,7 @@ class CreateFolderFragment :
         setListeners()
         presenter.attach(this)
         binding.sharedWithRecycler.doOnLayout {
+            binding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
             presenter.argsRetrieved(
                 args.parentFolderId,
                 it.width,
@@ -113,8 +116,7 @@ class CreateFolderFragment :
         counterValue: List<String>,
         overlap: Int
     ) {
-        val decorator = OverlappingItemDecorator(OverlappingItemDecorator.Overlap(left = overlap))
-        binding.sharedWithRecycler.addItemDecoration(decorator)
+        sharedWithDecorator.overlap = Overlap(left = overlap)
         FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })
         FastAdapterDiffUtil.calculateDiff(userPermissionsItemAdapter, userPermissions.map { UserItem(it) })
         FastAdapterDiffUtil.calculateDiff(permissionsCounterItemAdapter, counterValue.map { CounterItem(it) })
