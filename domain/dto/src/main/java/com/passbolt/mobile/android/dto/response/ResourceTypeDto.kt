@@ -30,7 +30,8 @@ data class ResourceTypeDto(
     val slug: String,
     val name: String,
     val description: String,
-    val definition: ResourceDefinition
+    val definition: ResourceDefinition,
+    val deleted: String?
 )
 
 data class ResourceDefinition(

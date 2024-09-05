@@ -29,6 +29,7 @@ import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase.Output
 import com.passbolt.mobile.android.dto.response.PermissionDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
@@ -219,7 +220,7 @@ class ResourceListDeserializerTest : KoinTest {
             )
         }
         val validResources = listOf(
-            ResourceResponseDto(
+            ResourceResponseV4Dto(
                 id = UUID.randomUUID(),
                 resourceTypeId = testedResourceTypeUuid,
                 description = null,
@@ -255,7 +256,7 @@ class ResourceListDeserializerTest : KoinTest {
             )
         }
         val validResources = listOf(
-            ResourceResponseDto(
+            ResourceResponseV4Dto(
                 id = UUID.randomUUID(),
                 resourceTypeId = testedResourceTypeUuid,
                 description = null,
@@ -279,7 +280,7 @@ class ResourceListDeserializerTest : KoinTest {
         )
 
         assertThat(resulList).hasSize(1)
-        assertThat(resulList[0]).isEqualTo(validResources[0])
+        assertThat(resulList[0].id).isEqualTo(validResources[0].id)
     }
 
     @Test
@@ -292,7 +293,7 @@ class ResourceListDeserializerTest : KoinTest {
             )
         }
         val validResources = listOf(
-            ResourceResponseDto(
+            ResourceResponseV4Dto(
                 id = UUID.randomUUID(),
                 resourceTypeId = testedResourceTypeUuid,
                 description = null,
@@ -316,7 +317,7 @@ class ResourceListDeserializerTest : KoinTest {
         )
 
         assertThat(resulList).hasSize(1)
-        assertThat(resulList[0]).isEqualTo(validResources[0])
+        assertThat(resulList[0].id).isEqualTo(validResources[0].id)
     }
 
     @Test
@@ -329,7 +330,7 @@ class ResourceListDeserializerTest : KoinTest {
             )
         }
         val validResources = listOf(
-            ResourceResponseDto(
+            ResourceResponseV4Dto(
                 id = UUID.randomUUID(),
                 resourceTypeId = testedResourceTypeUuid,
                 description = null,
@@ -353,7 +354,7 @@ class ResourceListDeserializerTest : KoinTest {
         )
 
         assertThat(resulList).hasSize(1)
-        assertThat(resulList[0]).isEqualTo(validResources[0])
+        assertThat(resulList[0].id).isEqualTo(validResources[0].id)
     }
 
     @Test
@@ -366,7 +367,7 @@ class ResourceListDeserializerTest : KoinTest {
             )
         }
         val validResources = listOf(
-            ResourceResponseDto(
+            ResourceResponseV4Dto(
                 id = UUID.randomUUID(),
                 resourceTypeId = testedResourceTypeUuid,
                 description = null,
@@ -390,7 +391,7 @@ class ResourceListDeserializerTest : KoinTest {
         )
 
         assertThat(resulList).hasSize(1)
-        assertThat(resulList[0]).isEqualTo(validResources[0])
+        assertThat(resulList[0].id).isEqualTo(validResources[0].id)
     }
 
     private companion object {

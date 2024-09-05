@@ -27,44 +27,47 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  */
 
 @Suppress("MagicNumber")
-object Migration14to15 : Migration(14, 15) {
+object Migration15to16 : Migration(15, 16) {
 
-    private const val DROP_EXISTING_RESOURCES_TABLE = "DROP TABLE Resource"
-    private const val DROP_EXISTING_RESOURCES_TYPES_TABLE = "DROP TABLE ResourceType"
+    private const val DROP_RESOURCES = "DROP TABLE Resource"
 
-    private const val CREATE_NEW_RESOURCES_TABLE = "CREATE TABLE IF NOT EXISTS Resource (" +
+    @Suppress("MaxLineLength")
+    private const val CREATE_RESOURCES = "CREATE TABLE IF NOT EXISTS Resource (" +
             "`resourceId` TEXT NOT NULL, " +
             "`folderId` TEXT, " +
-            "`resourceName` TEXT NOT NULL, " +
             "`resourcePermission` TEXT NOT NULL, " +
-            "`url` TEXT, " +
-            "`username` TEXT, " +
-            "`description` TEXT, " +
             "`resourceTypeId` TEXT NOT NULL, " +
             "`favouriteId` TEXT, " +
             "`modified` INTEGER NOT NULL, " +
-            "`expiry` INTEGER, " +
-            "`resourceJson` TEXT NOT NULL, " +
-            "PRIMARY KEY(`resourceId`), " +
-            "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`)" +
-            " ON UPDATE NO ACTION ON DELETE SET NULL , " +
-            "FOREIGN KEY(`resourceTypeId`) REFERENCES `ResourceType`(`resourceTypeId`)" +
-            " ON UPDATE NO ACTION ON DELETE NO ACTION )"
-
-    private const val CREATE_NEW_RESOURCE_TYPES_TABLE = "CREATE TABLE IF NOT EXISTS ResourceType (" +
-            "`resourceTypeId` TEXT NOT NULL, " +
+            "`expiry` INTEGER, PRIMARY KEY(`resourceId`), " +
+            "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`) ON UPDATE NO ACTION ON DELETE SET NULL , " +
+            "FOREIGN KEY(`resourceTypeId`) REFERENCES `ResourceType`(`resourceTypeId`) ON UPDATE NO ACTION ON DELETE NO ACTION " +
+            ")"
+    private const val ADD_RESOURCE_METADATA = "CREATE TABLE IF NOT EXISTS ResourceMetadata (" +
+            "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+            "`resourceId` TEXT NOT NULL, " +
+            "`metadataJson` TEXT NOT NULL, " +
             "`name` TEXT NOT NULL, " +
-            "`slug` TEXT NOT NULL, " +
-            "`resourceSchemaJson` TEXT NOT NULL, " +
-            "`secretSchemaJson` TEXT NOT NULL, " +
-            "PRIMARY KEY(`resourceTypeId`))"
+            "`username` TEXT, " +
+            "`description` TEXT, " +
+            "FOREIGN KEY(`resourceId`) REFERENCES `Resource`(`resourceId`) ON UPDATE NO ACTION ON DELETE CASCADE " +
+            ")"
+    private const val ADD_RESOURCE_URIS = "CREATE TABLE IF NOT EXISTS ResourceUri (" +
+            "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+            "`resourceId` TEXT NOT NULL, " +
+            "`uri` TEXT NOT NULL, " +
+            "FOREIGN KEY(`resourceId`) REFERENCES `Resource`(`resourceId`) ON UPDATE NO ACTION ON DELETE CASCADE " +
+            ")"
+    private const val ADD_RESOURCE_TYPE_DELETED_COLUMN =
+        "ALTER TABLE ResourceType ADD COLUMN deleted INTEGER"
 
     override fun migrate(db: SupportSQLiteDatabase) {
         with(db) {
-            execSQL(DROP_EXISTING_RESOURCES_TABLE)
-            execSQL(DROP_EXISTING_RESOURCES_TYPES_TABLE)
-            execSQL(CREATE_NEW_RESOURCES_TABLE)
-            execSQL(CREATE_NEW_RESOURCE_TYPES_TABLE)
+            execSQL(DROP_RESOURCES)
+            execSQL(ADD_RESOURCE_TYPE_DELETED_COLUMN)
+            execSQL(CREATE_RESOURCES)
+            execSQL(ADD_RESOURCE_METADATA)
+            execSQL(ADD_RESOURCE_URIS)
         }
     }
 }

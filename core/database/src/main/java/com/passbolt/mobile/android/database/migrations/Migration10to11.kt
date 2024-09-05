@@ -46,8 +46,8 @@ object Migration10to11 : Migration(10, 11) {
                 "PRIMARY KEY(`folderId`, `groupId`)" +
                 ")"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        with(database) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
             execSQL(CREATE_FOLDER_AND_USERS_CROSS_REF_TABLE)
             execSQL(CREATE_FOLDER_AND_GROUPS_CROSS_REF_TABLE)
         }

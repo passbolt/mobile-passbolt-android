@@ -129,7 +129,6 @@ class OtpMenuTest : KoinTest {
                 resourceId = "resId",
                 resourceTypeId = "resTypeId",
                 folderId = null,
-                initials = "in",
                 permission = ResourcePermission.READ,
                 favouriteId = null,
                 modified = ZonedDateTime.now(),

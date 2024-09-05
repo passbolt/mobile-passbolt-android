@@ -173,7 +173,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, never()).displayExpiryTitle(any())
         verify(view, never()).displayExpirySection(any())
         verify(view, times(2)).displayUsername(USERNAME)
-        verify(view, times(2)).displayInitialsIcon(NAME, INITIALS)
+        verify(view, times(2)).displayInitialsIcon(NAME, "n")
         verify(view, times(2)).displayUrl(URL)
         verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
@@ -211,7 +211,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).showExpiryIndicator()
         verify(view, times(2)).displayExpirySection(RESOURCE_MODEL_EXPIRED.expiry!!)
         verify(view, times(2)).displayUsername(USERNAME)
-        verify(view, times(2)).displayInitialsIcon(NAME, INITIALS)
+        verify(view, times(2)).displayInitialsIcon(NAME, "n")
         verify(view, times(2)).displayUrl(URL)
         verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
@@ -426,7 +426,6 @@ class ResourceDetailsPresenterTest : KoinTest {
     private companion object {
         private const val NAME = "name"
         private const val USERNAME = "username"
-        private const val INITIALS = "NN"
         private const val URL = "https://www.passbolt.com"
         private val ID = UUID.randomUUID().toString()
         private val ID_EXPIRED = UUID.randomUUID().toString()
@@ -437,7 +436,6 @@ class ResourceDetailsPresenterTest : KoinTest {
             resourceId = ID,
             resourceTypeId = RESOURCE_TYPE_ID,
             folderId = FOLDER_ID_ID,
-            initials = INITIALS,
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",
             modified = ZonedDateTime.now(),
@@ -453,7 +451,6 @@ class ResourceDetailsPresenterTest : KoinTest {
             resourceId = ID_EXPIRED,
             resourceTypeId = RESOURCE_TYPE_ID,
             folderId = FOLDER_ID_ID,
-            initials = INITIALS,
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",
             modified = ZonedDateTime.now(),

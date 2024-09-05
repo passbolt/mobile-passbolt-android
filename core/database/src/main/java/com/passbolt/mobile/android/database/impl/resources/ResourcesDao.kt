@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.entity.permission.GroupPermission
 import com.passbolt.mobile.android.entity.permission.UserPermission
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
 import java.time.ZonedDateTime
 
 /**
@@ -37,55 +38,89 @@ interface ResourcesDao : BaseDao<Resource> {
 
     @Transaction
     @Query(
-        "SELECT * FROM Resource " +
-                "WHERE resourceTypeId IN(" +
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId " +
+                "WHERE r.resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ") " +
-                "ORDER BY resourceName " +
+                "ORDER BY rm.name " +
                 "COLLATE NOCASE ASC"
     )
-    suspend fun getAllOrderedByName(slugs: Set<String>): List<Resource>
+    suspend fun getAllOrderedByName(slugs: Set<String>): List<ResourceWithMetadata>
 
     @Transaction
     @Query(
-        "SELECT * FROM Resource " +
-                "WHERE favouriteId IS NOT NULL AND resourceTypeId IN(" +
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId " +
+                "WHERE r.favouriteId IS NOT NULL AND r.resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ") " +
                 "ORDER BY modified DESC"
     )
-    suspend fun getFavourites(slugs: Set<String>): List<Resource>
+    suspend fun getFavourites(slugs: Set<String>): List<ResourceWithMetadata>
 
     @Transaction
     @Query(
-        "SELECT * FROM Resource " +
-                "WHERE resourceTypeId IN(" +
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId " +
+                "WHERE r.resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ") " +
                 "ORDER BY modified DESC"
     )
-    suspend fun getAllOrderedByModifiedDate(slugs: Set<String>): List<Resource>
+    suspend fun getAllOrderedByModifiedDate(slugs: Set<String>): List<ResourceWithMetadata>
 
     @Transaction
     @Query(
-        "SELECT * FROM Resource " +
-                "WHERE resourcePermission IN (:permissions) AND resourceTypeId IN(" +
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId " +
+                "WHERE r.resourcePermission IN (:permissions) AND r.resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ")" +
                 "ORDER BY modified DESC"
     )
-    suspend fun getWithPermissions(permissions: Set<Permission>, slugs: Set<String>): List<Resource>
+    suspend fun getWithPermissions(permissions: Set<Permission>, slugs: Set<String>): List<ResourceWithMetadata>
 
     @Transaction
     @Query(
-        "SELECT * FROM Resource WHERE (" +
-                "resourceName LIKE '%' || :searchQuery || '%' OR " +
-                "url LIKE '%' || :searchQuery || '%' OR " +
-                "username LIKE '%' || :searchQuery || '%') " +
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId " +
+                "WHERE r.resourceId == :resourceId"
+    )
+    suspend fun get(resourceId: String): ResourceWithMetadata
+
+    @Transaction
+    @Query(
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, rm.metadataJson, ru.uri " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId " +
+                "INNER JOIN ResourceUri ru " +
+                "ON r.resourceId = ru.resourceId " +
+                "WHERE (" +
+                "rm.name LIKE '%' || :searchQuery || '%' OR " +
+                "ru.uri LIKE '%' || :searchQuery || '%' OR " +
+                "r.folderId LIKE '%' || :searchQuery || '%') " +
                 "AND " +
-                "folderId IN (:inOneOfFolders) " +
+                "r.folderId IN (:inOneOfFolders) " +
                 "AND " +
-                "resourceTypeId IN(" +
+                "r.resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ")" +
                 "ORDER BY modified DESC"
@@ -94,42 +129,50 @@ interface ResourcesDao : BaseDao<Resource> {
         searchQuery: String,
         inOneOfFolders: List<String>,
         slugs: Set<String>
-    ): List<Resource>
-
-    @Transaction
-    @Query("SELECT * FROM Resource WHERE resourceId == :resourceId")
-    suspend fun get(resourceId: String): Resource
+    ): List<ResourceWithMetadata>
 
     @Transaction
     @Query(
-        "SELECT * FROM Resource " +
-                "WHERE folderId IS :folderId AND resourceTypeId IN(" +
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId " +
+                "WHERE r.folderId IS :folderId AND r.resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ")"
     )
-    suspend fun getResourcesForFolderWithId(folderId: String?, slugs: Set<String>): List<Resource>
+    suspend fun getResourcesForFolderWithId(folderId: String?, slugs: Set<String>): List<ResourceWithMetadata>
 
     @Transaction
     @Query(
-        "SELECT * FROM Resource r " +
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId " +
                 "INNER JOIN ResourceAndTagsCrossRef cr " +
                 "ON r.resourceId=cr.resourceId " +
                 "WHERE cr.tagId=:tagId AND r.resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ")"
     )
-    suspend fun getResourcesWithTag(tagId: String, slugs: Set<String>): List<Resource>
+    suspend fun getResourcesWithTag(tagId: String, slugs: Set<String>): List<ResourceWithMetadata>
 
     @Transaction
     @Query(
-        "SELECT * FROM Resource r " +
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId " +
                 "INNER JOIN ResourceAndGroupsCrossRef cr " +
                 "ON r.resourceId=cr.resourceId " +
                 "WHERE cr.groupId=:groupId AND r.resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ")"
     )
-    suspend fun getResourcesWithGroup(groupId: String, slugs: Set<String>): List<Resource>
+    suspend fun getResourcesWithGroup(groupId: String, slugs: Set<String>): List<ResourceWithMetadata>
 
     @Transaction
     @Query(
@@ -157,7 +200,11 @@ interface ResourcesDao : BaseDao<Resource> {
 
     @Transaction
     @Query(
-        "SELECT * FROM Resource r " +
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId " +
                 "INNER JOIN ResourceAndTagsCrossRef rTCR " +
                 "ON rTCR.resourceId = r.resourceId " +
                 "INNER JOIN Tag t " +
@@ -166,14 +213,18 @@ interface ResourcesDao : BaseDao<Resource> {
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ")" +
                 "GROUP BY r.resourceId " +
-                "ORDER BY resourceName COLLATE NOCASE ASC "
+                "ORDER BY rm.name COLLATE NOCASE ASC "
     )
-    suspend fun getAllThatHaveTagContaining(tagSearchQuery: String, slugs: Set<String>): List<Resource>
+    suspend fun getAllThatHaveTagContaining(tagSearchQuery: String, slugs: Set<String>): List<ResourceWithMetadata>
 
     @Transaction
     @Query(
-        "SELECT * FROM Resource " +
-                "WHERE expiry IS NOT NULL AND expiry < :expiryTimestampMillis AND resourceTypeId IN(" +
+        "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
+                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "FROM Resource r " +
+                "INNER JOIN ResourceMetadata rm " +
+                "ON r.resourceId = rm.resourceId " +
+                "WHERE r.expiry IS NOT NULL AND r.expiry < :expiryTimestampMillis AND r.resourceTypeId IN(" +
                 "   SELECT resourceTypeId FROM ResourceType WHERE slug IN (:slugs)" +
                 ") " +
                 "ORDER BY modified DESC"
@@ -181,7 +232,7 @@ interface ResourcesDao : BaseDao<Resource> {
     suspend fun getExpiredResources(
         slugs: Set<String>,
         expiryTimestampMillis: Long = ZonedDateTime.now().toInstant().toEpochMilli()
-    ): List<Resource>
+    ): List<ResourceWithMetadata>
 
     @Transaction
     @Query("DELETE FROM Resource")

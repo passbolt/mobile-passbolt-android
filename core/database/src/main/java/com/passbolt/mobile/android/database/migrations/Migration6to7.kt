@@ -39,8 +39,8 @@ object Migration6to7 : Migration(6, 7) {
                 "`groupId` TEXT NOT NULL, " +
                 "PRIMARY KEY(`resourceId`, `groupId`))"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        with(database) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
             execSQL(CREATE_GROUPS_TABLE)
             execSQL(CREATE_RESOURCES_AND_GROUPS_CROSS_REF_TABLE)
         }

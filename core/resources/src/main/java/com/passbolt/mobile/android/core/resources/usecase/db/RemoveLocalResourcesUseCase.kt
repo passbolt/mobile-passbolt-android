@@ -31,9 +31,10 @@ class RemoveLocalResourcesUseCase(
 ) : AsyncUseCase<UserIdInput, Unit> {
 
     override suspend fun execute(input: UserIdInput) {
-        databaseProvider
-            .get(input.userId)
-            .resourcesDao()
-            .deleteAll()
+        databaseProvider.get(input.userId).apply {
+            resourceUriDao().deleteAll()
+            resourceMetadataDao().deleteAll()
+            resourcesDao().deleteAll()
+        }
     }
 }

@@ -6,6 +6,7 @@ import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.google.gson.JsonElement
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -37,7 +38,8 @@ data class ResourceType(
     val name: String,
     val slug: String,
     val resourceSchemaJson: JsonElement,
-    val secretSchemaJson: JsonElement
+    val secretSchemaJson: JsonElement,
+    val deleted: ZonedDateTime?
 )
 
 @Entity

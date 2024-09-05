@@ -1,15 +1,10 @@
-package com.passbolt.mobile.android.tagsdetails
+package com.passbolt.mobile.android.database.impl.metadata
 
-import com.passbolt.mobile.android.common.InitialsProvider
-import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
-import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.bind
-import org.koin.dsl.module
-import org.mockito.kotlin.mock
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
+import com.passbolt.mobile.android.database.impl.base.BaseDao
+import com.passbolt.mobile.android.entity.resource.ResourceUri
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,19 +28,14 @@ import org.mockito.kotlin.mock
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+@Dao
+interface ResourceUriDao : BaseDao<ResourceUri> {
 
-internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
-internal val mockResourceTagsUseCase = mock<GetLocalResourceTagsUseCase>()
+    @Transaction
+    @Query("DELETE FROM ResourceUri WHERE resourceId=:resourceId")
+    suspend fun deleteForResource(resourceId: String)
 
-@ExperimentalCoroutinesApi
-internal val testResourceTagsModule = module {
-    factoryOf(::InitialsProvider)
-    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
-    factory<ResourceTagsContract.Presenter> {
-        ResourceTagsPresenter(
-            getLocalResourceUseCase = mockGetLocalResourceUseCase,
-            coroutineLaunchContext = get(),
-            getLocalResourceTags = mockResourceTagsUseCase
-        )
-    }
+    @Transaction
+    @Query("DELETE FROM ResourceUri")
+    suspend fun deleteAll()
 }

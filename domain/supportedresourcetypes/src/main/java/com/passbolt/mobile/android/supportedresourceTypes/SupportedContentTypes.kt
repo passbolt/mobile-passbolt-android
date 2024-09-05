@@ -40,4 +40,14 @@ object SupportedContentTypes {
     )
 
     val allSlugs = homeSlugs + totpSlugs
+
+    val v4Slugs = setOf(
+        PASSWORD_STRING_SLUG,
+        PASSWORD_AND_DESCRIPTION_SLUG,
+        PASSWORD_DESCRIPTION_TOTP_SLUG,
+        TOTP_SLUG
+    )
+
+    // TODO (v5) prepared for v5 content types
+    val v5Slugs = emptySet<String>()
 }

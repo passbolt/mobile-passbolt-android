@@ -54,8 +54,8 @@ object Migration4to5 : Migration(4, 5) {
             "PRIMARY KEY(`folderId`)" +
             ")"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        with(database) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
             execSQL(DROP_EXISTING_RESOURCES_TABLE)
             execSQL(CREATE_NEW_RESOURCES_TABLE)
             execSQL(DROP_EXISTING_FOLDER_TABLE)

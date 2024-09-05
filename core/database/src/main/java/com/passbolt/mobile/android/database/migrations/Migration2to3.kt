@@ -32,7 +32,7 @@ object Migration2to3 : Migration(2, 3) {
     private const val ADD_RESOURCE_IS_FAVOURITE_COLUMN =
         "ALTER TABLE Resource ADD COLUMN isFavourite INTEGER NOT NULL DEFAULT 0"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL(ADD_RESOURCE_IS_FAVOURITE_COLUMN)
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(ADD_RESOURCE_IS_FAVOURITE_COLUMN)
     }
 }

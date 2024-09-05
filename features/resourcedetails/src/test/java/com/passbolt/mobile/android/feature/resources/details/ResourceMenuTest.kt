@@ -279,7 +279,6 @@ class ResourceMenuTest : KoinTest {
     private companion object {
         private const val NAME = "name"
         private const val USERNAME = "username"
-        private const val INITIALS = "NN"
         private const val URL = "https://www.passbolt.com"
         private val ID = UUID.randomUUID().toString()
         private const val DESCRIPTION = "desc"
@@ -289,7 +288,6 @@ class ResourceMenuTest : KoinTest {
             resourceId = ID,
             resourceTypeId = RESOURCE_TYPE_ID,
             folderId = FOLDER_ID_ID,
-            initials = INITIALS,
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",
             modified = ZonedDateTime.now(),
