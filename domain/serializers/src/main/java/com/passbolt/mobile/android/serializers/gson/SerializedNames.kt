@@ -1,7 +1,4 @@
-package com.passbolt.mobile.android.database.migrations
-
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+package com.passbolt.mobile.android.serializers.gson
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,16 +22,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-@Suppress("MagicNumber")
-object Migration12to13 : Migration(12, 13) {
-
-    private const val ADD_KEY_CREATION_DATE_COLUMN =
-        "ALTER TABLE User ADD COLUMN created INTEGER"
-
-    override fun migrate(db: SupportSQLiteDatabase) {
-        with(db) {
-            execSQL(ADD_KEY_CREATION_DATE_COLUMN)
-        }
-    }
+object SerializedNames {
+    const val RESOURCE_TYPE_ID = "resource_type_id"
 }

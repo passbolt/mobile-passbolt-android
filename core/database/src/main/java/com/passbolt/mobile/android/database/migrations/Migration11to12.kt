@@ -119,8 +119,8 @@ object Migration11to12 : Migration(11, 12) {
                 "FOREIGN KEY(`folderId`) REFERENCES `Folder`(`folderId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
                 "FOREIGN KEY(`groupId`) REFERENCES `UsersGroup`(`groupId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        with(database) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
             TABLES_TO_DROP.forEach {
                 execSQL("DROP TABLE $it")
             }

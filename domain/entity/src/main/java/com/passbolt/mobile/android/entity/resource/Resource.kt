@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.entity.resource
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.ForeignKey.Companion.SET_NULL
 import androidx.room.PrimaryKey
 import com.passbolt.mobile.android.entity.folder.Folder
@@ -49,14 +50,58 @@ data class Resource(
     @PrimaryKey
     val resourceId: String,
     val folderId: String?,
-    val resourceName: String,
     val resourcePermission: Permission,
-    val url: String?,
+    val resourceTypeId: String,
+    val favouriteId: String?,
+    val modified: ZonedDateTime,
+    val expiry: ZonedDateTime?
+)
+
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = Resource::class,
+            parentColumns = ["resourceId"],
+            childColumns = ["resourceId"],
+            onDelete = CASCADE
+        )
+    ]
+)
+data class ResourceMetadata(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val resourceId: String,
+    val metadataJson: String,
+    val name: String,
     val username: String?,
-    val description: String?,
+    val description: String?
+)
+
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = Resource::class,
+            parentColumns = ["resourceId"],
+            childColumns = ["resourceId"],
+            onDelete = CASCADE
+        )
+    ]
+)
+data class ResourceUri(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val resourceId: String,
+    val uri: String
+)
+
+data class ResourceWithMetadata(
+    @PrimaryKey
+    val resourceId: String,
+    val folderId: String?,
+    val resourcePermission: Permission,
     val resourceTypeId: String,
     val favouriteId: String?,
     val modified: ZonedDateTime,
     val expiry: ZonedDateTime?,
-    val resourceJson: String
+    val metadataJson: String
 )

@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceType
 import com.passbolt.mobile.android.entity.resource.ResourceTypeIdWithFields
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -56,7 +57,8 @@ class ResourceTypesModelMapper(
                     name = it.name,
                     slug = it.slug,
                     resourceSchemaJson = it.definition.resource,
-                    secretSchemaJson = it.definition.secret
+                    secretSchemaJson = it.definition.secret,
+                    deleted = it.deleted?.let { deleted -> ZonedDateTime.parse(deleted) }
                 ),
                 resourceFields + secretFields
             )

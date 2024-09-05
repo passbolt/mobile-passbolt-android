@@ -79,7 +79,7 @@ class ResourceTagsPresenterTest : KoinTest {
 
         verify(view).showFavouriteStar()
         verify(view).displayTitle(NAME)
-        verify(view).displayInitialsIcon(NAME, INITIALS)
+        verify(view).displayInitialsIcon(NAME, "n")
         verify(view).showTags(RESOURCE_TAGS)
         verifyNoMoreInteractions(view)
     }
@@ -87,7 +87,6 @@ class ResourceTagsPresenterTest : KoinTest {
     private companion object {
         private const val NAME = "name"
         private const val USERNAME = "username"
-        private const val INITIALS = "NN"
         private const val URL = "https://www.passbolt.com"
         private const val ID = "id"
         private const val DESCRIPTION = "desc"
@@ -97,7 +96,6 @@ class ResourceTagsPresenterTest : KoinTest {
             resourceId = ID,
             resourceTypeId = RESOURCE_TYPE_ID,
             folderId = FOLDER_ID_ID,
-            initials = INITIALS,
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",
             modified = ZonedDateTime.now(),

@@ -1,9 +1,13 @@
 package com.passbolt.mobile.android.mappers
 
 import com.google.gson.JsonObject
-import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
+import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
 import com.passbolt.mobile.android.entity.resource.Resource
+import com.passbolt.mobile.android.entity.resource.ResourceMetadata
+import com.passbolt.mobile.android.entity.resource.ResourceUri
+import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
 import com.passbolt.mobile.android.ui.ResourceModel
 import java.time.ZonedDateTime
 
@@ -30,58 +34,77 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 class ResourceModelMapper(
-    private val initialsProvider: InitialsProvider,
     private val permissionsModelMapper: PermissionsModelMapper
 ) {
 
-    fun map(resource: ResourceResponseDto): ResourceModel =
-        ResourceModel(
-            resourceId = resource.id.toString(),
-            resourceTypeId = resource.resourceTypeId.toString(),
-            folderId = resource.resourceFolderId?.toString(),
-            initials = initialsProvider.get(resource.name),
-            permission = permissionsModelMapper.map(resource.permission.type),
-            favouriteId = resource.favorite?.id?.toString(),
-            modified = ZonedDateTime.parse(resource.modified),
-            expiry = resource.expired?.let { ZonedDateTime.parse(it) },
-            json = resource.resourceJson
-        )
+    fun map(resource: ResourceResponseDto): ResourceModel = when (resource) {
+        is ResourceResponseV4Dto -> {
+            ResourceModel(
+                resourceId = resource.id.toString(),
+                resourceTypeId = resource.resourceTypeId.toString(),
+                folderId = resource.resourceFolderId?.toString(),
+                permission = permissionsModelMapper.map(resource.permission.type),
+                favouriteId = resource.favorite?.id?.toString(),
+                modified = ZonedDateTime.parse(resource.modified),
+                expiry = resource.expired?.let { ZonedDateTime.parse(it) },
+                json = getV5Metadata(resource)
+            )
+        }
+        is ResourceResponseV5Dto -> {
+            ResourceModel(
+                resourceId = resource.id.toString(),
+                resourceTypeId = resource.resourceTypeId.toString(),
+                folderId = resource.resourceFolderId?.toString(),
+                permission = permissionsModelMapper.map(resource.permission.type),
+                favouriteId = resource.favorite?.id?.toString(),
+                modified = ZonedDateTime.parse(resource.modified),
+                expiry = resource.expired?.let { ZonedDateTime.parse(it) },
+                json = resource.metadata
+            )
+        }
+    }
 
     fun map(resourceModel: ResourceModel): Resource =
         Resource(
             resourceId = resourceModel.resourceId,
             folderId = resourceModel.folderId,
-            resourceName = resourceModel.name,
-            description = resourceModel.description,
             resourcePermission = permissionsModelMapper.map(resourceModel.permission),
-            url = resourceModel.url,
-            username = resourceModel.username,
             resourceTypeId = resourceModel.resourceTypeId,
             favouriteId = resourceModel.favouriteId,
             modified = resourceModel.modified,
-            expiry = resourceModel.expiry,
-            resourceJson = resourceModel.toJsonString()
+            expiry = resourceModel.expiry
         )
 
-    fun map(resourceEntity: Resource): ResourceModel =
+    fun mapResourceMetadata(resourceModel: ResourceModel): ResourceMetadata =
+        ResourceMetadata(
+            resourceId = resourceModel.resourceId,
+            metadataJson = resourceModel.json,
+            name = resourceModel.name,
+            username = resourceModel.username,
+            description = resourceModel.description
+        )
+
+    fun mapResourceUri(resourceModel: ResourceModel) = resourceModel.url?.let {
+        ResourceUri(resourceId = resourceModel.resourceId, uri = it)
+    }
+
+    fun map(resourceEntity: ResourceWithMetadata): ResourceModel =
         ResourceModel(
             resourceId = resourceEntity.resourceId,
             resourceTypeId = resourceEntity.resourceTypeId,
             folderId = resourceEntity.folderId,
-            initials = initialsProvider.get(resourceEntity.resourceName),
             permission = permissionsModelMapper.map(resourceEntity.resourcePermission),
             favouriteId = resourceEntity.favouriteId,
             modified = resourceEntity.modified,
             expiry = resourceEntity.expiry,
-            json = resourceEntity.resourceJson
+            json = resourceEntity.metadataJson
         )
 
-    private fun ResourceModel.toJsonString(): String {
-        return JsonObject().apply {
-            addProperty("name", name)
-            addProperty("username", username)
-            addProperty("description", description)
-            addProperty("uri", url)
+    private fun getV5Metadata(resourceModel: ResourceResponseV4Dto) =
+        JsonObject().apply {
+            addProperty("name", resourceModel.name)
+            addProperty("username", resourceModel.username)
+            addProperty("description", resourceModel.description)
+            addProperty("uri", resourceModel.uri)
         }.toString()
-    }
 }

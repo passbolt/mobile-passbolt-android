@@ -2,6 +2,7 @@ plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.gradle
     alias libs.plugins.kotlin.ksp
+    alias libs.plugins.room
 }
 
 dependencies {
@@ -42,12 +43,12 @@ android {
     packagingOptions {
         exclude "META-INF/{AL2.0,LGPL2.1}"
     }
+
+    room {
+        schemaDirectory "$projectDir/schemas"
+    }
 }
 
 kotlin {
     jvmToolchain(17)
-}
-
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas".toString())
 }

@@ -1,12 +1,14 @@
 package com.passbolt.mobile.android.ui
 
 import android.os.Parcelable
+import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.Searchable
 import com.passbolt.mobile.android.delegates.JsonModel
 import com.passbolt.mobile.android.delegates.JsonPathDelegate
 import com.passbolt.mobile.android.delegates.JsonPathNullableDelegate
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.koin.java.KoinJavaComponent.inject
 import java.time.ZonedDateTime
 
 /**
@@ -37,7 +39,6 @@ data class ResourceModel(
     val resourceId: String,
     val resourceTypeId: String,
     val folderId: String?,
-    val initials: String,
     val permission: ResourcePermission,
     val favouriteId: String?,
     val modified: ZonedDateTime,
@@ -58,7 +59,15 @@ data class ResourceModel(
     var url: String? by JsonPathNullableDelegate(jsonPath = "$.uri")
 
     @IgnoredOnParcel
+    val initials: String
+        get() = initialsProvider.get(name)
+
+    @IgnoredOnParcel
     override val searchCriteria: String = "$name$username$url"
+
+    companion object {
+        val initialsProvider: InitialsProvider by inject(InitialsProvider::class.java)
+    }
 }
 
 fun ResourceModel.isFavourite() = favouriteId != null

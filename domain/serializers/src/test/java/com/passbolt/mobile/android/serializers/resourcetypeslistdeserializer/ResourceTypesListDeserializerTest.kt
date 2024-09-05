@@ -48,18 +48,20 @@ class ResourceTypesListDeserializerTest : KoinTest {
     fun `resources types with unsupported slugs should be filtered out`() {
         val resourceTypes = listOf(
             ResourceTypeDto(
-                UUID.randomUUID(),
-                "invalid_slug",
-                "name",
-                "description",
-                ResourceDefinition(JsonObject(), JsonObject())
+                id = UUID.randomUUID(),
+                slug = "invalid_slug",
+                name = "name",
+                description = "description",
+                definition = ResourceDefinition(JsonObject(), JsonObject()),
+                deleted = null
             ),
             ResourceTypeDto(
-                UUID.randomUUID(),
-                PASSWORD_STRING_SLUG,
-                "name",
-                "description",
-                ResourceDefinition(JsonObject(), JsonObject())
+                id = UUID.randomUUID(),
+                slug = PASSWORD_STRING_SLUG,
+                name = "name",
+                description = "description",
+                definition = ResourceDefinition(JsonObject(), JsonObject()),
+                deleted = null
             )
         )
 

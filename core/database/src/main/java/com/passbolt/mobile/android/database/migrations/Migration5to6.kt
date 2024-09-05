@@ -39,8 +39,8 @@ object Migration5to6 : Migration(5, 6) {
             "`resourceId` TEXT NOT NULL, " +
             "PRIMARY KEY(`tagId`, `resourceId`))"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        with(database) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
             execSQL(CREATE_TAGS_TABLE)
             execSQL(CREATE_TAG_RESOURCE_CROSS_REF_TABLE)
         }

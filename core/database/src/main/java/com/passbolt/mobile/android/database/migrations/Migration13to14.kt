@@ -32,8 +32,8 @@ object Migration13to14 : Migration(13, 14) {
     private const val ADD_DISABLED_COLUMN =
         "ALTER TABLE User ADD COLUMN disabled INTEGER NOT NULL DEFAULT 0"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        with(database) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
             execSQL(ADD_DISABLED_COLUMN)
         }
     }

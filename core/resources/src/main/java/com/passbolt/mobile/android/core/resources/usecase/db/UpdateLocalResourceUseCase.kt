@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.core.resources.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -30,19 +30,33 @@ import com.passbolt.mobile.android.ui.ResourceModel
  */
 class UpdateLocalResourceUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val resourceModelMapper: ResourceModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<UpdateLocalResourceUseCase.Input, Unit> {
-    override suspend fun execute(input: Input) {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
+    private val resourceModelMapper: ResourceModelMapper
+) : AsyncUseCase<UpdateLocalResourceUseCase.Input, Unit>, SelectedAccountUseCase {
 
-        databaseProvider
-            .get(userId)
-            .resourcesDao()
-            .update(resourceModelMapper.map(input.passwordModel))
+    override suspend fun execute(input: Input) {
+        val db = databaseProvider.get(selectedAccountId)
+        val resourcesDao = db.resourcesDao()
+        val resourceMetadataDao = db.resourceMetadataDao()
+        val resourceUriDao = db.resourceUriDao()
+
+        resourcesDao.update(resourceModelMapper.map(input.resourceModel))
+        resourceMetadataDao.updateMetadataForResource(
+            resourceId = input.resourceModel.resourceId,
+            metadataJson = input.resourceModel.json,
+            name = input.resourceModel.name,
+            username = input.resourceModel.username,
+            description = input.resourceModel.description
+        )
+
+        resourceUriDao.apply {
+            deleteForResource(input.resourceModel.resourceId)
+            resourceModelMapper.mapResourceUri(input.resourceModel)?.let { uri ->
+                resourceUriDao.insert(uri)
+            }
+        }
     }
 
     data class Input(
-        val passwordModel: ResourceModel
+        val resourceModel: ResourceModel
     )
 }

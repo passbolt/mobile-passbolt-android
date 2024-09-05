@@ -94,78 +94,54 @@ class SortByModifiedDateTest {
             name = "password-description",
             slug = PASSWORD_DESCRIPTION_SLUG,
             resourceSchemaJson = JsonObject(),
-            secretSchemaJson = JsonObject()
+            secretSchemaJson = JsonObject(),
+            deleted = null
         )
 
         private val RESOURCE_1 = Resource(
             resourceId = "1",
             folderId = "folderid",
-            resourceName = "",
             resourcePermission = Permission.READ,
-            url = null,
-            username = null,
-            description = null,
             resourceTypeId = "1",
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
-            resourceJson = String()
         )
         private val RESOURCE_2 = Resource(
             resourceId = "2",
             folderId = "folderid",
-            resourceName = "",
             resourcePermission = Permission.READ,
-            url = null,
-            username = null,
-            description = null,
             resourceTypeId = "1",
             favouriteId = null,
             modified = ZonedDateTime.now().plusDays(1),
             expiry = null,
-            resourceJson = String()
         )
         private val RESOURCE_3 = Resource(
             resourceId = "3",
             folderId = "folderid",
-            resourceName = "",
             resourcePermission = Permission.READ,
-            url = null,
-            username = null,
-            description = null,
             resourceTypeId = "1",
             favouriteId = null,
             modified = ZonedDateTime.now().plusDays(2),
             expiry = null,
-            resourceJson = String()
         )
         private val RESOURCE_1_ZONE_MINUS = Resource(
             resourceId = "4",
             folderId = "folderid",
-            resourceName = "",
             resourcePermission = Permission.READ,
-            url = null,
-            username = null,
-            description = null,
             resourceTypeId = "1",
             favouriteId = null,
             modified = LocalDateTime.now().atZone(ZoneOffset.of("-08:00")),
             expiry = null,
-            resourceJson = String()
         )
         private val RESOURCE_1_ZONE_PLUS = Resource(
             resourceId = "5",
             folderId = "folderid",
-            resourceName = "",
             resourcePermission = Permission.READ,
-            url = null,
-            username = null,
-            description = null,
             resourceTypeId = "1",
             favouriteId = null,
             modified = LocalDateTime.now().atZone(ZoneOffset.of("+08:00")),
             expiry = null,
-            resourceJson = String()
         )
     }
 }

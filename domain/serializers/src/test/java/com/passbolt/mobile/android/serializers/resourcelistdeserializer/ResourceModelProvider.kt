@@ -24,11 +24,11 @@
 package com.passbolt.mobile.android.serializers.resourcelistdeserializer
 
 import com.passbolt.mobile.android.dto.response.PermissionDto
-import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import java.util.UUID
 
-internal fun resourceWithNameOfLength(nameLength: Int, testedResourceTypeUuid: UUID) {
-    ResourceResponseDto(
+internal fun resourceWithNameOfLength(nameLength: Int, testedResourceTypeUuid: UUID) =
+    ResourceResponseV4Dto(
         id = UUID.randomUUID(),
         resourceTypeId = testedResourceTypeUuid,
         description = null,
@@ -43,10 +43,9 @@ internal fun resourceWithNameOfLength(nameLength: Int, testedResourceTypeUuid: U
         permissions = emptyList(),
         expired = null
     )
-}
 
-internal fun resourceWithUriOfLength(uriLength: Int, testedResourceTypeUuid: UUID) {
-    ResourceResponseDto(
+internal fun resourceWithUriOfLength(uriLength: Int, testedResourceTypeUuid: UUID) =
+    ResourceResponseV4Dto(
         id = UUID.randomUUID(),
         resourceTypeId = testedResourceTypeUuid,
         description = null,
@@ -61,10 +60,9 @@ internal fun resourceWithUriOfLength(uriLength: Int, testedResourceTypeUuid: UUI
         permissions = emptyList(),
         expired = null
     )
-}
 
-internal fun resourceWithDescriptionOfLength(descriptionLength: Int, testedResourceTypeUuid: UUID) {
-    ResourceResponseDto(
+internal fun resourceWithDescriptionOfLength(descriptionLength: Int, testedResourceTypeUuid: UUID) =
+    ResourceResponseV4Dto(
         id = UUID.randomUUID(),
         resourceTypeId = testedResourceTypeUuid,
         description = (0..(descriptionLength)).joinToString { "a" },
@@ -79,10 +77,9 @@ internal fun resourceWithDescriptionOfLength(descriptionLength: Int, testedResou
         permissions = emptyList(),
         expired = null
     )
-}
 
-internal fun resourceWithUsernameOfLength(usernameLength: Int, testedResourceTypeUuid: UUID) {
-    ResourceResponseDto(
+internal fun resourceWithUsernameOfLength(usernameLength: Int, testedResourceTypeUuid: UUID) =
+    ResourceResponseV4Dto(
         id = UUID.randomUUID(),
         resourceTypeId = testedResourceTypeUuid,
         description = null,
@@ -97,4 +94,3 @@ internal fun resourceWithUsernameOfLength(usernameLength: Int, testedResourceTyp
         permissions = emptyList(),
         expired = null
     )
-}

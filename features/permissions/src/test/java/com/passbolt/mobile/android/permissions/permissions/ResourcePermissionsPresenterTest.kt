@@ -273,7 +273,6 @@ class ResourcePermissionsPresenterTest : KoinTest {
 
         private const val NAME = "name"
         private const val USERNAME = "username"
-        private const val INITIALS = "NN"
         private const val URL = "https://www.passbolt.com"
         private const val DESCRIPTION = "desc"
         private const val RESOURCE_TYPE_ID = "resTypeId"
@@ -282,7 +281,6 @@ class ResourcePermissionsPresenterTest : KoinTest {
             resourceId = RESOURCE_ID,
             resourceTypeId = RESOURCE_TYPE_ID,
             folderId = FOLDER_ID_ID,
-            initials = INITIALS,
             permission = ResourcePermission.READ,
             favouriteId = null,
             modified = ZonedDateTime.now(),
