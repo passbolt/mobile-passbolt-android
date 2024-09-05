@@ -122,6 +122,7 @@ class ResourceDetailsFragment :
             binding.sharedWithRecyclerClickableArea,
             binding.sharedWithNavIcon
         )
+    private val sharedWithDecorator: OverlappingItemDecorator by inject()
 
     private val totpFields
         get() = listOf(binding.totpHeader, binding.totpValue)
@@ -179,6 +180,7 @@ class ResourceDetailsFragment :
         setUpPermissionsRecycler()
         presenter.attach(this)
         binding.sharedWithRecycler.doOnLayout {
+            binding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
             presenter.argsReceived(
                 bundledResourceModel.resourceId,
                 it.width,
@@ -556,8 +558,7 @@ class ResourceDetailsFragment :
         overlapOffset: Int
     ) {
         sharedWithFields.forEach { it.visible() }
-        val decorator = OverlappingItemDecorator(Overlap(left = overlapOffset))
-        binding.sharedWithRecycler.addItemDecoration(decorator)
+        sharedWithDecorator.overlap = Overlap(left = overlapOffset)
         FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })
         FastAdapterDiffUtil.calculateDiff(userPermissionsItemAdapter, userPermissions.map { UserItem(it) })
         FastAdapterDiffUtil.calculateDiff(permissionsCounterItemAdapter, counterValue.map { CounterItem(it) })

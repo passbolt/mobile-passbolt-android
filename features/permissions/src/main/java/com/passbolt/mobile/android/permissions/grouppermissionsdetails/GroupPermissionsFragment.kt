@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
+import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.permissions.databinding.FragmentGroupPermissionsBinding
 import com.passbolt.mobile.android.groupdetails.groupmembers.GroupMembersFragment
@@ -41,6 +42,7 @@ class GroupPermissionsFragment :
     private val groupMembersItemAdapter: ItemAdapter<GroupUserItem> by inject(named(GROUP_MEMBER_ITEM_ADAPTER))
     private val counterItemAdapter: ItemAdapter<CounterItem> by inject(named(COUNTER_ITEM_ADAPTER))
     private val fastAdapter: FastAdapter<GenericItem> by inject()
+    private val sharedWithDecorator: OverlappingItemDecorator by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,6 +51,7 @@ class GroupPermissionsFragment :
         setupGroupMembersRecycler()
         presenter.attach(this)
         binding.groupMembersRecycler.doOnLayout {
+            binding.groupMembersRecycler.addItemDecoration(sharedWithDecorator)
             presenter.argsRetrieved(
                 args.permission,
                 args.mode,
@@ -128,8 +131,7 @@ class GroupPermissionsFragment :
         counterValue: List<String>,
         overlapOffset: Int
     ) {
-        val decorator = OverlappingItemDecorator(OverlappingItemDecorator.Overlap(left = overlapOffset))
-        binding.groupMembersRecycler.addItemDecoration(decorator)
+        sharedWithDecorator.overlap = Overlap(left = overlapOffset)
         FastAdapterDiffUtil.calculateDiff(groupMembersItemAdapter, users.map { GroupUserItem((it)) })
         FastAdapterDiffUtil.calculateDiff(counterItemAdapter, counterValue.map { CounterItem((it)) })
         fastAdapter.notifyAdapterDataSetChanged()
