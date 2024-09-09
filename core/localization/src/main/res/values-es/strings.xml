@@ -200,7 +200,7 @@
     <string name="autofill_service_title">Passbolt</string>
     <string name="autofill_service_content">Servicio de accesibilidad de autocompletado activado</string>
     <string name="autofill_service_enable_overlay">Activar permiso de superposición</string>
-    <string name="autofill_service_overlay_description"><![CDATA[Autocompletar nombres de usuario y contraseñas para los navegadores web Android. Por favor, active el permiso 'Mostrar sobre otras aplicaciones' para el autocompletado de Passbolt]]></string>
+    <string name="autofill_service_overlay_description"><![CDATA[Autocompletar nombres de usuario y contraseñas para los navegadores web Android. Por favor, active el permiso ‘Mostrar sobre otras aplicaciones’ para el autocompletado de Passbolt]]></string>
     <string name="autofill_service_enable_service">Activar autocompletado para la mayoría de aplicaciones</string>
     <string name="autofill_service_enable_service_description"><![CDATA[Autocompletar nombres de usuario y contraseñas para aplicaciones Android]]></string>
     <string name="autofill_dropdown_select">Seleccionar desde Passbolt</string>
