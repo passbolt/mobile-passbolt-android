@@ -90,7 +90,7 @@
         android:gravity="center"
         android:paddingHorizontal="@dimen/dp_80"
         android:paddingBottom="@dimen/dp_96"
-        android:text="@string/permission_recipients_user_not_found"
+        android:text="@string/permission_recipients_user_or_group_not_found"
         android:textColor="@color/text_primary"
         android:textFontWeight="600"
         android:textSize="@dimen/sp_24"
