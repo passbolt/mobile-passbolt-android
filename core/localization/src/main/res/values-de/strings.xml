@@ -334,7 +334,7 @@
     <string name="group_member_details_group_member">Gruppenmitglieder</string>
     <string name="permission_recipients_select_users">Benutzer wählen</string>
     <string name="permission_recipients_already_added">Bereits hinzugefügt</string>
-    <string name="permission_recipients_user_not_found">Benutzer nicht gefunden</string>
+    <string name="permission_recipients_user_or_group_not_found">Benutzer nicht gefunden</string>
     <string name="permission_deletion_dialog_message">Das Passwort wird nicht mehr mit diesem Benutzer geteilt.</string>
     <string name="main_update_downloaded">Passbolt Update wurde soeben heruntergeladen</string>
     <string name="main_update_download_in_progress">Herunterladen im Hintergrund. Wir werden Sie benachrichtigen, sobald der Download abgeschlossen ist.</string>

@@ -414,7 +414,7 @@
 
     <string name="permission_recipients_select_users">Select users</string>
     <string name="permission_recipients_already_added">Already added</string>
-    <string name="permission_recipients_user_not_found">User not found</string>
+    <string name="permission_recipients_user_or_group_not_found">User or group not found</string>
 
     <string name="permission_deletion_dialog_message">The password will no longer be shared with this user.</string>
 
