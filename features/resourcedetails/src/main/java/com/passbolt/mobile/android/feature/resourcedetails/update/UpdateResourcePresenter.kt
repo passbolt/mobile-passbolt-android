@@ -287,8 +287,9 @@ class UpdateResourcePresenter(
     }
 
     private suspend fun checkPasswordStatus() {
+        val passwordField = if (isSimplePasswordEdit()) SECRET_FIELD else PASSWORD_FIELD
         when (checkPasswordPropertiesUseCase.execute(
-            CheckPasswordPropertiesUseCase.Input(getFieldValue(PASSWORD_FIELD)!!)
+            CheckPasswordPropertiesUseCase.Input(getFieldValue(passwordField)!!)
         )
         ) {
             CheckPasswordPropertiesUseCase.Output.Fine -> updateResource()
@@ -301,6 +302,9 @@ class UpdateResourcePresenter(
             }
         }
     }
+
+    private suspend fun isSimplePasswordEdit() = existingResource != null &&
+            resourceTypeFactory.getResourceTypeEnum(existingResource!!.resourceTypeId) == SIMPLE_PASSWORD
 
     override fun onPwnedOrWeakPasswordConfirmed() {
         updateResource()
