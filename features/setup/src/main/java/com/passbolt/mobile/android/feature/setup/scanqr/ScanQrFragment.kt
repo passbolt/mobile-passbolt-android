@@ -7,7 +7,9 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.common.dialogs.qrCodesInformationDialog
 import com.passbolt.mobile.android.common.dialogs.serverNotReachableAlertDialog
+import com.passbolt.mobile.android.common.dialogs.setupExitConfirmationDialog
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
@@ -109,20 +111,9 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     override fun scanResultChannel() = scanManager.barcodeScanPublisher
 
     override fun showExitConfirmation() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(LocalizationR.string.are_you_sure)
-            .setMessage(LocalizationR.string.scan_qr_exit_confirmation_dialog_message)
-            .setPositiveButton(LocalizationR.string.cancel) { _, _ -> }
-            .setNegativeButton(LocalizationR.string.stop_scanning) { _, _ -> presenter.exitConfirmClick() }
-            .show()
-    }
-
-    override fun showInformationDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(LocalizationR.string.scan_qr_exit_information_dialog_title)
-            .setMessage(LocalizationR.string.scan_qr_exit_information_dialog_message)
-            .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
-            .show()
+        setupExitConfirmationDialog(requireContext()) {
+            presenter.exitConfirmClick()
+        }.show()
     }
 
     private fun initToolbar() {
@@ -242,7 +233,7 @@ class ScanQrFragment : BindingScopedFragment<FragmentScanQrBinding>(FragmentScan
     }
 
     override fun menuWhyScanQrCodesClick() {
-        showInformationDialog()
+        qrCodesInformationDialog(requireContext()).show()
     }
 
     override fun navigateToImportProfile() {
