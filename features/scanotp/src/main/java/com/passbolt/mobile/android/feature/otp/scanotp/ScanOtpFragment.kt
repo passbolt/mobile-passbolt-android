@@ -23,11 +23,18 @@
 
 package com.passbolt.mobile.android.feature.otp.scanotp
 
+import android.Manifest.permission.CAMERA
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.common.dialogs.cameraRequiredDialog
+import com.passbolt.mobile.android.common.dialogs.provideCameraPermissionInSettingsDialog
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.mvp.scoped.BindingScopedFragment
 import com.passbolt.mobile.android.core.qrscan.SCAN_MANAGER_SCOPE
@@ -48,6 +55,15 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
     private lateinit var scanManagerScope: Scope
     private lateinit var scanManager: ScanManager
     private val flagSecureSetter: FlagSecureSetter by inject()
+    private var requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            presenter.cameraPermissionGranted()
+        } else {
+            presenter.permissionRejectedClick()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -124,6 +140,30 @@ class ScanOtpFragment : BindingScopedFragment<FragmentScanOtpBinding>(FragmentSc
             bundleOf(EXTRA_SCANNED_OTP to parserResult)
         )
         findNavController().popBackStack()
+    }
+
+    override fun showCameraRequiredDialog() {
+        cameraRequiredDialog(requireContext()).show()
+    }
+
+    override fun requestCameraPermission() {
+        requestPermissionLauncher.launch(CAMERA)
+    }
+
+    override fun showCameraPermissionRequiredDialog() {
+        provideCameraPermissionInSettingsDialog(requireContext()) {
+            presenter.settingsButtonClick()
+        }
+            .show()
+    }
+
+    override fun navigateToAppSettings() {
+        findNavController().popBackStack()
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            .apply {
+                data = Uri.fromParts("package", requireContext().packageName, null)
+            }
+        startActivity(intent)
     }
 
     companion object {

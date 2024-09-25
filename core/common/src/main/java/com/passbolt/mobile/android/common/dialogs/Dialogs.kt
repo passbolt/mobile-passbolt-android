@@ -164,6 +164,21 @@ fun weakPasswordAlertDialog(context: Context, onProceed: () -> Unit) =
         .setCancelable(false)
         .create()
 
+fun provideCameraPermissionInSettingsDialog(context: Context, onSettingsClick: () -> Unit) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.transfer_details_camera_access_dialog_title)
+        .setMessage(LocalizationR.string.transfer_details_camera_access_dialog_message)
+        .setPositiveButton(LocalizationR.string.settings) { _, _ -> onSettingsClick() }
+        .setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
+        .create()
+
+fun cameraRequiredDialog(context: Context) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.transfer_details_camera_required_dialog_title)
+        .setMessage(LocalizationR.string.transfer_details_camera_required_dialog_message)
+        .setPositiveButton(LocalizationR.string.ok) { _, _ -> }
+        .create()
+
 fun setupExitConfirmationDialog(context: Context, onExit: () -> Unit) =
     AlertDialog.Builder(context)
         .setTitle(LocalizationR.string.are_you_sure)
