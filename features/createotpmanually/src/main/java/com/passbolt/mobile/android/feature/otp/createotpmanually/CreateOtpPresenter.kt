@@ -51,6 +51,7 @@ import com.passbolt.mobile.android.ui.OtpResourceModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -398,6 +399,11 @@ class CreateOtpPresenter(
         validateFields {
             view?.navigateToResourcePicker(issuer)
         }
+    }
+
+    override fun detach() {
+        coroutineScope.coroutineContext.cancelChildren()
+        super<BaseAuthenticatedPresenter>.detach()
     }
 
     private companion object {

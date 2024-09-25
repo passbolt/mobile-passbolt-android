@@ -41,6 +41,7 @@ import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -159,4 +160,9 @@ class ScanOtpSuccessPresenter(
             algorithm = scannedTotp.algorithm.name,
             secretKey = scannedTotp.secret
         )
+
+    override fun detach() {
+        scope.coroutineContext.cancelChildren()
+        super<BaseAuthenticatedPresenter>.detach()
+    }
 }
