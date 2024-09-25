@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.setup.transferdetails
 
+import com.passbolt.mobile.android.core.qrscan.CameraInformationProvider
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 

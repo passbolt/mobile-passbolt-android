@@ -24,6 +24,7 @@
 package com.passbolt.mobile.android.feature.otp.scanotp
 
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.qrscan.CameraInformationProvider
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpQrParser
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +35,7 @@ import timber.log.Timber
 
 class ScanOtpPresenter(
     private val otpQrParser: OtpQrParser,
+    private val cameraInformationProvider: CameraInformationProvider,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : ScanOtpContract.Presenter {
 
@@ -44,6 +46,16 @@ class ScanOtpPresenter(
 
     override fun attach(view: ScanOtpContract.View) {
         super.attach(view)
+        if (!cameraInformationProvider.isCameraAvailable()) {
+            view.showCameraRequiredDialog()
+        } else if (!cameraInformationProvider.isCameraPermissionGranted()) {
+            view.requestCameraPermission()
+        } else {
+            initQrScanning()
+        }
+    }
+
+    override fun cameraPermissionGranted() {
         initQrScanning()
     }
 
@@ -85,6 +97,10 @@ class ScanOtpPresenter(
         view?.showBarcodeScanError(exception?.message)
     }
 
+    override fun permissionRejectedClick() {
+        view?.showCameraPermissionRequiredDialog()
+    }
+
     override fun startCameraError(exc: Exception) {
         Timber.e(exc)
         view?.showStartCameraError()
@@ -101,5 +117,9 @@ class ScanOtpPresenter(
 
     override fun viewPaused() {
         view?.removeFlagSecure()
+    }
+
+    override fun settingsButtonClick() {
+        view?.navigateToAppSettings()
     }
 }

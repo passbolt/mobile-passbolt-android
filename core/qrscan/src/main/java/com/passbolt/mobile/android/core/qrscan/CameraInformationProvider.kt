@@ -1,7 +1,10 @@
-package com.passbolt.mobile.android.feature.setup.transferdetails
+package com.passbolt.mobile.android.core.qrscan
 
-import org.koin.core.module.Module
-import org.koin.core.qualifier.named
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.hardware.camera2.CameraManager
+import androidx.core.content.ContextCompat
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,12 +28,14 @@ import org.koin.core.qualifier.named
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-fun Module.transferDetailsModule() {
-    scope(named<TransferDetailsFragment>()) {
-        scoped<TransferDetailsContract.Presenter> {
-            TransferDetailsPresenter(
-                cameraInformationProvider = get()
-            )
-        }
-    }
+class CameraInformationProvider(
+    private val context: Context
+) {
+
+    fun isCameraAvailable(): Boolean =
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) &&
+                (context.getSystemService(Context.CAMERA_SERVICE) as CameraManager).cameraIdList.isNotEmpty()
+
+    fun isCameraPermissionGranted(): Boolean =
+        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
 }

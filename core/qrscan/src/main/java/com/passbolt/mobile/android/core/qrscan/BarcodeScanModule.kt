@@ -7,6 +7,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.passbolt.mobile.android.core.qrscan.analyzer.QrCodeImageAnalyzer
 import com.passbolt.mobile.android.core.qrscan.analyzer.QrCodeImageAnalyzerResultsConsumer
 import com.passbolt.mobile.android.core.qrscan.manager.ScanManager
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.qualifier.named
@@ -38,11 +39,16 @@ import org.koin.dsl.module
 const val SCAN_MANAGER_SCOPE = "SCAN_MANAGER_SCOPE"
 
 val barcodeScanModule = module {
+    factory {
+        CameraInformationProvider(
+            context = androidApplication()
+        )
+    }
+
     scope(named(SCAN_MANAGER_SCOPE)) {
         scopedOf(::ScanManager)
         scopedOf(::QrCodeImageAnalyzer)
         scopedOf(::QrCodeImageAnalyzerResultsConsumer)
-
         scoped {
             BarcodeScannerOptions.Builder()
                 .setBarcodeFormats(Barcode.FORMAT_QR_CODE)

@@ -6,10 +6,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.common.dialogs.cameraRequiredDialog
+import com.passbolt.mobile.android.common.dialogs.provideCameraPermissionInSettingsDialog
 import com.passbolt.mobile.android.common.extension.fromHtml
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
@@ -46,7 +46,15 @@ class TransferDetailsFragment : BindingScopedFragment<FragmentTransferDetailsBin
 ), TransferDetailsContract.View {
 
     private val presenter: TransferDetailsContract.Presenter by inject()
-    private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
+    private var requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            presenter.scanQrCodesButtonClick()
+        } else {
+            presenter.permissionRejectedClick()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,24 +64,15 @@ class TransferDetailsFragment : BindingScopedFragment<FragmentTransferDetailsBin
         addSteps()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        initActivityResultLauncher()
-    }
-
     override fun onDestroyView() {
         presenter.detach()
         super.onDestroyView()
     }
 
     override fun showCameraPermissionRequiredDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(LocalizationR.string.transfer_details_camera_access_dialog_title)
-            .setMessage(LocalizationR.string.transfer_details_camera_access_dialog_message)
-            .setPositiveButton(LocalizationR.string.settings) { _, _ ->
-                presenter.settingsButtonClick()
-            }
-            .setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
+        provideCameraPermissionInSettingsDialog(requireContext()) {
+            presenter.settingsButtonClick()
+        }
             .show()
     }
 
@@ -85,18 +84,6 @@ class TransferDetailsFragment : BindingScopedFragment<FragmentTransferDetailsBin
         startActivity(intent)
     }
 
-    private fun initActivityResultLauncher() {
-        requestPermissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted) {
-                presenter.scanQrCodesButtonClick()
-            } else {
-                presenter.permissionRejectedClick()
-            }
-        }
-    }
-
     private fun setListeners() {
         binding.scanQrCodesButton.setDebouncingOnClick {
             presenter.scanQrCodesButtonClick()
@@ -104,15 +91,11 @@ class TransferDetailsFragment : BindingScopedFragment<FragmentTransferDetailsBin
     }
 
     override fun showCameraRequiredDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(LocalizationR.string.transfer_details_camera_required_dialog_title)
-            .setMessage(LocalizationR.string.transfer_details_camera_required_dialog_message)
-            .setPositiveButton(LocalizationR.string.ok) { _, _ -> }
-            .show()
+        cameraRequiredDialog(requireContext()).show()
     }
 
     override fun requestCameraPermission() {
-        requestPermissionLauncher?.launch(CAMERA)
+        requestPermissionLauncher.launch(CAMERA)
     }
 
     private fun addSteps() {

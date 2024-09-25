@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.feature.setup.transferdetails
-
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.hardware.camera2.CameraManager
-import androidx.core.content.ContextCompat
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -28,14 +20,32 @@ import androidx.core.content.ContextCompat
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class CameraInformationProvider constructor(
-    private val context: Context
-) {
 
-    fun isCameraAvailable(): Boolean =
-        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) &&
-                (context.getSystemService(Context.CAMERA_SERVICE) as CameraManager).cameraIdList.isNotEmpty()
+package com.passbolt.mobile.android.feature.otp.scanotp
 
-    fun isCameraPermissionGranted(): Boolean =
-        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.qrscan.CameraInformationProvider
+import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpQrParser
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import org.mockito.kotlin.mock
+
+
+internal val cameraInformationProvider = mock<CameraInformationProvider>()
+internal val qrParser = mock<OtpQrParser>()
+
+@ExperimentalCoroutinesApi
+val scanOtpTestModule = module {
+    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
+
+    factory<ScanOtpContract.Presenter> {
+        ScanOtpPresenter(
+            otpQrParser = qrParser,
+            cameraInformationProvider = cameraInformationProvider,
+            coroutineLaunchContext = get()
+        )
+    }
 }

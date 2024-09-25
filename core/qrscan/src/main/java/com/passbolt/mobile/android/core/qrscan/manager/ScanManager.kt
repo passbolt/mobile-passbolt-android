@@ -33,7 +33,7 @@ import java.util.concurrent.Executor
  * @since v1.0
  */
 
-class ScanManager constructor(
+class ScanManager(
     private val mainExecutor: Executor,
     private val barcodeImageAnalyzer: QrCodeImageAnalyzer,
     private val cameraController: LifecycleCameraController,

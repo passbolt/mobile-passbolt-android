@@ -367,7 +367,7 @@
     <string name="transfer_details_camera_access_dialog_message">Please provide permissions to the Passbolt application to access the camera in your settings.</string>
 
     <string name="scan_qr_exit_confirmation_dialog_message">If you leave, you will need to scan QR codes again.</string>
-    <string name="scan_qr_exit_information_dialog_message">You will see a sequence of QR codes. We will scan these codes until the progress bar is full. then you will be able to login!</string>
+    <string name="scan_qr_exit_information_dialog_message">You will see a sequence of QR codes. We will scan these codes until the progress bar is full. Then you will be able to login!</string>
     <string name="scan_qr_exit_information_dialog_title">Scanning QR codes</string>
     <string name="scan_qr_keep_going">Scanning QR codes</string>
     <string name="scan_qr_aim_at_qr_code">Aim the camera at the QR Code</string>
