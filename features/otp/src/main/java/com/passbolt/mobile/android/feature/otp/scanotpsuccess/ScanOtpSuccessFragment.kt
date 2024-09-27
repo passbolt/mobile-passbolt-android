@@ -74,6 +74,11 @@ class ScanOtpSuccessFragment :
         presenter.argsRetrieved(navArgs.scannedTotp)
     }
 
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
     private fun setupView() {
         with(binding.resultView) {
             setIcon(CoreUiR.drawable.ic_success)

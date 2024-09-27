@@ -90,6 +90,11 @@ class CreateOtpFragment :
         presenter.argsRetrieved(args.editedOtpResourceId)
     }
 
+    override fun onDestroyView() {
+        presenter.detach()
+        super.onDestroyView()
+    }
+
     override fun setupEditUi() {
         with(binding) {
             toolbar.toolbarTitle = getString(LocalizationR.string.otp_edit_title)
