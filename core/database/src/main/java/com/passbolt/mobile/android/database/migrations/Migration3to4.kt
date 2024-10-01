@@ -34,7 +34,7 @@ object Migration3to4 : Migration(3, 4) {
         "ALTER TABLE Resource ADD COLUMN modified INTEGER NOT NULL DEFAULT " +
                 "'${ZonedDateTime.now().toInstant().toEpochMilli()}'"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL(ADD_RESOURCE_MODIFIED_COLUMN)
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(ADD_RESOURCE_MODIFIED_COLUMN)
     }
 }

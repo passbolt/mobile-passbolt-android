@@ -33,17 +33,22 @@ class AddLocalResourcesUseCase(
 ) : AsyncUseCase<AddLocalResourcesUseCase.Input, Unit> {
 
     override suspend fun execute(input: Input) {
-        databaseProvider
-            .get(input.userId)
-            .resourcesDao()
-            .insertAll(
-                input.passwordModels.map {
-                    resourceModelMapper.map(it)
-                })
+        val db = databaseProvider.get(input.userId)
+        val resourcesDao = db.resourcesDao()
+        val resourceMetadataDao = db.resourceMetadataDao()
+        val resourceUriDao = db.resourceUriDao()
+
+        input.resourceModels.forEach {
+            resourcesDao.insert(resourceModelMapper.map(it))
+            resourceMetadataDao.insert(resourceModelMapper.mapResourceMetadata(it))
+            resourceModelMapper.mapResourceUri(it)?.let { uri ->
+                resourceUriDao.insert(uri)
+            }
+        }
     }
 
     data class Input(
-        val passwordModels: List<ResourceModel>,
+        val resourceModels: List<ResourceModel>,
         val userId: String
     )
 }

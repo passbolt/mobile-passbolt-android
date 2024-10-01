@@ -26,7 +26,9 @@ import androidx.recyclerview.widget.RecyclerView
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class OverlappingItemDecorator(private val overlap: Overlap) : RecyclerView.ItemDecoration() {
+class OverlappingItemDecorator : RecyclerView.ItemDecoration() {
+
+    var overlap = Overlap()
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         if (!EXCLUDED_POSITIONS.contains(parent.getChildAdapterPosition(view))) {

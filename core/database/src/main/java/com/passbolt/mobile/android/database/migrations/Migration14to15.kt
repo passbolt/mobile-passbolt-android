@@ -59,8 +59,8 @@ object Migration14to15 : Migration(14, 15) {
             "`secretSchemaJson` TEXT NOT NULL, " +
             "PRIMARY KEY(`resourceTypeId`))"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        with(database) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
             execSQL(DROP_EXISTING_RESOURCES_TABLE)
             execSQL(DROP_EXISTING_RESOURCES_TYPES_TABLE)
             execSQL(CREATE_NEW_RESOURCES_TABLE)

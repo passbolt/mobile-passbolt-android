@@ -34,8 +34,8 @@ object Migration8to9 : Migration(8, 9) {
     private const val ADD_RESOURCE_AND_USERS_CROSS_REF_PERMISSION_COLUMN =
         "ALTER TABLE ResourceAndUsersCrossRef ADD COLUMN permissionId TEXT NOT NULL DEFAULT ''"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        with(database) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
             execSQL(ADD_RESOURCE_AND_GROUPS_CROSS_REF_PERMISSION_COLUMN)
             execSQL(ADD_RESOURCE_AND_USERS_CROSS_REF_PERMISSION_COLUMN)
         }

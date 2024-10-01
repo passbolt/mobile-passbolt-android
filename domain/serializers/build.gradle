@@ -10,6 +10,7 @@ dependencies {
     implementation project(':storage')
     implementation project(':resourcetypes')
     implementation project(':supportedresourcetypes')
+    implementation project(':gopenpgp')
 
     implementation libs.koin
     implementation libs.gson

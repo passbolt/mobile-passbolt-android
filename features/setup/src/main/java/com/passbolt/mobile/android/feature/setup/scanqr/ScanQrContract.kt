@@ -34,7 +34,6 @@ interface ScanQrContract {
     interface View : BaseContract.View {
         fun showExitConfirmation()
         fun navigateBack()
-        fun showInformationDialog()
         fun startAnalysis()
         fun showStartCameraError()
         fun scanResultChannel(): StateFlow<BarcodeScanResult>

@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.core.commongroups.usecase
 
+import android.database.SQLException
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
-import net.sqlcipher.SQLException
 import timber.log.Timber
 
 /**

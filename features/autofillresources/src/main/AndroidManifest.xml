@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.passbolt.mobile.android.feature.autofill">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -39,6 +38,6 @@
                 Accessibility autofill is a users aware opt-in choice from the application settings." />
         </service>
 
-        <activity android:name=".resources.AutofillResourcesActivity" />
+        <activity android:name="com.passbolt.mobile.android.feature.autofill.resources.AutofillResourcesActivity" />
     </application>
 </manifest>

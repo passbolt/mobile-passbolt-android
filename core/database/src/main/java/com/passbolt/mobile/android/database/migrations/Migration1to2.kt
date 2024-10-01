@@ -32,7 +32,7 @@ object Migration1to2 : Migration(1, 2) {
     private const val ADD_RESOURCE_TYPE_SLUG_COLUMN =
         "ALTER TABLE ResourceType ADD COLUMN slug TEXT NOT NULL DEFAULT ''"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL(ADD_RESOURCE_TYPE_SLUG_COLUMN)
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(ADD_RESOURCE_TYPE_SLUG_COLUMN)
     }
 }

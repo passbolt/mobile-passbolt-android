@@ -18,6 +18,7 @@ import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.deeplinks.NavDeepLinkProvider
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
+import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.folderdetails.databinding.FragmentFolderDetailsBinding
 import com.passbolt.mobile.android.locationdetails.LocationItem
@@ -74,6 +75,7 @@ class FolderDetailsFragment :
             binding.sharedWithRecyclerClickableArea,
             binding.sharedWithNavIcon
         )
+    private val sharedWithDecorator: OverlappingItemDecorator by inject()
     private val locationFields
         get() = listOf(binding.locationHeader, binding.locationValue, binding.locationNavIcon)
 
@@ -85,6 +87,7 @@ class FolderDetailsFragment :
         initListeners()
         presenter.attach(this)
         binding.sharedWithRecycler.doOnLayout {
+            binding.sharedWithRecycler.addItemDecoration(sharedWithDecorator)
             presenter.argsRetrieved(
                 args.folderId,
                 it.width,
@@ -154,8 +157,7 @@ class FolderDetailsFragment :
         overlap: Int
     ) {
         sharedWithFields.forEach { it.visible() }
-        val decorator = OverlappingItemDecorator(OverlappingItemDecorator.Overlap(left = overlap))
-        binding.sharedWithRecycler.addItemDecoration(decorator)
+        sharedWithDecorator.overlap = Overlap(left = overlap)
         FastAdapterDiffUtil.calculateDiff(groupPermissionsItemAdapter, groupPermissions.map { GroupItem(it) })
         FastAdapterDiffUtil.calculateDiff(userPermissionsItemAdapter, userPermissions.map { UserItem(it) })
         FastAdapterDiffUtil.calculateDiff(permissionsCounterItemAdapter, counterValue.map { CounterItem(it) })

@@ -41,6 +41,7 @@ class KeyStoreWrapper(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             setUserAuthenticationParameters(KEY_AUTH_DURATION_ZERO, KeyProperties.AUTH_BIOMETRIC_STRONG)
         } else {
+            @Suppress("DEPRECATION")
             setUserAuthenticationValidityDurationSeconds(KEY_AUTH_EVERY_USAGE)
         }
     }

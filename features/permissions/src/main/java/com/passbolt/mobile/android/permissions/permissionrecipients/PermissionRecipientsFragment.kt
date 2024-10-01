@@ -14,10 +14,8 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.ISelectionListener
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.mikepenz.fastadapter.adapters.ItemFilter
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.fastadapter.select.getSelectExtension
-import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.extension.clearEndIcon
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.initDefaultToolbar
@@ -25,10 +23,10 @@ import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
 import com.passbolt.mobile.android.core.extension.setSearchEndIconWithListener
 import com.passbolt.mobile.android.core.extension.visible
 import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
+import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator.Overlap
 import com.passbolt.mobile.android.feature.authentication.BindingScopedAuthenticatedFragment
 import com.passbolt.mobile.android.feature.permissions.databinding.FragmentPermissionRecipientsBinding
 import com.passbolt.mobile.android.permissions.permissionrecipients.recipientsrecycler.ExistingUsersAndGroupsHeaderItem
-import com.passbolt.mobile.android.permissions.permissionrecipients.recipientsrecycler.GenericFilteredByConstraintListener
 import com.passbolt.mobile.android.permissions.permissionrecipients.recipientsrecycler.GroupRecipientItem
 import com.passbolt.mobile.android.permissions.permissionrecipients.recipientsrecycler.UserRecipientItem
 import com.passbolt.mobile.android.permissions.permissions.recycler.PermissionItem
@@ -92,10 +90,9 @@ class PermissionRecipientsFragment :
         named(ALREADY_ADDED_COUNTER_ITEM_ADAPTER)
     )
     private val alreadyAddedFastAdapter: FastAdapter<GenericItem> by inject(named(ALREADY_ADDED_ADAPTER))
-    private lateinit var alreadyAddedItemDecorator: OverlappingItemDecorator
+    private val alreadyAddedItemDecorator: OverlappingItemDecorator by inject()
 
     private val args: PermissionRecipientsFragmentArgs by navArgs()
-    private val searchableMatcher: SearchableMatcher by inject()
 
     private val userOrGroupSelectedListener = object : ISelectionListener<GenericItem> {
         override fun onSelectionChanged(item: GenericItem, selected: Boolean) {
@@ -107,11 +104,6 @@ class PermissionRecipientsFragment :
         }
     }
 
-    private val filteredByConstraintListener = GenericFilteredByConstraintListener(
-        onFiltered = { constraint, resultsSize -> presenter.groupsAndUsersItemsFiltered(constraint, resultsSize) },
-        onFilterReset = { presenter.groupsAndUsersFilterReset() }
-    )
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initDefaultToolbar(binding.toolbar)
@@ -120,6 +112,7 @@ class PermissionRecipientsFragment :
         initAlreadyAddedRecycler()
         presenter.attach(this)
         binding.alreadyAddedRecycler.doOnLayout {
+            binding.alreadyAddedRecycler.addItemDecoration(alreadyAddedItemDecorator)
             presenter.argsReceived(
                 args.groupPermissions.toList(),
                 args.userPermissions.toList(),
@@ -175,30 +168,10 @@ class PermissionRecipientsFragment :
             withSavedInstanceState(savedInstanceState, BUNDLE_USERS_AND_GROUPS_ADAPTER_SELECTIONS)
         }
 
-        setupItemFilter(groupRecipientItemAdapter.itemFilter) { item: GenericItem, constraint: CharSequence? ->
-            searchableMatcher.matches((item as GroupRecipientItem).model, constraint.toString())
-        }
-        setupItemFilter(userRecipientItemAdapter.itemFilter) { item: GenericItem, constraint: CharSequence? ->
-            searchableMatcher.matches((item as UserRecipientItem).model, constraint.toString())
-        }
-
         with(binding.recipientsRecycler) {
             layoutManager = LinearLayoutManager(context)
             adapter = usersAndGroupsFastAdapter
         }
-    }
-
-    private fun setupItemFilter(
-        itemFilter: ItemFilter<GenericItem, GenericItem>,
-        function: (GenericItem, CharSequence?) -> Boolean
-    ) {
-        itemFilter.filterPredicate = function
-        itemFilter.itemFilterListener = filteredByConstraintListener
-    }
-
-    override fun filterGroupsAndUsers(searchText: String) {
-        groupRecipientItemAdapter.filter(searchText)
-        userRecipientItemAdapter.filter(searchText)
     }
 
     override fun showExistingUsersAndGroups(list: List<PermissionModelUi>) {
@@ -224,11 +197,7 @@ class PermissionRecipientsFragment :
         counterValue: List<String>,
         overlap: Int
     ) {
-        if (::alreadyAddedItemDecorator.isInitialized) {
-            binding.alreadyAddedRecycler.removeItemDecoration(alreadyAddedItemDecorator)
-        }
-        alreadyAddedItemDecorator = OverlappingItemDecorator(OverlappingItemDecorator.Overlap(left = overlap))
-        binding.alreadyAddedRecycler.addItemDecoration(alreadyAddedItemDecorator)
+        alreadyAddedItemDecorator.overlap = Overlap(left = overlap)
         FastAdapterDiffUtil.calculateDiff(alreadyAddedGroupsItemAdapter, groupPermissions.map { GroupItem(it) })
         FastAdapterDiffUtil.calculateDiff(alreadyAddedUsersItemAdapter, userPermissions.map { UserItem(it) })
         FastAdapterDiffUtil.calculateDiff(alreadyAddedCounterItemAdapter, counterValue.map { CounterItem(it) })

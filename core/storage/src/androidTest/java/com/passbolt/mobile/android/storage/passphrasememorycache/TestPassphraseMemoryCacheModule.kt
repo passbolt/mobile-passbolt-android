@@ -4,6 +4,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -30,8 +31,10 @@ import org.koin.dsl.module
  * @since v1.0
  */
 
+@ExperimentalCoroutinesApi
 internal val testCoroutineLaunchContext = TestCoroutineLaunchContext()
 
+@ExperimentalCoroutinesApi
 internal val testPassphraseMemoryCacheModule = module {
     single {
         PassphraseMemoryCache(

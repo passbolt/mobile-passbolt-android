@@ -3,6 +3,7 @@ package com.passbolt.mobile.android.permissions.permissions
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
 import androidx.fragment.app.setFragmentResult
@@ -72,33 +73,49 @@ class PermissionsFragment :
         get() = binding.addPermissionButton
     private val newRecipientsAddedListener = { _: String, bundle: Bundle ->
         presenter.shareRecipientsAdded(
-            bundle.getParcelableArrayList(PermissionRecipientsFragment.EXTRA_NEW_PERMISSIONS)
+            BundleCompat.getParcelableArrayList(
+                bundle,
+                PermissionRecipientsFragment.EXTRA_NEW_PERMISSIONS,
+                PermissionModelUi::class.java
+            )
         )
     }
     private val userPermissionUpdatedListener = { _: String, bundle: Bundle ->
-        bundle.getParcelable<PermissionModelUi.UserPermissionModel>(
-            UserPermissionsFragment.EXTRA_UPDATED_USER_PERMISSION
+        BundleCompat.getParcelable(
+            bundle,
+            UserPermissionsFragment.EXTRA_UPDATED_USER_PERMISSION,
+            PermissionModelUi.UserPermissionModel::class.java
         )?.let { permission ->
             presenter.userPermissionModified(permission)
         }
-        bundle.getParcelable<PermissionModelUi.UserPermissionModel>(
-            UserPermissionsFragment.EXTRA_DELETED_USER_PERMISSION
+
+        BundleCompat.getParcelable(
+            bundle,
+            UserPermissionsFragment.EXTRA_DELETED_USER_PERMISSION,
+            PermissionModelUi.UserPermissionModel::class.java
         )?.let { permission ->
             presenter.userPermissionDeleted(permission)
         }
+
         Unit
     }
     private val groupPermissionUpdatedListener = { _: String, bundle: Bundle ->
-        bundle.getParcelable<PermissionModelUi.GroupPermissionModel>(
-            GroupPermissionsFragment.EXTRA_UPDATED_GROUP_PERMISSION
+        BundleCompat.getParcelable(
+            bundle,
+            GroupPermissionsFragment.EXTRA_UPDATED_GROUP_PERMISSION,
+            PermissionModelUi.GroupPermissionModel::class.java
         )?.let { permission ->
             presenter.groupPermissionModified(permission)
         }
-        bundle.getParcelable<PermissionModelUi.GroupPermissionModel>(
-            GroupPermissionsFragment.EXTRA_DELETED_GROUP_PERMISSION
+
+        BundleCompat.getParcelable(
+            bundle,
+            GroupPermissionsFragment.EXTRA_DELETED_GROUP_PERMISSION,
+            PermissionModelUi.GroupPermissionModel::class.java
         )?.let { permission ->
             presenter.groupPermissionDeleted(permission)
         }
+
         Unit
     }
 

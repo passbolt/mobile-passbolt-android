@@ -64,8 +64,8 @@ object Migration7to8 : Migration(7, 8) {
                 "`permission` TEXT NOT NULL, " +
                 "PRIMARY KEY(`resourceId`, `userId`))"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        with(database) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
             execSQL(CREATE_USERS_TABLE)
             execSQL(DROP_RESOURCE_AND_GROUPS_CROSS_REF_TABLE)
             execSQL(CREATE_RESOURCE_AND_GROUPS_CROSS_REF_TABLE)

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.passbolt.mobile.android.common.WebsiteOpener
@@ -50,7 +51,7 @@ class HelpMenuFragment : BottomSheetDialogFragment(), AndroidScopeComponent, Hel
     private var listener: Listener? = null
     private val websiteOpener: WebsiteOpener by inject()
     private val bundledShowQrCodesHelp by lifecycleAwareLazy {
-        requireNotNull(requireArguments().getParcelable<HelpMenuModel>(EXTRA_HELP_MENU_MODEL))
+        requireNotNull(BundleCompat.getParcelable(requireArguments(), EXTRA_HELP_MENU_MODEL, HelpMenuModel::class.java))
     }
     private val presenter: HelpMenuContract.Presenter by scope.inject()
     private val enableLogsSwitchChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->

@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.setup.transferdetails
 
-import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 
@@ -31,11 +30,6 @@ fun Module.transferDetailsModule() {
         scoped<TransferDetailsContract.Presenter> {
             TransferDetailsPresenter(
                 cameraInformationProvider = get()
-            )
-        }
-        scoped {
-            CameraInformationProvider(
-                context = androidApplication()
             )
         }
     }

@@ -7,6 +7,8 @@ import com.passbolt.mobile.android.core.ui.formatter.DateFormatter
 import com.passbolt.mobile.android.core.ui.formatter.FingerprintFormatter
 import com.passbolt.mobile.android.core.ui.formatter.OtpFormatter
 import com.passbolt.mobile.android.core.ui.initialsicon.InitialsIconGenerator
+import com.passbolt.mobile.android.core.ui.recyclerview.OverlappingItemDecorator
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -42,6 +44,7 @@ val coreUiModule = module {
     singleOf(::OtpFormatter)
     singleOf(::FingerprintFormatter)
     singleOf(::DateFormatter)
+    factoryOf(::OverlappingItemDecorator)
 
     single {
         DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm O")

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.DialogFragment
 import com.passbolt.mobile.android.common.WebsiteOpener
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
@@ -42,8 +43,10 @@ class AutofillTutorialDialog : DialogFragment(), AutofillTutorialContract.View, 
 
     override val scope by fragmentScope(useParentActivityScope = false)
     private val presenter: AutofillTutorialContract.Presenter by scope.inject()
-    private val tutorialMode: TutorialMode by lifecycleAwareLazy {
-        requireArguments().getSerializable(TUTORIAL_MODE_KEY) as TutorialMode
+    private val tutorialMode by lifecycleAwareLazy {
+        requireNotNull(
+            BundleCompat.getSerializable(requireArguments(), TUTORIAL_MODE_KEY, TutorialMode::class.java)
+        )
     }
     private val websiteOpener: WebsiteOpener by inject()
     private val settingsNavigator: SettingsNavigator by inject()

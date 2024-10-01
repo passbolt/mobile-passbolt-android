@@ -28,8 +28,7 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.allSlugs
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -57,7 +56,7 @@ open class ResourceListDeserializer(
                 .provideMappingForSelectedAccount()
 
             val supportedResourceTypesIds = resourceTypeIdToSlugMapping
-                .filter { it.value in homeSlugs + totpSlugs }
+                .filter { it.value in allSlugs }
                 .keys
 
             val singleResourceDeserializer = get<ResourceListItemDeserializer> {

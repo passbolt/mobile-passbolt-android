@@ -1,5 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.transferdetails
 
+import com.passbolt.mobile.android.core.qrscan.CameraInformationProvider
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA

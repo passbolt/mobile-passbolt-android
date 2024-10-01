@@ -29,9 +29,10 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
+import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.allSlugs
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
@@ -60,22 +61,33 @@ open class SingleResourceDeserializer(
                 .provideMappingForSelectedAccount()
 
             val supportedResourceTypesIds = resourceTypeIdToSlugMapping
-                .filter { it.value in homeSlugs + totpSlugs }
+                .filter { it.value in allSlugs }
                 .keys
+
+            val resourceTypeId = json.asJsonObject[SerializedNames.RESOURCE_TYPE_ID].asString
+            val slug = resourceTypeIdToSlugMapping[UUID.fromString(resourceTypeId)]
 
             if (json.isJsonObject) {
                 if (!json.asJsonObject.isJsonNull) {
-                    val resource = gson.fromJson(json, ResourceResponseDto::class.java)
+                    if (slug in SupportedContentTypes.v4Slugs) {
+                        val resource = gson.fromJson(json, ResourceResponseV4Dto::class.java)
 
-                    if (isSupported(resource, supportedResourceTypesIds) &&
-                        isValid(resource.resourceTypeId, json.toString(), resourceTypeIdToSlugMapping)
-                    ) {
-                        resource.apply {
-                            resourceJson = json.toString()
+                        if (isSupported(resource, supportedResourceTypesIds) &&
+                            isValid(resource.resourceTypeId, json.toString(), resourceTypeIdToSlugMapping)
+                        ) {
+                            resource
+                        } else {
+                            Timber.d("Invalid resource found id=(${resource.id}, skipping")
+                            null
                         }
+                    } else if (slug in SupportedContentTypes.v5Slugs) {
+                        // TODO (v5) prepared for v5 content types
+                        // TODO parse into ResourceResponseV5Dto and add JSON schema validation and supported check
+                        @Suppress("UseRequire")
+                        throw IllegalArgumentException("Unsupported v5 resource type slug: $slug")
                     } else {
-                        Timber.d("Invalid resource found id=(${resource.id}, skipping")
-                        null
+                        @Suppress("UseRequire")
+                        throw IllegalArgumentException("Unsupported resource type slug: $slug")
                     }
                 } else {
                     Timber.e("Encountered a null root json element when parsing resources")
@@ -100,6 +112,6 @@ open class SingleResourceDeserializer(
         }
     }
 
-    private fun isSupported(resource: ResourceResponseDto, supportedResourceTypesIds: Set<UUID>) =
+    private fun isSupported(resource: ResourceResponseV4Dto, supportedResourceTypesIds: Set<UUID>) =
         resource.resourceTypeId in supportedResourceTypesIds
 }

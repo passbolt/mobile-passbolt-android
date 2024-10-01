@@ -1,9 +1,7 @@
 package com.passbolt.mobile.android.common.lifecycleawarelazy
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import java.io.Serializable
 
 /**
@@ -36,9 +34,8 @@ class LifecycleAwareLazy<out T>(owner: LifecycleOwner, private val initializer: 
     private var _value: T? = null
 
     init {
-        owner.lifecycle.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-            fun onStop() {
+        owner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStop(owner: LifecycleOwner) {
                 _value = null
             }
         })

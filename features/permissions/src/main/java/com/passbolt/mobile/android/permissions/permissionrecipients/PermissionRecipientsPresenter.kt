@@ -63,6 +63,10 @@ class PermissionRecipientsPresenter(
     private lateinit var alreadyAddedGroups: List<PermissionModelUi.GroupPermissionModel>
     private lateinit var groups: List<GroupModel>
     private lateinit var users: List<UserModel>
+    private lateinit var filteredGroups: List<GroupModel>
+    private lateinit var filteredUsers: List<UserModel>
+    private val filteredEntitiesSize: Int
+        get() = filteredGroups.size + filteredUsers.size
 
     /*
         Initial users and groups list has to be filtered - existing permissions have to be excluded from list.
@@ -98,28 +102,22 @@ class PermissionRecipientsPresenter(
 
     override fun searchTextChange(searchText: String) {
         processSearchIconChange(searchText)
-        view?.filterGroupsAndUsers(searchText)
-    }
+        filteredGroups = groups.filter { searchableMatcher.matches(it, searchText) }
+        filteredUsers = users.filter { searchableMatcher.matches(it, searchText) }
+        view?.showRecipients(filteredGroups, filteredUsers)
 
-    /*
-        User entered search query - show existing permissions additionally.
-     */
-    override fun groupsAndUsersItemsFiltered(constraint: String, resultsSize: Int) {
-        val filteredExistingUsersAndGroups = (alreadyAddedGroups + alreadyAddedUsers)
-            .filter { searchableMatcher.matches(it, constraint) }
-        view?.showExistingUsersAndGroups(filteredExistingUsersAndGroups)
-        if (resultsSize == 0 && filteredExistingUsersAndGroups.isEmpty()) {
-            view?.showEmptyState()
+        if (searchText.isNotBlank()) {
+            val filteredExistingUsersAndGroups = (alreadyAddedGroups + alreadyAddedUsers)
+                .filter { searchableMatcher.matches(it, searchText) }
+            view?.showExistingUsersAndGroups(filteredExistingUsersAndGroups)
+            if (filteredEntitiesSize == 0 && filteredExistingUsersAndGroups.isEmpty()) {
+                view?.showEmptyState()
+            } else {
+                view?.hideEmptyState()
+            }
         } else {
-            view?.hideEmptyState()
+            view?.showExistingUsersAndGroups(emptyList())
         }
-    }
-
-    /*
-        Search query is cleared - hide existing permissions.
-     */
-    override fun groupsAndUsersFilterReset() {
-        view?.showExistingUsersAndGroups(emptyList())
     }
 
     private fun processSearchIconChange(searchText: String) {

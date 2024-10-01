@@ -36,6 +36,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.material.R
 import com.passbolt.mobile.android.feature.otp.R.id.searchEditText
 import com.passbolt.mobile.android.withHint
 import com.passbolt.mobile.android.withIndex
@@ -104,4 +105,9 @@ internal fun signIn(passphrase: String) {
 internal fun pickFirstResourceWithName(name: String) {
     onView(withId(searchEditText)).perform(click(), typeText(name))
     onView(withIndex(index = 1, withText(name))).perform(click())
+}
+
+internal fun chooseFilter(filter: Int) {
+    onView(withId(R.id.text_input_start_icon)).perform(click())
+    onView(withId(filter)).perform(click())
 }

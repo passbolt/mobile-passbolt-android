@@ -25,31 +25,56 @@ import java.util.UUID
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
 /**
- * Model of resource used to parse backend response.
- * @param resourceTypeId id of the type of the resource (secret, secret with description and more in future)
- * @param resourceFolderId id of the resource folder or null if in root
- * @param favorite if resource is in favourites it contains a favourite object else null
+ * A compatibility resource model - can eiter support v4 resource or v5 resource with metadata.
  */
-data class ResourceResponseDto(
+sealed class ResourceResponseDto(
     val id: UUID,
     @SerializedName("resource_type_id")
     val resourceTypeId: UUID,
     @SerializedName("folder_parent_id")
     val resourceFolderId: UUID?,
-    val description: String?,
-    val name: String,
-    val uri: String?,
-    val username: String?,
     val permission: PermissionDto,
     val favorite: FavouriteDto?,
     val modified: String,
     val tags: List<TagDto>?,
     val expired: String?,
     val permissions: List<PermissionWithGroupDto>?
-) {
-    lateinit var resourceJson: String
-}
+)
+
+class ResourceResponseV4Dto(
+    val description: String?,
+    val name: String,
+    val uri: String?,
+    val username: String?,
+    id: UUID,
+    resourceTypeId: UUID,
+    resourceFolderId: UUID?,
+    permission: PermissionDto,
+    favorite: FavouriteDto?,
+    modified: String,
+    tags: List<TagDto>?,
+    expired: String?,
+    permissions: List<PermissionWithGroupDto>?
+) : ResourceResponseDto(
+    id, resourceTypeId, resourceFolderId, permission, favorite, modified, tags, expired, permissions
+)
+
+class ResourceResponseV5Dto(
+    val metadata: String,
+    id: UUID,
+    resourceTypeId: UUID,
+    resourceFolderId: UUID?,
+    permission: PermissionDto,
+    favorite: FavouriteDto?,
+    modified: String,
+    tags: List<TagDto>?,
+    expired: String?,
+    permissions: List<PermissionWithGroupDto>?
+) : ResourceResponseDto(
+    id, resourceTypeId, resourceFolderId, permission, favorite, modified, tags, expired, permissions
+)
 
 data class TagDto(
     val id: UUID,

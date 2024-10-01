@@ -1,0 +1,16 @@
+# Passbolt 1.22.0-32 Android app release notes
+
+## Added
+- MOB-1980: Added database and DTO support for incoming v5 resources
+
+## Improved
+- MOB-1999: Check camera permissions before adding totp by qr scan
+
+## Fixed
+- MOB-1895: Fixed filtering on permissions recipient screen
+- MOB-1894: Fix shared with UI overlap when many shared with many users
+- MOB-1994: Fix missing help dialog on welcome screen
+- MOB-2002: Fix simple password edit form crash
+
+## Maintenance
+- MOB-1870: Bumped dependencies versions

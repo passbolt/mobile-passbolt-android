@@ -144,6 +144,11 @@ class ScanQrPresenterTest : KoinTest {
         whenever(uuidProvider.get()).doReturn(testUserId.toString())
         whenever(checkAccountExistsUseCase.execute(any())).doReturn(CheckAccountExistsUseCase.Output(false))
         whenever(httpsVerifier.isHttps(anyOrNull())).thenReturn(true)
+        whenever(updateTransferUseCase.execute(any())).doReturn(
+            UpdateTransferUseCase.Output.Success(
+                UpdateTransferModel("id", null, null, null, null)
+            )
+        )
 
         parseFlow.emit(ParseResult.PassboltQr.FirstPage(FIRST_PAGE_RESERVED_BYTES_DTO, FIRST_PAGE_CONTENT))
 

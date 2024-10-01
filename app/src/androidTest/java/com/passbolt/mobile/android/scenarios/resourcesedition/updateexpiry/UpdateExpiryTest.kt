@@ -49,6 +49,7 @@ import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.scenarios.helpers.chooseFilter
 import com.passbolt.mobile.android.scenarios.helpers.createNewPasswordFromHomeScreen
 import com.passbolt.mobile.android.scenarios.helpers.signIn
 import com.passbolt.mobile.android.scenarios.resourcesedition.EditableFieldInput
@@ -163,9 +164,4 @@ class UpdateExpiryTest : KoinTest {
 
     private fun onViewInputWithHintName(hintName: String): ViewInteraction =
         onView(allOf(isDescendantOfA(withHint(equalTo(hintName))), withId(CoreUiR.id.input)))
-
-    private fun chooseFilter(filter: Int) {
-        onView(withId(MaterialR.id.text_input_start_icon)).perform(click())
-        onView(withId(filter)).perform(click())
-    }
 }

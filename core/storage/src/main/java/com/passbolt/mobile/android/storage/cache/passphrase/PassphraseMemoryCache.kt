@@ -1,10 +1,8 @@
 package com.passbolt.mobile.android.storage.cache.passphrase
 
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import com.passbolt.mobile.android.common.coroutinetimer.timerFlow
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
@@ -42,7 +40,7 @@ import timber.log.Timber
 class PassphraseMemoryCache(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val lifecycleOwner: LifecycleOwner
-) : LifecycleObserver {
+) : DefaultLifecycleObserver {
 
     private var value: PotentialPassphrase = PotentialPassphrase.PassphraseNotPresent()
 
@@ -90,8 +88,7 @@ class PassphraseMemoryCache(
         Timber.d("Passphrase cache cleared")
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun onAppBackground() {
+    override fun onStop(owner: LifecycleOwner) {
         Timber.d("App went background")
         clear()
     }

@@ -40,8 +40,6 @@ interface PermissionRecipientsContract {
         )
         fun searchTextChange(searchText: String)
         fun searchClearClick()
-        fun groupsAndUsersItemsFiltered(constraint: String, resultsSize: Int)
-        fun groupsAndUsersFilterReset()
         fun saveButtonClick()
     }
 
@@ -61,7 +59,6 @@ interface PermissionRecipientsContract {
         fun showClearSearchIcon()
         fun hideClearSearchIcon()
         fun clearSearch()
-        fun filterGroupsAndUsers(searchText: String)
         fun showExistingUsersAndGroups(list: List<PermissionModelUi>)
         fun setSelectedPermissionsResult(selectedPermissions: List<PermissionModelUi>)
         fun navigateBack()

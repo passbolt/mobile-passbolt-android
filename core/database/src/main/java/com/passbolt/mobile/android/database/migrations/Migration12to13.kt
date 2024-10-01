@@ -32,8 +32,8 @@ object Migration12to13 : Migration(12, 13) {
     private const val ADD_KEY_CREATION_DATE_COLUMN =
         "ALTER TABLE User ADD COLUMN created INTEGER"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        with(database) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
             execSQL(ADD_KEY_CREATION_DATE_COLUMN)
         }
     }

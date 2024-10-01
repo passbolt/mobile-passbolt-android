@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.ui.ResourcePermission
 import com.passbolt.mobile.android.ui.UserModel
 import com.passbolt.mobile.android.ui.UserProfileModel
 import com.passbolt.mobile.android.ui.UserWithAvatar
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -47,6 +48,7 @@ import java.time.ZonedDateTime
  * @since v1.0
  */
 
+@ExperimentalCoroutinesApi
 class UserPermissionsDetailsPresenterTest : KoinTest {
 
     private val presenter: UserPermissionsContract.Presenter by inject()

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.content.IntentCompat
 import com.passbolt.mobile.android.common.dialogs.encryptionErrorAlertDialog
 import com.passbolt.mobile.android.common.dialogs.pwnedPasswordAlertDialog
 import com.passbolt.mobile.android.common.dialogs.unableToGeneratePasswordAlertDialog
@@ -63,11 +64,20 @@ class UpdateResourceFragment :
     override val presenter: UpdateResourceContract.Presenter by inject()
     private val viewProvider: ViewProvider by inject()
     private val bundledExistingResource by lifecycleAwareLazy {
-        requireActivity().intent?.getParcelableExtra<ResourceModel>(ResourceActivity.EXTRA_RESOURCE_MODEL)
+        IntentCompat.getParcelableExtra(
+            requireActivity().intent,
+            ResourceActivity.EXTRA_RESOURCE_MODEL,
+            ResourceModel::class.java
+        )
     }
     private val bundledMode by lifecycleAwareLazy {
-        requireActivity().intent?.getSerializableExtra(ResourceActivity.EXTRA_RESOURCE_MODE)
-                as ResourceMode
+        requireNotNull(
+            IntentCompat.getSerializableExtra(
+                requireActivity().intent,
+                ResourceActivity.EXTRA_RESOURCE_MODE,
+                ResourceMode::class.java
+            )
+        )
     }
     private val bundledResourceParentFolderId by lifecycleAwareLazy {
         requireActivity().intent?.getStringExtra(ResourceActivity.EXTRA_RESOURCE_PARENT_FOLDER_ID)

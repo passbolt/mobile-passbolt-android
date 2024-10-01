@@ -6,7 +6,7 @@ tasks.named("dokkaHtmlPartial").configure {
         configureEach {
             includeNonPublic.set(true)
             skipEmptyPackages.set(true)
-            jdkVersion.set(11)
+            jdkVersion.set(17)
         }
     }
 }

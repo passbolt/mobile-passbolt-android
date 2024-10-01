@@ -1,10 +1,13 @@
 package com.passbolt.mobile.android.tagsdetails
 
+import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
@@ -36,7 +39,8 @@ internal val mockResourceTagsUseCase = mock<GetLocalResourceTagsUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceTagsModule = module {
-    factory<CoroutineLaunchContext> { TestCoroutineLaunchContext() }
+    factoryOf(::InitialsProvider)
+    factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
     factory<ResourceTagsContract.Presenter> {
         ResourceTagsPresenter(
             getLocalResourceUseCase = mockGetLocalResourceUseCase,

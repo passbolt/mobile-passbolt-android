@@ -163,3 +163,40 @@ fun weakPasswordAlertDialog(context: Context, onProceed: () -> Unit) =
         .setNegativeButton(LocalizationR.string.proceed) { _, _ -> onProceed() }
         .setCancelable(false)
         .create()
+
+fun provideCameraPermissionInSettingsDialog(context: Context, onSettingsClick: () -> Unit) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.transfer_details_camera_access_dialog_title)
+        .setMessage(LocalizationR.string.transfer_details_camera_access_dialog_message)
+        .setPositiveButton(LocalizationR.string.settings) { _, _ -> onSettingsClick() }
+        .setNegativeButton(LocalizationR.string.cancel) { _, _ -> }
+        .create()
+
+fun cameraRequiredDialog(context: Context) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.transfer_details_camera_required_dialog_title)
+        .setMessage(LocalizationR.string.transfer_details_camera_required_dialog_message)
+        .setPositiveButton(LocalizationR.string.ok) { _, _ -> }
+        .create()
+
+fun setupExitConfirmationDialog(context: Context, onExit: () -> Unit) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.are_you_sure)
+        .setMessage(LocalizationR.string.scan_qr_exit_confirmation_dialog_message)
+        .setPositiveButton(LocalizationR.string.cancel) { _, _ -> }
+        .setNegativeButton(LocalizationR.string.stop_scanning) { _, _ -> onExit() }
+        .create()
+
+fun qrCodesInformationDialog(context: Context) =
+    AlertDialog.Builder(context)
+        .setTitle(LocalizationR.string.scan_qr_exit_information_dialog_title)
+        .setMessage(LocalizationR.string.scan_qr_exit_information_dialog_message)
+        .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
+        .create()
+
+fun howToCreateAccountDialog(context: Context) =
+    AlertDialog.Builder(context, com.passbolt.mobile.android.core.ui.R.style.AlertDialogTheme)
+        .setTitle(LocalizationR.string.welcome_create_account_dialog_title)
+        .setMessage(LocalizationR.string.welcome_create_account_dialog_message)
+        .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
+        .create()

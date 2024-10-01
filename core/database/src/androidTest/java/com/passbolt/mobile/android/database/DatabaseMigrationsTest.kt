@@ -32,6 +32,7 @@ import com.passbolt.mobile.android.database.migrations.Migration11to12
 import com.passbolt.mobile.android.database.migrations.Migration12to13
 import com.passbolt.mobile.android.database.migrations.Migration13to14
 import com.passbolt.mobile.android.database.migrations.Migration14to15
+import com.passbolt.mobile.android.database.migrations.Migration15to16
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
@@ -302,14 +303,41 @@ class DatabaseMigrationsTest {
         helper.runMigrationsAndValidate(TEST_DB, 15, true, Migration14to15)
             .apply {
                 execSQL("INSERT INTO ResourceType VALUES('2', 'resourceTypeName', 'resourceTypeSlug', 'resourceSchemaJson', 'secretSchemaJson')")
-                execSQL(
-                    "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
-                            "'2', 'favouriteId',1644909225833,1644909225833, 'resourceJson')"
-                )
+
                 execSQL(
                     "INSERT INTO Resource VALUES('id3','folderid','name','READ','url','username','desc'," +
                             "'typeId', 'favouriteId', 1644909225833, null,'resourceJson')"
                 )
+                close()
+            }
+    }
+
+    @Test
+    fun migrate15To16() {
+        helper.createDatabase(TEST_DB, 15)
+            .apply {
+                execSQL("INSERT INTO ResourceType VALUES('2', 'resourceTypeName', 'resourceTypeSlug', 'resourceSchemaJson', 'secretSchemaJson')")
+
+                execSQL(
+                    "INSERT INTO Resource VALUES('id2','folderid','name','READ','url','username','desc'," +
+                            "'2', 'favouriteId',1644909225833,1644909225833, 'resourceJson')"
+                )
+                close()
+            }
+
+        helper.runMigrationsAndValidate(TEST_DB, 16, true, Migration15to16)
+            .apply {
+                execSQL("INSERT INTO ResourceType VALUES('3', 'resourceTypeName', 'resourceTypeSlug', 'resourceSchemaJson', 'secretSchemaJson', 1644909225833)")
+                execSQL("INSERT INTO ResourceType VALUES('4', 'resourceTypeName', 'resourceTypeSlug', 'resourceSchemaJson', 'secretSchemaJson', null)")
+                execSQL(
+                    "INSERT INTO Resource VALUES('id2','folderid','READ', '2'," +
+                            " 'favouriteId', 1644909225833, 1644909225833)"
+                )
+                execSQL(
+                    "INSERT INTO ResourceMetadata VALUES(1, 'id2', 'metadataJson', 'name', 'username', 'desc')"
+                )
+                execSQL("INSERT INTO ResourceUri VALUES(1, 'id2', 'uri1')")
+                execSQL("INSERT INTO ResourceUri VALUES(2, 'id2', 'uri2')")
                 close()
             }
     }
@@ -328,7 +356,7 @@ class DatabaseMigrationsTest {
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
                 Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11,
-                Migration11to12, Migration12to13, Migration13to14, Migration14to15
+                Migration11to12, Migration12to13, Migration13to14, Migration14to15, Migration15to16
             )
             .build().apply {
                 openHelper.writableDatabase

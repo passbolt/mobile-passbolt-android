@@ -13,5 +13,8 @@
 # OS
 .DS_Store
 
+# kotlin
+.kotlin
+
 # script templates with user data
 /scripts/implementation/

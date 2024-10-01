@@ -44,8 +44,8 @@ object Migration9to10 : Migration(9, 10) {
             "PRIMARY KEY(`resourceId`)" +
             ")"
 
-    override fun migrate(database: SupportSQLiteDatabase) {
-        with(database) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        with(db) {
             execSQL(DROP_RESOURCES_TABLE)
             execSQL(CREATE_RESOURCE_TABLE)
         }

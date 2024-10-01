@@ -41,11 +41,18 @@ interface ScanOtpContract {
         fun removeFlagSecure()
         fun showNotAnOtpBarcode()
         fun setResultAndNavigateBack(parserResult: OtpParseResult.OtpQr.TotpQr)
+        fun showCameraRequiredDialog()
+        fun requestCameraPermission()
+        fun showCameraPermissionRequiredDialog()
+        fun navigateToAppSettings()
     }
 
     interface Presenter : BaseContract.Presenter<View> {
         fun startCameraError(exc: Exception)
         fun viewResumed()
         fun viewPaused()
+        fun cameraPermissionGranted()
+        fun permissionRejectedClick()
+        fun settingsButtonClick()
     }
 }

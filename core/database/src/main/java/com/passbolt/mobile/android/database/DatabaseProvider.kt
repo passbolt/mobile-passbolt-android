@@ -8,6 +8,7 @@ import com.passbolt.mobile.android.database.migrations.Migration11to12
 import com.passbolt.mobile.android.database.migrations.Migration12to13
 import com.passbolt.mobile.android.database.migrations.Migration13to14
 import com.passbolt.mobile.android.database.migrations.Migration14to15
+import com.passbolt.mobile.android.database.migrations.Migration15to16
 import com.passbolt.mobile.android.database.migrations.Migration1to2
 import com.passbolt.mobile.android.database.migrations.Migration2to3
 import com.passbolt.mobile.android.database.migrations.Migration3to4
@@ -18,8 +19,8 @@ import com.passbolt.mobile.android.database.migrations.Migration7to8
 import com.passbolt.mobile.android.database.migrations.Migration8to9
 import com.passbolt.mobile.android.database.migrations.Migration9to10
 import com.passbolt.mobile.android.storage.usecase.database.GetResourcesDatabasePassphraseUseCase
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SupportFactory
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
+import java.nio.charset.StandardCharsets
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -55,12 +56,13 @@ class DatabaseProvider(
     private var instance: HashMap<String, ResourceDatabase?> = hashMapOf()
 
     fun get(userId: String): ResourceDatabase {
+        System.loadLibrary("sqlcipher")
         val currentUser = messageDigestHash.sha256(userId)
         instance[currentUser]?.let {
             return it
         }
         val passphrase = getResourcesDatabasePassphraseUseCase.execute(Unit).passphrase
-        val factory = SupportFactory(SQLiteDatabase.getBytes(passphrase.toCharArray()))
+        val factory = SupportOpenHelperFactory(passphrase.toByteArray(StandardCharsets.UTF_8))
         val newInstance = Room.databaseBuilder(
             context,
             ResourceDatabase::class.java, "${currentUser}_$RESOURCE_DATABASE_NAME"
@@ -68,7 +70,7 @@ class DatabaseProvider(
             .addMigrations(
                 Migration1to2, Migration2to3, Migration3to4, Migration4to5, Migration5to6,
                 Migration6to7, Migration7to8, Migration8to9, Migration9to10, Migration10to11,
-                Migration11to12, Migration12to13, Migration13to14, Migration14to15
+                Migration11to12, Migration12to13, Migration13to14, Migration14to15, Migration15to16
             )
             .openHelperFactory(factory)
             .build()

@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.core.resources.usecase.db
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -30,19 +30,23 @@ import com.passbolt.mobile.android.ui.ResourceModel
  */
 class AddLocalResourceUseCase(
     private val databaseProvider: DatabaseProvider,
-    private val resourceModelMapper: ResourceModelMapper,
-    private val getSelectedAccountUseCase: GetSelectedAccountUseCase
-) : AsyncUseCase<AddLocalResourceUseCase.Input, Unit> {
+    private val resourceModelMapper: ResourceModelMapper
+) : AsyncUseCase<AddLocalResourceUseCase.Input, Unit>, SelectedAccountUseCase {
 
     override suspend fun execute(input: Input) {
-        val userId = requireNotNull(getSelectedAccountUseCase.execute(Unit).selectedAccount)
-        databaseProvider
-            .get(userId)
-            .resourcesDao()
-            .insert(resourceModelMapper.map(input.passwordModel))
+        val db = databaseProvider.get(selectedAccountId)
+        val resourcesDao = db.resourcesDao()
+        val resourceMetadataDao = db.resourceMetadataDao()
+        val resourceUriDao = db.resourceUriDao()
+
+        resourcesDao.insert(resourceModelMapper.map(input.resourceModel))
+        resourceMetadataDao.insert(resourceModelMapper.mapResourceMetadata(input.resourceModel))
+        resourceModelMapper.mapResourceUri(input.resourceModel)?.let { uri ->
+            resourceUriDao.insert(uri)
+        }
     }
 
     data class Input(
-        val passwordModel: ResourceModel
+        val resourceModel: ResourceModel
     )
 }

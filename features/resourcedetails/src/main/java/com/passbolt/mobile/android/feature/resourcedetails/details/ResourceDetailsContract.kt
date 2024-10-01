@@ -74,7 +74,7 @@ interface ResourceDetailsContract {
         fun showTags(tags: List<String>)
         fun navigateToResourceTags(resourceId: String, mode: PermissionsMode)
         fun showFolderLocation(locationPathSegments: List<String>)
-        fun navigateToResourceLocation(folderId: String)
+        fun navigateToResourceLocation(resourceId: String)
         fun showDataRefreshError()
         fun showContentNotAvailable()
         fun showTotp(otpWrapper: OtpItemWrapper?)

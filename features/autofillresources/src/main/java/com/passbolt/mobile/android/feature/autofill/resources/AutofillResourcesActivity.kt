@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.autofill.AutofillManager.EXTRA_ASSIST_STRUCTURE
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.IntentCompat
 import com.passbolt.mobile.android.common.lifecycleawarelazy.lifecycleAwareLazy
 import com.passbolt.mobile.android.core.extension.findNavHostFragment
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
@@ -112,8 +113,9 @@ class AutofillResourcesActivity :
         finish()
     }
 
-    override fun getAutofillStructure() =
-        intent!!.getParcelableExtra<AssistStructure>(EXTRA_ASSIST_STRUCTURE)!!
+    override fun getAutofillStructure() = requireNotNull(
+        IntentCompat.getParcelableExtra(intent, EXTRA_ASSIST_STRUCTURE, AssistStructure::class.java)
+    )
 
     override fun autofillReturn(username: String, password: String, uri: String?) {
         returnAutofillDatasetStrategy.returnDataset(username, password, uri)
