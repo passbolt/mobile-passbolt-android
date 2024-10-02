@@ -3,8 +3,9 @@ package com.passbolt.mobile.android.feature.setup.welcome
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
+import com.passbolt.mobile.android.common.dialogs.howToCreateAccountDialog
+import com.passbolt.mobile.android.common.dialogs.qrCodesInformationDialog
 import com.passbolt.mobile.android.common.dialogs.rootWarningAlertDialog
 import com.passbolt.mobile.android.core.extension.gone
 import com.passbolt.mobile.android.core.extension.setDebouncingOnClick
@@ -14,7 +15,6 @@ import com.passbolt.mobile.android.feature.setup.summary.ResultStatus
 import com.passbolt.mobile.android.helpmenu.HelpMenuFragment
 import com.passbolt.mobile.android.ui.HelpMenuModel
 import org.koin.android.ext.android.inject
-import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 /**
  * Passbolt - Open source password manager for teams
@@ -84,11 +84,7 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
     }
 
     override fun showAccountCreationInfoDialog() {
-        AlertDialog.Builder(requireContext(), com.passbolt.mobile.android.core.ui.R.style.AlertDialogTheme)
-            .setTitle(LocalizationR.string.welcome_create_account_dialog_title)
-            .setMessage(LocalizationR.string.welcome_create_account_dialog_message)
-            .setPositiveButton(LocalizationR.string.got_it) { _, _ -> }
-            .show()
+        howToCreateAccountDialog(requireContext()).show()
     }
 
     override fun navigateToTransferDetails() {
@@ -135,6 +131,10 @@ class WelcomeFragment : BindingScopedFragment<FragmentWelcomeBinding>(FragmentWe
 
     override fun menuImportAccountKitClick() {
         presenter.importAccountKitClick()
+    }
+
+    override fun menuWhyScanQrCodesClick() {
+        qrCodesInformationDialog(requireContext()).show()
     }
 
     override fun showAccountKitFilePicker() {
