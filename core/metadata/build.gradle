@@ -1,0 +1,27 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+}
+
+dependencies {
+    implementation project(':storage')
+    implementation project(':common')
+    implementation project(':passboltapi')
+    implementation project(':mappers')
+    implementation project(':ui')
+    implementation project(':entity')
+    implementation project(':database')
+    implementation project(':architecture')
+    implementation project(':gopenpgp')
+
+    implementation libs.koin
+    implementation libs.room.core
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.core.metadata"
+}
+
+kotlin {
+    jvmToolchain(17)
+}

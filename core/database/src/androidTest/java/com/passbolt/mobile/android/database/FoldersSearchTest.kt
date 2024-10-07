@@ -123,6 +123,8 @@ class FoldersSearchTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         val RESOURCE_2 = Resource(
             resourceId = "2",
@@ -132,6 +134,8 @@ class FoldersSearchTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         val RESOURCE_3 = Resource(
             resourceId = "3",
@@ -141,6 +145,8 @@ class FoldersSearchTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         val RESOURCE_4 = Resource(
             resourceId = "4",
@@ -150,6 +156,8 @@ class FoldersSearchTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         val RESOURCE_5 = Resource(
             resourceId = "5",
@@ -159,6 +167,8 @@ class FoldersSearchTest {
             favouriteId = null,
             modified = ZonedDateTime.now(),
             expiry = null,
+            metadataKeyId = null,
+            metadataKeyType = null
         )
 
         val FOLDER_1 = Folder(

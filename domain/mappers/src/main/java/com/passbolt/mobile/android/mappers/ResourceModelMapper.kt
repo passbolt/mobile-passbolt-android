@@ -1,13 +1,18 @@
 package com.passbolt.mobile.android.mappers
 
 import com.google.gson.JsonObject
+import com.passbolt.mobile.android.dto.response.MetadataKeyTypeDto
+import com.passbolt.mobile.android.dto.response.MetadataKeyTypeDto.PERSONAL
+import com.passbolt.mobile.android.dto.response.MetadataKeyTypeDto.SHARED
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
+import com.passbolt.mobile.android.entity.metadata.MetadataKeyType
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceMetadata
 import com.passbolt.mobile.android.entity.resource.ResourceUri
 import com.passbolt.mobile.android.entity.resource.ResourceWithMetadata
+import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.ResourceModel
 import java.time.ZonedDateTime
 
@@ -47,7 +52,9 @@ class ResourceModelMapper(
                 favouriteId = resource.favorite?.id?.toString(),
                 modified = ZonedDateTime.parse(resource.modified),
                 expiry = resource.expired?.let { ZonedDateTime.parse(it) },
-                json = getV5Metadata(resource)
+                json = getV5Metadata(resource),
+                metadataKeyId = null,
+                metadataKeyType = null
             )
         }
         is ResourceResponseV5Dto -> {
@@ -59,9 +66,28 @@ class ResourceModelMapper(
                 favouriteId = resource.favorite?.id?.toString(),
                 modified = ZonedDateTime.parse(resource.modified),
                 expiry = resource.expired?.let { ZonedDateTime.parse(it) },
-                json = resource.metadata
+                json = resource.metadata,
+                metadataKeyId = resource.metadataKeyId.toString(),
+                metadataKeyType = map(resource.metadataKeyType)
             )
         }
+    }
+
+    private fun map(metadataKeyTypeDto: MetadataKeyTypeDto) = when (metadataKeyTypeDto) {
+        SHARED -> MetadataKeyTypeModel.SHARED
+        PERSONAL -> MetadataKeyTypeModel.PERSONAL
+    }
+
+    private fun map(metadataKeyTypeModel: MetadataKeyTypeModel?) = when (metadataKeyTypeModel) {
+        MetadataKeyTypeModel.SHARED -> MetadataKeyType.SHARED
+        MetadataKeyTypeModel.PERSONAL -> MetadataKeyType.PERSONAL
+        null -> null
+    }
+
+    private fun map(metadataKeyType: MetadataKeyType?) = when (metadataKeyType) {
+        MetadataKeyType.SHARED -> MetadataKeyTypeModel.SHARED
+        MetadataKeyType.PERSONAL -> MetadataKeyTypeModel.PERSONAL
+        null -> null
     }
 
     fun map(resourceModel: ResourceModel): Resource =
@@ -72,7 +98,9 @@ class ResourceModelMapper(
             resourceTypeId = resourceModel.resourceTypeId,
             favouriteId = resourceModel.favouriteId,
             modified = resourceModel.modified,
-            expiry = resourceModel.expiry
+            expiry = resourceModel.expiry,
+            metadataKeyId = resourceModel.metadataKeyId,
+            metadataKeyType = map(resourceModel.metadataKeyType)
         )
 
     fun mapResourceMetadata(resourceModel: ResourceModel): ResourceMetadata =
@@ -97,7 +125,9 @@ class ResourceModelMapper(
             favouriteId = resourceEntity.favouriteId,
             modified = resourceEntity.modified,
             expiry = resourceEntity.expiry,
-            json = resourceEntity.metadataJson
+            json = resourceEntity.metadataJson,
+            metadataKeyId = resourceEntity.metadataKeyId,
+            metadataKeyType = map(resourceEntity.metadataKeyType)
         )
 
     private fun getV5Metadata(resourceModel: ResourceResponseV4Dto) =

@@ -15,6 +15,7 @@ import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.RBAC_K
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TAGS_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TERMS_AND_CONDITIONS_KEY
 import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.TOTP_KEY
+import com.passbolt.mobile.android.storage.usecase.featureflags.Constants.V5_METADATA
 
 /**
  * Passbolt - Open source password manager for teams
@@ -56,6 +57,7 @@ class SaveFeatureFlagsUseCase(
             putBoolean(PASSWORD_EXPIRY_KEY, input.featureFlags.isPasswordExpiryAvailable)
             putBoolean(PASSWORD_POLICIES_KEY, input.featureFlags.arePasswordPoliciesAvailable)
             putBoolean(PASSWORD_POLICIES_UPDATE_KEY, input.featureFlags.canUpdatePasswordPolicies)
+            putBoolean(V5_METADATA, input.featureFlags.isV5MetadataAvailable)
             apply()
         }
     }

@@ -11,6 +11,9 @@ dependencies {
     implementation project(':resourcetypes')
     implementation project(':supportedresourcetypes')
     implementation project(':gopenpgp')
+    implementation project(':storage')
+    implementation project(':metadata')
+    implementation project(':ui')
 
     implementation libs.koin
     implementation libs.gson

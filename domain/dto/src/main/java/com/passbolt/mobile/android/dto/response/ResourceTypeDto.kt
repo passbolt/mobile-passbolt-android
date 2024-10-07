@@ -30,7 +30,7 @@ data class ResourceTypeDto(
     val slug: String,
     val name: String,
     val description: String,
-    val definition: ResourceDefinition,
+    val definition: ResourceDefinition?, // TODO(v5): rollback after response json fix
     val deleted: String?
 )
 

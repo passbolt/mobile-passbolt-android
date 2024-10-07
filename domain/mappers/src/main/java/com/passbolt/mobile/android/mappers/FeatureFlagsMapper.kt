@@ -48,7 +48,9 @@ class FeatureFlagsMapper {
                 arePasswordPoliciesAvailable = it.plugins.passwordPolicies?.enabled
                     ?: Defaults.ARE_PASSWORD_POLICIES_AVAILABLE,
                 canUpdatePasswordPolicies = it.plugins.passwordPoliciesUpdate?.enabled
-                    ?: Defaults.CAN_UPDATE_PASSWORD_POLICIES
+                    ?: Defaults.CAN_UPDATE_PASSWORD_POLICIES,
+                isV5MetadataAvailable = it.plugins.metadata?.enabled
+                    ?: Defaults.IS_V5_METADATA_AVAILABLE
             )
         }
 }

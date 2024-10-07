@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.passboltapi.auth
 
 import com.passbolt.mobile.android.core.networking.RestService
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,17 +29,8 @@ import org.koin.core.module.Module
  */
 
 internal fun Module.authApiModule() {
-    single {
-        AuthRepository(
-            authDataSource = get(),
-            responseHandler = get()
-        )
-    }
-    single<AuthDataSource> {
-        AuthRemoteDataSource(
-            authApi = get()
-        )
-    }
+    singleOf(::AuthRepository)
+    singleOf(::AuthRemoteDataSource) bind AuthDataSource::class
     single {
         get<RestService>()
             .service(AuthApi::class.java)

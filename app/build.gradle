@@ -188,6 +188,7 @@ dependencies {
     implementation project(':policies')
     implementation project(':pwnedpasswordsapi')
     implementation project(':passwordgenerator')
+    implementation project(':metadata')
 
     debugImplementation libs.leakcanary
 

@@ -105,7 +105,9 @@ class ResourceTagsPresenterTest : KoinTest {
                 addProperty("username", USERNAME)
                 addProperty("uri", URL)
                 addProperty("description", DESCRIPTION)
-            }.toString()
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         private val RESOURCE_TAGS = listOf(
             TagModel("id1", "tag1", false),

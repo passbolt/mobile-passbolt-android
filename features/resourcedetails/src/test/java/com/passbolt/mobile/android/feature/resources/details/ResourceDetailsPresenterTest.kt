@@ -111,7 +111,8 @@ class ResourceDetailsPresenterTest : KoinTest {
                     isRbacAvailable = true,
                     isPasswordExpiryAvailable = true,
                     arePasswordPoliciesAvailable = true,
-                    canUpdatePasswordPolicies = true
+                    canUpdatePasswordPolicies = true,
+                    isV5MetadataAvailable = false
                 )
             )
         }
@@ -365,7 +366,8 @@ class ResourceDetailsPresenterTest : KoinTest {
                         isRbacAvailable = true,
                         isPasswordExpiryAvailable = true,
                         arePasswordPoliciesAvailable = true,
-                        canUpdatePasswordPolicies = true
+                        canUpdatePasswordPolicies = true,
+                        isV5MetadataAvailable = false
                     )
                 )
             )
@@ -445,7 +447,9 @@ class ResourceDetailsPresenterTest : KoinTest {
                 addProperty("username", USERNAME)
                 addProperty("uri", URL)
                 addProperty("description", DESCRIPTION)
-            }.toString()
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         private val RESOURCE_MODEL_EXPIRED = ResourceModel(
             resourceId = ID_EXPIRED,
@@ -460,7 +464,9 @@ class ResourceDetailsPresenterTest : KoinTest {
                 addProperty("username", USERNAME)
                 addProperty("uri", URL)
                 addProperty("description", DESCRIPTION)
-            }.toString()
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
             permission = ResourcePermission.READ,

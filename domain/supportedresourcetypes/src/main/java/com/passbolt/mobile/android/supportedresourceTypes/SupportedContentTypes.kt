@@ -28,15 +28,23 @@ object SupportedContentTypes {
     const val PASSWORD_AND_DESCRIPTION_SLUG = "password-and-description"
     const val TOTP_SLUG = "totp"
     const val PASSWORD_DESCRIPTION_TOTP_SLUG = "password-description-totp"
+    const val V5_TOTP_STANDALONE_SLUG = "v5-totp-standalone"
+    const val V5_DEFAULT_SLUG = "v5-default"
+    const val V5_DEFAULT_WITH_TOTP = "v5-default-with-totp"
+    const val V5_PASSWORD_STRING_SLUG = "v5-password-string"
 
     val homeSlugs = setOf(
         PASSWORD_STRING_SLUG,
         PASSWORD_AND_DESCRIPTION_SLUG,
-        PASSWORD_DESCRIPTION_TOTP_SLUG
+        PASSWORD_DESCRIPTION_TOTP_SLUG,
+        V5_DEFAULT_SLUG,
+        V5_PASSWORD_STRING_SLUG
     )
     val totpSlugs = setOf(
         TOTP_SLUG,
-        PASSWORD_DESCRIPTION_TOTP_SLUG
+        PASSWORD_DESCRIPTION_TOTP_SLUG,
+        V5_TOTP_STANDALONE_SLUG,
+        V5_DEFAULT_WITH_TOTP
     )
 
     val allSlugs = homeSlugs + totpSlugs
@@ -48,6 +56,10 @@ object SupportedContentTypes {
         TOTP_SLUG
     )
 
-    // TODO (v5) prepared for v5 content types
-    val v5Slugs = emptySet<String>()
+    val v5Slugs = setOf(
+        V5_DEFAULT_SLUG,
+        V5_PASSWORD_STRING_SLUG,
+        V5_DEFAULT_WITH_TOTP,
+        V5_TOTP_STANDALONE_SLUG
+    )
 }

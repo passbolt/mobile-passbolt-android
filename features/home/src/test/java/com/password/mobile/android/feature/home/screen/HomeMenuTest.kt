@@ -466,7 +466,9 @@ class HomeMenuTest : KoinTest {
                 addProperty("username", USERNAME)
                 addProperty("uri", URL)
                 addProperty("description", DESCRIPTION)
-            }.toString()
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
         )
     }
 }

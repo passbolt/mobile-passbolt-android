@@ -28,6 +28,7 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.allSlugs
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
@@ -37,7 +38,8 @@ import timber.log.Timber
 import java.lang.reflect.Type
 
 open class ResourceListDeserializer(
-    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
+    private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase
 ) : JsonDeserializer<List<ResourceResponseDto>>, KoinComponent {
 
     override fun deserialize(
@@ -59,8 +61,10 @@ open class ResourceListDeserializer(
                 .filter { it.value in allSlugs }
                 .keys
 
+            val metadataKeys = getLocalMetadataKeysUseCase.execute(Unit)
+
             val singleResourceDeserializer = get<ResourceListItemDeserializer> {
-                parametersOf(resourceTypeIdToSlugMapping, supportedResourceTypesIds)
+                parametersOf(resourceTypeIdToSlugMapping, supportedResourceTypesIds, metadataKeys)
             }
 
             if (json.isJsonArray) {

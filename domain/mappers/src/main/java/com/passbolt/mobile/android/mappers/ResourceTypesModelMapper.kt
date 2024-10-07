@@ -48,19 +48,20 @@ class ResourceTypesModelMapper(
 
     fun map(resourceTypesDto: List<ResourceTypeDto>): List<ResourceTypeIdWithFields> =
         resourceTypesDto.map {
-            val resourceFields = processFieldsDefinition(it.definition.resource, FieldKind.RESOURCE)
-            val secretFields = processFieldsDefinition(it.definition.secret, FieldKind.SECRET)
+            // TODO(v5): rollback after response json fix
+//            val resourceFields = processFieldsDefinition(it.definition.resource, FieldKind.RESOURCE)
+//            val secretFields = processFieldsDefinition(it.definition.secret, FieldKind.SECRET)
 
             ResourceTypeIdWithFields(
                 ResourceType(
                     resourceTypeId = it.id.toString(),
                     name = it.name,
                     slug = it.slug,
-                    resourceSchemaJson = it.definition.resource,
-                    secretSchemaJson = it.definition.secret,
+                    resourceSchemaJson = it.definition?.resource ?: JsonObject(),
+                    secretSchemaJson = it.definition?.secret ?: JsonObject(),
                     deleted = it.deleted?.let { deleted -> ZonedDateTime.parse(deleted) }
                 ),
-                resourceFields + secretFields
+                emptyList()
             )
         }
 

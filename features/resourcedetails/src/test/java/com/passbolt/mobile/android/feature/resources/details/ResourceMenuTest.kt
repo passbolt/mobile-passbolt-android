@@ -105,7 +105,8 @@ class ResourceMenuTest : KoinTest {
                     isRbacAvailable = true,
                     isPasswordExpiryAvailable = true,
                     arePasswordPoliciesAvailable = true,
-                    canUpdatePasswordPolicies = true
+                    canUpdatePasswordPolicies = true,
+                    isV5MetadataAvailable = false
                 )
             )
         }
@@ -297,7 +298,9 @@ class ResourceMenuTest : KoinTest {
                 addProperty("username", USERNAME)
                 addProperty("uri", URL)
                 addProperty("description", DESCRIPTION)
-            }.toString()
+            }.toString(),
+            metadataKeyType = null,
+            metadataKeyId = null
         )
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
             permission = ResourcePermission.READ, permissionId = "permId1", group = GroupModel("grId", "grName")

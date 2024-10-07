@@ -373,7 +373,9 @@ class HomePresenterTest : KoinTest {
                 addProperty("username", "")
                 addProperty("uri", "")
                 addProperty("description", "")
-            }.toString()
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
         )
         mockAccountData(null)
         presenter.attach(view)
@@ -621,7 +623,9 @@ class HomePresenterTest : KoinTest {
                 addProperty("username", "")
                 addProperty("uri", "")
                 addProperty("description", "")
-            }.toString()
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
         ),
         ResourceModel(
             resourceId = "id2",
@@ -637,7 +641,9 @@ class HomePresenterTest : KoinTest {
                 addProperty("username", "")
                 addProperty("uri", "")
                 addProperty("description", "")
-            }.toString()
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
         )
     )
 

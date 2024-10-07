@@ -39,6 +39,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
+import kotlin.test.fail
 
 
 @ExperimentalCoroutinesApi
@@ -68,7 +69,8 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
                         isRbacAvailable = true,
                         isPasswordExpiryAvailable = true,
                         arePasswordPoliciesAvailable = true,
-                        canUpdatePasswordPolicies = true
+                        canUpdatePasswordPolicies = true,
+                        isV5MetadataAvailable = false
                     )
                 )
             )
@@ -90,7 +92,8 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
                         isRbacAvailable = true,
                         isPasswordExpiryAvailable = true,
                         arePasswordPoliciesAvailable = true,
-                        canUpdatePasswordPolicies = true
+                        canUpdatePasswordPolicies = true,
+                        isV5MetadataAvailable = false
                     )
                 )
             )
@@ -130,7 +133,8 @@ class TermsAndLicensesSettingsPresenterTest : KoinTest {
             isRbacAvailable = true,
             isPasswordExpiryAvailable = true,
             arePasswordPoliciesAvailable = true,
-            canUpdatePasswordPolicies = true
+            canUpdatePasswordPolicies = true,
+            isV5MetadataAvailable = false
         )
         getFeatureFlagsUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(

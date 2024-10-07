@@ -27,6 +27,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
+import com.passbolt.mobile.android.serializers.gson.MetadataDecryptor
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceListItemDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
@@ -35,7 +36,9 @@ import com.passbolt.mobile.android.serializers.gson.serializer.ZonedDateTimeSeri
 import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.serializers.jsonschema.jsonSchemaModule
+import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.time.ZonedDateTime
@@ -54,18 +57,31 @@ val serializersModule = module {
         SingleResourceDeserializer(
             resourceTypeIdToSlugMappingProvider = get(),
             jsonSchemaValidationRunner = get(),
+            getLocalMetadataKeys = get(),
             gson = get(named(RESOURCE_DTO_GSON))
         )
     }
-    single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
+    single { (
+                 resourceTypeIdToSlugMapping: Map<UUID, String>,
+                 supportedResourceTypesIds: Set<UUID>,
+                 metadataKeys: List<ParsedMetadataKeyModel>
+             ) ->
         ResourceListItemDeserializer(
             jsonSchemaValidationRunner = get(),
             gson = get(named(RESOURCE_DTO_GSON)),
+            metadataDecryptor = get<MetadataDecryptor> { parametersOf(metadataKeys) },
             resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
             supportedResourceTypesIds = supportedResourceTypesIds
         )
     }
-
+    single { (metadataKeys: List<ParsedMetadataKeyModel>) ->
+        MetadataDecryptor(
+            getSelectedUserPrivateKeyUseCase = get(),
+            passphraseMemoryCache = get(),
+            openPgp = get(),
+            metadataKeys = metadataKeys
+        )
+    }
     single {
         GsonBuilder()
             .serializeNulls()

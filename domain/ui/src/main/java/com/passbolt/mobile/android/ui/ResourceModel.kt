@@ -43,6 +43,8 @@ data class ResourceModel(
     val favouriteId: String?,
     val modified: ZonedDateTime,
     val expiry: ZonedDateTime?,
+    val metadataKeyId: String?,
+    val metadataKeyType: MetadataKeyTypeModel?,
     override var json: String
 ) : Parcelable, Searchable, JsonModel {
 
@@ -78,3 +80,8 @@ data class ResourceModelWithAttributes(
     val resourcePermissions: List<PermissionModel>,
     val favouriteId: String?
 )
+
+enum class MetadataKeyTypeModel {
+    SHARED,
+    PERSONAL
+}

@@ -201,7 +201,9 @@ class OtpPresenterTest : KoinTest {
                     addProperty("username", "")
                     addProperty("uri", "")
                     addProperty("description", "")
-                }.toString()
+                }.toString(),
+                metadataKeyId = null,
+                metadataKeyType = null
             )
         )
     }

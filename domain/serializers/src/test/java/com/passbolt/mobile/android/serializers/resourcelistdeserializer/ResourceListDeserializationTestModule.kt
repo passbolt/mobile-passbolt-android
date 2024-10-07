@@ -28,7 +28,9 @@ import com.google.gson.reflect.TypeToken
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.serializers.RESOURCE_DTO_GSON
+import com.passbolt.mobile.android.serializers.gson.MetadataDecryptor
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceListItemDeserializer
 import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
@@ -50,6 +52,8 @@ internal val mockIdToSlugMappingUseCase =
     mock<GetResourceTypeIdToSlugMappingUseCase>()
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val mockJSFSchemaRepository = mock<JSFSchemaRepository>()
+internal val mockMetadataDecryptor = mock<MetadataDecryptor>()
+internal val mockGetLocalMetadataKeysUseCase = mock<GetLocalMetadataKeysUseCase>()
 
 val resourceListDeserializationTestModule = module {
     singleOf(::JsonSchemaValidationRunner)
@@ -59,7 +63,8 @@ val resourceListDeserializationTestModule = module {
             jsonSchemaValidationRunner = get(),
             gson = get(named(RESOURCE_DTO_GSON)),
             resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
-            supportedResourceTypesIds = supportedResourceTypesIds
+            supportedResourceTypesIds = supportedResourceTypesIds,
+            metadataDecryptor = mockMetadataDecryptor
         )
     }
     singleOf(::ResourceTypeIdToSlugMappingProvider)
@@ -92,4 +97,5 @@ val resourceListDeserializationTestModule = module {
             }
             .create()
     }
+    single { mockGetLocalMetadataKeysUseCase }
 }

@@ -9,6 +9,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.plus
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypesInteractor
 import com.passbolt.mobile.android.core.users.UsersInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataKeysInteractor
 
 /**
  * Passbolt - Open source password manager for teams
@@ -42,11 +43,14 @@ class HomeDataInteractor(
     private val groupsInteractor: GroupsInteractor,
     private val usersInteractor: UsersInteractor,
     private val resourceTypesInteractor: ResourceTypesInteractor,
+    private val metadataKeysInteractor: MetadataKeysInteractor,
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource
 ) {
 
+    // TODO start multiple async where possible
     suspend fun refreshAllHomeScreenData(): Output {
         resourcesFullRefreshIdlingResource.setIdle(false)
+        val metadataKeysOutput = metadataKeysInteractor.fetchAndSaveMetadataKeys()
         val resourceTypesOutput = resourceTypesInteractor.fetchAndSaveResourceTypes()
         val userInteractorOutput = usersInteractor.fetchAndSaveUsers()
         val groupsRefreshOutput = groupsInteractor.fetchAndSaveGroups()
@@ -55,7 +59,8 @@ class HomeDataInteractor(
         resourcesFullRefreshIdlingResource.setIdle(true)
 
         @Suppress("ComplexCondition")
-        return if (resourceTypesOutput is ResourceTypesInteractor.Output.Success &&
+        return if (metadataKeysOutput is MetadataKeysInteractor.Output.Success &&
+            resourceTypesOutput is ResourceTypesInteractor.Output.Success &&
             userInteractorOutput is UsersInteractor.Output.Success &&
             groupsRefreshOutput is GroupsInteractor.Output.Success &&
             foldersRefreshOutput is FoldersInteractor.Output.Success &&

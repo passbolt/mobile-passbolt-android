@@ -29,52 +29,62 @@ import java.util.UUID
 /**
  * A compatibility resource model - can eiter support v4 resource or v5 resource with metadata.
  */
-sealed class ResourceResponseDto(
-    val id: UUID,
-    @SerializedName("resource_type_id")
-    val resourceTypeId: UUID,
-    @SerializedName("folder_parent_id")
-    val resourceFolderId: UUID?,
-    val permission: PermissionDto,
-    val favorite: FavouriteDto?,
-    val modified: String,
-    val tags: List<TagDto>?,
-    val expired: String?,
-    val permissions: List<PermissionWithGroupDto>?
-)
+sealed class ResourceResponseDto {
+    abstract val id: UUID
+    abstract val resourceTypeId: UUID
+    abstract val resourceFolderId: UUID?
+    abstract val permission: PermissionDto
+    abstract val favorite: FavouriteDto?
+    abstract val modified: String
+    abstract val tags: List<TagDto>?
+    abstract val expired: String?
+    abstract val permissions: List<PermissionWithGroupDto>?
+}
 
-class ResourceResponseV4Dto(
+data class ResourceResponseV4Dto(
     val description: String?,
     val name: String,
     val uri: String?,
     val username: String?,
-    id: UUID,
-    resourceTypeId: UUID,
-    resourceFolderId: UUID?,
-    permission: PermissionDto,
-    favorite: FavouriteDto?,
-    modified: String,
-    tags: List<TagDto>?,
-    expired: String?,
-    permissions: List<PermissionWithGroupDto>?
-) : ResourceResponseDto(
-    id, resourceTypeId, resourceFolderId, permission, favorite, modified, tags, expired, permissions
-)
+    override val id: UUID,
+    @SerializedName("resource_type_id")
+    override val resourceTypeId: UUID,
+    @SerializedName("folder_parent_id")
+    override val resourceFolderId: UUID?,
+    override val permission: PermissionDto,
+    override val favorite: FavouriteDto?,
+    override val modified: String,
+    override val tags: List<TagDto>?,
+    override val expired: String?,
+    override val permissions: List<PermissionWithGroupDto>?
+) : ResourceResponseDto()
 
-class ResourceResponseV5Dto(
+data class ResourceResponseV5Dto(
     val metadata: String,
-    id: UUID,
-    resourceTypeId: UUID,
-    resourceFolderId: UUID?,
-    permission: PermissionDto,
-    favorite: FavouriteDto?,
-    modified: String,
-    tags: List<TagDto>?,
-    expired: String?,
-    permissions: List<PermissionWithGroupDto>?
-) : ResourceResponseDto(
-    id, resourceTypeId, resourceFolderId, permission, favorite, modified, tags, expired, permissions
-)
+    @SerializedName("metadata_key_id")
+    val metadataKeyId: UUID,
+    @SerializedName("metadata_key_type")
+    val metadataKeyType: MetadataKeyTypeDto,
+    override val id: UUID,
+    @SerializedName("resource_type_id")
+    override val resourceTypeId: UUID,
+    @SerializedName("folder_parent_id")
+    override val resourceFolderId: UUID?,
+    override val permission: PermissionDto,
+    override val favorite: FavouriteDto?,
+    override val modified: String,
+    override val tags: List<TagDto>?,
+    override val expired: String?,
+    override val permissions: List<PermissionWithGroupDto>?
+) : ResourceResponseDto()
+
+enum class MetadataKeyTypeDto {
+    @SerializedName("shared_key")
+    SHARED,
+
+    @SerializedName("user_key")
+    PERSONAL
+}
 
 data class TagDto(
     val id: UUID,
