@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.passboltapi.settings
 
 import com.passbolt.mobile.android.core.networking.RestService
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 
 /**
  * Passbolt - Open source password manager for teams
@@ -27,15 +29,8 @@ import org.koin.core.module.Module
  */
 
 internal fun Module.settingsApiModule() {
-    single {
-        SettingsRepository(
-            settingsDataSource = get(),
-            responseHandler = get()
-        )
-    }
-    single<SettingsDataSource> {
-        SettingsRemoteDataSource(settingsApi = get())
-    }
+    singleOf(::SettingsRepository)
+    singleOf(::SettingsRemoteDataSource) bind SettingsDataSource::class
     single {
         get<RestService>()
             .service(SettingsApi::class.java)

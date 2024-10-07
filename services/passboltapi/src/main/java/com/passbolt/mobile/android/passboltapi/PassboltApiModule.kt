@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.passboltapi.registration.mobileTransferApiMod
 import com.passbolt.mobile.android.passboltapi.resource.resourceApiModule
 import com.passbolt.mobile.android.passboltapi.resourcetypes.resourceTypesApiModule
 import com.passbolt.mobile.android.passboltapi.secrets.secretsApiModule
+import com.passbolt.mobile.android.passboltapi.metadata.metadataApiModule
 import com.passbolt.mobile.android.passboltapi.settings.settingsApiModule
 import com.passbolt.mobile.android.passboltapi.share.shareApiModule
 import com.passbolt.mobile.android.passboltapi.users.usersApiModule
@@ -55,4 +56,5 @@ val passboltApiModule = module {
     rbacApiModule()
     passwordExpiryApiModule()
     passwordPoliciesApiModule()
+    metadataApiModule()
 }

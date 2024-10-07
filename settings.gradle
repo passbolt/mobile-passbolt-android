@@ -51,6 +51,7 @@ coreModule "otpcore"
 coreModule "tags"
 coreModule "rbac"
 coreModule "policies"
+coreModule "metadata"
 
 featureModule "startup"
 featureModule "setup"

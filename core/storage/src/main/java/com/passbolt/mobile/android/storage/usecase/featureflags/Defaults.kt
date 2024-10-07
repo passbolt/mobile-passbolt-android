@@ -32,4 +32,5 @@ object Defaults {
     const val IS_PASSWORD_EXPIRY_AVAILABLE = false
     const val ARE_PASSWORD_POLICIES_AVAILABLE = false
     const val CAN_UPDATE_PASSWORD_POLICIES = false
+    const val IS_V5_METADATA_AVAILABLE = false
 }

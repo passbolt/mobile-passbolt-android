@@ -56,6 +56,7 @@ import com.passbolt.mobile.android.linksapi.linksApiModule
 import com.passbolt.mobile.android.locationDetailsModule
 import com.passbolt.mobile.android.logsModule
 import com.passbolt.mobile.android.mappersModule
+import com.passbolt.mobile.android.metadata.metadataModule
 import com.passbolt.mobile.android.otpMainMoreMenuModule
 import com.passbolt.mobile.android.passboltapi.passboltApiModule
 import com.passbolt.mobile.android.pwnedpasswordsapi.pwnedPasswordsApiModule
@@ -166,7 +167,8 @@ class KoinInitializer : Initializer<Unit> {
             accountsCoreModule,
             policiesModule,
             pwnedPasswordsApiModule,
-            passwordGeneratorModule
+            passwordGeneratorModule,
+            metadataModule
         )
     }
 }

@@ -7,6 +7,7 @@ import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import timber.log.Timber
 
@@ -24,25 +25,27 @@ class PostSignInActionsInteractor(
         onError: (Error) -> Unit,
         onSuccess: suspend () -> Unit
     ) {
-        fetchFeatureFlagsAndRbac(onError, onSuccess)
+        fetchFeatureFlagsDependencies(onError, onSuccess)
     }
 
-    private suspend fun fetchFeatureFlagsAndRbac(onError: (Error) -> Unit, onSuccess: suspend () -> Unit) {
+    private suspend fun fetchFeatureFlagsDependencies(onError: (Error) -> Unit, onSuccess: suspend () -> Unit) {
         Timber.d("Fetching feature flags")
         when (val featureFlagsResult = featureFlagsInteractor.fetchAndSaveFeatureFlags()) {
             is FeatureFlagsInteractor.Output.Success -> {
                 Timber.d("Feature flags fetched")
                 coroutineScope {
-                    val rbacDeferred = async {
-                        processRbac(featureFlagsResult.featureFlags, onError)
-                    }
-                    val passwordExpiryDeferred = async {
-                        processPasswordExpirySettings(featureFlagsResult.featureFlags, onError)
-                    }
-                    val passwordPoliciesDeferred = async {
-                        processPasswordPoliciesSettings(featureFlagsResult.featureFlags, onError)
-                    }
-                    if (rbacDeferred.await() && passwordExpiryDeferred.await() && passwordPoliciesDeferred.await()) {
+                    if (awaitAll(
+                            async {
+                                processRbac(featureFlagsResult.featureFlags, onError)
+                            },
+                            async {
+                                processPasswordExpirySettings(featureFlagsResult.featureFlags, onError)
+                            },
+                            async {
+                                processPasswordPoliciesSettings(featureFlagsResult.featureFlags, onError)
+                            }
+                        ).all { it }
+                    ) {
                         fetchUserAvatar(onError, onSuccess)
                     }
                 }

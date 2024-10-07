@@ -59,6 +59,7 @@ class GetFeatureFlagsUseCase(
                 Constants.PASSWORD_POLICIES_UPDATE_KEY,
                 Defaults.CAN_UPDATE_PASSWORD_POLICIES
             )
+            val isV5MetadataAvailable = it.getBoolean(Constants.V5_METADATA, Defaults.IS_V5_METADATA_AVAILABLE)
             return Output(
                 FeatureFlagsModel(
                     privacyPolicyUrl = privacyPolicyUrl,
@@ -70,7 +71,8 @@ class GetFeatureFlagsUseCase(
                     isRbacAvailable = isRbacAvailable,
                     isPasswordExpiryAvailable = isPasswordExpiryAvailable,
                     arePasswordPoliciesAvailable = arePasswordPoliciesAvailable,
-                    canUpdatePasswordPolicies = canUpdatePasswordPolicies
+                    canUpdatePasswordPolicies = canUpdatePasswordPolicies,
+                    isV5MetadataAvailable = isV5MetadataAvailable
                 )
             )
         }
