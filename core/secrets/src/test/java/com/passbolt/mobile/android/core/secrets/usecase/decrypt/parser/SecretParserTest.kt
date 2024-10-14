@@ -24,14 +24,7 @@
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_AND_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_DESCRIPTION_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import kotlinx.coroutines.test.runTest
@@ -60,16 +53,16 @@ class SecretParserTest : KoinTest {
     @Before
     fun setup() {
         mockJSFSchemaRepository.stub {
-            on { schemaForSecret(SupportedContentTypes.PASSWORD_STRING_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(ContentType.PasswordString.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-string-secret-schema.json")
             )
-            on { schemaForSecret(SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(ContentType.PasswordAndDescription.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-and-description-secret-schema.json")
             )
-            on { schemaForSecret(SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(ContentType.PasswordDescriptionTotp.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-description-totp-secret-schema.json")
             )
-            on { schemaForSecret(SupportedContentTypes.TOTP_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(ContentType.Totp.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/totp-secret-schema.json")
             )
         }
@@ -78,12 +71,9 @@ class SecretParserTest : KoinTest {
     @Test
     fun `password should parse correct for password string secret`() = runTest {
         val secret = "\\\"!@#_$%^&*()".toByteArray()
-        mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(resourceTypeId.toString()) } doReturn SIMPLE_PASSWORD
-        }
         mockIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() } doReturn mapOf(
-                resourceTypeId to SLUG_SIMPLE_PASSWORD
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(resourceTypeId to ContentType.PasswordString.slug)
             )
         }
 
@@ -96,12 +86,9 @@ class SecretParserTest : KoinTest {
     @Test
     fun `password and description should parse correct for password description secret`() = runTest {
         val secret = "{\"password\":\"\\\"!@#_\$%^&*()\", \"description\":\"desc\"}".toByteArray()
-        mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(resourceTypeId.toString()) } doReturn PASSWORD_WITH_DESCRIPTION
-        }
         mockIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() } doReturn mapOf(
-                resourceTypeId to SLUG_PASSWORD_AND_DESCRIPTION
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(resourceTypeId to ContentType.PasswordAndDescription.slug)
             )
         }
 
@@ -122,12 +109,9 @@ class SecretParserTest : KoinTest {
                 "\"algorithm\":\"SHA256\"," +
                 "\"secret_key\":\"secret\"" + "}" +
                 "}").toByteArray()
-        mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(resourceTypeId.toString()) } doReturn STANDALONE_TOTP
-        }
         mockIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() } doReturn mapOf(
-                resourceTypeId to SLUG_TOTP
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(resourceTypeId to ContentType.Totp.slug)
             )
         }
 
@@ -153,12 +137,9 @@ class SecretParserTest : KoinTest {
                 "\"secret_key\":\"secret\"" +
                 "}" +
                 "}").toByteArray()
-        mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(resourceTypeId.toString()) } doReturn PASSWORD_DESCRIPTION_TOTP
-        }
         mockIdToSlugMappingProvider.stub {
-            onBlocking { provideMappingForSelectedAccount() } doReturn mapOf(
-                resourceTypeId to SLUG_PASSWORD_DESCRIPTION_TOTP
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(resourceTypeId to ContentType.PasswordAndDescription.slug)
             )
         }
 

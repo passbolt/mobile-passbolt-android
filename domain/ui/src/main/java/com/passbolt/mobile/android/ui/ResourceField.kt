@@ -21,6 +21,11 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.core.resourcetypes.graph.base
+package com.passbolt.mobile.android.ui
 
-typealias Slug = String
+data class ResourceField(
+    val name: String,
+    val isSecret: Boolean,
+    val maxLength: Int?,
+    val isRequired: Boolean
+)

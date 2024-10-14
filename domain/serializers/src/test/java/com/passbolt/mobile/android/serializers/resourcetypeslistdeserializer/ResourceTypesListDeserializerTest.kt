@@ -25,12 +25,10 @@ package com.passbolt.mobile.android.serializers.resourcetypeslistdeserializer
 
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
-import com.passbolt.mobile.android.dto.response.ResourceDefinition
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
 import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_STRING_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import org.junit.Test
 import org.koin.test.KoinTest
 import java.util.UUID
@@ -52,15 +50,13 @@ class ResourceTypesListDeserializerTest : KoinTest {
                 slug = "invalid_slug",
                 name = "name",
                 description = "description",
-                definition = ResourceDefinition(JsonObject(), JsonObject()),
                 deleted = null
             ),
             ResourceTypeDto(
                 id = UUID.randomUUID(),
-                slug = PASSWORD_STRING_SLUG,
+                slug = ContentType.PasswordString.slug,
                 name = "name",
                 description = "description",
-                definition = ResourceDefinition(JsonObject(), JsonObject()),
                 deleted = null
             )
         )

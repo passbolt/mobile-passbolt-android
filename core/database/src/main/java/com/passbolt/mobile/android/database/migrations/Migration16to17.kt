@@ -28,7 +28,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Suppress("MagicNumber")
 object Migration16to17 : Migration(16, 17) {
+    private const val DROP_RESOURCE_TYPE_FIELDS_CROSS_REF = "DROP TABLE ResourceTypesAndFieldsCrossRef"
+    private const val DROP_RESOURCE_TYPE_FIELDS = "DROP TABLE ResourceField"
+    private const val DROP_RESOURCE_TYPE = "DROP TABLE ResourceType"
     private const val DROP_RESOURCES = "DROP TABLE Resource"
+
     @Suppress("MaxLineLength")
     private const val CREATE_RESOURCES = "CREATE TABLE IF NOT EXISTS Resource (" +
             "`resourceId` TEXT NOT NULL, " +
@@ -57,9 +61,20 @@ object Migration16to17 : Migration(16, 17) {
             "`data` TEXT NOT NULL, " +
             "FOREIGN KEY(`metadataKeyId`) REFERENCES `MetadataKey`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE " +
             ")"
+    private const val CREATE_RESOURCE_TYPE = "CREATE TABLE IF NOT EXISTS ResourceType (" +
+            "`resourceTypeId` TEXT NOT NULL, " +
+            "`name` TEXT NOT NULL, " +
+            "`slug` TEXT NOT NULL, " +
+            "`deleted` INTEGER, " +
+            "PRIMARY KEY(`resourceTypeId`)" +
+            ")"
 
     override fun migrate(db: SupportSQLiteDatabase) {
         with(db) {
+            execSQL(DROP_RESOURCE_TYPE_FIELDS_CROSS_REF)
+            execSQL(DROP_RESOURCE_TYPE_FIELDS)
+            execSQL(DROP_RESOURCE_TYPE)
+            execSQL(CREATE_RESOURCE_TYPE)
             execSQL(DROP_RESOURCES)
             execSQL(CREATE_RESOURCES)
             execSQL(CREATE_METADATA_KEYS)

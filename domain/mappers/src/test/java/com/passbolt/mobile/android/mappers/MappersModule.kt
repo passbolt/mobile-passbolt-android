@@ -38,9 +38,7 @@ val testMappersModule = module {
         GsonBuilder().create()
     }
     factory {
-        ResourceTypesModelMapper(
-            gson = get()
-        )
+        ResourceTypesModelMapper()
     }
     factory {
         SharePermissionsModelMapper(

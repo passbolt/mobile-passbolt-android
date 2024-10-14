@@ -5,8 +5,6 @@ import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.inappreview.InAppReviewInteractor
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetIsResourceTypeSupportedUseCase
 import com.passbolt.mobile.android.feature.main.mainscreen.bottomnavigation.MainBottomNavigationModel
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +16,6 @@ import kotlinx.coroutines.launch
 class MainPresenter(
     private val inAppReviewInteractor: InAppReviewInteractor,
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
-    private val getIsResourceTypeSupportedUseCase: GetIsResourceTypeSupportedUseCase,
     private val getFeatureFlagsUseCase: GetFeatureFlagsUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<MainContract.View>(coroutineLaunchContext), MainContract.Presenter {
@@ -40,14 +37,9 @@ class MainPresenter(
 
     private fun setupBottomNavigation() {
         scope.launch {
-            val isStandaloneTotpSupported = getIsResourceTypeSupportedUseCase.execute(
-                GetIsResourceTypeSupportedUseCase.Input(
-                    ResourceTypeFactory.SLUG_TOTP
-                )
-            ).isSupported
             val isTotpFeatureFlagEnabled = getFeatureFlagsUseCase.execute(Unit).featureFlags.isTotpAvailable
             view?.setupBottomNavigation(
-                MainBottomNavigationModel(isOtpTabVisible = isStandaloneTotpSupported && isTotpFeatureFlagEnabled)
+                MainBottomNavigationModel(isOtpTabVisible = isTotpFeatureFlagEnabled)
             )
         }
     }

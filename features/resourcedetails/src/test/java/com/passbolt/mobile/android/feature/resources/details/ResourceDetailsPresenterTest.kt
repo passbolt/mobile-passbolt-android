@@ -11,16 +11,11 @@ import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.RbacModel
@@ -129,19 +124,9 @@ class ResourceDetailsPresenterTest : KoinTest {
         mockGetFolderLocationUseCase.stub {
             onBlocking { execute(any()) }.doReturn(GetLocalFolderLocationUseCase.Output(emptyList()))
         }
-        mockGetResourceTypeWithFields.stub {
-            onBlocking { execute(any()) }.doReturn(
-                GetResourceTypeWithFieldsByIdUseCase.Output(
-                    resourceTypeId = RESOURCE_MODEL.resourceTypeId,
-                    listOf(ResourceField(0, "description", false, null, true, "string"))
-                )
-            )
-        }
-        mockGetResourceTypeIdToSlugMappingUseCase.stub {
-            onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to PASSWORD_AND_DESCRIPTION_SLUG)
-                )
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
             )
         }
         mockGetRbacRulesUseCase.stub {
@@ -179,7 +164,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
-        verify(view, times(2)).showDescription(RESOURCE_MODEL.description!!, isSecret = false)
+        verify(view, times(2)).hideDescription()
         verify(view, times(2)).showFolderLocation(emptyList())
         verify(view, times(2)).hideTotpSection()
         verify(view, times(2)).showPasswordEyeIcon()
@@ -217,7 +202,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         verify(view, times(2)).hidePassword()
         verify(view, times(2)).showPermissions(eq(listOf(groupPermission)), eq(listOf(userPermission)), any(), any())
         verify(view, times(2)).showTags(RESOURCE_TAGS.map { it.slug })
-        verify(view, times(2)).showDescription(RESOURCE_MODEL.description!!, isSecret = false)
+        verify(view, times(2)).hideDescription()
         verify(view, times(2)).showFolderLocation(emptyList())
         verify(view, times(2)).hideTotpSection()
         verify(view, times(2)).showPasswordEyeIcon()
@@ -227,11 +212,9 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     fun `top should show on appropriate content type`() {
-        mockGetResourceTypeIdToSlugMappingUseCase.stub {
-            onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to PASSWORD_DESCRIPTION_TOTP_SLUG)
-                )
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordDescriptionTotp.slug)
             )
         }
 
@@ -247,12 +230,9 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     fun `password details description encryption state should be shown correct for simple password`() {
-        mockGetResourceTypeWithFields.stub {
-            onBlocking { execute(any()) }.doReturn(
-                GetResourceTypeWithFieldsByIdUseCase.Output(
-                    resourceTypeId = RESOURCE_MODEL.resourceTypeId,
-                    listOf(ResourceField(0, "description", false, null, false, "string"))
-                )
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordString.slug)
             )
         }
 
@@ -268,12 +248,9 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     fun `password details description encryption state should be shown correct for default password`() {
-        mockGetResourceTypeWithFields.stub {
-            onBlocking { execute(any()) }.doReturn(
-                GetResourceTypeWithFieldsByIdUseCase.Output(
-                    resourceTypeId = RESOURCE_MODEL.resourceTypeId,
-                    listOf(ResourceField(1, name = "description", isSecret = true, null, false, "string"))
-                )
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
             )
         }
 
@@ -289,8 +266,10 @@ class ResourceDetailsPresenterTest : KoinTest {
 
     @Test
     fun `eye icon should react to password visibility change correct`() {
-        mockResourceTypeFactory.stub {
-            onBlocking { getResourceTypeEnum(any()) }.doReturn(PASSWORD_WITH_DESCRIPTION)
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordAndDescription.slug)
+            )
         }
         val password = "pass"
         mockSecretPropertiesActionsInteractor.stub {
@@ -432,11 +411,11 @@ class ResourceDetailsPresenterTest : KoinTest {
         private val ID = UUID.randomUUID().toString()
         private val ID_EXPIRED = UUID.randomUUID().toString()
         private const val DESCRIPTION = "desc"
-        private val RESOURCE_TYPE_ID = UUID.randomUUID().toString()
+        private val RESOURCE_TYPE_ID = UUID.randomUUID()
         private const val FOLDER_ID_ID = "folderId"
         private val RESOURCE_MODEL = ResourceModel(
             resourceId = ID,
-            resourceTypeId = RESOURCE_TYPE_ID,
+            resourceTypeId = RESOURCE_TYPE_ID.toString(),
             folderId = FOLDER_ID_ID,
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",
@@ -453,7 +432,7 @@ class ResourceDetailsPresenterTest : KoinTest {
         )
         private val RESOURCE_MODEL_EXPIRED = ResourceModel(
             resourceId = ID_EXPIRED,
-            resourceTypeId = RESOURCE_TYPE_ID,
+            resourceTypeId = RESOURCE_TYPE_ID.toString(),
             folderId = FOLDER_ID_ID,
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",

@@ -23,7 +23,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFi
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.HomeContract
@@ -46,7 +46,6 @@ internal val mockGetSelectedAccountDataUseCase = mock<GetSelectedAccountDataUseC
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val mockFetchAndUpdateDatabaseUseCase = mock<RebuildResourceTablesUseCase>()
 internal val mockSecretParser = mock<SecretParser>()
-internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
 internal val mockGetSubFoldersUseCase = mock<GetLocalSubFoldersForFolderUseCase>()
 internal val mockGetSubFoldersResourcesUseCase = mock<GetLocalSubFolderResourcesFilteredUseCase>()
@@ -65,6 +64,7 @@ internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesAc
 internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
 internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
+internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
 @ExperimentalCoroutinesApi
 val testHomeModule = module {
@@ -72,7 +72,6 @@ val testHomeModule = module {
     factory { mockGetSelectedAccountDataUseCase }
     factory { mockFetchAndUpdateDatabaseUseCase }
     factory { mockSecretParser }
-    factory { mockResourceTypeFactory }
     factory { mockCreateResourceMoreMenuModelUseCase }
     single { mock<FullDataRefreshExecutor>() }
     factoryOf(::TestCoroutineLaunchContext) bind CoroutineLaunchContext::class
@@ -101,8 +100,8 @@ val testHomeModule = module {
             getLocalFolderUseCase = mockGetLocalFolderUseCase,
             deleteResourceIdlingResource = get(),
             totpParametersProvider = mockTotpParametersProvider,
-            resourceTypeFactory = mockResourceTypeFactory,
-            getRbacRulesUseCase = mockGetRbacRulesUseCase
+            getRbacRulesUseCase = mockGetRbacRulesUseCase,
+            idToSlugMappingProvider = mockIdToSlugMappingProvider
         )
     }
     factory { mockResourceCommonActionsInteractor }

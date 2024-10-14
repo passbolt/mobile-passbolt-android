@@ -23,43 +23,74 @@
 
 package com.passbolt.mobile.android.supportedresourceTypes
 
+private const val PASSWORD_STRING_SLUG = "password-string"
+private const val PASSWORD_AND_DESCRIPTION_SLUG = "password-and-description"
+private const val TOTP_SLUG = "totp"
+private const val PASSWORD_DESCRIPTION_TOTP_SLUG = "password-description-totp"
+private const val V5_TOTP_STANDALONE_SLUG = "v5-totp-standalone"
+private const val V5_DEFAULT_SLUG = "v5-default"
+private const val V5_DEFAULT_WITH_TOTP = "v5-default-with-totp"
+private const val V5_PASSWORD_STRING_SLUG = "v5-password-string"
+
+sealed class ContentType(val slug: String) {
+    data object PasswordString : ContentType(PASSWORD_STRING_SLUG)
+    data object PasswordAndDescription : ContentType(PASSWORD_AND_DESCRIPTION_SLUG)
+    data object Totp : ContentType(TOTP_SLUG)
+    data object PasswordDescriptionTotp : ContentType(PASSWORD_DESCRIPTION_TOTP_SLUG)
+    data object V5TotpStandalone : ContentType(V5_TOTP_STANDALONE_SLUG)
+    data object V5Default : ContentType(V5_DEFAULT_SLUG)
+    data object V5DefaultWithTotp : ContentType(V5_DEFAULT_WITH_TOTP)
+    data object V5PasswordString : ContentType(V5_PASSWORD_STRING_SLUG)
+
+    fun isSimplePassword() = this == PasswordString || this == V5PasswordString
+
+    companion object {
+        fun fromSlug(slug: String): ContentType {
+            return when (slug) {
+                PASSWORD_STRING_SLUG -> PasswordString
+                PASSWORD_AND_DESCRIPTION_SLUG -> PasswordAndDescription
+                TOTP_SLUG -> Totp
+                PASSWORD_DESCRIPTION_TOTP_SLUG -> PasswordDescriptionTotp
+                V5_TOTP_STANDALONE_SLUG -> V5TotpStandalone
+                V5_DEFAULT_SLUG -> V5Default
+                V5_DEFAULT_WITH_TOTP -> V5DefaultWithTotp
+                V5_PASSWORD_STRING_SLUG -> V5PasswordString
+                else -> throw IllegalArgumentException("Unsupported content type slug: $slug")
+            }
+        }
+    }
+}
+
 object SupportedContentTypes {
-    const val PASSWORD_STRING_SLUG = "password-string"
-    const val PASSWORD_AND_DESCRIPTION_SLUG = "password-and-description"
-    const val TOTP_SLUG = "totp"
-    const val PASSWORD_DESCRIPTION_TOTP_SLUG = "password-description-totp"
-    const val V5_TOTP_STANDALONE_SLUG = "v5-totp-standalone"
-    const val V5_DEFAULT_SLUG = "v5-default"
-    const val V5_DEFAULT_WITH_TOTP = "v5-default-with-totp"
-    const val V5_PASSWORD_STRING_SLUG = "v5-password-string"
 
     val homeSlugs = setOf(
-        PASSWORD_STRING_SLUG,
-        PASSWORD_AND_DESCRIPTION_SLUG,
-        PASSWORD_DESCRIPTION_TOTP_SLUG,
-        V5_DEFAULT_SLUG,
-        V5_PASSWORD_STRING_SLUG
-    )
+        ContentType.PasswordString,
+        ContentType.PasswordAndDescription,
+        ContentType.PasswordDescriptionTotp,
+        ContentType.V5Default,
+        ContentType.V5PasswordString
+    ).map { it.slug }.toSet()
+
     val totpSlugs = setOf(
-        TOTP_SLUG,
-        PASSWORD_DESCRIPTION_TOTP_SLUG,
-        V5_TOTP_STANDALONE_SLUG,
-        V5_DEFAULT_WITH_TOTP
-    )
+        ContentType.Totp,
+        ContentType.PasswordDescriptionTotp,
+        ContentType.V5TotpStandalone,
+        ContentType.V5DefaultWithTotp
+    ).map { it.slug }.toSet()
 
     val allSlugs = homeSlugs + totpSlugs
 
     val v4Slugs = setOf(
-        PASSWORD_STRING_SLUG,
-        PASSWORD_AND_DESCRIPTION_SLUG,
-        PASSWORD_DESCRIPTION_TOTP_SLUG,
-        TOTP_SLUG
-    )
+        ContentType.PasswordString,
+        ContentType.PasswordAndDescription,
+        ContentType.PasswordDescriptionTotp,
+        ContentType.Totp
+    ).map { it.slug }.toSet()
 
     val v5Slugs = setOf(
-        V5_DEFAULT_SLUG,
-        V5_PASSWORD_STRING_SLUG,
-        V5_DEFAULT_WITH_TOTP,
-        V5_TOTP_STANDALONE_SLUG
-    )
+        ContentType.V5Default,
+        ContentType.V5PasswordString,
+        ContentType.V5DefaultWithTotp,
+        ContentType.V5TotpStandalone
+    ).map { it.slug }.toSet()
 }

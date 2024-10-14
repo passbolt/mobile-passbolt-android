@@ -56,8 +56,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesFi
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
@@ -68,6 +67,7 @@ import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.homeSlugs
 import com.passbolt.mobile.android.ui.Folder
 import com.passbolt.mobile.android.ui.FolderMoreMenuModel
@@ -112,8 +112,8 @@ class HomePresenter(
     private val getLocalFolderUseCase: GetLocalFolderDetailsUseCase,
     private val deleteResourceIdlingResource: DeleteResourceIdlingResource,
     private val totpParametersProvider: TotpParametersProvider,
-    private val resourceTypeFactory: ResourceTypeFactory,
-    private val getRbacRulesUseCase: GetRbacRulesUseCase
+    private val getRbacRulesUseCase: GetRbacRulesUseCase,
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider
 ) : DataRefreshViewReactivePresenter<HomeContract.View>(coroutineLaunchContext), HomeContract.Presenter,
     KoinComponent {
 
@@ -680,21 +680,21 @@ class HomePresenter(
 
     override fun menuCopyDescriptionClick() {
         coroutineScope.launch {
-            when (resourceTypeFactory.getResourceTypeEnum(currentMoreMenuResource!!.resourceTypeId)) {
-                SIMPLE_PASSWORD -> {
-                    performResourcePropertyAction(
-                        action = { resourcePropertiesActionsInteractor.provideDescription() },
-                        doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
-                    )
-                }
-                else -> {
-                    performSecretPropertyAction(
-                        action = { secretPropertiesActionsInteractor.provideDescription() },
-                        doOnDecryptionFailure = { view?.showDecryptionFailure() },
-                        doOnFetchFailure = { view?.showFetchFailure() },
-                        doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
-                    )
-                }
+            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                java.util.UUID.fromString(currentMoreMenuResource!!.resourceTypeId)
+            ]
+            if (ContentType.fromSlug(slug!!).isSimplePassword()) {
+                performResourcePropertyAction(
+                    action = { resourcePropertiesActionsInteractor.provideDescription() },
+                    doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                )
+            } else {
+                performSecretPropertyAction(
+                    action = { secretPropertiesActionsInteractor.provideDescription() },
+                    doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                    doOnFetchFailure = { view?.showFetchFailure() },
+                    doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                )
             }
         }
     }

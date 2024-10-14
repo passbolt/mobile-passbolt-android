@@ -7,6 +7,10 @@ android {
     namespace = "com.passbolt.mobile.android.domain.supportedresourcetypes"
 }
 
+dependencies {
+    implementation project(':ui')
+}
+
 kotlin {
     jvmToolchain(17)
 }

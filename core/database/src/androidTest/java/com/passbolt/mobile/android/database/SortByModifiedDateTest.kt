@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.JsonObject
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.Resource
@@ -93,8 +92,6 @@ class SortByModifiedDateTest {
             resourceTypeId = "1",
             name = "password-description",
             slug = PASSWORD_DESCRIPTION_SLUG,
-            resourceSchemaJson = JsonObject(),
-            secretSchemaJson = JsonObject(),
             deleted = null
         )
 

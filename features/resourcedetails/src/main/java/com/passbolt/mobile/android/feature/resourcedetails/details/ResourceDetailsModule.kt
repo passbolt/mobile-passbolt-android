@@ -44,14 +44,12 @@ fun Module.detailsModule() {
                 getLocalResourcePermissionsUseCase = get(),
                 getLocalResourceTagsUseCase = get(),
                 getLocalFolderLocation = get(),
-                getResourceTypeWithFieldsByIdUseCase = get(),
                 totpParametersProvider = get(),
                 otpModelMapper = get(),
-                getResourceTypeIdToSlugMappingUseCase = get(),
-                resourceTypeFactory = get(),
-                coroutineLaunchContext = get(),
+                idToSlugMappingProvider = get(),
                 getRbacRulesUseCase = get(),
-                resourceDetailActionIdlingResource = get()
+                resourceDetailActionIdlingResource = get(),
+                coroutineLaunchContext = get()
             )
         }
         scoped<ItemAdapter<GroupItem>>(named(GROUP_ITEM_ADAPTER)) {

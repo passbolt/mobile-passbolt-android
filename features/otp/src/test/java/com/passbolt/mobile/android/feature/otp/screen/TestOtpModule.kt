@@ -34,7 +34,7 @@ import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActi
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
@@ -52,8 +52,8 @@ internal val mockSecretPropertiesActionsInteractor = mock<SecretPropertiesAction
 internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesActionsInteractor>()
 internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
-internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockGetLocalResourcesUseCase = mock<GetLocalResourcesUseCase>()
+internal val mockIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
 @ExperimentalCoroutinesApi
 internal val testOtpModule = module {
@@ -72,8 +72,8 @@ internal val testOtpModule = module {
             getLocalResourcesUseCase = mockGetLocalResourcesUseCase,
             otpModelMapper = get(),
             totpParametersProvider = mockTotpParametersProvider,
-            resourceTypeFactory = mockResourceTypeFactory,
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            idToSlugMappingProvider = mockIdToSlugMappingProvider
         )
     }
     factory { mockResourceCommonActionsInteractor }

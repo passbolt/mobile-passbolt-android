@@ -31,7 +31,6 @@ import org.koin.dsl.module
 val resourceTypesModule = module {
     resourceTypesDbModule()
 
-    singleOf(::ResourceTypeFactory)
     singleOf(::GetResourceTypesUseCase)
     singleOf(::ResourceTypesInteractor)
     singleOf(::ResourceTypesUpdatesAdjacencyGraph)

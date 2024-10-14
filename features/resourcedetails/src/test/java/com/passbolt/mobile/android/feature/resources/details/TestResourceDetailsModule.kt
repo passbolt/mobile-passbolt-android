@@ -14,9 +14,8 @@ import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsPresenter
 import com.passbolt.mobile.android.mappers.GroupsModelMapper
@@ -31,21 +30,19 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 
-internal val mockResourceTypeFactory = mock<ResourceTypeFactory>()
 internal val mockGetFeatureFlagsUseCase = mock<GetFeatureFlagsUseCase>()
 internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockGetLocalResourcePermissionsUseCase = mock<GetLocalResourcePermissionsUseCase>()
 internal val mockFavouritesInteractor = mock<FavouritesInteractor>()
 internal val mockResourceTagsUseCase = mock<GetLocalResourceTagsUseCase>()
 internal val mockGetFolderLocationUseCase = mock<GetLocalFolderLocationUseCase>()
-internal val mockGetResourceTypeWithFields = mock<GetResourceTypeWithFieldsByIdUseCase>()
 internal val mockTotpParametersProvider = mock<TotpParametersProvider>()
-internal val mockGetResourceTypeIdToSlugMappingUseCase = mock<GetResourceTypeIdToSlugMappingUseCase>()
 internal val mockSecretPropertiesActionsInteractor = mock<SecretPropertiesActionsInteractor>()
 internal val mockResourcePropertiesActionsInteractor = mock<ResourcePropertiesActionsInteractor>()
 internal val mockResourceCommonActionsInteractor = mock<ResourceCommonActionsInteractor>()
 internal val mockResourceUpdateActionsInteractor = mock<ResourceUpdateActionsInteractor>()
 internal val mockGetRbacRulesUseCase = mock<GetRbacRulesUseCase>()
+internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
 
 @ExperimentalCoroutinesApi
 internal val testResourceDetailsModule = module {
@@ -63,14 +60,12 @@ internal val testResourceDetailsModule = module {
             getLocalResourcePermissionsUseCase = mockGetLocalResourcePermissionsUseCase,
             getLocalResourceTagsUseCase = mockResourceTagsUseCase,
             getLocalFolderLocation = mockGetFolderLocationUseCase,
-            getResourceTypeWithFieldsByIdUseCase = mockGetResourceTypeWithFields,
             totpParametersProvider = mockTotpParametersProvider,
             otpModelMapper = get(),
-            getResourceTypeIdToSlugMappingUseCase = mockGetResourceTypeIdToSlugMappingUseCase,
-            resourceTypeFactory = mockResourceTypeFactory,
             coroutineLaunchContext = get(),
             getRbacRulesUseCase = mockGetRbacRulesUseCase,
-            resourceDetailActionIdlingResource = mock()
+            resourceDetailActionIdlingResource = mock(),
+            idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider
         )
     }
     factory { mockResourceCommonActionsInteractor }

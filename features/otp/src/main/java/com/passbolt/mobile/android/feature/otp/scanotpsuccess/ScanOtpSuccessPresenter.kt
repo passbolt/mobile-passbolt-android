@@ -23,21 +23,23 @@
 
 package com.passbolt.mobile.android.feature.otp.scanotpsuccess
 
+import android.annotation.SuppressLint
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -46,10 +48,11 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import java.util.UUID
 
 class ScanOtpSuccessPresenter(
     private val createStandaloneTotpResourceInteractor: CreateStandaloneTotpResourceInteractor,
-    private val resourceTypeFactory: ResourceTypeFactory,
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : BaseAuthenticatedPresenter<ScanOtpSuccessContract.View>(coroutineLaunchContext),
     ScanOtpSuccessContract.Presenter, KoinComponent {
@@ -96,18 +99,22 @@ class ScanOtpSuccessPresenter(
         }
     }
 
+    @SuppressLint("StopShip")
     override fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel) {
         scope.launch {
             view?.showProgress()
 
+            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(resource.resourceTypeId)
+            ]
             val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
                 parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
             }
             val updateOperation =
-                when (resourceTypeFactory.getResourceTypeEnum(resource.resourceTypeId)) {
-                    SIMPLE_PASSWORD, STANDALONE_TOTP ->
+                when (ContentType.fromSlug(slug!!)) {
+                    is PasswordString, Totp ->
                         throw IllegalArgumentException("These resource types are not possible to link")
-                    PASSWORD_WITH_DESCRIPTION -> suspend {
+                    is PasswordAndDescription -> suspend {
                         resourceUpdateActionsInteractor.addTotpToResource(
                             overrideName = resource.name,
                             overrideUri = resource.url,
@@ -117,7 +124,7 @@ class ScanOtpSuccessPresenter(
                             secretKey = scannedTotp.secret
                         )
                     }
-                    PASSWORD_DESCRIPTION_TOTP -> suspend {
+                    is PasswordDescriptionTotp -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resource.name,
                             issuer = resource.url,
@@ -127,6 +134,10 @@ class ScanOtpSuccessPresenter(
                             secretKey = scannedTotp.secret
                         )
                     }
+                    ContentType.V5Default -> TODO()
+                    ContentType.V5DefaultWithTotp -> TODO()
+                    ContentType.V5PasswordString -> TODO()
+                    ContentType.V5TotpStandalone -> TODO()
                 }
             performResourceUpdateAction(
                 action = updateOperation,

@@ -29,10 +29,7 @@ import com.google.gson.JsonObject
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.mockJSFSchemaRepository
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.testParserModule
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_STRING_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.TOTP_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import kotlinx.coroutines.test.runTest
 import net.jimblackler.jsonschemafriend.SchemaStore
 import org.junit.Before
@@ -59,16 +56,16 @@ class SecretValidationTest : KoinTest {
     @Before
     fun setup() {
         mockJSFSchemaRepository.stub {
-            on { schemaForSecret(PASSWORD_STRING_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(ContentType.PasswordString.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-string-secret-schema.json")
             )
-            on { schemaForSecret(PASSWORD_AND_DESCRIPTION_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(ContentType.PasswordAndDescription.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-and-description-secret-schema.json")
             )
-            on { schemaForSecret(PASSWORD_DESCRIPTION_TOTP_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(ContentType.PasswordDescriptionTotp.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-description-totp-secret-schema.json")
             )
-            on { schemaForSecret(TOTP_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(ContentType.Totp.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/totp-secret-schema.json")
             )
         }
@@ -80,7 +77,7 @@ class SecretValidationTest : KoinTest {
             .joinToString { "a" }
         val tooLongPasswordJson = gson.toJson(tooLongPassword)
 
-        val result = secretValidationRunner.isSecretValid(tooLongPasswordJson, PASSWORD_STRING_SLUG)
+        val result = secretValidationRunner.isSecretValid(tooLongPasswordJson, ContentType.PasswordString.slug)
 
         assertThat(result).isFalse()
     }
@@ -105,7 +102,7 @@ class SecretValidationTest : KoinTest {
         ).map { gson.toJson(it) }
 
         val results = invalidSecrets
-            .map { secretValidationRunner.isSecretValid(it, PASSWORD_AND_DESCRIPTION_SLUG) }
+            .map { secretValidationRunner.isSecretValid(it, ContentType.PasswordAndDescription.slug) }
 
         assertThat(results.none { it }).isTrue()
     }
@@ -154,7 +151,7 @@ class SecretValidationTest : KoinTest {
         ).map { gson.toJson(it) }
 
         val results = invalidSecrets
-            .map { secretValidationRunner.isSecretValid(it, TOTP_SLUG) }
+            .map { secretValidationRunner.isSecretValid(it, ContentType.Totp.slug) }
 
         assertThat(results.none { it }).isTrue()
     }
@@ -238,7 +235,7 @@ class SecretValidationTest : KoinTest {
         ).map { gson.toJson(it) }
 
         val results = invalidSecrets
-            .map { secretValidationRunner.isSecretValid(it, PASSWORD_DESCRIPTION_TOTP_SLUG) }
+            .map { secretValidationRunner.isSecretValid(it, ContentType.PasswordDescriptionTotp.slug) }
 
         assertThat(results.none { it }).isTrue()
     }
@@ -247,7 +244,7 @@ class SecretValidationTest : KoinTest {
     fun `valid secret for password string resource type should not be rejected`() = runTest {
         val validSecret = gson.toJson("password")
 
-        val result = secretValidationRunner.isSecretValid(validSecret, PASSWORD_STRING_SLUG)
+        val result = secretValidationRunner.isSecretValid(validSecret, ContentType.PasswordString.slug)
 
         assertThat(result).isTrue()
     }
@@ -262,7 +259,7 @@ class SecretValidationTest : KoinTest {
         ).map { gson.toJson(it) }
 
         val results = validSecrets
-            .map { secretValidationRunner.isSecretValid(it, PASSWORD_AND_DESCRIPTION_SLUG) }
+            .map { secretValidationRunner.isSecretValid(it, ContentType.PasswordAndDescription.slug) }
 
         assertThat(results.all { it }).isTrue()
     }
@@ -281,7 +278,7 @@ class SecretValidationTest : KoinTest {
         ).map { gson.toJson(it) }
 
         val results = validSecrets
-            .map { secretValidationRunner.isSecretValid(it, TOTP_SLUG) }
+            .map { secretValidationRunner.isSecretValid(it, ContentType.Totp.slug) }
 
         assertThat(results.all { it }).isTrue()
     }
@@ -302,7 +299,7 @@ class SecretValidationTest : KoinTest {
         ).map { gson.toJson(it) }
 
         val results = validSecrets
-            .map { secretValidationRunner.isSecretValid(it, PASSWORD_DESCRIPTION_TOTP_SLUG) }
+            .map { secretValidationRunner.isSecretValid(it, ContentType.PasswordDescriptionTotp.slug) }
 
         assertThat(results.all { it }).isTrue()
     }

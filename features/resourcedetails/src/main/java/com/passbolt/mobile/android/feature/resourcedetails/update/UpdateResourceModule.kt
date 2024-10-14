@@ -41,7 +41,6 @@ fun Module.updateResourceModule() {
                 entropyViewMapper = get(),
                 createPasswordAndDescriptionResourceInteractor = get(),
                 addLocalResourceUseCase = get(),
-                resourceTypeFactory = get(),
                 editFieldsModelCreator = get(),
                 newFieldsModelCreator = get(),
                 secretInteractor = get(),
@@ -53,7 +52,8 @@ fun Module.updateResourceModule() {
                 updateResourceIdlingResource = get(),
                 getPasswordPoliciesUseCase = get(),
                 entropyCalculator = get(),
-                checkPasswordPropertiesUseCase = get()
+                checkPasswordPropertiesUseCase = get(),
+                idToSlugMappingProvider = get()
             )
         }
 

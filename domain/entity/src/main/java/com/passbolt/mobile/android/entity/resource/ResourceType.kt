@@ -1,11 +1,7 @@
 package com.passbolt.mobile.android.entity.resource
 
-import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.Junction
 import androidx.room.PrimaryKey
-import androidx.room.Relation
-import com.google.gson.JsonElement
 import java.time.ZonedDateTime
 
 /**
@@ -37,28 +33,5 @@ data class ResourceType(
     val resourceTypeId: String,
     val name: String,
     val slug: String,
-    val resourceSchemaJson: JsonElement,
-    val secretSchemaJson: JsonElement,
     val deleted: ZonedDateTime?
-)
-
-@Entity
-data class ResourceField(
-    @PrimaryKey(autoGenerate = true)
-    val resourceFieldId: Long = 0,
-    val name: String,
-    val isSecret: Boolean,
-    val maxLength: Int?,
-    val isRequired: Boolean,
-    val type: String
-)
-
-data class ResourceTypeIdWithFields(
-    @Embedded val resourceType: ResourceType,
-    @Relation(
-        parentColumn = "resourceTypeId",
-        entityColumn = "resourceFieldId",
-        associateBy = Junction(ResourceTypesAndFieldsCrossRef::class)
-    )
-    val resourceFields: List<ResourceField>
 )

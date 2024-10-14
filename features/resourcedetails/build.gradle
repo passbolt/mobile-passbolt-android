@@ -57,6 +57,7 @@ dependencies {
     implementation libs.coil.base
     implementation libs.room.core
     implementation libs.espresso.idling.resource
+    implementation libs.jsonschema.friend
 
     testImplementation project(':commontest')
     testImplementation libs.gson

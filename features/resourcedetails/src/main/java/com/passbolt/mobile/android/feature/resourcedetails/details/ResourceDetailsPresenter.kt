@@ -19,10 +19,7 @@ import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyA
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
@@ -31,7 +28,9 @@ import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreato
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.ui.ManageTotpAction
 import com.passbolt.mobile.android.ui.ManageTotpAction.ADD_TOTP
 import com.passbolt.mobile.android.ui.ManageTotpAction.EDIT_TOTP
@@ -84,11 +83,9 @@ class ResourceDetailsPresenter(
     private val getLocalResourcePermissionsUseCase: GetLocalResourcePermissionsUseCase,
     private val getLocalResourceTagsUseCase: GetLocalResourceTagsUseCase,
     private val getLocalFolderLocation: GetLocalFolderLocationUseCase,
-    private val getResourceTypeWithFieldsByIdUseCase: GetResourceTypeWithFieldsByIdUseCase,
     private val totpParametersProvider: TotpParametersProvider,
     private val otpModelMapper: OtpModelMapper,
-    private val getResourceTypeIdToSlugMappingUseCase: GetResourceTypeIdToSlugMappingUseCase,
-    private val resourceTypeFactory: ResourceTypeFactory,
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val getRbacRulesUseCase: GetRbacRulesUseCase,
     private val resourceDetailActionIdlingResource: ResourceDetailActionIdlingResource,
     coroutineLaunchContext: CoroutineLaunchContext
@@ -252,15 +249,15 @@ class ResourceDetailsPresenter(
 
     private fun handleTotpField(resourceModel: ResourceModel) {
         coroutineScope.launch {
-            getResourceTypeIdToSlugMappingUseCase.execute(Unit)
-                .idToSlugMapping[UUID.fromString(resourceModel.resourceTypeId)]
-                .let { slug ->
-                    if (slug == PASSWORD_DESCRIPTION_TOTP_SLUG) {
-                        view?.showTotpSection()
-                    } else {
-                        view?.hideTotpSection()
-                    }
-                }
+            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(resourceModel.resourceTypeId)
+            ]
+            val contentType = ContentType.fromSlug(slug!!)
+            if (contentType is PasswordDescriptionTotp || contentType is V5DefaultWithTotp) {
+                view?.showTotpSection()
+            } else {
+                view?.hideTotpSection()
+            }
         }
     }
 
@@ -276,12 +273,10 @@ class ResourceDetailsPresenter(
 
     private fun handleDescriptionField(resourceModel: ResourceModel) {
         coroutineScope.launch {
-            val resourceTypeFields = getResourceTypeWithFieldsByIdUseCase.execute(
-                GetResourceTypeWithFieldsByIdUseCase.Input(resourceModel.resourceTypeId)
-            ).fields
-            val isDescriptionSecret = resourceTypeFields
-                .find { it.name == "description" }
-                ?.isSecret ?: false
+            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(resourceModel.resourceTypeId)
+            ]
+            val isDescriptionSecret = !ContentType.fromSlug(slug!!).isSimplePassword()
             if (isDescriptionSecret) {
                 view?.hideDescription()
             } else {
@@ -344,21 +339,22 @@ class ResourceDetailsPresenter(
         if (!isDescriptionVisible) {
             resourceDetailActionIdlingResource.setIdle(false)
             coroutineScope.launch {
-                when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
-                    SIMPLE_PASSWORD -> {
-                        performResourcePropertyAction(
-                            action = { resourcePropertiesActionsInteractor.provideDescription() },
-                            doOnResult = { view?.showDescription(it.result, isSecret = it.isSecret) }
-                        )
-                    }
-                    else -> {
-                        performSecretPropertyAction(
-                            action = { secretPropertiesActionsInteractor.provideDescription() },
-                            doOnDecryptionFailure = { view?.showDecryptionFailure() },
-                            doOnFetchFailure = { view?.showFetchFailure() },
-                            doOnSuccess = { view?.showDescription(it.result, isSecret = it.isSecret) }
-                        )
-                    }
+                val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(resourceModel.resourceTypeId)
+                ]
+                val contentType = ContentType.fromSlug(slug!!)
+                if (contentType.isSimplePassword()) {
+                    performResourcePropertyAction(
+                        action = { resourcePropertiesActionsInteractor.provideDescription() },
+                        doOnResult = { view?.showDescription(it.result, isSecret = it.isSecret) }
+                    )
+                } else {
+                    performSecretPropertyAction(
+                        action = { secretPropertiesActionsInteractor.provideDescription() },
+                        doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                        doOnFetchFailure = { view?.showFetchFailure() },
+                        doOnSuccess = { view?.showDescription(it.result, isSecret = it.isSecret) }
+                    )
                 }
                 isDescriptionVisible = true
                 resourceDetailActionIdlingResource.setIdle(true)
@@ -408,21 +404,22 @@ class ResourceDetailsPresenter(
     override fun copyDescriptionClick() {
         resourceDetailActionIdlingResource.setIdle(false)
         coroutineScope.launch {
-            when (resourceTypeFactory.getResourceTypeEnum(resourceModel.resourceTypeId)) {
-                SIMPLE_PASSWORD -> {
-                    performResourcePropertyAction(
-                        action = { resourcePropertiesActionsInteractor.provideDescription() },
-                        doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
-                    )
-                }
-                else -> {
-                    performSecretPropertyAction(
-                        action = { secretPropertiesActionsInteractor.provideDescription() },
-                        doOnDecryptionFailure = { view?.showDecryptionFailure() },
-                        doOnFetchFailure = { view?.showFetchFailure() },
-                        doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
-                    )
-                }
+            val slug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
+                UUID.fromString(resourceModel.resourceTypeId)
+            ]
+            val contentType = ContentType.fromSlug(slug!!)
+            if (contentType.isSimplePassword()) {
+                performResourcePropertyAction(
+                    action = { resourcePropertiesActionsInteractor.provideDescription() },
+                    doOnResult = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                )
+            } else {
+                performSecretPropertyAction(
+                    action = { secretPropertiesActionsInteractor.provideDescription() },
+                    doOnDecryptionFailure = { view?.showDecryptionFailure() },
+                    doOnFetchFailure = { view?.showFetchFailure() },
+                    doOnSuccess = { view?.addToClipboard(it.label, it.result, it.isSecret) }
+                )
             }
             resourceDetailActionIdlingResource.setIdle(true)
         }

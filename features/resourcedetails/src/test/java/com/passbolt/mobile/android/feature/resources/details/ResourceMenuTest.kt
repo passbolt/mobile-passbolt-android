@@ -12,14 +12,11 @@ import com.passbolt.mobile.android.core.resources.usecase.FavouritesInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.feature.resourcedetails.details.ResourceDetailsContract
 import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.storage.usecase.rbac.GetRbacRulesUseCase
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.GroupModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
 import com.passbolt.mobile.android.ui.RbacModel
@@ -136,19 +133,9 @@ class ResourceMenuTest : KoinTest {
         mockGetFolderLocationUseCase.stub {
             onBlocking { execute(any()) }.doReturn(GetLocalFolderLocationUseCase.Output(emptyList()))
         }
-        mockGetResourceTypeWithFields.stub {
-            onBlocking { execute(any()) }.doReturn(
-                GetResourceTypeWithFieldsByIdUseCase.Output(
-                    resourceTypeId = RESOURCE_MODEL.resourceTypeId,
-                    listOf(ResourceField(0, "description", false, null, true, "string"))
-                )
-            )
-        }
-        mockGetResourceTypeIdToSlugMappingUseCase.stub {
-            onBlocking { execute(Unit) }.doReturn(
-                GetResourceTypeIdToSlugMappingUseCase.Output(
-                    mapOf(UUID.fromString(RESOURCE_TYPE_ID) to PASSWORD_AND_DESCRIPTION_SLUG)
-                )
+        mockResourceTypeIdToSlugMappingProvider.stub {
+            onBlocking { provideMappingForSelectedAccount() }.doReturn(
+                mapOf(RESOURCE_TYPE_ID to ContentType.PasswordString.slug)
             )
         }
         presenter.attach(view)
@@ -283,11 +270,11 @@ class ResourceMenuTest : KoinTest {
         private const val URL = "https://www.passbolt.com"
         private val ID = UUID.randomUUID().toString()
         private const val DESCRIPTION = "desc"
-        private val RESOURCE_TYPE_ID = UUID.randomUUID().toString()
+        private val RESOURCE_TYPE_ID = UUID.randomUUID()
         private const val FOLDER_ID_ID = "folderId"
         private val RESOURCE_MODEL = ResourceModel(
             resourceId = ID,
-            resourceTypeId = RESOURCE_TYPE_ID,
+            resourceTypeId = RESOURCE_TYPE_ID.toString(),
             folderId = FOLDER_ID_ID,
             permission = ResourcePermission.READ,
             favouriteId = "fav-id",

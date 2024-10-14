@@ -1,7 +1,8 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator
 
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsBySlugUseCase
 import com.passbolt.mobile.android.feature.resourcedetails.update.ResourceValue
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.ui.ResourceField
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,17 +27,124 @@ import com.passbolt.mobile.android.feature.resourcedetails.update.ResourceValue
  * @since v1.0
  */
 class NewFieldsModelCreator(
-    private val getResourceTypeWithFieldsBySlugUseCase: GetResourceTypeWithFieldsBySlugUseCase,
     private val resourceFieldsComparator: ResourceFieldsComparator
 ) {
 
-    suspend fun create(): List<ResourceValue> {
-        val defaultCreateResourceType = getResourceTypeWithFieldsBySlugUseCase.execute(
-            GetResourceTypeWithFieldsBySlugUseCase.Input()
-        )
-        return defaultCreateResourceType
-            .fields
+    fun create(contentType: ContentType): List<ResourceValue> {
+        return when (contentType) {
+            is ContentType.PasswordString, ContentType.V5PasswordString -> {
+                passwordStringFields()
+            }
+            is ContentType.PasswordAndDescription, ContentType.V5Default -> {
+                passwordAndDescriptionFields()
+            }
+            is ContentType.Totp, ContentType.V5TotpStandalone -> {
+                throw IllegalArgumentException("Totp content type is not supported")
+            }
+            is ContentType.PasswordDescriptionTotp, ContentType.V5DefaultWithTotp -> {
+                passwordWithTotp()
+            }
+        }
             .sortedWith(resourceFieldsComparator)
-            .map { ResourceValue(it, null) }
+            .map { ResourceValue(it) }
     }
+
+    private fun passwordAndDescriptionFields() = listOf(
+        ResourceField(
+            name = "name",
+            isSecret = false,
+            maxLength = 255,
+            isRequired = true
+        ),
+        ResourceField(
+            name = "username",
+            isSecret = false,
+            maxLength = 255,
+            isRequired = false
+        ),
+        ResourceField(
+            name = "uri",
+            isSecret = false,
+            maxLength = 1024,
+            isRequired = false
+        ),
+        ResourceField(
+            name = "description",
+            isSecret = true,
+            maxLength = 10000,
+            isRequired = false
+        ),
+        ResourceField(
+            name = "password",
+            isSecret = true,
+            maxLength = 4096,
+            isRequired = true
+        )
+    )
+
+    private fun passwordWithTotp() = listOf(
+        ResourceField(
+            name = "name",
+            isSecret = false,
+            maxLength = 255,
+            isRequired = true
+        ),
+        ResourceField(
+            name = "username",
+            isSecret = false,
+            maxLength = 255,
+            isRequired = false
+        ),
+        ResourceField(
+            name = "uri",
+            isSecret = false,
+            maxLength = 1024,
+            isRequired = false
+        ),
+        ResourceField(
+            name = "description",
+            isSecret = true,
+            maxLength = 10000,
+            isRequired = false
+        ),
+        ResourceField(
+            name = "password",
+            isSecret = true,
+            maxLength = 4096,
+            isRequired = true
+        )
+    )
+
+    private fun passwordStringFields() = listOf(
+        ResourceField(
+            name = "name",
+            isSecret = false,
+            maxLength = 255,
+            isRequired = true
+        ),
+        ResourceField(
+            name = "username",
+            isSecret = false,
+            maxLength = 255,
+            isRequired = false
+        ),
+        ResourceField(
+            name = "uri",
+            isSecret = false,
+            maxLength = 1024,
+            isRequired = false
+        ),
+        ResourceField(
+            name = "description",
+            isSecret = false,
+            maxLength = 10000,
+            isRequired = false
+        ),
+        ResourceField(
+            name = "secret",
+            isSecret = true,
+            maxLength = 4096,
+            isRequired = true
+        )
+    )
 }

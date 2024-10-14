@@ -15,8 +15,6 @@ import com.passbolt.mobile.android.database.impl.resourceandgroupscrossref.Resou
 import com.passbolt.mobile.android.database.impl.resourceandtagcrossref.ResourcesAndTagsCrossRefDao
 import com.passbolt.mobile.android.database.impl.resourceanduserscrossref.ResourcesAndUsersCrossRefDao
 import com.passbolt.mobile.android.database.impl.resources.ResourcesDao
-import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceFieldsDao
-import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceTypesAndFieldsCrossRefDao
 import com.passbolt.mobile.android.database.impl.resourcetypes.ResourceTypesDao
 import com.passbolt.mobile.android.database.impl.tags.TagsDao
 import com.passbolt.mobile.android.database.impl.users.UsersDao
@@ -32,10 +30,8 @@ import com.passbolt.mobile.android.entity.metadata.MetadataKey
 import com.passbolt.mobile.android.entity.metadata.MetadataPrivateKey
 import com.passbolt.mobile.android.entity.resource.Resource
 import com.passbolt.mobile.android.entity.resource.ResourceAndTagsCrossRef
-import com.passbolt.mobile.android.entity.resource.ResourceField
 import com.passbolt.mobile.android.entity.resource.ResourceMetadata
 import com.passbolt.mobile.android.entity.resource.ResourceType
-import com.passbolt.mobile.android.entity.resource.ResourceTypesAndFieldsCrossRef
 import com.passbolt.mobile.android.entity.resource.ResourceUri
 import com.passbolt.mobile.android.entity.resource.Tag
 import com.passbolt.mobile.android.entity.user.ResourceAndUsersCrossRef
@@ -69,8 +65,6 @@ import com.passbolt.mobile.android.entity.user.User
         Resource::class,
         Folder::class,
         ResourceType::class,
-        ResourceField::class,
-        ResourceTypesAndFieldsCrossRef::class,
         Tag::class,
         ResourceAndTagsCrossRef::class,
         UsersGroup::class,
@@ -97,10 +91,6 @@ abstract class ResourceDatabase : RoomDatabase() {
     abstract fun resourceUriDao(): ResourceUriDao
 
     abstract fun resourceTypesDao(): ResourceTypesDao
-
-    abstract fun resourceFieldsDao(): ResourceFieldsDao
-
-    abstract fun resourceTypesAndFieldsCrossRefDao(): ResourceTypesAndFieldsCrossRefDao
 
     abstract fun foldersDao(): FoldersDao
 
