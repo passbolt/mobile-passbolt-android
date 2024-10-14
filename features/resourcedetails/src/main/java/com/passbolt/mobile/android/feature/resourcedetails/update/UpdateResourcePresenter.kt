@@ -7,8 +7,6 @@ import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.Validation
 import com.passbolt.mobile.android.common.validation.validation
-import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
-import com.passbolt.mobile.android.core.commonfolders.usecase.db.ItemIdResourceId
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResource
@@ -17,14 +15,11 @@ import com.passbolt.mobile.android.core.passwordgenerator.SecretGenerator
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.Entropy
 import com.passbolt.mobile.android.core.passwordgenerator.entropy.EntropyCalculator
 import com.passbolt.mobile.android.core.passwordgenerator.usecase.CheckPasswordPropertiesUseCase
+import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionResult
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.performResourceCreateAction
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
-import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
-import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
-import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
-import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
@@ -83,15 +78,10 @@ class UpdateResourcePresenter(
     coroutineLaunchContext: CoroutineLaunchContext,
     private val secretGenerator: SecretGenerator,
     private val entropyViewMapper: EntropyViewMapper,
-    private val createPasswordAndDescriptionResourceInteractor: CreatePasswordAndDescriptionResourceInteractor,
-    private val addLocalResourceUseCase: AddLocalResourceUseCase,
     private val editFieldsModelCreator: EditFieldsModelCreator,
     private val newFieldsModelCreator: NewFieldsModelCreator,
     private val secretInteractor: SecretInteractor,
     private val fieldNamesMapper: FieldNamesMapper,
-    private val resourceShareInteractor: ResourceShareInteractor,
-    private val getLocalParentFolderPermissionsToApplyUseCase: GetLocalParentFolderPermissionsToApplyToNewItemUseCase,
-    private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase,
     private val createResourceIdlingResource: CreateResourceIdlingResource,
     private val updateResourceIdlingResource: UpdateResourceIdlingResource,
     private val getPasswordPoliciesUseCase: GetPasswordPoliciesUseCase,
@@ -341,68 +331,32 @@ class UpdateResourcePresenter(
     }
 
     private suspend fun createResource() {
-        when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            createPasswordAndDescriptionResourceInteractor.execute(
-                createResourceCommonCreateInput(),
-                createResourceCustomInput()
-            )
-        }) {
-            is CreateResourceInteractor.Output.Failure<*> -> view?.showError()
-            is CreateResourceInteractor.Output.OpenPgpError -> view?.showEncryptionError(result.message)
-            is CreateResourceInteractor.Output.PasswordExpired -> {
-                /* will not happen in BaseAuthenticatedPresenter */
-            }
-            is CreateResourceInteractor.Output.Success -> {
-                addLocalResourceUseCase.execute(AddLocalResourceUseCase.Input(result.resource.resourceModel))
-                addLocalResourcePermissionsUseCase.execute(
-                    AddLocalResourcePermissionsUseCase.Input(listOf(result.resource))
-                )
-                resourceParentFolderId?.let {
-                    applyFolderPermissionsToCreatedResource(result.resource.resourceModel, it)
-                } ?: run {
-                    view?.closeWithCreateSuccessResult(
-                        result.resource.resourceModel.name,
-                        result.resource.resourceModel.resourceId
-                    )
-                }
-            }
-            is CreateResourceInteractor.Output.JsonSchemaValidationFailure ->
-                handleSchemaValidationFailure(result.entity)
+        val resourceCreateActionsInteractor = get<ResourceCreateActionsInteractor> {
+            parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
         }
+        performResourceCreateAction(
+            action = {
+                resourceCreateActionsInteractor.createPasswordAndDescriptionResource(
+                    resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
+                    resourceUsername = getFieldValue(USERNAME_FIELD),
+                    resourceUri = getFieldValue(URI_FIELD),
+                    resourceParentFolderId = resourceParentFolderId,
+                    password = getFieldValue(PASSWORD_FIELD)!!, // validated to be not null
+                    description = getFieldValue(DESCRIPTION_FIELD)
+                )
+            },
+            doOnFailure = { view?.showError() },
+            doOnCryptoFailure = { view?.showEncryptionError(it) },
+            doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
+            doOnShareFailure = { view?.showShareFailure() },
+            doOnSuccess = { view?.closeWithCreateSuccessResult(it.resourceName, it.resourceId) }
+        )
     }
 
     private fun handleSchemaValidationFailure(entity: SchemaEntity) {
         when (entity) {
             SchemaEntity.RESOURCE -> view?.showJsonResourceSchemaValidationError()
             SchemaEntity.SECRET -> view?.showJsonSecretSchemaValidationError()
-        }
-    }
-
-    private suspend fun applyFolderPermissionsToCreatedResource(
-        resource: ResourceModel,
-        resourceParentFolderId: String
-    ) {
-        val newPermissionsToApply = getLocalParentFolderPermissionsToApplyUseCase.execute(
-            GetLocalParentFolderPermissionsToApplyToNewItemUseCase.Input(
-                resourceParentFolderId,
-                ItemIdResourceId(resource.resourceId)
-            )
-        ).permissions
-
-        when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-            resourceShareInteractor.simulateAndShareResource(resource.resourceId, newPermissionsToApply)
-        }) {
-            is ResourceShareInteractor.Output.SecretDecryptFailure -> view?.showSecretDecryptFailure()
-            is ResourceShareInteractor.Output.SecretEncryptFailure -> view?.showSecretEncryptFailure()
-            is ResourceShareInteractor.Output.SecretFetchFailure -> view?.showSecretFetchFailure()
-            is ResourceShareInteractor.Output.ShareFailure -> view?.showShareFailure()
-            is ResourceShareInteractor.Output.SimulateShareFailure -> view?.showShareSimulationFailure()
-            is ResourceShareInteractor.Output.Success -> {
-                view?.closeWithCreateSuccessResult(resource.name, resource.resourceId)
-            }
-            is ResourceShareInteractor.Output.Unauthorized -> {
-                // handled automatically in runAuthenticatedOperation
-            }
         }
     }
 
@@ -468,20 +422,6 @@ class UpdateResourcePresenter(
 
     private fun getFieldValue(fieldName: String) =
         fields.find { it.field.name == fieldName }?.value
-
-    private fun createResourceCommonCreateInput() =
-        CreateResourceInteractor.CommonInput(
-            resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
-            resourceUsername = getFieldValue(USERNAME_FIELD),
-            resourceUri = getFieldValue(URI_FIELD),
-            resourceParentFolderId = resourceParentFolderId
-        )
-
-    private fun createResourceCustomInput() =
-        CreatePasswordAndDescriptionResourceInteractor.CreatePasswordAndDescriptionInput(
-            password = getFieldValue(PASSWORD_FIELD)!!, // validated to be not null
-            getFieldValue(DESCRIPTION_FIELD)
-        )
 
     private fun Validation.ValueValidation<String>.validateRules(
         rule: Rule<String>,
