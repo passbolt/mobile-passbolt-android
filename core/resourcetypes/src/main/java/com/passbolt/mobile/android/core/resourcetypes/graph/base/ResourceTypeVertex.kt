@@ -23,4 +23,6 @@
 
 package com.passbolt.mobile.android.core.resourcetypes.graph.base
 
-class ResourceTypeVertex(override val slug: Slug) : Vertex<Slug>
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+
+class ResourceTypeVertex(override val contentType: ContentType) : Vertex<ContentType>

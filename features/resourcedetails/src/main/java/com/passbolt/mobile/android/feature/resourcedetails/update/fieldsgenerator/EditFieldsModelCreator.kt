@@ -1,14 +1,18 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator
 
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_DESCRIPTION_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.PASSWORD_WITH_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.ResourceTypeEnum.STANDALONE_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeWithFieldsByIdUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.feature.resourcedetails.update.ResourceValue
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,10 +37,9 @@ import com.passbolt.mobile.android.ui.ResourceModel
  * @since v1.0
  */
 class EditFieldsModelCreator(
-    private val getResourceTypeWithFieldsByIdUseCase: GetResourceTypeWithFieldsByIdUseCase,
     private val secretParser: SecretParser,
-    private val resourceTypeEnumFactory: com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory,
-    private val resourceFieldsComparator: ResourceFieldsComparator
+    private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
+    private val newFieldsModelCreator: NewFieldsModelCreator
 ) {
 
     @Throws(ClassCastException::class)
@@ -45,46 +48,48 @@ class EditFieldsModelCreator(
         secret: ByteArray
     ): List<ResourceValue> {
 
-        val editedResourceType = getResourceTypeWithFieldsByIdUseCase.execute(
-            GetResourceTypeWithFieldsByIdUseCase.Input(existingResource.resourceTypeId)
-        )
+        val editedResourceTypeSlug = idToSlugMappingProvider.provideMappingForSelectedAccount()[
+            UUID.fromString(existingResource.resourceTypeId)
+        ]
 
-        val resourceTypeEnum = resourceTypeEnumFactory.getResourceTypeEnum(existingResource.resourceTypeId)
+        requireNotNull(editedResourceTypeSlug)
 
-        return editedResourceType
-            .fields
-            .sortedWith(resourceFieldsComparator)
-            .filter { it.name in updateResourceFormSupportedFieldNames }
+        val resourceTypeFields = newFieldsModelCreator.create(ContentType.fromSlug(editedResourceTypeSlug))
+
+        return resourceTypeFields
+            .filter { it.field.name in updateResourceFormSupportedFieldNames }
             .map { field ->
-                val initialValue = when (field.name) {
+                val initialValue = when (field.field.name) {
                     in listOf(FieldNamesMapper.PASSWORD_FIELD, FieldNamesMapper.SECRET_FIELD) -> {
                         val parsedSecret = (secretParser.parseSecret(
                             existingResource.resourceTypeId,
                             secret
                         ) as DecryptedSecretOrError.DecryptedSecret).secret
-                        when (resourceTypeEnum) {
-                            SIMPLE_PASSWORD -> parsedSecret.password
-                            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> parsedSecret.secret
-                            STANDALONE_TOTP -> {
+                        when (editedResourceTypeSlug) {
+                            PasswordString.slug, V5PasswordString.slug -> parsedSecret.password
+                            PasswordAndDescription.slug, PasswordDescriptionTotp.slug,
+                            V5Default.slug, V5DefaultWithTotp.slug -> parsedSecret.secret
+                            else -> {
                                 throw IllegalArgumentException("Standalone totp does not contain password or secret")
                             }
                         }
                     }
                     FieldNamesMapper.DESCRIPTION_FIELD -> {
-                        when (resourceTypeEnum) {
-                            SIMPLE_PASSWORD -> existingResource.description
+                        when (editedResourceTypeSlug) {
+                            PasswordString.slug, V5PasswordString.slug -> existingResource.description
                             // there can be parsing errors when secret data is invalid - do not create the input then
-                            PASSWORD_WITH_DESCRIPTION, PASSWORD_DESCRIPTION_TOTP -> (secretParser.parseSecret(
+                            PasswordAndDescription.slug, PasswordDescriptionTotp.slug,
+                            V5Default.slug, V5DefaultWithTotp.slug -> (secretParser.parseSecret(
                                 existingResource.resourceTypeId,
                                 secret
                             ) as DecryptedSecretOrError.DecryptedSecret).secret.description.orEmpty()
-                            STANDALONE_TOTP -> {
+                            else -> {
                                 throw IllegalArgumentException("Standalone totp does not contain description field")
                             }
                         }
                     }
                     else -> {
-                        when (field.name) {
+                        when (field.field.name) {
                             FieldNamesMapper.NAME_FIELD -> existingResource.name
                             FieldNamesMapper.USERNAME_FIELD -> existingResource.username
                             FieldNamesMapper.URI_FIELD -> existingResource.url
@@ -92,7 +97,7 @@ class EditFieldsModelCreator(
                         }
                     }
                 }
-                ResourceValue(field, initialValue)
+                ResourceValue(field.field, initialValue)
             }
     }
 

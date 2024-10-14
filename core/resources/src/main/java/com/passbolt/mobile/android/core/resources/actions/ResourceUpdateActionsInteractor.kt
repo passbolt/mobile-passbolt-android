@@ -292,7 +292,7 @@ class ResourceUpdateActionsInteractor(
     ): Flow<ResourceUpdateActionResult> {
         return try {
             val decryptedSecret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
-            val newResourceTypeSlug = resourceTypesUpdateGraph.getResourceTypeSlugAfterUpdate(
+            val newResourceType = resourceTypesUpdateGraph.getResourceTypeSlugAfterUpdate(
                 idToSlugMappingProvider.provideMappingForSelectedAccount()[UUID.fromString(resource.resourceTypeId)]!!,
                 updateAction
             )
@@ -301,7 +301,7 @@ class ResourceUpdateActionsInteractor(
                     is SecretPropertyActionResult.Success ->
                         runUpdateOperation {
                             updateResourceInteractor.execute(
-                                updateResource(newResourceTypeSlug),
+                                updateResource(newResourceType.slug),
                                 updateSecret(decryptedSecret.result)
                             )
                         }

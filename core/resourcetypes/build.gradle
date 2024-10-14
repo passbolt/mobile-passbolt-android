@@ -13,6 +13,7 @@ dependencies {
     implementation project(':architecture')
     implementation project(':dto')
     implementation project(':mappers')
+    implementation project(':supportedresourcetypes')
 
     implementation libs.koin
     implementation libs.room.core

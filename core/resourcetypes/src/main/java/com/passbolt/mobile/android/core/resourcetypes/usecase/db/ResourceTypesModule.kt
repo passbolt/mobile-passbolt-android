@@ -28,9 +28,6 @@ import org.koin.core.module.dsl.singleOf
 
 internal fun Module.resourceTypesDbModule() {
     singleOf(::RebuildLocalResourceTypesUseCase)
-    singleOf(::GetResourceTypeWithFieldsByIdUseCase)
-    singleOf(::GetResourceTypeWithFieldsBySlugUseCase)
     singleOf(::GetResourceTypeIdToSlugMappingUseCase)
     singleOf(::ResourceTypeIdToSlugMappingProvider)
-    singleOf(::GetIsResourceTypeSupportedUseCase)
 }

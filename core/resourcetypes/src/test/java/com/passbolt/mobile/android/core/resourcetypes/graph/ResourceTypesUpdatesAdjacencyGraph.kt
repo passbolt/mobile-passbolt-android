@@ -24,10 +24,7 @@
 package com.passbolt.mobile.android.core.resourcetypes.graph
 
 import com.google.common.truth.Truth.assertThat
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_AND_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_DESCRIPTION_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_SIMPLE_PASSWORD
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_TOTP
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import org.junit.Test
 
 
@@ -36,7 +33,15 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
 
     @Test
     fun `actions are correct for simple password`() {
-        val actions = graph.getUpdateActionsMetadata(SLUG_SIMPLE_PASSWORD)
+        val actions = graph.getUpdateActionsMetadata(ContentType.PasswordString.slug)
+
+        assertThat(actions).hasSize(1)
+        assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
+    }
+
+    @Test
+    fun `actions are correct for V5 simple password`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.V5PasswordString.slug)
 
         assertThat(actions).hasSize(1)
         assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
@@ -44,7 +49,16 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
 
     @Test
     fun `actions are correct for password and description`() {
-        val actions = graph.getUpdateActionsMetadata(SLUG_PASSWORD_AND_DESCRIPTION)
+        val actions = graph.getUpdateActionsMetadata(ContentType.PasswordAndDescription.slug)
+
+        assertThat(actions).hasSize(2)
+        assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
+        assertThat(actions.any { it.action == UpdateAction.ADD_TOTP }).isTrue()
+    }
+
+    @Test
+    fun `actions are correct for v5 default`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.V5Default.slug)
 
         assertThat(actions).hasSize(2)
         assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
@@ -53,7 +67,17 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
 
     @Test
     fun `actions are correct for password description totp`() {
-        val actions = graph.getUpdateActionsMetadata(SLUG_PASSWORD_DESCRIPTION_TOTP)
+        val actions = graph.getUpdateActionsMetadata(ContentType.PasswordDescriptionTotp.slug)
+
+        assertThat(actions).hasSize(3)
+        assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
+        assertThat(actions.any { it.action == UpdateAction.EDIT_TOTP }).isTrue()
+        assertThat(actions.any { it.action == UpdateAction.REMOVE_TOTP }).isTrue()
+    }
+
+    @Test
+    fun `actions are correct for v5 password description totp`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.PasswordDescriptionTotp.slug)
 
         assertThat(actions).hasSize(3)
         assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
@@ -63,7 +87,15 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
 
     @Test
     fun `actions are correct for totp`() {
-        val actions = graph.getUpdateActionsMetadata(SLUG_TOTP)
+        val actions = graph.getUpdateActionsMetadata(ContentType.Totp.slug)
+
+        assertThat(actions).hasSize(1)
+        assertThat(actions.any { it.action == UpdateAction.EDIT_TOTP }).isTrue()
+    }
+
+    @Test
+    fun `actions are correct for v5 standalone totp`() {
+        val actions = graph.getUpdateActionsMetadata(ContentType.V5TotpStandalone.slug)
 
         assertThat(actions).hasSize(1)
         assertThat(actions.any { it.action == UpdateAction.EDIT_TOTP }).isTrue()

@@ -28,9 +28,6 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_AND_DESCRIPTION
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_PASSWORD_DESCRIPTION_TOTP
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory.Companion.SLUG_SIMPLE_PASSWORD
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInput
 import com.passbolt.mobile.android.core.users.usecase.FetchUsersUseCase
@@ -51,6 +48,13 @@ import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 import com.passbolt.mobile.android.storage.usecase.policies.GetPasswordExpirySettingsUseCase
 import com.passbolt.mobile.android.storage.usecase.privatekey.GetPrivateKeyUseCase
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.ui.EncryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.UserModel
@@ -81,7 +85,10 @@ class UpdateResourceInteractor(
             is FetchUsersUseCase.Output.Failure<*> -> Output.Failure(usersWhoHaveAccess.response)
             is FetchUsersUseCase.Output.Success -> {
                 if (isSecretValid(
-                        PlainSecretValidationWrapper(secretInput.decryptedSecret.json, input.newResourceTypeSlug)
+                        PlainSecretValidationWrapper(
+                            secretInput.decryptedSecret.json,
+                            ContentType.fromSlug(input.newResourceTypeSlug)
+                        )
                             .validationPlainSecret,
                         input.newResourceTypeSlug
                     )
@@ -134,7 +141,7 @@ class UpdateResourceInteractor(
     @Suppress("NestedBlockDepth")
     // https://drive.google.com/file/d/1lqiF0ajpuvx1xaZ74aSSjxiDLMGPBXVa/view?usp=drive_link
     private suspend fun getResourceExpiry(resourceInput: ResourceInput, secretInput: SecretInput): ZonedDateTime? {
-        return if (resourcesSlugsSupportingExpiry.contains(resourceInput.newResourceTypeSlug)) {
+        return if (resourcesSlugsSupportingExpiry.contains(ContentType.fromSlug(resourceInput.newResourceTypeSlug))) {
             val expirySettings = passwordExpirySettingsUseCase.execute(Unit).expirySettings
             if (expirySettings.automaticUpdate) {
                 if (secretInput.passwordChanged) {
@@ -234,9 +241,12 @@ class UpdateResourceInteractor(
 
     private companion object {
         private val resourcesSlugsSupportingExpiry = setOf(
-            SLUG_PASSWORD_AND_DESCRIPTION,
-            SLUG_SIMPLE_PASSWORD,
-            SLUG_PASSWORD_DESCRIPTION_TOTP
+            PasswordString,
+            PasswordAndDescription,
+            PasswordDescriptionTotp,
+            V5PasswordString,
+            V5Default,
+            V5DefaultWithTotp
         )
     }
 }

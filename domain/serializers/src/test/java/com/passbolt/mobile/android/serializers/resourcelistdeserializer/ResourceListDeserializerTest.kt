@@ -26,16 +26,12 @@ package com.passbolt.mobile.android.serializers.resourcelistdeserializer
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase.Output
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.dto.response.PermissionDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_STRING_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.TOTP_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import net.jimblackler.jsonschemafriend.SchemaStore
 import org.junit.Before
 import org.junit.Rule
@@ -64,16 +60,16 @@ class ResourceListDeserializerTest : KoinTest {
             onBlocking { execute(Unit) } doReturn GetSelectedAccountUseCase.Output("selectedAccountId")
         }
         mockJSFSchemaRepository.stub {
-            on { schemaForResource(PASSWORD_STRING_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForResource(ContentType.PasswordString.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-string-resource-schema.json")
             )
-            on { schemaForResource(PASSWORD_AND_DESCRIPTION_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForResource(ContentType.PasswordAndDescription.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-and-description-resource-schema.json")
             )
-            on { schemaForResource(PASSWORD_DESCRIPTION_TOTP_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForResource(ContentType.PasswordDescriptionTotp.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-description-totp-resource-schema.json")
             )
-            on { schemaForResource(TOTP_SLUG) } doReturn SchemaStore().loadSchema(
+            on { schemaForResource(ContentType.Totp.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/totp-resource-schema.json")
             )
         }
@@ -83,11 +79,12 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for password string type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_STRING_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to ContentType.PasswordString.slug)
                 )
             )
         }
+
         val invalidResources = listOf(
             resourceWithNameOfLength(
                 PASSWORD_STRING_NAME_MAX_LENGTH + 1, testedResourceTypeUuid
@@ -119,8 +116,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for password and description type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_AND_DESCRIPTION_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to ContentType.PasswordAndDescription.slug)
                 )
             )
         }
@@ -152,8 +149,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for totp type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to SupportedContentTypes.TOTP_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to ContentType.Totp.slug)
                 )
             )
         }
@@ -181,8 +178,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with invalid fields for password description totp type should be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_DESCRIPTION_TOTP_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to ContentType.PasswordDescriptionTotp.slug)
                 )
             )
         }
@@ -214,8 +211,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `optional fields should pass validation`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_AND_DESCRIPTION_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to ContentType.PasswordAndDescription.slug)
                 )
             )
         }
@@ -250,8 +247,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resource with valid fields for password string type should not be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_STRING_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to ContentType.PasswordString.slug)
                 )
             )
         }
@@ -287,8 +284,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with valid fields for password and description type should not be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_AND_DESCRIPTION_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to ContentType.PasswordAndDescription.slug)
                 )
             )
         }
@@ -324,8 +321,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with valid fields for totp type should not be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to SupportedContentTypes.TOTP_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to ContentType.Totp.slug)
                 )
             )
         }
@@ -361,8 +358,8 @@ class ResourceListDeserializerTest : KoinTest {
     fun `resources with valid fields for password description totp type should not be filtered`() {
         mockIdToSlugMappingUseCase.stub {
             onBlocking { execute(Unit) }.doReturn(
-                Output(
-                    mapOf(testedResourceTypeUuid to PASSWORD_DESCRIPTION_TOTP_SLUG)
+                GetResourceTypeIdToSlugMappingUseCase.Output(
+                    mapOf(testedResourceTypeUuid to ContentType.PasswordDescriptionTotp.slug)
                 )
             )
         }

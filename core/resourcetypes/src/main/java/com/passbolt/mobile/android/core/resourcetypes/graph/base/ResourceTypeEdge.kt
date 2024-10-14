@@ -24,9 +24,10 @@
 package com.passbolt.mobile.android.core.resourcetypes.graph.base
 
 import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 
 class ResourceTypeEdge(
     override val source: ResourceTypeVertex,
     override val destination: ResourceTypeVertex,
     override val updateAction: UpdateAction
-) : Edge<Slug>
+) : Edge<ContentType>

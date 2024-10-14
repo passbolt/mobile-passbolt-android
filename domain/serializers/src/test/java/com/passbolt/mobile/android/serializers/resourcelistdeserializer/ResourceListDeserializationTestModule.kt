@@ -48,8 +48,7 @@ import org.koin.dsl.module
 import org.mockito.kotlin.mock
 import java.util.UUID
 
-internal val mockIdToSlugMappingUseCase =
-    mock<GetResourceTypeIdToSlugMappingUseCase>()
+internal val mockIdToSlugMappingUseCase = mock<GetResourceTypeIdToSlugMappingUseCase>()
 internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 internal val mockJSFSchemaRepository = mock<JSFSchemaRepository>()
 internal val mockMetadataDecryptor = mock<MetadataDecryptor>()

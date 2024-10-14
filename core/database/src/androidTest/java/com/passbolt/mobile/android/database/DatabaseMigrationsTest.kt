@@ -357,16 +357,18 @@ class DatabaseMigrationsTest {
 
         helper.runMigrationsAndValidate(TEST_DB, 17, true, Migration16to17)
             .apply {
+                execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', 1644909225833)")
+
                 execSQL("INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey')")
                 execSQL(
                     "INSERT INTO MetadataPrivateKey VALUES(0,'id', 'userId', 'data')"
                 )
                 execSQL(
-                    "INSERT INTO Resource VALUES('id2','folderid','READ', '2'," +
+                    "INSERT INTO Resource VALUES('id2','folderid','READ', '1'," +
                             " 'favouriteId', 1644909225833, 1644909225833, null, 'SHARED')"
                 )
                 execSQL(
-                    "INSERT INTO Resource VALUES('id3','folderid','READ', '2'," +
+                    "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
                             " 'favouriteId', 1644909225833, 1644909225833, 'id', 'SHARED')"
                 )
                 close()

@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.dto.response
 
-import com.google.gson.JsonElement
 import java.util.UUID
 
 /**
@@ -30,11 +29,5 @@ data class ResourceTypeDto(
     val slug: String,
     val name: String,
     val description: String,
-    val definition: ResourceDefinition?, // TODO(v5): rollback after response json fix
     val deleted: String?
-)
-
-data class ResourceDefinition(
-    val resource: JsonElement,
-    val secret: JsonElement
 )

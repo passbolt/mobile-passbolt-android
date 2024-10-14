@@ -25,13 +25,13 @@ package com.passbolt.mobile.android.core.resources.actions
 
 import androidx.annotation.VisibleForTesting
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
-import com.passbolt.mobile.android.core.resourcetypes.ResourceTypeFactory
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInteractor
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.Flow
@@ -94,7 +94,7 @@ class SecretPropertiesActionsInteractor(
                         SecretPropertyActionResult.Success(
                             SECRET_LABEL,
                             isSecret = true,
-                            if (slug == ResourceTypeFactory.SLUG_SIMPLE_PASSWORD) {
+                            if (ContentType.fromSlug(slug!!).isSimplePassword()) {
                                 password.secret.password
                             } else {
                                 password.secret.secret

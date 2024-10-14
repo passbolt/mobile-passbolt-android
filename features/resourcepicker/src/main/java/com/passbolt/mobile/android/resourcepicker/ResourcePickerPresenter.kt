@@ -32,8 +32,7 @@ import com.passbolt.mobile.android.mappers.ResourcePickerMapper
 import com.passbolt.mobile.android.resourcepicker.model.ConfirmationModel
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.resourcepicker.model.SearchInputEndIconMode
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_AND_DESCRIPTION_SLUG
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.PASSWORD_DESCRIPTION_TOTP_SLUG
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.allSlugs
 import com.passbolt.mobile.android.ui.ResourcePickerListItem
 import kotlinx.coroutines.CoroutineScope
@@ -197,9 +196,9 @@ class ResourcePickerPresenter(
             require(pickedResourceResourceTypeId in selectableIdToSlugMapping.keys)
             val (pickAction, confirmationModel) =
                 when (val slug = selectableIdToSlugMapping[pickedResourceResourceTypeId]) {
-                    PASSWORD_AND_DESCRIPTION_SLUG ->
+                    ContentType.PasswordAndDescription.slug ->
                         PickResourceAction.TOTP_LINK to ConfirmationModel.LinkTotpModel()
-                    PASSWORD_DESCRIPTION_TOTP_SLUG ->
+                    ContentType.PasswordDescriptionTotp.slug ->
                         PickResourceAction.TOTP_REPLACE to ConfirmationModel.ReplaceTotpModel()
                     else -> error("Impossible resource slug: $slug")
                 }
@@ -220,8 +219,8 @@ class ResourcePickerPresenter(
 
     private companion object {
         private val selectableResourceTypesSlugs = listOf(
-            PASSWORD_AND_DESCRIPTION_SLUG,
-            PASSWORD_DESCRIPTION_TOTP_SLUG
+            ContentType.PasswordAndDescription.slug,
+            ContentType.PasswordDescriptionTotp.slug
         )
     }
 }
