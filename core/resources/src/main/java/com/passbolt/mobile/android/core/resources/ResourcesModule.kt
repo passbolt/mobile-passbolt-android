@@ -3,11 +3,11 @@ package com.passbolt.mobile.android.core.resources
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
 import com.passbolt.mobile.android.core.resources.actions.ResourceCommonActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
-import com.passbolt.mobile.android.core.resources.interactor.create.CreatePasswordAndDescriptionResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
+import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
 import com.passbolt.mobile.android.core.resources.interactor.update.UpdateResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.AddToFavouritesUseCase
 import com.passbolt.mobile.android.core.resources.usecase.DeleteResourceUseCase
@@ -67,8 +67,7 @@ val resourcesModule = module {
     singleOf(::FavouritesInteractor)
     singleOf(::ResourceShareInteractor)
     singleOf(::UpdateResourceInteractor)
-    singleOf(::CreatePasswordAndDescriptionResourceInteractor)
-    singleOf(::CreateStandaloneTotpResourceInteractor)
+    singleOf(::CreateResourceInteractor)
 
     factory { (resource: ResourceModel) ->
         ResourcePropertiesActionsInteractor(resource)
@@ -120,6 +119,21 @@ val resourcesModule = module {
             idToSlugMappingProvider = get(),
             updateResourceInteractor = get(),
             resourceTypesUpdateGraph = get()
+        )
+    }
+    factory { (
+                  needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
+                  sessionRefreshedFlow: StateFlow<Unit?>
+              ) ->
+        ResourceCreateActionsInteractor(
+            needSessionRefreshFlow,
+            sessionRefreshedFlow,
+            createResourceInteractor = get(),
+            secretInputCreator = get(),
+            addLocalResourceUseCase = get(),
+            addLocalResourcePermissionsUseCase = get(),
+            resourceShareInteractor = get(),
+            getLocalParentFolderPermissionsToApplyUseCase = get()
         )
     }
 }

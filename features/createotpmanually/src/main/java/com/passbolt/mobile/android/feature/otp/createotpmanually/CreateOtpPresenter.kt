@@ -29,17 +29,15 @@ import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.validation
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionResult
 import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
+import com.passbolt.mobile.android.core.resources.actions.performResourceCreateAction
 import com.passbolt.mobile.android.core.resources.actions.performResourceUpdateAction
 import com.passbolt.mobile.android.core.resources.actions.performSecretPropertyAction
-import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor
-import com.passbolt.mobile.android.core.resources.interactor.create.CreateResourceInteractor.Output.JsonSchemaValidationFailure
-import com.passbolt.mobile.android.core.resources.interactor.create.CreateStandaloneTotpResourceInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.resourcepicker.model.PickResourceAction
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
@@ -66,7 +64,6 @@ import org.koin.core.parameter.parametersOf
 import java.util.UUID
 
 class CreateOtpPresenter(
-    private val createStandaloneTotpResourceInteractor: CreateStandaloneTotpResourceInteractor,
     private val getLocalResourceUseCase: GetLocalResourceUseCase,
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     coroutineLaunchContext: CoroutineLaunchContext
@@ -235,25 +232,29 @@ class CreateOtpPresenter(
     private fun createTotp() {
         coroutineScope.launch {
             view?.showProgress()
-            when (val result = runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                createStandaloneTotpResourceInteractor.execute(
-                    createCommonStandaloneTotpResourceCreateInput(),
-                    createStandaloneTotpResourceCreateInput()
-                )
-            }) {
-                is CreateResourceInteractor.Output.Failure<*> -> view?.showGenericError()
-                is CreateResourceInteractor.Output.OpenPgpError -> view?.showEncryptionError(result.message)
-                is CreateResourceInteractor.Output.PasswordExpired -> {
-                    /* will not happen in BaseAuthenticatedPresenter */
-                }
-                is CreateResourceInteractor.Output.Success -> {
-                    view?.navigateBackInCreateFlow(
-                        result.resource.resourceModel.name,
-                        otpCreated = true
-                    )
-                }
-                is JsonSchemaValidationFailure -> handleSchemaValidationFailure(result.entity)
+            val resourceCreateActionsInteractor = get<ResourceCreateActionsInteractor> {
+                parametersOf(needSessionRefreshFlow, sessionRefreshedFlow)
             }
+            performResourceCreateAction(
+                action = {
+                    resourceCreateActionsInteractor.createStandaloneTotpResource(
+                        label = label,
+                        resourceUsername = null,
+                        issuer = issuer,
+                        period = period,
+                        digits = digits,
+                        algorithm = algorithm,
+                        secretKey = secret,
+                        resourceParentFolderId = null
+                    )
+                },
+                doOnFailure = { view?.showGenericError() },
+                doOnCryptoFailure = { view?.showEncryptionError(it) },
+                doOnSchemaValidationFailure = ::handleSchemaValidationFailure,
+                doOnSuccess = { (_, resourceName) ->
+                    view?.navigateBackInCreateFlow(resourceName, otpCreated = true)
+                }
+            )
             view?.hideProgress()
         }
     }
@@ -326,24 +327,6 @@ class CreateOtpPresenter(
             V5TotpStandalone -> TODO()
         }
     }
-
-    // creates standalone totp resource input
-    private fun createStandaloneTotpResourceCreateInput() =
-        CreateStandaloneTotpResourceInteractor.CreateStandaloneTotpInput(
-            period = period,
-            digits = digits,
-            algorithm = algorithm,
-            secretKey = secret
-        )
-
-    // creates standalone totp common input
-    private fun createCommonStandaloneTotpResourceCreateInput() =
-        CreateResourceInteractor.CommonInput(
-            resourceName = label,
-            resourceUsername = null,
-            resourceUri = issuer,
-            resourceParentFolderId = null
-        )
 
     override fun advancedSettingsClick() {
         view?.navigateToCreateOtpAdvancedSettings(

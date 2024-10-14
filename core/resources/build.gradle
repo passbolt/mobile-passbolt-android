@@ -24,6 +24,7 @@ dependencies {
     implementation project(':serializers')
     implementation project(':policies')
     implementation project(':supportedresourcetypes')
+    implementation project(':folders')
 
     implementation libs.gson
     implementation libs.room.core
