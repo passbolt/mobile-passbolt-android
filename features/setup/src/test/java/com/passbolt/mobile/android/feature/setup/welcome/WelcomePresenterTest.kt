@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.welcome
 
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.feature.setup.di.testModule
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule

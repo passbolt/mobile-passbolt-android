@@ -1,10 +1,10 @@
 package com.passbolt.mobile.android.core.users.usecase.db
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.UsersModelMapper
-import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
-import com.passbolt.mobile.android.storage.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.ui.UserModel
 
 /**
@@ -33,7 +33,8 @@ class GetLocalCurrentUserUseCase(
     private val databaseProvider: DatabaseProvider,
     private val userModelMapper: UsersModelMapper,
     private val getSelectedAccountDataUseCase: GetSelectedAccountDataUseCase
-) : AsyncUseCase<Unit, GetLocalCurrentUserUseCase.Output>, SelectedAccountUseCase {
+) : AsyncUseCase<Unit, GetLocalCurrentUserUseCase.Output>,
+    SelectedAccountUseCase {
 
     override suspend fun execute(input: Unit): Output {
         val currentUserAccountData = getSelectedAccountDataUseCase.execute(Unit)

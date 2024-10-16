@@ -1,6 +1,8 @@
 package com.password.mobile.android.feature.home.switchaccount
 
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
+import com.passbolt.mobile.android.core.accounts.usecase.accounts.GetAllAccountsDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.entity.account.Account
@@ -9,12 +11,8 @@ import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountContr
 import com.passbolt.mobile.android.feature.home.switchaccount.SwitchAccountPresenter
 import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
 import com.passbolt.mobile.android.mappers.comparator.SwitchAccountUiModelComparator
-import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module
-import org.koin.test.inject
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
@@ -30,12 +28,8 @@ internal val mockGetAllAccountsDataUseCase = mock<GetAllAccountsDataUseCase> {
     on { execute(Unit) }.doReturn(GetAllAccountsDataUseCase.Output(accountsList))
 }
 internal val mockSignOutUseCase = mock<SignOutUseCase>()
-internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase> {
-    on { execute(any()) }.doReturn(GetSelectedAccountUseCase.Output("selected"))
-}
-internal val switchAccountModelMapper = SwitchAccountModelMapper(
-    mockGetSelectedAccountUseCase, SwitchAccountUiModelComparator()
-)
+internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
+internal val switchAccountModelMapper = SwitchAccountModelMapper(SwitchAccountUiModelComparator())
 internal val mockFullDataRefreshExecutor = mock<FullDataRefreshExecutor>()
 
 @ExperimentalCoroutinesApi
@@ -48,7 +42,8 @@ val testSwitchAccountModule = module {
             switchAccountModelMapper = switchAccountModelMapper,
             signOutUseCase = mockSignOutUseCase,
             saveSelectedAccountUseCase = mock(),
-            fullDataRefreshExecutor = mockFullDataRefreshExecutor
+            fullDataRefreshExecutor = mockFullDataRefreshExecutor,
+            getSelectedAccountUseCase = mockGetSelectedAccountUseCase
         )
     }
 }

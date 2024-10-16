@@ -1,14 +1,15 @@
 package com.passbolt.mobile.android.feature.home.switchaccount
 
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.accounts.GetAllAccountsDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.mappers.SwitchAccountModelMapper
-import com.passbolt.mobile.android.storage.usecase.accounts.GetAllAccountsDataUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.SaveSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.SwitchAccountUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -45,6 +46,7 @@ class SwitchAccountPresenter(
     private val signOutUseCase: SignOutUseCase,
     private val saveSelectedAccountUseCase: SaveSelectedAccountUseCase,
     private val fullDataRefreshExecutor: FullDataRefreshExecutor,
+    private val getSelectedAccountUseCase: GetSelectedAccountUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : SwitchAccountContract.Presenter {
 
@@ -71,9 +73,11 @@ class SwitchAccountPresenter(
         )
     }
 
-    private fun prepareAccountList(): List<SwitchAccountUiModel> =
-        switchAccountModelMapper
-            .map(getAllAccountsDataUseCase.execute(Unit).accounts, appContext)
+    private fun prepareAccountList(): List<SwitchAccountUiModel> {
+        val selectedAccount = getSelectedAccountUseCase.execute(Unit).selectedAccount
+        return switchAccountModelMapper
+            .map(getAllAccountsDataUseCase.execute(Unit).accounts, selectedAccount, appContext)
+    }
 
     override fun signOutClick() {
         scope.launch {

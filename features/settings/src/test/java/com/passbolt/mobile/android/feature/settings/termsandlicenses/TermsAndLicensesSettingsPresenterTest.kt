@@ -25,7 +25,7 @@ package com.passbolt.mobile.android.feature.settings.termsandlicenses
 
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.feature.settings.screen.termsandlicenses.TermsAndLicensesSettingsContract
-import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
@@ -39,7 +39,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
-import kotlin.test.fail
 
 
 @ExperimentalCoroutinesApi

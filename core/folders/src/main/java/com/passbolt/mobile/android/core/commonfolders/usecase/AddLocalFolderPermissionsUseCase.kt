@@ -1,11 +1,11 @@
 package com.passbolt.mobile.android.core.commonfolders.usecase
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.entity.folder.FolderAndUsersCrossRef
 import com.passbolt.mobile.android.entity.group.FolderAndGroupsCrossRef
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
-import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.ui.FolderModelWithAttributes
 import com.passbolt.mobile.android.ui.PermissionModel
 
@@ -34,7 +34,8 @@ import com.passbolt.mobile.android.ui.PermissionModel
 class AddLocalFolderPermissionsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val permissionsModelMapper: PermissionsModelMapper
-) : AsyncUseCase<AddLocalFolderPermissionsUseCase.Input, Unit>, SelectedAccountUseCase {
+) : AsyncUseCase<AddLocalFolderPermissionsUseCase.Input, Unit>,
+    SelectedAccountUseCase {
 
     override suspend fun execute(input: Input) {
         val db = databaseProvider.get(selectedAccountId)

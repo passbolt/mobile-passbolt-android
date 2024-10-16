@@ -5,7 +5,7 @@ import androidx.startup.Initializer
 import com.passbolt.mobile.android.BuildConfig
 import com.passbolt.mobile.android.core.logger.FileLoggingTree
 import com.passbolt.mobile.android.core.logger.LogFilesManager
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber

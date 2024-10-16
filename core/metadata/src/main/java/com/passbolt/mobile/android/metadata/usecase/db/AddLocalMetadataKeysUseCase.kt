@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.metadata.usecase.db
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.MetadataMapper
-import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.ui.MetadataKeyModel
 
 /**
@@ -31,7 +31,8 @@ import com.passbolt.mobile.android.ui.MetadataKeyModel
 class AddLocalMetadataKeysUseCase(
     private val databaseProvider: DatabaseProvider,
     private val metadataMapper: MetadataMapper
-) : AsyncUseCase<AddLocalMetadataKeysUseCase.Input, Unit>, SelectedAccountUseCase {
+) : AsyncUseCase<AddLocalMetadataKeysUseCase.Input, Unit>,
+    SelectedAccountUseCase {
 
     override suspend fun execute(input: Input) {
         val metadataKeysDao = databaseProvider

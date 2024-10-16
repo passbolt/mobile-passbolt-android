@@ -13,7 +13,6 @@ dependencies {
     implementation project(':ui')
     implementation project(':networking')
     implementation project(':database')
-    implementation project(':storage')
     implementation project(':featureflags')
     implementation project(':security')
     implementation project(':authentication')

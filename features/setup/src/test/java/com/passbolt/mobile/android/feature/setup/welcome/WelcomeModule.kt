@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.feature.setup.welcome
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.accounts.AccountKitParser
 import com.passbolt.mobile.android.core.accounts.AccountsInteractor
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetectorImpl
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module

@@ -4,8 +4,9 @@ plugins {
 }
 
 dependencies {
-    implementation project(':storage')
     implementation project(':common')
+    implementation project(':encryptedstorage')
+    implementation project(':accounts')
 
     implementation libs.koin
 }

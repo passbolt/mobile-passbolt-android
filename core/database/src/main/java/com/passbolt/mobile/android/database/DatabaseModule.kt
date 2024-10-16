@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.database
 
+import com.passbolt.mobile.android.database.usecase.databaseModule
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
@@ -26,6 +27,7 @@ import org.koin.dsl.module
  * @since v1.0
  */
 val databaseModule = module {
+    databaseModule()
     single {
         DatabaseProvider(
             context = androidApplication(),

@@ -2,17 +2,17 @@ package com.passbolt.mobile.android.feature.settings.screen.appsettings
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.core.accounts.usecase.biometrickey.SaveBiometricKeyIvUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.authenticationcore.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.core.authenticationcore.passphrase.RemovePassphraseUseCase
+import com.passbolt.mobile.android.core.authenticationcore.passphrase.SavePassphraseUseCase
+import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
+import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
+import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
+import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
-import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
-import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.RemovePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import timber.log.Timber
 import javax.crypto.Cipher
 
@@ -111,10 +111,15 @@ class AppSettingsPresenter(
         val passphrase = passphraseMemoryCache.get()
         if (passphrase is PotentialPassphrase.Passphrase && authenticatedCipher != null) {
             savePassphraseUseCase.execute(
-                SavePassphraseUseCase.Input(passphrase.passphrase, authenticatedCipher)
+                SavePassphraseUseCase.Input(
+                    passphrase.passphrase,
+                    authenticatedCipher
+                )
             )
             saveBiometricKeyIvUseCase.execute(
-                SaveBiometricKeyIvUseCase.Input(authenticatedCipher.iv)
+                SaveBiometricKeyIvUseCase.Input(
+                    authenticatedCipher.iv
+                )
             )
             view?.toggleFingerprintOn(silently = true)
         } else {

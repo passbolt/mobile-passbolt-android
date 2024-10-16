@@ -10,7 +10,6 @@ dependencies {
     implementation project(':navigation')
     implementation project(':coreui')
     implementation project(':common')
-    implementation project(':storage')
     implementation project(':autofill')
     implementation project(':autofillresources')
     implementation project(':authentication')
@@ -27,6 +26,11 @@ dependencies {
     implementation project(':gopenpgp')
     implementation project(':accountdetails')
     implementation project(':fulldatarefresh')
+    implementation project(':accounts')
+    implementation project(':passphrasememorycache')
+    implementation project(':authenticationcore')
+    implementation project(':encryptedstorage')
+    implementation project(':preferences')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

@@ -4,7 +4,8 @@ plugins {
 }
 
 dependencies {
-    implementation project(':storage')
+    implementation project(':accounts')
+    implementation project(':encryptedstorage')
     implementation project(':common')
     implementation project(':passboltapi')
     implementation project(':mappers')
@@ -14,6 +15,7 @@ dependencies {
     implementation project(':architecture')
     implementation project(':gopenpgp')
     implementation project(':dto')
+    implementation project(':passphrasememorycache')
 
     implementation libs.koin
     implementation libs.room.core

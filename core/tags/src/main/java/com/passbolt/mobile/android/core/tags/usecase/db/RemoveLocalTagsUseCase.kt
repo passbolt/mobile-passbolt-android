@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.core.tags.usecase.db
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.storage.usecase.input.UserIdInput
 
 /**
  * Passbolt - Open source password manager for teams

@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.featureflags.usecase
 
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
-import com.passbolt.mobile.android.storage.usecase.featureflags.SaveFeatureFlagsUseCase
 
 /**
  * Passbolt - Open source password manager for teams

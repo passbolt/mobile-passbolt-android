@@ -17,10 +17,10 @@ dependencies {
     implementation project(':folderdetails')
     implementation project(':networking')
     implementation project(':folders')
-    implementation project(':storage')
     implementation project(':idlingresource')
     implementation project(':users')
     implementation project(':localization')
+    implementation project(':accounts')
 
     implementation libs.koin
     implementation libs.sqlite

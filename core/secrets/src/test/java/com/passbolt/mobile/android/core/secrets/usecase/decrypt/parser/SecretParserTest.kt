@@ -25,7 +25,6 @@ package com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser
 
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
-import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import kotlinx.coroutines.test.runTest
 import net.jimblackler.jsonschemafriend.SchemaStore

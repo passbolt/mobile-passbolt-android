@@ -1,9 +1,13 @@
 package com.passbolt.mobile.android.feature.authentication.auth.presenter
 
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.IsServerFingerprintCorrectUseCase
+import com.passbolt.mobile.android.core.authenticationcore.passphrase.CheckIfPassphraseFileExistsUseCase
+import com.passbolt.mobile.android.core.authenticationcore.session.GetSessionUseCase
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.policies.usecase.PasswordExpiryPoliciesInteractor
 import com.passbolt.mobile.android.core.policies.usecase.PasswordPoliciesInteractor
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
 import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.dto.response.ChallengeResponseDto
@@ -22,10 +26,6 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPas
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataKeysSettingsInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataTypesSettingsInteractor
-import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.storage.usecase.session.GetSessionUseCase
 import com.passbolt.mobile.android.ui.CaseTypeModel
 import com.passbolt.mobile.android.ui.PassphraseGeneratorSettingsModel
 import com.passbolt.mobile.android.ui.PasswordExpirySettings

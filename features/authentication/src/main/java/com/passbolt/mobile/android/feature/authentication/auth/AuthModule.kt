@@ -18,11 +18,13 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpTimeUpdater
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.PostSignInActionsInteractor
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.RemoveAllAccountDataUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.scopedOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -78,6 +80,8 @@ fun Module.authModule() {
     singleOf(::SignOutUseCase)
     singleOf(::BiometryInteractor)
     singleOf(::SignInIdlingResource)
+    singleOf(::SignInIdlingResource)
+    factoryOf(::RemoveAllAccountDataUseCase)
 }
 
 private fun ScopeDSL.authPresenter() {

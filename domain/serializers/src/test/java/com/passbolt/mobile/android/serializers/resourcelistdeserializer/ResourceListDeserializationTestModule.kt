@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.serializers.resourcelistdeserializer
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceTypeIdToSlugMappingUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
@@ -39,7 +40,6 @@ import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFJs
 import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JSFSchemaRepository
 import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaRepository
 import com.passbolt.mobile.android.serializers.jsonschema.schamarepository.JsonSchemaValidator
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import net.jimblackler.jsonschemafriend.Schema
 import net.jimblackler.jsonschemafriend.Validator
 import org.koin.core.module.dsl.singleOf

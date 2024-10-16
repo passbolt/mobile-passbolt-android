@@ -74,9 +74,7 @@ class SecretInteractor(
 
                 other as Success
 
-                if (!decryptedSecret.contentEquals(other.decryptedSecret)) return false
-
-                return true
+                return decryptedSecret.contentEquals(other.decryptedSecret)
             }
 
             override fun hashCode(): Int {

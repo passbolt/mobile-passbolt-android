@@ -7,7 +7,6 @@ plugins {
 dependencies {
     implementation project(':common')
     implementation project(':architecture')
-    implementation project(':storage')
     implementation project(':mappers')
     implementation project(':ui')
     implementation project(':dto')
@@ -25,6 +24,8 @@ dependencies {
     implementation project(':policies')
     implementation project(':supportedresourcetypes')
     implementation project(':folders')
+    implementation project(':accounts')
+    implementation project(':passphrasememorycache')
 
     implementation libs.gson
     implementation libs.room.core

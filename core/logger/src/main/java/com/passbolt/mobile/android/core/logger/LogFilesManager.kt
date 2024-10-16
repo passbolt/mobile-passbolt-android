@@ -2,8 +2,8 @@ package com.passbolt.mobile.android.core.logger
 
 import android.content.Context
 import com.passbolt.mobile.android.core.envinfo.EnvInfoProvider
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.UpdateGlobalPreferencesUseCase
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.core.preferences.usecase.UpdateGlobalPreferencesUseCase
 import java.io.File
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit

@@ -2,13 +2,13 @@ package com.passbolt.mobile.android.feature.setup.fingerprint
 
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import com.passbolt.mobile.android.common.FingerprintInformationProvider
+import com.passbolt.mobile.android.core.accounts.usecase.biometrickey.SaveBiometricKeyIvUseCase
+import com.passbolt.mobile.android.core.authenticationcore.passphrase.SavePassphraseUseCase
+import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
+import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
+import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.autofill.informationprovider.AutofillInformationProvider
-import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
-import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
-import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
-import com.passbolt.mobile.android.storage.usecase.biometrickey.SaveBiometricKeyIvUseCase
-import com.passbolt.mobile.android.storage.usecase.passphrase.SavePassphraseUseCase
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import javax.crypto.Cipher
@@ -97,7 +97,10 @@ class FingerprintPresenter(
             is PotentialPassphrase.Passphrase -> {
                 authenticatedCipher?.let {
                     savePassphraseUseCase.execute(
-                        SavePassphraseUseCase.Input(cachedPassphrase.passphrase, it)
+                        SavePassphraseUseCase.Input(
+                            cachedPassphrase.passphrase,
+                            it
+                        )
                     )
                     saveBiometricKeyIvUseCase.execute(
                         SaveBiometricKeyIvUseCase.Input(authenticatedCipher.iv)
