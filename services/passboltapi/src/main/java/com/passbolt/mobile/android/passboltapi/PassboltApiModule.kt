@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.passboltapi.expiry.passwordExpiryApiModule
 import com.passbolt.mobile.android.passboltapi.favourites.favouritesApiModule
 import com.passbolt.mobile.android.passboltapi.folders.foldersApiModule
 import com.passbolt.mobile.android.passboltapi.groups.groupsApiModule
+import com.passbolt.mobile.android.passboltapi.metadata.metadataApiModule
 import com.passbolt.mobile.android.passboltapi.mfa.mfaApiModule
 import com.passbolt.mobile.android.passboltapi.passwordpolicies.passwordPoliciesApiModule
 import com.passbolt.mobile.android.passboltapi.rbac.rbacApiModule
@@ -12,7 +13,6 @@ import com.passbolt.mobile.android.passboltapi.registration.mobileTransferApiMod
 import com.passbolt.mobile.android.passboltapi.resource.resourceApiModule
 import com.passbolt.mobile.android.passboltapi.resourcetypes.resourceTypesApiModule
 import com.passbolt.mobile.android.passboltapi.secrets.secretsApiModule
-import com.passbolt.mobile.android.passboltapi.metadata.metadataApiModule
 import com.passbolt.mobile.android.passboltapi.settings.settingsApiModule
 import com.passbolt.mobile.android.passboltapi.share.shareApiModule
 import com.passbolt.mobile.android.passboltapi.users.usersApiModule

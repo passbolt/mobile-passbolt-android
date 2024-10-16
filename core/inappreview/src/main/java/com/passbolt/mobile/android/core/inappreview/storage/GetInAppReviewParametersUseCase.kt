@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.core.inappreview.storage
 
 import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.storage.encrypted.EncryptedSharedPreferencesFactory
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
+import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFactory
 import java.time.LocalDate
 
 /**

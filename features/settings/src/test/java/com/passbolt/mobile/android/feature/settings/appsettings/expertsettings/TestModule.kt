@@ -23,10 +23,10 @@
 
 package com.passbolt.mobile.android.feature.settings.appsettings.expertsettings
 
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.core.preferences.usecase.UpdateGlobalPreferencesUseCase
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.ExpertSettingsContract
 import com.passbolt.mobile.android.feature.settings.screen.appsettings.expertsettings.ExpertSettingsPresenter
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.UpdateGlobalPreferencesUseCase
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
 

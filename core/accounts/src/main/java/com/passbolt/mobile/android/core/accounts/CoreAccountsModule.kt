@@ -23,10 +23,34 @@
 
 package com.passbolt.mobile.android.core.accounts
 
+import android.content.Context
+import com.passbolt.mobile.android.core.accounts.usecase.BiometricCipherImpl
+import com.passbolt.mobile.android.core.accounts.usecase.account.accountModule
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.accountDataModule
+import com.passbolt.mobile.android.core.accounts.usecase.accounts.accountsModule
+import com.passbolt.mobile.android.core.accounts.usecase.biometrickey.biometricKeyIvModule
+import com.passbolt.mobile.android.core.accounts.usecase.privatekey.privateKeyModule
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.selectedAccountModule
+import com.passbolt.mobile.android.encryptedstorage.biometric.BiometricCipher
+import org.koin.android.ext.koin.androidApplication
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val accountsCoreModule = module {
+    accountModule()
+    accountsModule()
+    accountDataModule()
+    privateKeyModule()
+    biometricKeyIvModule()
+    selectedAccountModule()
+
     singleOf(::AccountsInteractor)
     singleOf(::AccountKitParser)
+    factoryOf(::BiometricCipherImpl) bind BiometricCipher::class
+
+    single {
+        androidApplication().getSharedPreferences("user-accounts", Context.MODE_PRIVATE)
+    }
 }

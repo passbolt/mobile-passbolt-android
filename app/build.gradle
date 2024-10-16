@@ -134,7 +134,6 @@ dependencies {
     implementation project(':passboltapi')
     implementation project(':ui')
     implementation project(':common')
-    implementation project(':storage')
     implementation project(':navigation')
     implementation project(':mappers')
     implementation project(':qrscan')
@@ -189,6 +188,10 @@ dependencies {
     implementation project(':pwnedpasswordsapi')
     implementation project(':passwordgenerator')
     implementation project(':metadata')
+    implementation project(':encryptedstorage')
+    implementation project(':authenticationcore')
+    implementation project(':preferences')
+    implementation project(':passphrasememorycache')
 
     debugImplementation libs.leakcanary
 

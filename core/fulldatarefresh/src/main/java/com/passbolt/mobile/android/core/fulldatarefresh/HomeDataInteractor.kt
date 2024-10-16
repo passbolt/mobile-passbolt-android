@@ -9,8 +9,8 @@ import com.passbolt.mobile.android.core.mvp.authentication.plus
 import com.passbolt.mobile.android.core.resources.usecase.ResourceInteractor
 import com.passbolt.mobile.android.core.resourcetypes.ResourceTypesInteractor
 import com.passbolt.mobile.android.core.users.UsersInteractor
+import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.metadata.interactor.MetadataKeysInteractor
-import com.passbolt.mobile.android.storage.usecase.featureflags.GetFeatureFlagsUseCase
 
 /**
  * Passbolt - Open source password manager for teams

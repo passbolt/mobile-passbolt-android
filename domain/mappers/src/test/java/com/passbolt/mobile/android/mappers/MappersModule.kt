@@ -1,9 +1,7 @@
 package com.passbolt.mobile.android.mappers
 
 import com.google.gson.GsonBuilder
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import org.koin.dsl.module
-import org.mockito.kotlin.mock
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,11 +26,10 @@ import org.mockito.kotlin.mock
  * @since v1.0
  */
 
-internal val mockGetSelectedAccountUseCase = mock<GetSelectedAccountUseCase>()
 
 val testMappersModule = module {
     factory {
-        AccountModelMapper(mockGetSelectedAccountUseCase)
+        AccountModelMapper()
     }
     factory {
         GsonBuilder().create()

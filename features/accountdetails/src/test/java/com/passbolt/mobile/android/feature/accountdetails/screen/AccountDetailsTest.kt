@@ -1,6 +1,6 @@
 package com.passbolt.mobile.android.feature.accountdetails.screen
 
-import com.passbolt.mobile.android.storage.usecase.accountdata.UpdateAccountDataUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.accountdata.UpdateAccountDataUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test

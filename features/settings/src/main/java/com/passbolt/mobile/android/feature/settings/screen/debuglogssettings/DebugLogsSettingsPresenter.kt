@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.settings.screen.debuglogssettings
 
 import com.passbolt.mobile.android.core.logger.FileLoggingTree
-import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.UpdateGlobalPreferencesUseCase
+import com.passbolt.mobile.android.core.preferences.usecase.GetGlobalPreferencesUseCase
+import com.passbolt.mobile.android.core.preferences.usecase.UpdateGlobalPreferencesUseCase
 import timber.log.Timber
 
 /**

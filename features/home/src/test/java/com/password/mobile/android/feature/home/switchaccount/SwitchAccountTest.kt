@@ -1,5 +1,6 @@
 package com.password.mobile.android.feature.home.switchaccount
 
+import com.passbolt.mobile.android.core.accounts.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.navigation.AppContext
@@ -54,8 +55,9 @@ class SwitchAccountTest : KoinTest {
 
     @Test
     fun `account list should be shown on ui`() {
+        whenever(mockGetSelectedAccountUseCase.execute(Unit)).doReturn(GetSelectedAccountUseCase.Output("selected"))
         val appContext = AppContext.APP
-        val uiMapped = switchAccountModelMapper.map(accountsList, appContext)
+        val uiMapped = switchAccountModelMapper.map(accountsList, currentAccount = "selected", appContext)
 
         presenter.attach(view)
         presenter.argsRetrieved(appContext)

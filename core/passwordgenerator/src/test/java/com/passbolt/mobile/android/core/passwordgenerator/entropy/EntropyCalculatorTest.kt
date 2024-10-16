@@ -27,7 +27,6 @@ import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.core.passwordgenerator.Alphabets
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.CodepointSet
 import com.passbolt.mobile.android.core.passwordgenerator.codepoints.toCodepoints
-import com.passbolt.mobile.android.core.passwordgenerator.dice.Dice
 import com.passbolt.mobile.android.core.passwordgenerator.passwordGeneratorTestModule
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi

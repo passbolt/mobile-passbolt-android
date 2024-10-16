@@ -23,7 +23,6 @@
 
 package com.passbolt.mobile.android.core.rbac.usecase
 
-import com.passbolt.mobile.android.storage.usecase.rbac.SaveRbacRulesUseCase
 import com.passbolt.mobile.android.ui.RbacModel
 
 class RbacInteractor(

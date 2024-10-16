@@ -10,6 +10,7 @@ import com.passbolt.mobile.android.metadata.usecase.db.AddLocalMetadataKeysUseCa
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.RebuildMetadataKeysTablesUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.RemoveLocalMetadataKeysUseCase
+import com.passbolt.mobile.android.metadata.usecase.metadataSettingsModule
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -37,6 +38,8 @@ import org.koin.dsl.module
  */
 
 val metadataModule = module {
+    metadataSettingsModule()
+
     singleOf(::FetchMetadataKeysUseCase)
     singleOf(::MetadataKeysInteractor)
     singleOf(::AddLocalMetadataKeysUseCase)

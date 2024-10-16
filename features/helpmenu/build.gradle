@@ -7,10 +7,10 @@ dependencies {
     implementation project(':architecture')
     implementation project(':coreui')
     implementation project(':common')
-    implementation project(':storage')
     implementation project(':localization')
     implementation project(':logger')
     implementation project(':ui')
+    implementation project(':preferences')
 
     implementation libs.koin
     implementation libs.material

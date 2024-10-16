@@ -19,7 +19,7 @@ import com.passbolt.mobile.android.database.migrations.Migration6to7
 import com.passbolt.mobile.android.database.migrations.Migration7to8
 import com.passbolt.mobile.android.database.migrations.Migration8to9
 import com.passbolt.mobile.android.database.migrations.Migration9to10
-import com.passbolt.mobile.android.storage.usecase.database.GetResourcesDatabasePassphraseUseCase
+import com.passbolt.mobile.android.database.usecase.GetResourcesDatabasePassphraseUseCase
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import java.nio.charset.StandardCharsets
 import kotlin.coroutines.resume

@@ -3,8 +3,8 @@ package com.passbolt.mobile.android.mappers
 import com.passbolt.mobile.android.entity.home.HomeDisplayView
 import com.passbolt.mobile.android.entity.resource.Permission
 import com.passbolt.mobile.android.entity.resource.ResourceDatabaseView
-import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 import com.passbolt.mobile.android.ui.DefaultFilterModel
+import com.passbolt.mobile.android.ui.HomeDisplayViewModel
 
 /**
  * Mapper responsible for mapping between UI related resource display view type and database related

@@ -27,11 +27,14 @@ import com.passbolt.mobile.android.core.policies.usecase.FetchPasswordExpirySett
 import com.passbolt.mobile.android.core.policies.usecase.FetchPasswordPoliciesUseCase
 import com.passbolt.mobile.android.core.policies.usecase.PasswordExpiryPoliciesInteractor
 import com.passbolt.mobile.android.core.policies.usecase.PasswordPoliciesInteractor
+import com.passbolt.mobile.android.core.policies.usecase.policiesModule
 import com.passbolt.mobile.android.core.policies.validation.PasswordPoliciesValidator
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val policiesModule = module {
+    policiesModule()
+
     singleOf(::FetchPasswordExpirySettingsUseCase)
     singleOf(::PasswordExpiryPoliciesInteractor)
     singleOf(::FetchPasswordPoliciesUseCase)

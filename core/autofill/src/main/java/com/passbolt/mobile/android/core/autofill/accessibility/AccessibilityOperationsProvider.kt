@@ -279,13 +279,9 @@ class AccessibilityOperationsProvider(
         }
 
     fun shouldSkipPackage(eventPackageName: String?): Boolean {
-        if (eventPackageName.isNullOrEmpty() ||
-            filteredPackageNames.any { it == eventPackageName } ||
-            eventPackageName.contains("launcher", true)
-        ) {
-            return true
-        }
-        return false
+        return eventPackageName.isNullOrEmpty() ||
+                filteredPackageNames.any { it == eventPackageName } ||
+                eventPackageName.contains("launcher", true)
     }
 
     private val filteredPackageNames = hashSetOf(

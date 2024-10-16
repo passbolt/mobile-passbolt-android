@@ -1,7 +1,6 @@
 package com.passbolt.mobile.android.mappers
 
 import com.passbolt.mobile.android.entity.account.Account
-import com.passbolt.mobile.android.storage.usecase.selectedaccount.GetSelectedAccountUseCase
 import com.passbolt.mobile.android.ui.AccountModelUi
 
 /**
@@ -26,16 +25,14 @@ import com.passbolt.mobile.android.ui.AccountModelUi
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class AccountModelMapper(
-    private val selectedAccountUseCase: GetSelectedAccountUseCase
-) {
+class AccountModelMapper {
 
-    fun map(accounts: List<Account>): List<AccountModelUi> =
+    fun map(accounts: List<Account>, currentAccount: String?): List<AccountModelUi> =
         accounts
-            .mapIndexed { i, item -> map(item, i == 0) }
+            .mapIndexed { i, item -> map(item, currentAccount, i == 0) }
             .let { it + AccountModelUi.AddNewAccount }
 
-    private fun map(account: Account, isFirstItem: Boolean) =
+    private fun map(account: Account, currentAccount: String?, isFirstItem: Boolean) =
         AccountModelUi.AccountModel(
             userId = account.userId,
             title = account.label ?: defaultLabel(account.firstName, account.lastName),
@@ -43,11 +40,8 @@ class AccountModelMapper(
             avatar = account.avatarUrl,
             isFirstItem = isFirstItem,
             url = account.url,
-            isCurrentUser = isCurrentUser(account)
+            isCurrentUser = account.userId == currentAccount
         )
-
-    private fun isCurrentUser(account: Account) =
-        account.userId == selectedAccountUseCase.execute(Unit).selectedAccount
 
     companion object {
 

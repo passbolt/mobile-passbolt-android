@@ -1,7 +1,7 @@
 package com.passbolt.mobile.android.feature.setup.fingerprint
 
+import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
 import com.passbolt.mobile.android.feature.setup.di.testModule
-import com.passbolt.mobile.android.storage.cache.passphrase.PotentialPassphrase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule

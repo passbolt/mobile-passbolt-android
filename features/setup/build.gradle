@@ -15,7 +15,6 @@ dependencies {
     implementation project(':ui')
     implementation project(':dto')
     implementation project(':mappers')
-    implementation project(':storage')
     implementation project(':gopenpgp')
     implementation project(':autofill')
     implementation project(':autofillresources')
@@ -27,6 +26,10 @@ dependencies {
     implementation project(':helpmenu')
     implementation project(':logs')
     implementation project(':accounts')
+    implementation project(':passphrasememorycache')
+    implementation project(':encryptedstorage')
+    implementation project(':authenticationcore')
+    implementation project(':preferences')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

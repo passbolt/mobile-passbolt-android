@@ -12,7 +12,6 @@ dependencies {
     implementation project(':authentication')
     implementation project(':navigation')
     implementation project(':security')
-    implementation project(':storage')
     implementation project(':dto')
     implementation project(':gopenpgp')
     implementation project(':passboltapi')
@@ -20,6 +19,8 @@ dependencies {
     implementation project(':ui')
     implementation project(':idlingresource')
     implementation project(':localization')
+    implementation project(':authenticationcore')
+    implementation project(':accounts')
 
     implementation libs.koin
     implementation libs.fragment

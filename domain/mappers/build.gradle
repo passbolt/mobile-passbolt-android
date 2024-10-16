@@ -7,7 +7,6 @@ dependencies {
     implementation project(':dto')
     implementation project(':entity')
     implementation project(':common')
-    implementation project(':storage')
     implementation project(':ui')
     implementation project(':navigation')
 

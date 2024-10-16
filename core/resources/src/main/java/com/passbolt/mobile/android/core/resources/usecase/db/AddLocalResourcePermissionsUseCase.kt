@@ -1,11 +1,11 @@
 package com.passbolt.mobile.android.core.resources.usecase.db
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.entity.group.ResourceAndGroupsCrossRef
 import com.passbolt.mobile.android.entity.user.ResourceAndUsersCrossRef
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
-import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.ui.PermissionModel
 import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 
@@ -34,7 +34,8 @@ import com.passbolt.mobile.android.ui.ResourceModelWithAttributes
 class AddLocalResourcePermissionsUseCase(
     private val databaseProvider: DatabaseProvider,
     private val permissionsModelMapper: PermissionsModelMapper
-) : AsyncUseCase<AddLocalResourcePermissionsUseCase.Input, Unit>, SelectedAccountUseCase {
+) : AsyncUseCase<AddLocalResourcePermissionsUseCase.Input, Unit>,
+    SelectedAccountUseCase {
 
     override suspend fun execute(input: Input) {
         val db = databaseProvider.get(selectedAccountId)

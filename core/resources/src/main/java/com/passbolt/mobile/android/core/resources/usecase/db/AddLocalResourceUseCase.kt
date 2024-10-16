@@ -1,9 +1,9 @@
 package com.passbolt.mobile.android.core.resources.usecase.db
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.ui.ResourceModel
 
 /**
@@ -31,7 +31,8 @@ import com.passbolt.mobile.android.ui.ResourceModel
 class AddLocalResourceUseCase(
     private val databaseProvider: DatabaseProvider,
     private val resourceModelMapper: ResourceModelMapper
-) : AsyncUseCase<AddLocalResourceUseCase.Input, Unit>, SelectedAccountUseCase {
+) : AsyncUseCase<AddLocalResourceUseCase.Input, Unit>,
+    SelectedAccountUseCase {
 
     override suspend fun execute(input: Input) {
         val db = databaseProvider.get(selectedAccountId)

@@ -14,7 +14,6 @@ dependencies {
     implementation project(':ui')
     implementation project(':networking')
     implementation project(':database')
-    implementation project(':storage')
     implementation project(':entity')
     implementation project(':featureflags')
     implementation project(':security')
@@ -45,6 +44,8 @@ dependencies {
     implementation project(':scanotp')
     implementation project(':rbac')
     implementation project(':serializers')
+    implementation project(':accounts')
+    implementation project(':policies')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

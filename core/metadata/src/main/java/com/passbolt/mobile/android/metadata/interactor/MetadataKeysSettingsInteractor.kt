@@ -3,7 +3,7 @@ package com.passbolt.mobile.android.metadata.interactor
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseOutput
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysSettingsUseCase
-import com.passbolt.mobile.android.storage.usecase.metadata.SaveMetadataKeysSettingsUseCase
+import com.passbolt.mobile.android.metadata.usecase.SaveMetadataKeysSettingsUseCase
 import com.passbolt.mobile.android.ui.MetadataKeysSettingsModel
 
 /**

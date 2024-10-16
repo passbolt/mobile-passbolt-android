@@ -24,8 +24,8 @@
 package com.passbolt.mobile.android.core.resourcetypes.usecase.db
 
 import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
-import com.passbolt.mobile.android.storage.usecase.SelectedAccountUseCase
 import java.util.UUID
 
 /**

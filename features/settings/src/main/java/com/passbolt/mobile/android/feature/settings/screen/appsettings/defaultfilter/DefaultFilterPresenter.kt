@@ -1,8 +1,8 @@
 package com.passbolt.mobile.android.feature.settings.screen.appsettings.defaultfilter
 
-import com.passbolt.mobile.android.storage.usecase.preferences.GetHomeDisplayViewPrefsUseCase
-import com.passbolt.mobile.android.storage.usecase.preferences.HomeDisplayViewPrefsValidator
-import com.passbolt.mobile.android.storage.usecase.preferences.UpdateHomeDisplayViewPrefsUseCase
+import com.passbolt.mobile.android.core.preferences.usecase.GetHomeDisplayViewPrefsUseCase
+import com.passbolt.mobile.android.core.preferences.usecase.HomeDisplayViewPrefsValidator
+import com.passbolt.mobile.android.core.preferences.usecase.UpdateHomeDisplayViewPrefsUseCase
 import com.passbolt.mobile.android.ui.DefaultFilterModel
 
 class DefaultFilterPresenter(

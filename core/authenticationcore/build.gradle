@@ -1,0 +1,22 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+}
+
+dependencies {
+    implementation project(":common")
+    implementation project(":accounts")
+    implementation project(":encryptedstorage")
+    implementation project(":passphrasememorycache")
+    implementation project(":entity")
+
+    implementation libs.koin
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.core.authentication"
+}
+
+kotlin {
+    jvmToolchain(17)
+}
