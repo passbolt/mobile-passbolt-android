@@ -20,6 +20,8 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInFai
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataKeysSettingsInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataTypesSettingsInteractor
 import com.passbolt.mobile.android.storage.usecase.accountdata.IsServerFingerprintCorrectUseCase
 import com.passbolt.mobile.android.storage.usecase.passphrase.CheckIfPassphraseFileExistsUseCase
 import com.passbolt.mobile.android.storage.usecase.preferences.GetGlobalPreferencesUseCase
@@ -140,6 +142,16 @@ class SignInPresenterTest : KoinTest {
                         isExternalDictionaryCheckEnabled = false
                     )
                 )
+            )
+        }
+        mockMetadataTypesSettingsInteractor.stub {
+            onBlocking { fetchAndSaveMetadataTypesSettings() }.doReturn(
+                MetadataTypesSettingsInteractor.Output.Success
+            )
+        }
+        mockMetadataKeysSettingsInteractor.stub {
+            onBlocking { fetchAndSaveMetadataKeysSettings() }.doReturn(
+                MetadataKeysSettingsInteractor.Output.Success
             )
         }
     }

@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.passboltapi.metadata
+package com.passbolt.mobile.android.ui
 
-import com.passbolt.mobile.android.core.networking.ResponseHandler
-import com.passbolt.mobile.android.core.networking.callWithHandler
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,20 +24,25 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class MetadataRepository(
-    private val metadataDataSource: MetadataDataSource,
-    private val responseHandler: ResponseHandler
-) {
 
-    suspend fun getMetadataKeys() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataKeys()
-    }
+data class MetadataTypesSettingsModel(
+    val defaultMetadataType: MetadataTypeModel,
+    val defaultFolderType: MetadataTypeModel,
+    val defaultTagType: MetadataTypeModel,
+    val allowCreationOfV5Resources: Boolean,
+    val allowCreationOfV5Folders: Boolean,
+    val allowCreationOfV5Tags: Boolean,
+    val allowCreationOfV4Resources: Boolean,
+    val allowCreationOfV4Folders: Boolean,
+    val allowCreationOfV4Tags: Boolean,
+    val allowV4V5Upgrade: Boolean,
+    val allowV5V4Downgrade: Boolean
+)
 
-    suspend fun getMetadataTypesSettings() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataTypesSettings()
-    }
+enum class MetadataTypeModel {
+    @SerializedName("v4")
+    V4,
 
-    suspend fun getMetadataKeysSettings() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataKeysSettings()
-    }
+    @SerializedName("v5")
+    V5
 }
