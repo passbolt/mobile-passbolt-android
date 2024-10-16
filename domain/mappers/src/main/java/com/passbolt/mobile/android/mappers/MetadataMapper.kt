@@ -26,11 +26,17 @@ package com.passbolt.mobile.android.mappers
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
+import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
+import com.passbolt.mobile.android.dto.response.MetadataTypeDto
+import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
 import com.passbolt.mobile.android.entity.metadata.MetadataKey
 import com.passbolt.mobile.android.entity.metadata.MetadataKeyWithPrivateKeys
 import com.passbolt.mobile.android.entity.metadata.MetadataPrivateKey
 import com.passbolt.mobile.android.ui.MetadataKeyModel
+import com.passbolt.mobile.android.ui.MetadataKeysSettingsModel
 import com.passbolt.mobile.android.ui.MetadataPrivateKeyModel
+import com.passbolt.mobile.android.ui.MetadataTypeModel
+import com.passbolt.mobile.android.ui.MetadataTypesSettingsModel
 import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 import com.passbolt.mobile.android.ui.ParsedMetadataPrivateKeyModel
 import java.util.UUID
@@ -83,6 +89,31 @@ class MetadataMapper {
             )
         }
     }
+
+    private fun MetadataTypeDto.mapToUi() = when (this) {
+        MetadataTypeDto.V4 -> MetadataTypeModel.V4
+        MetadataTypeDto.V5 -> MetadataTypeModel.V5
+    }
+
+    fun map(dto: MetadataTypesSettingsResponseDto) = MetadataTypesSettingsModel(
+        defaultMetadataType = dto.defaultMetadataType.mapToUi(),
+        defaultFolderType = dto.defaultFolderType.mapToUi(),
+        defaultTagType = dto.defaultTagType.mapToUi(),
+        allowCreationOfV5Resources = dto.allowCreationOfV5Resources,
+        allowCreationOfV5Folders = dto.allowCreationOfV5Folders,
+        allowCreationOfV5Tags = dto.allowCreationOfV5Tags,
+        allowCreationOfV4Resources = dto.allowCreationOfV4Resources,
+        allowCreationOfV4Folders = dto.allowCreationOfV4Folders,
+        allowCreationOfV4Tags = dto.allowCreationOfV4Tags,
+        allowV4V5Upgrade = dto.allowV4V5Upgrade,
+        allowV5V4Downgrade = dto.allowV5V4Downgrade
+    )
+
+    fun map(dto: MetadataKeysSettingsResponseDto) =
+        MetadataKeysSettingsModel(
+            allowUsageOfPersonalKeys = dto.allowUsageOfPersonalKeys,
+            zeroKnowledgeKeyShare = dto.zeroKnowledgeKeyShare
+        )
 
     private companion object {
         private const val KEY_ARMORED_KEY = "armored_key"

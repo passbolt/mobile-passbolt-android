@@ -6,6 +6,8 @@ import com.passbolt.mobile.android.core.rbac.usecase.RbacInteractor
 import com.passbolt.mobile.android.core.users.profile.UserProfileInteractor
 import com.passbolt.mobile.android.entity.featureflags.FeatureFlagsModel
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataKeysSettingsInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataTypesSettingsInteractor
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -18,7 +20,9 @@ class PostSignInActionsInteractor(
     private val rbacInteractor: RbacInteractor,
     private val userProfileInteractor: UserProfileInteractor,
     private val passwordExpiryPoliciesInteractor: PasswordExpiryPoliciesInteractor,
-    private val passwordPoliciesInteractor: PasswordPoliciesInteractor
+    private val passwordPoliciesInteractor: PasswordPoliciesInteractor,
+    private val metadataTypesSettingsInteractor: MetadataTypesSettingsInteractor,
+    private val metadataKeysSettingsInteractor: MetadataKeysSettingsInteractor
 ) {
 
     suspend fun launchPostSignInActions(
@@ -43,6 +47,9 @@ class PostSignInActionsInteractor(
                             },
                             async {
                                 processPasswordPoliciesSettings(featureFlagsResult.featureFlags, onError)
+                            },
+                            async {
+                                processMetadataSettings(featureFlagsResult.featureFlags, onError)
                             }
                         ).all { it }
                     ) {
@@ -53,6 +60,38 @@ class PostSignInActionsInteractor(
             is FeatureFlagsInteractor.Output.Failure -> {
                 Timber.e("Failed to fetch feature flags")
                 onError(Error.ConfigurationFetchError)
+            }
+        }
+    }
+
+    private suspend fun processMetadataSettings(
+        featureFlagsModel: FeatureFlagsModel,
+        onError: (Error) -> Unit
+    ): IsSuccess {
+        return coroutineScope {
+            if (featureFlagsModel.isV5MetadataAvailable) {
+                Timber.d("V5 metadata available, fetching v5 metadata types and keys settings")
+                val typesSettingsDeferred = async {
+                    metadataTypesSettingsInteractor.fetchAndSaveMetadataTypesSettings()
+                }
+                val keysSettingsDeferred = async {
+                    metadataKeysSettingsInteractor.fetchAndSaveMetadataKeysSettings()
+                }
+
+                val results = awaitAll(typesSettingsDeferred, keysSettingsDeferred)
+                if (results[0] is MetadataTypesSettingsInteractor.Output.Success &&
+                    results[1] is MetadataKeysSettingsInteractor.Output.Success
+                ) {
+                    Timber.d("V5 metadata types and keys settings fetched")
+                    true
+                } else {
+                    Timber.e("Failed to fetch metadata settings")
+                    onError(Error.ConfigurationFetchError)
+                    false
+                }
+            } else {
+                Timber.d("V5 metadata not available")
+                true
             }
         }
     }

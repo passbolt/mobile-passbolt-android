@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.passboltapi.metadata
 
 import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
+import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
+import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -30,4 +32,10 @@ internal class MetadataRemoteDataSource(
 
     override suspend fun getMetadataKeys(): List<MetadataKeysResponseDto> =
         metadataApi.getMetadataKeys().body
+
+    override suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto =
+        metadataApi.getMetadataTypesSettings().body
+
+    override suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto =
+        metadataApi.getMetadataKeysSettings().body
 }

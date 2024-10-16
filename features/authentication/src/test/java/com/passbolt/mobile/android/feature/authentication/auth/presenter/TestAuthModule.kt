@@ -29,6 +29,8 @@ import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVer
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.VerifyPassphraseUseCase
 import com.passbolt.mobile.android.featureflags.usecase.FeatureFlagsInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataKeysSettingsInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataTypesSettingsInteractor
 import com.passbolt.mobile.android.storage.cache.passphrase.PassphraseMemoryCache
 import com.passbolt.mobile.android.storage.encrypted.biometric.BiometricCipher
 import com.passbolt.mobile.android.storage.usecase.accountdata.GetAccountDataUseCase
@@ -138,6 +140,8 @@ internal val mockGopenPgpTimeUpdater = mock<GopenPgpTimeUpdater>()
 internal val mockRbacInteractor = mock<RbacInteractor>()
 internal val mockPasswordExpiryPoliciesInteractor = mock<PasswordExpiryPoliciesInteractor>()
 internal val mockPasswordPoliciesInteractor = mock<PasswordPoliciesInteractor>()
+internal val mockMetadataTypesSettingsInteractor = mock<MetadataTypesSettingsInteractor>()
+internal val mockMetadataKeysSettingsInteractor = mock<MetadataKeysSettingsInteractor>()
 
 @ExperimentalCoroutinesApi
 val testAuthModule = module {
@@ -174,7 +178,9 @@ val testAuthModule = module {
             rbacInteractor = mockRbacInteractor,
             userProfileInteractor = mockProfileInteractor,
             passwordExpiryPoliciesInteractor = mockPasswordExpiryPoliciesInteractor,
-            passwordPoliciesInteractor = mockPasswordPoliciesInteractor
+            passwordPoliciesInteractor = mockPasswordPoliciesInteractor,
+            metadataTypesSettingsInteractor = mockMetadataTypesSettingsInteractor,
+            metadataKeysSettingsInteractor = mockMetadataKeysSettingsInteractor
         )
     }
     single { RuntimeAuthenticatedFlag() }

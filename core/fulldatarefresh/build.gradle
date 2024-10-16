@@ -28,6 +28,9 @@ dependencies {
     implementation project(':authentication')
     implementation project(':resourcetypes')
     implementation project(':metadata')
+    implementation project(':storage')
+    implementation project(':common')
+    implementation project(':entity')
 
     implementation libs.koin
     implementation libs.room.core

@@ -13,6 +13,7 @@ dependencies {
     implementation project(':database')
     implementation project(':architecture')
     implementation project(':gopenpgp')
+    implementation project(':dto')
 
     implementation libs.koin
     implementation libs.room.core

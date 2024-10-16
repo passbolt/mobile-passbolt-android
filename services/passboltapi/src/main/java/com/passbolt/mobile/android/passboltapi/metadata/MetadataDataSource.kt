@@ -1,6 +1,8 @@
 package com.passbolt.mobile.android.passboltapi.metadata
 
 import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
+import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
+import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
 
 /**
  * Passbolt - Open source password manager for teams
@@ -26,5 +28,10 @@ import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
  */
 
 interface MetadataDataSource {
+
     suspend fun getMetadataKeys(): List<MetadataKeysResponseDto>
+
+    suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto
+
+    suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto
 }

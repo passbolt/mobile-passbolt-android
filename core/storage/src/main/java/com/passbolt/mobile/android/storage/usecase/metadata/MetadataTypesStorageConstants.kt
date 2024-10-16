@@ -1,7 +1,4 @@
-package com.passbolt.mobile.android.passboltapi.metadata
-
-import com.passbolt.mobile.android.core.networking.ResponseHandler
-import com.passbolt.mobile.android.core.networking.callWithHandler
+package com.passbolt.mobile.android.storage.usecase.metadata
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,20 +22,18 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class MetadataRepository(
-    private val metadataDataSource: MetadataDataSource,
-    private val responseHandler: ResponseHandler
-) {
-
-    suspend fun getMetadataKeys() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataKeys()
-    }
-
-    suspend fun getMetadataTypesSettings() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataTypesSettings()
-    }
-
-    suspend fun getMetadataKeysSettings() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataKeysSettings()
-    }
+object MetadataTypesStorageConstants {
+    internal const val DEFAULT_METADATA_TYPE = "DEFAULT_METADATA_TYPE"
+    internal const val DEFAULT_FOLDER_TYPE = "DEFAULT_FOLDER_TYPE"
+    internal const val DEFAULT_TAG_TYPE = "DEFAULT_TAG_TYPE"
+    internal const val ALLOW_CREATION_OF_V5_RESOURCES = "ALLOW_CREATION_OF_V5_RESOURCES"
+    internal const val ALLOW_CREATION_OF_V5_FOLDERS = "ALLOW_CREATION_OF_V5_FOLDERS"
+    internal const val ALLOW_CREATION_OF_V5_TAGS = "ALLOW_CREATION_OF_V5_TAGS"
+    internal const val ALLOW_CREATION_OF_V4_RESOURCES = "ALLOW_CREATION_OF_V4_RESOURCES"
+    internal const val ALLOW_CREATION_OF_V4_FOLDERS = "ALLOW_CREATION_OF_V4_FOLDERS"
+    internal const val ALLOW_CREATION_OF_V4_TAGS = "ALLOW_CREATION_OF_V4_TAGS"
+    internal const val ALLOW_V4_V5_UPGRADE = "ALLOW_V4_V5_UPGRADE"
+    internal const val ALLOW_V5_V4_DOWNGRADE = "ALLOW_V5_V4_DOWNGRADE"
+    internal const val ALLOW_USAGE_OF_PERSONAL_KEYS = "ALLOW_USAGE_OF_PERSONAL_KEYS"
+    internal const val ZERO_KNOWLEDGE_KEY_SHARE = "ZERO_KNOWLEDGE_KEY_SHARE"
 }

@@ -2,6 +2,8 @@ package com.passbolt.mobile.android.passboltapi.metadata
 
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
+import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
+import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -30,15 +32,25 @@ import retrofit2.http.Query
 
 internal interface MetadataApi {
 
-    @GET(METADATA_KEYS)
+    @GET(METADATA_KEYS_ENDPOINT)
     suspend fun getMetadataKeys(
         @Query(QUERY_CONTAIN_PRIVATE_KEYS) containPrivateKeys: Int? = 1
     ): BaseResponse<List<MetadataKeysResponseDto>>
+
+    @GET(METADATA_TYPES_SETTINGS)
+    suspend fun getMetadataTypesSettings(): BaseResponse<MetadataTypesSettingsResponseDto>
+
+    @GET(METADATA_KEYS_SETTINGS)
+    suspend fun getMetadataKeysSettings(): BaseResponse<MetadataKeysSettingsResponseDto>
 
     private companion object {
         private const val QUERY_CONTAIN_PRIVATE_KEYS = "contain[metadata_private_keys]"
 
         private const val METADATA = "metadata"
-        private const val METADATA_KEYS = "$METADATA/keys.json"
+        private const val METADATA_KEYS_ENDPOINT = "$METADATA/keys.json"
+        private const val METADATA_TYPES = "$METADATA/types"
+        private const val METADATA_KEYS = "$METADATA/keys"
+        private const val METADATA_TYPES_SETTINGS = "$METADATA_TYPES/settings.json"
+        private const val METADATA_KEYS_SETTINGS = "$METADATA_KEYS/settings.json"
     }
 }

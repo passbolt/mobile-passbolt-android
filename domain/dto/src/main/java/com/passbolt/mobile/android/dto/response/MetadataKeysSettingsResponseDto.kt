@@ -1,7 +1,6 @@
-package com.passbolt.mobile.android.passboltapi.metadata
+package com.passbolt.mobile.android.dto.response
 
-import com.passbolt.mobile.android.core.networking.ResponseHandler
-import com.passbolt.mobile.android.core.networking.callWithHandler
+import com.google.gson.annotations.SerializedName
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,20 +24,10 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class MetadataRepository(
-    private val metadataDataSource: MetadataDataSource,
-    private val responseHandler: ResponseHandler
-) {
 
-    suspend fun getMetadataKeys() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataKeys()
-    }
-
-    suspend fun getMetadataTypesSettings() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataTypesSettings()
-    }
-
-    suspend fun getMetadataKeysSettings() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataKeysSettings()
-    }
-}
+data class MetadataKeysSettingsResponseDto(
+    @SerializedName("allow_usage_of_personal_keys")
+    val allowUsageOfPersonalKeys: Boolean,
+    @SerializedName("zero_knowledge_key_share")
+    val zeroKnowledgeKeyShare: Boolean
+)

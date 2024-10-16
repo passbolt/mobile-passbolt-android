@@ -1,7 +1,7 @@
-package com.passbolt.mobile.android.passboltapi.metadata
+package com.passbolt.mobile.android.storage.usecase.metadata
 
-import com.passbolt.mobile.android.core.networking.ResponseHandler
-import com.passbolt.mobile.android.core.networking.callWithHandler
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 
 /**
  * Passbolt - Open source password manager for teams
@@ -25,20 +25,10 @@ import com.passbolt.mobile.android.core.networking.callWithHandler
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class MetadataRepository(
-    private val metadataDataSource: MetadataDataSource,
-    private val responseHandler: ResponseHandler
-) {
 
-    suspend fun getMetadataKeys() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataKeys()
-    }
-
-    suspend fun getMetadataTypesSettings() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataTypesSettings()
-    }
-
-    suspend fun getMetadataKeysSettings() = callWithHandler(responseHandler) {
-        metadataDataSource.getMetadataKeysSettings()
-    }
+fun Module.metadataTypesSettingsModule() {
+    singleOf(::GetMetadataTypesSettingsUseCase)
+    singleOf(::SaveMetadataTypesSettingsUseCase)
+    singleOf(::GetMetadataKeysSettingsUseCase)
+    singleOf(::SaveMetadataKeysSettingsUseCase)
 }
