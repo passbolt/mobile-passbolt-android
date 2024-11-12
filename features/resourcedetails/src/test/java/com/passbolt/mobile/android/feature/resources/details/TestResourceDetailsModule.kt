@@ -31,6 +31,7 @@ import com.passbolt.mobile.android.mappers.GroupsModelMapper
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.UsersModelMapper
+import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -78,8 +79,13 @@ internal val testResourceDetailsModule = module {
             idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider
         )
     }
+    factory { (resource: ResourceModel) ->
+        ResourcePropertiesActionsInteractor(
+            resource,
+            idToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider
+        )
+    }
     factory { mockResourceCommonActionsInteractor }
-    factory { mockResourcePropertiesActionsInteractor }
     factory { mockSecretPropertiesActionsInteractor }
     factory { mockResourceUpdateActionsInteractor }
     single(named(JSON_MODEL_GSON)) { Gson() }

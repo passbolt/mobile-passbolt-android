@@ -69,7 +69,10 @@ val resourcesModule = module {
     singleOf(::CreateResourceInteractor)
 
     factory { (resource: ResourceModel) ->
-        ResourcePropertiesActionsInteractor(resource)
+        ResourcePropertiesActionsInteractor(
+            resource,
+            idToSlugMappingProvider = get()
+        )
     }
     factory { (
                   resource: ResourceModel,

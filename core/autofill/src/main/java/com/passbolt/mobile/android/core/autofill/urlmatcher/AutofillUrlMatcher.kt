@@ -23,10 +23,16 @@
 
 package com.passbolt.mobile.android.core.autofill.urlmatcher
 
+import com.passbolt.mobile.android.ui.ResourceModel
 import timber.log.Timber
 import java.net.URL
 
 class AutofillUrlMatcher {
+
+    fun isMatching(autofillUrl: String?, resource: ResourceModel): Boolean {
+        val resourceUris = resource.uris.orEmpty() + resource.uri.orEmpty()
+        return resourceUris.any { isMatching(autofillUrl, it) }
+    }
 
     fun isMatching(autofillUrl: String?, resourceUrl: String?): Boolean {
         // not matching if any is null or empty

@@ -70,7 +70,7 @@ data class ResourceModel(
         get() = initialsProvider.get(name)
 
     @IgnoredOnParcel
-    override val searchCriteria: String = "$name$username$uri"
+    override val searchCriteria: String = "$name${username.orEmpty()}${uri.orEmpty()}${uris?.joinToString()}"
 
     companion object {
         val initialsProvider: InitialsProvider by inject(InitialsProvider::class.java)

@@ -21,9 +21,9 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePer
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.permissions.permissions.PermissionsMode
 import com.passbolt.mobile.android.permissions.recycler.PermissionsDatasetCreator
@@ -209,10 +209,13 @@ class ResourceDetailsPresenter(
         resourceId: String
     ) {
         resourceModel = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(resourceId)).resource
+        performResourcePropertyAction(
+            action = { resourcePropertiesActionsInteractor.provideWebsiteUrl() },
+            doOnResult = { view?.displayUrl(it.result) }
+        )
         view?.apply {
             displayUsername(resourceModel.username.orEmpty())
             displayInitialsIcon(resourceModel.name, resourceModel.initials)
-            displayUrl(resourceModel.uri.orEmpty())
             handleExpiry()
             handleFavourite()
             hidePassword()

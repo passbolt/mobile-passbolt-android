@@ -349,8 +349,7 @@ class HomePresenter(
                         .resources
                         .filter {
                             val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
-                            val resourceUrl = it.uri
-                            autofillMatcher.isMatching(autofillUrl, resourceUrl)
+                            autofillMatcher.isMatching(autofillUrl, it)
                         }
                 } else {
                     emptyList()
