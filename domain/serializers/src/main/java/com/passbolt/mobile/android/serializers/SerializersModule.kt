@@ -25,9 +25,12 @@ package com.passbolt.mobile.android.serializers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.passbolt.mobile.android.dto.request.CreateResourceDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceTypeDto
+import com.passbolt.mobile.android.serializers.gson.CreateResourceModelSerializer
 import com.passbolt.mobile.android.serializers.gson.MetadataDecryptor
+import com.passbolt.mobile.android.serializers.gson.MetadataEncryptor
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceListItemDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceTypesListDeserializer
@@ -82,6 +85,13 @@ val serializersModule = module {
             metadataKeys = metadataKeys
         )
     }
+    single { (metadataKeys: List<ParsedMetadataKeyModel>) ->
+        MetadataEncryptor(
+            getSelectedUserPrivateKeyUseCase = get(),
+            openPgp = get(),
+            metadataKeys = metadataKeys
+        )
+    }
     single {
         GsonBuilder()
             .serializeNulls()
@@ -102,6 +112,7 @@ val serializersModule = module {
                     ResourceResponseDto::class.java,
                     get<SingleResourceDeserializer>()
                 )
+                registerTypeAdapter(CreateResourceDto::class.java, CreateResourceModelSerializer())
             }
             .create()
     }

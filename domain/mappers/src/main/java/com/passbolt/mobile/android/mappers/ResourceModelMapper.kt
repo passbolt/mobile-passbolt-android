@@ -112,7 +112,7 @@ class ResourceModelMapper(
             description = resourceModel.description
         )
 
-    fun mapResourceUri(resourceModel: ResourceModel) = resourceModel.url?.let {
+    fun mapResourceUri(resourceModel: ResourceModel) = resourceModel.uri?.let {
         ResourceUri(resourceId = resourceModel.resourceId, uri = it)
     }
 

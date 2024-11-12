@@ -69,9 +69,26 @@ class ResourcePermissionsPresenterTest : KoinTest {
 
     @Before
     fun setup() {
+        resourceModel = ResourceModel(
+            resourceId = RESOURCE_ID,
+            resourceTypeId = RESOURCE_TYPE_ID,
+            folderId = FOLDER_ID_ID,
+            permission = ResourcePermission.READ,
+            favouriteId = null,
+            modified = ZonedDateTime.now(),
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
+        )
         mockGetLocalResourceUseCase.stub {
             onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_ID)) }
-                .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL))
+                .doReturn(GetLocalResourceUseCase.Output(resourceModel))
         }
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
             flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
@@ -91,8 +108,8 @@ class ResourcePermissionsPresenterTest : KoinTest {
     @Test
     fun `edit button should be shown in view mode and if owner`() {
         mockGetLocalResourceUseCase.stub {
-            onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_MODEL.resourceId)) }
-                .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL.copy(permission = ResourcePermission.OWNER)))
+            onBlocking { execute(GetLocalResourceUseCase.Input(resourceModel.resourceId)) }
+                .doReturn(GetLocalResourceUseCase.Output(resourceModel.copy(permission = ResourcePermission.OWNER)))
         }
 
         presenter.argsReceived(PermissionsItem.RESOURCE, RESOURCE_ID, PermissionsMode.VIEW)
@@ -277,22 +294,6 @@ class ResourcePermissionsPresenterTest : KoinTest {
         private const val DESCRIPTION = "desc"
         private const val RESOURCE_TYPE_ID = "resTypeId"
         private const val FOLDER_ID_ID = "folderId"
-        private val RESOURCE_MODEL = ResourceModel(
-            resourceId = RESOURCE_ID,
-            resourceTypeId = RESOURCE_TYPE_ID,
-            folderId = FOLDER_ID_ID,
-            permission = ResourcePermission.READ,
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString(),
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
+        private lateinit var resourceModel: ResourceModel
     }
 }

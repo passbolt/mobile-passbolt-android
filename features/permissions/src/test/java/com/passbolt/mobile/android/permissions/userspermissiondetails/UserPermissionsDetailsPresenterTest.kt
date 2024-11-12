@@ -24,6 +24,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import java.time.ZonedDateTime
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -151,7 +152,8 @@ class UserPermissionsDetailsPresenterTest : KoinTest {
                 keyId = "keyid",
                 type = "rsa",
                 keyExpirationDate = ZonedDateTime.now(),
-                keyCreationDate = ZonedDateTime.now()
+                keyCreationDate = ZonedDateTime.now(),
+                id = UUID.randomUUID().toString()
             ),
             profile = UserProfileModel(
                 username = "username",

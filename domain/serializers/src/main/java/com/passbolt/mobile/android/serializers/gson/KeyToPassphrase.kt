@@ -1,8 +1,3 @@
-package com.passbolt.mobile.android.storage.usecase.metadata
-
-import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,9 +21,6 @@ import org.koin.core.module.dsl.singleOf
  * @since v1.0
  */
 
-fun Module.metadataTypesSettingsModule() {
-    singleOf(::GetMetadataTypesSettingsUseCase)
-    singleOf(::SaveMetadataTypesSettingsUseCase)
-    singleOf(::GetMetadataKeysSettingsUseCase)
-    singleOf(::SaveMetadataKeysSettingsUseCase)
-}
+package com.passbolt.mobile.android.serializers.gson
+
+internal typealias KeyToPassphrase = Pair<String, ByteArray>

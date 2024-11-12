@@ -8,6 +8,8 @@ dependencies {
     implementation project(':common')
     implementation project(':coreui')
     implementation project(':localization')
+    implementation project(':supportedresourcetypes')
+    implementation project(':jsonmodel')
 
     implementation libs.koin
     implementation libs.gson

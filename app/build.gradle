@@ -192,6 +192,7 @@ dependencies {
     implementation project(':authenticationcore')
     implementation project(':preferences')
     implementation project(':passphrasememorycache')
+    implementation project(':jsonmodel')
 
     debugImplementation libs.leakcanary
 
@@ -202,6 +203,7 @@ dependencies {
     implementation libs.gson
     implementation libs.app.startup
     implementation libs.espresso.idling.resource
+    implementation libs.json.path
 
     androidTestImplementation project(':commontest')
     androidTestImplementation libs.appcompat

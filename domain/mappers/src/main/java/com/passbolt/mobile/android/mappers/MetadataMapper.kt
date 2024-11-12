@@ -25,6 +25,7 @@ package com.passbolt.mobile.android.mappers
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.passbolt.mobile.android.dto.response.MetadataKeyTypeDto
 import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
 import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
 import com.passbolt.mobile.android.dto.response.MetadataTypeDto
@@ -33,6 +34,7 @@ import com.passbolt.mobile.android.entity.metadata.MetadataKey
 import com.passbolt.mobile.android.entity.metadata.MetadataKeyWithPrivateKeys
 import com.passbolt.mobile.android.entity.metadata.MetadataPrivateKey
 import com.passbolt.mobile.android.ui.MetadataKeyModel
+import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.MetadataKeysSettingsModel
 import com.passbolt.mobile.android.ui.MetadataPrivateKeyModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
@@ -114,6 +116,13 @@ class MetadataMapper {
             allowUsageOfPersonalKeys = dto.allowUsageOfPersonalKeys,
             zeroKnowledgeKeyShare = dto.zeroKnowledgeKeyShare
         )
+
+    fun mapToDto(metadataKeyTypeModel: MetadataKeyTypeModel?) = metadataKeyTypeModel?.let {
+        when (it) {
+            MetadataKeyTypeModel.SHARED -> MetadataKeyTypeDto.SHARED
+            MetadataKeyTypeModel.PERSONAL -> MetadataKeyTypeDto.PERSONAL
+        }
+    }
 
     private companion object {
         private const val KEY_ARMORED_KEY = "armored_key"

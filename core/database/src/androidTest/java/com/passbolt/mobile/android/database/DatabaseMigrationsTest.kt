@@ -352,6 +352,10 @@ class DatabaseMigrationsTest {
                     "INSERT INTO Resource VALUES('id1','folderid','READ', '1'," +
                             " 'favouriteId', 1644909225833, 1644909225833)"
                 )
+                execSQL(
+                    "INSERT INTO User VALUES('id2','username',1,'fName','lName','avatar','armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
+                )
                 close()
             }
 
@@ -370,6 +374,10 @@ class DatabaseMigrationsTest {
                 execSQL(
                     "INSERT INTO Resource VALUES('id3','folderid','READ', '1'," +
                             " 'favouriteId', 1644909225833, 1644909225833, 'id', 'SHARED')"
+                )
+                execSQL(
+                    "INSERT INTO User VALUES('id3','username',1,'fName','lName','avatar','userKeyId', 'armoredKey'," +
+                            "4096,'uid','keyId','fingerprint','type',1644909225833, 1644909225830)"
                 )
                 close()
             }

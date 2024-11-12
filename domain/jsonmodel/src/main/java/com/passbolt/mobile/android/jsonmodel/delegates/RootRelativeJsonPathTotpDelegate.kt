@@ -1,0 +1,31 @@
+package com.passbolt.mobile.android.jsonmodel.delegates
+
+import com.google.gson.Gson
+import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
+import com.passbolt.mobile.android.jsonmodel.JsonModel
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.qualifier.named
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
+
+class RootRelativeJsonPathTotpDelegate(private val jsonPath: String) :
+    ReadWriteProperty<JsonModel, TotpSecret>, KoinComponent {
+
+    private val gson: Gson by inject(named(JSON_MODEL_GSON))
+    private val jsonPathsOps: JsonPathsOps by inject()
+
+    override fun getValue(thisRef: JsonModel, property: KProperty<*>): TotpSecret =
+        jsonPathsOps.read(thisRef) { "$.$jsonPath" }.let {
+            gson.fromJson(it, TotpSecret::class.java)
+        }
+
+    override fun setValue(thisRef: JsonModel, property: KProperty<*>, value: TotpSecret) {
+        jsonPathsOps.setOrCreate(thisRef, { jsonPath }, gson.toJsonTree(value))
+    }
+
+    fun delete(jsonModel: JsonModel) {
+        jsonPathsOps.delete(jsonModel) { "$.$jsonPath" }
+    }
+}

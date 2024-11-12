@@ -68,6 +68,7 @@ object Migration16to17 : Migration(16, 17) {
             "`deleted` INTEGER, " +
             "PRIMARY KEY(`resourceTypeId`)" +
             ")"
+    private const val ADD_USER_KEY_ID_COLUMN = "ALTER TABLE User ADD COLUMN `userKeyId` TEXT NOT NULL DEFAULT ''"
 
     override fun migrate(db: SupportSQLiteDatabase) {
         with(db) {
@@ -79,6 +80,7 @@ object Migration16to17 : Migration(16, 17) {
             execSQL(CREATE_RESOURCES)
             execSQL(CREATE_METADATA_KEYS)
             execSQL(CREATE_METADATA_PRIVATE_KEYS)
+            execSQL(ADD_USER_KEY_ID_COLUMN)
         }
     }
 }

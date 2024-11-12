@@ -1,0 +1,18 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.gradle
+}
+
+dependencies {
+    implementation libs.json.path
+    implementation libs.gson
+    implementation libs.koin
+}
+
+android {
+    namespace = "com.passbolt.mobile.android.domain.jsonmodel"
+}
+
+kotlin {
+    jvmToolchain(17)
+}

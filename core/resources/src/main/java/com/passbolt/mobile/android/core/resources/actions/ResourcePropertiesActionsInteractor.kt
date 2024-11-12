@@ -37,7 +37,7 @@ class ResourcePropertiesActionsInteractor(
             ResourcePropertyActionResult(
                 URL_LABEL,
                 isSecret = false,
-                resource.url.orEmpty()
+                resource.uri.orEmpty()
             )
         )
 

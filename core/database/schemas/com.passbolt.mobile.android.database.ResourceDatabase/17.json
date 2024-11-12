@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 17,
-    "identityHash": "b03ceb422492c74f6c3ab521f132c7f9",
+    "identityHash": "0d46899712f0d5788741a96abf0856c9",
     "entities": [
       {
         "tableName": "Resource",
@@ -349,7 +349,7 @@
       },
       {
         "tableName": "User",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `userName` TEXT NOT NULL, `disabled` INTEGER NOT NULL, `firstName` TEXT, `lastName` TEXT, `avatarUrl` TEXT, `armoredKey` TEXT NOT NULL, `bits` INTEGER NOT NULL, `uid` TEXT, `keyId` TEXT NOT NULL, `fingerprint` TEXT NOT NULL, `type` TEXT, `expires` INTEGER, `created` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `userName` TEXT NOT NULL, `disabled` INTEGER NOT NULL, `firstName` TEXT, `lastName` TEXT, `avatarUrl` TEXT, `userKeyId` TEXT NOT NULL, `armoredKey` TEXT NOT NULL, `bits` INTEGER NOT NULL, `uid` TEXT, `keyId` TEXT NOT NULL, `fingerprint` TEXT NOT NULL, `type` TEXT, `expires` INTEGER, `created` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -386,6 +386,12 @@
             "columnName": "avatarUrl",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "gpgKey.id",
+            "columnName": "userKeyId",
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "gpgKey.armoredKey",
@@ -873,7 +879,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b03ceb422492c74f6c3ab521f132c7f9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0d46899712f0d5788741a96abf0856c9')"
     ]
   }
 }

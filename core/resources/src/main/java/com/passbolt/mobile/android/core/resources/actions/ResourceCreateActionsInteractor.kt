@@ -23,10 +23,10 @@
 
 package com.passbolt.mobile.android.core.resources.actions
 
+import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderPermissionsUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalParentFolderPermissionsToApplyToNewItemUseCase
 import com.passbolt.mobile.android.core.commonfolders.usecase.db.ItemIdResourceId
 import com.passbolt.mobile.android.core.mvp.authentication.UnauthenticatedReason
-import com.passbolt.mobile.android.core.resources.SecretInputCreator
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.CryptoFailure
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.Failure
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionResult.FetchFailure
@@ -39,10 +39,24 @@ import com.passbolt.mobile.android.core.resources.interactor.create.CreateResour
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourceUseCase
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretModel
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
+import com.passbolt.mobile.android.core.users.usecase.db.GetLocalCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.metadata.usecase.GetMetadataKeysSettingsUseCase
+import com.passbolt.mobile.android.metadata.usecase.GetMetadataTypesSettingsUseCase
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
+import com.passbolt.mobile.android.ui.CreateResourceModel
+import com.passbolt.mobile.android.ui.MetadataKeyParamsModel
+import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
+import com.passbolt.mobile.android.ui.MetadataTypeModel
+import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
+import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,40 +70,55 @@ class ResourceCreateActionsInteractor(
     private val needSessionRefreshFlow: MutableStateFlow<UnauthenticatedReason?>,
     private val sessionRefreshedFlow: StateFlow<Unit?>,
     private val createResourceInteractor: CreateResourceInteractor,
-    private val secretInputCreator: SecretInputCreator,
     private val addLocalResourceUseCase: AddLocalResourceUseCase,
     private val addLocalResourcePermissionsUseCase: AddLocalResourcePermissionsUseCase,
     private val resourceShareInteractor: ResourceShareInteractor,
-    private val getLocalParentFolderPermissionsToApplyUseCase: GetLocalParentFolderPermissionsToApplyToNewItemUseCase
+    private val getLocalParentFolderPermissionsToApplyUseCase: GetLocalParentFolderPermissionsToApplyToNewItemUseCase,
+    private val getLocalFolderPermissionsUseCase: GetLocalFolderPermissionsUseCase,
+    private val getMetadataKeysSettingsUseCase: GetMetadataKeysSettingsUseCase,
+    private val getMetadataTypesSettingsUseCase: GetMetadataTypesSettingsUseCase,
+    private val getMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
+    private val getLocalCurrentUserUseCase: GetLocalCurrentUserUseCase
 ) : KoinComponent {
 
     suspend fun createPasswordAndDescriptionResource(
         resourceName: String,
         resourceUsername: String?,
-        resourceUri: String?,
+        resourceUris: List<String>?,
         resourceParentFolderId: String?,
         password: String,
         description: String?
-    ): Flow<ResourceCreateActionResult> =
-        createResource(
-            createResource = {
-                CreateResourceInteractor.ResourceInput(
-                    resourceName = resourceName,
-                    resourceUsername = resourceUsername,
-                    resourceUri = resourceUri,
-                    resourceParentFolderId = resourceParentFolderId,
-                    description = null,
-                    slug = ContentType.PasswordAndDescription.slug
-                )
+    ): Flow<ResourceCreateActionResult> {
+        val (metadataKeyId, metadataKeyType) = getMetadataKeysParams(resourceParentFolderId)
+        return createResource(
+            createResource = { metadataType ->
+                CreateResourceModel(
+                    contentType = when (metadataType) {
+                        V4 -> PasswordAndDescription
+                        V5 -> V5Default
+                    },
+                    folderId = resourceParentFolderId,
+                    expiry = null,
+                    metadataKeyId = metadataKeyId,
+                    metadataKeyType = metadataKeyType,
+                    json = "{}"
+                ).apply {
+                    name = resourceName
+                    username = resourceUsername
+                    when (metadataType) {
+                        V4 -> this.uri = resourceUris?.firstOrNull()
+                        V5 -> this.uris = resourceUris
+                    }
+                }
             },
             createSecret = {
-                val secretJson = secretInputCreator.createPasswordWithDescriptionSecretInput(
-                    password = password,
-                    description = description
-                )
-                DecryptedSecret(secretJson)
+                SecretModel(json = "{}").apply {
+                    this.secret = password
+                    this.description = description
+                }
             }
         )
+    }
 
     @Suppress("LongParameterList")
     suspend fun createStandaloneTotpResource(
@@ -101,38 +130,84 @@ class ResourceCreateActionsInteractor(
         digits: Int,
         algorithm: String,
         secretKey: String
-    ): Flow<ResourceCreateActionResult> =
-        createResource(
-            createResource = {
-                CreateResourceInteractor.ResourceInput(
-                    resourceName = label,
-                    resourceUsername = resourceUsername,
-                    resourceUri = issuer,
-                    resourceParentFolderId = resourceParentFolderId,
-                    description = null,
-                    slug = ContentType.Totp.slug
-                )
+    ): Flow<ResourceCreateActionResult> {
+        val (metadataKeyId, metadataKeyType) = getMetadataKeysParams(resourceParentFolderId)
+
+        return createResource(
+            createResource = { metadataType ->
+                CreateResourceModel(
+                    contentType = when (metadataType) {
+                        V4 -> Totp
+                        V5 -> V5TotpStandalone
+                    },
+                    folderId = resourceParentFolderId,
+                    expiry = null,
+                    metadataKeyId = metadataKeyId,
+                    metadataKeyType = metadataKeyType,
+                    json = "{}"
+                ).apply {
+                    name = label
+                    username = resourceUsername
+                    when (metadataType) {
+                        V4 -> this.uri = issuer
+                        V5 -> this.uris = issuer?.let { listOf(it) }
+                    }
+                }
             },
+
             createSecret = {
-                val secretJson = secretInputCreator.createTotpSecretInput(
-                    algorithm = algorithm,
-                    key = secretKey,
-                    digits = digits,
-                    period = period
-                )
-                DecryptedSecret(secretJson)
+                SecretModel(json = "{}").apply {
+                    this.totp = TotpSecret(
+                        algorithm = algorithm,
+                        key = secretKey,
+                        digits = digits,
+                        period = period
+                    )
+                }
             }
         )
+    }
+
+    private suspend fun getMetadataKeysParams(parentFolderId: String?): MetadataKeyParamsModel {
+        val isPersonalKeyAllowed = getMetadataKeysSettingsUseCase.execute(Unit)
+            .metadataKeysSettingsModel.allowUsageOfPersonalKeys
+        val isParentFolderShared = parentFolderId?.let {
+            getLocalFolderPermissionsUseCase.execute(
+                GetLocalFolderPermissionsUseCase.Input(parentFolderId)
+            ).permissions.size > 1
+        } ?: false
+        val metadataKeyType = if (isPersonalKeyAllowed && !isParentFolderShared) {
+            MetadataKeyTypeModel.PERSONAL
+        } else {
+            MetadataKeyTypeModel.SHARED
+        }
+
+        val metadataKeyId = if (metadataKeyType == MetadataKeyTypeModel.SHARED) {
+            getMetadataKeysUseCase.execute(Unit).firstOrNull()?.id?.toString()
+        } else {
+            getLocalCurrentUserUseCase.execute(Unit).user.gpgKey.id
+        }
+
+        return MetadataKeyParamsModel(
+            metadataKeyId = metadataKeyId,
+            metadataKeyType = metadataKeyType
+        )
+    }
+
+    // TODO: Confront with resource-types.json response
+    // TODO: there can be default v5 setting but no v5 content types in response
+    private suspend fun getMetadataType() =
+        getMetadataTypesSettingsUseCase.execute(Unit).metadataTypesSettingsModel.defaultMetadataType
 
     private suspend fun createResource(
-        createResource: () -> CreateResourceInteractor.ResourceInput,
-        createSecret: () -> DecryptedSecret
+        createResource: (MetadataTypeModel) -> CreateResourceModel,
+        createSecret: () -> SecretModel
     ): Flow<ResourceCreateActionResult> {
         return try {
             flowOf(
                 runCreateOperation {
                     createResourceInteractor.execute(
-                        resourceInput = createResource(),
+                        resourceInput = createResource(getMetadataType()),
                         secretInput = createSecret()
                     )
                 }

@@ -9,6 +9,7 @@ dependencies {
     implementation project(':mappers')
     implementation project(':entity')
     implementation project(':ui')
+    implementation project(':jsonmodel')
     implementation project(':accounts')
 
     implementation libs.koin

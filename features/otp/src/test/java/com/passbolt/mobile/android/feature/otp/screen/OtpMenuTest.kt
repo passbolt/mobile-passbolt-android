@@ -31,8 +31,8 @@ import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.otpcore.TotpParametersProvider
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resources.actions.SecretPropertyActionResult
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
@@ -86,6 +86,25 @@ class OtpMenuTest : KoinTest {
         whenever(mockFullDataRefreshExecutor.dataRefreshStatusFlow).doReturn(
             flowOf(DataRefreshStatus.Finished(HomeDataInteractor.Output.Success))
         )
+        mockTotpResources = listOf(
+            ResourceModel(
+                resourceId = "resId",
+                resourceTypeId = "resTypeId",
+                folderId = null,
+                permission = ResourcePermission.READ,
+                favouriteId = null,
+                modified = ZonedDateTime.now(),
+                expiry = null,
+                json = JsonObject().apply {
+                    addProperty("name", "")
+                    addProperty("username", "")
+                    addProperty("uri", "")
+                    addProperty("description", "")
+                }.toString(),
+                metadataKeyId = null,
+                metadataKeyType = null
+            )
+        )
     }
 
     @Test
@@ -124,24 +143,6 @@ class OtpMenuTest : KoinTest {
 
     private companion object {
         private const val SEARCH_AVATAR_URL = "url"
-        private val mockTotpResources = listOf(
-            ResourceModel(
-                resourceId = "resId",
-                resourceTypeId = "resTypeId",
-                folderId = null,
-                permission = ResourcePermission.READ,
-                favouriteId = null,
-                modified = ZonedDateTime.now(),
-                expiry = null,
-                json = JsonObject().apply {
-                    addProperty("name", "")
-                    addProperty("username", "")
-                    addProperty("uri", "")
-                    addProperty("description", "")
-                }.toString(),
-                metadataKeyId = null,
-                metadataKeyType = null
-            )
-        )
+        private lateinit var mockTotpResources: List<ResourceModel>
     }
 }

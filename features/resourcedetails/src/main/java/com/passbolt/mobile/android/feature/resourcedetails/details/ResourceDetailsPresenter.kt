@@ -21,7 +21,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePer
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.mappers.OtpModelMapper
@@ -212,7 +212,7 @@ class ResourceDetailsPresenter(
         view?.apply {
             displayUsername(resourceModel.username.orEmpty())
             displayInitialsIcon(resourceModel.name, resourceModel.initials)
-            displayUrl(resourceModel.url.orEmpty())
+            displayUrl(resourceModel.uri.orEmpty())
             handleExpiry()
             handleFavourite()
             hidePassword()
@@ -573,7 +573,7 @@ class ResourceDetailsPresenter(
                     ADD_TOTP -> suspend {
                         resourceUpdateActionsInteractor.addTotpToResource(
                             overrideName = resourceModel.name,
-                            overrideUri = resourceModel.url,
+                            overrideUri = resourceModel.uri,
                             period = totpQr.period,
                             digits = totpQr.digits,
                             algorithm = totpQr.algorithm.name,
@@ -583,7 +583,7 @@ class ResourceDetailsPresenter(
                     EDIT_TOTP -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resourceModel.name,
-                            issuer = resourceModel.url,
+                            issuer = resourceModel.uri,
                             period = totpQr.period,
                             digits = totpQr.digits,
                             algorithm = totpQr.algorithm.name,

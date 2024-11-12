@@ -14,6 +14,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':idlingresource')
     implementation project(':resourcetypes')
+    implementation project(':jsonmodel')
 
     implementation libs.androidx.core
     implementation libs.appcompat

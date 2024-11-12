@@ -26,11 +26,14 @@ dependencies {
     implementation project(':folders')
     implementation project(':accounts')
     implementation project(':passphrasememorycache')
+    implementation project(':metadata')
+    implementation project(':jsonmodel')
 
     implementation libs.gson
     implementation libs.room.core
     implementation(libs.sqlite.cipher) { artifact { type = "aar" } }
     implementation libs.koin
+    implementation libs.json.path
 }
 
 android {

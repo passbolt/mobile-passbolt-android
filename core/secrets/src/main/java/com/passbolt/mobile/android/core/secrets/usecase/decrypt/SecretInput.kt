@@ -23,9 +23,9 @@
 
 package com.passbolt.mobile.android.core.secrets.usecase.decrypt
 
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretModel
 
 data class SecretInput(
-    val decryptedSecret: DecryptedSecret,
+    val secretModel: SecretModel,
     val passwordChanged: Boolean
 )

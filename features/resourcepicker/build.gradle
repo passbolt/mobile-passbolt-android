@@ -18,6 +18,7 @@ dependencies {
     implementation project(':resources')
     implementation project(':resourcetypes')
     implementation project(':accounts')
+    implementation project(':jsonmodel')
 
     implementation libs.androidx.core
     implementation libs.appcompat

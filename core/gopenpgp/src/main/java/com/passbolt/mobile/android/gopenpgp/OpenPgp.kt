@@ -61,6 +61,31 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
         }
     }
 
+    suspend fun encryptSignMessageArmored(
+        privateKey: String,
+        passphrase: ByteArray,
+        message: String
+    ): OpenPgpResult<String> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val passphraseCopy = passphrase.copyOf()
+                val publicKey = Crypto.newKeyFromArmored(privateKey).armoredPublicKey
+
+                val encrypted = Helper.encryptSignMessageArmored(
+                    publicKey, privateKey, passphrase, message
+                )
+                passphraseCopy.erase()
+
+                OpenPgpResult.Result(encrypted)
+            }
+        } catch (exception: Exception) {
+            Timber.e(exception, "There was an error during encryptSignMessageArmored")
+            OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
+        } finally {
+            Helper.freeOSMemory()
+        }
+    }
+
     suspend fun decryptVerifyMessageArmored(
         publicKey: String,
         privateKey: String,

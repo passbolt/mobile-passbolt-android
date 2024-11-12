@@ -145,7 +145,7 @@ class CreateOtpPresenter(
                         parentFolderId = resource.folderId,
                         label = resource.name,
                         secret = it.result.key,
-                        issuer = resource.url,
+                        issuer = resource.uri,
                         algorithm = it.result.algorithm,
                         digits = it.result.digits,
                         period = it.result.period
@@ -162,7 +162,7 @@ class CreateOtpPresenter(
                 parentFolderId = resource.folderId,
                 label = resource.name,
                 secret = "",
-                issuer = resource.url,
+                issuer = resource.uri,
                 algorithm = OtpParseResult.OtpQr.Algorithm.DEFAULT.name,
                 digits = OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS,
                 period = OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS
@@ -354,7 +354,7 @@ class CreateOtpPresenter(
                     is PasswordAndDescription, V5Default -> suspend {
                         resourceUpdateActionsInteractor.addTotpToResource(
                             overrideName = resource.name,
-                            overrideUri = resource.url,
+                            overrideUri = resource.uri,
                             period = period,
                             digits = digits,
                             algorithm = algorithm,
@@ -364,7 +364,7 @@ class CreateOtpPresenter(
                     is PasswordDescriptionTotp, V5DefaultWithTotp -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resource.name,
-                            issuer = resource.url,
+                            issuer = resource.uri,
                             period = period,
                             digits = digits,
                             algorithm = algorithm,

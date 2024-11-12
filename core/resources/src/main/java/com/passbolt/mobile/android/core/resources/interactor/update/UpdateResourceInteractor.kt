@@ -38,6 +38,7 @@ import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceType
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInput
 import com.passbolt.mobile.android.core.users.usecase.FetchUsersUseCase
 import com.passbolt.mobile.android.dto.request.CreateResourceDto
+import com.passbolt.mobile.android.dto.request.CreateV4ResourceDto
 import com.passbolt.mobile.android.dto.request.EncryptedSecret
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
@@ -86,7 +87,7 @@ class UpdateResourceInteractor(
             is FetchUsersUseCase.Output.Success -> {
                 if (isSecretValid(
                         PlainSecretValidationWrapper(
-                            secretInput.decryptedSecret.json,
+                            secretInput.secretModel.json,
                             ContentType.fromSlug(input.newResourceTypeSlug)
                         )
                             .validationPlainSecret,
@@ -107,14 +108,15 @@ class UpdateResourceInteractor(
         usersWhoHaveAccess: FetchUsersUseCase.Output.Success,
         resourceInput: ResourceInput
     ): Output {
-        val encryptedSecrets = encrypt(secretInput.decryptedSecret.json, passphrase, usersWhoHaveAccess.users)
+        val encryptedSecrets = encrypt(secretInput.secretModel.json, passphrase, usersWhoHaveAccess.users)
         return if (encryptedSecrets.any { it is EncryptedSecretOrError.Error }) {
             Output.OpenPgpError(
                 encryptedSecrets.filterIsInstance<EncryptedSecretOrError.Error>().first().message
             )
         } else {
             val secrets = encryptedSecrets.filterIsInstance<EncryptedSecretOrError.EncryptedSecret>()
-            val createResourceDto = CreateResourceDto(
+            // TODO
+            val createResourceDto = CreateV4ResourceDto(
                 name = resourceInput.resourceName,
                 resourceTypeId = getResourceTypeIdForSlug(resourceInput.newResourceTypeSlug),
                 secrets = secrets.map { EncryptedSecret(it.userId, it.data) },

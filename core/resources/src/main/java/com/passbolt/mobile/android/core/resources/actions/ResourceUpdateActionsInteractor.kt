@@ -30,7 +30,8 @@ import com.passbolt.mobile.android.core.resourcetypes.graph.ResourceTypesUpdates
 import com.passbolt.mobile.android.core.resourcetypes.graph.UpdateAction
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.SecretInput
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.DecryptedSecret
+import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretModel
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -62,7 +63,7 @@ class ResourceUpdateActionsInteractor(
                     resourceId = resource.resourceId,
                     resourceName = resource.name,
                     resourceUsername = resource.username,
-                    resourceUri = resource.url,
+                    resourceUri = resource.uri,
                     resourceParentFolderId = resource.folderId,
                     description = null,
                     expiry = resource.expiry,
@@ -71,7 +72,7 @@ class ResourceUpdateActionsInteractor(
             },
             updateSecret = { decryptedSecret ->
                 SecretInput(
-                    decryptedSecret = decryptedSecret.apply {
+                    secretModel = decryptedSecret.apply {
                         removeTotp()
                     },
                     passwordChanged = false
@@ -94,7 +95,7 @@ class ResourceUpdateActionsInteractor(
                     resourceId = resource.resourceId,
                     resourceName = overrideName ?: resource.name,
                     resourceUsername = resource.username,
-                    resourceUri = overrideUri ?: resource.url,
+                    resourceUri = overrideUri ?: resource.uri,
                     resourceParentFolderId = resource.folderId,
                     description = null,
                     expiry = resource.expiry,
@@ -103,8 +104,13 @@ class ResourceUpdateActionsInteractor(
             },
             updateSecret = { decryptedSecret ->
                 SecretInput(
-                    decryptedSecret = decryptedSecret.apply {
-                        addTotp(algorithm, secretKey, digits, period.toInt())
+                    secretModel = decryptedSecret.apply {
+                        totp = TotpSecret(
+                            algorithm,
+                            secretKey,
+                            digits,
+                            period
+                        )
                     },
                     passwordChanged = false
                 )
@@ -136,7 +142,7 @@ class ResourceUpdateActionsInteractor(
             updateSecret = { decryptedSecret ->
                 decryptedSecret.secret.let { currentPassword ->
                     SecretInput(
-                        decryptedSecret = decryptedSecret.apply {
+                        secretModel = decryptedSecret.apply {
                             this.secret = password
                             this.description = description
                         },
@@ -171,10 +177,12 @@ class ResourceUpdateActionsInteractor(
             updateSecret = { decryptedSecret ->
                 SecretInput(
                     decryptedSecret.apply {
-                        this.totpAlgorithm = algorithm
-                        this.totpKey = secretKey
-                        this.totpDigits = digits
-                        this.totpPeriod = period.toInt()
+                        totp = TotpSecret(
+                            algorithm,
+                            secretKey,
+                            digits,
+                            period
+                        )
                     },
                     passwordChanged = false
                 )
@@ -206,7 +214,7 @@ class ResourceUpdateActionsInteractor(
             updateSecret = { decryptedSecret ->
                 decryptedSecret.password.let { currentPassword ->
                     SecretInput(
-                        decryptedSecret = decryptedSecret.apply {
+                        secretModel = decryptedSecret.apply {
                             this.password = password
                         },
                         passwordChanged = currentPassword != password
@@ -239,11 +247,13 @@ class ResourceUpdateActionsInteractor(
             },
             updateSecret = { decryptedSecret ->
                 SecretInput(
-                    decryptedSecret = decryptedSecret.apply {
-                        this.totpAlgorithm = algorithm
-                        this.totpKey = secretKey
-                        this.totpDigits = digits
-                        this.totpPeriod = period.toInt()
+                    secretModel = decryptedSecret.apply {
+                        totp = TotpSecret(
+                            algorithm,
+                            secretKey,
+                            digits,
+                            period
+                        )
                     },
                     passwordChanged = false
                 )
@@ -275,7 +285,7 @@ class ResourceUpdateActionsInteractor(
             updateSecret = { decryptedSecret ->
                 decryptedSecret.secret.let { currentPassword ->
                     SecretInput(
-                        decryptedSecret = decryptedSecret.apply {
+                        secretModel = decryptedSecret.apply {
                             this.secret = password
                             this.description = description.orEmpty()
                         },
@@ -288,7 +298,7 @@ class ResourceUpdateActionsInteractor(
     private suspend fun updateResource(
         updateAction: UpdateAction,
         updateResource: (String) -> UpdateResourceInteractor.ResourceInput,
-        updateSecret: (DecryptedSecret) -> SecretInput
+        updateSecret: (SecretModel) -> SecretInput
     ): Flow<ResourceUpdateActionResult> {
         return try {
             val decryptedSecret = secretPropertiesActionsInteractor.provideDecryptedSecret().single()
