@@ -174,8 +174,8 @@ class ResourcePickerPresenter(
         suggestionUri?.let { suggestionUri ->
             suggestedResourceList = resourceList
                 .filter {
-                    !it.resourceModel.url.isNullOrBlank() &&
-                            it.resourceModel.url!!.lowercase() == suggestionUri.lowercase()
+                    !it.resourceModel.uri.isNullOrBlank() &&
+                            it.resourceModel.uri!!.lowercase() == suggestionUri.lowercase()
                 }
         }
 

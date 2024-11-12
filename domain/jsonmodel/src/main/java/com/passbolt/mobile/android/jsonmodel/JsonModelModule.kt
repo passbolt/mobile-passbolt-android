@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.core.resources
-
-import com.google.gson.Gson
-import com.passbolt.mobile.android.dto.request.SecretsDto
-import com.passbolt.mobile.android.dto.request.TotpSecretsDto
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,17 +20,33 @@ import com.passbolt.mobile.android.dto.request.TotpSecretsDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class SecretInputCreator(
-    private val gson: Gson
-) {
 
-    fun createPasswordWithDescriptionSecretInput(password: String, description: String?): String =
-        gson.toJson(
-            SecretsDto(password, description.orEmpty())
-        )
+package com.passbolt.mobile.android.jsonmodel
 
-    fun createTotpSecretInput(algorithm: String, key: String, digits: Int, period: Long): String =
-        gson.toJson(
-            TotpSecretsDto(TotpSecretsDto.Totp(algorithm, key, digits, period))
-        )
+import com.google.gson.Gson
+import com.jayway.jsonpath.Configuration
+import com.jayway.jsonpath.Option
+import com.jayway.jsonpath.spi.json.GsonJsonProvider
+import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import java.util.EnumSet
+
+const val JSON_MODEL_GSON = "JSON_MODEL_GSON"
+
+val jsonModelModule = module {
+    single(named(JSON_MODEL_GSON)) { Gson() }
+
+    single {
+        Configuration.builder()
+            .jsonProvider(GsonJsonProvider())
+            .mappingProvider(GsonMappingProvider())
+            .options(EnumSet.noneOf(Option::class.java))
+            .build()
+    }
+    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
 }

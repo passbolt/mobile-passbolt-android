@@ -1,15 +1,26 @@
 package com.passbolt.mobile.android.tagsdetails
 
+import com.google.gson.Gson
+import com.jayway.jsonpath.Configuration
+import com.jayway.jsonpath.Option
+import com.jayway.jsonpath.spi.json.GsonJsonProvider
+import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.commontest.TestCoroutineLaunchContext
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceTagsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.mockito.kotlin.mock
+import java.util.EnumSet
 
 /**
  * Passbolt - Open source password manager for teams
@@ -48,4 +59,13 @@ internal val testResourceTagsModule = module {
             getLocalResourceTags = mockResourceTagsUseCase
         )
     }
+    single(named(JSON_MODEL_GSON)) { Gson() }
+    single {
+        Configuration.builder()
+            .jsonProvider(GsonJsonProvider())
+            .mappingProvider(GsonMappingProvider())
+            .options(EnumSet.noneOf(Option::class.java))
+            .build()
+    }
+    singleOf(::JsonPathJsonPathOps) bind JsonPathsOps::class
 }

@@ -24,6 +24,7 @@ dependencies {
     implementation project(':notifications')
     implementation project(':autofill')
     implementation project(':accounts')
+    implementation project(':jsonmodel')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui

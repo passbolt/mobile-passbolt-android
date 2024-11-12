@@ -339,7 +339,7 @@ class UpdateResourcePresenter(
                 resourceCreateActionsInteractor.createPasswordAndDescriptionResource(
                     resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
                     resourceUsername = getFieldValue(USERNAME_FIELD),
-                    resourceUri = getFieldValue(URI_FIELD),
+                    resourceUris = getFieldValue(URI_FIELD)?.let { listOf(it) },
                     resourceParentFolderId = resourceParentFolderId,
                     password = getFieldValue(PASSWORD_FIELD)!!, // validated to be not null
                     description = getFieldValue(DESCRIPTION_FIELD)

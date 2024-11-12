@@ -92,7 +92,7 @@ class EditFieldsModelCreator(
                         when (field.field.name) {
                             FieldNamesMapper.NAME_FIELD -> existingResource.name
                             FieldNamesMapper.USERNAME_FIELD -> existingResource.username
-                            FieldNamesMapper.URI_FIELD -> existingResource.url
+                            FieldNamesMapper.URI_FIELD -> existingResource.uri
                             else -> ""
                         }
                     }

@@ -39,6 +39,7 @@ data class UserModel(
 }
 
 data class GpgKeyModel(
+    val id: String,
     val armoredKey: String,
     val fingerprint: String,
     val bits: Int,

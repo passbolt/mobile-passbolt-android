@@ -34,8 +34,6 @@ import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 import timber.log.Timber
 
-private typealias KeyToPassphrase = Pair<String, ByteArray>
-
 class MetadataDecryptor(
     private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
     private val passphraseMemoryCache: PassphraseMemoryCache,
@@ -81,14 +79,9 @@ class MetadataDecryptor(
             }
             PERSONAL -> {
                 val privateKey = getSelectedUserPrivateKeyUseCase.execute(Unit).privateKey
-                require(privateKey != null) {
-                    "Metadata private key for resource id=(${resource.id}) not found, skipping"
-                }
+                require(privateKey != null) { "Selected user private key not found" }
                 val passphrase = passphraseMemoryCache.get()
-                require(passphrase is PotentialPassphrase.Passphrase) {
-                    "Passphrase not present in cache, showing authentication screen; Data refresh will be restarted"
-                }
-
+                require(passphrase is PotentialPassphrase.Passphrase) { "Passphrase not present in cache" }
                 privateKey to passphrase.passphrase
             }
         }

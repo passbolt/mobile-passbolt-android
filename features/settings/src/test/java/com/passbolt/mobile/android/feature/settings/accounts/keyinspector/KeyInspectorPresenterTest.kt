@@ -46,6 +46,7 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.net.UnknownHostException
 import java.time.ZonedDateTime
+import java.util.UUID
 
 
 class KeyInspectorPresenterTest : KoinTest {
@@ -133,7 +134,8 @@ class KeyInspectorPresenterTest : KoinTest {
                     keyId = "keyid",
                     type = "rsa",
                     keyExpirationDate = now,
-                    keyCreationDate = now
+                    keyCreationDate = now,
+                    id = UUID.randomUUID().toString()
                 ),
                 profile = UserProfileModel(
                     username = "username",

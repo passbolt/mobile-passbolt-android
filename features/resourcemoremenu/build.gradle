@@ -25,6 +25,7 @@ dependencies {
     implementation project(':idlingresource')
     implementation project(':featureflags')
     implementation project(':accounts')
+    implementation project(':jsonmodel')
 
     implementation libs.androidx.core
     implementation libs.appcompat

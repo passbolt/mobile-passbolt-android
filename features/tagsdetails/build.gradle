@@ -26,6 +26,7 @@ dependencies {
     implementation project(':fulldatarefresh')
     implementation project(':navigation')
     implementation project(':resources')
+    implementation project(':jsonmodel')
 
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
@@ -38,6 +39,7 @@ dependencies {
 
     testImplementation project(':commontest')
     testImplementation libs.gson
+    testImplementation libs.json.path
 }
 
 android {

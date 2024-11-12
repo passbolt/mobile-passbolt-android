@@ -82,12 +82,29 @@ class ResourceMenuTest : KoinTest {
 
     @Before
     fun setup() {
+        resourceModel = ResourceModel(
+            resourceId = ID,
+            resourceTypeId = RESOURCE_TYPE_ID.toString(),
+            folderId = FOLDER_ID_ID,
+            permission = ResourcePermission.READ,
+            favouriteId = "fav-id",
+            modified = ZonedDateTime.now(),
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString(),
+            metadataKeyType = null,
+            metadataKeyId = null
+        )
         mockGetLocalResourceUseCase.stub {
-            onBlocking { execute(GetLocalResourceUseCase.Input(RESOURCE_MODEL.resourceId)) }
-                .doReturn(GetLocalResourceUseCase.Output(RESOURCE_MODEL))
+            onBlocking { execute(GetLocalResourceUseCase.Input(resourceModel.resourceId)) }
+                .doReturn(GetLocalResourceUseCase.Output(resourceModel))
         }
         mockGetLocalResourcePermissionsUseCase.stub {
-            onBlocking { execute(GetLocalResourcePermissionsUseCase.Input(RESOURCE_MODEL.resourceId)) }
+            onBlocking { execute(GetLocalResourcePermissionsUseCase.Input(resourceModel.resourceId)) }
                 .doReturn(GetLocalResourcePermissionsUseCase.Output(listOf(groupPermission, userPermission)))
         }
         mockGetFeatureFlagsUseCase.stub {
@@ -146,12 +163,12 @@ class ResourceMenuTest : KoinTest {
     fun `delete resource should show confirmation dialog, delete and close details`() = runTest {
         mockResourceCommonActionsInteractor.stub {
             onBlocking { deleteResource() } doReturn flowOf(
-                ResourceCommonActionResult.Success(RESOURCE_MODEL.name)
+                ResourceCommonActionResult.Success(resourceModel.name)
             )
         }
 
         presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
+            resourceModel.resourceId,
             100,
             20f
         )
@@ -161,7 +178,7 @@ class ResourceMenuTest : KoinTest {
         presenter.deleteResourceConfirmed()
 
         verify(view).showDeleteConfirmationDialog()
-        verify(view).closeWithDeleteSuccessResult(RESOURCE_MODEL.name)
+        verify(view).closeWithDeleteSuccessResult(resourceModel.name)
     }
 
     @ExperimentalCoroutinesApi
@@ -172,7 +189,7 @@ class ResourceMenuTest : KoinTest {
         }
 
         presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
+            resourceModel.resourceId,
             100,
             20f
         )
@@ -193,13 +210,13 @@ class ResourceMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.url.orEmpty()
+                    resourceModel.uri.orEmpty()
                 )
             )
         }
 
         presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
+            resourceModel.resourceId,
             100,
             20f
         )
@@ -207,7 +224,7 @@ class ResourceMenuTest : KoinTest {
         presenter.moreClick()
         presenter.launchWebsiteClick()
 
-        verify(view).openWebsite(RESOURCE_MODEL.url.orEmpty())
+        verify(view).openWebsite(resourceModel.uri.orEmpty())
     }
 
     @Test
@@ -217,12 +234,12 @@ class ResourceMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.USERNAME_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.username.orEmpty()
+                    resourceModel.username.orEmpty()
                 )
             )
         }
         presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
+            resourceModel.resourceId,
             100,
             20f
         )
@@ -232,7 +249,7 @@ class ResourceMenuTest : KoinTest {
 
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.USERNAME_LABEL,
-            RESOURCE_MODEL.username.orEmpty(),
+            resourceModel.username.orEmpty(),
             isSecret = false
         )
     }
@@ -244,12 +261,12 @@ class ResourceMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.url.orEmpty()
+                    resourceModel.uri.orEmpty()
                 )
             )
         }
         presenter.argsReceived(
-            RESOURCE_MODEL.resourceId,
+            resourceModel.resourceId,
             100,
             20f
         )
@@ -259,7 +276,7 @@ class ResourceMenuTest : KoinTest {
 
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.URL_LABEL,
-            RESOURCE_MODEL.url.orEmpty(),
+            resourceModel.uri.orEmpty(),
             isSecret = false
         )
     }
@@ -272,23 +289,7 @@ class ResourceMenuTest : KoinTest {
         private const val DESCRIPTION = "desc"
         private val RESOURCE_TYPE_ID = UUID.randomUUID()
         private const val FOLDER_ID_ID = "folderId"
-        private val RESOURCE_MODEL = ResourceModel(
-            resourceId = ID,
-            resourceTypeId = RESOURCE_TYPE_ID.toString(),
-            folderId = FOLDER_ID_ID,
-            permission = ResourcePermission.READ,
-            favouriteId = "fav-id",
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString(),
-            metadataKeyType = null,
-            metadataKeyId = null
-        )
+        private lateinit var resourceModel: ResourceModel
         private val groupPermission = PermissionModelUi.GroupPermissionModel(
             permission = ResourcePermission.READ, permissionId = "permId1", group = GroupModel("grId", "grName")
         )

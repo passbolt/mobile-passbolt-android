@@ -88,6 +88,24 @@ class HomeMenuTest : KoinTest {
                 role = "user"
             )
         )
+
+        RESOURCE_MODEL = ResourceModel(
+            resourceId = ID,
+            resourceTypeId = RESOURCE_TYPE_ID.toString(),
+            folderId = FOLDER_ID,
+            permission = ResourcePermission.READ,
+            favouriteId = null,
+            modified = ZonedDateTime.now(),
+            expiry = null,
+            json = JsonObject().apply {
+                addProperty("name", NAME)
+                addProperty("username", USERNAME)
+                addProperty("uri", URL)
+                addProperty("description", DESCRIPTION)
+            }.toString(),
+            metadataKeyId = null,
+            metadataKeyType = null
+        )
     }
 
     @Test
@@ -338,7 +356,7 @@ class HomeMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.url.orEmpty()
+                    RESOURCE_MODEL.uri.orEmpty()
                 )
             )
         }
@@ -357,7 +375,7 @@ class HomeMenuTest : KoinTest {
 
         verify(view).addToClipboard(
             ResourcePropertiesActionsInteractor.URL_LABEL,
-            RESOURCE_MODEL.url.orEmpty(),
+            RESOURCE_MODEL.uri.orEmpty(),
             isSecret = false
         )
     }
@@ -400,7 +418,7 @@ class HomeMenuTest : KoinTest {
                 ResourcePropertyActionResult(
                     ResourcePropertiesActionsInteractor.URL_LABEL,
                     isSecret = false,
-                    RESOURCE_MODEL.url.orEmpty()
+                    RESOURCE_MODEL.uri.orEmpty()
                 )
             )
         }
@@ -417,7 +435,7 @@ class HomeMenuTest : KoinTest {
         presenter.resourceMoreClick(RESOURCE_MODEL)
         presenter.menuLaunchWebsiteClick()
 
-        verify(view).openWebsite(RESOURCE_MODEL.url.orEmpty())
+        verify(view).openWebsite(RESOURCE_MODEL.uri.orEmpty())
     }
 
     @Test
@@ -456,22 +474,6 @@ class HomeMenuTest : KoinTest {
             canCopy = true
         )
 
-        private val RESOURCE_MODEL = ResourceModel(
-            resourceId = ID,
-            resourceTypeId = RESOURCE_TYPE_ID.toString(),
-            folderId = FOLDER_ID,
-            permission = ResourcePermission.READ,
-            favouriteId = null,
-            modified = ZonedDateTime.now(),
-            expiry = null,
-            json = JsonObject().apply {
-                addProperty("name", NAME)
-                addProperty("username", USERNAME)
-                addProperty("uri", URL)
-                addProperty("description", DESCRIPTION)
-            }.toString(),
-            metadataKeyId = null,
-            metadataKeyType = null
-        )
+        private lateinit var RESOURCE_MODEL: ResourceModel
     }
 }

@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.entity.user
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -46,6 +47,8 @@ data class UserProfile(
 )
 
 data class UserGpgKey(
+    @ColumnInfo(name = "userKeyId")
+    val id: String,
     val armoredKey: String,
     val bits: Int,
     val uid: String?,

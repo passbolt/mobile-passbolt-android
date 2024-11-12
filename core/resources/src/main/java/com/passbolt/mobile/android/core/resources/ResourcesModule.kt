@@ -57,7 +57,6 @@ val resourcesModule = module {
     singleOf(::ResourceInteractor)
     singleOf(::SearchableMatcher)
     singleOf(::DeleteResourceUseCase)
-    singleOf(::SecretInputCreator)
     singleOf(::RebuildResourceTablesUseCase)
     singleOf(::RebuildResourcePermissionsTablesUseCase)
     singleOf(::SimulateShareResourceUseCase)
@@ -129,11 +128,15 @@ val resourcesModule = module {
             needSessionRefreshFlow,
             sessionRefreshedFlow,
             createResourceInteractor = get(),
-            secretInputCreator = get(),
             addLocalResourceUseCase = get(),
             addLocalResourcePermissionsUseCase = get(),
             resourceShareInteractor = get(),
-            getLocalParentFolderPermissionsToApplyUseCase = get()
+            getLocalParentFolderPermissionsToApplyUseCase = get(),
+            getLocalFolderPermissionsUseCase = get(),
+            getMetadataKeysSettingsUseCase = get(),
+            getMetadataTypesSettingsUseCase = get(),
+            getMetadataKeysUseCase = get(),
+            getLocalCurrentUserUseCase = get()
         )
     }
 }

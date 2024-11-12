@@ -3,9 +3,11 @@ package com.passbolt.mobile.android.ui
 import android.os.Parcelable
 import com.passbolt.mobile.android.common.InitialsProvider
 import com.passbolt.mobile.android.common.search.Searchable
-import com.passbolt.mobile.android.delegates.JsonModel
-import com.passbolt.mobile.android.delegates.JsonPathDelegate
-import com.passbolt.mobile.android.delegates.JsonPathNullableDelegate
+import com.passbolt.mobile.android.jsonmodel.JsonModel
+import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNullableStringDelegate
+import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathNullableStringListDelegate
+import com.passbolt.mobile.android.jsonmodel.delegates.RootRelativeJsonPathStringDelegate
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.koin.java.KoinJavaComponent.inject
@@ -49,23 +51,26 @@ data class ResourceModel(
 ) : Parcelable, Searchable, JsonModel {
 
     @IgnoredOnParcel
-    var name: String by JsonPathDelegate(jsonPath = "$.name")
+    var name: String by RootRelativeJsonPathStringDelegate(jsonPath = "name")
 
     @IgnoredOnParcel
-    var username: String? by JsonPathNullableDelegate(jsonPath = "$.username")
+    var username: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "username")
 
     @IgnoredOnParcel
-    var description: String? by JsonPathNullableDelegate(jsonPath = "$.description")
+    var description: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "description")
 
     @IgnoredOnParcel
-    var url: String? by JsonPathNullableDelegate(jsonPath = "$.uri")
+    var uri: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "uri")
+
+    @IgnoredOnParcel
+    var uris: List<String>? by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "uris")
 
     @IgnoredOnParcel
     val initials: String
         get() = initialsProvider.get(name)
 
     @IgnoredOnParcel
-    override val searchCriteria: String = "$name$username$url"
+    override val searchCriteria: String = "$name$username$uri"
 
     companion object {
         val initialsProvider: InitialsProvider by inject(InitialsProvider::class.java)
@@ -84,4 +89,28 @@ data class ResourceModelWithAttributes(
 enum class MetadataKeyTypeModel {
     SHARED,
     PERSONAL
+}
+
+class CreateResourceModel(
+    val contentType: ContentType,
+    val folderId: String?,
+    val expiry: ZonedDateTime?,
+    val metadataKeyId: String?,
+    val metadataKeyType: MetadataKeyTypeModel?,
+    override var json: String
+) : JsonModel {
+
+    var objectType: String by RootRelativeJsonPathStringDelegate(jsonPath = "object_type")
+
+    var resourceTypeId: String by RootRelativeJsonPathStringDelegate(jsonPath = "resource_type_id")
+
+    var name: String by RootRelativeJsonPathStringDelegate(jsonPath = "name")
+
+    var username: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "username")
+
+    var description: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "description")
+
+    var uri: String? by RootRelativeJsonPathNullableStringDelegate(jsonPath = "uri")
+
+    var uris: List<String>? by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "uris")
 }

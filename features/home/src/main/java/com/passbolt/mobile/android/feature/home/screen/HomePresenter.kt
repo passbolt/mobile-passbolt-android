@@ -60,7 +60,7 @@ import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesUs
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithGroupUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcesWithTagUseCase
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
-import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.TotpSecret
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.core.tags.usecase.db.GetLocalTagsUseCase
 import com.passbolt.mobile.android.feature.home.screen.model.HeaderSectionConfiguration
 import com.passbolt.mobile.android.feature.home.screen.model.SearchInputEndIconMode
@@ -349,7 +349,7 @@ class HomePresenter(
                         .resources
                         .filter {
                             val autofillUrl = (showSuggestedModel as? ShowSuggestedModel.Show)?.suggestedUri
-                            val resourceUrl = it.url
+                            val resourceUrl = it.uri
                             autofillMatcher.isMatching(autofillUrl, resourceUrl)
                         }
                 } else {
@@ -912,7 +912,7 @@ class HomePresenter(
                 ManageTotpAction.ADD_TOTP -> suspend {
                     resourceUpdateActionsInteractor.addTotpToResource(
                         overrideName = resourceModel.name,
-                        overrideUri = resourceModel.url,
+                        overrideUri = resourceModel.uri,
                         period = totpQr.period,
                         digits = totpQr.digits,
                         algorithm = totpQr.algorithm.name,
@@ -922,7 +922,7 @@ class HomePresenter(
                 ManageTotpAction.EDIT_TOTP -> suspend {
                     resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                         label = resourceModel.name,
-                        issuer = resourceModel.url,
+                        issuer = resourceModel.uri,
                         period = totpQr.period,
                         digits = totpQr.digits,
                         algorithm = totpQr.algorithm.name,

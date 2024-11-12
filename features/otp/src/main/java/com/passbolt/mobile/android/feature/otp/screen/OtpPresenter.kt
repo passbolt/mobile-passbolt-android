@@ -515,7 +515,7 @@ class OtpPresenter(
                     is ContentType.PasswordDescriptionTotp ->
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resource.name,
-                            issuer = resource.url,
+                            issuer = resource.uri,
                             period = totpQr.period,
                             digits = totpQr.digits,
                             algorithm = totpQr.algorithm.name,

@@ -9,6 +9,7 @@ dependencies {
     implementation project(':common')
     implementation project(':ui')
     implementation project(':navigation')
+    implementation project(':jsonmodel')
 
     implementation libs.koin
     implementation libs.gson

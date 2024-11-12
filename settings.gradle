@@ -94,6 +94,7 @@ domainModule "mappers"
 domainModule "entity"
 domainModule "serializers"
 domainModule "supportedresourcetypes"
+domainModule "jsonmodel"
 
 def featureModule(String name) {
     projectModule(name, "features/")

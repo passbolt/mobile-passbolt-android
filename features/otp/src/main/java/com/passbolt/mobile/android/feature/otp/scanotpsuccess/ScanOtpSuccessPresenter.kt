@@ -117,7 +117,7 @@ class ScanOtpSuccessPresenter(
                     is PasswordAndDescription -> suspend {
                         resourceUpdateActionsInteractor.addTotpToResource(
                             overrideName = resource.name,
-                            overrideUri = resource.url,
+                            overrideUri = resource.uri,
                             period = scannedTotp.period,
                             digits = scannedTotp.digits,
                             algorithm = scannedTotp.algorithm.name,
@@ -127,7 +127,7 @@ class ScanOtpSuccessPresenter(
                     is PasswordDescriptionTotp -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resource.name,
-                            issuer = resource.url,
+                            issuer = resource.uri,
                             period = scannedTotp.period,
                             digits = scannedTotp.digits,
                             algorithm = scannedTotp.algorithm.name,
