@@ -44,6 +44,8 @@ sealed class ContentType(val slug: String) {
 
     fun isSimplePassword() = this == PasswordString || this == V5PasswordString
 
+    fun isV5() = this.slug in SupportedContentTypes.v5Slugs
+
     companion object {
         fun fromSlug(slug: String): ContentType {
             return when (slug) {

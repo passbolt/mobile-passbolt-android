@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator
 
+import com.passbolt.mobile.android.core.resources.actions.ResourcePropertiesActionsInteractor
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretParser
 import com.passbolt.mobile.android.feature.resourcedetails.update.ResourceValue
@@ -12,6 +13,10 @@ import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultW
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.ui.DecryptedSecretOrError
 import com.passbolt.mobile.android.ui.ResourceModel
+import kotlinx.coroutines.flow.first
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 import java.util.UUID
 
 /**
@@ -40,7 +45,7 @@ class EditFieldsModelCreator(
     private val secretParser: SecretParser,
     private val idToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
     private val newFieldsModelCreator: NewFieldsModelCreator
-) {
+) : KoinComponent {
 
     @Throws(ClassCastException::class)
     suspend fun create(
@@ -92,7 +97,12 @@ class EditFieldsModelCreator(
                         when (field.field.name) {
                             FieldNamesMapper.NAME_FIELD -> existingResource.name
                             FieldNamesMapper.USERNAME_FIELD -> existingResource.username
-                            FieldNamesMapper.URI_FIELD -> existingResource.uri
+                            FieldNamesMapper.URI_FIELD -> {
+                                val resourcePropertiesActionsInteractor = get<ResourcePropertiesActionsInteractor> {
+                                    parametersOf(existingResource)
+                                }
+                                resourcePropertiesActionsInteractor.provideWebsiteUrl().first().result
+                            }
                             else -> ""
                         }
                     }
