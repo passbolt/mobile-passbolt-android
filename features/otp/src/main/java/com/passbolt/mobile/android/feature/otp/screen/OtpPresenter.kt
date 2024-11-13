@@ -23,7 +23,6 @@
 
 package com.passbolt.mobile.android.feature.otp.screen
 
-import android.annotation.SuppressLint
 import com.passbolt.mobile.android.common.coroutinetimer.infiniteTimer
 import com.passbolt.mobile.android.common.search.SearchableMatcher
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
@@ -44,6 +43,10 @@ import com.passbolt.mobile.android.feature.otp.scanotp.parser.OtpParseResult
 import com.passbolt.mobile.android.mappers.OtpModelMapper
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.totpSlugs
 import com.passbolt.mobile.android.ui.OtpItemWrapper
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -377,7 +380,6 @@ class OtpPresenter(
         view?.navigateToCreateOtpManually()
     }
 
-    @SuppressLint("StopShip")
     override fun totpDeletionConfirmed() {
         presenterScope.launch {
             view?.showProgress()
@@ -386,16 +388,12 @@ class OtpPresenter(
                 UUID.fromString(otpResource.resourceTypeId)
             ]
             when (val contentType = ContentType.fromSlug(slug!!)) {
-                is ContentType.PasswordString, ContentType.PasswordAndDescription ->
-                    throw IllegalArgumentException("$contentType type should not be presented on totp list")
-                is ContentType.Totp ->
+                is Totp, V5TotpStandalone ->
                     deleteStandaloneTotpResource(otpResource)
-                is ContentType.PasswordDescriptionTotp ->
+                is PasswordDescriptionTotp, V5DefaultWithTotp ->
                     downgradeToPasswordAndDescriptionResource(otpResource)
-                is ContentType.V5Default -> TODO()
-                is ContentType.V5DefaultWithTotp -> TODO()
-                is ContentType.V5PasswordString -> TODO()
-                is ContentType.V5TotpStandalone -> TODO()
+                else ->
+                    throw IllegalArgumentException("$contentType type should not be presented on totp list")
             }
             view?.hideProgress()
         }
@@ -483,7 +481,6 @@ class OtpPresenter(
         }
     }
 
-    @SuppressLint("StopShip")
     private fun editOtpAfterQrScan(totpQr: OtpParseResult.OtpQr.TotpQr?) {
         if (totpQr == null) {
             Timber.e("No data scanned in the QR code")
@@ -501,9 +498,7 @@ class OtpPresenter(
             ]
             val updateOperation =
                 when (ContentType.fromSlug(slug!!)) {
-                    is ContentType.PasswordString, ContentType.PasswordAndDescription ->
-                        throw IllegalArgumentException("These resource types are not shown on TOTP tab")
-                    is ContentType.Totp ->
+                    is Totp, V5TotpStandalone ->
                         resourceUpdateActionsInteractor.updateStandaloneTotpResource(
                             label = totpQr.label,
                             issuer = totpQr.issuer,
@@ -512,7 +507,7 @@ class OtpPresenter(
                             algorithm = totpQr.algorithm.name,
                             secretKey = totpQr.secret
                         )
-                    is ContentType.PasswordDescriptionTotp ->
+                    is PasswordDescriptionTotp, V5DefaultWithTotp ->
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resource.name,
                             issuer = resource.uri,
@@ -521,10 +516,8 @@ class OtpPresenter(
                             algorithm = totpQr.algorithm.name,
                             secretKey = totpQr.secret
                         )
-                    ContentType.V5Default -> TODO()
-                    ContentType.V5DefaultWithTotp -> TODO()
-                    ContentType.V5PasswordString -> TODO()
-                    ContentType.V5TotpStandalone -> TODO()
+                    else ->
+                        throw IllegalArgumentException("$slug resource type should not be on TOTP tab")
                 }
             performResourceUpdateAction(
                 action = { updateOperation },

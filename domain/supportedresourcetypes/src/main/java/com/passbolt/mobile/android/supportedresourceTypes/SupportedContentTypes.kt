@@ -23,6 +23,13 @@
 
 package com.passbolt.mobile.android.supportedresourceTypes
 
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
+
 private const val PASSWORD_STRING_SLUG = "password-string"
 private const val PASSWORD_AND_DESCRIPTION_SLUG = "password-and-description"
 private const val TOTP_SLUG = "totp"
@@ -66,33 +73,42 @@ sealed class ContentType(val slug: String) {
 object SupportedContentTypes {
 
     val homeSlugs = setOf(
-        ContentType.PasswordString,
-        ContentType.PasswordAndDescription,
-        ContentType.PasswordDescriptionTotp,
-        ContentType.V5Default,
-        ContentType.V5PasswordString
+        PasswordString,
+        PasswordAndDescription,
+        PasswordDescriptionTotp,
+        V5Default,
+        V5PasswordString
     ).map { it.slug }.toSet()
 
     val totpSlugs = setOf(
         ContentType.Totp,
-        ContentType.PasswordDescriptionTotp,
+        PasswordDescriptionTotp,
         ContentType.V5TotpStandalone,
-        ContentType.V5DefaultWithTotp
+        V5DefaultWithTotp
     ).map { it.slug }.toSet()
 
     val allSlugs = homeSlugs + totpSlugs
 
     val v4Slugs = setOf(
-        ContentType.PasswordString,
-        ContentType.PasswordAndDescription,
-        ContentType.PasswordDescriptionTotp,
+        PasswordString,
+        PasswordAndDescription,
+        PasswordDescriptionTotp,
         ContentType.Totp
     ).map { it.slug }.toSet()
 
     val v5Slugs = setOf(
-        ContentType.V5Default,
-        ContentType.V5PasswordString,
-        ContentType.V5DefaultWithTotp,
+        V5Default,
+        V5PasswordString,
+        V5DefaultWithTotp,
         ContentType.V5TotpStandalone
     ).map { it.slug }.toSet()
+
+    val resourcesSlugsSupportingExpiry = setOf(
+        PasswordString,
+        PasswordAndDescription,
+        PasswordDescriptionTotp,
+        V5PasswordString,
+        V5Default,
+        V5DefaultWithTotp
+    )
 }

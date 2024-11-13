@@ -1,18 +1,3 @@
-package com.passbolt.mobile.android.jsonmodel
-
-import com.google.gson.Gson
-import com.jayway.jsonpath.Configuration
-import com.jayway.jsonpath.Option
-import com.jayway.jsonpath.spi.json.GsonJsonProvider
-import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
-import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
-import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
-import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier.named
-import org.koin.dsl.bind
-import org.koin.dsl.module
-import java.util.EnumSet
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -36,10 +21,26 @@ import java.util.EnumSet
  * @since v1.0
  */
 
+package com.passbolt.mobile.android.jsonmodel
+
+import com.google.gson.Gson
+import com.jayway.jsonpath.Configuration
+import com.jayway.jsonpath.Option
+import com.jayway.jsonpath.spi.json.GsonJsonProvider
+import com.jayway.jsonpath.spi.mapper.GsonMappingProvider
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
+import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import java.util.EnumSet
+
 const val JSON_MODEL_GSON = "JSON_MODEL_GSON"
 
 val jsonModelModule = module {
     single(named(JSON_MODEL_GSON)) { Gson() }
+
     single {
         Configuration.builder()
             .jsonProvider(GsonJsonProvider())

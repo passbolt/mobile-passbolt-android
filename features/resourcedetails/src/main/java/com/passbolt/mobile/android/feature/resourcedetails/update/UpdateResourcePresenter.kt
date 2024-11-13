@@ -37,6 +37,12 @@ import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerato
 import com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerator.ResourceUpdateType
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.ui.PasswordGeneratorTypeModel
 import com.passbolt.mobile.android.ui.ResourceField
 import com.passbolt.mobile.android.ui.ResourceModel
@@ -171,7 +177,7 @@ class UpdateResourcePresenter(
         existingResourceSecret: ByteArray? = null
     ) {
         fields = when (resourceUpdateType) {
-            ResourceUpdateType.CREATE -> newFieldsModelCreator.create(ContentType.PasswordAndDescription)
+            ResourceUpdateType.CREATE -> newFieldsModelCreator.create(PasswordAndDescription)
             ResourceUpdateType.EDIT -> {
                 val resource = requireNotNull(existingResource)
                 val secret = requireNotNull(existingResourceSecret)
@@ -374,7 +380,6 @@ class UpdateResourcePresenter(
         )
     }
 
-    @SuppressLint("StopShip")
     private suspend fun getUpdateOperation(
         existingResource: ResourceModel,
         resourceUpdateActionsInteractor: ResourceUpdateActionsInteractor
@@ -383,7 +388,7 @@ class UpdateResourcePresenter(
             UUID.fromString(existingResource.resourceTypeId)
         ]
         return when (val contentType = ContentType.fromSlug(slug!!)) {
-            is ContentType.PasswordString ->
+            is PasswordString, V5PasswordString ->
                 resourceUpdateActionsInteractor.updateSimplePasswordResource(
                     resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
                     resourceUsername = getFieldValue(USERNAME_FIELD),
@@ -392,7 +397,7 @@ class UpdateResourcePresenter(
                     password = getFieldValue(SECRET_FIELD)!!, // validated to be not null
                     description = getFieldValue(DESCRIPTION_FIELD)
                 )
-            is ContentType.PasswordAndDescription ->
+            is PasswordAndDescription, V5Default ->
                 resourceUpdateActionsInteractor.updatePasswordAndDescriptionResource(
                     resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
                     resourceUsername = getFieldValue(USERNAME_FIELD),
@@ -402,7 +407,7 @@ class UpdateResourcePresenter(
                     resourceParentFolderId = resourceParentFolderId
                 )
 
-            is ContentType.V5DefaultWithTotp ->
+            is PasswordDescriptionTotp, V5DefaultWithTotp ->
                 resourceUpdateActionsInteractor.updateLinkedTotpResourcePasswordFields(
                     resourceName = getFieldValue(NAME_FIELD)!!, // validated to be not null
                     resourceUsername = getFieldValue(USERNAME_FIELD),
@@ -411,12 +416,8 @@ class UpdateResourcePresenter(
                     password = getFieldValue(PASSWORD_FIELD)!!, // validated to be not null
                     description = getFieldValue(DESCRIPTION_FIELD)
                 )
-            is ContentType.Totp ->
+            else ->
                 throw IllegalArgumentException("Unsupported resource type on update form: $contentType")
-            ContentType.PasswordDescriptionTotp -> TODO()
-            ContentType.V5Default -> TODO()
-            ContentType.V5PasswordString -> TODO()
-            ContentType.V5TotpStandalone -> TODO()
         }
     }
 

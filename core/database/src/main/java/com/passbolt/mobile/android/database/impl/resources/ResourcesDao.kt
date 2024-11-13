@@ -39,7 +39,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
@@ -54,7 +54,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
@@ -68,7 +68,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
@@ -82,7 +82,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
@@ -96,7 +96,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
@@ -107,7 +107,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-                "r.resourcePermission, r.resourceTypeId, rm.metadataJson, ru.uri " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson, ru.uri " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
@@ -134,7 +134,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
@@ -147,7 +147,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
@@ -162,7 +162,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
@@ -201,7 +201,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
@@ -220,7 +220,7 @@ interface ResourcesDao : BaseDao<Resource> {
     @Transaction
     @Query(
         "SELECT r.resourceId, r.folderId, r.expiry, r.favouriteId, r.modified, " +
-                "r.resourcePermission, r.resourceTypeId, rm.metadataJson " +
+                "r.resourcePermission, r.resourceTypeId, r.metadataKeyId, r.metadataKeyType, rm.metadataJson " +
                 "FROM Resource r " +
                 "INNER JOIN ResourceMetadata rm " +
                 "ON r.resourceId = rm.resourceId " +
