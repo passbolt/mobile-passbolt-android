@@ -5,6 +5,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticatedUseCaseO
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.networking.MfaTypeProvider
 import com.passbolt.mobile.android.core.networking.NetworkResult
+import com.passbolt.mobile.android.dto.PassphraseNotInCacheException
 import com.passbolt.mobile.android.mappers.PermissionsModelMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
 import com.passbolt.mobile.android.mappers.TagsModelMapper
@@ -61,6 +62,9 @@ class GetResourcesUseCase(
             get() = when {
                 this is Failure<*> && this.response.isUnauthorized -> {
                     AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Session)
+                }
+                this is Failure<*> && this.response.exception is PassphraseNotInCacheException -> {
+                    AuthenticationState.Unauthenticated(AuthenticationState.Unauthenticated.Reason.Passphrase)
                 }
                 this is Failure<*> && this.response.isMfaRequired -> {
                     val providers = MfaTypeProvider.get(this.response)

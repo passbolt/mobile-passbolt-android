@@ -28,6 +28,7 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
+import com.passbolt.mobile.android.dto.PassphraseNotInCacheException
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
@@ -79,34 +80,43 @@ open class SingleResourceDeserializer(
                 Timber.d("Unsupported resource type id: $resourceTypeId, skipping")
                 null
             } else if (json.isJsonObject && !json.asJsonObject.isJsonNull) {
-                if (slug in SupportedContentTypes.v4Slugs) {
-                    val resource = gson.fromJson(json, ResourceResponseV4Dto::class.java)
+                try {
+                    if (slug in SupportedContentTypes.v4Slugs) {
+                        val resource = gson.fromJson(json, ResourceResponseV4Dto::class.java)
 
-                    if (isValid(resource.resourceTypeId, json.toString(), resourceTypeIdToSlugMapping)) {
-                        resource
+                        if (isValid(resource.resourceTypeId, json.toString(), resourceTypeIdToSlugMapping)) {
+                            resource
+                        } else {
+                            Timber.d("Invalid resource found id=(${resource.id}, skipping")
+                            null
+                        }
+                    } else if (slug in SupportedContentTypes.v5Slugs) {
+                        val resource = gson.fromJson(json, ResourceResponseV5Dto::class.java)
+
+                        val decryptedMetadataResult = metadataDecryptor.decryptMetadata(resource)
+
+                        if (decryptedMetadataResult is MetadataDecryptor.Output.Success && isValid(
+                                resource.resourceTypeId,
+                                decryptedMetadataResult.decryptedMetadata,
+                                resourceTypeIdToSlugMapping
+                            )
+                        ) {
+                            resource.copy(metadata = decryptedMetadataResult.decryptedMetadata)
+                        } else {
+                            Timber.d("Invalid resource found id=(${resource.id}, skipping")
+                            null
+                        }
                     } else {
-                        Timber.d("Invalid resource found id=(${resource.id}, skipping")
-                        null
+                        @Suppress("UseRequire")
+                        throw IllegalArgumentException("Unsupported resource type slug: $slug")
                     }
-                } else if (slug in SupportedContentTypes.v5Slugs) {
-                    val resource = gson.fromJson(json, ResourceResponseV5Dto::class.java)
-
-                    val decryptedMetadataResult = metadataDecryptor.decryptMetadata(resource)
-
-                    if (decryptedMetadataResult is MetadataDecryptor.Output.Success && isValid(
-                            resource.resourceTypeId,
-                            decryptedMetadataResult.decryptedMetadata,
-                            resourceTypeIdToSlugMapping
-                        )
-                    ) {
-                        resource.copy(metadata = decryptedMetadataResult.decryptedMetadata)
-                    } else {
-                        Timber.d("Invalid resource found id=(${resource.id}, skipping")
-                        null
-                    }
-                } else {
-                    @Suppress("UseRequire")
-                    throw IllegalArgumentException("Unsupported resource type slug: $slug")
+                } catch (e: PassphraseNotInCacheException) {
+                    // re-throw this exception for to be mapped to Unauthenticated result
+                    Timber.d("Passphrase not in cache; Re-throwing to show auth screen")
+                    throw e
+                } catch (e: Exception) {
+                    Timber.e("Error when deserializing list item resource: ${e.message}")
+                    null
                 }
             } else {
                 Timber.e("Encountered a null root json element when parsing resources")

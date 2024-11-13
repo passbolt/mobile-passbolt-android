@@ -76,6 +76,7 @@ class HomeDataInteractor(
             Output.Success
         } else {
             Output.Failure(
+                metadataKeysOutput.authenticationState +
                 resourceTypesOutput.authenticationState +
                         userInteractorOutput.authenticationState +
                         groupsRefreshOutput.authenticationState +
