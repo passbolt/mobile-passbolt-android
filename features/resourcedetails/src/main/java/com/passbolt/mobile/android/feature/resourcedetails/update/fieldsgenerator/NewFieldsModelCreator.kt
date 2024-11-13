@@ -2,6 +2,14 @@ package com.passbolt.mobile.android.feature.resourcedetails.update.fieldsgenerat
 
 import com.passbolt.mobile.android.feature.resourcedetails.update.ResourceValue
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import com.passbolt.mobile.android.ui.ResourceField
 
 /**
@@ -32,16 +40,16 @@ class NewFieldsModelCreator(
 
     fun create(contentType: ContentType): List<ResourceValue> {
         return when (contentType) {
-            is ContentType.PasswordString, ContentType.V5PasswordString -> {
+            is PasswordString, V5PasswordString -> {
                 passwordStringFields()
             }
-            is ContentType.PasswordAndDescription, ContentType.V5Default -> {
+            is PasswordAndDescription, V5Default -> {
                 passwordAndDescriptionFields()
             }
-            is ContentType.Totp, ContentType.V5TotpStandalone -> {
+            is Totp, V5TotpStandalone -> {
                 throw IllegalArgumentException("Totp content type is not supported")
             }
-            is ContentType.PasswordDescriptionTotp, ContentType.V5DefaultWithTotp -> {
+            is PasswordDescriptionTotp, V5DefaultWithTotp -> {
                 passwordWithTotp()
             }
         }

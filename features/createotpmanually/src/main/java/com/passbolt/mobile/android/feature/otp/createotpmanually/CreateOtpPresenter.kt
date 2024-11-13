@@ -23,7 +23,6 @@
 
 package com.passbolt.mobile.android.feature.otp.createotpmanually
 
-import android.annotation.SuppressLint
 import com.passbolt.mobile.android.common.validation.StringMaxLength
 import com.passbolt.mobile.android.common.validation.StringNotBlank
 import com.passbolt.mobile.android.common.validation.validation
@@ -280,7 +279,6 @@ class CreateOtpPresenter(
         }
     }
 
-    @SuppressLint("StopShip")
     private suspend fun getEditOperation(
         resource: ResourceModel
     ): Flow<ResourceUpdateActionResult> {
@@ -291,11 +289,7 @@ class CreateOtpPresenter(
             UUID.fromString(resource.resourceTypeId)
         ]
         return when (val contentType = ContentType.fromSlug(slug!!)) {
-            is PasswordString, V5PasswordString -> throw IllegalArgumentException(
-                "Unsupported resource type on manual totp form:" +
-                        " $contentType"
-            )
-            is PasswordAndDescription ->
+            is PasswordAndDescription, V5Default ->
                 resourceUpdateActionsInteractor.addTotpToResource(
                     overrideUri = issuer,
                     overrideName = label,
@@ -304,7 +298,7 @@ class CreateOtpPresenter(
                     algorithm = algorithm,
                     secretKey = secret
                 )
-            is PasswordDescriptionTotp ->
+            is PasswordDescriptionTotp, V5DefaultWithTotp ->
                 resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                     label = label,
                     issuer = issuer,
@@ -313,7 +307,7 @@ class CreateOtpPresenter(
                     algorithm = algorithm,
                     secretKey = secret
                 )
-            is Totp ->
+            is Totp, V5TotpStandalone ->
                 resourceUpdateActionsInteractor.updateStandaloneTotpResource(
                     label = label,
                     issuer = issuer,
@@ -322,9 +316,8 @@ class CreateOtpPresenter(
                     algorithm = algorithm,
                     secretKey = secret
                 )
-            V5Default -> TODO()
-            V5DefaultWithTotp -> TODO()
-            V5TotpStandalone -> TODO()
+            else ->
+                throw IllegalArgumentException("Unsupported resource type on manual totp form: $contentType")
         }
     }
 

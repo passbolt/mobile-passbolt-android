@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.serializers.gson
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -22,5 +20,7 @@ package com.passbolt.mobile.android.serializers.gson
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+
+package com.passbolt.mobile.android.serializers.gson
 
 internal typealias KeyToPassphrase = Pair<String, ByteArray>

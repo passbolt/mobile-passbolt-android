@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.core.resources.interactor.create
 
+import com.passbolt.mobile.android.common.extension.stripPGPHeaders
 import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetPrivateKeyUseCase
@@ -53,12 +54,6 @@ import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity.RESOURCE
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity.SECRET
 import com.passbolt.mobile.android.serializers.validationwrapper.PlainSecretValidationWrapper
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
 import com.passbolt.mobile.android.ui.CreateResourceModel
 import com.passbolt.mobile.android.ui.EncryptedSecretOrError
@@ -157,7 +152,8 @@ class CreateResourceInteractor(
                     secrets = listOf(EncryptedSecret(encryptedSecret.userId, encryptedSecret.data)),
                     folderParentId = resourceInput.folderId,
                     expiry = getResourceExpiry(resourceInput.contentType),
-                    metadata = encryptedMetadata.encryptedMetadata,
+                    // FIXME temporary solution to satisfy web-extension validation
+                    metadata = encryptedMetadata.encryptedMetadata.stripPGPHeaders(),
                     metadataKeyId = resourceInput.metadataKeyId,
                     metadataKeyType = metadataMapper.mapToDto(resourceInput.metadataKeyType)
                 )
@@ -181,7 +177,7 @@ class CreateResourceInteractor(
     @Suppress("NestedBlockDepth")
     // https://drive.google.com/file/d/1lqiF0ajpuvx1xaZ74aSSjxiDLMGPBXVa/view?usp=drive_link
     private suspend fun getResourceExpiry(contentType: ContentType): ZonedDateTime? {
-        return if (resourcesSlugsSupportingExpiry.contains(contentType)) {
+        return if (SupportedContentTypes.resourcesSlugsSupportingExpiry.contains(contentType)) {
             val expirySettings = passwordExpirySettingsUseCase.execute(Unit).expirySettings
             if (expirySettings.automaticUpdate) {
                 if (expirySettings.defaultExpiryPeriodDays != null) {
@@ -258,16 +254,5 @@ class CreateResourceInteractor(
         data class OpenPgpError(val message: String?) : Output()
 
         data class JsonSchemaValidationFailure(val entity: SchemaEntity) : Output()
-    }
-
-    private companion object {
-        private val resourcesSlugsSupportingExpiry = setOf(
-            PasswordString,
-            PasswordAndDescription,
-            PasswordDescriptionTotp,
-            V5PasswordString,
-            V5Default,
-            V5DefaultWithTotp
-        )
     }
 }

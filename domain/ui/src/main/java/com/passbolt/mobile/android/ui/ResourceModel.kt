@@ -91,7 +91,7 @@ enum class MetadataKeyTypeModel {
     PERSONAL
 }
 
-class CreateResourceModel(
+open class CreateResourceModel(
     val contentType: ContentType,
     val folderId: String?,
     val expiry: ZonedDateTime?,
@@ -114,3 +114,20 @@ class CreateResourceModel(
 
     var uris: List<String>? by RootRelativeJsonPathNullableStringListDelegate(jsonPath = "uris")
 }
+
+class UpdateResourceModel(
+    val resourceId: String,
+    contentType: ContentType,
+    folderId: String?,
+    expiry: ZonedDateTime?,
+    metadataKeyId: String?,
+    metadataKeyType: MetadataKeyTypeModel?,
+    json: String
+) : CreateResourceModel(
+    contentType = contentType,
+    folderId = folderId,
+    expiry = expiry,
+    metadataKeyId = metadataKeyId,
+    metadataKeyType = metadataKeyType,
+    json = json
+)

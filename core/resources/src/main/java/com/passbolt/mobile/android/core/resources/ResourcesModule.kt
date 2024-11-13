@@ -117,10 +117,10 @@ val resourcesModule = module {
                     sessionRefreshedFlow
                 )
             },
-            updateLocalResourceUseCase = get(),
-            idToSlugMappingProvider = get(),
             updateResourceInteractor = get(),
-            resourceTypesUpdateGraph = get()
+            resourceTypesUpdateGraph = get(),
+            updateLocalResourceUseCase = get(),
+            idToSlugMappingProvider = get()
         )
     }
     factory { (

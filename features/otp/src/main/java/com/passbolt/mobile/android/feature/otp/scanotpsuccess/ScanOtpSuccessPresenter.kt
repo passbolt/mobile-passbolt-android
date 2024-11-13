@@ -23,7 +23,6 @@
 
 package com.passbolt.mobile.android.feature.otp.scanotpsuccess
 
-import android.annotation.SuppressLint
 import com.passbolt.mobile.android.core.mvp.authentication.BaseAuthenticatedPresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
 import com.passbolt.mobile.android.core.resources.actions.ResourceCreateActionsInteractor
@@ -37,8 +36,8 @@ import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
-import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
 import com.passbolt.mobile.android.ui.ResourceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -99,7 +98,6 @@ class ScanOtpSuccessPresenter(
         }
     }
 
-    @SuppressLint("StopShip")
     override fun linkedResourceReceived(action: PickResourceAction, resource: ResourceModel) {
         scope.launch {
             view?.showProgress()
@@ -112,9 +110,7 @@ class ScanOtpSuccessPresenter(
             }
             val updateOperation =
                 when (ContentType.fromSlug(slug!!)) {
-                    is PasswordString, Totp ->
-                        throw IllegalArgumentException("These resource types are not possible to link")
-                    is PasswordAndDescription -> suspend {
+                    is PasswordAndDescription, V5Default -> suspend {
                         resourceUpdateActionsInteractor.addTotpToResource(
                             overrideName = resource.name,
                             overrideUri = resource.uri,
@@ -124,7 +120,7 @@ class ScanOtpSuccessPresenter(
                             secretKey = scannedTotp.secret
                         )
                     }
-                    is PasswordDescriptionTotp -> suspend {
+                    is PasswordDescriptionTotp, V5DefaultWithTotp -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resource.name,
                             issuer = resource.uri,
@@ -134,10 +130,8 @@ class ScanOtpSuccessPresenter(
                             secretKey = scannedTotp.secret
                         )
                     }
-                    ContentType.V5Default -> TODO()
-                    ContentType.V5DefaultWithTotp -> TODO()
-                    ContentType.V5PasswordString -> TODO()
-                    ContentType.V5TotpStandalone -> TODO()
+                    else ->
+                        throw IllegalArgumentException("$slug resource type is not possible to link")
                 }
             performResourceUpdateAction(
                 action = updateOperation,
