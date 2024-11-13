@@ -27,6 +27,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.passbolt.mobile.android.dto.PassphraseNotInCacheException
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
@@ -94,6 +95,10 @@ open class ResourceListItemDeserializer(
                         @Suppress("UseRequire")
                         throw IllegalArgumentException("Unsupported resource type slug: $slug")
                     }
+                } catch (e: PassphraseNotInCacheException) {
+                    // re-throw this exception for to be mapped to Unauthenticated result
+                    Timber.d("Passphrase not in cache; Re-throwing to show auth screen")
+                    throw e
                 } catch (e: Exception) {
                     Timber.e("Error when deserializing list item resource: ${e.message}")
                     null

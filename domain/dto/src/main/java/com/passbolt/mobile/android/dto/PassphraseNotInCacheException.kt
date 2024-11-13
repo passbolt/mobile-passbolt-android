@@ -1,5 +1,3 @@
-package com.passbolt.mobile.android.serializers.gson
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -23,4 +21,6 @@ package com.passbolt.mobile.android.serializers.gson
  * @since v1.0
  */
 
-internal typealias KeyToPassphrase = Pair<String, ByteArray>
+package com.passbolt.mobile.android.dto
+
+class PassphraseNotInCacheException : Exception("Passphrase not in cache")

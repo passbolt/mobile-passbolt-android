@@ -6,6 +6,7 @@ import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState
 import com.passbolt.mobile.android.core.mvp.authentication.AuthenticationState.Unauthenticated.Reason.Passphrase
 import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
 import com.passbolt.mobile.android.core.passphrasememorycache.PotentialPassphrase
+import com.passbolt.mobile.android.dto.PassphraseNotInCacheException
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysUseCase
@@ -47,13 +48,18 @@ class MetadataKeysInteractor(
     suspend fun fetchAndSaveMetadataKeys(): Output {
         return when (val response = fetchMetadataKeysUseCase.execute(Unit)) {
             is FetchMetadataKeysUseCase.Output.Success -> {
-                saveMetadataKeys(response.metadataKeysModel)
+                try {
+                    saveMetadataKeys(response.metadataKeysModel)
+                } catch (e: PassphraseNotInCacheException) {
+                    Output.Failure(AuthenticationState.Unauthenticated(Passphrase))
+                }
             }
             is FetchMetadataKeysUseCase.Output.Failure<*> ->
                 Output.Failure(response.authenticationState)
         }
     }
 
+    @Throws(PassphraseNotInCacheException::class)
     private suspend fun saveMetadataKeys(metadataKeysModel: List<MetadataKeyModel>): Output {
         val privateKey = getPrivateKeyUseCase.execute(Unit).privateKey
         if (privateKey == null) {
@@ -83,7 +89,7 @@ class MetadataKeysInteractor(
                 Output.Success
             }
             is PotentialPassphrase.PassphraseNotPresent ->
-                Output.Failure(AuthenticationState.Unauthenticated(Passphrase))
+                throw PassphraseNotInCacheException()
         }
     }
 
