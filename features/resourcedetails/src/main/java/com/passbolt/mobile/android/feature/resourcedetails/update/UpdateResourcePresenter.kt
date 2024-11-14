@@ -1,6 +1,5 @@
 package com.passbolt.mobile.android.feature.resourcedetails.update
 
-import android.annotation.SuppressLint
 import com.passbolt.mobile.android.common.extension.erase
 import com.passbolt.mobile.android.common.validation.Rule
 import com.passbolt.mobile.android.common.validation.StringMaxLength
