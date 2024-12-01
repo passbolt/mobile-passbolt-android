@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.passboltapi.metadata
-
-import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
-import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataSessionKeyResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,15 +21,25 @@ import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
  * @since v1.0
  */
 
-interface MetadataDataSource {
+package com.passbolt.mobile.android.dto.request
 
-    suspend fun getMetadataKeys(): List<MetadataKeysResponseDto>
+import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
-    suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto
+data class SessionKeysBundleDto(
+    @SerializedName("object_type")
+    val objectType: String,
+    @SerializedName("session_keys")
+    val sessionKeys: List<SessionKeyDto> = emptyList()
+)
 
-    suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto
-
-    suspend fun getMetadataSessionKeys(): List<MetadataSessionKeyResponseDto>
-
-    suspend fun saveMetadataSessionKeys(request: EncryptedDataRequest)
-}
+data class SessionKeyDto(
+    @SerializedName("foreign_model")
+    val foreignModel: String,
+    @SerializedName("foreign_id")
+    val foreignId: UUID,
+    @SerializedName("session_key")
+    val sessionKey: String,
+    @SerializedName("modified")
+    val modified: String
+)

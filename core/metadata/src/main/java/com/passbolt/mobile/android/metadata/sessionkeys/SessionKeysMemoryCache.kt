@@ -1,10 +1,9 @@
-package com.passbolt.mobile.android.passboltapi.metadata
+package com.passbolt.mobile.android.metadata.sessionkeys
 
-import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
-import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataSessionKeyResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
+import com.passbolt.mobile.android.ui.SessionKeyIdentifier
+import com.passbolt.mobile.android.ui.SessionKeyModel
+import java.time.ZonedDateTime
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,15 +28,18 @@ import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
  * @since v1.0
  */
 
-interface MetadataDataSource {
+class SessionKeysMemoryCache {
 
-    suspend fun getMetadataKeys(): List<MetadataKeysResponseDto>
+    var value: HashMap<SessionKeyIdentifier, SessionKeyModel> = hashMapOf()
 
-    suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto
+    fun put(model: String, id: UUID, sessionKey: String) {
+        val sessionKeyIdentifier = SessionKeyIdentifier(model, id)
+        value[sessionKeyIdentifier] = SessionKeyModel(sessionKey, ZonedDateTime.now())
+    }
 
-    suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto
+    fun hasCachedKey(model: String, id: UUID): Boolean =
+        value.containsKey(SessionKeyIdentifier(model, id))
 
-    suspend fun getMetadataSessionKeys(): List<MetadataSessionKeyResponseDto>
-
-    suspend fun saveMetadataSessionKeys(request: EncryptedDataRequest)
+    fun getSessionKeyHexString(model: String, id: UUID): String? =
+        value[SessionKeyIdentifier(model, id)]?.sessionKey
 }

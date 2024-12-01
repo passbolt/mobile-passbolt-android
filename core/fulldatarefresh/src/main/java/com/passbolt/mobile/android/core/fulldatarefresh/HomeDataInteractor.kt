@@ -11,6 +11,8 @@ import com.passbolt.mobile.android.core.resourcetypes.ResourceTypesInteractor
 import com.passbolt.mobile.android.core.users.UsersInteractor
 import com.passbolt.mobile.android.featureflags.usecase.GetFeatureFlagsUseCase
 import com.passbolt.mobile.android.metadata.interactor.MetadataKeysInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataKeysSettingsInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataSessionKeysInteractor
 
 /**
  * Passbolt - Open source password manager for teams
@@ -45,6 +47,7 @@ class HomeDataInteractor(
     private val usersInteractor: UsersInteractor,
     private val resourceTypesInteractor: ResourceTypesInteractor,
     private val metadataKeysInteractor: MetadataKeysInteractor,
+    private val metadataSessionKeysInteractor: MetadataSessionKeysInteractor,
     private val featureFlagsUseCase: GetFeatureFlagsUseCase,
     private val resourcesFullRefreshIdlingResource: ResourcesFullRefreshIdlingResource
 ) {
@@ -58,30 +61,47 @@ class HomeDataInteractor(
         } else {
             MetadataKeysInteractor.Output.Success
         }
+        val metadataSessionKeysOutput = if (featureFlagsOutput.isV5MetadataAvailable) {
+            metadataSessionKeysInteractor.fetchMetadataSessionKeys()
+        } else {
+            MetadataSessionKeysInteractor.Output.Success
+        }
+
         val resourceTypesOutput = resourceTypesInteractor.fetchAndSaveResourceTypes()
         val userInteractorOutput = usersInteractor.fetchAndSaveUsers()
         val groupsRefreshOutput = groupsInteractor.fetchAndSaveGroups()
         val foldersRefreshOutput = foldersInteractor.fetchAndSaveFolders()
         val resourcesOutput = resourcesInteractor.fetchAndSaveResources()
+
+        val saveSessionKeysOutput = if (featureFlagsOutput.isV5MetadataAvailable) {
+            metadataSessionKeysInteractor.saveMetadataSessionKeysCache()
+        } else {
+            MetadataSessionKeysInteractor.Output.Success
+        }
+
         resourcesFullRefreshIdlingResource.setIdle(true)
 
         @Suppress("ComplexCondition")
         return if (metadataKeysOutput is MetadataKeysInteractor.Output.Success &&
+            metadataSessionKeysOutput is MetadataSessionKeysInteractor.Output.Success &&
             resourceTypesOutput is ResourceTypesInteractor.Output.Success &&
             userInteractorOutput is UsersInteractor.Output.Success &&
             groupsRefreshOutput is GroupsInteractor.Output.Success &&
             foldersRefreshOutput is FoldersInteractor.Output.Success &&
-            resourcesOutput is ResourceInteractor.Output.Success
+            resourcesOutput is ResourceInteractor.Output.Success &&
+            saveSessionKeysOutput is MetadataSessionKeysInteractor.Output.Success
         ) {
             Output.Success
         } else {
             Output.Failure(
                 metadataKeysOutput.authenticationState +
-                resourceTypesOutput.authenticationState +
+                        metadataSessionKeysOutput.authenticationState +
+                        resourceTypesOutput.authenticationState +
                         userInteractorOutput.authenticationState +
                         groupsRefreshOutput.authenticationState +
                         foldersRefreshOutput.authenticationState +
-                        resourcesOutput.authenticationState
+                        resourcesOutput.authenticationState +
+                        saveSessionKeysOutput.authenticationState
             )
         }
     }

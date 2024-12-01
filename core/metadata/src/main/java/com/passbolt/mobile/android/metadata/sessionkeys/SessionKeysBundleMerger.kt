@@ -1,11 +1,3 @@
-package com.passbolt.mobile.android.passboltapi.metadata
-
-import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
-import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataSessionKeyResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -29,15 +21,27 @@ import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
  * @since v1.0
  */
 
-interface MetadataDataSource {
+package com.passbolt.mobile.android.metadata.sessionkeys
 
-    suspend fun getMetadataKeys(): List<MetadataKeysResponseDto>
+import com.passbolt.mobile.android.dto.request.SessionKeysBundleDto
+import com.passbolt.mobile.android.ui.SessionKeyIdentifier
+import com.passbolt.mobile.android.ui.SessionKeyModel
+import java.time.ZonedDateTime
 
-    suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto
+class SessionKeysBundleMerger {
 
-    suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto
+    fun merge(input: List<SessionKeysBundleDto>): HashMap<SessionKeyIdentifier, SessionKeyModel> {
+        val merged = hashMapOf<SessionKeyIdentifier, SessionKeyModel>()
 
-    suspend fun getMetadataSessionKeys(): List<MetadataSessionKeyResponseDto>
+        input.flatMap { it.sessionKeys }.forEach {
+            val sessionKeyIdentifier = SessionKeyIdentifier(foreignModel = it.foreignModel, foreignId = it.foreignId)
+            val currentModified = ZonedDateTime.parse(it.modified)
+            val existing = merged[sessionKeyIdentifier]
+            if (existing == null || existing.modified.isBefore(currentModified)) {
+                merged[sessionKeyIdentifier] = SessionKeyModel(it.sessionKey, currentModified)
+            }
+        }
 
-    suspend fun saveMetadataSessionKeys(request: EncryptedDataRequest)
+        return merged
+    }
 }

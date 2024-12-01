@@ -47,7 +47,7 @@ import org.koin.dsl.module
 import java.time.ZonedDateTime
 import java.util.UUID
 
-internal const val RESOURCE_DTO_GSON = "RESOURCE_DTO_GSON"
+const val STRICT_ADAPTERS_ONLY_GSON = "RESOURCE_DTO_GSON"
 
 val serializersModule = module {
     jsonSchemaModule()
@@ -61,7 +61,7 @@ val serializersModule = module {
             resourceTypeIdToSlugMappingProvider = get(),
             jsonSchemaValidationRunner = get(),
             getLocalMetadataKeys = get(),
-            gson = get(named(RESOURCE_DTO_GSON))
+            gson = get(named(STRICT_ADAPTERS_ONLY_GSON))
         )
     }
     single { (
@@ -71,7 +71,7 @@ val serializersModule = module {
              ) ->
         ResourceListItemDeserializer(
             jsonSchemaValidationRunner = get(),
-            gson = get(named(RESOURCE_DTO_GSON)),
+            gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
             metadataDecryptor = get<MetadataDecryptor> { parametersOf(metadataKeys) },
             resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
             supportedResourceTypesIds = supportedResourceTypesIds
@@ -82,6 +82,7 @@ val serializersModule = module {
             getSelectedUserPrivateKeyUseCase = get(),
             passphraseMemoryCache = get(),
             openPgp = get(),
+            sessionKeysCache = get(),
             metadataKeys = metadataKeys
         )
     }
@@ -117,7 +118,7 @@ val serializersModule = module {
             .create()
     }
 
-    single(named(RESOURCE_DTO_GSON)) {
+    single(named(STRICT_ADAPTERS_ONLY_GSON)) {
         GsonBuilder()
             .apply {
                 strictTypeAdapters.forEach {

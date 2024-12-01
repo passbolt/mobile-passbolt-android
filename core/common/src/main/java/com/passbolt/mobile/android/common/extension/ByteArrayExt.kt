@@ -28,3 +28,7 @@ import java.util.Arrays
 fun ByteArray.erase() {
     Arrays.fill(this, 0)
 }
+
+fun ByteArray.encodeHex(): String {
+    return joinToString("") { "%02x".format(it) }
+}

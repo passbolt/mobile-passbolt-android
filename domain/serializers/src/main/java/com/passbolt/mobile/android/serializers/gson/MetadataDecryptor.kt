@@ -31,6 +31,8 @@ import com.passbolt.mobile.android.dto.response.MetadataKeyTypeDto.SHARED
 import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
+import com.passbolt.mobile.android.metadata.sessionkeys.ForeignModel.RESOURCE
+import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysMemoryCache
 import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 import timber.log.Timber
 
@@ -38,25 +40,46 @@ class MetadataDecryptor(
     private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
     private val passphraseMemoryCache: PassphraseMemoryCache,
     private val metadataKeys: List<ParsedMetadataKeyModel>,
-    private val openPgp: OpenPgp
+    private val openPgp: OpenPgp,
+    private val sessionKeysCache: SessionKeysMemoryCache
 ) {
 
     suspend fun decryptMetadata(resource: ResourceResponseV5Dto): Output {
         return try {
             val (key, passphrase) = getKeyAndPassphrase(resource)
 
-            val decryptedMeta = openPgp.decryptMessageArmored(
-                key,
-                passphrase,
-                resource.metadata
+            // decrypt using cached session key
+            if (sessionKeysCache.hasCachedKey(RESOURCE.value, resource.id)) {
+                val cachedSessionKey = requireNotNull( // not null because of hasCachedKey check
+                    sessionKeysCache.getSessionKeyHexString(RESOURCE.value, resource.id)
+                )
+                val decryptUsingCachedResult = openPgp.decryptMessageArmoredWithSessionKey(
+                    cachedSessionKey, resource.metadata
+                )
+                // if result is success, return it; otherwise, fallback to full decrypt
+                // session key may not be valid but we know it only when trying to use it and it fails
+                if (decryptUsingCachedResult is OpenPgpResult.Result) {
+                    return Output.Success(decryptUsingCachedResult.result)
+                }
+            }
+
+            // fallback to full decrypt
+            val sessionKey = openPgp.decryptSessionKey(key, passphrase, resource.metadata)
+            require(sessionKey is OpenPgpResult.Result) {
+                "Failed to decrypt session key id=(${resource.id}), skipping"
+            }
+
+            sessionKeysCache.put(RESOURCE.value, resource.id, sessionKey.result)
+
+            val decryptedMetadata = openPgp.decryptMessageArmoredWithSessionKey(
+                sessionKey.result, resource.metadata
             )
 
-            require(decryptedMeta is OpenPgpResult.Result) {
+            require(decryptedMetadata is OpenPgpResult.Result) {
                 "Failed to decrypt resource id=(${resource.id}), skipping"
             }
 
-            val decryptedMetaString = String(decryptedMeta.result)
-            Output.Success(decryptedMetaString)
+            Output.Success(decryptedMetadata.result)
         } catch (exception: Exception) {
             Timber.e(exception, "Exception during metadata decryption")
             Output.Failure(exception)

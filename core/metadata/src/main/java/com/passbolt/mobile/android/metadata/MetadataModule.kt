@@ -2,10 +2,15 @@ package com.passbolt.mobile.android.metadata
 
 import com.passbolt.mobile.android.metadata.interactor.MetadataKeysInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataKeysSettingsInteractor
+import com.passbolt.mobile.android.metadata.interactor.MetadataSessionKeysInteractor
 import com.passbolt.mobile.android.metadata.interactor.MetadataTypesSettingsInteractor
+import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysBundleMerger
+import com.passbolt.mobile.android.metadata.sessionkeys.SessionKeysMemoryCache
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysSettingsUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysUseCase
+import com.passbolt.mobile.android.metadata.usecase.FetchMetadataSessionKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataTypesSettingsUseCase
+import com.passbolt.mobile.android.metadata.usecase.SaveMetadataSessionKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.AddLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.RebuildMetadataKeysTablesUseCase
@@ -51,4 +56,21 @@ val metadataModule = module {
     singleOf(::FetchMetadataKeysUseCase)
     singleOf(::FetchMetadataKeysSettingsUseCase)
     singleOf(::MetadataKeysSettingsInteractor)
+    singleOf(::FetchMetadataSessionKeysUseCase)
+    singleOf(::SessionKeysBundleMerger)
+    singleOf(::SessionKeysMemoryCache)
+    singleOf(::SaveMetadataSessionKeysUseCase)
+    single {
+        MetadataSessionKeysInteractor(
+            fetchMetadataSessionKeysUseCase = get(),
+            saveMetadataSessionKeysUseCase = get(),
+            passphraseMemoryCache = get(),
+            getPrivateKeyUseCase = get(),
+            openPgp = get(),
+            sessionKeysBundleMerger = get(),
+            sessionKeysMemoryCache = get(),
+            metadataMapper = get(),
+            gson = get()
+        )
+    }
 }
