@@ -1,10 +1,4 @@
-package com.passbolt.mobile.android.passboltapi.metadata
-
-import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
-import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataSessionKeyResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
+package com.passbolt.mobile.android.dto.request
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,16 +22,6 @@ import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-interface MetadataDataSource {
-
-    suspend fun getMetadataKeys(): List<MetadataKeysResponseDto>
-
-    suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto
-
-    suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto
-
-    suspend fun getMetadataSessionKeys(): List<MetadataSessionKeyResponseDto>
-
-    suspend fun saveMetadataSessionKeys(request: EncryptedDataRequest)
-}
+data class EncryptedDataRequest(
+    val data: String
+)

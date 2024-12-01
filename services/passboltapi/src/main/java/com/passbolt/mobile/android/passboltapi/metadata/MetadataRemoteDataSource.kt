@@ -1,7 +1,9 @@
 package com.passbolt.mobile.android.passboltapi.metadata
 
+import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
 import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
 import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
+import com.passbolt.mobile.android.dto.response.MetadataSessionKeyResponseDto
 import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
 
 /**
@@ -38,4 +40,10 @@ internal class MetadataRemoteDataSource(
 
     override suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto =
         metadataApi.getMetadataKeysSettings().body
+
+    override suspend fun getMetadataSessionKeys(): List<MetadataSessionKeyResponseDto> =
+        metadataApi.getMetadataSessionKeys().body
+
+    override suspend fun saveMetadataSessionKeys(request: EncryptedDataRequest) =
+        metadataApi.saveMetadataSessionKeys(request).body
 }

@@ -25,9 +25,12 @@ package com.passbolt.mobile.android.mappers
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.passbolt.mobile.android.dto.request.SessionKeyDto
+import com.passbolt.mobile.android.dto.request.SessionKeysBundleDto
 import com.passbolt.mobile.android.dto.response.MetadataKeyTypeDto
 import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
 import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
+import com.passbolt.mobile.android.dto.response.MetadataSessionKeyResponseDto
 import com.passbolt.mobile.android.dto.response.MetadataTypeDto
 import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
 import com.passbolt.mobile.android.entity.metadata.MetadataKey
@@ -37,10 +40,14 @@ import com.passbolt.mobile.android.ui.MetadataKeyModel
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.MetadataKeysSettingsModel
 import com.passbolt.mobile.android.ui.MetadataPrivateKeyModel
+import com.passbolt.mobile.android.ui.MetadataSessionKeysBundleModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypesSettingsModel
 import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 import com.passbolt.mobile.android.ui.ParsedMetadataPrivateKeyModel
+import com.passbolt.mobile.android.ui.SessionKeyIdentifier
+import com.passbolt.mobile.android.ui.SessionKeyModel
+import java.time.ZonedDateTime
 import java.util.UUID
 
 class MetadataMapper {
@@ -123,6 +130,35 @@ class MetadataMapper {
             MetadataKeyTypeModel.PERSONAL -> MetadataKeyTypeDto.PERSONAL
         }
     }
+
+    fun mapToUiModel(value: List<MetadataSessionKeyResponseDto>): List<MetadataSessionKeysBundleModel> =
+        value.map {
+            MetadataSessionKeysBundleModel(
+                id = it.id,
+                userId = it.userId,
+                data = it.data,
+                created = ZonedDateTime.parse(it.created),
+                modified = ZonedDateTime.parse(it.modified)
+            )
+        }
+
+    fun map(value: HashMap<SessionKeyIdentifier, SessionKeyModel>): SessionKeysBundleDto =
+        value
+            .mapTo(mutableListOf()) { (id, keyModel) ->
+            SessionKeyDto(
+                foreignModel = id.foreignModel,
+                foreignId = id.foreignId,
+                sessionKey = keyModel.sessionKey,
+                modified = keyModel.modified.toString()
+            )
+        }
+            .toList()
+            .let {
+                SessionKeysBundleDto(
+                    objectType = "PASSBOLT_SESSION_KEYS",
+                    sessionKeys = it
+                )
+            }
 
     private companion object {
         private const val KEY_ARMORED_KEY = "armored_key"

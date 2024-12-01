@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.passboltapi.metadata
 
 import com.passbolt.mobile.android.core.networking.ResponseHandler
 import com.passbolt.mobile.android.core.networking.callWithHandler
+import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
 
 /**
  * Passbolt - Open source password manager for teams
@@ -40,5 +41,13 @@ class MetadataRepository(
 
     suspend fun getMetadataKeysSettings() = callWithHandler(responseHandler) {
         metadataDataSource.getMetadataKeysSettings()
+    }
+
+    suspend fun getMetadataSessionKeys() = callWithHandler(responseHandler) {
+        metadataDataSource.getMetadataSessionKeys()
+    }
+
+    suspend fun saveMetadataSessionKeys(request: EncryptedDataRequest) = callWithHandler(responseHandler) {
+        metadataDataSource.saveMetadataSessionKeys(request)
     }
 }

@@ -30,7 +30,7 @@ import com.passbolt.mobile.android.core.resourcetypes.usecase.db.GetResourceType
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
-import com.passbolt.mobile.android.serializers.RESOURCE_DTO_GSON
+import com.passbolt.mobile.android.serializers.STRICT_ADAPTERS_ONLY_GSON
 import com.passbolt.mobile.android.serializers.gson.MetadataDecryptor
 import com.passbolt.mobile.android.serializers.gson.ResourceListDeserializer
 import com.passbolt.mobile.android.serializers.gson.ResourceListItemDeserializer
@@ -60,7 +60,7 @@ val resourceListDeserializationTestModule = module {
     single { (resourceTypeIdToSlugMapping: Map<UUID, String>, supportedResourceTypesIds: Set<UUID>) ->
         ResourceListItemDeserializer(
             jsonSchemaValidationRunner = get(),
-            gson = get(named(RESOURCE_DTO_GSON)),
+            gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
             resourceTypeIdToSlugMapping = resourceTypeIdToSlugMapping,
             supportedResourceTypesIds = supportedResourceTypesIds,
             metadataDecryptor = mockMetadataDecryptor
@@ -87,7 +87,7 @@ val resourceListDeserializationTestModule = module {
             )
             .create()
     }
-    single(named(RESOURCE_DTO_GSON)) {
+    single(named(STRICT_ADAPTERS_ONLY_GSON)) {
         GsonBuilder()
             .apply {
                 strictTypeAdapters.forEach {

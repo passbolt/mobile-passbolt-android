@@ -19,6 +19,7 @@ dependencies {
 
     implementation libs.koin
     implementation libs.room.core
+    implementation libs.gson
 }
 
 android {

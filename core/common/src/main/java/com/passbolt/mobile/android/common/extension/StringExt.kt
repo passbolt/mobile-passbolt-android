@@ -36,3 +36,12 @@ fun String.stripPGPHeaders(): String {
         .filterNot { it.startsWith("Version:") || it.startsWith("Comment:") }
         .joinToString("\n")
 }
+
+fun String.decodeHex(): ByteArray {
+    require(length % 2 == 0) { "String must have an even length" }
+
+    @Suppress("MagicNumber") // hex is radix 16
+    return chunked(2)
+        .map { it.toInt(16).toByte() }
+        .toByteArray()
+}
