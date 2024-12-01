@@ -50,7 +50,7 @@ class GetMetadataTypesSettingsUseCase(
             return Output(
                 MetadataTypesSettingsModel(
                     defaultMetadataType = MetadataTypeModel.valueOf(
-                        it.getString(DEFAULT_METADATA_TYPE, MetadataTypeModel.V5.name)!!
+                        it.getString(DEFAULT_METADATA_TYPE, MetadataTypeModel.V4.name)!!
                     ),
                     defaultFolderType = MetadataTypeModel.valueOf(
                         it.getString(DEFAULT_FOLDER_TYPE, MetadataTypeModel.V4.name)!!
@@ -58,7 +58,7 @@ class GetMetadataTypesSettingsUseCase(
                     defaultTagType = MetadataTypeModel.valueOf(
                         it.getString(DEFAULT_TAG_TYPE, MetadataTypeModel.V4.name)!!
                     ),
-                    allowCreationOfV5Resources = it.getBoolean(ALLOW_CREATION_OF_V5_RESOURCES, true),
+                    allowCreationOfV5Resources = it.getBoolean(ALLOW_CREATION_OF_V5_RESOURCES, false),
                     allowCreationOfV5Folders = it.getBoolean(ALLOW_CREATION_OF_V5_FOLDERS, false),
                     allowCreationOfV5Tags = it.getBoolean(ALLOW_CREATION_OF_V5_TAGS, false),
                     allowCreationOfV4Resources = it.getBoolean(ALLOW_CREATION_OF_V4_RESOURCES, false),
