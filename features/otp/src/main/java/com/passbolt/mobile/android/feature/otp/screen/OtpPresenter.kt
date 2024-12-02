@@ -497,7 +497,7 @@ class OtpPresenter(
                 UUID.fromString(resource.resourceTypeId)
             ]
             val updateOperation =
-                when (ContentType.fromSlug(slug!!)) {
+                when (val contentType = ContentType.fromSlug(slug!!)) {
                     is Totp, V5TotpStandalone ->
                         resourceUpdateActionsInteractor.updateStandaloneTotpResource(
                             label = totpQr.label,
@@ -510,7 +510,11 @@ class OtpPresenter(
                     is PasswordDescriptionTotp, V5DefaultWithTotp ->
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resource.name,
-                            issuer = resource.uri,
+                            issuer = if (contentType.isV5()) {
+                                resource.uris?.firstOrNull()
+                            } else {
+                                resource.uri
+                            },
                             period = totpQr.period,
                             digits = totpQr.digits,
                             algorithm = totpQr.algorithm.name,

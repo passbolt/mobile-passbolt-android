@@ -100,19 +100,19 @@ class CreateOtpPresenter(
                     UUID.fromString(resource.resourceTypeId)
                 ]
 
-                when (ContentType.fromSlug(slug!!)) {
+                when (val contentType = ContentType.fromSlug(slug!!)) {
                     is PasswordString, V5PasswordString -> {
-                        setupEditForResourceWithoutTotp(resource)
+                        setupEditForResourceWithoutTotp(resource, contentType)
                     }
                     is PasswordAndDescription, V5Default -> {
-                        setupEditForResourceWithoutTotp(resource)
+                        setupEditForResourceWithoutTotp(resource, contentType)
                         view?.showEditingValuesAlsoEditsResourceValuesWarning()
                     }
                     is Totp, V5TotpStandalone -> {
-                        setupEditForResourceContainingTotp(resource)
+                        setupEditForResourceContainingTotp(resource, contentType)
                     }
                     is PasswordDescriptionTotp, V5DefaultWithTotp -> {
-                        setupEditForResourceContainingTotp(resource)
+                        setupEditForResourceContainingTotp(resource, contentType)
                         view?.showEditingValuesAlsoEditsResourceValuesWarning()
                     }
                 }
@@ -129,7 +129,7 @@ class CreateOtpPresenter(
         }
     }
 
-    private suspend fun setupEditForResourceContainingTotp(resource: ResourceModel) {
+    private suspend fun setupEditForResourceContainingTotp(resource: ResourceModel, contentType: ContentType) {
         val secretPropertiesActionsInteractor = get<SecretPropertiesActionsInteractor> {
             parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
         }
@@ -144,7 +144,11 @@ class CreateOtpPresenter(
                         parentFolderId = resource.folderId,
                         label = resource.name,
                         secret = it.result.key,
-                        issuer = resource.uri,
+                        issuer = if (contentType.isV5()) {
+                            resource.uris?.firstOrNull()
+                        } else {
+                            resource.uri
+                        },
                         algorithm = it.result.algorithm,
                         digits = it.result.digits,
                         period = it.result.period
@@ -154,14 +158,18 @@ class CreateOtpPresenter(
         )
     }
 
-    private fun setupEditForResourceWithoutTotp(resource: ResourceModel) {
+    private fun setupEditForResourceWithoutTotp(resource: ResourceModel, contentType: ContentType) {
         initScreenData(
             OtpResourceModel(
                 resourceId = resource.resourceId,
                 parentFolderId = resource.folderId,
                 label = resource.name,
                 secret = "",
-                issuer = resource.uri,
+                issuer = if (contentType.isV5()) {
+                    resource.uris?.firstOrNull()
+                } else {
+                    resource.uri
+                },
                 algorithm = OtpParseResult.OtpQr.Algorithm.DEFAULT.name,
                 digits = OtpParseResult.OtpQr.TotpQr.DEFAULT_DIGITS,
                 period = OtpParseResult.OtpQr.TotpQr.DEFAULT_PERIOD_SECONDS
@@ -341,13 +349,17 @@ class CreateOtpPresenter(
             val updateOperation = idToSlugMappingProvider.provideMappingForSelectedAccount()[
                 UUID.fromString(resource.resourceTypeId)
             ].let {
-                when (ContentType.fromSlug(it!!)) {
+                when (val contentType = ContentType.fromSlug(it!!)) {
                     is PasswordString, V5PasswordString, Totp, V5TotpStandalone ->
                         throw IllegalArgumentException("These resource types are not possible to link")
                     is PasswordAndDescription, V5Default -> suspend {
                         resourceUpdateActionsInteractor.addTotpToResource(
                             overrideName = resource.name,
-                            overrideUri = resource.uri,
+                            overrideUri = if (contentType.isV5()) {
+                                resource.uris?.firstOrNull()
+                            } else {
+                                resource.uri
+                            },
                             period = period,
                             digits = digits,
                             algorithm = algorithm,
@@ -357,7 +369,11 @@ class CreateOtpPresenter(
                     is PasswordDescriptionTotp, V5DefaultWithTotp -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resource.name,
-                            issuer = resource.uri,
+                            issuer = if (contentType.isV5()) {
+                                resource.uris?.firstOrNull()
+                            } else {
+                                resource.uri
+                            },
                             period = period,
                             digits = digits,
                             algorithm = algorithm,

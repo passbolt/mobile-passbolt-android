@@ -186,7 +186,7 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
                 OpenPgpResult.Result(decryptedOutput)
             }
         } catch (exception: Exception) {
-            Timber.e(exception, "There was an error during decryptMessageArmored (with pk generation)")
+            Timber.e(exception, "There was an error during decryptMessageArmored")
             OpenPgpResult.Error(gopenPgpExceptionParser.parseGopenPgpException(exception))
         } finally {
             Helper.freeOSMemory()
@@ -207,7 +207,7 @@ class OpenPgp(private val gopenPgpExceptionParser: GopenPgpExceptionParser) {
                 val message = Crypto.newPGPSplitMessageFromArmored(cipherText)
                 val decryptedSessionKey = keyRing.decryptSessionKey(message.keyPacket)
 
-                passphrase.erase()
+                passphraseCopy.erase()
 
                 OpenPgpResult.Result(decryptedSessionKey.key.encodeHex())
             }

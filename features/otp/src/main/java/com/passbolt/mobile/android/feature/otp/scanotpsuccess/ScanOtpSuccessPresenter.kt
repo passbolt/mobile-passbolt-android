@@ -109,11 +109,15 @@ class ScanOtpSuccessPresenter(
                 parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
             }
             val updateOperation =
-                when (ContentType.fromSlug(slug!!)) {
+                when (val contentType = ContentType.fromSlug(slug!!)) {
                     is PasswordAndDescription, V5Default -> suspend {
                         resourceUpdateActionsInteractor.addTotpToResource(
                             overrideName = resource.name,
-                            overrideUri = resource.uri,
+                            overrideUri = if (contentType.isV5()) {
+                                resource.uris?.firstOrNull()
+                            } else {
+                                resource.uri
+                            },
                             period = scannedTotp.period,
                             digits = scannedTotp.digits,
                             algorithm = scannedTotp.algorithm.name,
@@ -123,7 +127,11 @@ class ScanOtpSuccessPresenter(
                     is PasswordDescriptionTotp, V5DefaultWithTotp -> suspend {
                         resourceUpdateActionsInteractor.updateLinkedTotpResourceTotpFields(
                             label = resource.name,
-                            issuer = resource.uri,
+                            issuer = if (contentType.isV5()) {
+                                resource.uris?.firstOrNull()
+                            } else {
+                                resource.uri
+                            },
                             period = scannedTotp.period,
                             digits = scannedTotp.digits,
                             algorithm = scannedTotp.algorithm.name,
