@@ -56,7 +56,7 @@ val serializersModule = module {
     singleOf(::ResourceListDeserializer)
     singleOf(::ResourceTypesListDeserializer)
     singleOf(::ZonedDateTimeSerializer)
-    single {
+    factory {
         SingleResourceDeserializer(
             resourceTypeIdToSlugMappingProvider = get(),
             jsonSchemaValidationRunner = get(),
@@ -64,7 +64,7 @@ val serializersModule = module {
             gson = get(named(STRICT_ADAPTERS_ONLY_GSON))
         )
     }
-    single { (
+    factory { (
                  resourceTypeIdToSlugMapping: Map<UUID, String>,
                  supportedResourceTypesIds: Set<UUID>,
                  metadataKeys: List<ParsedMetadataKeyModel>
@@ -77,7 +77,7 @@ val serializersModule = module {
             supportedResourceTypesIds = supportedResourceTypesIds
         )
     }
-    single { (metadataKeys: List<ParsedMetadataKeyModel>) ->
+    factory { (metadataKeys: List<ParsedMetadataKeyModel>) ->
         MetadataDecryptor(
             getSelectedUserPrivateKeyUseCase = get(),
             passphraseMemoryCache = get(),
@@ -86,7 +86,7 @@ val serializersModule = module {
             metadataKeys = metadataKeys
         )
     }
-    single { (metadataKeys: List<ParsedMetadataKeyModel>) ->
+    factory { (metadataKeys: List<ParsedMetadataKeyModel>) ->
         MetadataEncryptor(
             getSelectedUserPrivateKeyUseCase = get(),
             openPgp = get(),
