@@ -30,6 +30,14 @@ import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.mockJSFSc
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.testParserModule
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordDescriptionTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5Default
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5DefaultWithTotp
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5PasswordString
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType.V5TotpStandalone
 import kotlinx.coroutines.test.runTest
 import net.jimblackler.jsonschemafriend.SchemaStore
 import org.junit.Before
@@ -41,6 +49,7 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
+import kotlin.test.assertTrue
 
 class SecretValidationTest : KoinTest {
 
@@ -56,17 +65,29 @@ class SecretValidationTest : KoinTest {
     @Before
     fun setup() {
         mockJSFSchemaRepository.stub {
-            on { schemaForSecret(ContentType.PasswordString.slug) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(PasswordString.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-string-secret-schema.json")
             )
-            on { schemaForSecret(ContentType.PasswordAndDescription.slug) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(V5PasswordString.slug) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/v5-password-string-secret-schema.json")
+            )
+            on { schemaForSecret(PasswordAndDescription.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-and-description-secret-schema.json")
             )
-            on { schemaForSecret(ContentType.PasswordDescriptionTotp.slug) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(V5Default.slug) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/v5-default-secret-schema.json")
+            )
+            on { schemaForSecret(PasswordDescriptionTotp.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/password-description-totp-secret-schema.json")
             )
-            on { schemaForSecret(ContentType.Totp.slug) } doReturn SchemaStore().loadSchema(
+            on { schemaForSecret(V5DefaultWithTotp.slug) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/v5-default-with-totp-secret-schema.json")
+            )
+            on { schemaForSecret(Totp.slug) } doReturn SchemaStore().loadSchema(
                 this::class.java.getResource("/totp-secret-schema.json")
+            )
+            on { schemaForSecret(V5TotpStandalone.slug) } doReturn SchemaStore().loadSchema(
+                this::class.java.getResource("/v5-totp-standalone-secret-schema.json")
             )
         }
     }
@@ -77,9 +98,11 @@ class SecretValidationTest : KoinTest {
             .joinToString { "a" }
         val tooLongPasswordJson = gson.toJson(tooLongPassword)
 
-        val result = secretValidationRunner.isSecretValid(tooLongPasswordJson, ContentType.PasswordString.slug)
+        val resultV4 = secretValidationRunner.isSecretValid(tooLongPasswordJson, PasswordString.slug)
+        val resultV5 = secretValidationRunner.isSecretValid(tooLongPasswordJson, V5PasswordString.slug)
 
-        assertThat(result).isFalse()
+
+        assertTrue { listOf(resultV4, resultV5).all { it == false } }
     }
 
     @Test
@@ -101,10 +124,12 @@ class SecretValidationTest : KoinTest {
             },
         ).map { gson.toJson(it) }
 
-        val results = invalidSecrets
-            .map { secretValidationRunner.isSecretValid(it, ContentType.PasswordAndDescription.slug) }
+        val resultsV4 = invalidSecrets
+            .map { secretValidationRunner.isSecretValid(it, PasswordAndDescription.slug) }
+        val resultsV5 = invalidSecrets
+            .map { secretValidationRunner.isSecretValid(it, V5Default.slug) }
 
-        assertThat(results.none { it }).isTrue()
+        assertThat((resultsV4 + resultsV5).none { it }).isTrue()
     }
 
     @Test
@@ -150,10 +175,12 @@ class SecretValidationTest : KoinTest {
             },
         ).map { gson.toJson(it) }
 
-        val results = invalidSecrets
-            .map { secretValidationRunner.isSecretValid(it, ContentType.Totp.slug) }
+        val resultsV4 = invalidSecrets
+            .map { secretValidationRunner.isSecretValid(it, Totp.slug) }
+        val resultsV5 = invalidSecrets
+            .map { secretValidationRunner.isSecretValid(it, V5TotpStandalone.slug) }
 
-        assertThat(results.none { it }).isTrue()
+        assertThat((resultsV4 + resultsV5).none { it }).isTrue()
     }
 
     @Test
@@ -234,19 +261,22 @@ class SecretValidationTest : KoinTest {
             },
         ).map { gson.toJson(it) }
 
-        val results = invalidSecrets
-            .map { secretValidationRunner.isSecretValid(it, ContentType.PasswordDescriptionTotp.slug) }
+        val resultsV4 = invalidSecrets
+            .map { secretValidationRunner.isSecretValid(it, PasswordDescriptionTotp.slug) }
+        val resultsV5 = invalidSecrets
+            .map { secretValidationRunner.isSecretValid(it, V5Default.slug) }
 
-        assertThat(results.none { it }).isTrue()
+        assertThat((resultsV4 + resultsV5).none { it }).isTrue()
     }
 
     @Test
     fun `valid secret for password string resource type should not be rejected`() = runTest {
         val validSecret = gson.toJson("password")
 
-        val result = secretValidationRunner.isSecretValid(validSecret, ContentType.PasswordString.slug)
+        val resultV4 = secretValidationRunner.isSecretValid(validSecret, PasswordString.slug)
+        val resultV5 = secretValidationRunner.isSecretValid(validSecret, V5PasswordString.slug)
 
-        assertThat(result).isTrue()
+        assertThat(listOf(resultV4, resultV5).all { it })
     }
 
     @Test
@@ -258,10 +288,12 @@ class SecretValidationTest : KoinTest {
             },
         ).map { gson.toJson(it) }
 
-        val results = validSecrets
-            .map { secretValidationRunner.isSecretValid(it, ContentType.PasswordAndDescription.slug) }
+        val resultsV4 = validSecrets
+            .map { secretValidationRunner.isSecretValid(it, PasswordAndDescription.slug) }
+        val resultsV5 = validSecrets
+            .map { secretValidationRunner.isSecretValid(it, V5Default.slug) }
 
-        assertThat(results.all { it }).isTrue()
+        assertThat((resultsV4 + resultsV5).all { it }).isTrue()
     }
 
     @Test
@@ -277,10 +309,12 @@ class SecretValidationTest : KoinTest {
             },
         ).map { gson.toJson(it) }
 
-        val results = validSecrets
-            .map { secretValidationRunner.isSecretValid(it, ContentType.Totp.slug) }
+        val resultsV4 = validSecrets
+            .map { secretValidationRunner.isSecretValid(it, Totp.slug) }
+        val resultsV5 = validSecrets
+            .map { secretValidationRunner.isSecretValid(it, V5TotpStandalone.slug) }
 
-        assertThat(results.all { it }).isTrue()
+        assertThat((resultsV4 + resultsV5).all { it }).isTrue()
     }
 
     @Test
@@ -298,10 +332,12 @@ class SecretValidationTest : KoinTest {
             }
         ).map { gson.toJson(it) }
 
-        val results = validSecrets
-            .map { secretValidationRunner.isSecretValid(it, ContentType.PasswordDescriptionTotp.slug) }
+        val resultsV4 = validSecrets
+            .map { secretValidationRunner.isSecretValid(it, PasswordDescriptionTotp.slug) }
+        val resultsV5 = validSecrets
+            .map { secretValidationRunner.isSecretValid(it, V5DefaultWithTotp.slug) }
 
-        assertThat(results.all { it }).isTrue()
+        assertThat((resultsV4 + resultsV5).all { it }).isTrue()
     }
 
     private companion object {
