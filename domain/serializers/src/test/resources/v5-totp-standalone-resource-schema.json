@@ -10,17 +10,29 @@
       "maxLength": 255
     },
     "uris": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "maxLength": 1024,
-        "nullable": true
-      }
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 1024
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "description": {
-      "type": "string",
-      "maxLength": 10000,
-      "nullable": true
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 10000
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   }
 }
