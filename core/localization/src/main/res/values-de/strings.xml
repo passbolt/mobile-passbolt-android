@@ -65,7 +65,7 @@
     <string name="logout_dialog_sign_out">Abmelden</string>
     <string name="no_username">kein Benutzername</string>
     <string name="more_launch_website">Webseite öffnen</string>
-    <string name="more_copy_url">URL kopieren</string>
+    <string name="more_copy_uri">URL kopieren</string>
     <string name="more_copy_password">Passwort kopieren</string>
     <string name="more_copy_username">Benutzernamen kopieren</string>
     <string name="more_copy_desc">Beschreibung kopieren</string>
