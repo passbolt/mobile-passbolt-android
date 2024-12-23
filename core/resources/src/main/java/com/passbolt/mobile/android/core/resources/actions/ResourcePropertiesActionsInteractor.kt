@@ -47,7 +47,7 @@ class ResourcePropertiesActionsInteractor(
                 URL_LABEL,
                 isSecret = false,
                 if (resourceContentType.isV5()) {
-                    resource.uris?.get(0)
+                    resource.uris?.firstOrNull()
                 } else {
                     resource.uri
                 }.orEmpty()
