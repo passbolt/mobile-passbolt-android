@@ -196,11 +196,11 @@ class ResourcePickerPresenter(
             require(pickedResourceResourceTypeId in selectableIdToSlugMapping.keys)
             val (pickAction, confirmationModel) =
                 when (val slug = selectableIdToSlugMapping[pickedResourceResourceTypeId]) {
-                    ContentType.PasswordAndDescription.slug ->
+                    ContentType.PasswordAndDescription.slug, ContentType.V5Default.slug ->
                         PickResourceAction.TOTP_LINK to ConfirmationModel.LinkTotpModel()
-                    ContentType.PasswordDescriptionTotp.slug ->
+                    ContentType.PasswordDescriptionTotp.slug, ContentType.V5DefaultWithTotp.slug ->
                         PickResourceAction.TOTP_REPLACE to ConfirmationModel.ReplaceTotpModel()
-                    else -> error("Impossible resource slug: $slug")
+                    else -> error("This resource type does not support linking or replacing totplink: $slug")
                 }
 
             view?.showConfirmation(confirmationModel, pickAction)
@@ -220,7 +220,9 @@ class ResourcePickerPresenter(
     private companion object {
         private val selectableResourceTypesSlugs = listOf(
             ContentType.PasswordAndDescription.slug,
-            ContentType.PasswordDescriptionTotp.slug
+            ContentType.V5Default.slug,
+            ContentType.PasswordDescriptionTotp.slug,
+            ContentType.V5DefaultWithTotp.slug
         )
     }
 }
