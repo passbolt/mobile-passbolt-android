@@ -23,6 +23,7 @@
 
 package com.passbolt.mobile.android.feature.settings.accounts.keyinspector
 
+import com.passbolt.mobile.android.commontest.session.validSessionTestModule
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetSelectedAccountDataUseCase
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.core.users.user.FetchCurrentUserUseCase
@@ -57,7 +58,7 @@ class KeyInspectorPresenterTest : KoinTest {
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
-        modules(testKeyInspectorModule)
+        modules(testKeyInspectorModule, validSessionTestModule)
     }
 
     @Before

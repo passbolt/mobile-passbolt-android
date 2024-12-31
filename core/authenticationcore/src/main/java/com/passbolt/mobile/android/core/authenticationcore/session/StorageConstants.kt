@@ -23,6 +23,6 @@ package com.passbolt.mobile.android.core.authenticationcore.session
  * @since v1.0
  */
 
-internal const val ACCESS_TOKEN_KEY = "ACCESS_TOKEN_KEY"
-internal const val REFRESH_TOKEN_KEY = "SESSION_REFRESH_TOKEN_KEY"
-internal const val MFA_TOKEN_KEY = "REFRESH_TOKEN_KEY"
+const val ACCESS_TOKEN_KEY = "ACCESS_TOKEN_KEY"
+const val REFRESH_TOKEN_KEY = "SESSION_REFRESH_TOKEN_KEY"
+const val MFA_TOKEN_KEY = "REFRESH_TOKEN_KEY"

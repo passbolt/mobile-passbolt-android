@@ -1,9 +1,3 @@
-package com.passbolt.mobile.android.feature.authentication.auth.usecase
-
-import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.common.usecase.UserIdInput
-import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFactory
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,17 +20,34 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetServerPublicRsaKeyUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
-) : UseCase<UserIdInput, GetServerPublicRsaKeyUseCase.Output> {
 
-    override fun execute(input: UserIdInput): Output {
-        val fileName = ServerRsaKeyFileName(input.userId).name
-        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
-        return Output(sharedPreferences.getString(SERVER_RSA_KEY_KEY, null))
+package com.passbolt.mobile.android.commontest.session
+
+import com.passbolt.mobile.android.core.passphrasememorycache.PassphraseMemoryCache
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetSessionExpiryUseCase
+import org.koin.dsl.module
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.stub
+import org.mockito.kotlin.whenever
+import java.time.ZonedDateTime
+
+internal val mockGetSessionExpiryUseCase = mock<GetSessionExpiryUseCase>()
+internal val mockPassphraseMemoryCache = mock<PassphraseMemoryCache>()
+
+private const val VALID_SESSION_DURATION_SECONDS = 60L
+
+val validSessionTestModule = module {
+    single {
+        mockGetSessionExpiryUseCase.stub {
+            onBlocking { execute(Unit) }.thenReturn(
+                GetSessionExpiryUseCase.Output.JwtWillExpire(
+                    ZonedDateTime.now().plusSeconds(VALID_SESSION_DURATION_SECONDS)
+                )
+            )
+        }
     }
-
-    data class Output(
-        val rsaKey: String?
-    )
+    single {
+        whenever(mockPassphraseMemoryCache.getSessionDurationSeconds()).thenReturn(VALID_SESSION_DURATION_SECONDS)
+        mockPassphraseMemoryCache
+    }
 }
