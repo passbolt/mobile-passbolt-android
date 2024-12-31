@@ -32,11 +32,12 @@ import com.passbolt.mobile.android.feature.authentication.auth.challenge.Challen
 import com.passbolt.mobile.android.feature.authentication.auth.challenge.MfaStatusProvider
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.BiometryInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetAndVerifyServerKeysAndTimeInteractor
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicPgpKeyUseCase
-import com.passbolt.mobile.android.feature.authentication.auth.usecase.GetServerPublicRsaKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.FetchServerPublicPgpKeyUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.FetchServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.GopenPgpTimeUpdater
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.PostSignInActionsInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.RefreshSessionUseCase
+import com.passbolt.mobile.android.feature.authentication.auth.usecase.SaveServerPublicRsaKeyUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInUseCase
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignInVerifyInteractor
 import com.passbolt.mobile.android.feature.authentication.auth.usecase.SignOutUseCase
@@ -108,9 +109,9 @@ internal val mockPrivateKeyUseCase = mock<GetPrivateKeyUseCase> {
 internal val mockVerifyPassphraseUseCase = mock<VerifyPassphraseUseCase>()
 internal val mockCheckIfPassphraseExistsUseCase = mock<CheckIfPassphraseFileExistsUseCase>()
 
-internal val mockGetServerPublicPgpKeyUseCase = mock<GetServerPublicPgpKeyUseCase>()
+internal val mockFetchServerPublicPgpKeyUseCase = mock<FetchServerPublicPgpKeyUseCase>()
 internal val mockRemoveAllAccountsPassphraseUseCase = mock<RemoveAllAccountsPassphrasesUseCase>()
-internal val mockGetServerPublicRsaKeyUseCase = mock<GetServerPublicRsaKeyUseCase>()
+internal val mockFetchServerPublicRsaKeyUseCase = mock<FetchServerPublicRsaKeyUseCase>()
 internal val mockChallengeProvider = mock<ChallengeProvider>()
 internal val mockSignInUseCase = mock<SignInUseCase>()
 internal val mockChallengeDecryptor = mock<ChallengeDecryptor>()
@@ -142,16 +143,18 @@ internal val mockPasswordExpiryPoliciesInteractor = mock<PasswordExpiryPoliciesI
 internal val mockPasswordPoliciesInteractor = mock<PasswordPoliciesInteractor>()
 internal val mockMetadataTypesSettingsInteractor = mock<MetadataTypesSettingsInteractor>()
 internal val mockMetadataKeysSettingsInteractor = mock<MetadataKeysSettingsInteractor>()
+internal val mockSaveServerPublicRsaKeyUseCase = mock<SaveServerPublicRsaKeyUseCase>()
 
 @ExperimentalCoroutinesApi
 val testAuthModule = module {
     factory {
         GetAndVerifyServerKeysAndTimeInteractor(
-            getServerPublicPgpKeyUseCase = mockGetServerPublicPgpKeyUseCase,
-            getServerPublicRsaKeyUseCase = mockGetServerPublicRsaKeyUseCase,
+            fetchServerPublicPgpKeyUseCase = mockFetchServerPublicPgpKeyUseCase,
+            fetchServerPublicRsaKeyUseCase = mockFetchServerPublicRsaKeyUseCase,
             getAccountDataUseCase = mockGetAccountDataUseCase,
             isServerFingerprintCorrectUseCase = mockIsServerFingerprintCorrectUseCase,
-            gopenPgpTimeUpdater = mockGopenPgpTimeUpdater
+            gopenPgpTimeUpdater = mockGopenPgpTimeUpdater,
+            saveServerPublicRsaKeyUseCase = mockSaveServerPublicRsaKeyUseCase
         )
     }
     factory {

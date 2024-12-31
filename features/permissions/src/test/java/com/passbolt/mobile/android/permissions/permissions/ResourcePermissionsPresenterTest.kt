@@ -2,6 +2,7 @@ package com.passbolt.mobile.android.permissions.permissions
 
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.JsonObject
+import com.passbolt.mobile.android.commontest.session.validSessionTestModule
 import com.passbolt.mobile.android.core.fulldatarefresh.DataRefreshStatus
 import com.passbolt.mobile.android.core.fulldatarefresh.FullDataRefreshExecutor
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
@@ -64,7 +65,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
-        modules(testResourcePermissionsModule)
+        modules(testResourcePermissionsModule, validSessionTestModule)
     }
 
     @Before

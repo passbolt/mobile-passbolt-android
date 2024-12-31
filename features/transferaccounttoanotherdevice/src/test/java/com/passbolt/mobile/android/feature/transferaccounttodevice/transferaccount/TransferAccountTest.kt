@@ -1,6 +1,7 @@
 package com.passbolt.mobile.android.feature.transferaccounttodevice.transferaccount
 
 import com.google.common.truth.Truth.assertThat
+import com.passbolt.mobile.android.commontest.session.validSessionTestModule
 import com.passbolt.mobile.android.core.networking.NetworkResult
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.summary.TransferAccountStatus
 import com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.transferaccount.TransferAccountContract
@@ -53,7 +54,7 @@ class TransferAccountTest : KoinTest {
     @get:Rule
     val koinTestRule = KoinTestRule.create {
         printLogger(Level.ERROR)
-        modules(transferAccountModule)
+        modules(transferAccountModule, validSessionTestModule)
     }
 
     @Test

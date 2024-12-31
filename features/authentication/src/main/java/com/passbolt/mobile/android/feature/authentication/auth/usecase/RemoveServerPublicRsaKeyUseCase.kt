@@ -1,10 +1,8 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
-import com.passbolt.mobile.android.common.usecase.AsyncUseCase
-import com.passbolt.mobile.android.core.networking.NetworkResult
-import com.passbolt.mobile.android.dto.response.BaseResponse
-import com.passbolt.mobile.android.dto.response.ServerPgpResponseDto
-import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
+import com.passbolt.mobile.android.common.usecase.UseCase
+import com.passbolt.mobile.android.common.usecase.UserIdInput
+import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFactory
 
 /**
  * Passbolt - Open source password manager for teams
@@ -28,28 +26,17 @@ import com.passbolt.mobile.android.passboltapi.auth.AuthRepository
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetServerPublicPgpKeyUseCase(
-    private val authRepository: AuthRepository
-) : AsyncUseCase<Unit, GetServerPublicPgpKeyUseCase.Output> {
 
-    override suspend fun execute(input: Unit): Output =
-        when (val result = authRepository.getServerPublicPgpKey()) {
-            is NetworkResult.Failure -> Output.Failure(result)
-            is NetworkResult.Success -> Output.Success(
-                result.value.body.keydata,
-                result.value.body.fingerprint,
-                result.value.header.serverTime
-            )
+class RemoveServerPublicRsaKeyUseCase(
+    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
+) : UseCase<UserIdInput, Unit> {
+
+    override fun execute(input: UserIdInput) {
+        val fileName = ServerRsaKeyFileName(input.userId).name
+        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
+        with(sharedPreferences.edit()) {
+            remove(SERVER_RSA_KEY_KEY)
+            apply()
         }
-
-    sealed class Output {
-
-        data class Success(
-            val publicKey: String,
-            val fingerprint: String,
-            val serverTime: Long
-        ) : Output()
-
-        data class Failure(val error: NetworkResult.Failure<BaseResponse<ServerPgpResponseDto>>) : Output()
     }
 }

@@ -39,7 +39,8 @@ class RemoveAllAccountDataUseCase(
     private val removePrivateKeyUseCase: RemovePrivateKeyUseCase,
     private val removeSelectedAccountUseCase: RemoveSelectedAccountUseCase,
     private val removeSessionUseCase: RemoveSessionUseCase,
-    private val removeAccountUseCase: RemoveAccountUseCase
+    private val removeAccountUseCase: RemoveAccountUseCase,
+    private val removeServerPublicRsaKeyUseCase: RemoveServerPublicRsaKeyUseCase
 ) : AsyncUseCase<UserIdInput, Unit> {
 
     override suspend fun execute(input: UserIdInput) {
@@ -58,5 +59,6 @@ class RemoveAllAccountDataUseCase(
         removePrivateKeyUseCase.execute(userIdInput)
         removeSessionUseCase.execute(userIdInput)
         removeAccountUseCase.execute(userIdInput)
+        removeServerPublicRsaKeyUseCase.execute(userIdInput)
     }
 }

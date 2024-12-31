@@ -10,7 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -48,6 +47,7 @@ class PassphraseMemoryCache(
 
     private val timerJob = SupervisorJob()
     private val timerScope = CoroutineScope(timerJob + coroutineLaunchContext.ui)
+    private var currentTimerMillis: Long? = null
 
     // lifecycle observer remove/add methods need to be called on Main thread (even in Android Tests
     // TestDispatcher must not be injected here - Main dispatcher is obligatory
@@ -57,11 +57,17 @@ class PassphraseMemoryCache(
     fun set(passphrase: ByteArray) {
         clear()
         initializeObservers()
+        currentTimerMillis = TIMER_TICK_MILLIS
         value = PotentialPassphrase.Passphrase(passphrase.copyOf())
         Timber.d("Passphrase cached")
     }
 
     fun get() = value
+
+    @Suppress("MagicNumber") // second has 1000 millis
+    fun getSessionDurationSeconds() = currentTimerMillis?.let {
+        (CACHE_EXPIRATION_MILLIS - it) / 1000
+    }
 
     fun hasPassphrase() = value is PotentialPassphrase.Passphrase
 
@@ -70,7 +76,7 @@ class PassphraseMemoryCache(
             lifecycleOwner.lifecycle.addObserver(this@PassphraseMemoryCache)
         }
         timerScope.launch {
-            timerFlow.collect()
+            timerFlow.collect { currentTimerMillis = it * TIMER_TICK_MILLIS }
             clear()
         }
     }
@@ -80,6 +86,7 @@ class PassphraseMemoryCache(
             it?.passphrase?.erase()
         }
         value = PotentialPassphrase.PassphraseNotPresent()
+        currentTimerMillis = null
         lifecycleObserverScope.launch {
             lifecycleOwner.lifecycle.removeObserver(this@PassphraseMemoryCache)
         }

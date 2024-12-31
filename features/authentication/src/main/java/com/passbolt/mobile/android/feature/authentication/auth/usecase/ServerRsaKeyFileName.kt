@@ -1,9 +1,5 @@
 package com.passbolt.mobile.android.feature.authentication.auth.usecase
 
-import com.passbolt.mobile.android.common.usecase.UseCase
-import com.passbolt.mobile.android.common.usecase.UserIdInput
-import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFactory
-
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -26,17 +22,13 @@ import com.passbolt.mobile.android.encryptedstorage.EncryptedSharedPreferencesFa
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-class GetServerPublicRsaKeyUseCase(
-    private val encryptedSharedPreferencesFactory: EncryptedSharedPreferencesFactory
-) : UseCase<UserIdInput, GetServerPublicRsaKeyUseCase.Output> {
 
-    override fun execute(input: UserIdInput): Output {
-        val fileName = ServerRsaKeyFileName(input.userId).name
-        val sharedPreferences = encryptedSharedPreferencesFactory.get("$fileName.xml")
-        return Output(sharedPreferences.getString(SERVER_RSA_KEY_KEY, null))
+class ServerRsaKeyFileName(userId: String) {
+
+    val name = SERVER_RSA_KEY_FILE_NAME_FORMAT.format(userId)
+
+    private companion object {
+        private const val SERVER_RSA_KEY_ALIAS = "rsa_key"
+        private const val SERVER_RSA_KEY_FILE_NAME_FORMAT = "${SERVER_RSA_KEY_ALIAS}_%s"
     }
-
-    data class Output(
-        val rsaKey: String?
-    )
 }

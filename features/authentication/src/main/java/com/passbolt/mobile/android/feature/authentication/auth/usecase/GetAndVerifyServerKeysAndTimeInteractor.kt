@@ -4,7 +4,6 @@ import com.passbolt.mobile.android.common.usecase.UserIdInput
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.GetAccountDataUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.accountdata.IsServerFingerprintCorrectUseCase
 import timber.log.Timber
-import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
 /**
@@ -30,22 +29,23 @@ import kotlin.time.measureTimedValue
  * @since v1.0
  */
 class GetAndVerifyServerKeysAndTimeInteractor(
-    private val getServerPublicPgpKeyUseCase: GetServerPublicPgpKeyUseCase,
-    private val getServerPublicRsaKeyUseCase: GetServerPublicRsaKeyUseCase,
+    private val fetchServerPublicPgpKeyUseCase: FetchServerPublicPgpKeyUseCase,
+    private val fetchServerPublicRsaKeyUseCase: FetchServerPublicRsaKeyUseCase,
+    private val saveServerPublicRsaKeyUseCase: SaveServerPublicRsaKeyUseCase,
     private val isServerFingerprintCorrectUseCase: IsServerFingerprintCorrectUseCase,
     private val getAccountDataUseCase: GetAccountDataUseCase,
     private val gopenPgpTimeUpdater: GopenPgpTimeUpdater
 ) {
 
-    @OptIn(ExperimentalTime::class)
     suspend fun getAndVerifyServerKeys(userId: String, onError: (Error) -> Unit, onSuccess: suspend (Success) -> Unit) {
         Timber.d("Getting server pgp and rsa keys")
-        val (pgpKey, getTimeRequestDuration) = measureTimedValue { getServerPublicPgpKeyUseCase.execute(Unit) }
-        val rsaKey = getServerPublicRsaKeyUseCase.execute(Unit)
+        val (pgpKey, getTimeRequestDuration) = measureTimedValue { fetchServerPublicPgpKeyUseCase.execute(Unit) }
+        val rsaKey = fetchServerPublicRsaKeyUseCase.execute(Unit)
 
-        if (pgpKey is GetServerPublicPgpKeyUseCase.Output.Success &&
-            rsaKey is GetServerPublicRsaKeyUseCase.Output.Success
+        if (pgpKey is FetchServerPublicPgpKeyUseCase.Output.Success &&
+            rsaKey is FetchServerPublicRsaKeyUseCase.Output.Success
         ) {
+            saveServerPublicRsaKeyUseCase.execute(SaveServerPublicRsaKeyUseCase.Input(userId, rsaKey.rsaKey))
             Timber.d("Getting server pgp and rsa keys succeeded")
             Timber.d("Checking if time adjustment is needed")
             val timeUpdateResult =
@@ -64,9 +64,9 @@ class GetAndVerifyServerKeysAndTimeInteractor(
                 onSuccess(Success(pgpKey.publicKey, pgpKey.fingerprint, rsaKey.rsaKey))
             }
         } else {
-            if ((pgpKey as? GetServerPublicPgpKeyUseCase.Output.Failure)
+            if ((pgpKey as? FetchServerPublicPgpKeyUseCase.Output.Failure)
                     ?.error?.isServerNotReachable == true ||
-                (rsaKey as? GetServerPublicRsaKeyUseCase.Output.Failure)
+                (rsaKey as? FetchServerPublicRsaKeyUseCase.Output.Failure)
                     ?.error?.isServerNotReachable == true
             ) {
                 Timber.d("Server is not reachable")
