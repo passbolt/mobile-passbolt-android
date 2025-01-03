@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2024 Passbolt SA
+ * Copyright (c) 2024-2025 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -44,17 +44,18 @@ import com.passbolt.mobile.android.core.idlingresource.UpdateResourceIdlingResou
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.first
+import com.passbolt.mobile.android.feature.home.R
+import com.passbolt.mobile.android.helpers.chooseFilter
+import com.passbolt.mobile.android.helpers.createNewPasswordFromHomeScreen
+import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.matchers.first
+import com.passbolt.mobile.android.matchers.withHint
+import com.passbolt.mobile.android.matchers.withIndex
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.helpers.chooseFilter
-import com.passbolt.mobile.android.scenarios.helpers.createNewPasswordFromHomeScreen
-import com.passbolt.mobile.android.scenarios.helpers.signIn
 import com.passbolt.mobile.android.scenarios.resourcesedition.EditableFieldInput
-import com.passbolt.mobile.android.withHint
-import com.passbolt.mobile.android.withIndex
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.Matchers.allOf
@@ -64,7 +65,6 @@ import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
-import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
@@ -108,7 +108,7 @@ class UpdateExpiryTest : KoinTest {
     @BeforeTest
     fun setup() {
         signIn(managedAccountIntentCreator.getPassphrase())
-        chooseFilter(com.passbolt.mobile.android.feature.home.R.id.expiry)
+        chooseFilter(R.id.expiry)
     }
 
     @Test
@@ -124,21 +124,29 @@ class UpdateExpiryTest : KoinTest {
         onView(first(withId(com.passbolt.mobile.android.feature.otp.R.id.more))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resourcemoremenu.R.id.editPassword)).perform(click())
         //    When   I edit a password of the resource
-        onViewInputWithHintName("Enter password").perform(replaceText("UpdatedForExpiryTest"))
+        onViewInputWithHintName(EditableFieldInput.ENTER_PASSWORD.hintName).perform(replaceText("UpdatedForExpiryTest"))
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(scrollTo(), click())
         //    Then   The resource is marked to expire after <number of days> //7 days
-        chooseFilter(com.passbolt.mobile.android.feature.home.R.id.recentlyModified)
+        chooseFilter(R.id.recentlyModified)
         onView(withIndex(index = 0, withText("ExpiringResource"))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.expiryItem)).check(matches(isDisplayed()))
         onView(withText("In 7 days")).check(matches(isDisplayed()))
     }
 
+    /**
+     * Test Case: Do not update expiry of a resource when all items except the password have changed.
+     * [Test Case Link](https://passbolt.testrail.io/index.php?/cases/view/11938)
+     *
+     * Pre-conditions:
+     * 1. Logged in as a Cloud user.
+     * 2. Automatic expiry is enabled on the server.
+     * 3. Expiry is set to 7 days and resource is already expired on "January 1".
+     */
     @Test
-    //  https://passbolt.testrail.io/index.php?/cases/view/11938
     fun doNotUpdateExpiryOfAResourceWhenAllItemsExceptPasswordHasChanged() {
         //  Given  I am logged in as a Pro or Cloud user // Cloud
         //  And    automatic expiry is enabled on the server
-        //  And    automatic expiry is set to <number of days> // 7 days
+        //  And    automatic expiry is set to <number of days>
         //  And    the resource is set to expire <expire date> // in the past
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText("Expired"))
         //  When   I edit an resource omitting password
@@ -147,19 +155,19 @@ class UpdateExpiryTest : KoinTest {
         onView(withText(LocalizationR.string.resource_update_edit_password_title)).check(matches(isDisplayed()))
         val randomizedName = "StillExpired ${java.util.UUID.randomUUID().toString().take(5)}"
         val fieldsToUpdate = EditableFieldInput.entries.filterNot {
-            it.hintName == "Enter Name" || it.hintName == "Enter password"
+            it.hintName == EditableFieldInput.ENTER_NAME.hintName || it.hintName == EditableFieldInput.ENTER_PASSWORD.hintName
         }
         fieldsToUpdate.forEach { field ->
-            onViewInputWithHintName("Enter Name").perform(replaceText(randomizedName))
+            onViewInputWithHintName(EditableFieldInput.ENTER_NAME.hintName).perform(replaceText(randomizedName))
             onViewInputWithHintName(field.hintName).perform(replaceText(field.textToReplace))
         }
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(scrollTo(), click())
         // Then   The resource is marked to expire <expire date> // look for this edited resource with randomized name
-        chooseFilter(com.passbolt.mobile.android.feature.home.R.id.recentlyModified)
+        chooseFilter(R.id.recentlyModified)
         onView(withId(com.passbolt.mobile.android.feature.otp.R.id.searchEditText)).perform(typeText(randomizedName))
         onView(withIndex(index = 0, withText("$randomizedName (expired)"))).perform(click())
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.expiryItem)).check(matches(isDisplayed()))
-        onView(withText(containsString(" ago"))).check(matches(isDisplayed()))
+        onView(withText(containsString("January 1"))).check(matches(isDisplayed()))
     }
 
     private fun onViewInputWithHintName(hintName: String): ViewInteraction =

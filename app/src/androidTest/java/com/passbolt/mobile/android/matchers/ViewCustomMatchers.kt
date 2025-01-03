@@ -22,7 +22,7 @@
  */
 
 
-package com.passbolt.mobile.android
+package com.passbolt.mobile.android.matchers
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -53,6 +53,7 @@ import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
+import java.util.regex.Pattern
 
 /**
  * HasDrawable is custom matcher method, which help us in ui test, to check whether view displays the appropriate drawable.
@@ -145,20 +146,6 @@ fun hasToast() = object : TypeSafeMatcher<Root?>() {
         description?.appendText("is toast")
     }
 }
-
-fun atPosition(position: Int, itemMatcher: Matcher<View?>) =
-    object : BoundedMatcher<View?, RecyclerView>(RecyclerView::class.java) {
-        override fun describeTo(description: Description?) {
-            description?.appendText("has item at position $position: ")
-            itemMatcher.describeTo(description)
-        }
-
-        override fun matchesSafely(recyclerView: RecyclerView?): Boolean {
-            val viewHolder: RecyclerView.ViewHolder =
-                recyclerView?.findViewHolderForAdapterPosition(position) ?: return false // has no item on such position
-            return itemMatcher.matches(viewHolder.itemView)
-        }
-    }
 
 /**
  * Matches a view at any position within a RecyclerView that satisfies the given itemMatcher.
@@ -290,3 +277,18 @@ fun withImageViewContainingAnyImage(): Matcher<View?> =
             } ?: false
         }
     }
+
+
+fun withFormattedText(formatRegex: String): Matcher<View> {
+    return object : TypeSafeMatcher<View>() {
+        override fun describeTo(description: Description) {
+            description.appendText("with text matching the format: $formatRegex")
+        }
+
+        override fun matchesSafely(view: View): Boolean {
+            if (view !is TextView) return false
+            val text = view.text.toString()
+            return Pattern.matches(formatRegex, text)
+        }
+    }
+}

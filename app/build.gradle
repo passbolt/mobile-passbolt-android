@@ -55,12 +55,10 @@ android {
             }
         }
         automatedTests {
-            initWith qa
-            matchingFallbacks = ['release']
+            initWith debug
+            matchingFallbacks = ['debug']
 
             applicationIdSuffix ".qa.automated"
-            debuggable false
-            minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             firebaseAppDistribution {
                 appId = "1:660923335137:android:c7e452d7912a9e3ab092a0"

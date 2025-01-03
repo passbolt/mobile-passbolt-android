@@ -50,6 +50,16 @@ def setupModule(isAndroid, isAndroidComponent) {
             }
 
             testOptions {
+                managedDevices {
+                    localDevices {
+                        create("pixel5@targetSdk") {
+                            device = "Pixel 5"
+                            apiLevel = projectTargetSdk
+                            systemImageSource = "aosp"
+                        }
+                    }
+                }
+
                 animationsDisabled true
 
                 unitTests.all {

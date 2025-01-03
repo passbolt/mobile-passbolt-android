@@ -42,17 +42,15 @@ import androidx.test.filters.MediumTest
 import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
+import com.passbolt.mobile.android.helpers.getString
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
-import com.passbolt.mobile.android.scenarios.helpers.getString
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 
 
@@ -64,16 +62,6 @@ class WelcomeScreenTest : KoinTest {
     val activityRule = lazyActivityScenarioRule<SetUpActivity>(
         koinOverrideModules = listOf(instrumentationTestsModule)
     )
-
-    @BeforeTest
-    fun setup() {
-        Intents.init()
-    }
-
-    @AfterTest
-    fun tearDown() {
-        Intents.release()
-    }
 
     @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2332
@@ -132,6 +120,8 @@ class WelcomeScreenTest : KoinTest {
     @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/6191
     fun asAMobileUserICanOpenHelpWebpageBeforeTheQrCodeScanningProcess() {
+        Intents.init()
+
         //        Given   the user is on the “Help” modal
         onView(withId(R.id.helpButton)).perform(click())
         //        When    the user clicks on the “Visit help site” button
@@ -142,6 +132,8 @@ class WelcomeScreenTest : KoinTest {
             hasData(getString(LocalizationR.string.help_website))
         )
         intended(expectedIntent)
+
+        Intents.release()
     }
 
     @Test

@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021-2024 Passbolt SA
+ * Copyright (c) 2021-2025 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -21,13 +21,12 @@
  * @since v1.0
  */
 
-package com.passbolt.mobile.android.scenarios.helpers
+package com.passbolt.mobile.android.helpers
 
-import android.view.KeyEvent
 import androidx.annotation.StringRes
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.pressKey
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -36,13 +35,15 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.android.material.R
-import com.passbolt.mobile.android.feature.otp.R.id.searchEditText
-import com.passbolt.mobile.android.withHint
-import com.passbolt.mobile.android.withIndex
+import com.passbolt.mobile.android.matchers.withHint
+import com.passbolt.mobile.android.matchers.withIndex
+import com.passbolt.mobile.android.scenarios.resourcesedition.EditableFieldInput
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
+import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.feature.otp.R.id as OtpId
+import com.passbolt.mobile.android.feature.permissions.R.id as PermissionsId
 
 
 internal fun getString(@StringRes stringResId: Int, vararg formatArgs: String? = emptyArray()) =
@@ -50,44 +51,52 @@ internal fun getString(@StringRes stringResId: Int, vararg formatArgs: String? =
 
 internal fun createNewPasswordFromHomeScreen(name: String) {
     onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
-    onView(
-        allOf(
-            isDescendantOfA(withHint(hasToString("Enter Name"))),
-            withId(CoreUiR.id.input)
-        )
-    )
-        .perform(typeText(name), pressKey(KeyEvent.KEYCODE_BACK))
-    onView(
-        allOf(
-            isDescendantOfA(withHint(hasToString("Enter URL"))),
-            withId(CoreUiR.id.input)
-        )
-    )
-        .perform(typeText("TestURL"), pressKey(KeyEvent.KEYCODE_BACK))
-    onView(
-        allOf(
-            isDescendantOfA(withHint(hasToString("Enter Username"))),
-            withId(CoreUiR.id.input)
-        )
-    )
-        .perform(typeText("TestUsername"), pressKey(KeyEvent.KEYCODE_BACK))
     onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
     onView(
         allOf(
-            isDescendantOfA(withHint(hasToString("Enter Description"))),
+            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_NAME.hintName))),
             withId(CoreUiR.id.input)
         )
     )
-        .perform(typeText("TestDescription"), pressKey(KeyEvent.KEYCODE_BACK))
+        .perform(
+            typeText(name)
+        )
+    onView(
+        allOf(
+            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_URL.hintName))),
+            withId(CoreUiR.id.input)
+        )
+    )
+        .perform(
+            typeText("TestURL")
+        )
+    onView(
+        allOf(
+            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_USERNAME.hintName))),
+            withId(CoreUiR.id.input)
+        )
+    )
+        .perform(
+            typeText("TestUsername")
+        )
+    onView(
+        allOf(
+            isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_DESCRIPTION.hintName))),
+            withId(CoreUiR.id.input)
+        )
+    )
+        .perform(
+            scrollTo(),
+            typeText("TestDescription"),
+            closeSoftKeyboard()
+        )
     onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(scrollTo(), click())
 }
 
 internal fun signIn(passphrase: String) {
-    onView(withId(CoreUiR.id.input)).perform(typeText(passphrase), pressKey(KeyEvent.KEYCODE_ENTER))
+    onView(withId(CoreUiR.id.input)).perform(typeText(passphrase), closeSoftKeyboard())
     onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(click())
-    //TODO: There is failure here when testing on real devices https://app.clickup.com/t/2593179/MOB-1835
-    //    sleep(300) usually helps
-    onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
+    onView(withId(PermissionsId.rootLayout)).check(matches(isDisplayed()))
 }
 
 /**
@@ -103,11 +112,22 @@ internal fun signIn(passphrase: String) {
  * @param name The name of the resource to search for and navigate to.
  */
 internal fun pickFirstResourceWithName(name: String) {
-    onView(withId(searchEditText)).perform(click(), typeText(name))
+    onView(withId(OtpId.searchEditText)).perform(click(), typeText(name))
     onView(withIndex(index = 1, withText(name))).perform(click())
 }
 
+/**
+ * Selects a filter from the filter options.
+ *
+ * This function assumes that the filter button is displayed in a UI. It clicks on the "text input start icon"
+ * to open the filter options and then selects the specified filter.
+ *
+ * Note: This function uses the `withIndex` matcher to select the first view
+ * that matches the start icon ID, as there might be multiple views with the same ID.
+ *
+ * @param filter The resource ID of the filter to select.
+ */
 internal fun chooseFilter(filter: Int) {
-    onView(withId(R.id.text_input_start_icon)).perform(click())
+    onView(withIndex(index = 0, withId(MaterialR.id.text_input_start_icon))).perform(click())
     onView(withId(filter)).perform(click())
 }

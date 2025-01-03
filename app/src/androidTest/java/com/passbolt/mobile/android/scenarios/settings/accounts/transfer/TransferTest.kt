@@ -44,15 +44,15 @@ import com.passbolt.mobile.android.core.idlingresource.TransferAccountIdlingReso
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.hasDrawable
+import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.mappers.AccountModelMapper
+import com.passbolt.mobile.android.matchers.hasDrawable
+import com.passbolt.mobile.android.matchers.withImageViewContainingAnyImage
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.helpers.signIn
 import com.passbolt.mobile.android.scenarios.setup.configurebiometric.biometricSetupUnavailableModuleTests
-import com.passbolt.mobile.android.withImageViewContainingAnyImage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -180,7 +180,9 @@ class TransferTest : KoinTest {
         onView(withText(LocalizationR.string.transfer_account_title)).check(matches(isDisplayed()))
         //      And      I see a first QR code
         /* check if any image is loaded into the QR code image view */
-        onView(withId(com.passbolt.mobile.android.feature.setup.R.id.qrCode)).check(matches(withImageViewContainingAnyImage()))
+        onView(withId(com.passbolt.mobile.android.feature.setup.R.id.qrCode)).check(matches(
+            withImageViewContainingAnyImage()
+        ))
         //      And      I see a “Cancel transfer” primary action button
         onView(withId(com.passbolt.mobile.android.feature.transferaccounttoanotherdevice.R.id.cancelTransferButton)).check(matches(isDisplayed()))
     }
