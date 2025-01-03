@@ -39,12 +39,12 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.home.R.id.titleDrawable
-import com.passbolt.mobile.android.hasDrawable
+import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.matchers.hasDrawable
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.helpers.signIn
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,7 +52,6 @@ import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import kotlin.test.BeforeTest
 import com.google.android.material.R as MaterialR
-import com.passbolt.mobile.android.core.ui.R as CoreUiR
 
 
 @RunWith(AndroidJUnit4::class)

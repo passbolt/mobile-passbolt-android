@@ -1,4 +1,4 @@
-package com.passbolt.mobile.android.scenarios.actions
+package com.passbolt.mobile.android.actions
 
 import android.view.View
 import android.widget.Checkable
@@ -7,8 +7,8 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
-import com.passbolt.mobile.android.scenarios.helpers.getString
-import com.passbolt.mobile.android.withHint
+import com.passbolt.mobile.android.helpers.getString
+import com.passbolt.mobile.android.matchers.withHint
 import org.hamcrest.BaseMatcher
 import org.hamcrest.CoreMatchers.isA
 import org.hamcrest.Description

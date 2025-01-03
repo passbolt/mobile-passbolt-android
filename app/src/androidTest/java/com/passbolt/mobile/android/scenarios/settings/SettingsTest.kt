@@ -48,6 +48,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.passbolt.mobile.android.actions.setChecked
 import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
@@ -55,13 +56,12 @@ import com.passbolt.mobile.android.core.idlingresource.SignOutIdlingResource
 import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
-import com.passbolt.mobile.android.hasDrawable
+import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.matchers.hasDrawable
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.actions.setChecked
-import com.passbolt.mobile.android.scenarios.helpers.signIn
 import com.passbolt.mobile.android.scenarios.setup.autofill.autofillConfiguredModuleTests
 import com.passbolt.mobile.android.scenarios.setup.configurebiometric.biometricSetupUnavailableModuleTests
 import org.hamcrest.CoreMatchers.allOf
@@ -72,7 +72,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.component.inject
 import org.koin.test.KoinTest
-import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
@@ -116,12 +115,6 @@ class SettingsTest : KoinTest {
         //    And	I am logged in
         //    And 	I am on Passbolt PRO/CE/Cloud
         signIn(managedAccountIntentCreator.getPassphrase())
-        Intents.init()
-    }
-
-    @AfterTest
-    fun tearDown() {
-        Intents.release()
     }
 
     @Test
@@ -171,7 +164,12 @@ class SettingsTest : KoinTest {
         //    When 	    I click on the “App settings” button
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.appSettings)).perform(click())
         //    Then      I see the “App settings” title
-        onView(allOf(isDescendantOfA(withId(com.passbolt.mobile.android.feature.setup.R.id.toolbar)), withText(LocalizationR.string.settings_app_settings)))
+        onView(
+            allOf(
+                isDescendantOfA(withId(com.passbolt.mobile.android.feature.setup.R.id.toolbar)),
+                withText(LocalizationR.string.settings_app_settings)
+            )
+        )
             .check(matches(isDisplayed()))
         //    And	    I see a back button to go to the main settings page
         onView(isAssignableFrom(Toolbar::class.java))
@@ -197,7 +195,12 @@ class SettingsTest : KoinTest {
         //    When 	    I click on the “Expert settings” button
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.expertSettings)).perform(click())
         //    Then      I see the “Expert settings” title
-        onView(allOf(isDescendantOfA(withId(com.passbolt.mobile.android.feature.setup.R.id.toolbar)), withText(LocalizationR.string.settings_app_settings_expert_settings)))
+        onView(
+            allOf(
+                isDescendantOfA(withId(com.passbolt.mobile.android.feature.setup.R.id.toolbar)),
+                withText(LocalizationR.string.settings_app_settings_expert_settings)
+            )
+        )
             .check(matches(isDisplayed()))
         //    And 	    I see the back button to go to the main settings page
         onView(isAssignableFrom(Toolbar::class.java))
@@ -317,6 +320,8 @@ class SettingsTest : KoinTest {
 
     @Test
     fun asAnAndroidUserICanSeeTermsAndLicences() {
+        Intents.init()
+
         //    Given     that I am #MOBILE_USER_ON_SETTINGS_PAGE
         //    Then      I see the “Terms & licences” title
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.settingsNav)).perform(click())
@@ -329,10 +334,14 @@ class SettingsTest : KoinTest {
         //    And 	    I see a Open Source Licences with an feather icon and a caret on the right
         val expectedIntent: Matcher<Intent> = allOf(hasAction(Intent.ACTION_VIEW), hasData("passbolt.com/terms"))
         intending(expectedIntent).respondWith(ActivityResult(0, null))
+
+        Intents.release()
     }
 
     @Test
     fun asALoggedInMobileUserOnTheSettingsPageICanOpenThePrivacyPolicePage() {
+        Intents.init()
+
         //    Given     that I am a mobile user with the application installed
         //    And       the Passbolt application is already opened
         //    And       I completed the login step
@@ -344,6 +353,8 @@ class SettingsTest : KoinTest {
         //    Then      I see a “Privacy policy” page (as a web page)
         val expectedIntent: Matcher<Intent> = allOf(hasAction(Intent.ACTION_VIEW), hasData("passbolt.com/privacy"))
         intending(expectedIntent).respondWith(ActivityResult(0, null))
+
+        Intents.release()
     }
 
     @Test
@@ -353,7 +364,12 @@ class SettingsTest : KoinTest {
         //    When 	    I click on the “Debug, logs” button
         onView(withId(com.passbolt.mobile.android.feature.settings.R.id.debugLogsSettings)).perform(click())
         //    Then      I see the “Debug, logs” title
-        onView(allOf(isDescendantOfA(withId(com.passbolt.mobile.android.feature.setup.R.id.toolbar)), withText(LocalizationR.string.settings_debug_logs)))
+        onView(
+            allOf(
+                isDescendantOfA(withId(com.passbolt.mobile.android.feature.setup.R.id.toolbar)),
+                withText(LocalizationR.string.settings_debug_logs)
+            )
+        )
             .check(matches(isDisplayed()))
         //    And 	    I see the back button to go to the main settings page
         onView(isAssignableFrom(Toolbar::class.java))
@@ -364,7 +380,14 @@ class SettingsTest : KoinTest {
         DebugLogsItemModel.entries.forEach { debugLogsSettingsItem ->
             onView(withText(debugLogsSettingsItem.settingsItemTextId)).perform(scrollTo()).check(matches(isDisplayed()))
             onView(allOf(isDescendantOfA(withId(debugLogsSettingsItem.settingsItemId)), withId(CoreUiR.id.iconImage)))
-                .check(matches(hasDrawable(id = debugLogsSettingsItem.settingsItemIconId, tint = CoreUiR.color.icon_tint)))
+                .check(
+                    matches(
+                        hasDrawable(
+                            id = debugLogsSettingsItem.settingsItemIconId,
+                            tint = CoreUiR.color.icon_tint
+                        )
+                    )
+                )
         }
     }
 

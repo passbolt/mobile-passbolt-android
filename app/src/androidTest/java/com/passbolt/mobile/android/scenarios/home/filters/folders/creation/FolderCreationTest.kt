@@ -27,14 +27,20 @@ import android.view.KeyEvent
 import androidx.appcompat.widget.Toolbar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.pressKey
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.hasTextColor
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.leinardi.android.speeddial.SpeedDialView
-import com.passbolt.mobile.android.*
 import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.core.idlingresource.CreateFolderIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
@@ -43,11 +49,16 @@ import com.passbolt.mobile.android.core.navigation.ActivityIntents
 import com.passbolt.mobile.android.core.navigation.AppContext
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.setup.R
+import com.passbolt.mobile.android.helpers.getString
+import com.passbolt.mobile.android.helpers.signIn
+import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.matchers.hasDrawable
+import com.passbolt.mobile.android.matchers.withIndex
+import com.passbolt.mobile.android.matchers.withSpeedDialViewOpenState
+import com.passbolt.mobile.android.matchers.withTextInputStrokeColorOf
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.helpers.getString
-import com.passbolt.mobile.android.scenarios.helpers.signIn
 import org.hamcrest.Matchers.allOf
 import org.junit.Rule
 import org.junit.Test
@@ -151,7 +162,6 @@ class FolderCreationTest : KoinTest {
             )
         )
             .check(matches(isDisplayed()))
-            // TODO: Fix me please
             .check(matches(hasDrawable(id = CoreUiR.drawable.ic_key, tint = CoreUiR.color.icon_tint)))
         onView(
             allOf(

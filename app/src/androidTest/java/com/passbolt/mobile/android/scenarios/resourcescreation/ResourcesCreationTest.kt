@@ -1,6 +1,6 @@
 /**
  * Passbolt - Open source password manager for teams
- * Copyright (c) 2021-2023 Passbolt SA
+ * Copyright (c) 2021-2025 Passbolt SA
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License (AGPL) as published by the Free Software Foundation version 3.
@@ -44,6 +44,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.material.textfield.TextInputLayout
+import com.passbolt.mobile.android.actions.clickOnPasswordToggle
 import com.passbolt.mobile.android.commontest.viewassertions.CastedViewAssertion
 import com.passbolt.mobile.android.core.idlingresource.CreateResourceIdlingResource
 import com.passbolt.mobile.android.core.idlingresource.ResourcesFullRefreshIdlingResource
@@ -54,18 +55,19 @@ import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputV
 import com.passbolt.mobile.android.core.ui.textinputfield.PasswordGenerateInputView.PasswordStrength.VeryStrong
 import com.passbolt.mobile.android.feature.authentication.AuthenticationMainActivity
 import com.passbolt.mobile.android.feature.setup.R
-import com.passbolt.mobile.android.hasDrawable
+import com.passbolt.mobile.android.helpers.getString
+import com.passbolt.mobile.android.helpers.signIn
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
-import com.passbolt.mobile.android.isTextHidden
+import com.passbolt.mobile.android.matchers.hasDrawable
+import com.passbolt.mobile.android.matchers.isTextHidden
+import com.passbolt.mobile.android.matchers.withFormattedText
+import com.passbolt.mobile.android.matchers.withHint
+import com.passbolt.mobile.android.matchers.withProgressBarOfMinimumProgress
+import com.passbolt.mobile.android.matchers.withTextInputStrokeColorOf
 import com.passbolt.mobile.android.rules.IdlingResourceRule
 import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
-import com.passbolt.mobile.android.scenarios.actions.clickOnPasswordToggle
-import com.passbolt.mobile.android.scenarios.helpers.getString
-import com.passbolt.mobile.android.scenarios.helpers.signIn
-import com.passbolt.mobile.android.withHint
-import com.passbolt.mobile.android.withProgressBarOfMinimumProgress
-import com.passbolt.mobile.android.withTextInputStrokeColorOf
+import com.passbolt.mobile.android.scenarios.resourcesedition.EditableFieldInput
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matchers.allOf
@@ -79,6 +81,7 @@ import kotlin.test.BeforeTest
 import com.google.android.material.R as MaterialR
 import com.passbolt.mobile.android.core.localization.R as LocalizationR
 import com.passbolt.mobile.android.core.ui.R as CoreUiR
+import com.passbolt.mobile.android.feature.permissions.R.id as permissionsId
 
 
 @RunWith(AndroidJUnit4::class)
@@ -174,24 +177,24 @@ class ResourcesCreationTest : KoinTest {
         onView(isAssignableFrom(Toolbar::class.java))
             .check(CastedViewAssertion<Toolbar> { it.navigationIcon != null })
         //    And       I see a mandatory input text field with a "Name" and "Enter Name"
-        onView(withText("Name *")).check(matches(isDisplayed()))
-        onView(withHint(hasToString("Enter Name"))).check(matches(isDisplayed()))
+        onView(withText("Resource name *")).check(matches(isDisplayed()))
+        onView(withHint(hasToString(EditableFieldInput.ENTER_NAME.hintName))).check(matches(isDisplayed()))
         //    And       I see a optional input text field with a "URL" and "Enter URL"
-        onView(withText("URL")).check(matches(isDisplayed()))
-        onView(withHint(hasToString("Enter URL"))).check(matches(isDisplayed()))
+        onView(withText("Main URI")).check(matches(isDisplayed()))
+        onView(withHint(hasToString(EditableFieldInput.ENTER_URL.hintName))).check(matches(isDisplayed()))
         //    And       I see a optional input text field with a "Username" and "Enter Username"
         onView(withText("Username")).check(matches(isDisplayed()))
-        onView(withHint(hasToString("Enter Username"))).check(matches(isDisplayed()))
+        onView(withHint(hasToString(EditableFieldInput.ENTER_USERNAME.hintName))).check(matches(isDisplayed()))
         //    And       I see a mandatory input text field with a "Password" and "Enter password"
         onView(withText("Password *")).check(matches(isDisplayed()))
-        onView(withHint(hasToString("Enter password"))).check(matches(isDisplayed()))
+        onView(withHint(hasToString(EditableFieldInput.ENTER_PASSWORD.hintName))).check(matches(isDisplayed()))
         //    And       I see a optional input text field with a "Description" and "Enter Description"
         onView(withText("Description")).check(matches(isDisplayed()))
-        onView(withHint(hasToString("Enter Description"))).check(matches(isDisplayed()))
+        onView(withHint(hasToString(EditableFieldInput.ENTER_DESCRIPTION.hintName))).check(matches(isDisplayed()))
         //    And       I see a mandatory input text field with a "Show/Hide" button inside the field
         onView(
             allOf(
-                isDescendantOfA(withHint(hasToString("Enter password"))),
+                isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_PASSWORD.hintName))),
                 withId(MaterialR.id.text_input_end_icon)
             )
         )
@@ -217,10 +220,15 @@ class ResourcesCreationTest : KoinTest {
         // (second refresh is during snackbar is showing)
         IdlingRegistry.getInstance().unregister(resourcesFullRefreshIdlingResource)
 
-        //    Given     I am a logged in mobile user on the new password page
+        //    Given     I on the "new password" page
         onView(withId(com.passbolt.mobile.android.feature.home.R.id.homeSpeedDialViewId)).perform(click())
         //    And       I filled out all mandatory fields
-        onView(allOf(isDescendantOfA(withHint(hasToString("Enter Name"))), withId(CoreUiR.id.input)))
+        onView(
+            allOf(
+                isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_NAME.hintName))),
+                withId(CoreUiR.id.input)
+            )
+        )
             .perform(
                 typeText("PasswordNameTest"),
                 closeSoftKeyboard(),
@@ -230,11 +238,10 @@ class ResourcesCreationTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton))
             .perform(scrollTo(), click())
         //    Then      I see a "Loading" box
+        //    And       I see a toast message with "New Password created"
+        onView(withId(MaterialR.id.snackbar_text)).check(matches(withText(LocalizationR.string.resource_update_create_success)))
         //    And       I am redirected to the password workspace
-        onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
-        //    And       I see a toaster message with "New Password created"
-        onView(withId(MaterialR.id.snackbar_text))
-            .check(matches(withText(LocalizationR.string.resource_update_create_success)))
+        onView(withId(permissionsId.rootLayout)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -246,19 +253,19 @@ class ResourcesCreationTest : KoinTest {
         //    When      I click on the create button
         onView(withId(com.passbolt.mobile.android.feature.resources.R.id.updateButton)).perform(click())
         //    Then      I see the label of the Name and Password fields in @red
-        onView(withText("Name *")).check(matches(hasTextColor(CoreUiR.color.red)))
+        onView(withText("Resource name *")).check(matches(hasTextColor(CoreUiR.color.red)))
         onView(withText("Password *")).check(matches(hasTextColor(CoreUiR.color.red)))
         //    And       I see the stroke of the Name and Password fields in @red
         onView(
             allOf(
-                isDescendantOfA(withHint(hasToString("Enter Name"))),
+                isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_NAME.hintName))),
                 isAssignableFrom(TextInputLayout::class.java)
             )
         )
             .check(matches(withTextInputStrokeColorOf(CoreUiR.color.red)))
         onView(
             allOf(
-                isDescendantOfA(withHint(hasToString("Enter password"))),
+                isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_PASSWORD.hintName))),
                 isAssignableFrom(TextInputLayout::class.java)
             )
         )
@@ -284,7 +291,7 @@ class ResourcesCreationTest : KoinTest {
         onView(withId(CoreUiR.id.generatePasswordLayout)).perform(click())
         //    Then      I see the "Password" field is automatically filled in
         //    And       I see the password is obfuscated
-        onView(allOf(isDescendantOfA(withHint(hasToString("Enter password"))), withId(CoreUiR.id.input)))
+        onView(allOf(isDescendantOfA(withHint(hasToString(EditableFieldInput.ENTER_PASSWORD.hintName))), withId(CoreUiR.id.input)))
             .check(matches(isTextHidden()))
         //    And       I see the "Strength" bar is green
         onView(
@@ -295,9 +302,9 @@ class ResourcesCreationTest : KoinTest {
         )
             .check(matches(isDisplayed()))
             .check(matches(withProgressBarOfMinimumProgress(VeryStrong.progress)))
-        //    And       I see the "password strength" text is "Very strong"
-        onView(withId(CoreUiR.id.strengthDescription))
-            .check(matches(withText(VeryStrong.text)))
+        //    And       I see the "password strength" text is of format "%s (entropy: %.2f bits)", i.e. "Very strong (entropy: 209.25 bits)"
+        val format = ".* \\(entropy: \\d+\\.\\d{2} bits\\)"
+        onView(withId(CoreUiR.id.strengthDescription)).check(matches(withFormattedText(format)))
     }
 
     @Test

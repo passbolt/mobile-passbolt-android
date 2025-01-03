@@ -103,59 +103,17 @@ Note for instrumented tests run a set of environment variables with test user mu
 * `PASSBOLT_TEST_PASSPHRASE` - user's key passphrase
 * `PASSBOLT_TEST_LOCAL_USER_UUID` - a random uuid
 
-# How run instrumented tests with SauceLabs cloud
+# How to run instrumented tests locally
 
-Example running `saucectl` with espresso.
+For running instrumented tests there we set
+up [Gradle managed devices](https://developer.android.com/studio/test/gradle-managed-devices) for consistent results.
+Please use:
 
-### What You'll Need
-
-The steps below illustrate one of the quickest ways to get set up. If you'd like a more in-depth guide, please check out
-SauceLabs [documentation](https://docs.saucelabs.com/testrunner-toolkit/installation).
-
-### Install `saucectl`
-
-```shell
-curl -L https://saucelabs.github.io/saucectl/install | bash
-```
-
-### Install `saucectl` using Homebrew (macOS)
-
-```shell
-brew tap saucelabs/saucectl
-brew install saucectl
-```
-
-⚠ Make sure saucectl version is newer than **v0.44.0**
-
-### Set Your Sauce Labs Credentials
-
-```shell
-saucectl configure
-```
-
-### Prepare test artifacts
-
-```
-./gradlew --no-daemon --build-cache assembleDebug assembleAndroidTest
-```
-
-### Running Tests
-
-```shell
-saucectl run
-```
-
-![sauce cloud example](https://github.com/saucelabs/saucectl-espresso-example/blob/master/assets/sauce_cloud_example.gif?raw=true)
-
-### Sauce cloud support
-
-Espresso only works on sauce cloud for both Android Emulators and Real Devices.
-
-[Docker mode](https://docs.saucelabs.com/testrunner-toolkit/configuration/common-syntax/index.html#mode) is not supported.
-
-### The Config
-
-Go to `.sauce/config.yml` if you'd like to see how saucectl is configured for this repository.
+* `./gradlew pixel5@targetSdkautomatedTestsAndroidTest` to run all the tests or
+* `./gradlew pixel5@targetSdkautomatedTestsAndroidTest -Pandroid.testInstrumentationRunnerArguments.class={_packege_class}` to run
+  specific class tests.
+* `./gradlew pixel5@targetSdkautomatedTestsAndroidTest -Pandroid.testInstrumentationRunnerArguments.class={_packege_class}#{_method}` to run
+  specific test.
 
 # Credits
 

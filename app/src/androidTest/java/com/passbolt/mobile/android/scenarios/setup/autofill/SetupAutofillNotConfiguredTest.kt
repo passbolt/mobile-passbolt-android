@@ -39,13 +39,15 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import com.passbolt.mobile.android.accountinit.AccountDataCleaner
+import com.passbolt.mobile.android.accountinit.AccountInitializer
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.startup.StartUpActivity
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
 import com.passbolt.mobile.android.rules.IdlingResourceRule
-import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf
 import org.junit.Rule
@@ -64,7 +66,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class SetupAutofillNotConfiguredTest : KoinTest {
 
     @get:Rule
-    val startActivityRule = lazyActivitySetupScenarioRule<StartUpActivity>(
+    val startActivityRule = lazyActivityScenarioRule<StartUpActivity>(
         koinOverrideModules = listOf(instrumentationTestsModule, autofillNotConfiguredModuleTests),
         intentSupplier = {
             managedAccountIntentCreator.createIntent(
@@ -83,6 +85,8 @@ class SetupAutofillNotConfiguredTest : KoinTest {
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
+    private val accountDataCleaner: AccountDataCleaner by inject()
+    private val accountDataInitializer: AccountInitializer by inject()
 
     @BeforeTest
     fun setup() {
@@ -91,12 +95,12 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
         onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
         onView(withId(com.passbolt.mobile.android.feature.authentication.R.id.authButton)).perform(scrollTo(), click())
-        Intents.init()
+        accountDataInitializer.initializeAccount()
     }
 
     @AfterTest
     fun tearDown() {
-        Intents.release()
+        accountDataCleaner.clearAccountData()
     }
 
     @Test
@@ -118,6 +122,8 @@ class SetupAutofillNotConfiguredTest : KoinTest {
     @Test
     //    https://passbolt.testrail.io/index.php?/cases/view/2364
     fun asAMobileUserIShouldBeAbleToSetupPassboltAutofillDuringTheSetupProcessIfItIsNotAlreadyConfigured() {
+        Intents.init()
+
         //    Given     I am on the Autofill setup page
         onView(withId(R.id.maybeLaterButton)).perform((click()))
         //    When      I click on the "Go to settings" button
@@ -128,6 +134,8 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         )
         Intents.intended(expectedIntent)
         //    And       I can go back to the application
+
+        Intents.release()
     }
 
     @Test
@@ -136,7 +144,7 @@ class SetupAutofillNotConfiguredTest : KoinTest {
         //    Given     I am on the Autofill setup page
         onView(withId(R.id.maybeLaterButton)).perform((click()))
         //    When      I click on the "Maybe later" button
-        onView(withId(R.id.maybeLaterButton)).perform(click())
+        onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.maybeLaterButton)).perform(click())
         //    Then      I am redirected to the home page
         onView(withId(com.passbolt.mobile.android.feature.permissions.R.id.rootLayout)).check(matches(isDisplayed()))
     }

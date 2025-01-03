@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android
 
+import com.passbolt.mobile.android.accountinit.AccountDataCleaner
 import com.passbolt.mobile.android.accountinit.AccountInitializer
 import com.passbolt.mobile.android.core.security.rootdetection.RootDetector
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
@@ -41,4 +42,5 @@ val instrumentationTestsModule = module {
     }
     singleOf(::ManagedAccountIntentCreator)
     singleOf(::AccountInitializer)
+    singleOf(::AccountDataCleaner)
 }

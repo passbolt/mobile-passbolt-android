@@ -39,14 +39,16 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import com.passbolt.mobile.android.accountinit.AccountDataCleaner
+import com.passbolt.mobile.android.accountinit.AccountInitializer
 import com.passbolt.mobile.android.core.idlingresource.SignInIdlingResource
 import com.passbolt.mobile.android.feature.setup.R
 import com.passbolt.mobile.android.feature.setup.SetUpActivity
-import com.passbolt.mobile.android.hasDrawable
 import com.passbolt.mobile.android.instrumentationTestsModule
 import com.passbolt.mobile.android.intents.ManagedAccountIntentCreator
+import com.passbolt.mobile.android.matchers.hasDrawable
 import com.passbolt.mobile.android.rules.IdlingResourceRule
-import com.passbolt.mobile.android.rules.lazyActivitySetupScenarioRule
+import com.passbolt.mobile.android.rules.lazyActivityScenarioRule
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf
 import org.junit.Rule
@@ -64,7 +66,7 @@ import com.passbolt.mobile.android.core.ui.R as CoreUiR
 class SetupConfigureBiometricUnavailableTest : KoinTest {
 
     @get:Rule
-    val startActivityRule = lazyActivitySetupScenarioRule<SetUpActivity>(koinOverrideModules = listOf(
+    val startActivityRule = lazyActivityScenarioRule<SetUpActivity>(koinOverrideModules = listOf(
         instrumentationTestsModule,
         biometricSetupUnavailableModuleTests
     ),
@@ -84,18 +86,20 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA)
 
     private val managedAccountIntentCreator: ManagedAccountIntentCreator by inject()
+    private val accountDataCleaner: AccountDataCleaner by inject()
+    private val accountDataInitializer: AccountInitializer by inject()
 
     @BeforeTest
     fun setup() {
         onView(withId(R.id.connectToAccountButton)).perform(click())
         onView(withId(R.id.scanQrCodesButton)).perform(scrollTo(), click())
         onView(withId(com.passbolt.mobile.android.feature.autofill.R.id.button)).perform(click())
-        Intents.init()
+        accountDataInitializer.initializeAccount()
     }
 
     @AfterTest
     fun tearDown() {
-        Intents.release()
+        accountDataCleaner.clearAccountData()
     }
 
     @Test
@@ -120,6 +124,8 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
     @Test
     // https://passbolt.testrail.io/index.php?/cases/view/2359
     fun asAMobileUserICanConfigureBiometricsToUseItOnTheDevice() {
+        Intents.init()
+
         //    Given     I don't have biometrics configured on my device
         //    And       I am on the Configure {biometrics provider} screen
         onView(withId(CoreUiR.id.input)).perform(typeText(managedAccountIntentCreator.getPassphrase()))
@@ -132,6 +138,8 @@ class SetupConfigureBiometricUnavailableTest : KoinTest {
         )
         Intents.intended(expectedIntent)
         //    And       I can go back to the application
+
+        Intents.release()
     }
 
     @Test
