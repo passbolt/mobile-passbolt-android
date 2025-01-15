@@ -14,9 +14,11 @@ import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchCont
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.jsonmodel.JSON_MODEL_GSON
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathJsonPathOps
 import com.passbolt.mobile.android.jsonmodel.jsonpathops.JsonPathsOps
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -54,6 +56,8 @@ internal val mockHomeDataInteractor = mock<HomeDataInteractor>()
 internal val mockGetLocalResourceUseCase = mock<GetLocalResourceUseCase>()
 internal val mockGetLocalFolderPermissionsUseCase = mock<GetLocalFolderPermissionsUseCase>()
 internal val mockGetLocalFolderUseCase = mock<GetLocalFolderDetailsUseCase>()
+internal val mockResourceTypeIdToSlugMappingProvider = mock<ResourceTypeIdToSlugMappingProvider>()
+internal val mockGetLocalMetadataKeysUseCase = mock<GetLocalMetadataKeysUseCase>()
 
 @ExperimentalCoroutinesApi
 internal val testResourcePermissionsModule = module {
@@ -69,7 +73,9 @@ internal val testResourcePermissionsModule = module {
             getLocalFolderUseCase = mockGetLocalFolderUseCase,
             resourceShareInteractor = mockResourceShareInteractor,
             homeDataInteractor = mockHomeDataInteractor,
-            coroutineLaunchContext = get()
+            coroutineLaunchContext = get(),
+            resourceTypeIdToSlugMappingProvider = mockResourceTypeIdToSlugMappingProvider,
+            getLocalMetadataKeysUseCase = mockGetLocalMetadataKeysUseCase
         )
     }
     single(named(JSON_MODEL_GSON)) { Gson() }

@@ -35,69 +35,93 @@ class ResourceTypesUpdatesAdjacencyGraphTest {
     fun `actions are correct for simple password`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.PasswordString.slug)
 
-        assertThat(actions).hasSize(1)
-        assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
+        assertThat(actions).hasSize(2)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_PASSWORD,
+            UpdateAction.EDIT_METADATA
+        )
     }
 
     @Test
     fun `actions are correct for V5 simple password`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.V5PasswordString.slug)
 
-        assertThat(actions).hasSize(1)
-        assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
+        assertThat(actions).hasSize(2)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_PASSWORD,
+            UpdateAction.EDIT_METADATA
+        )
     }
 
     @Test
     fun `actions are correct for password and description`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.PasswordAndDescription.slug)
 
-        assertThat(actions).hasSize(2)
-        assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
-        assertThat(actions.any { it.action == UpdateAction.ADD_TOTP }).isTrue()
+        assertThat(actions).hasSize(3)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_PASSWORD,
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_TOTP
+        )
     }
 
     @Test
     fun `actions are correct for v5 default`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.V5Default.slug)
 
-        assertThat(actions).hasSize(2)
-        assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
-        assertThat(actions.any { it.action == UpdateAction.ADD_TOTP }).isTrue()
+        assertThat(actions).hasSize(3)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_PASSWORD,
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.ADD_TOTP
+        )
     }
 
     @Test
     fun `actions are correct for password description totp`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.PasswordDescriptionTotp.slug)
 
-        assertThat(actions).hasSize(3)
-        assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
-        assertThat(actions.any { it.action == UpdateAction.EDIT_TOTP }).isTrue()
-        assertThat(actions.any { it.action == UpdateAction.REMOVE_TOTP }).isTrue()
+        assertThat(actions).hasSize(4)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_PASSWORD,
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.EDIT_TOTP,
+            UpdateAction.REMOVE_TOTP
+        )
     }
 
     @Test
     fun `actions are correct for v5 password description totp`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.PasswordDescriptionTotp.slug)
 
-        assertThat(actions).hasSize(3)
-        assertThat(actions.any { it.action == UpdateAction.EDIT_PASSWORD }).isTrue()
-        assertThat(actions.any { it.action == UpdateAction.EDIT_TOTP }).isTrue()
-        assertThat(actions.any { it.action == UpdateAction.REMOVE_TOTP }).isTrue()
+        assertThat(actions).hasSize(4)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_PASSWORD,
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.EDIT_TOTP,
+            UpdateAction.REMOVE_TOTP
+        )
     }
 
     @Test
     fun `actions are correct for totp`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.Totp.slug)
 
-        assertThat(actions).hasSize(1)
-        assertThat(actions.any { it.action == UpdateAction.EDIT_TOTP }).isTrue()
+        assertThat(actions).hasSize(2)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.EDIT_TOTP,
+        )
     }
 
     @Test
     fun `actions are correct for v5 standalone totp`() {
         val actions = graph.getUpdateActionsMetadata(ContentType.V5TotpStandalone.slug)
 
-        assertThat(actions).hasSize(1)
-        assertThat(actions.any { it.action == UpdateAction.EDIT_TOTP }).isTrue()
+        assertThat(actions).hasSize(2)
+        assertThat(actions.map { it.action }).containsExactly(
+            UpdateAction.EDIT_METADATA,
+            UpdateAction.EDIT_TOTP,
+        )
     }
 }

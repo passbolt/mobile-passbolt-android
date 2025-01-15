@@ -40,12 +40,13 @@ import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteracto
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.AddLocalResourceUseCase
 import com.passbolt.mobile.android.core.secrets.usecase.decrypt.parser.SecretModel
-import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.core.users.usecase.db.GetLocalCurrentUserUseCase
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.metadata.usecase.GetMetadataKeysSettingsUseCase
 import com.passbolt.mobile.android.metadata.usecase.GetMetadataTypesSettingsUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.ENCRYPT
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.PasswordAndDescription
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType.Totp
@@ -183,7 +184,7 @@ class ResourceCreateActionsInteractor(
         }
 
         val metadataKeyId = if (metadataKeyType == MetadataKeyTypeModel.SHARED) {
-            getMetadataKeysUseCase.execute(Unit).firstOrNull()?.id?.toString()
+            getMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(ENCRYPT)).firstOrNull()?.id?.toString()
         } else {
             getLocalCurrentUserUseCase.execute(Unit).user.gpgKey.id
         }

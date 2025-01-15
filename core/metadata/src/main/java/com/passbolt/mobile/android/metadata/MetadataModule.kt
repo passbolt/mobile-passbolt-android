@@ -12,6 +12,7 @@ import com.passbolt.mobile.android.metadata.usecase.FetchMetadataSessionKeysUseC
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataTypesSettingsUseCase
 import com.passbolt.mobile.android.metadata.usecase.SaveMetadataSessionKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.AddLocalMetadataKeysUseCase
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.RebuildMetadataKeysTablesUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.RemoveLocalMetadataKeysUseCase
@@ -49,6 +50,7 @@ val metadataModule = module {
     singleOf(::MetadataKeysInteractor)
     singleOf(::AddLocalMetadataKeysUseCase)
     singleOf(::GetLocalMetadataKeysUseCase)
+    singleOf(::GetLocalMetadataKeyUseCase)
     singleOf(::RebuildMetadataKeysTablesUseCase)
     singleOf(::RemoveLocalMetadataKeysUseCase)
     singleOf(::FetchMetadataTypesSettingsUseCase)

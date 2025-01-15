@@ -40,6 +40,7 @@ import com.passbolt.mobile.android.serializers.gson.strictTypeAdapters
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.serializers.jsonschema.jsonSchemaModule
 import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
@@ -65,10 +66,10 @@ val serializersModule = module {
         )
     }
     factory { (
-                 resourceTypeIdToSlugMapping: Map<UUID, String>,
-                 supportedResourceTypesIds: Set<UUID>,
-                 metadataKeys: List<ParsedMetadataKeyModel>
-             ) ->
+                  resourceTypeIdToSlugMapping: Map<UUID, String>,
+                  supportedResourceTypesIds: Set<UUID>,
+                  metadataKeys: List<ParsedMetadataKeyModel>
+              ) ->
         ResourceListItemDeserializer(
             jsonSchemaValidationRunner = get(),
             gson = get(named(STRICT_ADAPTERS_ONLY_GSON)),
@@ -86,13 +87,7 @@ val serializersModule = module {
             metadataKeys = metadataKeys
         )
     }
-    factory { (metadataKeys: List<ParsedMetadataKeyModel>) ->
-        MetadataEncryptor(
-            getSelectedUserPrivateKeyUseCase = get(),
-            openPgp = get(),
-            metadataKeys = metadataKeys
-        )
-    }
+    factoryOf(::MetadataEncryptor)
     single {
         GsonBuilder()
             .serializeNulls()

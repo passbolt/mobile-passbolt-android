@@ -33,6 +33,7 @@ import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV4Dto
 import com.passbolt.mobile.android.dto.response.ResourceResponseV5Dto
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.DECRYPT
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.allSlugs
@@ -70,7 +71,7 @@ open class SingleResourceDeserializer(
                 .filter { it.value in allSlugs }
                 .keys
 
-            val metadataKeys = getLocalMetadataKeys.execute(Unit)
+            val metadataKeys = getLocalMetadataKeys.execute(GetLocalMetadataKeysUseCase.Input(DECRYPT))
             val metadataDecryptor = get<MetadataDecryptor> { parametersOf(metadataKeys) }
 
             val resourceTypeId = json.asJsonObject[SerializedNames.RESOURCE_TYPE_ID].asString

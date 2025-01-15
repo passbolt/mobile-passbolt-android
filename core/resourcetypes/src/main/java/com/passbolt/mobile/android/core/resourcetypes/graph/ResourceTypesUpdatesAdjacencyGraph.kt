@@ -52,34 +52,42 @@ class ResourceTypesUpdatesAdjacencyGraph {
 
         // edges (actions)
         map[simplePassword] = listOf(
-            ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.EDIT_PASSWORD)
+            ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.EDIT_PASSWORD),
+            ResourceTypeEdge(simplePassword, simplePassword, UpdateAction.EDIT_METADATA)
         )
         map[v5PasswordString] = listOf(
-            ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.EDIT_PASSWORD)
+            ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.EDIT_PASSWORD),
+            ResourceTypeEdge(v5PasswordString, v5PasswordString, UpdateAction.EDIT_METADATA)
         )
         map[passwordAndDescription] = listOf(
             ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.EDIT_PASSWORD),
+            ResourceTypeEdge(passwordAndDescription, passwordAndDescription, UpdateAction.EDIT_METADATA),
             ResourceTypeEdge(passwordAndDescription, passwordDescriptionTotp, UpdateAction.ADD_TOTP)
         )
         map[v5Default] = listOf(
             ResourceTypeEdge(v5Default, v5Default, UpdateAction.EDIT_PASSWORD),
+            ResourceTypeEdge(v5Default, v5Default, UpdateAction.EDIT_METADATA),
             ResourceTypeEdge(v5Default, v5DefaultWithTotp, UpdateAction.ADD_TOTP)
         )
         map[passwordDescriptionTotp] = listOf(
             ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.EDIT_PASSWORD),
+            ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.EDIT_METADATA),
             ResourceTypeEdge(passwordDescriptionTotp, passwordDescriptionTotp, UpdateAction.EDIT_TOTP),
             ResourceTypeEdge(passwordDescriptionTotp, passwordAndDescription, UpdateAction.REMOVE_TOTP)
         )
         map[v5DefaultWithTotp] = listOf(
             ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.EDIT_PASSWORD),
+            ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.EDIT_METADATA),
             ResourceTypeEdge(v5DefaultWithTotp, v5DefaultWithTotp, UpdateAction.EDIT_TOTP),
             ResourceTypeEdge(v5DefaultWithTotp, v5Default, UpdateAction.REMOVE_TOTP)
         )
         map[totp] = listOf(
-            ResourceTypeEdge(totp, totp, UpdateAction.EDIT_TOTP)
+            ResourceTypeEdge(totp, totp, UpdateAction.EDIT_TOTP),
+            ResourceTypeEdge(totp, totp, UpdateAction.EDIT_METADATA)
         )
         map[v5Totp] = listOf(
-            ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.EDIT_TOTP)
+            ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.EDIT_TOTP),
+            ResourceTypeEdge(v5Totp, v5Totp, UpdateAction.EDIT_METADATA)
         )
 
         adjacencyMap = map

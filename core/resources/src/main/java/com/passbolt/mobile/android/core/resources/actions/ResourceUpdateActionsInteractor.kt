@@ -35,6 +35,7 @@ import com.passbolt.mobile.android.feature.authentication.session.runAuthenticat
 import com.passbolt.mobile.android.jsonmodel.delegates.TotpSecret
 import com.passbolt.mobile.android.serializers.jsonschema.SchemaEntity
 import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel
 import com.passbolt.mobile.android.ui.MetadataTypeModel.V4
 import com.passbolt.mobile.android.ui.MetadataTypeModel.V5
@@ -326,6 +327,31 @@ class ResourceUpdateActionsInteractor(
                         this.description = description.orEmpty()
                     },
                     passwordChanged = decryptedSecret.secret != password
+                )
+            }
+        )
+
+    suspend fun reEncryptResourceMetadata(
+        metadataKeyId: String,
+        metadataKeyType: MetadataKeyTypeModel
+    ): Flow<ResourceUpdateActionResult> =
+        updateResource(
+            updateAction = UpdateAction.EDIT_METADATA,
+            updateResource = { newResourceType, _ ->
+                UpdateResourceModel(
+                    resourceId = resource.resourceId,
+                    contentType = newResourceType,
+                    folderId = resource.folderId,
+                    expiry = resource.expiry,
+                    json = resource.json,
+                    metadataKeyId = metadataKeyId,
+                    metadataKeyType = metadataKeyType
+                )
+            },
+            updateSecret = { decryptedSecret ->
+                SecretInput(
+                    secretModel = decryptedSecret,
+                    passwordChanged = false
                 )
             }
         )

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 17,
-    "identityHash": "0d46899712f0d5788741a96abf0856c9",
+    "identityHash": "e09cfd45b37e9c38e4c4c27476a480a4",
     "entities": [
       {
         "tableName": "Resource",
@@ -795,7 +795,7 @@
       },
       {
         "tableName": "MetadataKey",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `fingerprint` TEXT, `armoredKey` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `fingerprint` TEXT, `armoredKey` TEXT NOT NULL, `expired` INTEGER, `deleted` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -814,6 +814,18 @@
             "columnName": "armoredKey",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "expired",
+            "columnName": "expired",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "deleted",
+            "columnName": "deleted",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -879,7 +891,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0d46899712f0d5788741a96abf0856c9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e09cfd45b37e9c38e4c4c27476a480a4')"
     ]
   }
 }

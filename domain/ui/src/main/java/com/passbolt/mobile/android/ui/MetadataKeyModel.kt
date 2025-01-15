@@ -23,12 +23,15 @@
 
 package com.passbolt.mobile.android.ui
 
+import java.time.ZonedDateTime
 import java.util.UUID
 
 data class MetadataKeyModel(
     val id: UUID,
     val fingerprint: String?,
     val armoredKey: String,
+    val expired: ZonedDateTime?,
+    val deleted: ZonedDateTime?,
     val metadataPrivateKeys: List<MetadataPrivateKeyModel>
 )
 
