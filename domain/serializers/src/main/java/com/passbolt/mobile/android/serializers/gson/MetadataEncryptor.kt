@@ -3,18 +3,19 @@ package com.passbolt.mobile.android.serializers.gson
 import com.passbolt.mobile.android.core.accounts.usecase.privatekey.GetSelectedUserPrivateKeyUseCase
 import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeyUseCase
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
-import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 import timber.log.Timber
 
 class MetadataEncryptor(
     private val getSelectedUserPrivateKeyUseCase: GetSelectedUserPrivateKeyUseCase,
-    private val metadataKeys: List<ParsedMetadataKeyModel>,
+    private val getLocalMetadataKeyUseCase: GetLocalMetadataKeyUseCase,
     private val openPgp: OpenPgp
 ) {
 
     suspend fun encryptMetadata(
         metadataKeyTypeModel: MetadataKeyTypeModel,
+        metadataKeyId: String,
         metadataJsonString: String,
         usersPrivateKeyPassphrase: ByteArray
     ): Output {
@@ -26,10 +27,11 @@ class MetadataEncryptor(
                     privateKey to usersPrivateKeyPassphrase
                 }
                 MetadataKeyTypeModel.SHARED -> {
-                    val metadataPrivateKey = metadataKeys
+                    val metadataPrivateKey = getLocalMetadataKeyUseCase.execute(
+                        GetLocalMetadataKeyUseCase.Input(metadataKeyId)
+                    )
+                        .metadataPrivateKeys
                         .firstOrNull()
-                        ?.metadataPrivateKeys
-                        ?.firstOrNull()
 
                     require(metadataPrivateKey != null) { "Metadata private key not found" }
 

@@ -1,3 +1,11 @@
+package com.passbolt.mobile.android.metadata.usecase.db
+
+import com.passbolt.mobile.android.common.usecase.AsyncUseCase
+import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
+import com.passbolt.mobile.android.database.DatabaseProvider
+import com.passbolt.mobile.android.mappers.MetadataMapper
+import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
+
 /**
  * Passbolt - Open source password manager for teams
  * Copyright (c) 2021 Passbolt SA
@@ -20,13 +28,18 @@
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
+class GetLocalMetadataKeyUseCase(
+    private val databaseProvider: DatabaseProvider,
+    private val metadataMapper: MetadataMapper
+) : AsyncUseCase<GetLocalMetadataKeyUseCase.Input, ParsedMetadataKeyModel>,
+    SelectedAccountUseCase {
 
-package com.passbolt.mobile.android.core.resourcetypes.graph
+    override suspend fun execute(input: Input): ParsedMetadataKeyModel =
+        databaseProvider
+            .get(selectedAccountId)
+            .metadataKeysDao()
+            .getMetadataKey(input.metadataKeyId)
+            .let { metadataMapper.mapToUi(it) }
 
-enum class UpdateAction {
-    EDIT_PASSWORD,
-    EDIT_TOTP,
-    ADD_TOTP,
-    REMOVE_TOTP,
-    EDIT_METADATA
+    data class Input(val metadataKeyId: String)
 }

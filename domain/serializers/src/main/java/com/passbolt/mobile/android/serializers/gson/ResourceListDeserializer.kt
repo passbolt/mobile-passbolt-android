@@ -29,6 +29,7 @@ import com.google.gson.JsonElement
 import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.dto.response.ResourceResponseDto
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.DECRYPT
 import com.passbolt.mobile.android.supportedresourceTypes.SupportedContentTypes.allSlugs
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
@@ -61,7 +62,7 @@ open class ResourceListDeserializer(
                 .filter { it.value in allSlugs }
                 .keys
 
-            val metadataKeys = getLocalMetadataKeysUseCase.execute(Unit)
+            val metadataKeys = getLocalMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(DECRYPT))
 
             val singleResourceDeserializer = get<ResourceListItemDeserializer> {
                 parametersOf(resourceTypeIdToSlugMapping, supportedResourceTypesIds, metadataKeys)

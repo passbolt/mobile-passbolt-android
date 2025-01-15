@@ -31,6 +31,8 @@ data class MetadataKeysResponseDto(
     val fingerprint: String,
     @SerializedName("armored_key")
     val armoredKey: String,
+    val expired: String?,
+    val deleted: String?,
     @SerializedName("metadata_private_keys")
     val metadataPrivateKeys: List<MetadataPrivateKeyDto>
 )

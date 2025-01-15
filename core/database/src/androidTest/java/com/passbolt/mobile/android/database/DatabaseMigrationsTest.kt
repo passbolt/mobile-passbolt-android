@@ -363,7 +363,8 @@ class DatabaseMigrationsTest {
             .apply {
                 execSQL("INSERT INTO ResourceType VALUES('1', 'resourceTypeName', 'resourceTypeSlug', 1644909225833)")
 
-                execSQL("INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey')")
+                execSQL("INSERT INTO MetadataKey VALUES('id', 'fingerprint', 'armoredKey', 1644909225833, 1644909225833)")
+                execSQL("INSERT INTO MetadataKey VALUES('id2', 'fingerprint', 'armoredKey', null, null)")
                 execSQL(
                     "INSERT INTO MetadataPrivateKey VALUES(0,'id', 'userId', 'data')"
                 )

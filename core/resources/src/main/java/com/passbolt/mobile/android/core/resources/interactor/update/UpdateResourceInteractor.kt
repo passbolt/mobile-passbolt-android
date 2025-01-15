@@ -44,7 +44,6 @@ import com.passbolt.mobile.android.gopenpgp.OpenPgp
 import com.passbolt.mobile.android.gopenpgp.exception.OpenPgpResult
 import com.passbolt.mobile.android.mappers.MetadataMapper
 import com.passbolt.mobile.android.mappers.ResourceModelMapper
-import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.passboltapi.resource.ResourceRepository
 import com.passbolt.mobile.android.serializers.gson.MetadataEncryptor
 import com.passbolt.mobile.android.serializers.gson.validation.JsonSchemaValidationRunner
@@ -59,8 +58,6 @@ import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.UpdateResourceModel
 import com.passbolt.mobile.android.ui.UserModel
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
-import org.koin.core.parameter.parametersOf
 import java.time.ZonedDateTime
 
 class UpdateResourceInteractor(
@@ -74,8 +71,8 @@ class UpdateResourceInteractor(
     private val getPrivateKeyUseCase: GetPrivateKeyUseCase,
     private val openPgp: OpenPgp,
     private val passwordExpirySettingsUseCase: GetPasswordExpirySettingsUseCase,
-    private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
-    private val metadataMapper: MetadataMapper
+    private val metadataMapper: MetadataMapper,
+    private val metadataEncryptor: MetadataEncryptor
 ) : KoinComponent {
 
     suspend fun execute(resourceInput: UpdateResourceModel, secretInput: SecretInput): Output {
@@ -138,10 +135,9 @@ class UpdateResourceInteractor(
                     this.resourceTypeId = getResourceTypeIdForSlug(contentType.slug)
                 }
 
-                val metadataKeys = getLocalMetadataKeysUseCase.execute(Unit)
-                val metadataEncryptor = get<MetadataEncryptor> { parametersOf(metadataKeys) }
                 val encryptedMetadata = metadataEncryptor.encryptMetadata(
                     resourceInput.metadataKeyType!!,
+                    resourceInput.metadataKeyId!!,
                     resourceInput.json,
                     passphrase
                 )

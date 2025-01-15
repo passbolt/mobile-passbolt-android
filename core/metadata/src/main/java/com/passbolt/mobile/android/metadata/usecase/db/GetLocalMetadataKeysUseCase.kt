@@ -4,6 +4,8 @@ import com.passbolt.mobile.android.common.usecase.AsyncUseCase
 import com.passbolt.mobile.android.core.accounts.usecase.SelectedAccountUseCase
 import com.passbolt.mobile.android.database.DatabaseProvider
 import com.passbolt.mobile.android.mappers.MetadataMapper
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.DECRYPT
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.ENCRYPT
 import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 
 /**
@@ -31,13 +33,31 @@ import com.passbolt.mobile.android.ui.ParsedMetadataKeyModel
 class GetLocalMetadataKeysUseCase(
     private val databaseProvider: DatabaseProvider,
     private val metadataMapper: MetadataMapper
-) : AsyncUseCase<Unit, List<ParsedMetadataKeyModel>>,
+) : AsyncUseCase<GetLocalMetadataKeysUseCase.Input, List<ParsedMetadataKeyModel>>,
     SelectedAccountUseCase {
 
-    override suspend fun execute(input: Unit): List<ParsedMetadataKeyModel> =
-        databaseProvider
+    override suspend fun execute(input: Input): List<ParsedMetadataKeyModel> {
+        val metadataKeysDao = databaseProvider
             .get(selectedAccountId)
             .metadataKeysDao()
-            .getMetadataKeysWithPrivateKeys()
-            .let { metadataMapper.mapToUi(it) }
+
+        return when (input.purpose) {
+            ENCRYPT -> metadataKeysDao.getEncryptionMetadataKeysWithPrivateKeys()
+            DECRYPT -> metadataKeysDao.getDecryptionMetadataKeysWithPrivateKeys()
+        }.let { metadataMapper.mapToUi(it) }
+    }
+
+    data class Input(val purpose: MetadataKeyPurpose)
+
+    enum class MetadataKeyPurpose {
+        /**
+         * Metadata keys that are not expired and deleted. Those should be used for encryption.
+         */
+        ENCRYPT,
+
+        /**
+         * Metadata keys that may be expired. They may be used for decryption of not yet migrated items.
+         */
+        DECRYPT
+    }
 }

@@ -4,6 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -33,7 +34,9 @@ data class MetadataKey(
     @PrimaryKey
     val id: String,
     val fingerprint: String?,
-    val armoredKey: String
+    val armoredKey: String,
+    val expired: ZonedDateTime?,
+    val deleted: ZonedDateTime?
 )
 
 data class MetadataKeyWithPrivateKeys(

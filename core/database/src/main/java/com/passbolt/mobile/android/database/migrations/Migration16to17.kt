@@ -52,6 +52,8 @@ object Migration16to17 : Migration(16, 17) {
             "`id` TEXT NOT NULL, " +
             "`fingerprint` TEXT, " +
             "`armoredKey` TEXT NOT NULL, " +
+            "`expired` INTEGER, " +
+            "`deleted` INTEGER, " +
             "PRIMARY KEY(`id`)" +
             ")"
     private const val CREATE_METADATA_PRIVATE_KEYS = "CREATE TABLE IF NOT EXISTS MetadataPrivateKey (" +

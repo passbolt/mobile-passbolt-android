@@ -59,6 +59,8 @@ class MetadataMapper {
             id = dto.id,
             fingerprint = dto.fingerprint,
             armoredKey = dto.armoredKey,
+            expired = dto.expired?.let { ZonedDateTime.parse(it) },
+            deleted = dto.deleted?.let { ZonedDateTime.parse(it) },
             metadataPrivateKeys = dto.metadataPrivateKeys.map { metadataPrivateKey ->
                 MetadataPrivateKeyModel(
                     userId = metadataPrivateKey.userId,
@@ -71,7 +73,9 @@ class MetadataMapper {
     fun map(uiModel: MetadataKeyModel) = MetadataKey(
         id = uiModel.id.toString(),
         fingerprint = uiModel.fingerprint,
-        armoredKey = uiModel.armoredKey
+        armoredKey = uiModel.armoredKey,
+        expired = uiModel.expired,
+        deleted = uiModel.deleted
     )
 
     fun map(uiModel: MetadataPrivateKeyModel) = MetadataPrivateKey(
@@ -80,23 +84,25 @@ class MetadataMapper {
         data = uiModel.keyData
     )
 
-    fun mapToUi(daoModel: List<MetadataKeyWithPrivateKeys>): List<ParsedMetadataKeyModel> {
+    fun mapToUi(daoModel: List<MetadataKeyWithPrivateKeys>): List<ParsedMetadataKeyModel> =
+        daoModel.map(::mapToUi)
+
+    fun mapToUi(dao: MetadataKeyWithPrivateKeys): ParsedMetadataKeyModel {
         // TODO(v5) inject - currently graph loop
         val gson = Gson()
-        return daoModel.map {
-            ParsedMetadataKeyModel(
-                id = UUID.fromString(it.metadataKey.id),
-                armoredKey = it.metadataKey.armoredKey,
-                metadataPrivateKeys = it.metadataPrivateKeys.map { metadataPrivateKey ->
-                    val parsedPrivateKey = gson.fromJson(metadataPrivateKey.data, JsonObject::class.java)
-                    ParsedMetadataPrivateKeyModel(
-                        userId = metadataPrivateKey.userId?.let { UUID.fromString(it) },
-                        armoredKey = parsedPrivateKey.get(KEY_ARMORED_KEY).asString,
-                        passphrase = parsedPrivateKey.get(KEY_PASSPHRASE).asString
-                    )
-                }
-            )
-        }
+
+        return ParsedMetadataKeyModel(
+            id = UUID.fromString(dao.metadataKey.id),
+            armoredKey = dao.metadataKey.armoredKey,
+            metadataPrivateKeys = dao.metadataPrivateKeys.map { metadataPrivateKey ->
+                val parsedPrivateKey = gson.fromJson(metadataPrivateKey.data, JsonObject::class.java)
+                ParsedMetadataPrivateKeyModel(
+                    userId = metadataPrivateKey.userId?.let { UUID.fromString(it) },
+                    armoredKey = parsedPrivateKey.get(KEY_ARMORED_KEY).asString,
+                    passphrase = parsedPrivateKey.get(KEY_PASSPHRASE).asString
+                )
+            }
+        )
     }
 
     private fun MetadataTypeDto.mapToUi() = when (this) {
@@ -145,13 +151,13 @@ class MetadataMapper {
     fun map(value: HashMap<SessionKeyIdentifier, SessionKeyModel>): SessionKeysBundleDto =
         value
             .mapTo(mutableListOf()) { (id, keyModel) ->
-            SessionKeyDto(
-                foreignModel = id.foreignModel,
-                foreignId = id.foreignId,
-                sessionKey = keyModel.sessionKey,
-                modified = keyModel.modified.toString()
-            )
-        }
+                SessionKeyDto(
+                    foreignModel = id.foreignModel,
+                    foreignId = id.foreignId,
+                    sessionKey = keyModel.sessionKey,
+                    modified = keyModel.modified.toString()
+                )
+            }
             .toList()
             .let {
                 SessionKeysBundleDto(

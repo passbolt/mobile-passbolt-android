@@ -302,6 +302,14 @@ class PermissionsFragment :
         )
     }
 
+    override fun showReEncyptMetadataFailure() {
+        showSnackbar(
+            LocalizationR.string.common_metadata_encryption_failure,
+            anchorView = snackbarAnchorView,
+            backgroundColor = CoreUiR.color.red
+        )
+    }
+
     override fun showProgress() {
         showProgressDialog(childFragmentManager)
     }

@@ -54,6 +54,7 @@ interface PermissionsContract {
         fun showSecretFetchFailure()
         fun showSecretEncryptFailure()
         fun showSecretDecryptFailure()
+        fun showReEncyptMetadataFailure()
         fun showProgress()
         fun hideProgress()
         fun closeWithShareSuccessResult()

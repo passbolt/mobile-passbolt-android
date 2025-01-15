@@ -6,19 +6,32 @@ import com.passbolt.mobile.android.core.commonfolders.usecase.db.GetLocalFolderP
 import com.passbolt.mobile.android.core.fulldatarefresh.HomeDataInteractor
 import com.passbolt.mobile.android.core.fulldatarefresh.base.DataRefreshViewReactivePresenter
 import com.passbolt.mobile.android.core.mvp.coroutinecontext.CoroutineLaunchContext
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionResult
+import com.passbolt.mobile.android.core.resources.actions.ResourceUpdateActionsInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor
 import com.passbolt.mobile.android.core.resources.usecase.ResourceShareInteractor.Output
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourcePermissionsUseCase
 import com.passbolt.mobile.android.core.resources.usecase.db.GetLocalResourceUseCase
+import com.passbolt.mobile.android.core.resourcetypes.usecase.db.ResourceTypeIdToSlugMappingProvider
 import com.passbolt.mobile.android.feature.authentication.session.runAuthenticatedOperation
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
+import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase.MetadataKeyPurpose.ENCRYPT
 import com.passbolt.mobile.android.permissions.permissions.validation.HasAtLeastOneOwnerPermission
+import com.passbolt.mobile.android.supportedresourceTypes.ContentType
+import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.PermissionModelUi
+import com.passbolt.mobile.android.ui.ResourceModel
 import com.passbolt.mobile.android.ui.ResourcePermission
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
+import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
+import timber.log.Timber
+import java.util.UUID
 
 /**
  * Passbolt - Open source password manager for teams
@@ -51,6 +64,8 @@ class PermissionsPresenter(
     private val permissionModelUiComparator: PermissionModelUiComparator,
     private val resourceShareInteractor: ResourceShareInteractor,
     private val homeDataInteractor: HomeDataInteractor,
+    private val resourceTypeIdToSlugMappingProvider: ResourceTypeIdToSlugMappingProvider,
+    private val getLocalMetadataKeysUseCase: GetLocalMetadataKeysUseCase,
     coroutineLaunchContext: CoroutineLaunchContext
 ) : PermissionsContract.Presenter,
     DataRefreshViewReactivePresenter<PermissionsContract.View>(coroutineLaunchContext) {
@@ -165,28 +180,74 @@ class PermissionsPresenter(
                 }
             }
             onValid {
-                shareResource()
+                updateIfNeededAndShareResource()
             }
         }
     }
 
-    private fun shareResource() {
+    private fun shouldReEncryptUserResourceMetadataWithSharedKey(
+        contentType: ContentType,
+        resource: ResourceModel
+    ) =
+        contentType.isV5() && resource.metadataKeyType == MetadataKeyTypeModel.PERSONAL && recipients.size > 1
+
+    private fun updateIfNeededAndShareResource() {
         view?.showProgress()
         scope.launch {
-            when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
-                resourceShareInteractor.simulateAndShareResource(id, recipients)
-            }) {
-                is Output.SecretDecryptFailure -> view?.showSecretDecryptFailure()
-                is Output.SecretEncryptFailure -> view?.showSecretEncryptFailure()
-                is Output.SecretFetchFailure -> view?.showSecretFetchFailure()
-                is Output.ShareFailure -> view?.showShareFailure()
-                is Output.SimulateShareFailure -> view?.showShareSimulationFailure()
-                is Output.Success -> shareSuccess()
-                is Output.Unauthorized -> {
-                    /* not interested */
-                }
+            val resource = getLocalResourceUseCase.execute(GetLocalResourceUseCase.Input(id)).resource
+            val contentType = ContentType.fromSlug(
+                resourceTypeIdToSlugMappingProvider.provideMappingForSelectedAccount()[
+                    UUID.fromString(resource.resourceTypeId)
+                ]!!
+            )
+
+            if (shouldReEncryptUserResourceMetadataWithSharedKey(contentType, resource)) {
+                reEncryptUserResourceMetadataWithSharedKey(resource)
             }
+            shareResource()
+
             view?.hideProgress()
+        }
+    }
+
+    private suspend fun reEncryptUserResourceMetadataWithSharedKey(resource: ResourceModel) {
+        val metadataKeyId = getLocalMetadataKeysUseCase.execute(GetLocalMetadataKeysUseCase.Input(ENCRYPT))
+            .firstOrNull()
+            ?.id
+
+        val resourceUpdateActionsInteractor = get<ResourceUpdateActionsInteractor> {
+            parametersOf(resource, needSessionRefreshFlow, sessionRefreshedFlow)
+        }
+        if (metadataKeyId == null) {
+            Timber.e(
+                "Resource metadata should be re-encrypted with shared key " +
+                        "but no valid ENCRYPT metadata shared key found "
+            )
+            view?.showReEncyptMetadataFailure()
+            return
+        }
+        when (resourceUpdateActionsInteractor.reEncryptResourceMetadata(
+            metadataKeyId = metadataKeyId.toString(),
+            metadataKeyType = MetadataKeyTypeModel.SHARED
+        ).single()) {
+            is ResourceUpdateActionResult.Success -> shareResource()
+            else -> view?.showReEncyptMetadataFailure()
+        }
+    }
+
+    private suspend fun shareResource() {
+        when (runAuthenticatedOperation(needSessionRefreshFlow, sessionRefreshedFlow) {
+            resourceShareInteractor.simulateAndShareResource(id, recipients)
+        }) {
+            is Output.SecretDecryptFailure -> view?.showSecretDecryptFailure()
+            is Output.SecretEncryptFailure -> view?.showSecretEncryptFailure()
+            is Output.SecretFetchFailure -> view?.showSecretFetchFailure()
+            is Output.ShareFailure -> view?.showShareFailure()
+            is Output.SimulateShareFailure -> view?.showShareSimulationFailure()
+            is Output.Success -> shareSuccess()
+            is Output.Unauthorized -> {
+                /* not interested */
+            }
         }
     }
 
@@ -207,6 +268,7 @@ class PermissionsPresenter(
     override fun shareRecipientsAdded(shareRecipients: ArrayList<PermissionModelUi>?) {
         shareRecipients?.let { newRecipients ->
             recipients = newRecipients
+            refreshAction()
         }
     }
 
@@ -223,6 +285,7 @@ class PermissionsPresenter(
                         existingPermission.user.copy()
                     )
             }
+        refreshAction()
     }
 
     override fun userPermissionDeleted(permission: PermissionModelUi.UserPermissionModel) {
@@ -230,6 +293,7 @@ class PermissionsPresenter(
             .filterIsInstance<PermissionModelUi.UserPermissionModel>()
             .find { it.user.userId == permission.user.userId }
             ?.let { recipients.remove(it) }
+        refreshAction()
     }
 
     override fun groupPermissionModified(permission: PermissionModelUi.GroupPermissionModel) {
@@ -245,6 +309,7 @@ class PermissionsPresenter(
                         existingPermission.group.copy()
                     )
             }
+        refreshAction()
     }
 
     override fun groupPermissionDeleted(permission: PermissionModelUi.GroupPermissionModel) {
@@ -252,6 +317,7 @@ class PermissionsPresenter(
             .filterIsInstance<PermissionModelUi.GroupPermissionModel>()
             .find { it.group.groupId == permission.group.groupId }
             ?.let { recipients.remove(it) }
+        refreshAction()
     }
 
     override fun detach() {

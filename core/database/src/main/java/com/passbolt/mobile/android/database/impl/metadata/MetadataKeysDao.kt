@@ -33,8 +33,16 @@ import com.passbolt.mobile.android.entity.metadata.MetadataKeyWithPrivateKeys
 interface MetadataKeysDao : BaseDao<MetadataKey> {
 
     @Transaction
-    @Query("SELECT * FROM MetadataKey")
-    suspend fun getMetadataKeysWithPrivateKeys(): List<MetadataKeyWithPrivateKeys>
+    @Query("SELECT * FROM MetadataKey WHERE id = :id")
+    suspend fun getMetadataKey(id: String): MetadataKeyWithPrivateKeys
+
+    @Transaction
+    @Query("SELECT * FROM MetadataKey WHERE deleted is NULL")
+    suspend fun getDecryptionMetadataKeysWithPrivateKeys(): List<MetadataKeyWithPrivateKeys>
+
+    @Transaction
+    @Query("SELECT * FROM MetadataKey WHERE (deleted IS NULL AND expired IS NULL)")
+    suspend fun getEncryptionMetadataKeysWithPrivateKeys(): List<MetadataKeyWithPrivateKeys>
 
     @Transaction
     @Query("DELETE FROM ResourceMetadata")
