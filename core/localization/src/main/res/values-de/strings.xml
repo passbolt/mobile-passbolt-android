@@ -42,6 +42,7 @@
     <string name="common_sign_out">Abmelden</string>
     <string name="common_data_refresh_error">Es gab einen Fehler beim Aktualisieren der Daten</string>
     <string name="common_decryption_failure">Fehler bei der Entschlüsselung des Geheimnisses</string>
+    <string name="common_metadata_encryption_failure">Error during metadata encryption</string>
     <string name="common_fetch_failure">Fehler beim Herunterladen des Geheimnisses</string>
     <string name="common_encryption_failure">Es gab einen Fehler bei der geheimen Verschlüsselung</string>
     <string name="common_json_schema_resource_validation_error">Bei der Überprüfung der Ressource ist ein Fehler aufgetreten. Aktiviere Protokolle für weitere Details.</string>
@@ -65,7 +66,7 @@
     <string name="logout_dialog_sign_out">Abmelden</string>
     <string name="no_username">kein Benutzername</string>
     <string name="more_launch_website">Webseite öffnen</string>
-    <string name="more_copy_uri">URL kopieren</string>
+    <string name="more_copy_uri">URI kopieren</string>
     <string name="more_copy_password">Passwort kopieren</string>
     <string name="more_copy_username">Benutzernamen kopieren</string>
     <string name="more_copy_desc">Beschreibung kopieren</string>
@@ -235,7 +236,7 @@
     <string name="resource_details_username_header">Benutzername</string>
     <string name="resource_details_password_header">Passwort</string>
     <string name="resource_details_totp_header">Totp</string>
-    <string name="resource_details_url_header">Webseiten URL</string>
+    <string name="resource_details_url_header">Main URI</string>
     <string name="resource_details_expiry_header">Ablauf</string>
     <string name="resource_details_description_header">Beschreibung</string>
     <string name="resource_details_tags_header">Tags</string>
@@ -255,8 +256,8 @@
     <string name="resource_update_create_success">Neues Passwort wurde erstellt!</string>
     <string name="resource_update_edit_password_title">Passwort bearbeiten</string>
     <string name="resource_update_field_password">Passwort</string>
-    <string name="resource_update_field_name">Name</string>
-    <string name="resource_update_field_uri">URL</string>
+    <string name="resource_update_field_name">Resource name</string>
+    <string name="resource_update_field_uri">Main URI</string>
     <string name="resource_update_field_username">Benutzername</string>
     <string name="resource_update_field_description">Beschreibung</string>
     <string name="resource_update_invalid_secret_data">Ungültige geheimen Datentypen. Bearbeitung wird abgebrochen.</string>
@@ -317,7 +318,7 @@
     <string name="transfer_details_camera_required_dialog_message">Leider benötigen Sie ein Gerät mit einer Kamera, um fortzufahren, da die Schlüsselübertragung über QR-Codes erfolgt.</string>
     <string name="transfer_details_camera_access_dialog_message">Bitte erteilen Sie der Passbolt-Anwendung in Ihren Einstellungen die Berechtigung zum Zugriff auf die Kamera.</string>
     <string name="scan_qr_exit_confirmation_dialog_message">Wenn Sie gehen, müssen Sie die QR-Codes erneut scannen.</string>
-    <string name="scan_qr_exit_information_dialog_message">Sie werden eine Reihe von QR-Codes sehen. Wir scannen diese Codes, bis der Fortschrittsbalken voll ist. Dann können Sie sich anmelden!</string>
+    <string name="scan_qr_exit_information_dialog_message">You will see a sequence of QR codes. We will scan these codes until the progress bar is full. Then you will be able to login!</string>
     <string name="scan_qr_exit_information_dialog_title">Scannen von QR-Codes</string>
     <string name="scan_qr_keep_going">Scannen von QR-Codes</string>
     <string name="scan_qr_aim_at_qr_code">Richten Sie die Kamera auf den QR-Code</string>
@@ -356,7 +357,7 @@
     <string name="group_member_details_group_member">Gruppenmitglieder</string>
     <string name="permission_recipients_select_users">Benutzer wählen</string>
     <string name="permission_recipients_already_added">Bereits hinzugefügt</string>
-    <string name="permission_recipients_user_or_group_not_found">User or group not found</string>
+    <string name="permission_recipients_user_or_group_not_found">Benutzer oder Gruppe nicht gefunden</string>
     <string name="permission_deletion_dialog_message">Das Passwort wird nicht mehr mit diesem Benutzer geteilt.</string>
     <string name="main_update_downloaded">Passbolt Update wurde soeben heruntergeladen</string>
     <string name="main_update_download_in_progress">Herunterladen im Hintergrund. Wir werden Sie benachrichtigen, sobald der Download abgeschlossen ist.</string>
