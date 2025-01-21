@@ -33,17 +33,22 @@ class FolderModelMapper(
     private val permissionsModelMapper: PermissionsModelMapper
 ) {
 
-    fun map(folder: FolderResponseDto): FolderModelWithAttributes =
-        FolderModelWithAttributes(
+    fun map(folder: FolderResponseDto): FolderModelWithAttributes {
+        val currentUserPermission = folder.permission
+        val otherUsersPermissions = folder.permissions.filter { folderPermission ->
+            folderPermission.aroForeignKey != currentUserPermission.aroForeignKey
+        }
+        return FolderModelWithAttributes(
             FolderModel(
                 folderId = folder.id.toString(),
                 parentFolderId = folder.folderParentId?.toString(),
                 name = folder.name.orEmpty(),
-                isShared = folder.personal == false,
+                isShared = otherUsersPermissions.isNotEmpty(),
                 permission = permissionsModelMapper.map(folder.permission.type)
             ),
             folder.permissions.map(permissionsModelMapper::map)
         )
+    }
 
     fun map(folderModel: FolderModel): Folder =
         Folder(
