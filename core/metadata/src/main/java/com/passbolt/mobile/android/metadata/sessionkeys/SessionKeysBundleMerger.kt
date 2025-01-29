@@ -23,17 +23,18 @@
 
 package com.passbolt.mobile.android.metadata.sessionkeys
 
-import com.passbolt.mobile.android.dto.request.SessionKeysBundleDto
+import com.passbolt.mobile.android.dto.response.DecryptedMetadataSessionKeysBundleModel
+import com.passbolt.mobile.android.ui.MergedSessionKeys
 import com.passbolt.mobile.android.ui.SessionKeyIdentifier
 import com.passbolt.mobile.android.ui.SessionKeyModel
 import java.time.ZonedDateTime
 
 class SessionKeysBundleMerger {
 
-    fun merge(input: List<SessionKeysBundleDto>): HashMap<SessionKeyIdentifier, SessionKeyModel> {
+    fun merge(input: List<DecryptedMetadataSessionKeysBundleModel>): MergedSessionKeys {
         val merged = hashMapOf<SessionKeyIdentifier, SessionKeyModel>()
 
-        input.flatMap { it.sessionKeys }.forEach {
+        input.flatMap { it.bundle.sessionKeys }.forEach {
             val sessionKeyIdentifier = SessionKeyIdentifier(foreignModel = it.foreignModel, foreignId = it.foreignId)
             val currentModified = ZonedDateTime.parse(it.modified)
             val existing = merged[sessionKeyIdentifier]
@@ -42,6 +43,11 @@ class SessionKeysBundleMerger {
             }
         }
 
-        return merged
+        val originKeysMetadata = hashMapOf<String, ZonedDateTime>()
+        input.forEach {
+            originKeysMetadata[it.id.toString()] = it.modified
+        }
+
+        return MergedSessionKeys(merged, originKeysMetadata)
     }
 }

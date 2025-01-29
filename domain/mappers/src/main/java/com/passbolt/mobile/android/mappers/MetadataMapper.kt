@@ -27,6 +27,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.passbolt.mobile.android.dto.request.SessionKeyDto
 import com.passbolt.mobile.android.dto.request.SessionKeysBundleDto
+import com.passbolt.mobile.android.dto.response.DecryptedMetadataSessionKeysBundleModel
 import com.passbolt.mobile.android.dto.response.MetadataKeyTypeDto
 import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
 import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
@@ -36,6 +37,7 @@ import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
 import com.passbolt.mobile.android.entity.metadata.MetadataKey
 import com.passbolt.mobile.android.entity.metadata.MetadataKeyWithPrivateKeys
 import com.passbolt.mobile.android.entity.metadata.MetadataPrivateKey
+import com.passbolt.mobile.android.ui.MergedSessionKeys
 import com.passbolt.mobile.android.ui.MetadataKeyModel
 import com.passbolt.mobile.android.ui.MetadataKeyTypeModel
 import com.passbolt.mobile.android.ui.MetadataKeysSettingsModel
@@ -165,6 +167,14 @@ class MetadataMapper {
                     sessionKeys = it
                 )
             }
+
+    fun map(mergedSessionKeys: MergedSessionKeys, bundleId: UUID): DecryptedMetadataSessionKeysBundleModel =
+        DecryptedMetadataSessionKeysBundleModel(
+            id = bundleId,
+            bundle = map(mergedSessionKeys.keys),
+            created = ZonedDateTime.now(),
+            modified = ZonedDateTime.now()
+        )
 
     private companion object {
         private const val KEY_ARMORED_KEY = "armored_key"

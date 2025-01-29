@@ -26,6 +26,7 @@ package com.passbolt.mobile.android.metadata.sessionkeys
 import com.google.common.truth.Truth.assertThat
 import com.passbolt.mobile.android.dto.request.SessionKeyDto
 import com.passbolt.mobile.android.dto.request.SessionKeysBundleDto
+import com.passbolt.mobile.android.dto.response.DecryptedMetadataSessionKeysBundleModel
 import com.passbolt.mobile.android.ui.SessionKeyIdentifier
 import org.junit.Test
 import java.time.ZonedDateTime
@@ -43,17 +44,22 @@ class SessionKeysBundleMergerTest {
             SessionKeyDto("2", UUID.randomUUID(), "key2", ZonedDateTime.now().toString()),
             SessionKeyDto("3", UUID.randomUUID(), "key3", ZonedDateTime.now().toString())
         )
-        val bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys)
+        val bundle = DecryptedMetadataSessionKeysBundleModel(
+            id = UUID.randomUUID(),
+            created = ZonedDateTime.now(),
+            modified = ZonedDateTime.now(),
+            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys)
+        )
 
         val result = sessionKeysBundleMerger.merge(listOf(bundle))
 
-        assertThat(result).hasSize(keys.size)
-        assertThat(result.keys).containsExactly(
+        assertThat(result.keys).hasSize(keys.size)
+        assertThat(result.keys.keys).containsExactly(
             SessionKeyIdentifier("1", keys[0].foreignId),
             SessionKeyIdentifier("2", keys[1].foreignId),
             SessionKeyIdentifier("3", keys[2].foreignId)
         )
-        assertThat(result.values.map { it.sessionKey }).containsExactly("key1", "key2", "key3")
+        assertThat(result.keys.map { it.value.sessionKey }).containsExactly("key1", "key2", "key3")
     }
 
     @Test
@@ -65,17 +71,22 @@ class SessionKeysBundleMergerTest {
             SessionKeyDto("3", sameForignModelId, "key3", ZonedDateTime.now().toString()),
             SessionKeyDto("3", sameForignModelId, "key4", ZonedDateTime.now().minusDays(1).toString())
         )
-        val bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys)
+        val bundle = DecryptedMetadataSessionKeysBundleModel(
+            id = UUID.randomUUID(),
+            created = ZonedDateTime.now(),
+            modified = ZonedDateTime.now(),
+            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys)
+        )
 
         val result = sessionKeysBundleMerger.merge(listOf(bundle))
 
-        assertThat(result).hasSize(3)
-        assertThat(result.keys).containsExactly(
+        assertThat(result.keys).hasSize(3)
+        assertThat(result.keys.keys).containsExactly(
             SessionKeyIdentifier("1", keys[0].foreignId),
             SessionKeyIdentifier("2", keys[1].foreignId),
             SessionKeyIdentifier("3", keys[2].foreignId)
         )
-        assertThat(result.values.map { it.sessionKey }).containsExactly("key1", "key2", "key3")
+        assertThat(result.keys.map { it.value.sessionKey }).containsExactly("key1", "key2", "key3")
     }
 
     @Test
@@ -90,13 +101,23 @@ class SessionKeysBundleMergerTest {
             SessionKeyDto("5", UUID.randomUUID(), "key5", ZonedDateTime.now().toString()),
             SessionKeyDto("6", UUID.randomUUID(), "key6", ZonedDateTime.now().toString())
         )
-        val bundle1 = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1)
-        val bundle2 = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2)
+        val bundle1 = DecryptedMetadataSessionKeysBundleModel(
+            id = UUID.randomUUID(),
+            created = ZonedDateTime.now(),
+            modified = ZonedDateTime.now(),
+            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1)
+        )
+        val bundle2 = DecryptedMetadataSessionKeysBundleModel(
+            id = UUID.randomUUID(),
+            created = ZonedDateTime.now(),
+            modified = ZonedDateTime.now(),
+            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2)
+        )
 
         val result = sessionKeysBundleMerger.merge(listOf(bundle1, bundle2))
 
-        assertThat(result).hasSize((keys1 + keys2).size)
-        assertThat(result.keys).containsExactly(
+        assertThat(result.keys).hasSize((keys1 + keys2).size)
+        assertThat(result.keys.keys).containsExactly(
             SessionKeyIdentifier("1", keys1[0].foreignId),
             SessionKeyIdentifier("2", keys1[1].foreignId),
             SessionKeyIdentifier("3", keys1[2].foreignId),
@@ -104,7 +125,7 @@ class SessionKeysBundleMergerTest {
             SessionKeyIdentifier("5", keys2[1].foreignId),
             SessionKeyIdentifier("6", keys2[2].foreignId)
         )
-        assertThat(result.values.map { it.sessionKey }).containsExactly(
+        assertThat(result.keys.map { it.value.sessionKey }).containsExactly(
             "key1", "key2", "key3", "key4", "key5", "key6"
         )
     }
@@ -122,20 +143,30 @@ class SessionKeysBundleMergerTest {
             SessionKeyDto("2", sameForeignModelId, "key5", ZonedDateTime.now().toString()),
             SessionKeyDto("6", UUID.randomUUID(), "key6", ZonedDateTime.now().toString())
         )
-        val bundle1 = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1)
-        val bundle2 = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2)
+        val bundle1 = DecryptedMetadataSessionKeysBundleModel(
+            id = UUID.randomUUID(),
+            created = ZonedDateTime.now(),
+            modified = ZonedDateTime.now(),
+            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys1)
+        )
+        val bundle2 = DecryptedMetadataSessionKeysBundleModel(
+            id = UUID.randomUUID(),
+            created = ZonedDateTime.now(),
+            modified = ZonedDateTime.now(),
+            bundle = SessionKeysBundleDto("PASSBOLT_SESSION_KEYS", keys2)
+        )
 
         val result = sessionKeysBundleMerger.merge(listOf(bundle1, bundle2))
 
-        assertThat(result).hasSize(5)
-        assertThat(result.keys).containsExactly(
+        assertThat(result.keys).hasSize(5)
+        assertThat(result.keys.keys).containsExactly(
             SessionKeyIdentifier("1", keys1[0].foreignId),
             SessionKeyIdentifier("2", keys2[1].foreignId),
             SessionKeyIdentifier("3", keys1[2].foreignId),
             SessionKeyIdentifier("4", keys2[0].foreignId),
             SessionKeyIdentifier("6", keys2[2].foreignId)
         )
-        assertThat(result.values.map { it.sessionKey }).containsExactly(
+        assertThat(result.keys.map { it.value.sessionKey }).containsExactly(
             "key1", "key3", "key4", "key5", "key6"
         )
     }

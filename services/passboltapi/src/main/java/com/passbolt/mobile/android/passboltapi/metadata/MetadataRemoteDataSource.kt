@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.passboltapi.metadata
 
+import com.passbolt.mobile.android.dto.request.EncryptedDataAndModifiedRequest
 import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
 import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
 import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
@@ -44,6 +45,12 @@ internal class MetadataRemoteDataSource(
     override suspend fun getMetadataSessionKeys(): List<MetadataSessionKeyResponseDto> =
         metadataApi.getMetadataSessionKeys().body
 
-    override suspend fun saveMetadataSessionKeys(request: EncryptedDataRequest) =
-        metadataApi.saveMetadataSessionKeys(request).body
+    override suspend fun postMetadataSessionKeys(request: EncryptedDataRequest) =
+        metadataApi.postMetadataSessionKeys(request).body
+
+    override suspend fun updateMetadataSessionKeys(
+        uuid: String,
+        request: EncryptedDataAndModifiedRequest
+    ) =
+        metadataApi.updateMetadataSessionKeys(uuid, request).body
 }
