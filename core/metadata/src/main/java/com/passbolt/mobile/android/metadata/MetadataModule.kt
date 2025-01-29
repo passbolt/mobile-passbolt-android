@@ -10,7 +10,8 @@ import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysSettingsUse
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataSessionKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.FetchMetadataTypesSettingsUseCase
-import com.passbolt.mobile.android.metadata.usecase.SaveMetadataSessionKeysUseCase
+import com.passbolt.mobile.android.metadata.usecase.PostMetadataSessionKeysUseCase
+import com.passbolt.mobile.android.metadata.usecase.UpdateMetadataSessionKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.AddLocalMetadataKeysUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeyUseCase
 import com.passbolt.mobile.android.metadata.usecase.db.GetLocalMetadataKeysUseCase
@@ -61,11 +62,13 @@ val metadataModule = module {
     singleOf(::FetchMetadataSessionKeysUseCase)
     singleOf(::SessionKeysBundleMerger)
     singleOf(::SessionKeysMemoryCache)
-    singleOf(::SaveMetadataSessionKeysUseCase)
+    singleOf(::PostMetadataSessionKeysUseCase)
+    singleOf(::UpdateMetadataSessionKeysUseCase)
     single {
         MetadataSessionKeysInteractor(
             fetchMetadataSessionKeysUseCase = get(),
-            saveMetadataSessionKeysUseCase = get(),
+            postMetadataSessionKeysUseCase = get(),
+            updateMetadataSessionKeysUseCase = get(),
             passphraseMemoryCache = get(),
             getPrivateKeyUseCase = get(),
             openPgp = get(),

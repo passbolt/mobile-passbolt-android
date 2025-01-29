@@ -1,11 +1,6 @@
-package com.passbolt.mobile.android.passboltapi.metadata
+package com.passbolt.mobile.android.dto.request
 
-import com.passbolt.mobile.android.dto.request.EncryptedDataAndModifiedRequest
-import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
-import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataKeysSettingsResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataSessionKeyResponseDto
-import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
+import java.time.ZonedDateTime
 
 /**
  * Passbolt - Open source password manager for teams
@@ -29,18 +24,7 @@ import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
  * @link https://www.passbolt.com Passbolt (tm)
  * @since v1.0
  */
-
-interface MetadataDataSource {
-
-    suspend fun getMetadataKeys(): List<MetadataKeysResponseDto>
-
-    suspend fun getMetadataTypesSettings(): MetadataTypesSettingsResponseDto
-
-    suspend fun getMetadataKeysSettings(): MetadataKeysSettingsResponseDto
-
-    suspend fun getMetadataSessionKeys(): List<MetadataSessionKeyResponseDto>
-
-    suspend fun postMetadataSessionKeys(request: EncryptedDataRequest)
-
-    suspend fun updateMetadataSessionKeys(uuid: String, request: EncryptedDataAndModifiedRequest)
-}
+data class EncryptedDataAndModifiedRequest(
+    val data: String,
+    val modified: ZonedDateTime
+)

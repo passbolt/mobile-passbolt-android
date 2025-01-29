@@ -1,5 +1,6 @@
 package com.passbolt.mobile.android.passboltapi.metadata
 
+import com.passbolt.mobile.android.dto.request.EncryptedDataAndModifiedRequest
 import com.passbolt.mobile.android.dto.request.EncryptedDataRequest
 import com.passbolt.mobile.android.dto.response.BaseResponse
 import com.passbolt.mobile.android.dto.response.MetadataKeysResponseDto
@@ -9,6 +10,7 @@ import com.passbolt.mobile.android.dto.response.MetadataTypesSettingsResponseDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -51,14 +53,23 @@ internal interface MetadataApi {
     suspend fun getMetadataSessionKeys(): BaseResponse<List<MetadataSessionKeyResponseDto>>
 
     @POST(METADATA_SESSION_KEYS_ENDPOINT)
-    suspend fun saveMetadataSessionKeys(@Body request: EncryptedDataRequest): BaseResponse<Unit>
+    suspend fun postMetadataSessionKeys(@Body request: EncryptedDataRequest): BaseResponse<Unit>
+
+    @POST(METADATA_SESSION_KEYS_UPDATE_ENDPOINT)
+    suspend fun updateMetadataSessionKeys(
+        @Path(QUERY_UUID) uuid: String,
+        @Body request: EncryptedDataAndModifiedRequest
+    ): BaseResponse<Unit>
 
     private companion object {
         private const val QUERY_CONTAIN_PRIVATE_KEYS = "contain[metadata_private_keys]"
 
+        private const val QUERY_UUID = "uuid"
         private const val METADATA = "metadata"
+        private const val SESSION_KEYS = "session-keys"
         private const val METADATA_KEYS_ENDPOINT = "$METADATA/keys.json"
         private const val METADATA_SESSION_KEYS_ENDPOINT = "$METADATA/session-keys.json"
+        private const val METADATA_SESSION_KEYS_UPDATE_ENDPOINT = "$METADATA/$SESSION_KEYS/{$QUERY_UUID}.json"
         private const val METADATA_TYPES = "$METADATA/types"
         private const val METADATA_KEYS = "$METADATA/keys"
         private const val METADATA_TYPES_SETTINGS = "$METADATA_TYPES/settings.json"
