@@ -1,19 +1,16 @@
-FROM openjdk:17-slim-bullseye
+FROM --platform=linux/amd64 amazoncorretto:17-alpine
 
 ENV ANDROID_HOME="/usr/local/android-sdk" \
     ANDROID_SDK_ROOT="/usr/local/android-sdk" \
-    ANDROID_VERSION=33 \
-    ANDROID_BUILD_TOOLS_VERSION="33.0.0" \
-    ANDROID_SDK_TOOLS_VERSION="9123335"
+    ANDROID_VERSION=34 \
+    ANDROID_BUILD_TOOLS_VERSION="34.0.0" \
+    ANDROID_SDK_TOOLS_VERSION="11076708"
 
-# install required tools
-RUN apt-get --quiet update --yes \
-    && apt-get -y install gnupg \
-    && apt-get --quiet install --yes wget unzip lib32stdc++6 lib32z1 tar \
-    && apt-get --quiet install --yes software-properties-common > /dev/null \
-    && apt-add-repository --yes ppa:deadsnakes/ppa > /dev/null \
-    && apt-get --quiet install --yes python3.9 > /dev/null \
-    && apt-get --quiet install --yes python3-pip > /dev/null
+# the base image does not have fonts (needed for easy launcher plugin)
+RUN apk add --no-cache freetype fontconfig ttf-dejavu
+
+# install required c libraries for aapt2
+RUN apk add --no-cache gcompat libstdc++
 
 # setup android home path for moving the downloaded sdk into it
 RUN install -d $ANDROID_HOME
