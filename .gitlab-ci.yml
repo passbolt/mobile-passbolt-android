@@ -1,7 +1,7 @@
-image: registry.gitlab.com/passbolt/passbolt-ci-docker-images/android-app:latest
+image: registry.gitlab.com/passbolt/passbolt-ci-docker-images/android-app-alpine:latest
 
 variables:
-  ANDROID_HOME: "${PWD}/android-home"
+  ANDROID_HOME: "/usr/local/android-sdk"
 
 default:
   retry:
