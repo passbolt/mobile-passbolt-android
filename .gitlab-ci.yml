@@ -59,7 +59,7 @@ Deploy qa application to Firebase:
     - echo $QA_KEY | base64 -d > "${HOME}/qa.keystore"
     - export FIREBASE_DIR="$HOME/.config/firebase"
     - install -d $FIREBASE_DIR
-    - echo ${FIREBASE_SERVICE_KEY} | base64 --decode > "$FIREBASE_DIR/service_key.json"
+    - echo ${FIREBASE_SERVICE_KEY} | base64 -d > "$FIREBASE_DIR/service_key.json"
     - >
       ./gradlew --no-daemon --build-cache -PserviceKey="$FIREBASE_DIR/service_key.json"
       -Pandroid.injected.signing.store.file="${HOME}/qa.keystore"
