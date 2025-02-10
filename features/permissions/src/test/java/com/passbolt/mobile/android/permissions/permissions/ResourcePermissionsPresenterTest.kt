@@ -176,7 +176,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         presenter.resume(view)
         presenter.userPermissionDeleted(USER_PERMISSIONS[0])
 
-        verify(view, times(2)).showPermissions(GROUP_PERMISSIONS)
+        verify(view).showPermissions(GROUP_PERMISSIONS)
     }
 
     @Test
@@ -191,7 +191,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         presenter.resume(view)
         presenter.groupPermissionDeleted(GROUP_PERMISSIONS[0])
 
-        verify(view, times(2)).showPermissions(USER_PERMISSIONS)
+        verify(view).showPermissions(USER_PERMISSIONS)
     }
 
     @Test
@@ -210,7 +210,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         presenter.userPermissionModified(modifiedPermission)
 
         argumentCaptor<List<PermissionModelUi>>().apply {
-            verify(view, times(2)).showPermissions(capture())
+            verify(view).showPermissions(capture())
             assertThat(firstValue).contains(GROUP_PERMISSIONS[0])
             assertThat(firstValue.filterIsInstance<PermissionModelUi.UserPermissionModel>()).hasSize(1)
             assertThat(firstValue.filterIsInstance<PermissionModelUi.UserPermissionModel>()[0].permission)
@@ -234,7 +234,7 @@ class ResourcePermissionsPresenterTest : KoinTest {
         presenter.groupPermissionModified(modifiedPermission)
 
         argumentCaptor<List<PermissionModelUi>>().apply {
-            verify(view, times(2)).showPermissions(capture())
+            verify(view).showPermissions(capture())
             assertThat(firstValue).contains(USER_PERMISSIONS[0])
             assertThat(firstValue.filterIsInstance<PermissionModelUi.GroupPermissionModel>()).hasSize(1)
             assertThat(firstValue.filterIsInstance<PermissionModelUi.GroupPermissionModel>()[0].permission)

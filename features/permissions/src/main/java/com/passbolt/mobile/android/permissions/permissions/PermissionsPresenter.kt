@@ -92,6 +92,10 @@ class PermissionsPresenter(
     }
 
     override fun refreshAction() {
+        refreshPermissionsList()
+    }
+
+    override fun refreshPermissionsList() {
         processItemsVisibility(mode)
         getPermissions(permissionsItem, id)
     }
@@ -268,7 +272,6 @@ class PermissionsPresenter(
     override fun shareRecipientsAdded(shareRecipients: ArrayList<PermissionModelUi>?) {
         shareRecipients?.let { newRecipients ->
             recipients = newRecipients
-            refreshAction()
         }
     }
 
@@ -285,7 +288,6 @@ class PermissionsPresenter(
                         existingPermission.user.copy()
                     )
             }
-        refreshAction()
     }
 
     override fun userPermissionDeleted(permission: PermissionModelUi.UserPermissionModel) {
@@ -293,7 +295,6 @@ class PermissionsPresenter(
             .filterIsInstance<PermissionModelUi.UserPermissionModel>()
             .find { it.user.userId == permission.user.userId }
             ?.let { recipients.remove(it) }
-        refreshAction()
     }
 
     override fun groupPermissionModified(permission: PermissionModelUi.GroupPermissionModel) {
@@ -309,7 +310,6 @@ class PermissionsPresenter(
                         existingPermission.group.copy()
                     )
             }
-        refreshAction()
     }
 
     override fun groupPermissionDeleted(permission: PermissionModelUi.GroupPermissionModel) {
@@ -317,7 +317,6 @@ class PermissionsPresenter(
             .filterIsInstance<PermissionModelUi.GroupPermissionModel>()
             .find { it.group.groupId == permission.group.groupId }
             ?.let { recipients.remove(it) }
-        refreshAction()
     }
 
     override fun detach() {
